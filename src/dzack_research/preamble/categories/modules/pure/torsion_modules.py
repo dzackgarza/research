@@ -125,6 +125,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         orders = tuple(ring(order) for order in orders)
         if any(order == ring.zero() for order in orders):
             raise ValueError("a cyclic torsion summand requires a nonzero relation scalar")
+        orders = tuple(order for order in orders if not order.is_unit())
         size = len(orders)
 
         relations = MatrixSpace(

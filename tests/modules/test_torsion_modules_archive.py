@@ -1,6 +1,13 @@
 r"""Archive reconciliation for the torsion-module category."""
 
-from dzack_research.preamble.all import CC, QQ, ZZ, FinitelyPresentedTorsionModules, TorsionModules
+from dzack_research.preamble.all import (
+    CC,
+    QQ,
+    ZZ,
+    FinitelyPresentedTorsionModules,
+    PowerSeriesRing,
+    TorsionModules,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
 )
@@ -54,3 +61,13 @@ def test_unit_relation_over_an_inexact_field_is_the_zero_vector_space() -> None:
     assert module.is_torsion()
     assert module.is_torsion_free()
     assert module.cardinality() == 1
+
+
+def test_unit_relation_over_formal_power_series_constructs_the_zero_torsion_module() -> None:
+    ring = PowerSeriesRing(QQ, "t")
+    module = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring.one(),))
+
+    assert module.base_ring() is ring
+    assert module.is_torsion()
+    assert module.is_zero()
+    assert module.projective_dimension() == 0
