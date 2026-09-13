@@ -2552,7 +2552,7 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         extra.append(Algebras(scalars).Associative().Unital())
-    if category.is_subcategory(SageIntegralDomains()):
+    if engine in SageIntegralDomains():
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
         extra.append(OwnedOrderedRings())
@@ -2576,7 +2576,7 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
         noetherian = engine is SageZZ
     if noetherian is True or engine is SageZZ:
         extra.append(OwnedNoetherianRings())
-    if category.is_subcategory(SageFields()):
+    if engine in SageFields():
         placement = OwnedFields()
     elif category.is_subcategory(SageDivisionRings()):
         placement = OwnedDivisionRings()

@@ -462,6 +462,16 @@ def test_gaussian_primes(build) -> None:
     assert gaussian.ideal(gaussian(7)).quotient_ring().cardinality() == 49
 
 
+def test_direct_integer_mod_ring_refines_prime_moduli_to_fields() -> None:
+    seven = Zmod(7)
+    twelve = Zmod(12)
+
+    assert seven in Fields()
+    assert seven in IntegralDomains()
+    assert twelve not in Fields()
+    assert twelve not in IntegralDomains()
+
+
 def test_quotient_rings_of_the_integers() -> None:
     twelve = ZZ.quotient_ring(ZZ.ideal(12))
     seven = ZZ.quotient_ring(ZZ.ideal(7))
