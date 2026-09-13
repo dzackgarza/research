@@ -400,6 +400,7 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert recovered(generator) == sign_to_six(generator)
 
     conjugation = group.Aut().one()
+    assert conjugation in group_homset(group, group)
     left, right = adjunction.unit_transformation().naturality_square(conjugation)
     for generator in group_generators:
         assert left(generator) == right(generator)

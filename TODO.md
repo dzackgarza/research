@@ -991,7 +991,12 @@ carry on with the 36 collection errors, which are this repository's own and are 
   imports the retired `integrallattice` package path: it imports `Genus` from the
   live lattice owner. Remaining observed collection repairs are duplicate test-module
   basenames, group-algebra commutativity reaching an `OwnedArrowCategory` parent,
-  and the missing `OwnedCategoryOverBaseRing` session export.
+  and the missing `OwnedCategoryOverBaseRing` session export. A fresh category-suite
+  execution then exposed a distinct group-Hom admission defect: an automorphism in
+  `Aut(G)` was rejected as a morphism of `Grp` while checking abelianization-unit
+  naturality. The group Hom owner now corestricts same-endpoint structured group
+  homomorphisms through their retained GAP map; the abelianization naturality
+  regression passes.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
