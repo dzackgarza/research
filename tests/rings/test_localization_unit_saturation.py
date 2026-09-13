@@ -44,3 +44,6 @@ def test_pid_localization_units_use_owned_principal_saturation_fallback() -> Non
 
     assert ZZ.ideal(72).ideal_saturation(ZZ.ideal(6)) == ZZ.ideal(1)
     assert ZZ.ideal(20).ideal_saturation(ZZ.ideal(6)) == ZZ.ideal(5)
+    assert ZZ.ideal(10).colon(ZZ.ideal(5)) == ZZ.ideal(2)
+    assert ZZ.ideal(0).colon(ZZ.ideal(5)) == ZZ.ideal(0)
+    assert ZZ.ideal(0).colon(ZZ.ideal(0)) == ZZ.ideal(1)

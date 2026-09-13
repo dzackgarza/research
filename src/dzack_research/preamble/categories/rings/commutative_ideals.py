@@ -325,12 +325,36 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     self.ring(),
                     _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
                 )
-            method = _engine_ideal_method(
-                self,
-                "quotient",
-                "this ideal backend has no colon/ideal-quotient operation",
-            )
-            return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
+            method = _optional_engine_method(self._engine_ideal(), "quotient")
+            match method:
+                case None:
+                    ring = self.ring()
+                    match ring in PrincipalIdealDomains():
+                        case True:
+                            pass
+                        case False:
+                            raise NotImplementedError(
+                                "this ideal backend has no colon operation and the owned fallback requires a PID"
+                            )
+                    numerator = _pid_principal_ideal_generator(self)
+                    denominator = _pid_principal_ideal_generator(other)
+                    match denominator == ring.zero():
+                        case True:
+                            return ring.ideal(ring.one())
+                        case False:
+                            common = numerator.gcd(denominator)
+                            quotient, remainder = numerator.quo_rem(common)
+                    match remainder == ring.zero():
+                        case True:
+                            return ring.ideal(quotient)
+                        case False:
+                            raise ArithmeticError(
+                                "a PID gcd did not divide the ideal generator exactly"
+                            )
+                case _:
+                    return _from_engine_ideal(
+                        self.ring(), method(other._engine_ideal())
+                    )
 
         ideal_quotient = colon
 
@@ -362,19 +386,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                                 "this ideal backend has no saturation operation and the owned fallback requires a PID"
                             )
 
-                    def principal_generator(ideal):
-                        generators = tuple(ideal.ideal_generators())
-                        match generators:
-                            case ():
-                                return ring.zero()
-                            case (first, *rest):
-                                generator = ring(first)
-                                for candidate in rest:
-                                    generator = generator.gcd(ring(candidate))
-                                return generator
-
-                    numerator = principal_generator(self)
-                    denominator = principal_generator(other)
+                    numerator = _pid_principal_ideal_generator(self)
+                    denominator = _pid_principal_ideal_generator(other)
                     match (numerator == ring.zero(), denominator == ring.zero()):
                         case (_, True):
                             return ring.ideal(ring.one())
@@ -616,6 +629,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 def _require_same_ring(left, right):
     if left.ring() is not right.ring():
         raise ValueError("ideal arithmetic requires one ambient ring")
+
+
+def _pid_principal_ideal_generator(ideal):
+    r"""Return a generator of an ideal in a represented principal ideal domain."""
+    ring = ideal.ring()
+    generators = tuple(ideal.ideal_generators())
+    match generators:
+        case ():
+            return ring.zero()
+        case (first, *rest):
+            generator = ring(first)
+            for candidate in rest:
+                generator = generator.gcd(ring(candidate))
+            return generator
 
 
 def _optional_engine_method(engine, name):
