@@ -25,12 +25,34 @@ IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
 
 
+class _IndexedFiniteOrderedPresentation:
+    r"""Private constructor data for a finite ordered image.
 
+    ``FiniteOrderedSets`` is the specialization ``OrderedEnumeratedSets`` plus
+    finiteness.  Constructing an indexed image through the general category and
+    refining afterward can replay the specialization constructor with the index
+    set as its ``elements`` datum, silently replacing the intended value map by
+    the index enumeration.  Carry the indexed presentation as the one datum of
+    the specialized constructor instead.
+    """
 
+    def __init__(self, index_set, element_at, index_of, contains) -> None:
+        self.index_set = index_set
+        self.element_at = element_at
+        self.index_of = index_of
+        self.contains = contains
 
 
 def _finite_ordered_presentation(elements):
     r"""Return the enumeration data of one known-finite ordered source."""
+
+    if isinstance(elements, _IndexedFiniteOrderedPresentation):
+        return (
+            elements.index_set,
+            elements.element_at,
+            elements.index_of,
+            elements.contains,
+        )
 
     if elements in FiniteOrderedSets():
         return (
@@ -319,13 +341,15 @@ class FiniteOrderedSets(OwnedCategory):
                 except (TypeError, ValueError):
                     return False
                 return True
-        return OrderedEnumeratedSets()(
-            index_set,
-            element_at,
-            index_of=index_of,
-            contains=contains,
+        return object_of(
+            self,
+            elements=_IndexedFiniteOrderedPresentation(
+                index_set,
+                element_at,
+                index_of,
+                contains,
+            ),
             name=name,
-            finite=True,
         )
 
     class ParentMethods:

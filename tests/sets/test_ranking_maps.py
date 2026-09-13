@@ -106,6 +106,19 @@ def test_a_finite_coproduct_is_enumerated_by_rank_layer() -> None:
     assert ranking.inverse()(1) == coproduct.injection(1)(right[0])
 
 
+def test_finite_ordered_image_over_owned_labels_retains_the_value_map() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    image = finite_ordered_image(
+        labels,
+        lambda label: ("value", label),
+    )
+
+    assert image.index_set() is labels
+    assert tuple(image) == (("value", "left"), ("value", "right"))
+    assert image[0] == ("value", "left")
+    assert int(image.ranking_map()(("value", "right"))) == 1
+
+
 def test_a_product_of_infinite_factors_refuses_the_arrow_it_cannot_represent() -> None:
     r"""$\mathbb N \times \mathbb N$ is countable, but mixed radix does not enumerate it.
 
