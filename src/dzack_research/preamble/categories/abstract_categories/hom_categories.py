@@ -61,6 +61,23 @@ def _category_hom(
     return Hom(domain, codomain, category)
 
 
+def _arrow_is_inherited_from_subcategory(target, arrow: Morphism) -> bool:
+    r"""Return whether ``arrow`` lies in a stronger Hom category below ``target``.
+
+    If ``D <= C``, every ``D``-morphism is definitionally a ``C``-morphism.
+    A structured Hom parent may represent that stronger arrow by a different
+    morphism class, so admission follows the Hom-category edge itself rather
+    than reconstructing and re-verifying the same arrow in ``C``.
+    """
+    parent = arrow.parent()
+    return (
+        isinstance(parent, CategoricalHomset)
+        and parent.domain_object() is target.domain_object()
+        and parent.codomain_object() is target.codomain_object()
+        and parent.base_category().is_subcategory(target.base_category())
+    )
+
+
 def _category_homset(
     category: Category | None,
     domain: Parent,
@@ -305,7 +322,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             and arrow.codomain() is self.codomain_object()
         ):
             return False
-        if arrow.parent() is self:
+        if arrow.parent() is self or _arrow_is_inherited_from_subcategory(self, arrow):
             return True
         try:
             self(arrow)
@@ -508,7 +525,7 @@ class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
         ):
             return False
         homset = self.arrow_set()
-        if arrow.parent() is homset:
+        if arrow.parent() is homset or _arrow_is_inherited_from_subcategory(self, arrow):
             return True
         # Structured subcategories may represent an arrow by a stronger
         # morphism class while retaining the same underlying categorical map.

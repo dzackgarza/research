@@ -1224,13 +1224,8 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
                 return self._from_group_generator_images(images, check=check)
             case GapElement():
                 return self._from_gap_homomorphism(images, check=check)
-            case GroupHomomorphism() if (
-                images.domain() is self.domain()
-                and images.codomain() is self.codomain()
-            ):
-                if images.parent() is self:
-                    return images
-                return self._from_gap_homomorphism(images.gap(), check=check)
+            case Morphism() if images.parent() is self:
+                return images
             case tuple() | list():
                 return self._from_gap_generator_images(images, check=check)
         raise TypeError(f"unable to convert {images!r} to an element of {self}")

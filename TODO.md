@@ -1000,7 +1000,12 @@ carry on with the 36 collection errors, which are this repository's own and are 
   that `Modules(R[G])` is literally a subcategory of `Modules(R)`. The retained
   architecture correctly makes restriction along `R -> R[G]` a functor; the
   specimen now exercises that object/morphism restriction and keeps genuine
-  form/lattice subcategory inclusions separate.
+  form/lattice subcategory inclusions separate. Continuing the category suite
+  exposed Hom admission rebuilding stronger structured arrows in a weaker Hom
+  category; fixed Hom objects now accept same-endpoint arrows along the declared
+  subcategory edge instead of re-verifying their presentation. This subsumes the
+  earlier group-automorphism special case and lets the free-algebra functor reach
+  its next independent arithmetic assertion.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

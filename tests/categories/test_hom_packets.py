@@ -107,6 +107,20 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     assert packet.Ends().Of(algebra) in algebra_aut_category.super_categories()
 
 
+def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -> None:
+    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    structured_identity = algebra.Mor(algebra).identity()
+    ordinary_hom = Algebras(QQ).Mor(algebra, algebra)
+
+    assert structured_identity.parent() is not ordinary_hom
+    assert structured_identity in ordinary_hom
+
+    group = Groups.C(3)
+    automorphism = group.Aut().one()
+    assert automorphism.parent() is group.Aut()
+    assert automorphism in OwnedGroups().Mor(group, group)
+
+
 def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     polynomial = SymmetricAlgebraOn(QQ, ("x",))
     x = polynomial.algebra_generator("x")
