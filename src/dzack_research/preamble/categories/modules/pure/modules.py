@@ -2746,10 +2746,15 @@ def _module_tensor_product_with_data(
     tensor_labels = _tensor_label_set(factors)
 
     if represented_free:
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FreshFreeModuleOn,
+        )
+
         construction_data = {"tensor_factors": factors}
         if extra_construction_data is not None:
             construction_data.update(extra_construction_data)
-        return values[0]._fresh_free_module_on(
+        return FreshFreeModuleOn(
+            ring,
             tensor_labels,
             _extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
             _extra_construction_data=construction_data,

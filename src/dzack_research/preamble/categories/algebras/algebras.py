@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Subobjects,
-    TensorProduct,
     TensorSquare,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -583,7 +582,7 @@ class _AlgebraTensorSquareFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, module):
-        return TensorSquare(module)
+        return Modules(self.base_ring()).tensor_product((module, module))
 
     def _apply_morphism(self, morphism):
         return tensor_product_morphism(
@@ -850,7 +849,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             ring = self.algebra_base_ring()
             module = self.underlying_module()
             try:
-                tensor = TensorProduct(module, module)
+                tensor = _algebra_tensor_square_functor(ring)(module)
             except NotImplementedError as error:
                 raise TypeError(f"the multiplication morphism of {self} has no represented tensor-product realization by finitely presented {ring}-modules") from error
             return tensor.from_bilinear(
@@ -916,7 +915,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return center
 
             inclusion = center.inclusion()
-            center_tensor = TensorProduct(center, center)
+            center_tensor = Modules(self.base_ring()).tensor_product((center, center))
             ambient_tensor = multiplication.domain()
             center_multiplication = center_tensor.from_bilinear(
                 BilinearMap(
@@ -1032,7 +1031,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             projection = ideal.inclusion().cokernel_projection()
             quotient_module = projection.codomain()
             labels = quotient_module.module_generating_set()
-            multiplication = TensorProduct(quotient_module, quotient_module).from_bilinear(
+            quotient_tensor = Modules(self.base_ring()).tensor_product(
+                (quotient_module, quotient_module)
+            )
+            multiplication = quotient_tensor.from_bilinear(
                 BilinearMap(
                     quotient_module,
                     quotient_module,

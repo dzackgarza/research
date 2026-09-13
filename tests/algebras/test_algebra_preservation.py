@@ -10,9 +10,12 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def test_center_of_unital_associative_algebra_retains_its_unit() -> None:
     matrices = MatrixSpace(QQ, 2)
+    multiplication = matrices.multiplication_morphism()
     center = matrices.center()
     inclusion = center.center_inclusion()
 
+    assert multiplication.domain().base_ring() is QQ
+    assert multiplication.codomain() is matrices
     assert center in Algebras(QQ).Associative().Unital()
     assert center in Algebras(QQ).Commutative()
     unit_map = center.unit_morphism()
