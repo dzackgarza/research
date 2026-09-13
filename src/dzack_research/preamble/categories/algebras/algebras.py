@@ -724,6 +724,18 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return super().module_generating_set()
             return self.underlying_module().module_generating_set()
 
+        def module_rank(self):
+            r"""Return the rank of the underlying ``R``-module when represented.
+
+            ``Alg_R`` is not implemented as a subcategory of ``Mod_R``: the
+            forgetful functor retains the exact carrier module.  Rank is
+            therefore read from that carrier rather than from the arrow object
+            used to retain the multiplication.  In particular ``R[G]`` has
+            module rank ``|G|`` for finite ``G`` without making the algebra
+            object itself a module-category object.
+            """
+            return self.underlying_module().module_rank()
+
         def module_generator(self, label):
             if not _has_exact_algebra_carrier(self):
                 return super().module_generator(label)

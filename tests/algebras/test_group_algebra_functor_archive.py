@@ -133,3 +133,15 @@ def test_group_algebra_commutativity_is_available_before_ring_refinement() -> No
 
     assert cyclic_algebra.is_commutative() is True
     assert symmetric_algebra.is_commutative() is False
+
+
+def test_group_algebra_rank_is_the_rank_of_its_exact_carrier_module() -> None:
+    cyclic = Groups.C(4)
+    symmetric = Groups.S(3)
+    cyclic_algebra = GroupAlgebraFunctor(ZZ)(cyclic)
+    symmetric_algebra = GroupAlgebraFunctor(ZZ)(symmetric)
+
+    assert cyclic_algebra.underlying_module().module_rank() == 4
+    assert symmetric_algebra.underlying_module().module_rank() == 6
+    assert cyclic_algebra.module_rank() == cyclic_algebra.underlying_module().module_rank()
+    assert symmetric_algebra.module_rank() == symmetric_algebra.underlying_module().module_rank()
