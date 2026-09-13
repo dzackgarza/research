@@ -60,6 +60,19 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
+## Delete a reproduction tree when the reproduction is finished
+
+A repro that copies the tree costs about 270 MB here, and two of them from 2026-09-12 were still
+in `/tmp` a day later, holding half a gigabyte on a host at 93% disk. Nothing collects them: the
+directory outlives the turn, the worker that made it, and the chat.
+
+So remove the tree in the same turn that finishes with it, and where a repro needs to survive for
+comparison, say in its own filename what it is for and when it can go. `mktemp -d` names tell a
+later reader nothing, which is why these two were left alone by everyone who saw them.
+
+The same applies to log captures that run to megabytes. Keep the finding, not the capture — a
+recorded line number and message outlives a `.log` file and costs nothing.
+
 ## Bank before you wait
 
 Work that is written but uncommitted lives only in this chat's working tree, and a turn that
