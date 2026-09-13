@@ -581,12 +581,36 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         )
         return self.codomain().point_morphism(values)
 
+    def __mul__(self, other):
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        if other._is_the_identity():
+            return self
+        try:
+            pullback = other.coordinate_algebra_morphism()
+        except NotImplementedError:
+            return super().__mul__(other)
+        coordinates = tuple(
+            pullback(coordinate) for coordinate in self.homogeneous_coordinates()
+        )
+        return _ProjectiveCoordinateMorphism(
+            _scheme_mor_category(other.domain(), self.codomain()),
+            coordinates,
+        )
+
     def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _ProjectiveCoordinateMorphism)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and tuple(other.homogeneous_coordinates()) == tuple(self.homogeneous_coordinates())
+        if (
+            not isinstance(other, _ProjectiveCoordinateMorphism)
+            or other.domain() is not self.domain()
+            or other.codomain() is not self.codomain()
+        ):
+            return False
+        left = tuple(self.homogeneous_coordinates())
+        right = tuple(other.homogeneous_coordinates())
+        return all(
+            left[i] * right[j] == left[j] * right[i]
+            for i in range(len(left))
+            for j in range(i + 1, len(left))
         )
 
     def __ne__(self, other) -> bool:
@@ -3302,23 +3326,17 @@ def _standard_projective_chart_embedding(projective, chart_index):
     chart_index = int(chart_index)
     chart = projective.standard_affine_chart(chart_index)
     algebra = chart.coordinate_algebra()
-    engine = _engine_ring(algebra)
     coordinates = []
     for numerator in range(int(projective.relative_dimension()) + 1):
         if numerator == chart_index:
-            coordinates.append(engine.one())
+            coordinates.append(algebra.one())
         else:
             coordinates.append(
-                _engine_element(
-                    algebra,
-                    projective._standard_chart_coordinate(chart_index, numerator),
-                )
+                projective._standard_chart_coordinate(chart_index, numerator)
             )
-    native = chart.hom(coordinates, projective)
-    return categorical_scheme_morphism(
-        native,
-        domain=chart,
-        codomain=projective,
+    return _ProjectiveCoordinateMorphism(
+        _scheme_mor_category(chart, projective),
+        coordinates,
     )
 
 
