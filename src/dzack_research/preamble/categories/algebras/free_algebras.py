@@ -791,17 +791,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             return self.grading_monoid()(degrees.pop())
 
         def from_component(self, degree, component):
-            r"""Embed ``T^degree(M)`` into the tensor algebra."""
-            degree = int(degree)
-            piece = self.graded_piece(degree)
-            component = piece(component)
-            result = self.zero()
-            for label, coefficient in module_coefficients(component, piece).items():
-                result += self.scalar_multiple(
-                    coefficient,
-                    self._realize_graded_piece_basis_label(degree, label),
-                )
-            return result
+            r"""Embed ``T^degree(M)`` through the shared graded-piece inclusion."""
+            return self.from_graded_piece(degree, component)
 
         def homogeneous_component(self, element, degree):
             r"""Project an element onto the authoritative tensor-power piece."""
