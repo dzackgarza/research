@@ -265,3 +265,28 @@ def test_archive_free_algebra_categories_are_the_live_four_flavor_placements() -
         assert algebra in GradedFreeAlgebras(QQ)
         assert algebra in flavor
         assert algebra.is_free()
+
+def test_tensor_algebra_homogeneous_degree_is_free_word_length() -> None:
+    import pytest
+
+    from dzack_research.preamble.all import ZZ
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+        TensorAlgebraOf,
+    )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        BasedFreeModule,
+    )
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+
+    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    algebra = TensorAlgebraOf(module)
+    x = algebra.algebra_generator("x")
+    y = algebra.algebra_generator("y")
+
+    assert algebra.homogeneous_degree(x) == 1
+    assert algebra.homogeneous_degree(x + y) == 1
+    assert algebra.homogeneous_degree(x * y) == 2
+    with pytest.raises(ValueError, match="not homogeneous"):
+        algebra.homogeneous_degree(x + x * y)

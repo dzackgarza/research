@@ -159,7 +159,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             target = self.graded_piece(degree + 1)
 
             def component(element):
-                source_element = self.from_component(degree, element)
+                source_element = self.from_graded_piece(degree, element)
                 image = self.d(source_element)
                 return image.homogeneous_component(degree + 1)
 

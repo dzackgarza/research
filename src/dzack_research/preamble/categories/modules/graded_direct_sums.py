@@ -209,6 +209,11 @@ class GradedDirectSumModule(Parent):
     def from_component(self, degree, component):
         return self.element_class(self, {int(degree): component})
 
+    def from_graded_piece(self, degree, component):
+        r"""Include one homogeneous piece into the represented direct sum."""
+        piece = self.graded_piece(degree)
+        return self.from_component(degree, piece(component))
+
     def from_components(self, components):
         return self.element_class(self, components)
 
