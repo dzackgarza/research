@@ -2099,7 +2099,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         return f"Isom({self.domain()}, {self.codomain()})"
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_homset(domain, codomain) -> LatticeHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
@@ -2107,7 +2107,7 @@ def lattice_homset(domain, codomain) -> LatticeHomset:
     return domain.lattice_category().Mor(domain, codomain)
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
@@ -2115,7 +2115,7 @@ def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
     return domain.lattice_category().Mono(domain, codomain)
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
