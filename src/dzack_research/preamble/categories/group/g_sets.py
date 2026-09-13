@@ -107,18 +107,21 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
     # Functors out of finite G-sets, sited on their domain.
 
+    @cached_method
     def orbits_functor(self):
         r"""``X |-> X/G : FinGSet_G -> FinSet``."""
         from dzack_research.preamble.categories.functors.g_sets import GSetOrbitsFunctor
 
         return GSetOrbitsFunctor(self.group())
 
+    @cached_method
     def fixed_points_functor(self):
         r"""``X |-> X^G : FinGSet_G -> FinSet``."""
         from dzack_research.preamble.categories.functors.g_sets import GSetFixedPointsFunctor
 
         return GSetFixedPointsFunctor(self.group())
 
+    @cached_method
     def orbits_trivial_adjunction(self):
         r"""``(-)/G -| Triv_G``."""
         from dzack_research.preamble.categories.functors.g_sets import (
@@ -127,6 +130,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         return g_set_orbits_trivial_adjunction(self.group())
 
+    @cached_method
     def underlying_cofree_adjunction(self):
         r"""``U -| Map(G, -)``: the underlying set is left adjoint to the cofree ``G``-set."""
         from dzack_research.preamble.categories.functors.g_sets import (
