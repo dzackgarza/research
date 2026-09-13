@@ -33,6 +33,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
     CategoryPacketMethods,
     OwnedHomset,
+    has_category_packet_surface,
     underlying_set_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -55,7 +56,7 @@ def _category_hom(
     also represent maps outside a restricted Hom category, so membership in
     that parent alone is not admission to the selected category.
     """
-    if isinstance(category, CategoryPacketMethods):
+    if has_category_packet_surface(category):
         return category_packet(category).Homs().Of(domain, codomain)
     return Hom(domain, codomain, category)
 
@@ -101,7 +102,7 @@ def _packet_supercategories(category):
     return tuple(
         supercategory
         for supercategory in category.super_categories()
-        if isinstance(supercategory, (OwnedCategoryMixin, CategoryPacketMethods))
+        if isinstance(supercategory, OwnedCategoryMixin) or has_category_packet_surface(supercategory)
     )
 
 
@@ -493,7 +494,7 @@ class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
         public category Hom here would ask that same family to construct
         itself.  Restrictions instead inherit the actual Hom-set below.
         """
-        if isinstance(self.base_category(), (OwnedCategoryMixin, CategoryPacketMethods)):
+        if isinstance(self.base_category(), OwnedCategoryMixin) or has_category_packet_surface(self.base_category()):
             return underlying_set_homset(self.domain_object(), self.codomain_object())
         return Hom(self.domain_object(), self.codomain_object(), self.base_category())
 
@@ -1120,7 +1121,7 @@ class HomCategoryOf(OwnedCategoryBase):
             sage: identity * identity == identity
             True
         """
-        if isinstance(self.base_category(), CategoryPacketMethods):
+        if has_category_packet_surface(self.base_category()):
             domain = self.base_category()._hom_endpoint(domain)
             codomain = self.base_category()._hom_endpoint(codomain)
         if domain not in self.base_category() or codomain not in self.base_category():
@@ -1289,7 +1290,7 @@ class EndCategoryOf(HomCategoryOf):
         obj: Parent,
         codomain: Parent | None = None,
     ) -> FixedHomObject:
-        if isinstance(self.base_category(), CategoryPacketMethods):
+        if has_category_packet_surface(self.base_category()):
             obj = self.base_category()._hom_endpoint(obj)
             if codomain is not None:
                 codomain = self.base_category()._hom_endpoint(codomain)
@@ -1407,7 +1408,7 @@ class AutCategoryOf(IsoCategoryOf):
         obj: Parent,
         codomain: Parent | None = None,
     ) -> FixedHomObject:
-        if isinstance(self.base_category(), CategoryPacketMethods):
+        if has_category_packet_surface(self.base_category()):
             obj = self.base_category()._hom_endpoint(obj)
             if codomain is not None:
                 codomain = self.base_category()._hom_endpoint(codomain)

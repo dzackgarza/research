@@ -113,3 +113,42 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     assert pair.second() is points
     assert tuple(pair) == (points, points)
     assert sets.Subobjects(points) is SubobjectCategory(sets, points)
+
+
+def test_cat_parent_method_provider_is_plain_and_reuses_the_hom_packet_owner() -> None:
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat as CatClass
+    from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+        CategoryPacketMethods,
+    )
+
+    assert CatClass.ParentMethods.__bases__ == (object,)
+    assert CatClass.ParentMethods.HomCategory is CategoryPacketMethods.HomCategory
+    assert CatClass.ParentMethods.Mor is CategoryPacketMethods.Mor
+    points = finite_ordered_set(("x", "y"))
+    homset = Sets().Mor(points, points)
+    assert homset.domain() is points
+    assert homset.codomain() is points
+
+
+def test_fresh_public_import_does_not_warn_about_cat_parent_methods() -> None:
+    import subprocess
+    import sys
+
+    code = r"""
+import warnings
+warnings.filterwarnings(
+    "error",
+    message=r"Cat\.ParentMethods should not have a super class",
+    category=UserWarning,
+)
+from dzack_research.preamble.all import Cat, Lattices, ZZ
+assert Cat().an_object() is not None
+assert Lattices(ZZ).an_object() is not None
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr

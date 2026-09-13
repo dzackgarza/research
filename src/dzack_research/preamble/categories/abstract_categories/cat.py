@@ -272,15 +272,35 @@ class Cat(CategoryPacketMethods, Category):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
-    class ParentMethods(CategoryPacketMethods):
+    class ParentMethods:
         r"""What a category can do, as an object of ``Cat``.
 
-        One home for the operations on categories.  Every owned category
-        receives them through ``subcategory_class``, which
-        ``CatConstructionsMixin`` on the owned root builds with this class
-        among its bases -- not through parenthood, which states separately
-        that a category is an object of ``Cat``.
+        Sage requires a nested ``ParentMethods`` provider to be a plain class:
+        inheriting another implementation class makes category construction
+        emit ``ParentMethods should not have a super class`` in a fresh session.
+        The Hom-packet operations below are therefore aliases of their single
+        implementation in :class:`CategoryPacketMethods`, not a second
+        implementation and not a superclass of this provider.
+
+        Every owned category receives this provider through
+        ``subcategory_class``; ``CatConstructionsMixin`` on the owned root
+        carries it through joins and functorial constructions.
         """
+
+        _hom_endpoint = CategoryPacketMethods._hom_endpoint
+        _category_packet = CategoryPacketMethods._category_packet
+        HomCategory = CategoryPacketMethods.HomCategory
+        EndCategory = CategoryPacketMethods.EndCategory
+        MonoCategory = CategoryPacketMethods.MonoCategory
+        EpiCategory = CategoryPacketMethods.EpiCategory
+        IsoCategory = CategoryPacketMethods.IsoCategory
+        AutCategory = CategoryPacketMethods.AutCategory
+        Mor = CategoryPacketMethods.Mor
+        End = CategoryPacketMethods.End
+        Mono = CategoryPacketMethods.Mono
+        Epi = CategoryPacketMethods.Epi
+        Iso = CategoryPacketMethods.Iso
+        Aut = CategoryPacketMethods.Aut
 
         @property
         def ObjectType(self) -> type[Parent]:
