@@ -257,8 +257,8 @@ class FormedModuleMorphism(Morphism):
             and self.value_morphism() is module_homset(source_values, source_values).identity()
         ):
             return
-        source_form = self.domain().form()
-        target_form = self.codomain().form()
+        source_form = self.domain()._formed_form()
+        target_form = self.codomain()._formed_form()
         source_generators = tuple(self.domain().module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
@@ -569,8 +569,8 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def _check_form_square(self) -> None:
         changed = self.base_changed_domain()
-        source_form = changed.form()
-        target_form = self.codomain().form()
+        source_form = changed._formed_form()
+        target_form = self.codomain()._formed_form()
         generators = tuple(changed.module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
@@ -857,7 +857,15 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def form(self):
-            return self._preamble_source_form.pullback(self.forget_form_morphism())
+            r"""Return the selected form datum on the unformed module."""
+            return self._preamble_source_form
+
+        @cached_method
+        def _formed_form(self):
+            r"""Transport the selected form to this structured module copy."""
+            if self.unformed_module() is self:
+                return self.form()
+            return self.form().pullback(self.forget_form_morphism())
 
         def unformed_module(self):
             r"""Return the module used to equip this represented formed object."""
@@ -886,7 +894,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
 
         def pairing(self, left, right):
-            return self.form()(left, right)
+            return self._formed_form()(left, right)
 
         def left_module(self):
             return self
@@ -926,7 +934,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Evaluate the (polar) bilinear form on two elements of this module."""
             if left not in self or right not in self:
                 raise TypeError("a form pairs two elements of one formed module")
-            form = self.form()
+            form = self._formed_form()
             if _is_quadratic_form(form):
                 return form.b(left, right)
             return form(left, right)
@@ -935,7 +943,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
             if element not in self:
                 raise TypeError("the norm is defined on elements of this formed module")
-            form = self.form()
+            form = self._formed_form()
             if _is_quadratic_form(form):
                 return form(element)
             return form(element, element)
@@ -973,7 +981,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def twist(self, scalar):
 
-            form = self.form()
+            form = self._formed_form()
             if _is_bilinear_form(form):
                 try:
                     values = form.coordinate_values().map(
@@ -1010,7 +1018,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             source = self
             source_labels = source.module_generating_set()
             changed = FreeModuleOn(target_ring, source_labels)
-            form = self.form()
+            form = self._formed_form()
 
             if _is_bilinear_form(form):
                 try:
@@ -1236,7 +1244,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             r"""Evaluate the equipped quadratic form on ``element``."""
             if element not in self:
                 raise TypeError("the quadratic form is defined on this module")
-            return self.form()(element)
+            return self._formed_form()(element)
 
         def associated_bilinear_module(self):
             r"""Return the bilinear module polarized from this quadratic form.
@@ -1258,7 +1266,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 )
             unformed = self.unformed_module()
             equip = self.equip_form_morphism()
-            form = self.form()
+            form = self._formed_form()
             return BilinearForm(
                 unformed,
                 self.value_module(),
@@ -1469,7 +1477,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             inclusion = radical.inclusion()
             value_module = self.value_module()
             value_identity = module_homset(value_module, value_module).identity()
-            descended = self.form().descend_along(inclusion, value_identity)
+            descended = self._formed_form().descend_along(inclusion, value_identity)
             return FormModule(descended)
 
         def determinant(self):
@@ -1590,7 +1598,7 @@ def _form_subobject_spanning(module, basis):
         return form_embedding(source, module, embedded)
 
     return FormModule(
-        module.form().pullback(preliminary),
+        module._formed_form().pullback(preliminary),
         _subobject_ambient=module,
         _subobject_generator_images=embedded,
         _subobject_lift=lift,
