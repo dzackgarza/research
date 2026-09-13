@@ -30,8 +30,8 @@ def test_archived_invariant_factor_form_uses_a_minimal_framing_isometrically() -
     normalized = normalization.codomain()
 
     _assert_form_isometry(normalization)
-    assert tuple(normalized.invariants()) == tuple(form.invariants())
-    assert normalized.module_generators().cardinality() == len(normalized.invariants())
+    assert normalized.invariants() == form.invariants()
+    assert normalized.module_generators().cardinality() == normalized.invariants().cardinality()
 
 
 def test_archived_correlation_matrix_is_the_gram_matrix_and_dual_form_is_inverse() -> None:
