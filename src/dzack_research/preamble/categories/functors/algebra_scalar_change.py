@@ -237,7 +237,7 @@ class AlgebraBaseChangeAdjunction(Adjunction):
         return f"Algebra scalar-extension/restriction adjunction along {self._ring_map}"
 
 
-@cached_function
+@cached_function(key=lambda ring_map: id(ring_map))
 def algebra_base_change_adjunction(ring_map) -> AlgebraBaseChangeAdjunction:
     return AlgebraBaseChangeAdjunction(ring_map)
 

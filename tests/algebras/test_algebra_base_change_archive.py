@@ -55,3 +55,17 @@ def test_archived_algebra_base_change_carries_a_nonidentity_morphism() -> None:
     assert extended_involution.domain() is extended
     assert extended_involution.codomain() is extended
     assert extended_involution(generator) == -generator
+
+
+def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None:
+    first = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
+    second = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
+
+    first_adjunction = algebra_base_change_adjunction(first)
+    second_adjunction = algebra_base_change_adjunction(second)
+
+    assert first_adjunction is algebra_base_change_adjunction(first)
+    assert second_adjunction is algebra_base_change_adjunction(second)
+    assert first_adjunction is not second_adjunction
+    assert first_adjunction.left_adjoint().ring_map() is first
+    assert second_adjunction.left_adjoint().ring_map() is second
