@@ -2397,6 +2397,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     return self._from_engine_element(self._engine(_engine_element(parent, value)))
             except (TypeError, ValueError, AttributeError):
                 pass
+            from dzack_research.preamble.categories.sets.set_categories import NN
+
+            if parent is NN:
+                return self._from_engine_element(self._engine(int(value)))
             if parent in SageRings() or parent is self._engine:
                 raise TypeError("raw backend ring elements are not accepted by the public preamble API")
         if isinstance(value, SageObject):
@@ -2404,7 +2408,12 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine(value))
 
     def __contains__(self, value) -> bool:
-        return isinstance(value, self.element_class) and value.parent() is self
+        r"""Return whether ``value`` represents an element of this owned ring."""
+        try:
+            self(value)
+        except (TypeError, ValueError):
+            return False
+        return True
 
     def zero(self):
         return self._from_engine_element(self._engine.zero())
