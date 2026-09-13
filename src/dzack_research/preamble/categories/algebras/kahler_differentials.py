@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
+    finite_ordered_set,
 )
 
 
@@ -307,9 +308,8 @@ def _construct_kahler_differentials(algebra):
     presentation, labels, _variables, relations, _lift = _commutative_presentation_data(
         algebra
     )
-    differential_labels = finite_ordered_image(
-        labels,
-        lambda label: ("d", label),
+    differential_labels = finite_ordered_set(
+        tuple(("d", label) for label in labels)
     )
     if relations.cardinality() != 0:
         from dzack_research.preamble.categories.functors.scalar_change import (
