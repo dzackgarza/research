@@ -21,6 +21,7 @@ from dzack_research.preamble.all import (
     QuasiProjectiveSchemes,
     SeparatedSchemes,
     SmoothSchemes,
+    Spec,
     Surfaces,
     scheme_product,
 )
@@ -76,6 +77,29 @@ def test_a_mixed_affine_projective_product_retains_projections_and_exact_propert
     assert product in IntegralSchemes(QQ)
     assert product in NormalSchemes(QQ)
     assert product not in AffineSchemes(QQ)
+
+
+def test_terminal_affine_factor_retains_the_selected_product_without_algebra_framing() -> None:
+    line = AffineSpace(1, QQ)
+    base = Spec(QQ, base_ring=QQ)
+    product = scheme_product(line, base)
+
+    assert product is not line
+    assert product.coordinate_algebra() is line.coordinate_algebra()
+    assert tuple(product.factors()) == (line, base)
+    assert product.projection(0).codomain() is line
+    assert product.projection(1).codomain() is base
+    assert product.projection(1) == product.structure_morphism()
+    assert (
+        product.projection(0).coordinate_algebra_morphism()
+        == line.coordinate_algebra().Mor(line.coordinate_algebra()).identity()
+    )
+
+    cone = product.from_product_cone(
+        (line.categorical_identity_morphism(), line.structure_morphism())
+    )
+    assert product.projection(0) * cone == line.categorical_identity_morphism()
+    assert product.projection(1) * cone == line.structure_morphism()
 
 
 def test_projective_line_diagonal_uses_the_projective_product_cone() -> None:

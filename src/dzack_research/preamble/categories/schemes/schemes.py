@@ -2500,6 +2500,12 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                     ).coordinate_algebra_morphism()
                     leg_pullback = leg.coordinate_algebra_morphism()
                     factor_algebra = factor.coordinate_algebra()
+                    if factor_algebra is base:
+                        if leg != source.structure_morphism():
+                            raise ValueError(
+                                "the cone leg to the terminal base scheme must be the structure morphism"
+                            )
+                        continue
                     for generator_label in factor_algebra.algebra_generating_set():
                         generator = factor_algebra.algebra_generator(generator_label)
                         images[
@@ -2508,7 +2514,11 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                                 projection_pullback(generator),
                             )
                         ] = leg_pullback(generator)
-                pullback = product_algebra.Mor(source.coordinate_algebra())(images)
+                pullback = (
+                    source.structure_morphism().coordinate_algebra_morphism()
+                    if product_algebra is base
+                    else product_algebra.Mor(source.coordinate_algebra())(images)
+                )
                 cone = _affine_morphism_from_pullback(source, self, pullback)
             elif self in ProductProjectiveSpaces(base):
                 coordinates = []
@@ -3674,23 +3684,73 @@ def scheme_product(*schemes):
             )
             offset += width
     elif all(scheme in AffineSchemes(base) for scheme in scheme_values):
-        algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
-        algebra = Coproduct(algebras[0], algebras[1])
-        factor_maps = list(algebra.coproduct_injections())
-        for next_algebra in algebras[2:]:
-            new_algebra = Coproduct(algebra, next_algebra)
-            left_map, right_map = new_algebra.coproduct_injections()
-            factor_maps = [left_map * factor_map for factor_map in factor_maps] + [right_map]
-            algebra = new_algebra
-        product = _fresh_affine_spectrum(
-            algebra,
-            base,
-            extra_categories=(ProductSchemes(base),),
+        base_scheme = Spec(base, base_ring=base)
+        nonterminal_positions = tuple(
+            position
+            for position, scheme in enumerate(scheme_values)
+            if scheme is not base_scheme
         )
-        projections = [
-            _affine_morphism_from_pullback(product, factor, factor_map)
-            for factor, factor_map in zip(scheme_values, factor_maps, strict=True)
-        ]
+        if len(nonterminal_positions) != len(scheme_values):
+            # ``Spec(R)`` is terminal in ``Sch/R``.  A selected product that
+            # includes terminal factors is therefore a fresh copy of the
+            # product of the remaining factors, with the omitted projections
+            # supplied by its structure morphism.  Keeping the copy fresh
+            # retains this product's exact factor family without attaching
+            # caller-specific product data to a pre-existing scheme.
+            if not nonterminal_positions:
+                reduced = base_scheme
+            elif len(nonterminal_positions) == 1:
+                reduced = scheme_values[nonterminal_positions[0]]
+            else:
+                reduced = scheme_product(
+                    tuple(scheme_values[position] for position in nonterminal_positions)
+                )
+            algebra = reduced.coordinate_algebra()
+            product = _fresh_affine_spectrum(
+                algebra,
+                base,
+                extra_categories=(ProductSchemes(base),),
+            )
+            identity_pullback = (
+                ring_homset(base, base).identity()
+                if algebra is base
+                else algebra.Mor(algebra).identity()
+            )
+            to_reduced = _affine_morphism_from_pullback(
+                product, reduced, identity_pullback
+            )
+            nonterminal_rank = {
+                original: rank
+                for rank, original in enumerate(nonterminal_positions)
+            }
+            projections = []
+            for position, factor in enumerate(scheme_values):
+                if factor is base_scheme:
+                    projections.append(product.structure_morphism())
+                elif len(nonterminal_positions) == 1:
+                    projections.append(to_reduced)
+                else:
+                    projections.append(
+                        reduced.projection(nonterminal_rank[position]) * to_reduced
+                    )
+        else:
+            algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
+            algebra = Coproduct(algebras[0], algebras[1])
+            factor_maps = list(algebra.coproduct_injections())
+            for next_algebra in algebras[2:]:
+                new_algebra = Coproduct(algebra, next_algebra)
+                left_map, right_map = new_algebra.coproduct_injections()
+                factor_maps = [left_map * factor_map for factor_map in factor_maps] + [right_map]
+                algebra = new_algebra
+            product = _fresh_affine_spectrum(
+                algebra,
+                base,
+                extra_categories=(ProductSchemes(base),),
+            )
+            projections = [
+                _affine_morphism_from_pullback(product, factor, factor_map)
+                for factor, factor_map in zip(scheme_values, factor_maps, strict=True)
+            ]
     elif all(
         scheme in AffineSchemes(base) or scheme in ProjectiveSpaces(base)
         for scheme in scheme_values
