@@ -180,10 +180,19 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             """
             if isinstance(value, self.category().ElementType):
                 value = value.underlying_element()
-            assert value in self.underlying_set(), (
-                f"{value!r} is not in the set this module is built on"
+            underlying = self.underlying_set()
+            if value in underlying:
+                return value
+            try:
+                normalized = underlying(value)
+            except (TypeError, ValueError) as error:
+                raise AssertionError(
+                    f"{value!r} is not in the set this module is built on"
+                ) from error
+            assert normalized in underlying, (
+                f"{normalized!r} is not in the set this module is built on"
             )
-            return value
+            return normalized
 
         def _element_constructor_(self, value):
             if isinstance(value, self.category().ElementType) and value.parent() is self:
