@@ -569,7 +569,7 @@ class ParallelPairDiagram(Functor):
         raise ValueError("unknown arrow of the walking parallel pair")
 
 
-@cached_function(key=lambda left, right, target_category: (id(left), id(right), id(target_category)))
+@cached_function
 def _parallel_pair_diagram(left: Morphism, right: Morphism, target_category: Category) -> ParallelPairDiagram:
     r"""Return the selected diagram object for one represented parallel pair.
 
