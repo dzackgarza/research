@@ -850,7 +850,11 @@ class ModuleMorphism(Morphism):
         for label in self.domain().module_generating_set():
             image = self(self.domain().module_generator(label))
             try:
-                images[label] = target_embedding.lift(image)
+                images[label] = (
+                    target_embedding.lift(image)
+                    if _has_finite_free_framing(target_embedding.domain())
+                    else target_embedding.preimage(image)
+                )
             except (TypeError, ValueError) as error:
                 raise ValueError("the morphism image is not contained in the target subobject") from error
         return module_homset(self.domain(), target_embedding.domain())(images)
@@ -1798,12 +1802,16 @@ class ModuleAutomorphism(CategoricalIsomorphism):
     __invert__ = inverse
 
     def __mul__(self, other):
-        if not isinstance(other, ModuleAutomorphism) or other.parent() is not self.parent():
-            return NotImplemented
-        return self.parent()._from_known_inverse_pair(
-            self.forward() * other.forward(),
-            other._inverse * self._inverse,
-        )
+        if isinstance(other, ModuleAutomorphism):
+            if other.parent() is not self.parent():
+                return NotImplemented
+            return self.parent()._from_known_inverse_pair(
+                self.forward() * other.forward(),
+                other._inverse * self._inverse,
+            )
+        if isinstance(other, ModuleMorphism):
+            return self.forward() * other
+        return NotImplemented
 
 
 class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
