@@ -54,8 +54,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors import tensor
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
 def _coordinates(vector):

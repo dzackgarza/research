@@ -18,18 +18,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     _variable_names,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOf as _alternating_algebra_of,
-)
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOn as _alternating_algebra_on,
-)
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    DividedPowerAlgebraOf as _divided_power_algebra_of,
-)
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    DividedPowerAlgebraOn as _divided_power_algebra_on,
-)
 from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
     SparseSymmetricAlgebraOf,
     SparseTensorAlgebraOf,
@@ -44,14 +32,6 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def AlternatingAlgebraOn(base_ring, algebra_generating_set):
-
-    return _alternating_algebra_on(base_ring, algebra_generating_set)
-
-
-def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
-
-    return _divided_power_algebra_on(base_ring, algebra_generating_set)
 
 
 def polynomial_ring(base_ring, names):
@@ -155,13 +135,3 @@ def SymmetricAlgebraOf(module):
         ),
         _free_source_module=module,
     )
-
-
-def AlternatingAlgebraOf(module):
-
-    return _alternating_algebra_of(module)
-
-
-def DividedPowerAlgebraOf(module):
-
-    return _divided_power_algebra_of(module)

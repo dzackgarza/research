@@ -9,10 +9,12 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
     SymmetricAlgebraOf,
     TensorAlgebraOf,
+)
+from dzack_research.preamble.categories.algebras.power_algebras import (
+    AlternatingAlgebraOf,
+    DividedPowerAlgebraOf,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,

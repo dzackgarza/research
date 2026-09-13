@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
     ProjectiveSpace,
 )
-from dzack_research.preamble.rings import PolynomialRing
+from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
 
 class PointedAnalyticFundamentalGroup(SageObject):

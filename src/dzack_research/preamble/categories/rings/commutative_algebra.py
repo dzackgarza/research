@@ -2988,8 +2988,6 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The formal power series ring in one variable."""
-        from dzack_research.preamble.rings import PowerSeriesRing
-
         return PowerSeriesRing(self.base_ring(), "t")
 
     @classmethod

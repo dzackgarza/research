@@ -859,32 +859,12 @@ class FunctorCategory(FixedHomCategory):
         return f"Functor category [{self.domain_category()}, {self.codomain_category()}]"
 
 
-class NaturalIsomorphism:
-    r"""A selected pair of mutually inverse natural transformations."""
-
-    def __init__(self, forward: Morphism, inverse: Morphism) -> None:
-        if forward.domain() is not inverse.codomain() or forward.codomain() is not inverse.domain():
-            raise ValueError("inverse natural transformations have reversed endpoints")
-        self._forward = forward
-        self._inverse = inverse
-
-    def forward(self) -> Morphism:
-        return self._forward
-
-    def inverse(self) -> Morphism:
-        return self._inverse
-
-    def component(self, obj: Parent) -> Morphism:
-        return self.forward().component(obj)
-
-
 __all__ = [
     "Cat",
     "CategoryFunctorHomset",
     "CategoryFunctorMorphism",
     "CategoryObject",
     "FunctorCategory",
-    "NaturalIsomorphism",
     "NaturalTransformationHomset",
     "NaturalTransformationMorphism",
 ]

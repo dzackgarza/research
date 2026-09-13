@@ -53,7 +53,7 @@ if TYPE_CHECKING:
     from sage.rings.polynomial.polynomial_element import Polynomial
     from sage.rings.ring import Ring
 
-    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon.algebra import Element
     from dzack_research.preamble.owned_category import ConstructionData
 
 from typing import Self

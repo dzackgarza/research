@@ -9,11 +9,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    AlternatingAlgebraOf,
     SymmetricAlgebraOf,
     TensorAlgebraOf,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (
+    AlternatingAlgebraOf,
     DividedPowerAlgebraOf,
     PowerAlgebraElement,
 )

@@ -867,30 +867,6 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
 
 ### Organization findings
 
-- [ ] **`package-organization`**. **Needs:** none.
-  Finish ownership-directed package, export and import consolidation after
-  the affected interfaces settle.
-  **Dependency scope:** this is final cross-family consolidation. Each feature
-  still repairs and consolidates its own changed owners in its delivery unit;
-  these final prerequisites do not defer constructor or ownership correctness.
-  **Targets:** surviving category/Hom infrastructure, module/algebra scalar
-  changes, scheme descent, lattice ecosystem and private engine routines.
-  **Deliver:** one owner for each repeated mathematical responsibility,
-  defining-module imports with public aggregators as leaves, focused
-  dependency boundaries, and package splits that reflect mathematical
-  independence.
-  **Decision:** do not resplit a file solely by size or reintroduce deferred
-  imports to mask a mathematical dependency inversion. Preserve deliberate
-  notebook/REPL vocabulary even when it has no internal callers.
-  **Acceptance:** trace a public constructor, nonidentity functor image and
-  downstream operation through the surviving owners; remove only superseded
-  implementations whose required behavior has been transferred.
-  Include their old construction routes, imports, session bindings, and ordinary
-  consumers in that transfer. Preserve mathematical expectations and public
-  vocabulary at the sanctioned entrypoint. A new private module containing the
-  same duplicated mathematics, an unused replacement adapter, or a compatibility
-  route left for an inconvenient caller leaves this item open (`OWN-08`, `OWN-13`).
-
 ## Final verification
 
 ### Testing is deferred until every other item is done (always-on)
@@ -907,7 +883,7 @@ review those source changes before T; T executes the mathematical evidence and
 repairs what it exposes. It is not a reason to postpone source-level ownership
 review until every downstream consumer has copied the same bypass.
 
-- [ ] **`terminal-reference`**. **Needs:** `package-organization`.
+- [ ] **`terminal-reference`**. **Needs:** none.
   After required implementation and transfer are finished, generate the
   preamble reference and category/functor graph from the integrated source,
   then read them against the intended objects, maps and inherited operations.
