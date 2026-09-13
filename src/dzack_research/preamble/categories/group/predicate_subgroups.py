@@ -143,9 +143,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 )
             return identity
 
-        def inclusion(self):
-            return _canonical_subgroup_inclusion(self)
-
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
                 raise ValueError("predicate-subgroup intersections require one ambient group")

@@ -1040,9 +1040,67 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
 # --------------------------------------------------------------------------
 
 
+def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
+    r"""Raise ``G/N`` and its quotient map from GAP for a represented finite group."""
+    from sage.groups.perm_gps.permgroup import PermutationGroup
+
+    assert group in OwnedFiniteGroups(), (
+        "the selected quotient adapter currently requires a finite ambient group"
+    )
+    group_model = _gap_model(group)
+    assert bool(normal_subgroup.IsNormal(group_model)), (
+        "a group quotient requires a normal subgroup"
+    )
+    gap_projection = libgap.NaturalHomomorphismByNormalSubgroup(
+        group_model,
+        normal_subgroup,
+    )
+    gap_quotient = gap_projection.Image()
+    permutation_isomorphism = gap_quotient.IsomorphismPermGroup()
+    permutation_model = permutation_isomorphism.Image()
+    quotient = _own_group(PermutationGroup(gap_group=permutation_model))
+    projection = group_homset(group, quotient)(
+        gap_projection * permutation_isomorphism
+    )
+    return quotient, projection
+
+
 class SubgroupInclusion(SetMorphism):
     def is_injective(self):
         return True
+
+    @cached_method
+    def _cokernel_data(self):
+        r"""Return the quotient by the normal closure of this subgroup image."""
+        subgroup = self.domain()
+        ambient = self.codomain()
+        assert ambient in OwnedFiniteGroups(), (
+            "group-inclusion cokernels are currently computed for finite ambient groups"
+        )
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            KernelSubgroups,
+            PredicateSubgroups,
+        )
+
+        if subgroup in KernelSubgroups(ambient):
+            subgroup_model = subgroup.kernel_morphism().gap().Kernel()
+        else:
+            assert subgroup not in PredicateSubgroups(ambient), (
+                "the current exact cokernel computation for a predicate subgroup "
+                "requires a represented kernel"
+            )
+            subgroup_model = _gap_model(subgroup)
+        normal_closure = libgap.NormalClosure(_gap_model(ambient), subgroup_model)
+        return _finite_group_quotient_by_gap_normal_subgroup(
+            ambient,
+            normal_closure,
+        )
+
+    def cokernel(self):
+        return self._cokernel_data()[0]
+
+    def cokernel_projection(self):
+        return self._cokernel_data()[1]
 
 
 def _group_inclusion_image(subgroup, containing_group, element):
@@ -1225,6 +1283,28 @@ class GroupHomomorphism(GroupMorphism_libgap):
     def image(self):
 
         return _subgroup_from_gap(self.codomain(), self.gap().Image())
+
+    @cached_method
+    def _cokernel_data(self):
+        r"""Return the quotient of the codomain by the normal closure of the image."""
+        codomain = self.codomain()
+        assert codomain in OwnedFiniteGroups(), (
+            "group-morphism cokernels are currently computed for finite codomains"
+        )
+        normal_closure = libgap.NormalClosure(
+            _gap_model(codomain),
+            self.gap().Image(),
+        )
+        return _finite_group_quotient_by_gap_normal_subgroup(
+            codomain,
+            normal_closure,
+        )
+
+    def cokernel(self):
+        return self._cokernel_data()[0]
+
+    def cokernel_projection(self):
+        return self._cokernel_data()[1]
 
     def is_injective(self):
         return bool(self.gap().IsInjective())
@@ -2611,6 +2691,7 @@ class Subgroups(OwnedParameterizedCategory):
         def supergroup(self):
             return self._preamble_supergroup
 
+        @cached_method
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
 
