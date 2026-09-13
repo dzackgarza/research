@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generic owned group surface."""
 
-from dzack_research.preamble.all import GF, Groups, Product
+from dzack_research.preamble.all import Coproduct, GF, Groups, Product, aleph0
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
@@ -40,6 +40,43 @@ def test_finite_group_product_retains_group_structure_and_order() -> None:
     assert product in Groups()
     assert product.order() == 6
     assert product.is_isomorphic_to(Groups.C(6))
+
+
+def test_group_coproduct_is_the_owned_free_product() -> None:
+    coproduct = Coproduct(Groups.C(2), Groups.C(3))
+
+    assert coproduct in Groups()
+    assert coproduct.cardinality() == aleph0
+    assert coproduct.group_generators().cardinality() == 2
+
+
+def test_group_coproduct_factorization_extends_the_factor_maps() -> None:
+    from dzack_research.preamble.categories.abstract_categories import (
+        CoproductCoconeCategory,
+        CoproductConstruction,
+    )
+
+    two = Groups.C(2)
+    three = Groups.C(3)
+    target = Groups.S(3)
+    construction = CoproductConstruction((two, three), target_category=Groups())
+    diagram = construction.diagram()
+    first_index = diagram.domain()(0)
+    second_index = diagram.domain()(1)
+    two_generator = two.group_generators()[0]
+    three_generator = three.group_generators()[0]
+    first = two.Mor(target)({two_generator: target((1, 2))})
+    second = three.Mor(target)({three_generator: target((1, 2, 3))})
+    cocone = CoproductCoconeCategory(diagram).cocone(
+        target,
+        lambda index: first if index is first_index else second,
+    )
+
+    factor = construction.factor(cocone).apex_map()
+    first_injection = construction.costructure_morphism(first_index)
+    second_injection = construction.costructure_morphism(second_index)
+    assert factor(first_injection(two_generator)) == first(two_generator)
+    assert factor(second_injection(three_generator)) == second(three_generator)
 
 
 def test_finite_group_subgroups_are_owned_and_keep_the_ambient_group() -> None:
