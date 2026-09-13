@@ -120,8 +120,7 @@ def _ray_generator(ray):
 
 def _pairing_on_ray(fan, character, ray):
     r"""``<m, u_rho>``, an integer, for a character and a ray of the fan."""
-    pairing = fan.character_cocharacter_pairing()
-    return _integers()(pairing(character, _ray_generator(ray)))
+    return fan.character_cocharacter_value(character, _ray_generator(ray))
 
 
 def _character_names(count):
