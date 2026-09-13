@@ -82,3 +82,13 @@ def test_zero_presented_module_has_only_its_zero_subobject_over_a_polynomial_pid
     assert subobject.is_zero()
     assert subobject.inclusion().codomain() is zero
     assert subobject.inclusion()(subobject.zero()) == zero.zero()
+
+
+def test_zero_torsion_module_has_zero_tor_over_a_polynomial_pid() -> None:
+    from dzack_research.preamble.all import GF, PolynomialRing
+
+    ring = PolynomialRing(GF(5), "t")
+    zero = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring.one(),))
+
+    assert zero.tor(zero, 1).is_zero()
+    assert zero.tor(zero, 1).cardinality() == zero.cardinality()

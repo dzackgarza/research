@@ -70,14 +70,21 @@ from dzack_research.preamble.owned_category import object_of
 
 
 def _free_cover_owner(module):
-    r"""Return a selected free cover owning fresh free-module construction."""
+    r"""Return the nearest owner of fresh free modules over ``module``'s scalars."""
     presentation = getattr(module, "presentation", None)
     if presentation is not None:
         try:
-            return presentation().codomain()
+            candidate = presentation().codomain()
         except (AttributeError, TypeError, ValueError):
-            pass
-    return module
+            candidate = None
+        if callable(getattr(candidate, "_fresh_free_module_on", None)):
+            return candidate
+    if callable(getattr(module, "_fresh_free_module_on", None)):
+        return module
+    base_ring = _owned_ring(module.base_ring())
+    if callable(getattr(base_ring, "_fresh_free_module_on", None)):
+        return base_ring
+    raise TypeError("the represented module has no owner for its free covers")
 
 
 def _matrix_space_like(module, nrows, ncols):
@@ -369,7 +376,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 def generator(label):
                     return generators[int(label)]
 
-            source = self.presentation().codomain()._fresh_free_module_on(labels)
+            source = _free_cover_owner(self)._fresh_free_module_on(labels)
             spanning = module_homset(source, self)(lambda label: self(generator(label)))
 
             if self.base_ring() in LocalRings():
@@ -683,7 +690,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 lambda label: label,
                 name="Local free basis labels",
             )
-            free = localized.presentation().codomain()._fresh_free_module_on(labels)
+            free = _free_cover_owner(localized)._fresh_free_module_on(labels)
             forward = module_homset(free, localized)(
                 lambda label: localized.module_generator(label)
             )
@@ -907,7 +914,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             source_labels = finite_ordered_set(range(int(presentation.domain().module_generating_set().cardinality())))
             target_labels = finite_ordered_set(range(int(presentation.codomain().module_generating_set().cardinality())))
-            free_owner = presentation.codomain()
+            free_owner = _free_cover_owner(self)
             normalized_source = free_owner._fresh_free_module_on(source_labels)
             normalized_target = free_owner._fresh_free_module_on(target_labels)
 
@@ -1072,7 +1079,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalization = self.invariant_factor_form()
             normalized = normalization.codomain()
             labels = normalized.module_generating_set()
-            free = self.presentation().codomain()._fresh_free_module_on(labels)
+            free = _free_cover_owner(self)._fresh_free_module_on(labels)
             normalized_to_free = module_homset(normalized, free)(
                 {label: free.module_generator(label) for label in labels}
             )
@@ -1275,7 +1282,7 @@ def _module_invariant_factor_form(module):
     )
 
     ring = module.base_ring()
-    free_owner = module.presentation().codomain()
+    free_owner = _free_cover_owner(module)
     reduced_labels = Sets.Δ[int(retained_positions.cardinality()) - 1]
     reduced_target = free_owner._fresh_free_module_on(reduced_labels)
     relation_labels = finite_ordered_filter(
