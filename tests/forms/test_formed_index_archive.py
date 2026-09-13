@@ -12,7 +12,7 @@ def test_formed_module_raises_and_lowers_the_same_tensor_indices_as_the_tensor_o
 
     raised = formed.raise_index(covariant)
     assert raised == covariant.raise_index(formed)
-    assert tuple(raised.list()) == (QQ(2), QQ(3))
+    assert raised == tensor(QQ, (2,), (), [QQ(2), QQ(3)])
 
     lowered = formed.lower_index(raised)
     assert lowered == covariant
@@ -28,7 +28,7 @@ def test_fraction_field_index_raising_changes_both_form_and_tensor_coefficients(
 
     raised = formed.raise_index_over_fraction_field(covariant)
     assert raised.base_ring() is QQ
-    assert tuple(raised.list()) == (QQ(1) / 2,)
+    assert raised == tensor(QQ, (1,), (), [QQ(1) / 2])
 
 
 def test_index_owner_rejects_a_slot_of_the_wrong_variance() -> None:
