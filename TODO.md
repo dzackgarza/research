@@ -978,18 +978,16 @@ carry on with the 36 collection errors, which are this repository's own and are 
   establish the originally required behavior.
   **Observed terminal failure set (2026-09-13):** `terminal-reference` now
   generates `docs/preamble-megadoc.md` and the 327-category/94-functor
-  preamble graph from a live Sage session, but the declared `just graph` route
-  currently depends on an untracked `scripts/build_graph.py`; make that recipe
-  reproducible from committed source. `just test-push` cannot resolve the
-  declared `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`,
+  preamble graph from a live Sage session. The declared `just graph` route is
+  reproducible from committed `scripts/build_graph.py`. The 36 collection
+  errors caused by missing public `preamble.all` construction names are also
+  repaired and pinned by a direct public-import regression; collection now
+  passes those former failures and reaches the independently blocked
+  `sage-categories` import. `just test-push` cannot resolve the declared
+  `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`,
   and the Sage pytest stage's configured `pytest-timeout`/`pytest-reportlog`
-  options are unavailable in that interpreter. Running the same mathematical
-  corpus without those reporting-only addopts reaches collection and exposes
-  36 errors: missing public `preamble.all` exports (`finite_ordered_set`,
-  `DividedPowerAlgebraOn`, `DividedPowerAlgebraOf`, `Core`, `Biproduct`,
-  `Coproduct`, `Product`, `QuotientRing`, `TensorSquare`, `QuadraticMap`,
-  `TensorProduct`, `CochainComplexFromFamily`, `Localization`, and
-  `AdicCompletion` among them); `sage-categories` importing `typing.TypeIs`
+  options are unavailable in that interpreter. The remaining observed failures
+  are `sage-categories` importing `typing.TypeIs`
   under Sage's Python 3.12; missing `hypothesis` and `sage_indefinite_port`;
   archive tests still importing the retired `integrallattice` package path;
   duplicate test-module basenames producing pytest import mismatches; an
