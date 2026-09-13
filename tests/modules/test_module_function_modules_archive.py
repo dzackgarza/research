@@ -150,5 +150,5 @@ def test_polynomial_helper_annotations_resolve_at_runtime() -> None:
 
     hints = get_type_hints(function_modules._real_polynomial)
     assert hints["return"] is not None
-    rational_hints = get_type_hints(function_modules._rational_function_polynomials)
+    rational_hints = get_type_hints(function_modules._as_rational_function)
     assert rational_hints["return"] is not None
