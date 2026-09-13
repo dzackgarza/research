@@ -1477,6 +1477,14 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
                 raise ValueError(f"{label!r} is not an algebra-generator label")
             return self._preamble_algebra_generator_values[label]
 
+        @cached_method
+        def algebra_generator_morphism(self):
+            r"""Return the selected map from generator labels into the algebra."""
+            return SetMorphism(
+                Sets().Mor(self.algebra_generating_set(), self),
+                self.algebra_generator,
+            )
+
         def number_of_algebra_generators(self):
             return self.algebra_generating_set().cardinality()
 
