@@ -1401,9 +1401,13 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
+        # A finite free form module is the intersection of the free-form
+        # structure and the finite-free module structure.  Finite generation
+        # of the formed module is then implied by those two immediate owners;
+        # listing that derived intersection as a third direct supercategory
+        # duplicates method spines and gives Sage an inconsistent C3 diamond.
         return [
             FreeFormModules(self.base_ring()),
-            FinitelyGeneratedFormModules(self.base_ring()),
             FinitelyGeneratedFreeModules(self.base_ring()),
         ]
 
@@ -1520,14 +1524,19 @@ def FormModule(
         categories.append(VectorSpaces(base_ring))
     is_free = module in FramedFreeModules(base_ring)
     is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
-    if is_free:
+    is_finitely_generated_free = module in FinitelyGeneratedFreeModules(base_ring)
+    # The finite-free specialization already carries both the free-form and
+    # chosen finite-presentation structure.  Do not add those intersections
+    # again as parallel direct branches: the redundant category diamond is
+    # mathematically empty and can make Sage's runtime parent MRO inconsistent.
+    if is_free and not is_finitely_generated_free:
         categories.append(FreeFormModules(base_ring))
-    if is_presented:
+    if is_presented and not is_finitely_generated_free:
         categories.append(FinitelyPresentedFormModules(base_ring))
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
         categories.append(FormedModules(form.codomain()))
-        if is_presented:
+        if is_presented and not is_finitely_generated_free:
             categories.append(FinitelyPresentedBilinearFormModules(base_ring))
         try:
             symmetric = form.gram_tensor().is_symmetric()
@@ -1537,15 +1546,10 @@ def FormModule(
             categories.append(SymmetricBilinearFormModules(base_ring))
     else:
         categories.append(QuadraticFormModules(base_ring))
-        if is_presented:
+        if is_presented and not is_finitely_generated_free:
             categories.append(FinitelyPresentedQuadraticFormModules(base_ring))
-    if module in FinitelyGeneratedFreeModules(base_ring):
-        categories.extend(
-            [
-                FinitelyGeneratedFormModules(base_ring),
-                FinitelyGeneratedFreeFormModules(base_ring),
-            ]
-        )
+    if is_finitely_generated_free:
+        categories.append(FinitelyGeneratedFreeFormModules(base_ring))
     categories.extend(tuple(_extra_categories))
     construction_data = dict(_extra_construction_data or {})
     construction_data.update({
