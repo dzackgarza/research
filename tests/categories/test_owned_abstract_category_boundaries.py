@@ -111,4 +111,5 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     pair = product(points, points)
     assert pair.first() is points
     assert pair.second() is points
+    assert tuple(pair) == (points, points)
     assert sets.Subobjects(points) is SubobjectCategory(sets, points)

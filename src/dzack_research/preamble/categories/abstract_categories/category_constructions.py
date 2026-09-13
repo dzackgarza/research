@@ -342,6 +342,15 @@ class ProductCategory(OwnedCategory):
         def second(self) -> Parent:
             return self._second
 
+        def __iter__(self):
+            r"""Iterate the two factors of this categorical product object.
+
+            This is presentation of the retained pair, not a replacement by a
+            Python tuple: the parent remains the object of ``C x D`` and its
+            two components keep their original mathematical owners.
+            """
+            return iter((self.first(), self.second()))
+
         def _repr_(self) -> str:
             return f"({self.first()}, {self.second()})"
 
