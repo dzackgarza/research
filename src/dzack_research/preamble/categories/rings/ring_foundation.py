@@ -26,11 +26,14 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
+from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement
@@ -2484,6 +2487,16 @@ def _owned_ring_size(engine):
         or engine is SageQQbar
     ):
         return CountablyInfiniteSets()
+    if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
+        coefficient_size = _owned_ring_size(engine.base_ring())
+        if engine.ngens() == 0:
+            return coefficient_size
+        if coefficient_size.is_subcategory(FiniteSets()) or coefficient_size.is_subcategory(CountablyInfiniteSets()):
+            return CountablyInfiniteSets()
+    if engine.category().is_subcategory(SageQuotientFields()):
+        source_size = _owned_ring_size(engine.ring())
+        if source_size.is_subcategory(FiniteSets()) or source_size.is_subcategory(CountablyInfiniteSets()):
+            return CountablyInfiniteSets()
     return Sets()
 
 

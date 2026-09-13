@@ -1,8 +1,10 @@
 import pytest
 
 from dzack_research.preamble.all import (
+    GF,
     QQ,
     ZZ,
+    aleph0,
     BasedFreeModule,
     Localization,
     NumberField,
@@ -33,6 +35,19 @@ def test_fraction_field_is_the_nonzero_localization_with_canonical_realization()
     half = localization.fraction(ZZ(1), ZZ(2))
     assert comparison(half) == QQ(1) / QQ(2)
     assert inverse(comparison(half)) == half
+
+
+
+def test_fraction_fields_of_countable_polynomial_domains_remain_countable() -> None:
+    domains = (
+        PolynomialRing(GF(5), "t"),
+        PolynomialRing(QQ, "x"),
+    )
+
+    for domain in domains:
+        field = domain.fraction_field()
+        assert field.cardinality() == aleph0
+        assert field.regular_module().cardinality() == aleph0
 
 
 def test_fraction_field_map_factors_through_the_localization_map() -> None:
