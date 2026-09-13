@@ -68,9 +68,11 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
+    CountablyInfiniteSets,
     FiniteSets,
     PartiallyOrderedSets,
     SetInclusion,
+    UncountableSets,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
@@ -2325,6 +2327,25 @@ def _one_step_inverted_family(source, generators):
     return source, inverted
 
 
+def _localization_size_placements(source, submonoid):
+    r"""Return exact cardinality placements inherited by ``S^-1 R``.
+
+    A localization of a finite ring is finite.  For an infinite domain with
+    ``0 not in S``, the canonical map is injective, while every fraction is a
+    pair from ``R x S``; hence the localization has exactly the cardinality of
+    ``R``.
+    """
+    if source in FiniteSets():
+        return (FiniteSets(),)
+    if source not in OwnedIntegralDomains() or source.zero() in submonoid:
+        return ()
+    if source in CountablyInfiniteSets():
+        return (CountablyInfiniteSets(),)
+    if source in UncountableSets():
+        return (UncountableSets(),)
+    return ()
+
+
 def _finite_generated_localization(source, submonoid):
     try:
         generators = tuple(submonoid.monoid_generators())
@@ -2340,7 +2361,7 @@ def _finite_generated_localization(source, submonoid):
         localization_engine = _engine_ring(bottom).localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         localization_engine = None
-    placements = []
+    placements = list(_localization_size_placements(source, submonoid))
     if source in PrincipalIdealDomains():
         placements.append(PrincipalIdealDomains())
     else:
@@ -2703,7 +2724,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     prime_ideal = structure.get("prime_ideal")
     if prime_ideal is None:
         raise ValueError("prime-complement localization requires its represented prime ideal")
-    placements = []
+    placements = list(_localization_size_placements(source, submonoid))
     if source in PrincipalIdealDomains():
         placements.append(PrincipalIdealDomains())
     else:

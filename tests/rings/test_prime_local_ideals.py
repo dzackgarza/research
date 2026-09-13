@@ -15,6 +15,7 @@ from dzack_research.preamble.all import (
     PrincipalIdealDomains,
     QQ,
     ZZ,
+    aleph0,
 )
 
 
@@ -68,5 +69,6 @@ def test_localization_of_a_polynomial_pid_remains_a_pid() -> None:
 
     assert polynomial in PrincipalIdealDomains()
     assert local in PrincipalIdealDomains()
+    assert local.cardinality() == aleph0
     assert not local(x).is_unit()
     assert local(6).is_unit()
