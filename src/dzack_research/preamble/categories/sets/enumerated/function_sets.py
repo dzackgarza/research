@@ -43,14 +43,14 @@ def integer_from_natural(n: SupportsIndex) -> Integer:
     return -n // 2
 
 
-def natural_from_integer(k: SupportsIndex) -> Integer:
+def natural_from_integer(k: SupportsIndex) -> int:
     r"""The inverse of :func:`integer_from_natural`."""
     k = ZZ(k)
     if k == 0:
-        return ZZ(0)
+        return 0
     if k > 0:
-        return 2 * k - 1
-    return -2 * k
+        return int(2 * k - 1)
+    return int(-2 * k)
 
 
 def indexed_symbol(
@@ -98,12 +98,26 @@ def index_of_symbol(
 class FunctionEnumeratedSets(OwnedCategory):
     r"""Enumerated sets whose elements stand for functions."""
 
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
+            HermitePolynomials,
+        )
+
+        return HermitePolynomials()
+
     def super_categories(self):
         return [EnumeratedSets()]
 
 
 class EnumeratedByNaturals(OwnedCategory):
     r"""Infinite enumerated sets ranked by \(\mathbb N\)."""
+
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
+            HermitePolynomials,
+        )
+
+        return HermitePolynomials()
 
     def super_categories(self):
         return [InfiniteEnumeratedSets()]
@@ -116,7 +130,7 @@ class EnumeratedByNaturals(OwnedCategory):
             return _nonnegative_integer(position, error_type=IndexError)
 
         def _rank_from_index(self, index):
-            return _nonnegative_integer(index, error_type=ValueError)
+            return int(_nonnegative_integer(index, error_type=ValueError))
 
         def function(self, index: SupportsIndex) -> Expression:
             return self[self._rank_from_index(index)]
@@ -128,6 +142,13 @@ class EnumeratedByIntegers(OwnedCategory):
     The ranking map still runs through \(\mathbb N\); :meth:`function` takes the
     integer index, and indexing takes the corresponding natural number.
     """
+
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.laurent_monomials import (
+            LaurentMonomials,
+        )
+
+        return LaurentMonomials()
 
     def super_categories(self):
         return [InfiniteEnumeratedSets()]
@@ -164,6 +185,15 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
 
     def cardinality(self) -> Parent:
         return aleph0
+
+    def _an_element_(self):
+        r"""Return the rank-zero function symbol."""
+        return self[0]
+
+    def __getitem__(self, position):
+        r"""Return the function at a nonnegative enumeration position."""
+        rank = int(_nonnegative_integer(position, error_type=IndexError))
+        return self.ranking_map().inverse()(rank)
 
     def _symbol_at_index(self, index):
         latex_prefix = (
