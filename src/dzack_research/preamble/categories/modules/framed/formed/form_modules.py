@@ -334,6 +334,18 @@ class FormEmbedding(FormedModuleMorphism):
     def is_quadratic(self) -> bool:
         return self._quadratic
 
+    def lift(self, element):
+        r"""Return the unique preimage through this formed monomorphism.
+
+        Subobject constructors may retain a specialized lift on the formed
+        inclusion itself.  Otherwise the form carries no additional lifting
+        datum: lift through the underlying module monomorphism.
+        """
+        custom = self.__dict__.get("_preamble_lift")
+        if custom is not None:
+            return custom(element)
+        return self.module_morphism().lift(element)
+
     @cached_method
     def orthogonal_complement(self):
         r"""Return the orthogonal complement of this embedded formed submodule.

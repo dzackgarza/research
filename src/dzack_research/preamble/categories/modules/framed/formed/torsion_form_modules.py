@@ -375,7 +375,20 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
     def lift_from_ambient(source, element):
         element = element if element.parent() is form else form(element)
         unformed_element = forget(element)
-        lifted = underlying_inclusion.lift(unformed_element)
+        custom = underlying_inclusion.__dict__.get("_preamble_lift")
+        if custom is not None:
+            lifted = underlying_inclusion.lift(unformed_element)
+        else:
+            lifted = next(
+                (
+                    candidate
+                    for candidate in underlying_subobject.elements()
+                    if underlying_inclusion(candidate) == unformed_element
+                ),
+                None,
+            )
+            if lifted is None:
+                raise ValueError("the selected ambient element does not lie in this finite torsion subobject")
         return source.equip_form_morphism()(lifted)
 
     return category.from_module(
