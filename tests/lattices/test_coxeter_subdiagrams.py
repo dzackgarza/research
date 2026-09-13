@@ -248,3 +248,19 @@ def test_the_root_data_separates_parallel_mirrors_from_divergent_ones() -> None:
     assert meeting.coxeter_entry(0, 1) == 3
     assert not meeting.mirrors_are_parallel(0, 1)
     assert not meeting.mirrors_are_divergent(0, 1)
+
+
+def test_diagram_automorphisms_keep_nonordinal_vertex_labels_at_the_public_boundary() -> None:
+    from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+
+    labels = ("left", "middle", "right")
+    diagram = CoxeterDiagrams().from_coxeter_matrix(
+        CoxeterMatrix(
+            [[1, 3, 3], [3, 1, 3], [3, 3, 1]],
+            index_set=labels,
+        )
+    )
+
+    assert diagram.Aut().order() == 6
+    orbit = diagram._orbit_vertex_sets(diagram.induced_subdiagram(("left",)))
+    assert set(orbit) == {frozenset({label}) for label in labels}

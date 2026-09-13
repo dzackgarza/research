@@ -571,22 +571,53 @@ class CoxeterDiagrams(OwnedCategory):
 
         @cached_method
         def _bond_preserving_permutation_group(self):
-            r"""Return the engine automorphism group of the labelled Coxeter graph.
+            r"""Return the owned automorphism group of the labelled Coxeter graph.
 
-            An automorphism permutes the vertices and preserves every bond
-            \(m_{vw}\); on a rooted diagram it preserves the root squares too,
-            which enters as the vertex partition by square.
+            NetworkX enumerates graph automorphisms on the finite ordinal of
+            vertex positions.  The public group is then the corresponding
+            subgroup of the owned symmetric group.  This avoids Sage's current
+            ``Graph.automorphism_group`` crash while keeping the maintained
+            graph-isomorphism algorithm as the computation owner.
             """
-            graph = self.graph()
-            if not self.is_rooted():
-                return graph.automorphism_group(edge_labels=True)
-            by_square = {}
-            for position, vertex in enumerate(self.index_set()):
-                by_square.setdefault(self._root_gram[position, position], []).append(vertex)
-            return graph.automorphism_group(
-                partition=[by_square[square] for square in sorted(by_square)],
-                edge_labels=True,
+            import networkx as nx
+
+            from dzack_research.preamble.categories.group.groups import Groups
+
+            vertices = tuple(self.index_set())
+            graph = nx.Graph()
+            for position in range(len(vertices)):
+                attributes = {}
+                if self.is_rooted():
+                    attributes["root_square"] = self._root_gram[position, position]
+                graph.add_node(position, **attributes)
+            for left_position, right_position in combinations(range(len(vertices)), 2):
+                bond = self.coxeter_entry(
+                    vertices[left_position], vertices[right_position]
+                )
+                if bond != 2:
+                    graph.add_edge(left_position, right_position, bond=bond)
+
+            node_match = (
+                nx.algorithms.isomorphism.categorical_node_match(
+                    "root_square", None
+                )
+                if self.is_rooted()
+                else None
             )
+            edge_match = nx.algorithms.isomorphism.categorical_edge_match(
+                "bond", None
+            )
+            matcher = nx.algorithms.isomorphism.GraphMatcher(
+                graph, graph, node_match=node_match, edge_match=edge_match
+            )
+            symmetric = Groups.S(len(vertices))
+            automorphisms = tuple(
+                symmetric(
+                    [mapping[position] + 1 for position in range(len(vertices))]
+                )
+                for mapping in matcher.isomorphisms_iter()
+            )
+            return symmetric.subgroup(automorphisms)
 
         def Aut(self):
             r"""Return the group of diagram automorphisms.
@@ -596,9 +627,7 @@ class CoxeterDiagrams(OwnedCategory):
             \(D_4\) the symmetric group on the three outer nodes, triality; for
             \(E_8\) trivial.
             """
-            from dzack_research.preamble.categories.group.groups import _own_group
-
-            return _own_group(self._bond_preserving_permutation_group())
+            return self._bond_preserving_permutation_group()
 
         def _orbit_vertex_sets(self, diagram):
             r"""Return the vertex sets of the :meth:`Aut`-orbit of ``diagram``."""
@@ -606,10 +635,17 @@ class CoxeterDiagrams(OwnedCategory):
             if not vertices:
                 # The empty vertex set is fixed by every permutation.
                 return (frozenset(),)
+            ranking = self.index_set().ranking_map()
+            unranking = ranking.inverse()
+            positions = tuple(int(ranking(vertex)) for vertex in vertices)
             group = self._bond_preserving_permutation_group()
+            images = {
+                frozenset(int(automorphism(position + 1)) - 1 for position in positions)
+                for automorphism in group
+            }
             return tuple(
-                frozenset(image)
-                for image in group.orbit(vertices, action="OnSets")
+                frozenset(unranking(position) for position in image)
+                for image in images
             )
 
         def _vertex_set_orbits(self, subdiagrams):
