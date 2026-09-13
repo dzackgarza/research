@@ -15,6 +15,7 @@ from dzack_research.preamble.all import (
     QQ,
     Set,
     ZZ,
+    Zmod,
 )
 
 
@@ -32,6 +33,13 @@ def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
     algebra = field.as_ZZ_algebra()
     assert algebra.algebra_base_ring() is ZZ
     assert algebra.algebra_structure_morphism()(ZZ(1)) == field.one()
+
+
+def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
+    assert Zmod(2).spectrum().cardinality() == 1
+    assert Zmod(8).spectrum().cardinality() == 1
+    assert Zmod(12).spectrum().cardinality() == 2
+    assert Zmod(30).spectrum().cardinality() == 3
 
 
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:

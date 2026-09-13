@@ -2238,7 +2238,13 @@ class _OwnedRingElement(RingElement):
         return integers._from_engine_element(SageZZ(self._backend().valuation(prime._backend())))
 
     def prime_divisors(self):
-        return tuple(self.parent()._from_engine_element(prime) for prime in self._backend().prime_divisors())
+        r"""Return the distinct prime divisors as an owned finite ordered set."""
+        return finite_ordered_set(
+            tuple(
+                self.parent()._from_engine_element(prime)
+                for prime in self._backend().prime_divisors()
+            )
+        )
 
     def is_prime(self):
         return bool(self._backend().is_prime())

@@ -14,6 +14,7 @@ from sage.all import (
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.infinity import Infinity
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -416,6 +417,19 @@ class PrimeSpectra(OwnedCategory):
 
         def ring(self):
             return self._ring
+
+        def cardinality(self):
+            r"""Return the exact number of prime points in supported finite spectra."""
+            ring = self.ring()
+            if ring in OwnedFields():
+                return cardinal(1)
+            engine = _engine_ring(ring)
+            if isinstance(engine, IntegerModRing_generic):
+                modulus = SageZZ(engine.characteristic())
+                return cardinal(len(tuple(modulus.prime_divisors())))
+            raise NotImplementedError(
+                f"the exact cardinality of Spec({ring}) has no selected computation"
+            )
 
         def ringed_space(self):
             r"""Return the ringed space whose underlying space this spectrum represents.
