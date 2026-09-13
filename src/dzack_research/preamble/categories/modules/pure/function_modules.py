@@ -43,6 +43,8 @@ scales, that addition is addition -- and that the form is a morphism out of the
 tensor square with values in $\RR$.
 """
 
+from __future__ import annotations
+
 import logging
 import operator as _operator
 from typing import TYPE_CHECKING
