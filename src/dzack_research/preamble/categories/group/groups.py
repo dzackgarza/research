@@ -1913,6 +1913,28 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
 
+        @cached_method
+        def subgroups(self):
+            r"""Return the represented subgroups as an owned finite ordered set.
+
+            GAP owns exact subgroup enumeration for finite groups whose elements
+            are represented by its group model.  Each enumerated subgroup is
+            raised through the existing transported-subgroup constructor, so the
+            ambient group and canonical inclusion remain the same owned data used
+            by ``subgroup(...)`` and the subgroup categories.
+            """
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return finite_ordered_set(
+                    tuple(
+                        _subgroup_from_gap(self, subgroup)
+                        for subgroup in _gap_model(self).AllSubgroups()
+                    )
+                )
+            assert False, (
+                "the subgroup set is defined for every group, but the current exact "
+                "enumeration requires a represented finite GAP group"
+            )
+
         def supergroup(self):
             return _engine_supergroup(self)
 
