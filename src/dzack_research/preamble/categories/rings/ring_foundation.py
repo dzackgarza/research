@@ -211,13 +211,24 @@ class RingMorphism(Morphism):
         Hom-object's own domain, so nothing has to be carried on the morphism
         for it to be found.
         """
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            LinearHomModules,
+        from dzack_research.preamble.categories.group.additive_homsets import (
+            AdditiveEndomorphismRings,
         )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         codomain = self.codomain()
-        if codomain in LinearHomModules(self.domain()) and codomain.domain() is codomain.codomain():
-            return codomain.domain().annihilator()
+        if codomain in AdditiveEndomorphismRings(codomain.base_ring()):
+            module = codomain.domain()
+            if (
+                module is codomain.codomain()
+                and module in Modules(self.domain())
+                and module.scalar_action() is self
+            ):
+                return module.annihilator()
+            raise NotImplementedError(
+                "the kernel of a non-selected action into an additive endomorphism ring "
+                "has no represented contraction backend"
+            )
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
 
