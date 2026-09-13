@@ -52,7 +52,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from sage.rings.polynomial.polynomial_element import Polynomial
     from sage.rings.ring import Ring
 
     from dzack_research.preamble.lexicon.algebra import Element
@@ -70,6 +69,7 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
+from sage.rings.polynomial.polynomial_element import Polynomial
 from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression

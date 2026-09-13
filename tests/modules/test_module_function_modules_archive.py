@@ -141,3 +141,14 @@ def test_l2_certifies_zero_and_polynomial_multiples_of_a_gaussian() -> None:
     assert zero(7) == 0
     assert weighted_gaussian(2) == 2 * exp(-4)
     assert _square_integrability(x * exp(-x**2), x) == _MEMBER
+
+
+def test_polynomial_helper_annotations_resolve_at_runtime() -> None:
+    from typing import get_type_hints
+
+    from dzack_research.preamble.categories.modules.pure import function_modules
+
+    hints = get_type_hints(function_modules._real_polynomial)
+    assert hints["return"] is not None
+    rational_hints = get_type_hints(function_modules._rational_function_polynomials)
+    assert rational_hints["return"] is not None

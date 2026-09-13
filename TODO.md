@@ -990,8 +990,7 @@ carry on with the 36 collection errors, which are this repository's own and are 
   are `sage-categories` importing `typing.TypeIs`
   under Sage's Python 3.12; missing `hypothesis` and `sage_indefinite_port`;
   archive tests still importing the retired `integrallattice` package path;
-  duplicate test-module basenames producing pytest import mismatches; an
-  undefined `Polynomial` annotation in `function_modules.py`; the group-algebra
+  duplicate test-module basenames producing pytest import mismatches; the group-algebra
   construction reaching `is_commutative` through an `OwnedArrowCategory`
   parent class; and the construction corpus expecting
   `OwnedCategoryOverBaseRing` in the installed session. `just test-universe`
