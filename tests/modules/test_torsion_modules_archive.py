@@ -92,3 +92,14 @@ def test_zero_torsion_module_has_zero_tor_over_a_polynomial_pid() -> None:
 
     assert zero.tor(zero, 1).is_zero()
     assert zero.tor(zero, 1).cardinality() == zero.cardinality()
+
+
+def test_zero_module_over_padic_field_is_projective_without_smith_normalization() -> None:
+    from dzack_research.preamble.all import Qp
+
+    field = Qp(3)
+    zero = FinitelyPresentedTorsionModules(field).direct_sum_of_cyclics((field.one(),))
+
+    assert zero.is_zero()
+    assert zero.is_projective()
+    assert zero.projective_dimension() == 0

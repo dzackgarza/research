@@ -1107,6 +1107,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             being declared projective in advance.
             """
 
+            if self.is_zero():
+                return True
+
             ring = self.base_ring()
             if ring in PrincipalIdealDomains():
                 if not self.is_torsion_free():
