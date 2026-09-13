@@ -71,3 +71,14 @@ def test_unit_relation_over_formal_power_series_constructs_the_zero_torsion_modu
     assert module.is_torsion()
     assert module.is_zero()
     assert module.projective_dimension() == 0
+
+
+def test_zero_presented_module_has_only_its_zero_subobject_over_a_polynomial_pid() -> None:
+    ring = __import__("dzack_research.preamble.all", fromlist=["GF", "PolynomialRing"])
+    pid = ring.PolynomialRing(ring.GF(5), "t")
+    zero = FinitelyPresentedTorsionModules(pid).direct_sum_of_cyclics((pid.one(),))
+    subobject = zero.subobject_on(())
+
+    assert subobject.is_zero()
+    assert subobject.inclusion().codomain() is zero
+    assert subobject.inclusion()(subobject.zero()) == zero.zero()
