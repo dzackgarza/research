@@ -637,8 +637,9 @@ def graded_lebesgue_algebra():
     r"""The pointwise algebra \(\bigoplus_s L^{1/s}\), interned from its product."""
     ring = _real_ring()
     module = GradedLebesgueModule(NonNegativeReals)
-    return GradedAlgebras(ring, NonNegativeReals)(
-        _lebesgue_multiplication(module, _pointwise_piece_product)
+    return module.algebra_from_multiplication(
+        _lebesgue_multiplication(module, _pointwise_piece_product),
+        unital=True,
     )
 
 
@@ -647,6 +648,7 @@ def lebesgue_convolution_algebra():
     r"""The convolution algebra \(\bigoplus_{s\in[0,1]} L^{1/s}\), interned from its product."""
     ring = _real_ring()
     module = GradedLebesgueModule(UnitInterval)
-    return AssociativeAlgebras(ring)(
-        _lebesgue_multiplication(module, _convolution_piece_product)
+    return module.algebra_from_multiplication(
+        _lebesgue_multiplication(module, _convolution_piece_product),
+        unital=False,
     )
