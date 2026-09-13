@@ -1289,9 +1289,10 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         cover = self._engine_module.V()
         coordinates = cover.coordinates(module_element.lift())
         labels = tuple(self._normalized_form.module_generating_set())
+        ring = self._normalized_form.base_ring()
         normalized = self._normalized_form.linear_combination(
             {
-                label: SageZZ(coefficient)
+                label: ring._from_engine_element(SageZZ(coefficient))
                 for label, coefficient in zip(labels, coordinates, strict=True)
                 if coefficient
             }
