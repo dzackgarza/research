@@ -554,6 +554,13 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def _algebra_homset_class(self):
             return FramedFreeAlgebraHomset
 
+        def Mor(self, codomain, category=None):
+            r"""Use the free-algebra universal Hom before the inherited ring Hom."""
+            ordinary = Algebras(self.base_ring()).Associative().Unital()
+            if category is None:
+                return ordinary.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
