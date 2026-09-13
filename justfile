@@ -141,7 +141,7 @@ sage-init-install:
     echo "sage-init-install: restart running kernels to pick it up"
 
 # Prove the installed startup file actually typesets in a real Sage kernel
-sage-init-check:
+sage-init-check: sage-init-install
     #!/usr/bin/env bash
     set -euo pipefail
     # Through ``sage -c``, which is the only way this Sage runs code: the CLI
