@@ -52,6 +52,16 @@ def test_finite_group_centers_are_owned_subgroups() -> None:
     assert cyclic.center().supergroup() is cyclic
 
 
+def test_finite_group_commutator_subgroups_are_owned() -> None:
+    symmetric = Groups.S(3)
+    cyclic = Groups.C(4)
+
+    assert symmetric.commutator_subgroup().order() == 3
+    assert symmetric.commutator_subgroup().supergroup() is symmetric
+    assert cyclic.commutator_subgroup().order() == 1
+    assert cyclic.commutator_subgroup().supergroup() is cyclic
+
+
 def test_group_coproduct_is_the_owned_free_product() -> None:
     coproduct = Coproduct(Groups.C(2), Groups.C(3))
 
