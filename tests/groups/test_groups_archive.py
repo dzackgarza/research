@@ -42,6 +42,16 @@ def test_finite_group_product_retains_group_structure_and_order() -> None:
     assert product.is_isomorphic_to(Groups.C(6))
 
 
+def test_finite_group_centers_are_owned_subgroups() -> None:
+    symmetric = Groups.S(3)
+    cyclic = Groups.C(2)
+
+    assert symmetric.center().order() == 1
+    assert symmetric.center().supergroup() is symmetric
+    assert cyclic.center().order() == 2
+    assert cyclic.center().supergroup() is cyclic
+
+
 def test_group_coproduct_is_the_owned_free_product() -> None:
     coproduct = Coproduct(Groups.C(2), Groups.C(3))
 
