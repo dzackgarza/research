@@ -2121,6 +2121,16 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return _engine_subgroup(self, generators)
 
         @cached_method
+        def center(self):
+            r"""Return the center as an owned subgroup in the represented finite case."""
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return _subgroup_from_gap(self, _gap_model(self).Center())
+            assert False, (
+                "the group center is defined generally, but the current exact "
+                "construction requires a represented finite GAP group"
+            )
+
+        @cached_method
         def subgroups(self):
             r"""Return the represented subgroups as an owned finite ordered set.
 
