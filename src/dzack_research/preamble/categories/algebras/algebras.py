@@ -56,6 +56,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _proper_restriction_base_ring,
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
@@ -620,6 +621,9 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
+        base = _proper_restriction_base_ring(self.base_ring())
+        if base is not None:
+            return [Algebras(base)]
         return [Sets()]
 
     class SubcategoryMethods:
