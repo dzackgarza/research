@@ -3056,10 +3056,16 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
 
 def Zp(*args, **kwargs):
-    parser = _SageZp(*args, **kwargs)
-    prime = SageZZ(args[0] if args else kwargs.get("p"))
     source = _own_ring(SageZZ)
-    defining = source.ideal(source(prime))
+    prime_value = args[0] if args else kwargs.get("p")
+    owned_prime = source(prime_value)
+    prime = SageZZ(_engine_element(source, owned_prime))
+    engine_args = (prime, *args[1:]) if args else args
+    engine_kwargs = dict(kwargs)
+    if not args and "p" in engine_kwargs:
+        engine_kwargs["p"] = prime
+    parser = _SageZp(*engine_args, **engine_kwargs)
+    defining = source.ideal(owned_prime)
     return AdicCompletions()(
         source,
         defining,
