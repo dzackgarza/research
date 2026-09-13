@@ -243,9 +243,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             components = getattr(element, "homogeneous_components", None)
             if callable(components):
+                try:
+                    component_items = components().items()
+                except (AttributeError, NotImplementedError):
+                    component_items = ()
                 nonzero_degrees = {
                     int(degree)
-                    for degree, component in components().items()
+                    for degree, component in component_items
                     if component != component.parent().zero()
                 }
                 if nonzero_degrees:
