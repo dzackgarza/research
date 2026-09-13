@@ -83,6 +83,10 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         def is_torsion(self) -> bool:
             return True
 
+        def invariants(self):
+            r"""Return the invariant factors of this finite presented torsion module."""
+            return self.invariant_factors()
+
         @cached_method
         def elements(self):
             r"""Return all elements through the private finite Smith workspace."""
