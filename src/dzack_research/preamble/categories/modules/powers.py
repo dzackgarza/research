@@ -8,7 +8,8 @@ three are the degree pieces of the corresponding graded algebra: for
 """
 
 from sage.arith.misc import binomial
-from sage.misc.cachefunc import cached_function
+from sage.categories.morphism import SetMorphism
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.products import (
@@ -30,6 +31,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleHomset,
     ModuleMorphism,
     module_coefficients,
+    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -90,6 +92,51 @@ class _PowerModuleParentMethods:
     def power_degree(self):
         return self._preamble_power_degree
 
+    def _lift_from_ambient_power_algebra(self, element):
+        r"""Read an ambient homogeneous element back in this power module."""
+        algebra = self.ambient_power_algebra()
+        if getattr(element, "parent", lambda: None)() is not algebra:
+            raise TypeError("the element belongs to a different ambient algebra")
+        degree = self.power_degree()
+        component = algebra.homogeneous_component(element, degree)
+        if algebra.from_graded_piece(degree, component) != element:
+            raise ValueError("the ambient element has support outside this homogeneous degree")
+        return self(component)
+
+    def __contains__(self, element) -> bool:
+        if getattr(element, "parent", lambda: None)() is self:
+            return True
+        if getattr(element, "parent", lambda: None)() is self.ambient_power_algebra():
+            try:
+                self._lift_from_ambient_power_algebra(element)
+            except (TypeError, ValueError):
+                return False
+            return True
+        return super().__contains__(element)
+
+    @cached_method
+    def inclusion(self):
+        r"""Return the canonical homogeneous-piece inclusion into its power algebra."""
+        algebra = self.ambient_power_algebra()
+        degree = self.power_degree()
+        inclusion = module_embedding(
+            self,
+            algebra,
+            lambda label: algebra.from_graded_piece(
+                degree,
+                self.module_generator(label),
+            ),
+            verify_linearity=False,
+        )
+        inclusion._preamble_lift = self._lift_from_ambient_power_algebra
+        self.register_conversion(
+            SetMorphism(
+                Sets().Mor(algebra, self),
+                inclusion.lift,
+            )
+        )
+        return inclusion
+
 
 class TensorPowerModules(OwnedCategoryOverBaseRing):
     @classmethod
@@ -101,7 +148,13 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods(_PowerModuleParentMethods):
-        pass
+        @cached_method
+        def ambient_power_algebra(self):
+            from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+                TensorAlgebraOf,
+            )
+
+            return TensorAlgebraOf(self.power_source())
 
 
 class SymmetricPowerModules(OwnedCategoryOverBaseRing):
@@ -114,7 +167,13 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods(_PowerModuleParentMethods):
-        pass
+        @cached_method
+        def ambient_power_algebra(self):
+            from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+                SymmetricAlgebraOf,
+            )
+
+            return SymmetricAlgebraOf(self.power_source())
 
 
 class AlternatingPowerModules(OwnedCategoryOverBaseRing):
@@ -127,7 +186,13 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods(_PowerModuleParentMethods):
-        pass
+        @cached_method
+        def ambient_power_algebra(self):
+            from dzack_research.preamble.categories.algebras.power_algebras import (
+                AlternatingAlgebraOf,
+            )
+
+            return AlternatingAlgebraOf(self.power_source())
 
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
@@ -140,7 +205,13 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods(_PowerModuleParentMethods):
-        pass
+        @cached_method
+        def ambient_power_algebra(self):
+            from dzack_research.preamble.categories.algebras.power_algebras import (
+                DividedPowerAlgebraOf,
+            )
+
+            return DividedPowerAlgebraOf(self.power_source())
 
 
 class QuadraticModuleMorphism(ModuleMorphism):
