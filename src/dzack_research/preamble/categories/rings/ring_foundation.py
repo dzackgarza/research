@@ -44,7 +44,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import op_EQ, op_NE, richcmp
+from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -2103,6 +2103,27 @@ class _OwnedRingElement(RingElement):
             except (TypeError, ValueError):
                 return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
+
+    def _ordered_comparison(self, other, op):
+        if self.parent() not in OwnedOrderedRings():
+            return NotImplemented
+        try:
+            other = self.parent()(other)
+        except (TypeError, ValueError):
+            return NotImplemented
+        return bool(richcmp(self._backend(), other._backend(), op))
+
+    def __lt__(self, other):
+        return self._ordered_comparison(other, op_LT)
+
+    def __le__(self, other):
+        return self._ordered_comparison(other, op_LE)
+
+    def __gt__(self, other):
+        return self._ordered_comparison(other, op_GT)
+
+    def __ge__(self, other):
+        return self._ordered_comparison(other, op_GE)
 
     def __eq__(self, other):
         try:
