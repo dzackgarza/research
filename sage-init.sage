@@ -87,6 +87,9 @@ install_implicit_typesetting(get_ipython())
 
 from sage_julia_bridge import JuliaHandle, julia
 
-julia.eval("using Oscar")
+# Do not initialize Oscar at session startup.  The maintained engine adapters
+# load the Julia packages they require when the corresponding computation is
+# first requested; eagerly evaluating ``using Oscar`` here can block an
+# otherwise usable Sage kernel before it becomes ready.
 
 import sageparse.preparser.research  # noqa: F401
