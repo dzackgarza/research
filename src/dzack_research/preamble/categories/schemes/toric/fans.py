@@ -470,9 +470,21 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             each primitive ray generator ``u`` of the cone.
             """
             pairing = self.parent().character_cocharacter_pairing()
-            return finite_ordered_set(
-                tuple(pairing(character, ray) for ray in self.rays())
-            )
+            values = pairing.codomain()
+            labels = tuple(values.module_generating_set())
+            if len(labels) != 1:
+                raise ArithmeticError(
+                    "the character-cocharacter pairing must take values in the rank-one integer module"
+                )
+            value_label = labels[0]
+            integers = _integers()
+
+            def scalar_value(ray):
+                paired = pairing(character, ray)
+                coefficients = module_coefficients(paired, values)
+                return integers(coefficients.get(value_label, integers.zero()))
+
+            return finite_ordered_set(tuple(scalar_value(ray) for ray in self.rays()))
 
         def dual_cone_contains(self, character) -> bool:
             r"""Whether ``m`` is in ``sigma^vee``, i.e. ``<m,u> >= 0`` on every ray."""
