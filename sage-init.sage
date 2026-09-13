@@ -62,9 +62,9 @@ def latex_if_typesettable(obj):
 
 
 def install_implicit_typesetting(shell):
-    shell.display_formatter.formatters["text/latex"].for_type(
-        object, latex_if_typesettable
-    )
+    formatter = shell.display_formatter.formatters["text/latex"]
+    formatter.enabled = True
+    formatter.for_type(object, latex_if_typesettable)
 
 
 # One import, and it is the same one a script or a notebook cell makes.
