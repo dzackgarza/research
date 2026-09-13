@@ -2820,6 +2820,8 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring()), DirectSumObjects()]
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"summands"})
+
         def __init__(self, biproduct_factors, **rest) -> None:
             self._preamble_biproduct_factors = biproduct_factors
             super().__init__(summands=biproduct_factors, **rest)

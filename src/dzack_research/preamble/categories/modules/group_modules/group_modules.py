@@ -331,6 +331,10 @@ class ModulesOverGroupAlgebra(Modules):
         return self.restriction_coextension_adjunction(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"action", "underlying_category"}
+        )
+
         def __init__(
             self,
             acting_group,
