@@ -282,6 +282,15 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                 return cardinal(int(self.kernel_morphism().gap().Kernel().Size()))
             return super().cardinality()
 
+        def is_abelian(self):
+            r"""Decide abelianity from the represented exact kernel when finite."""
+            if self.supergroup().is_finite() is True:
+                return bool(self.kernel_morphism().gap().Kernel().IsAbelian())
+            assert False, (
+                "kernel abelianity is mathematically defined generally, but the current "
+                "exact computation requires a finite ambient group with a GAP-backed morphism"
+            )
+
 
 class PreimageSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
