@@ -35,6 +35,10 @@ tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 
 
 [tool.pytest.ini_options]
+# The archived preamble is source evidence, not an executable test tree.
+# Bare pytest invocations collect the live suite only; an archive path may still
+# be named explicitly when inspecting historical material.
+testpaths = ["tests"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
 # --timeout is the important one: a suite that blocks -- on a subprocess, a
