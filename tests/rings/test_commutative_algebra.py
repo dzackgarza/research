@@ -110,7 +110,7 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
     assert power_series in CompleteLocalRings()
     assert power_series.residue_field() is field
     (uniformizer,) = power_series.maximal_ideal().ideal_generators()
-    assert uniformizer == power_series.algebra_generator("t")
+    assert uniformizer == power_series.power_series_variable()
 
 
 def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:

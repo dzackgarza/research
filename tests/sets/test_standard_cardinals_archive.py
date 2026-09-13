@@ -3,6 +3,7 @@ r"""Archived standard-cardinality facts not already covered by live catalogues."
 from dzack_research.preamble.all import (
     QQ,
     RR,
+    FramedAlgebras,
     MatrixSpace,
     PolynomialRing,
     PowerSeriesRing,
@@ -29,6 +30,8 @@ def test_rational_power_series_have_continuum_cardinality() -> None:
     power_series = PowerSeriesRing(QQ, "t")
 
     assert power_series.cardinality() == continuum
+    assert power_series not in FramedAlgebras(QQ)
+    assert tuple(power_series.formal_parameter_set()) == ("t",)
 
 
 def test_rational_polynomial_ring_is_countable() -> None:

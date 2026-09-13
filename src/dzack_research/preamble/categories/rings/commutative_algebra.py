@@ -65,7 +65,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_homset,
     ring_morphism,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -2084,10 +2084,18 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         completion_map_kernel=None,
         algebra_base=None,
         algebra_labels=None,
+        formal_parameter_labels=None,
         extra_categories=(),
     ) -> None:
         self._preamble_completion_source = source
         self._preamble_ideal_of_definition = defining_ideal
+        match formal_parameter_labels:
+            case None:
+                self._preamble_formal_parameter_labels = None
+            case _:
+                self._preamble_formal_parameter_labels = finite_ordered_set(
+                    formal_parameter_labels
+                )
         self._preamble_computation_precision = int(precision)
         self._preamble_projection_lift = projection_lift
         self._preamble_completion_arithmetic_mode = arithmetic_mode
@@ -2096,8 +2104,21 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         if source in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
         is_maximal = bool(defining_ideal.is_maximal())
-        if is_maximal:
-            placements.append(OwnedCompleteLocalRings())
+        formal_base = algebra_base
+        match formal_base:
+            case None:
+                formal_base_is_local = False
+            case _:
+                formal_base = _own_ring(formal_base)
+                formal_base_is_local = (
+                    formal_parameter_labels is not None
+                    and formal_base in OwnedLocalRings()
+                )
+        match is_maximal or formal_base_is_local:
+            case True:
+                placements.append(OwnedCompleteLocalRings())
+            case False:
+                pass
         _OwnedAlgebraParent.__init__(
             self,
             engine,
@@ -2135,11 +2156,27 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
         if algebra_base is None or algebra_base is source:
             self._preamble_structure_map = self._preamble_completion_map
-        if is_maximal:
-            self._preamble_maximal_ideal = self._preamble_completion_map.extension_of_ideal(
-                defining_ideal
-            )
-            self._preamble_residue_field = ResidueField(source, defining_ideal)
+        match (formal_base_is_local, is_maximal):
+            case (True, _):
+                formal_parameters = tuple(
+                    self._preamble_completion_map(
+                        source.algebra_generator(label)
+                    )
+                    for label in self._preamble_formal_parameter_labels
+                )
+                self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
+                    self,
+                    formal_base,
+                    formal_parameters,
+                )
+                self._preamble_residue_field = formal_base.residue_field()
+            case (False, True):
+                self._preamble_maximal_ideal = self._preamble_completion_map.extension_of_ideal(
+                    defining_ideal
+                )
+                self._preamble_residue_field = ResidueField(source, defining_ideal)
+            case (False, False):
+                pass
 
     def completion_arithmetic_mode(self):
         return self._preamble_completion_arithmetic_mode
@@ -3069,11 +3106,11 @@ def _adic_completion_from_owned_data(source, defining, precision):
         return source._from_engine_element(source_engine(polynomial))
 
     algebra_base = None
-    algebra_labels = None
+    formal_parameter_labels = None
     extra_categories = ()
     if len(selected_variables) == len(engine_variables):
         algebra_base = base
-        algebra_labels = tuple(source_engine.variable_names())
+        formal_parameter_labels = tuple(source_engine.variable_names())
         extra_categories = (FormalPowerSeriesRings(base),)
     return _AdicCompletionAlgebraParent(
         completion_engine,
@@ -3086,7 +3123,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
         arithmetic_mode="exact_lazy",
         completion_map_kernel=zero_ideal if source in OwnedIntegralDomains() else None,
         algebra_base=algebra_base,
-        algebra_labels=algebra_labels,
+        formal_parameter_labels=formal_parameter_labels,
         extra_categories=extra_categories,
     )
 
@@ -3150,13 +3187,39 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         return completion
 
     class ParentMethods:
+        def formal_parameter_set(self):
+            r"""Return the selected formal variables, not algebra generators."""
+            labels = self._preamble_formal_parameter_labels
+            if labels is None:
+                raise ArithmeticError(
+                    "this completion has no selected formal-power-series variables"
+                )
+            return labels
+
+        def formal_parameter(self, label):
+            r"""Return the image of one polynomial variable in the completion."""
+            labels = self.formal_parameter_set()
+            normalized = labels(label)
+            return self.completion_map()(
+                self.completion_source().algebra_generator(normalized)
+            )
+
         def power_series_variable(self):
-            labels = self.algebra_generating_set()
+            labels = self.formal_parameter_set()
             if int(labels.cardinality()) != 1:
                 raise ArithmeticError(
                     "a one-variable formal power-series ring has one selected variable"
                 )
-            return self.algebra_generator(labels[0])
+            return self.formal_parameter(labels[0])
+
+        def cardinality(self):
+            r"""Return ``|R|^aleph0`` for a nonconstant formal series ring."""
+            parameter_count = int(self.formal_parameter_set().cardinality())
+            match parameter_count:
+                case 0:
+                    return cardinal(self.base_ring().cardinality())
+                case _:
+                    return cardinal(self.base_ring().cardinality()) ** aleph0
 
     class ElementMethods:
         def coefficient(self, degree):
