@@ -227,6 +227,12 @@ class _SparseFreeModuleParent:
                 )
             return self.element_class(self, coefficients)
         labels = self.module_generating_set()
+        try:
+            scalar = self.base_ring()(value)
+        except (TypeError, ValueError):
+            scalar = None
+        if scalar is not None and scalar == self.base_ring().zero():
+            return self.zero()
 
         if isinstance(value, (tuple, list)):
             if labels not in EnumeratedSets():
