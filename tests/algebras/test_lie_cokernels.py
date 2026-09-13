@@ -29,6 +29,13 @@ def _lie_algebra(labels, brackets):
     return Algebras(QQ).Lie()(module, multiplication)
 
 
+def test_lie_is_a_constructible_algebra_axiom_category() -> None:
+    lie = Algebras(QQ).Lie()
+
+    assert lie.is_subcategory(Algebras(QQ))
+    assert LieAlgebras(QQ).is_subcategory(lie)
+
+
 def test_cartan_inclusion_in_sl2_has_zero_lie_cokernel_but_nonzero_module_cokernel() -> None:
     sl2 = _lie_algebra(
         ("e", "f", "h"),

@@ -3,6 +3,7 @@
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
@@ -73,6 +74,9 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
+
+if "Lie" not in all_axioms:
+    all_axioms.add("Lie")
 
 
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
@@ -1261,6 +1265,12 @@ class Algebras(OwnedCategoryOverBaseRing):
         class ParentMethods:
             def is_commutative(self) -> bool:
                 return True
+
+
+# ``Lie`` is an owned algebra axiom not known to Sage's global axiom registry.
+# Register the nested refinement explicitly so ``Algebras(R).Lie()`` is a
+# category-with-axiom rather than an inference through Sage's built-in names.
+Algebras.__dict__["Lie"]._base_category_class_and_axiom = (Algebras, "Lie")
 
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
