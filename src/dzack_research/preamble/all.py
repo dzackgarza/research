@@ -1256,10 +1256,6 @@ def _realize_owned_categories_over(_ring) -> None:
     category over any other ring to be created when a session first reaches it.
     Extending the tuple below is how another ring joins them.
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        OwnedCategoryOverBaseRing,
-    )
-
     session = globals()
     for _name in sorted(session):
         _value = session[_name]
@@ -1271,5 +1267,5 @@ def _realize_owned_categories_over(_ring) -> None:
             _value(_ring)._cmp_key
 
 
-for _initial_ring in (ZZ,):
+for _initial_ring in (globals()["ZZ"],):
     _realize_owned_categories_over(_initial_ring)
