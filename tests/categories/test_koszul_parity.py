@@ -42,6 +42,7 @@ def test_strict_graded_commutativity_keeps_the_grading_it_was_given() -> None:
     strict = StrictlyGradedCommutativeAlgebras(ZZ, two, identity)
 
     assert strict.grading_monoid() is two
+    assert strict.parity_homomorphism() is identity
     assert GradedCommutativeAlgebras(ZZ, two, identity) in strict.super_categories()
 
 

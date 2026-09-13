@@ -29,7 +29,43 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.refine import refine
 
 
+class _ParityKey:
+    r"""Identity-stable cache key for a chosen parity morphism.
+
+    Sage morphism equality can require generator comparison and is not a valid
+    cache-key operation for arbitrary owned ring morphisms.  Chosen parity is
+    structure, so its identity is the stable parameter until a separate
+    extensional morphism equality is available.
+    """
+
+    def __init__(self, morphism) -> None:
+        self._morphism = morphism
+
+    def morphism(self):
+        return self._morphism
+
+
+_PARITY_KEYS = {}
+
+
+def _parity_key(parity):
+    identity = id(parity)
+    known = _PARITY_KEYS.get(identity)
+    if known is not None and known.morphism() is parity:
+        return known
+    key = _ParityKey(parity)
+    _PARITY_KEYS[identity] = key
+    return key
+
+
 @cached_function
+def _integer_koszul_parity():
+    r"""Return the canonical reduction ``ZZ -> ZZ/2`` once."""
+    integers = _own_ring(SageZZ)
+    parity_target = Zmod(2)
+    return ring_morphism(integers, parity_target, parity_target)
+
+
 def koszul_parity(grading_monoid, parity=None):
     r"""Return the parity homomorphism ``M -> ZZ/2`` the Koszul rule reads through.
 
@@ -51,7 +87,7 @@ def koszul_parity(grading_monoid, parity=None):
             f"homomorphism to {parity_target}; state the parity the Koszul "
             "sign rule is to read its degrees through"
         )
-        parity = ring_morphism(grading_monoid, parity_target, parity_target)
+        parity = _integer_koszul_parity()
     assert parity.domain() is grading_monoid, (
         "the parity homomorphism is defined on the grading monoid"
     )
@@ -75,13 +111,15 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
         monoid = require_grading_monoid(grading_monoid)
+        selected_parity = koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
-            cls, base_ring, monoid, koszul_parity(monoid, parity)
+            cls, base_ring, monoid, _parity_key(selected_parity)
         )
 
-    def __init__(self, base_ring, grading_monoid, parity) -> None:
+    def __init__(self, base_ring, grading_monoid, parity_key) -> None:
         self._grading_monoid = grading_monoid
-        self._parity = parity
+        self._parity = parity_key.morphism()
+        self._parity_key = parity_key
         super().__init__(base_ring)
 
     def grading_monoid(self):
@@ -96,7 +134,11 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "graded-commutative algebras"
 
     def _make_named_class_key(self, name):
-        return (super()._make_named_class_key(name), self.grading_monoid())
+        return (
+            super()._make_named_class_key(name),
+            self.grading_monoid(),
+            self._parity_key,
+        )
 
     def super_categories(self):
 
@@ -117,13 +159,15 @@ class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
         monoid = require_grading_monoid(grading_monoid)
+        selected_parity = koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
-            cls, base_ring, monoid, koszul_parity(monoid, parity)
+            cls, base_ring, monoid, _parity_key(selected_parity)
         )
 
-    def __init__(self, base_ring, grading_monoid, parity) -> None:
+    def __init__(self, base_ring, grading_monoid, parity_key) -> None:
         self._grading_monoid = grading_monoid
-        self._parity = parity
+        self._parity = parity_key.morphism()
+        self._parity_key = parity_key
         super().__init__(base_ring)
 
     def grading_monoid(self):
@@ -138,7 +182,11 @@ class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "strictly graded-commutative algebras"
 
     def _make_named_class_key(self, name):
-        return (super()._make_named_class_key(name), self.grading_monoid())
+        return (
+            super()._make_named_class_key(name),
+            self.grading_monoid(),
+            self._parity_key,
+        )
 
     def super_categories(self):
         return [
