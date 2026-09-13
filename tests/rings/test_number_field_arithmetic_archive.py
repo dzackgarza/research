@@ -7,7 +7,11 @@ object itself.  The Gaussian field gives a source-standard exact specimen:
 its maximal order is ``ZZ[i]``, of class number one and discriminant ``-4``.
 """
 
-from dzack_research.preamble.all import ZZ, QuadraticField
+from dzack_research.preamble.all import (
+    ZZ,
+    PrincipalIdealDomains,
+    QuadraticField,
+)
 
 
 def test_gaussian_field_retains_class_number_ramification_and_galois_group() -> None:
@@ -36,3 +40,15 @@ def test_gaussian_primitive_element_has_two_owned_embedding_images() -> None:
         primitive,
         -primitive,
     }
+
+
+def test_maximal_order_is_a_pid_exactly_in_the_class_number_one_specimen() -> None:
+    gaussian_field = QuadraticField(-1, "i")
+    nonprincipal_field = QuadraticField(-5, "s")
+    gaussian = gaussian_field.ring_of_integers()
+    nonprincipal = nonprincipal_field.ring_of_integers()
+
+    assert gaussian_field.class_number() == 1
+    assert gaussian in PrincipalIdealDomains()
+    assert nonprincipal_field.class_number() == 2
+    assert nonprincipal not in PrincipalIdealDomains()

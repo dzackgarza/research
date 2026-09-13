@@ -2451,6 +2451,16 @@ def _owned_ring_category(engine: Ring) -> Category:
         extra.append(PrimeFields())
     if category.is_subcategory(SagePrincipalIdealDomains()):
         extra.append(OwnedPrincipalIdealDomains())
+    elif (
+        isinstance(engine, SageNumberFieldOrder)
+        and engine.is_maximal()
+        and engine.class_number() == 1
+    ):
+        # A maximal order is Dedekind, hence is a PID exactly when its
+        # ideal class group is trivial.  Sage does not place number-field
+        # orders in its PrincipalIdealDomains category, so retain this
+        # theorem at the owned boundary where the class number is exact.
+        extra.append(OwnedPrincipalIdealDomains())
     try:
         noetherian = engine.is_noetherian()
     except (AttributeError, NotImplementedError, TypeError, ValueError):
