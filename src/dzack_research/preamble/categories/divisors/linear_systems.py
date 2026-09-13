@@ -343,6 +343,32 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            _preamble_jet_projective_space,
+            _preamble_jet_line_bundle,
+            _preamble_jet_order,
+            _preamble_jet_point,
+            _preamble_jet_affine_chart,
+            _preamble_jet_spectrum_point,
+            _preamble_jet_stalk,
+            _preamble_jet_maximal_ideal,
+            _preamble_jet_local_quotient,
+            _preamble_jet_residue_field,
+            **rest,
+        ) -> None:
+            self._preamble_jet_projective_space = _preamble_jet_projective_space
+            self._preamble_jet_line_bundle = _preamble_jet_line_bundle
+            self._preamble_jet_order = _preamble_jet_order
+            self._preamble_jet_point = _preamble_jet_point
+            self._preamble_jet_affine_chart = _preamble_jet_affine_chart
+            self._preamble_jet_spectrum_point = _preamble_jet_spectrum_point
+            self._preamble_jet_stalk = _preamble_jet_stalk
+            self._preamble_jet_maximal_ideal = _preamble_jet_maximal_ideal
+            self._preamble_jet_local_quotient = _preamble_jet_local_quotient
+            self._preamble_jet_residue_field = _preamble_jet_residue_field
+            super().__init__(**rest)
+
         def jet_projective_space(self):
             return self._preamble_jet_projective_space
 
