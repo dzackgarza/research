@@ -553,7 +553,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                 raise ValueError(
                     "a global automorphism must be an endomorphism of the chosen closure"
                 )
-            element = self.element_class(self, exact_action=datum)
+            element = AbsoluteGaloisGroupElement(self, exact_action=datum)
         else:
             raise TypeError("an element requires an exact closure automorphism")
         if not element.fixes_base_field():
@@ -577,7 +577,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                 self._one_element = FrobeniusElement(self, ZZ.zero())
             else:
                 identity = exact_field_homset(self._closure, self._closure).identity()
-                self._one_element = self.element_class(self, exact_action=identity)
+                self._one_element = AbsoluteGaloisGroupElement(self, exact_action=identity)
         return self._one_element
 
     def an_element(self):

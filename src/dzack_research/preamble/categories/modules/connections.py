@@ -467,7 +467,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
             if connection.parent() is self:
                 return connection
             return self(lambda label: connection.generator_image(label))
-        return self.element_class(self, generator_images)
+        return Connection(self, generator_images)
 
     def _repr_(self):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
@@ -588,12 +588,12 @@ class ConnectionHomset(RestrictedHomCategoryParent):
             tagged = getattr(images, "_preamble_connection_morphism", None)
             if tagged is not None and tagged.parent() is self:
                 return tagged
-        return self.element_class(self, images)
+        return ConnectionMorphism(self, images)
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
             raise ValueError("identity belongs to a connection endomorphism homset")
-        return self.element_class(
+        return ConnectionMorphism(
             self,
             self.arrow_set().identity(),
             verify_horizontality=False,

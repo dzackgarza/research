@@ -652,10 +652,36 @@ class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
         category: Category | None = None,
     ) -> None:
         FixedRestrictedHomCategory.__init__(self, family, domain, codomain)
-        Parent.__init__(
-            self,
-            category=SageSets() if category is None else category,
-        )
+        if category is None:
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            category = Sets()
+        Parent.__init__(self, category=category)
+
+    def category(self) -> Category:
+        r"""Return the independent enrichment carried by this parent.
+
+        ``RestrictedHomCategoryParent`` has two roles: its restricted-Hom
+        methods describe which arrows its elements represent, while as a Sage
+        parent its elements may independently form a set, module, group, or
+        another category selected by ``category=``.  The fixed-Hom base is an
+        owned category object, whose inherited ``category()`` is therefore
+        ``Cat()``.  That answer would erase the enrichment explicitly stored by
+        :class:`Parent`.  Read the latter here.
+        """
+        return Parent.category(self)
+
+    def __call__(self, *args, **kwargs):
+        r"""Construct an element through the independent Parent role.
+
+        The fixed restricted-Hom category also has an explicit :meth:`object`
+        operation for regarding an accepted underlying arrow as an object of
+        the Hom category.  That categorical conversion must not replace this
+        parent's ordinary element constructor: derivations, connections, and
+        absolute-Galois automorphisms are structured elements specified by
+        their own defining data.
+        """
+        return self._element_constructor_(*args, **kwargs)
 
     def _underlying_arrow(self, candidate):
         if isinstance(candidate, HomArrowObject):
