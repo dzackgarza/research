@@ -1619,9 +1619,7 @@ def test_a_genus_datum_exists_exactly_when_nikulin_admits_it() -> None:
     the congruence is also sufficient at these signatures, each admissible
     one witnessed by an actual lattice: $(0,2)$ by $A_2$, $(1,3)$ by
     $A_2\oplus U$, $(2,4)$ by $A_2\oplus U^2$."""
-    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import (
-        Genus as LatticeGenus,
-    )
+    from dzack_research.preamble.categories.lattices import Genus as LatticeGenus
 
     q = Lattices.A2.discriminant_group()
     brown = q.brown_invariant()

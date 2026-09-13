@@ -987,9 +987,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`.
   A direct Sage 3.12 collection against the current local upstream checkout now
   collects 19,702 tests and reaches one upstream-only syntax error in
-  `sage_categories/cat/category.py`; the former `integrallattice` import,
-  duplicate-basename, group-algebra commutativity, and
-  `OwnedCategoryOverBaseRing` export failures no longer reproduce.
+  `sage_categories/cat/category.py`. The archived Nikulin genus specimen no longer
+  imports the retired `integrallattice` package path: it imports `Genus` from the
+  live lattice owner. Remaining observed collection repairs are duplicate test-module
+  basenames, group-algebra commutativity reaching an `OwnedArrowCategory` parent,
+  and the missing `OwnedCategoryOverBaseRing` session export.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
