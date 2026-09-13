@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
+    ModuleSubobjects,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -97,8 +98,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         return self.base_ring().ideal(2)
 
     def super_categories(self):
-
-        return [Modules(self.base_ring())]
+        return [ModuleSubobjects(self.base_ring())]
 
     def subobject_category(self):
 
