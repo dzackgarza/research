@@ -4499,11 +4499,22 @@ def refine_closed_subscheme(
     base = codomain.scheme_base_ring()
     if defining_equations is not None:
         subscheme._preamble_defining_equations = tuple(defining_equations)
+    native_inclusion = (
+        subscheme.embedding_morphism()
+        if getattr(subscheme, "_preamble_inclusion", None) is None
+        else None
+    )
+    if subscheme not in Schemes(base):
+        # The inclusion is an arrow in ``Sch/base``.  Establish that endpoint
+        # before asking the owned scheme Hom to construct the arrow.  Capture
+        # Sage's native embedding first: refining the endpoint changes its Hom
+        # category, but not the underlying closed immersion being retained.
+        refine_scheme(subscheme, base)
     if getattr(subscheme, "_preamble_inclusion", None) is None:
         # The subobject is the arrow, so a route that did not build one takes
         # the native embedding, retargeted at the stated codomain.
         subscheme._preamble_inclusion = categorical_scheme_morphism(
-            subscheme.embedding_morphism(),
+            native_inclusion,
             domain=subscheme,
             codomain=codomain,
         )
