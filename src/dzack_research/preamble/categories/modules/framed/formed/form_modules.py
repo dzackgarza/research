@@ -118,7 +118,7 @@ def _is_quadratic_form(form) -> bool:
     return is_quadratic_form(form)
 
 
-@cached_function
+@cached_function(key=lambda formed_module: id(formed_module))
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
 
