@@ -227,13 +227,6 @@ class _SparseFreeModuleParent:
                 )
             return self.element_class(self, coefficients)
         labels = self.module_generating_set()
-        try:
-            scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
-            scalar = None
-        if scalar is not None and scalar == self.base_ring().zero():
-            return self.zero()
-
         if isinstance(value, (tuple, list)):
             if labels not in EnumeratedSets():
                 raise TypeError(
@@ -253,6 +246,18 @@ class _SparseFreeModuleParent:
                 if coefficient != 0
             }
             return self.element_class(self, coefficients)
+
+        # Sequence inputs are coordinate syntax, never candidate scalars.  Only
+        # after the structured ingress cases have been exhausted may an
+        # arbitrary-rank free module ask whether the input is the additive zero
+        # of its base ring.
+        try:
+            scalar = self.base_ring()(value)
+        except (TypeError, ValueError):
+            scalar = None
+        if scalar is not None and scalar == self.base_ring().zero():
+            return self.zero()
+
         if labels.cardinality().is_finite() and int(labels.cardinality().finite_value()) == 1:
             try:
                 scalar = self.base_ring()(value)
