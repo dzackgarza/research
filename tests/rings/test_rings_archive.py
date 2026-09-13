@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     OwnedRings,
     PrimeField,
     PrimeFields,
-
 )
 
 ARCHIVE_RECONCILIATION = {

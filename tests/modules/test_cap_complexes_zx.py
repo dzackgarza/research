@@ -9,8 +9,8 @@ from dzack_research.preamble.all import ZZ, PolynomialRing
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    FinitelyPresentedModule,
     CochainComplex,
+    FinitelyPresentedModule,
     cochain_homset,
     module_homset,
 )

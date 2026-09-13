@@ -1,7 +1,7 @@
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     FinitelyPresentedModule,
-    ZZ,
     free_resolution,
     module_homset,
 )

@@ -1,23 +1,22 @@
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
     FinitelyPresentedModules,
-    ProjectiveModules,
     InternalHom,
     InternalHomModules,
     Modules,
-    ZZ,
-    module_homset,
-    QQ,
+    ProjectiveModules,
     SymmetricAlgebraOn,
+    module_homset,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.modules import FreeModuleOn
-from dzack_research.preamble.categories.sets import NN
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
 def test_module_hom_is_the_internal_hom_module() -> None:

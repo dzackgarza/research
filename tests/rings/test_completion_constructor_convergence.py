@@ -1,11 +1,11 @@
 r"""Every public adic-completion route uses the category-owned constructor."""
 
 from dzack_research.preamble.all import (
-    Cat,
     QQ,
     ZZ,
     AdicCompletion,
     AdicCompletions,
+    Cat,
     FormalPowerSeriesRings,
     PolynomialRing,
     PowerSeriesRing,

@@ -8,9 +8,9 @@ left to choose.
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     Modules,
-    ZZ,
     module_homset,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup

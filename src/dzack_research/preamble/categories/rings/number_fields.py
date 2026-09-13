@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.algebras import Algebras, CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
     FractionalIdeal,

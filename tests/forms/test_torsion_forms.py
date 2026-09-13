@@ -1,10 +1,10 @@
 from dzack_research.preamble.all import (
-    FractionFieldQuotient,
-    FiniteGroups,
-    Lattices,
-    MatrixSpace,
     QQ,
     ZZ,
+    FiniteGroups,
+    FractionFieldQuotient,
+    Lattices,
+    MatrixSpace,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )

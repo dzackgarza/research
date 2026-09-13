@@ -11,7 +11,6 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
-from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
@@ -74,6 +73,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetInclusion,
 )
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category
 
 
 def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
