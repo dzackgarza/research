@@ -984,14 +984,14 @@ carry on with the 36 collection errors, which are this repository's own and are 
   repaired and pinned by a direct public-import regression; collection now
   passes those former failures and reaches the independently blocked
   `sage-categories` import. `just test-push` cannot resolve the declared
-  `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`,
-  The remaining observed failures are archive tests still importing the retired
-  `integrallattice` package path;
-  duplicate test-module basenames producing pytest import mismatches; the group-algebra
-  construction reaching `is_commutative` through an `OwnedArrowCategory`
-  parent class; and the construction corpus expecting
-  `OwnedCategoryOverBaseRing` in the installed session. `just test-universe`
-  also reports 758 proof-surface findings. Session/notebook verification adds
+  `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`.
+  A direct Sage 3.12 collection against the current local upstream checkout now
+  collects 19,702 tests and reaches one upstream-only syntax error in
+  `sage_categories/cat/category.py`; the former `integrallattice` import,
+  duplicate-basename, group-algebra commutativity, and
+  `OwnedCategoryOverBaseRing` export failures no longer reproduce.
+  `just test-universe` still reports 758 proof-surface findings.
+  Session/notebook verification adds
   three independent failures: `just sage-init-check` says the startup object
   does not render as LaTeX; `preamble.ipynb` fails its first code cell because
   `Lattices` is absent from the bound Sage kernel; and the main
