@@ -2131,6 +2131,18 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
 
         @cached_method
+        def commutator_subgroup(self):
+            r"""Return ``[G,G]`` as the represented derived subgroup when finite."""
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
+            assert False, (
+                "the commutator subgroup is defined generally, but the current exact "
+                "construction requires a represented finite GAP group"
+            )
+
+        derived_subgroup = commutator_subgroup
+
+        @cached_method
         def subgroups(self):
             r"""Return the represented subgroups as an owned finite ordered set.
 
