@@ -1044,7 +1044,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   data still construct their stated choice. Finite automorphism groups now
   enumerate through their retained GAP automorphism group and compose inside the
   same ``Aut(G)`` parent; ``Aut(C8)`` consequently exhibits all four involutions
-  and ``Aut(V4)`` retains its noncommutative order-six multiplication.
+  and ``Aut(V4)`` retains its noncommutative order-six multiplication. Kernels
+  of finite represented group morphisms now take their order from GAP's exact
+  kernel, and GAP subgroups of ``Aut(G)`` return through the automorphism-group
+  subgroup constructor rather than a nonexistent Sage-group crossing; the
+  conjugation maps for ``S3`` and ``S6`` recover the expected inner images.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

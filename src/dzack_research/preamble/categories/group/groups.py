@@ -185,6 +185,8 @@ def _transported_subgroup(group, engine_subgroup):
 
 def _subgroup_from_gap(group, gap_subgroup):
     """Return the owned subgroup of ``group`` modelled by the GAP subgroup."""
+    if isinstance(group, GroupAutomorphismGroup):
+        return group._subgroup_from_engine(gap_subgroup)
     engine = _engine_group(group)
     match engine:
         case PermutationGroup_generic() | ParentLibGAP():

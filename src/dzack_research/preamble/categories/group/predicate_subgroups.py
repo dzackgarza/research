@@ -276,6 +276,12 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def kernel_morphism(self):
             return self._preamble_kernel_morphism
 
+        def cardinality(self):
+            r"""Return the exact kernel order when the ambient group is finite."""
+            if self.supergroup().is_finite() is True:
+                return cardinal(int(self.kernel_morphism().gap().Kernel().Size()))
+            return super().cardinality()
+
 
 class PreimageSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
