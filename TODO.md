@@ -987,8 +987,7 @@ carry on with the 36 collection errors, which are this repository's own and are 
   `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`,
   and the Sage pytest stage's configured `pytest-timeout`/`pytest-reportlog`
   options are unavailable in that interpreter. The remaining observed failures
-  are `sage-categories` importing `typing.TypeIs`
-  under Sage's Python 3.12; missing `hypothesis` and `sage_indefinite_port`;
+  are missing `hypothesis` and `sage_indefinite_port`;
   archive tests still importing the retired `integrallattice` package path;
   duplicate test-module basenames producing pytest import mismatches; the group-algebra
   construction reaching `is_commutative` through an `OwnedArrowCategory`
