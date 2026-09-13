@@ -2,10 +2,10 @@ r"""H1 geometric complexes for supported toric line-bundle cohomology."""
 
 from dzack_research.preamble.all import (
     NN,
-    Cat,
     QQ,
     ZZ,
     BasedFreeModule,
+    Cat,
     RationalPolyhedralFans,
     ToricFundamentalGroups,
     ToricGeometricLineBundleCohomologySpaces,

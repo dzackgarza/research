@@ -1,6 +1,6 @@
 """Regular-center projective blowups use their Rees graph and retained transforms."""
 
-from dzack_research.preamble.all import ProjectivePointBlowup, ProjectiveSpace, QQ
+from dzack_research.preamble.all import QQ, ProjectivePointBlowup, ProjectiveSpace
 
 
 def _blowup_and_cusp():

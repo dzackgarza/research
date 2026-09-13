@@ -1,6 +1,5 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
-from dzack_research.preamble.owned_category_bases import Category
 from sage.groups.free_group import FreeGroup
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -47,6 +46,7 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN, cartesian_product_of
+from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.refine import refine
 
 

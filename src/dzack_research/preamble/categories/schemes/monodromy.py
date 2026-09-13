@@ -27,6 +27,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
@@ -48,7 +49,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
     ProjectiveSpace,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
 
 class PointedAnalyticFundamentalGroup(SageObject):

@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebra,
 )

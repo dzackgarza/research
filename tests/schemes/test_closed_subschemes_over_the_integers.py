@@ -8,10 +8,10 @@ presentation is a separate question, asked only when the owned ideal is.
 """
 
 from dzack_research.preamble.all import (
-    AffineSpace,
-    ClosedEmbeddings,
     QQ,
     ZZ,
+    AffineSpace,
+    ClosedEmbeddings,
 )
 
 

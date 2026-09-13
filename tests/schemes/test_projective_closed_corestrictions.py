@@ -1,6 +1,6 @@
 """Projective coordinate maps corestrict through closed subschemes by equations."""
 
-from dzack_research.preamble.all import ProjectiveSpace, QQ
+from dzack_research.preamble.all import QQ, ProjectiveSpace
 
 
 def test_cubic_parametrization_corestricts_to_its_projective_curve() -> None:

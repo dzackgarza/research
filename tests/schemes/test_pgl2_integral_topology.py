@@ -1,11 +1,11 @@
 """PGL2 ordinary integral cohomology retains the torsion lost rationally."""
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     IntegralSingularCohomologyGroups,
     PGL2IntegralTopology,
     ProjectiveGeneralLinearGroup2,
-    QQ,
-    ZZ,
 )
 
 

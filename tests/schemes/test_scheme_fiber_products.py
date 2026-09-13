@@ -12,11 +12,11 @@ the pair ``(id, id)`` composes with each projection back to the identity.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     FiberProductSchemes,
     PolynomialRing,
-    QQ,
     Spec,
-    ZZ,
     scheme_fiber_product,
 )
 

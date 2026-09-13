@@ -8,6 +8,8 @@ each is checked against the morphism identity that defines it.
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSchemes,
     AffineSpace,
     ClosedEmbeddings,
@@ -16,12 +18,10 @@ from dzack_research.preamble.all import (
     NormalSchemes,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
     Schemes,
     SmoothSchemes,
     Spec,
     SpecFunctor,
-    ZZ,
     scheme_product,
 )
 

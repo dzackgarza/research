@@ -7,13 +7,12 @@ Neither reads an arity.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSpace,
     ProjectiveSpace,
-    QQ,
     Schemes,
-    ZZ,
 )
-
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 

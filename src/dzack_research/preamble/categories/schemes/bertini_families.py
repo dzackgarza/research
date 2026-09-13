@@ -18,6 +18,7 @@ basepoint free.
 """
 
 from sage.misc.cachefunc import cached_method
+from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
@@ -27,7 +28,6 @@ from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersection,
 )
 from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
-from sage.rings.rational_field import QQ as SageQQ
 
 
 class HesseBertiniFamily(SageObject):

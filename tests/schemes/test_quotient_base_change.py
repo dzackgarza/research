@@ -1,11 +1,11 @@
 """Affine invariant quotients compare with scalar field extension under Reynolds hypotheses."""
 
 from dzack_research.preamble.all import (
-    AffineGSchemes,
     GF,
+    QQ,
+    AffineGSchemes,
     Groups,
     PolynomialRing,
-    QQ,
     QuadraticField,
     Spec,
     SpecFunctor,

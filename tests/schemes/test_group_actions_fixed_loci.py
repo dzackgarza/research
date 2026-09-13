@@ -4,17 +4,16 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    ProjectiveSpace,
     AffineGSchemes,
     AffineSchemes,
     GObjects,
     Groups,
     PolynomialRing,
+    ProjectiveSpace,
     Schemes,
     Spec,
     SpecFunctor,
 )
-
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_fixed_loci.sage",

@@ -3,16 +3,16 @@ r"""Projective complete intersections with their selected defining multidegree."
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     ProjectiveSubschemeLineBundleIsomorphism,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
     LocalizationRings,
+    OwnedCategoryOverBaseRing,
     OwnedFields,
     _engine_ring,
 )

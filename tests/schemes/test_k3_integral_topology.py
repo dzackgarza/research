@@ -1,10 +1,10 @@
 """A quartic K3 retains its integral middle lattice and divisor inclusion."""
 
 from dzack_research.preamble.all import (
+    QQ,
     NamedLattices,
     ProjectiveCompleteIntersection,
     ProjectiveSpace,
-    QQ,
 )
 
 

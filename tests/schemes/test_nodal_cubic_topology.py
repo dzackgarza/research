@@ -1,12 +1,12 @@
 """A singular curve distinguishes ordinary from normalization-resolution cohomology."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     IntegralSingularCohomologyGroups,
     NodalCubic,
     NodalCubicIntegralTopology,
     NodalCubicNormalization,
     ResolutionIntegralCohomologyGroups,
-    ZZ,
 )
 
 

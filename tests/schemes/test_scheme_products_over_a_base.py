@@ -7,6 +7,8 @@ retains the same factor family and its actual projections.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSchemes,
     AffineSpace,
     FiniteTypeSchemes,
@@ -15,13 +17,11 @@ from dzack_research.preamble.all import (
     ProductSchemes,
     ProjectiveSchemes,
     ProjectiveSpace,
-    QQ,
     QuasiAffineSchemes,
     QuasiProjectiveSchemes,
     SeparatedSchemes,
     SmoothSchemes,
     Surfaces,
-    ZZ,
     scheme_product,
 )
 

@@ -1,13 +1,13 @@
 r"""Archive reconciliation for the elementary affine/projective scheme categories."""
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     AffineSpaces,
     ClosedEmbeddings,
     OpenImmersions,
     ProjectiveSpace,
     ProjectiveSpaces,
-    QQ,
     Schemes,
 )
 

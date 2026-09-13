@@ -27,7 +27,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
-
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,

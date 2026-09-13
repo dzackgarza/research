@@ -28,13 +28,13 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.schemes.singularities import (
-    IsolatedHypersurfaceSingularity,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
+)
+from dzack_research.preamble.categories.schemes.singularities import (
+    IsolatedHypersurfaceSingularity,
 )
 from dzack_research.preamble.categories.schemes.varieties import Curve, Curves
 from dzack_research.preamble.categories.sets.finite_families import finite_family

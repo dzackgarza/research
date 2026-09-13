@@ -1,10 +1,10 @@
 """Projective complete-intersection families retain equations under scalar base change."""
 
 from dzack_research.preamble.all import (
+    QQ,
     PolynomialRing,
     ProjectiveCompleteIntersection,
     ProjectiveSpace,
-    QQ,
 )
 
 

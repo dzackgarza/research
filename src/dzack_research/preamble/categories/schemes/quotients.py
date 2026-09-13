@@ -53,15 +53,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.schemes.base_change import (
+    scheme_base_change_functor,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     AffineSchemes,
     Schemes,
     _affine_morphism_from_pullback,
     _evaluate_polynomial_in_algebra,
-)
-from dzack_research.preamble.categories.schemes.base_change import (
-    scheme_base_change_functor,
 )
 
 

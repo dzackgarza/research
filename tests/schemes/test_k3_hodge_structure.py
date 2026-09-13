@@ -1,6 +1,6 @@
 """The quartic K3 Hodge structure is attached to adjunction and the K3 lattice."""
 
-from dzack_research.preamble.all import NN, ProjectiveCompleteIntersection, ProjectiveSpace, QQ
+from dzack_research.preamble.all import NN, QQ, ProjectiveCompleteIntersection, ProjectiveSpace
 
 
 def _quartic():
