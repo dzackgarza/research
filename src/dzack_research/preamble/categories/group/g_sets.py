@@ -138,6 +138,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     _HomCategory = GSetHomCategoryConstruction
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"acting_group", "action", "underlying_category"}
+        )
+
         def __init__(self, point_set, permutation_representation, **rest) -> None:
             assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
             group = permutation_representation.domain()
