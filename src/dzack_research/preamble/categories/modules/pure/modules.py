@@ -1997,7 +1997,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _represented_kernel_of_morphism(self, morphism):
             if morphism.domain() is not self:
                 return NotImplemented
-            if morphism.codomain().is_zero():
+            try:
+                codomain_is_zero = morphism.codomain().is_zero()
+            except NotImplementedError:
+                codomain_is_zero = False
+            if codomain_is_zero:
                 return self.whole_subobject()
             try:
                 coordinate_matrix = morphism.matrix()

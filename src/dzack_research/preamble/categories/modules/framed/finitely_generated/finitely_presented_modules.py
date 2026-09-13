@@ -968,6 +968,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def is_zero(self):
             ring = self.base_ring()
+            if ring in LocalizationRings():
+                return super().is_zero()
             if ring in OwnedFields():
                 return self.module_rank() == 0
             if ring not in PrincipalIdealDomains():
