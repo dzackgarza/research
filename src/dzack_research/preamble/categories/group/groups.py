@@ -225,15 +225,26 @@ def _engine_supergroup(group):
 
 def _engine_subgroup(group, generators):
     generators = tuple(group(generator) for generator in generators)
-    engine = _engine_group(group)
     try:
-        construct = engine.subgroup
+        direct = group._engine_subgroup_from_generators
     except AttributeError:
-        raise NotImplementedError(f"{group} does not construct subgroups from generators in this engine") from None
-    subgroup = _transported_subgroup(
-        group,
-        construct([group._to_engine(generator) for generator in generators]),
-    )
+        direct = None
+
+    if direct is not None:
+        engine_subgroup = direct(generators)
+    else:
+        engine = _engine_group(group)
+        try:
+            construct = engine.subgroup
+        except AttributeError:
+            raise NotImplementedError(
+                f"{group} does not construct subgroups from generators in this engine"
+            ) from None
+        engine_subgroup = construct(
+            [group._to_engine(generator) for generator in generators]
+        )
+
+    subgroup = _transported_subgroup(group, engine_subgroup)
     subgroup._preamble_selected_subgroup_generators = finite_ordered_set(generators)
     return refine(subgroup, GeneratedSubgroups(group))
 
@@ -697,10 +708,18 @@ class _TransportedGroupSubobject(Parent):
     def _to_engine(self, element):
         if element not in self._supergroup:
             raise TypeError("the subgroup crossing requires an ambient preamble element")
-        return self._engine(self._supergroup._to_engine(element))
+        try:
+            crossing = self._supergroup._to_subgroup_engine
+        except AttributeError:
+            return self._engine(self._supergroup._to_engine(element))
+        return crossing(element, self._engine)
 
     def _from_engine(self, element):
-        return self._supergroup._from_engine(element)
+        try:
+            crossing = self._supergroup._from_subgroup_engine
+        except AttributeError:
+            return self._supergroup._from_engine(element)
+        return crossing(element)
 
     def __call__(self, value):
         r"""Construct a subgroup element without Sage coercion discovery."""
@@ -709,18 +728,20 @@ class _TransportedGroupSubobject(Parent):
     def _element_constructor_(self, value):
         if value not in self._supergroup:
             raise TypeError("a subgroup element must be an ambient preamble element")
-        backend = self._supergroup._to_engine(value)
-        if backend not in self._engine:
-            raise ValueError(f"{value} is not in this subgroup")
+        try:
+            self._to_engine(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"{value} is not in this subgroup") from None
         return value
 
     def __contains__(self, value) -> bool:
         if value not in self._supergroup:
             return False
         try:
-            return self._supergroup._to_engine(value) in self._engine
+            self._to_engine(value)
         except (TypeError, ValueError):
             return False
+        return True
 
     def __iter__(self):
         return (self._supergroup._from_engine(element) for element in self._engine)
