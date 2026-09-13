@@ -385,3 +385,22 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
     assert not nonflat.is_flat()
     with raises(NotImplementedError, match="requires represented flatness"):
         nonflat.relative_nonsmooth_subscheme()
+
+
+def test_spectra_of_distinct_owned_algebras_do_not_alias_through_one_engine_parent() -> None:
+    from dzack_research.preamble.categories.algebras.semigroup_algebras import (
+        AffineSemigroupAlgebra,
+    )
+
+    first_algebra = AffineSemigroupAlgebra(((1, 0), (0, 1)), QQ)
+    second_algebra = AffineSemigroupAlgebra(((-1, 0), (-1, 1)), QQ)
+
+    assert first_algebra is not second_algebra
+    first = Spec(first_algebra, base_ring=QQ)
+    second = Spec(second_algebra, base_ring=QQ)
+
+    assert first is not second
+    assert first.coordinate_algebra() is first_algebra
+    assert second.coordinate_algebra() is second_algebra
+    assert Spec(first_algebra, base_ring=QQ) is first
+    assert Spec(second_algebra, base_ring=QQ) is second

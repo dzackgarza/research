@@ -2882,7 +2882,11 @@ def _affine_spectrum_from_owned_algebra(algebra, base):
         return cached
 
     scheme = _initialize_owned_affine_spectrum(
-        _SageSpec(_engine_ring(algebra), _engine_ring(base)),
+        typecall(
+            _SageAffineScheme,
+            _engine_ring(algebra),
+            _engine_ring(base),
+        ),
         algebra,
         base,
         is_base_scheme=algebra is base,
