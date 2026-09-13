@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Set
 from dzack_research.preamble.owned_category import object_of
 
 _LOGGER = logging.getLogger(__name__)
@@ -268,6 +268,12 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             if self.is_finite() is not True:
                 _LOGGER.debug(
                     "General module over %s accepted without exhaustive module-law verification",
+                    self.base_ring(),
+                )
+                return
+            if self.underlying_set() not in EnumeratedSets():
+                _LOGGER.debug(
+                    "Finite general module over %s accepted without exhaustive module-law verification; its underlying set has no selected enumeration",
                     self.base_ring(),
                 )
                 return
