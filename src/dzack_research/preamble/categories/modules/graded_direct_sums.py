@@ -80,6 +80,20 @@ class GradedDirectSumElement(ModuleElement):
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
+    def _rmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def __rmul__(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _acted_upon_(self, actor, self_on_left):
+        _ = self_on_left
+        try:
+            scalar = self.parent().base_ring()(actor)
+        except (TypeError, ValueError):
+            return None
+        return self.parent().scalar_multiple(scalar, self)
+
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
