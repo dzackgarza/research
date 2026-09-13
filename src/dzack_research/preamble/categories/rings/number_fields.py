@@ -519,7 +519,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
         integers = _own_ring(SageZZ)
         return [
             OwnedOrders(),
-            CommutativeAlgebras(integers),
             FinitelyGeneratedFreeModules(integers),
         ]
 
