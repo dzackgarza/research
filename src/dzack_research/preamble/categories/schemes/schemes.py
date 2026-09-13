@@ -23,8 +23,8 @@ from sage.schemes.projective.projective_space import (
 from sage.structure.category_object import CategoryObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Core,
     CosliceUnder,
-    Isomorphism,
     SliceOver,
 )
 from dzack_research.preamble.categories.abstract_categories.constructions import (
@@ -641,6 +641,40 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
             ).native_morphism()
         return self._native_realization
 
+    def __eq__(self, other) -> bool:
+        r"""Compare represented affine maps on a determining generator family.
+
+        Native Sage morphisms need not share the same carrier after the owned
+        construction has retained exact endpoints.  Equality of affine scheme
+        maps is equality of the contravariant coordinate-ring maps, and a
+        finite framing (or the foot of a localization tower) determines those
+        maps.
+        """
+        if self is other:
+            return True
+        if (
+            not isinstance(other, SchemeMorphism)
+            or other.domain() is not self.domain()
+            or other.codomain() is not self.codomain()
+        ):
+            return False
+        try:
+            other_pullback = other.coordinate_algebra_morphism()
+        except NotImplementedError:
+            return False
+        codomain_algebra = self.codomain().coordinate_algebra()
+        determining = _elements_determining_maps_out_of(
+            codomain_algebra,
+            self.codomain().scheme_base_ring(),
+        )
+        if determining is None:
+            return self.coordinate_algebra_morphism() is other_pullback
+        pullback = self.coordinate_algebra_morphism()
+        return all(pullback(element) == other_pullback(element) for element in determining)
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
     __hash__ = None
 
 
@@ -730,6 +764,22 @@ def _scheme_base_ring(scheme):
     if stored is not None:
         return stored
     return _own_ring(scheme.base_ring())
+
+
+def _scheme_isomorphism(forward, inverse):
+    r"""Return the selected inverse pair in the core of the scheme category.
+
+    A chart overlap can carry distinct open-subobject placements on its two
+    sides.  Those placements strengthen the objects, not the ambient category
+    in which their transition is an isomorphism: chart changes are arrows in
+    ``Sch/R``.  Selecting that owner explicitly avoids manufacturing a Hom in
+    the join of two unrelated subobject fibres.
+    """
+    if forward.domain() is not inverse.codomain() or forward.codomain() is not inverse.domain():
+        raise ValueError("an inverse pair must reverse the same two scheme endpoints")
+    base = forward.domain().scheme_base_ring()
+    schemes = Schemes(base)
+    return Core(schemes).Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 def _has_scheme_placement(scheme, category_class) -> bool:
@@ -832,7 +882,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         stated = getattr(candidate, "_preamble_scheme_base_ring", None)
         return stated is not None and any(base is self.base_ring() for base in _scheme_base_tower(stated)) and _has_scheme_placement(candidate, Schemes)
 
-    @cached_method
+    @cached_method(key=lambda self, domain, codomain: (id(domain), id(codomain)))
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
@@ -1591,19 +1641,20 @@ class AffineSchemes(_SchemePropertyCategory):
                     return cached_open
             localized = Localization(algebra, element)
             localization_map = localized.localization_map()
-            spec_inclusion = affine_spec_morphism(localization_map)
-            open_subscheme = spec_inclusion.domain()
-            inclusion = categorical_scheme_morphism(
-                spec_inclusion.native_morphism(),
-                domain=open_subscheme,
-                codomain=self,
+            base = self.scheme_base_ring()
+            open_subscheme = _fresh_affine_spectrum(
+                localized,
+                base,
+                extra_categories=(OpenImmersions(self),),
             )
-            inclusion._preamble_coordinate_algebra_morphism = localization_map
+            inclusion = _affine_morphism_from_pullback(
+                open_subscheme,
+                self,
+                localization_map,
+            )
             open_subscheme._preamble_inclusion = inclusion
             open_subscheme._preamble_distinguished_open_ambient = self
             open_subscheme._preamble_distinguished_open_element = element
-            base = self.scheme_base_ring()
-            open_subscheme = refine_scheme(open_subscheme, base, [OpenImmersions(self)])
             self._preamble_distinguished_open_cache = (
                 *cache,
                 (element, open_subscheme),
@@ -2271,7 +2322,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             inverse map, so the overlaps are isomorphic and these are the
             transitions of the standard atlas (Stacks, Tag 01MM).
             """
-            return Isomorphism(
+            return _scheme_isomorphism(
                 self._standard_chart_change(source_index, target_index),
                 self._standard_chart_change(target_index, source_index),
             )
@@ -2645,7 +2696,7 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                 return overlap(target_choice, source_choice).corestriction(into_target)
 
             transitions = {
-                (left, right): Isomorphism(
+                (left, right): _scheme_isomorphism(
                     transition(left, right),
                     transition(right, left),
                 )
@@ -3204,11 +3255,30 @@ def _normalized_space_names(names):
 
 
 def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
-    r"""Construct one fresh owned affine-space carrier from the stated data."""
-    if names is None:
-        scheme = _SageAffineSpace(engine_dimension, _engine_ring(base))
-    else:
-        scheme = _SageAffineSpace(engine_dimension, _engine_ring(base), names=names)
+    r"""Construct one fresh owned affine-space carrier from the stated data.
+
+    Sage's public ``AffineSpace`` constructor interns equal spaces.  That is
+    correct for the ordinary ``A^n_R`` constructor but wrong for structured
+    products: two chart products with equal coordinate presentation can carry
+    different factor roles and projection maps.  Build a fresh instance of the
+    selected Sage implementation class here; the cached public wrapper below
+    still supplies canonical ordinary affine spaces.
+    """
+    engine_base = _engine_ring(base)
+    prototype = (
+        _SageAffineSpace(engine_dimension, engine_base)
+        if names is None
+        else _SageAffineSpace(engine_dimension, engine_base, names=names)
+    )
+    normalized_names = prototype.coordinate_ring().variable_names()
+    scheme = typecall(
+        type(prototype),
+        engine_dimension,
+        engine_base,
+        normalized_names,
+        None,
+        None,
+    )
     engine_coordinate_ring = getattr(scheme, "_preamble_engine_coordinate_ring", None)
     if engine_coordinate_ring is None:
         engine_coordinate_ring = scheme.coordinate_ring()
@@ -3265,11 +3335,25 @@ def AffineSpace(dimension, base_ring, names=None):
 
 
 def _fresh_projective_space_from_owned_data(base, engine_dimension, names):
-    r"""Construct one fresh owned projective-space carrier from the stated data."""
-    if names is None:
-        scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base))
-    else:
-        scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base), names=names)
+    r"""Construct one fresh owned projective-space carrier from the stated data.
+
+    As for affine spaces, structured constructions need a carrier whose retained
+    maps cannot be overwritten through Sage's canonical parent cache.  Ordinary
+    ``ProjectiveSpace`` remains canonical through ``_projective_space_from_owned_data``.
+    """
+    engine_base = _engine_ring(base)
+    prototype = (
+        _SageProjectiveSpace(engine_dimension, engine_base)
+        if names is None
+        else _SageProjectiveSpace(engine_dimension, engine_base, names=names)
+    )
+    normalized_names = prototype.coordinate_ring().variable_names()
+    scheme = typecall(
+        type(prototype),
+        engine_dimension,
+        engine_base,
+        normalized_names,
+    )
     categories = [ProjectiveSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
@@ -3443,7 +3527,7 @@ def _mixed_affine_projective_product(factors, base):
         return overlap(target_label, source_label).corestriction(into_target_chart)
 
     transitions = tuple(
-        Isomorphism(
+        _scheme_isomorphism(
             transition(left, right),
             transition(right, left),
         )
@@ -4014,7 +4098,7 @@ def _distinguished_overlap_transition(
     """
     left_overlap = left_chart.distinguished_open(right_element)
     right_overlap = right_chart.distinguished_open(left_element)
-    return Isomorphism(
+    return _scheme_isomorphism(
         right_overlap.corestriction(right_chart.corestriction(left_chart.inclusion() * left_overlap.inclusion())),
         left_overlap.corestriction(left_chart.corestriction(right_chart.inclusion() * right_overlap.inclusion())),
     )

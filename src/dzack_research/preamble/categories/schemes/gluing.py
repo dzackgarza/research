@@ -728,7 +728,10 @@ class _FiniteSchemeGluingDatum(SageObject):
         for cached_key, cached in self._reverse_transitions:
             if cached_key == key:
                 return cached
-        reversed_transition = Isomorphism(
+        reversed_transition = transition.parent().core_category().Mor(
+            transition.codomain(),
+            transition.domain(),
+        )(
             transition.inverse(),
             transition.forward(),
         )
