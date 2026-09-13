@@ -122,6 +122,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return f"({self.numerator()})/({self.denominator()})"
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
+
         def __init__(
             self,
             source_module,
@@ -137,18 +139,17 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             framed_source = source_module in FramedModules(source_ring)
             if framed_source:
                 # Localization chooses no new framing: it carries the source
-                # generators to their images in S^{-1}M.
-                module_generating_set = source_module.module_generating_set()
-                def module_generator_function(label):
-                    return self.fraction(source_module.module_generator(label))
-                self._preamble_module_coefficient_function = self._framing_coefficients
-                super().__init__(
-                    base_ring=localization_ring,
-                    module_generating_set=module_generating_set,
-                    module_generator_function=module_generator_function,
-                    **rest,
+                # generators to their images in S^{-1}M.  This specialization
+                # owns that derived framing, so retain it here instead of
+                # depending on a particular ParentMethods MRO for the joined
+                # refinement categories.
+                self._preamble_module_generating_set = (
+                    source_module.module_generating_set()
                 )
-                return
+                self._preamble_module_generator_function = (
+                    lambda label: self.fraction(source_module.module_generator(label))
+                )
+                self._preamble_module_coefficient_function = self._framing_coefficients
             super().__init__(base_ring=localization_ring, **rest)
 
         def _framing_coefficients(self, element):
