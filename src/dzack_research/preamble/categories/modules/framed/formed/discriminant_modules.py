@@ -448,6 +448,10 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def value_module(self):
             return self.quadratic_value_module()
 
+        def twist(self, scalar):
+            r"""Return the same discriminant module equipped with ``scalar*q``."""
+            return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
+
         def q(self, element):
             if element not in self:
                 raise TypeError("the discriminant quadratic form is defined on this module")

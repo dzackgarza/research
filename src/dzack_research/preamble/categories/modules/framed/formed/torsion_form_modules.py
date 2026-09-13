@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.group.groups import (
     Subgroups,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _matrix_coordinate_rows,
     _module_invariant_factor_form,
     _presentation_matrix,
 )
@@ -315,8 +316,10 @@ def _relations_among_generators(form, generators):
     module = _underlying_presented_module(form)
     ring = module.base_ring()
     lifts = _coordinate_rows(form, generators)
-    known_tensor = _presentation_matrix(module)
-    known = MatrixSpace(ring, *known_tensor.tensor_shape()).from_tensor(known_tensor)
+    selected_relations = _presentation_matrix(module)
+    known = MatrixSpace(
+        ring, selected_relations.nrows(), selected_relations.ncols()
+    ).from_rows(_matrix_coordinate_rows(selected_relations))
     combined = lifts.stack(known)
     kernel = combined.matrix().transpose().kernel()
     relations = (
@@ -648,8 +651,10 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
 
 
     lifts = _coordinate_rows(form, generators)
-    known_tensor = _presentation_matrix(module)
-    known = MatrixSpace(ring, *known_tensor.tensor_shape()).from_tensor(known_tensor)
+    selected_relations = _presentation_matrix(module)
+    known = MatrixSpace(
+        ring, selected_relations.nrows(), selected_relations.ncols()
+    ).from_rows(_matrix_coordinate_rows(selected_relations))
     system = lifts.stack(known).matrix()
     source_labels = tuple(form.module_generating_set())
     regenerated_generators = tuple(regenerated.module_generators())
@@ -852,8 +857,9 @@ def _p_adic_jordan_form(form, *, quadratic: bool):
 
 def _twisted_torsion_form(form, scalar, *, quadratic: bool):
     generators = tuple(form.module_generators())
+    value_module = _value_module(form, quadratic=quadratic)
     gram = tuple(
-        tuple(scalar * entry for entry in row)
+        tuple(value_module.scalar_multiple(scalar, entry) for entry in row)
         for row in _form_gram_on(form, generators, quadratic=quadratic)
     )
     return _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
@@ -1509,7 +1515,18 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
     class ElementMethods:
         def coset_representative(self):
             r"""Return the selected lift of this class to the cokernel cover."""
-            return self.parent().projection().lift(self)
+            formed = self.parent()
+            unformed = formed.unformed_module()
+            underlying = formed.forget_form_morphism()(self)
+            coordinates = unformed._framing_coordinates(underlying)
+            cover = formed.cover()
+            return cover.linear_combination(
+                {
+                    label: coordinates[label]
+                    for label in cover.module_generating_set()
+                    if coordinates[label] != cover.base_ring().zero()
+                }
+            )
 
 
 class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
@@ -1633,11 +1650,17 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         def gram_matrix(self):
             r"""Return canonical rational representatives of the finite-form Gram values."""
             representative = _representative_gram(self, quadratic=False)
-            rows, columns = representative.tensor_shape()
+            rows, columns = map(int, representative.tensor_shape())
             return MatrixSpace(
-                representative.base_ring(), int(rows), int(columns)
-            ).from_tensor(representative)
+                representative.base_ring(), rows, columns
+            ).from_rows(
+                tuple(
+                    tuple(representative[row, column] for column in range(columns))
+                    for row in range(rows)
+                )
+            )
 
+        @cached_method(key=lambda self, generators: tuple(id(generator) for generator in generators))
         def reframing_isometry(self, generators):
             r"""Return the explicit isometry to this form on the selected generating family."""
             return _regenerate_form_on_generators(
@@ -1954,11 +1977,17 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         def gram_matrix(self):
             r"""Return canonical rational representatives of the finite-form Gram values."""
             representative = _representative_gram(self, quadratic=True)
-            rows, columns = representative.tensor_shape()
+            rows, columns = map(int, representative.tensor_shape())
             return MatrixSpace(
-                representative.base_ring(), int(rows), int(columns)
-            ).from_tensor(representative)
+                representative.base_ring(), rows, columns
+            ).from_rows(
+                tuple(
+                    tuple(representative[row, column] for column in range(columns))
+                    for row in range(rows)
+                )
+            )
 
+        @cached_method(key=lambda self, generators: tuple(id(generator) for generator in generators))
         def reframing_isometry(self, generators):
             r"""Return the explicit isometry to this form on the selected generating family."""
             return _regenerate_form_on_generators(

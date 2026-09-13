@@ -1644,6 +1644,9 @@ class CartesianProductsOfSets(OwnedCategory):
                 return True
             if not isinstance(other, Element) or other.parent() is not self.parent():
                 return False
+            if self.parent() in FiniteEnumeratedCartesianProductsOfSets():
+                ranking = self.parent().ranking_map()
+                return ranking(self) == ranking(other)
             if not self.parent().has_finite_index_set():
                 return True if self._components is other._components else Unknown
             answer = True

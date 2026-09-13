@@ -162,7 +162,7 @@ def test_mixed_prime_jordan_framing_is_distinct_and_has_an_explicit_isometry() -
     normalization = form.p_adic_jordan_form()
     jordan = normalization.codomain()
 
-    assert tuple(decomposition) == (2, 3)
+    assert tuple(decomposition.index_set()) == (ZZ(2), ZZ(3))
     assert tuple(generator.additive_order() for generator in decomposition[ZZ(2)]) == (2,)
     assert tuple(generator.additive_order() for generator in decomposition[ZZ(3)]) == (3,)
     assert form.invariant_factor_form().codomain().module_generators().cardinality() == 1
@@ -196,7 +196,7 @@ def test_bilinear_jordan_form_preserves_the_pairing() -> None:
     normalization = form.p_adic_jordan_form()
     jordan = normalization.codomain()
 
-    assert tuple(form.p_adic_jordan_decomposition()) == (2, 3)
+    assert tuple(form.p_adic_jordan_decomposition().index_set()) == (ZZ(2), ZZ(3))
     for left in form.module_generators():
         for right in form.module_generators():
             assert jordan.b(normalization(left), normalization(right)) == form.b(left, right)

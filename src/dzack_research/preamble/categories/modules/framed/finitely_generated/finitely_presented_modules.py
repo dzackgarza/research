@@ -2401,15 +2401,19 @@ def FinitelyPresentedModule(
     existing = _presentation_matrix(codomain)
 
     added_rows = []
+    label_ranking = labels.ranking_map()
+    width = int(labels.cardinality())
     for source_label in presentation.domain().module_generating_set():
         image = presentation(presentation.domain().module_generator(source_label))
         coefficients = module_coefficients(image, codomain)
-        added_rows.append(tuple(coefficients.get(label, base_ring.zero()) for label in labels))
+        row = [base_ring.zero()] * width
+        for label, coefficient in coefficients.items():
+            row[int(label_ranking(label))] = coefficient
+        added_rows.append(tuple(row))
     from itertools import chain
 
     existing_rows = _matrix_coordinate_rows(existing)
     existing_count = len(existing_rows)
-    width = int(labels.cardinality())
     relations_matrix = _matrix_space_like(
         codomain,
         existing_count + len(added_rows),

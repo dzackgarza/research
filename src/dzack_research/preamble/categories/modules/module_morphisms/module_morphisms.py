@@ -306,20 +306,41 @@ class ModuleMorphism(Morphism):
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, dict):
-            if not labels.cardinality().is_finite():
+            size = labels.cardinality()
+            if not size.is_finite():
                 raise TypeError("dictionary generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
-            normalized_images = {}
-            for label, value in images.items():
-                normalized_label = labels(label)
-                normalized_images[normalized_label] = value
-            missing = [label for label in labels if label not in normalized_images]
-            if missing:
-                raise ValueError(f"generator assignment omits {missing}")
-            self._generator_images = indexed_family(
-                labels,
-                normalized_images.__getitem__,
-                name="Module-morphism generator-image family",
-            )
+            if labels in EnumeratedSets():
+                ranking = labels.ranking_map()
+                missing_value = object()
+                normalized_values = [missing_value] * int(size.finite_value())
+                for label, value in images.items():
+                    normalized_label = labels(label)
+                    normalized_values[int(ranking(normalized_label))] = value
+                missing = [
+                    label
+                    for position, label in enumerate(labels)
+                    if normalized_values[position] is missing_value
+                ]
+                if missing:
+                    raise ValueError(f"generator assignment omits {missing}")
+                self._generator_images = indexed_family(
+                    labels,
+                    lambda label: normalized_values[int(ranking(label))],
+                    name="Module-morphism generator-image family",
+                )
+            else:
+                normalized_images = {}
+                for label, value in images.items():
+                    normalized_label = labels(label)
+                    normalized_images[normalized_label] = value
+                missing = [label for label in labels if label not in normalized_images]
+                if missing:
+                    raise ValueError(f"generator assignment omits {missing}")
+                self._generator_images = indexed_family(
+                    labels,
+                    normalized_images.__getitem__,
+                    name="Module-morphism generator-image family",
+                )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, (tuple, list)):

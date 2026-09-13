@@ -7,6 +7,7 @@ from dzack_research.preamble.all import (
     Sets,
     cardinal,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductsOfSets,
@@ -112,3 +113,36 @@ def test_finite_enumerated_product_exposes_its_mixed_radix_ranking_map() -> None
         point = product(coordinates)
         assert int(ranking(point)) == position
         assert ranking.inverse()(position) == point
+
+
+def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
+    from sage.misc.unknown import Unknown
+
+    class TriValuedLabel:
+        def __init__(self, name):
+            self.name = name
+
+        def __eq__(self, other):
+            if self is other:
+                return True
+            return Unknown
+
+        def __hash__(self):
+            return hash(self.name)
+
+    labels = Sets.Δ[1]
+    left_value = TriValuedLabel("left")
+    right_value = TriValuedLabel("right")
+    factor = finite_ordered_image(
+        labels,
+        lambda index: left_value if int(index) == 0 else right_value,
+        index_of=lambda value: labels[0] if value is left_value else labels[1] if value is right_value else None,
+    )
+    product = CartesianProductOfSets(factor, factor)
+    first = product((left_value, right_value))
+    same = product((left_value, right_value))
+    different = product((right_value, left_value))
+
+    assert first == same
+    assert first != different
+    assert {first: "same"}[same] == "same"
