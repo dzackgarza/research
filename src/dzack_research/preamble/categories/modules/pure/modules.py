@@ -2000,9 +2000,38 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             if morphism.codomain().is_zero():
                 return self.whole_subobject()
             try:
-                generators = morphism.matrix()._kernel_spanning_family()
+                coordinate_matrix = morphism.matrix()
+                coordinate_generators = coordinate_matrix._kernel_spanning_family()
             except (AttributeError, NotImplementedError):
                 return NotImplemented
+
+            source_labels = tuple(self.module_generating_set())
+            coordinate_domain = coordinate_matrix.domain()
+            coordinate_labels = tuple(coordinate_domain.module_generating_set())
+            if len(source_labels) != len(coordinate_labels):
+                raise ArithmeticError(
+                    "the coordinate kernel changed the source framing rank"
+                )
+
+            def transport(coordinate_vector):
+                coefficients = module_coefficients(
+                    coordinate_vector, coordinate_domain
+                )
+                return self.linear_combination(
+                    {
+                        source_label: coefficients[coordinate_label]
+                        for source_label, coordinate_label in zip(
+                            source_labels, coordinate_labels, strict=True
+                        )
+                        if coordinate_label in coefficients
+                    }
+                )
+
+            generators = finite_indexed_family(
+                coordinate_generators.index_set(),
+                lambda index: transport(coordinate_generators[index]),
+                name=f"Kernel spanning family in {self}",
+            )
             return self.subobject_on(generators)
 
         def _same_presentation_module(

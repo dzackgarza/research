@@ -22,6 +22,9 @@ from dzack_research.preamble.tensors.tensor import tensor
 ZZ = _own_ring(SageZZ)
 
 
+_LAZY_CATALOGUE_UNSET = object()
+
+
 class _LazyCatalogueValue:
     r"""A named catalogue object constructed only when its public name is read.
 
@@ -29,23 +32,18 @@ class _LazyCatalogueValue:
     startup.  Large lattice automorphisms and embeddings are genuine mathematical
     objects, but constructing all of them merely to bind that namespace performs
     kernel/cokernel and invariant-factor calculations before a session can answer
-    its first request.  The descriptor preserves the attribute API and replaces
-    itself with the constructed object on first access.
+    its first request.  The descriptor preserves the attribute API and caches the
+    constructed value internally; it never mutates the owning class.
     """
 
     def __init__(self, factory):
         self._factory = factory
-        self._name = None
-
-    def __set_name__(self, owner, name) -> None:
-        self._name = name
+        self._value = _LAZY_CATALOGUE_UNSET
 
     def __get__(self, instance, owner):
-        if owner is None or self._name is None:
-            return self
-        value = self._factory()
-        setattr(owner, self._name, value)
-        return value
+        if self._value is _LAZY_CATALOGUE_UNSET:
+            self._value = self._factory()
+        return self._value
 
 
 def _lazy_catalogue_value(factory):

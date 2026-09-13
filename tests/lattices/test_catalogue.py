@@ -49,6 +49,14 @@ def test_e8_2_maps_diagonally_into_the_two_e8_blocks_of_tdp() -> None:
         assert Embeddings.TEn_into_TdP(source[4 + index]) == target[4 + index] + target[12 + index]
 
 
+def test_lazy_catalogue_values_cache_without_mutating_the_owner_class() -> None:
+    descriptor = vars(Involutions)["I_dP"]
+    involution = Involutions.I_dP
+
+    assert Involutions.I_dP is involution
+    assert vars(Involutions)["I_dP"] is descriptor
+
+
 def test_named_k3_automorphisms_are_nontrivial_involutions() -> None:
     generators = NamedLattices.LK3.module_generators()
     for involution in (Involutions.I_dP, Involutions.I_En, Involutions.I_Nik):
