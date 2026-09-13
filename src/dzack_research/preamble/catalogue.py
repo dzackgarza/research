@@ -14,11 +14,42 @@ from dzack_research.preamble.categories.lattices import (
     signature_pair,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _own_ring(SageZZ)
+
+
+class _LazyCatalogueValue:
+    r"""A named catalogue object constructed only when its public name is read.
+
+    The catalogue namespace is imported by ``preamble.all`` at every interactive
+    startup.  Large lattice automorphisms and embeddings are genuine mathematical
+    objects, but constructing all of them merely to bind that namespace performs
+    kernel/cokernel and invariant-factor calculations before a session can answer
+    its first request.  The descriptor preserves the attribute API and replaces
+    itself with the constructed object on first access.
+    """
+
+    def __init__(self, factory):
+        self._factory = factory
+        self._name = None
+
+    def __set_name__(self, owner, name) -> None:
+        self._name = name
+
+    def __get__(self, instance, owner):
+        if owner is None or self._name is None:
+            return self
+        value = self._factory()
+        setattr(owner, self._name, value)
+        return value
+
+
+def _lazy_catalogue_value(factory):
+    return _LazyCatalogueValue(factory)
 
 
 def _gram_from_engine_matrix(engine_matrix):
@@ -290,6 +321,9 @@ class _TwoElementaryTable(Mapping):
 
     def __len__(self):
         return len(_TWO_ELEMENTARY_RECIPES)
+
+    def cardinality(self):
+        return cardinal(len(self))
 
 
 TwoElementary = _TwoElementaryTable()
@@ -724,6 +758,9 @@ class _NegativeDefTwoElementaryTable(Mapping):
     def __len__(self):
         return len(_NEGATIVE_TWO_ELEMENTARY_SPECS)
 
+    def cardinality(self):
+        return cardinal(len(self))
+
 
 NegativeDefTwoElementary = _NegativeDefTwoElementaryTable()
 
@@ -903,76 +940,101 @@ _LK3_GENS = tuple(NamedLattices.LK3.module_generators())
 class Involutions:
     r"""Named involutions of the K3 lattice in its displayed block framing."""
 
-    I_dP = NamedLattices.LK3.Aut()(
-        (
-            *(-generator for generator in _LK3_GENS[0:2]),
-            *_LK3_GENS[4:6],
-            *_LK3_GENS[2:4],
-            *(-generator for generator in _LK3_GENS[6:22]),
+    I_dP = _lazy_catalogue_value(
+        lambda: NamedLattices.LK3.Aut()(
+            (
+                *(-generator for generator in _LK3_GENS[0:2]),
+                *_LK3_GENS[4:6],
+                *_LK3_GENS[2:4],
+                *(-generator for generator in _LK3_GENS[6:22]),
+            )
         )
     )
-    I_En = NamedLattices.LK3.Aut()(
-        (
-            *(-generator for generator in _LK3_GENS[0:2]),
-            *_LK3_GENS[4:6],
-            *_LK3_GENS[2:4],
-            *_LK3_GENS[14:22],
-            *_LK3_GENS[6:14],
+    I_En = _lazy_catalogue_value(
+        lambda: NamedLattices.LK3.Aut()(
+            (
+                *(-generator for generator in _LK3_GENS[0:2]),
+                *_LK3_GENS[4:6],
+                *_LK3_GENS[2:4],
+                *_LK3_GENS[14:22],
+                *_LK3_GENS[6:14],
+            )
         )
     )
-    I_Nik = NamedLattices.LK3.Aut()(
-        (
-            *_LK3_GENS[0:6],
-            *(-generator for generator in _LK3_GENS[14:22]),
-            *(-generator for generator in _LK3_GENS[6:14]),
+    I_Nik = _lazy_catalogue_value(
+        lambda: NamedLattices.LK3.Aut()(
+            (
+                *_LK3_GENS[0:6],
+                *(-generator for generator in _LK3_GENS[14:22]),
+                *(-generator for generator in _LK3_GENS[6:14]),
+            )
         )
     )
 
 
 class Embeddings:
-    E8_2_into_TdP = NamedLattices.E8_2.Emb(NamedLattices.TdP)(tuple(_TDP_GENS[4 + index] + _TDP_GENS[12 + index] for index in range(8)))
-
-    TCo_into_TEn = NamedLattices.Tco.Emb(NamedLattices.TEn)(
-        (
-            _TEN_GENS[0] + _TEN_GENS[1],
-            _TEN_GENS[2],
-            _TEN_GENS[3],
-            *_TEN_GENS[4:12],
+    E8_2_into_TdP = _lazy_catalogue_value(
+        lambda: NamedLattices.E8_2.Emb(NamedLattices.TdP)(
+            tuple(
+                _TDP_GENS[4 + index] + _TDP_GENS[12 + index]
+                for index in range(8)
+            )
         )
     )
 
-    TEn_into_TdP = NamedLattices.TEn.Emb(NamedLattices.TdP)(
-        (
-            _TDP_GENS[0],
-            _TDP_GENS[1],
-            _TDP_GENS[2],
-            _TDP_GENS[3],
-            *tuple(_TDP_GENS[4 + index] + _TDP_GENS[12 + index] for index in range(8)),
+    TCo_into_TEn = _lazy_catalogue_value(
+        lambda: NamedLattices.Tco.Emb(NamedLattices.TEn)(
+            (
+                _TEN_GENS[0] + _TEN_GENS[1],
+                _TEN_GENS[2],
+                _TEN_GENS[3],
+                *_TEN_GENS[4:12],
+            )
         )
     )
 
-    TdP_into_LK3 = NamedLattices.TdP.Emb(NamedLattices.LK3)(
-        (
-            _LK3_GENS[0],
-            _LK3_GENS[1],
-            _LK3_GENS[2] - _LK3_GENS[4],
-            _LK3_GENS[3] - _LK3_GENS[5],
-            *_LK3_GENS[6:14],
-            *(-generator for generator in _LK3_GENS[14:22]),
+    TEn_into_TdP = _lazy_catalogue_value(
+        lambda: NamedLattices.TEn.Emb(NamedLattices.TdP)(
+            (
+                _TDP_GENS[0],
+                _TDP_GENS[1],
+                _TDP_GENS[2],
+                _TDP_GENS[3],
+                *tuple(
+                    _TDP_GENS[4 + index] + _TDP_GENS[12 + index]
+                    for index in range(8)
+                ),
+            )
         )
     )
 
-    TEn_into_LK3 = TdP_into_LK3 * TEn_into_TdP
+    TdP_into_LK3 = _lazy_catalogue_value(
+        lambda: NamedLattices.TdP.Emb(NamedLattices.LK3)(
+            (
+                _LK3_GENS[0],
+                _LK3_GENS[1],
+                _LK3_GENS[2] - _LK3_GENS[4],
+                _LK3_GENS[3] - _LK3_GENS[5],
+                *_LK3_GENS[6:14],
+                *(-generator for generator in _LK3_GENS[14:22]),
+            )
+        )
+    )
 
-    _u_e8_generators = tuple(NamedLattices.U_E8_2.module_generators())
-    U_E8_2_into_TEn = NamedLattices.U_E8_2.Emb(NamedLattices.TEn)(
-        (
-            _TEN_GENS[0] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
-            _TEN_GENS[1] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
-            _TEN_GENS[2] - _TEN_GENS[3],
-            _TEN_GENS[5],
-            _TEN_GENS[3] + _TEN_GENS[6],
-            *_TEN_GENS[7:12],
+    TEn_into_LK3 = _lazy_catalogue_value(
+        lambda: Embeddings.TdP_into_LK3 * Embeddings.TEn_into_TdP
+    )
+
+    U_E8_2_into_TEn = _lazy_catalogue_value(
+        lambda: NamedLattices.U_E8_2.Emb(NamedLattices.TEn)(
+            (
+                _TEN_GENS[0] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
+                _TEN_GENS[1] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
+                _TEN_GENS[2] - _TEN_GENS[3],
+                _TEN_GENS[5],
+                _TEN_GENS[3] + _TEN_GENS[6],
+                *_TEN_GENS[7:12],
+            )
         )
     )
 
