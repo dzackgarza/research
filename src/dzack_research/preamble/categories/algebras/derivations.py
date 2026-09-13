@@ -608,6 +608,8 @@ class GradedDerivation(ModuleElement):
         labels = algebra.algebra_generating_set()
         for label in labels:
             generator = algebra.algebra_generator(label)
+            if generator == algebra.zero():
+                continue
             try:
                 generator_degree = algebra.homogeneous_degree(generator)
             except (ValueError, NotImplementedError):
@@ -622,6 +624,8 @@ class GradedDerivation(ModuleElement):
                     return False
         for left_label in labels:
             left = algebra.algebra_generator(left_label)
+            if left == algebra.zero():
+                continue
             try:
                 left_degree = algebra.homogeneous_degree(left)
             except (ValueError, NotImplementedError):
