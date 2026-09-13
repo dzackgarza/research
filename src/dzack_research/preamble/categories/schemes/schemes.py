@@ -4436,11 +4436,8 @@ class OpenImmersions(_SchemeSubobjectsOf):
                 "the morphism does not land in this distinguished open: it does not send the defining element to a unit"
             )
 
-            def factor_pullback(element):
-                numerator, denominator = open_algebra.localization_fraction_data(element)
-                return source_algebra(pullback(numerator)) * source_algebra(pullback(denominator)).inverse_of_unit()
-
-            factor = source.Mor(self)(ring_morphism(open_algebra, source_algebra, factor_pullback))
+            factor_pullback = open_algebra.induced_morphism(pullback)
+            factor = source.Mor(self)(factor_pullback)
             assert self.inclusion() * factor == morphism, "the corestriction does not recover the morphism through the inclusion"
             return factor
 

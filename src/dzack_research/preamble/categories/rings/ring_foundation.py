@@ -852,7 +852,34 @@ class LocalizationRings(OwnedCategory):
                     fraction.denominator()
                 ).inverse_of_unit()
 
-            return ring_morphism(self, morphism.codomain(), image)
+            engine_morphism = None
+            try:
+                engine_source = _engine_ring(source)
+                engine_target = _engine_ring(morphism.codomain())
+                engine_localization = self._selected_engine_ring()
+                source_generators = tuple(engine_source.gens())
+                localization_generators = tuple(engine_localization.gens())
+                if len(source_generators) == len(localization_generators):
+                    engine_images = [
+                        _engine_element(
+                            morphism.codomain(),
+                            morphism(source._from_engine_element(generator)),
+                        )
+                        for generator in source_generators
+                    ]
+                    engine_morphism = engine_localization.hom(
+                        engine_images,
+                        engine_target,
+                    )
+            except (AttributeError, NotImplementedError, TypeError, ValueError, RuntimeError):
+                pass
+
+            return ring_morphism(
+                self,
+                morphism.codomain(),
+                image,
+                engine_morphism=engine_morphism,
+            )
 
         def localization_map(self):
             return self._preamble_localization_map
