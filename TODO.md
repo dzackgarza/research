@@ -883,6 +883,27 @@ review those source changes before T; T executes the mathematical evidence and
 repairs what it exposes. It is not a reason to postpone source-level ownership
 review until every downstream consumer has copied the same bypass.
 
+### The implementation nodes are closed; repairs now wait on execution
+
+Twenty-eight work nodes are done and the nine below are what remains. `terminal-reference` has
+no prerequisites, which means the verification phase is ready to start and has been for some
+time.
+
+This matters more than it reads. Every commit in this repository since the phase rule took
+effect is explicitly unverified — the construction and the specimens that would falsify it are
+banked, and nothing has executed them. That bank is the largest single risk here, and
+`terminal-execution` is the only thing that retires it. It does not shrink on its own, and it
+grows with every further commit.
+
+So a `fix(...)` landed before execution is a guess about what a suite that has never run would
+have said. It may be correct; nothing can tell, and if the construction it repairs was fine,
+the repair is a change to working mathematics made on no evidence. Once the implementation
+nodes are closed, an off-DAG repair is not the next unit of work: `terminal-reference` is, then
+`terminal-execution`, and what execution actually exposes becomes `terminal-repairs` — a node
+that exists precisely so repairs are made against observed failures rather than suspected ones.
+
+Take `terminal-reference` now.
+
 - [ ] **`terminal-reference`**. **Needs:** none.
   After required implementation and transfer are finished, generate the
   preamble reference and category/functor graph from the integrated source,
