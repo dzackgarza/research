@@ -1307,6 +1307,21 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
             check=check,
         )
 
+    @cached_method
+    def cardinality(self):
+        r"""Return the exact number of represented homomorphisms for finite endpoints."""
+        domain = self.domain()
+        codomain = self.codomain()
+        if domain not in OwnedFiniteGroups() or codomain not in OwnedFiniteGroups():
+            raise NotImplementedError(
+                "group-Hom cardinality is currently computed for finite groups"
+            )
+        homomorphisms = libgap.AllHomomorphisms(
+            _gap_model(domain),
+            _gap_model(codomain),
+        )
+        return cardinal(int(homomorphisms.Length()))
+
     def _repr_(self):
         return f"Hom({self.domain()}, {self.codomain()})"
 

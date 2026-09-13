@@ -24,6 +24,12 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     assert not morphism.is_injective()
 
 
+def test_finite_group_homset_cardinality_uses_the_represented_gap_homset() -> None:
+    assert group_homset(Groups.C(2), Groups.C(3)).cardinality() == 1
+    assert group_homset(Groups.C(4), Groups.C(6)).cardinality() == 2
+    assert group_homset(Groups.C(12), Groups.C(18)).cardinality() == 6
+
+
 def test_kernel_image_and_lift_are_actual_group_constructions() -> None:
     source = Groups.C(4)
     target = Groups.C(2)
