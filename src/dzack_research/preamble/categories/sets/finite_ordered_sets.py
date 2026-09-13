@@ -423,6 +423,17 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         # integer, and a cardinality here is a cardinal.
         return [OrderedEnumeratedSets(), FiniteSets()]
 
+    def __call__(self, source, predicate, *, name=None):
+        r"""Construct the subset even when ``source`` is already filtered.
+
+        Sage's generic category call is a coercion first: it returns its first
+        argument unchanged whenever that object is already in the category.
+        Here the predicate is additional defining data, so filtering a filtered
+        finite set must construct the intersection rather than discard the new
+        predicate.
+        """
+        return self._call_(source, predicate, name=name)
+
     def _call_(self, source, predicate, *, name=None):
         r"""Construct the finite ordered subset cut out by ``predicate``."""
         return object_of(self, source=source, predicate=predicate, name=name)

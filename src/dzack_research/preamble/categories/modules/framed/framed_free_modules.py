@@ -84,6 +84,18 @@ class _SparseFreeModuleElement(ModuleElement):
     def monomial_coefficients(self):
         return dict(self._coefficients)
 
+    def __iter__(self):
+        r"""Iterate coordinates when the selected framing is finite and ordered."""
+        labels = self.parent().module_generating_set()
+        match (labels in EnumeratedSets(), labels.cardinality().is_finite()):
+            case (True, True):
+                zero = self.parent().base_ring().zero()
+                return (self._coefficients.get(label, zero) for label in labels)
+            case _:
+                raise TypeError(
+                    "coordinate iteration requires a finite ordered module framing"
+                )
+
     def underlying_set_element(self):
         r"""Recover ``s`` when this is the canonical free generator ``[s]``.
 

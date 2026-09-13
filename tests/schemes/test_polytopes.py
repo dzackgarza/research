@@ -21,6 +21,10 @@ def test_lattice_polygon_carries_exact_lattice_point_and_volume_data() -> None:
     assert polygon.n_integral_points() == 16
     assert polygon.n_interior_points() == 4
     assert polygon.n_boundary_points() == 12
+    assert all(
+        point.parent() is polygon.ambient_lattice()
+        for point in polygon.integral_points()
+    )
     assert polygon.contains_point((1, 1))
     assert polygon.interior_contains_point((1, 1))
     assert not polygon.interior_contains_point((0, 1))

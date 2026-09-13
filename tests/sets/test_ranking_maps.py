@@ -159,3 +159,21 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
     assert tuple(ordered) == ("u", "v", "w")
     assert tuple(filtered) == tuple(filtered_notation) == ("a", "c")
     assert int(image.ranking_map()("z")) == 2
+
+
+def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -> None:
+    source = finite_ordered_set((0, 1, 2, 3))
+    even = finite_ordered_filter(source, lambda value: value % 2 == 0, name="even")
+    zero = finite_ordered_filter(even, lambda value: value == 0, name="zero")
+    direct = FiniteFilteredOrderedSets()(
+        even,
+        lambda value: value == 2,
+        name="two",
+    )
+
+    assert zero is not even
+    assert direct is not even
+    assert tuple(zero) == (0,)
+    assert tuple(direct) == (2,)
+    assert zero.cardinality() == 1
+    assert direct.cardinality() == 1

@@ -278,12 +278,11 @@ class ConvexPolytopes(OwnedCategory):
                 integers = _own_ring(SageZZ)
                 return finite_ordered_set(
                     tuple(
-                        tensor.vector(
-                            integers,
+                        self.ambient_lattice()(
                             tuple(
                                 self._owned_integral_coordinate(coordinate)
                                 for coordinate in vertex
-                            ),
+                            )
                         )
                         for vertex in self._engine_polyhedron().vertices()
                     )
@@ -405,9 +404,11 @@ class ConvexPolytopes(OwnedCategory):
             )
             return finite_ordered_image(
                 engine_points,
-                lambda point: tensor.vector(
-                    integers,
-                    (self._owned_integral_coordinate(coordinate) for coordinate in point),
+                lambda point: self.ambient_lattice()(
+                    tuple(
+                        self._owned_integral_coordinate(coordinate)
+                        for coordinate in point
+                    )
                 ),
                 name="Integral points",
             )
