@@ -1929,6 +1929,15 @@ class _OwnedRingElement(RingElement):
         parent = self.parent()
         return parent._from_engine_element(self._backend() * other._backend())
 
+    def _lmul_(self, scalar):
+        r"""Apply the selected scalar action when this ring is read as a module."""
+        parent = self.parent()
+        base = parent.base_ring()
+        scalar = base(scalar)
+        if base is parent:
+            return parent(scalar) * self
+        return parent(parent.algebra_structure_morphism()(scalar)) * self
+
     def __mul__(self, other):
         r"""``r x`` for a scalar of this ring and an element over it.
 
