@@ -6,6 +6,8 @@ specimen.  Each adjunction states the endpoints of its unit and counit and
 the value of one of them.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
     ZZ,
     Cardinalities,
@@ -129,6 +131,10 @@ def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
     assert carried.domain() == cardinal(3)
     assert carried.codomain() == cardinal(3)
     assert carried == Cardinalities().Mor(cardinal(3), cardinal(3)).unique_morphism()
+
+    collapse = Sets().Mor(ordinal, ordinal)(lambda _index: ordinal(0))
+    with pytest.raises(ValueError, match="biject"):
+        functor(collapse)
 
 
 def test_the_power_set_functor_has_all_of_sets_for_its_domain() -> None:

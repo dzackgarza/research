@@ -358,6 +358,40 @@ class OwnedSetMorphism(SetMorphism):
         image = self._image_points()
         return all(point in image for point in codomain)
 
+    def inverse(self):
+        r"""Return the inverse of a bijection between finite enumerated sets."""
+        domain = self.domain()
+        codomain = self.codomain()
+        match (
+            domain in FiniteSets() and domain in EnumeratedSets(),
+            codomain in FiniteSets() and codomain in EnumeratedSets(),
+        ):
+            case (True, True):
+                pass
+            case _:
+                raise NotImplementedError(
+                    "the represented inverse search requires finite enumerated endpoints"
+                )
+        match (self.is_injective(), self.is_surjective()):
+            case (True, True):
+                pass
+            case _:
+                raise ValueError("only a bijective set morphism has an inverse")
+
+        def preimage(target):
+            try:
+                return next(source for source in domain if self(source) == target)
+            except StopIteration as error:
+                raise ArithmeticError("a declared bijection omitted a codomain point") from error
+
+        return Sets().Mor(codomain, domain)(preimage)
+
+    def as_isomorphism(self):
+        r"""Return this finite bijection as the corresponding arrow of ``core(Set)``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
+
+        return Core(Sets()).Mor(self.domain(), self.codomain())(self, self.inverse())
+
     def __mul__(self, other):
         if not isinstance(other, Morphism) or other.codomain() is not self.domain():
             return NotImplemented

@@ -27,6 +27,20 @@ class CardinalityFunctor(Functor):
             raise ValueError("isomorphic sets must have equal cardinality")
         return self.codomain().Mor(source, target).unique_morphism()
 
+    def morphism_image(self, morphism):
+        r"""Accept a represented finite-set bijection through the core boundary."""
+        core_hom = self.domain().Mor(morphism.domain(), morphism.codomain())
+        match morphism:
+            case _ if morphism in core_hom:
+                isomorphism = morphism
+            case _ if hasattr(morphism, "as_isomorphism"):
+                isomorphism = morphism.as_isomorphism()
+            case _:
+                raise TypeError(
+                    "the cardinality functor acts on isomorphisms of sets"
+                )
+        return super().morphism_image(isomorphism)
+
     def cartesian_product_comparison(self, product):
         r"""Return ``prod_i #X_i -> #(prod_i X_i)`` for a represented set product."""
         try:
