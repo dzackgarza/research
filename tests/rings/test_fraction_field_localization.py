@@ -21,6 +21,7 @@ def test_fraction_field_is_the_nonzero_localization_with_canonical_realization()
 
     assert Localization(ZZ, nonzero) is localization
     assert localization.localization_source() is ZZ
+    assert localization.base_ring() is ZZ
     assert localization.localization_submonoid() is nonzero
     assert localization.fraction_field_realization() is QQ
     assert ZZ.fraction_field() is QQ

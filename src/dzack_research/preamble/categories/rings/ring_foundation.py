@@ -500,7 +500,7 @@ class LocalizationRings(OwnedCategory):
             self._preamble_fraction_field_realization = fraction_field_realization
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
-            super().__init__(base_ring=source.base_ring(), **rest)
+            super().__init__(base=source.base_ring(), **rest)
 
             self._preamble_localization_map = ring_morphism(
                 source,
