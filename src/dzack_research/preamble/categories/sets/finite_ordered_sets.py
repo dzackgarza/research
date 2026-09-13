@@ -329,6 +329,10 @@ class FiniteOrderedSets(OwnedCategory):
         )
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"index_set", "element_at", "index_of"}
+        )
+
         def __init__(
             self,
             elements: Parent | tuple[PointT, ...] | list[PointT] | range,

@@ -2,6 +2,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.owned_category import (
     construction_contract,
@@ -71,3 +72,14 @@ def test_hom_constructor_contract_retains_family_and_endpoints() -> None:
     assert any(name in required for name in ("hom_family", "family"))
     assert contract.owner.domain_object() is module
     assert contract.owner.codomain_object() is module
+
+
+def test_specialized_constructor_can_derive_general_constructor_data() -> None:
+    contract = construction_contract(FiniteOrderedSets())
+
+    assert contract.named("index_set")
+    assert "index_set" in contract.derived_names()
+    assert "element_at" in contract.derived_names()
+    assert "index_of" in contract.derived_names()
+    assert contract.required_names() == frozenset({"elements"})
+    contract.validate({"elements": ("a", "b")})

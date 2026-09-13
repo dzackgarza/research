@@ -703,8 +703,25 @@ class ConstructionContract:
     def named(self, name: str) -> tuple[ConstructionParameter, ...]:
         return tuple(parameter for parameter in self.parameters if parameter.name == name)
 
+    def derived_names(self) -> frozenset[str]:
+        r"""Return lower-level constructor data supplied by a stronger provider.
+
+        A specialization may take one mathematical datum and compute the data
+        consumed by its immediate general construction before calling
+        ``super().__init__``.  Those lower-level names remain visible in the
+        full contract, but they are not additional obligations on the public
+        caller.
+        """
+        names = set()
+        for provider in {parameter.provider for parameter in self.parameters}:
+            names.update(getattr(provider, "_derived_construction_parameters", ()))
+        return frozenset(names)
+
     def required_names(self) -> frozenset[str]:
-        return frozenset(parameter.name for parameter in self.parameters if parameter.required)
+        required = frozenset(
+            parameter.name for parameter in self.parameters if parameter.required
+        )
+        return required - self.derived_names()
 
     def optional_names(self) -> frozenset[str]:
         return frozenset(parameter.name for parameter in self.parameters if not parameter.required)
