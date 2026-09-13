@@ -1536,6 +1536,13 @@ class IdealExtensionData(SageObject):
 class AdicCompletions(Category):
     r"""Adic completions equipped with source and ideal of definition."""
 
+    def an_object(self):
+        r"""The 2-adic completion of the owned integers."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        integers = _own_ring(SageZZ)
+        return self(integers, integers.ideal(integers(2)), precision=4)
+
     def super_categories(self):
         return [OwnedAdicallyCompleteRings()]
 
