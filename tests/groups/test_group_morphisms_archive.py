@@ -49,6 +49,24 @@ def test_kernel_image_and_lift_are_actual_group_constructions() -> None:
     assert morphism(lifted) == target_generator
 
 
+def test_finite_kernel_uses_the_exact_gap_structure_predicates() -> None:
+    symmetric = Groups.S(3)
+    target = Groups.C(2)
+    target_generator = target.group_generators()[0]
+    sign = symmetric.Mor(target)(
+        {
+            generator: (
+                target_generator if generator.order() == 2 else target.one()
+            )
+            for generator in symmetric.group_generators()
+        }
+    )
+    kernel = sign.kernel()
+
+    assert kernel.cardinality() == 3
+    assert kernel.is_abelian()
+
+
 def test_composition_is_diagrammatic_and_retains_endpoints() -> None:
     c4 = Groups.C(4)
     c2 = Groups.C(2)
