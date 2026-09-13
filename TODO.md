@@ -883,6 +883,20 @@ review those source changes before T; T executes the mathematical evidence and
 repairs what it exposes. It is not a reason to postpone source-level ownership
 review until every downstream consumer has copied the same bypass.
 
+### Terminal T has begun; execution is authorized from here
+
+The phase rule suspends preamble tests, QC gates, Sage executions and notebooks *while the
+architecture, implementation, integration and transfer work remains open*. That work is closed.
+The four `terminal-*` nodes below are terminal T itself, not work standing before it, so the
+suspension does not apply to them: from `terminal-reference` onward, running Sage, the project
+recipes, the suites and the notebook checks is authorized and is the point of the phase.
+
+This matters because `terminal-reference` cannot be done any other way. Its deliverable comes
+from `just preamble-megadoc`, which surveys a live session, and from `just graph`. Reading the
+phase rule as forbidding that leaves the node unbuildable and the whole verification phase
+unreachable, which is how a repository ends up banking sixty unexecuted commits while its
+worker looks for something it is permitted to do.
+
 ### The implementation nodes are closed; repairs now wait on execution
 
 Twenty-eight work nodes are done and the nine below are what remains. `terminal-reference` has
