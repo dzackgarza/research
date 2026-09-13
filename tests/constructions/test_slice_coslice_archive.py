@@ -1,6 +1,7 @@
 r"""Archived slice/coslice/subobject semantics on the current owned categories."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     CosliceCategory,
     CoveredObjectCategory,
     CoveringObjectCategory,
@@ -10,7 +11,6 @@ from dzack_research.preamble.all import (
     SliceCategory,
     SubobjectCategory,
     SuperobjectCategory,
-    ZZ,
     set_injection,
     set_surjection,
 )

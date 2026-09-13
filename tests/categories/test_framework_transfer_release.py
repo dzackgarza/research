@@ -6,10 +6,9 @@ The preamble does not rebuild that construction or its CAP polynomial-kernel
 codec locally.
 """
 
-from sympy import Q
-
 from sage_categories import omega
 from sage_categories.all import Fun, Mor, Sets, ask
+from sympy import Q
 
 
 def _integer_translation_diagram():

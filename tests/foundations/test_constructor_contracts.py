@@ -2,8 +2,8 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import (
     construction_contract,
     hom_construction_contract,

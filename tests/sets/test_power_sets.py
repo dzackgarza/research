@@ -1,16 +1,15 @@
 
 from dzack_research.preamble.all import (
+    ZZ,
     FiniteSubsets,
     PowerSet,
     PowerSets,
     Set,
     Sets,
     SubsetsOfSize,
-    ZZ,
     aleph0,
     cardinal,
 )
-
 from dzack_research.preamble.categories.sets.set_categories import (
     FinitePowerSets,
     FixedCardinalitySubsetSets,

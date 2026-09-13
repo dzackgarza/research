@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     cardinal,
     continuum,
     omega,
-
 )
 
 ARCHIVE_RECONCILIATION = {

@@ -9,12 +9,11 @@ verifies that retained mathematical datum.
 import pytest
 
 from dzack_research.preamble.all import (
+    ZZ,
     DirectSumDecomposition,
     DirectSumObjects,
     Lattices,
-    ZZ,
 )
-
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/direct_sum_objects.sage",

@@ -1,6 +1,6 @@
 r"""A restricted Hom parent keeps both its arrow predicate and extra enrichment."""
 
-from dzack_research.preamble.all import BasedFreeModule, Derivations, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, BasedFreeModule, Derivations, PolynomialRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 

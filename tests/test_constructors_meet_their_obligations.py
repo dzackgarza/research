@@ -19,22 +19,21 @@ implemented.
 """
 
 import functools
-from unittest.mock import patch
 from collections.abc import Callable
+from unittest.mock import patch
 
 import pytest
-
 from sage.all import Infinity
-from sage.misc.abstract_method import AbstractMethod, abstract_methods_of_class
+from sage.misc.abstract_method import abstract_methods_of_class
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
     QuadraticFormMorphism,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -108,7 +107,7 @@ def _construction(name: str) -> Parent:
 
 
 @functools.cache
-def _constructions() -> "dict[str, Callable[[], Parent]]":
+def _constructions() -> dict[str, Callable[[], Parent]]:
     r"""Every way the preamble makes an object, with one specimen each.
 
     The values are thunks and not objects: collection needs the names, and

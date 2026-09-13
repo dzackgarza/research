@@ -65,7 +65,7 @@ def test_lattice_module_action_uses_the_same_owned_integer_ring() -> None:
 def test_python_integers_and_owned_integers_name_the_same_finite_ordered_set() -> None:
     integers = _own_ring(SageZZ)
 
-    from_python = finite_ordered_set((int(1), int(2), int(3)))
+    from_python = finite_ordered_set((1, 2, 3))
     from_ring = finite_ordered_set((integers(1), integers(2), integers(3)))
 
     assert from_python is from_ring
