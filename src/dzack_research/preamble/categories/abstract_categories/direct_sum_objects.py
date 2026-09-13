@@ -94,8 +94,13 @@ def DirectSumDecomposition(
         raise ValueError(
             "direct-sum decomposition data must be supplied by the object's constructor"
         )
-    selected = underlying_object.summands()
-    selected_labels = underlying_object.summand_index_set()
+    try:
+        selected = underlying_object._preamble_direct_sum_summands
+        selected_labels = underlying_object._preamble_direct_sum_index_set
+    except AttributeError as error:
+        raise ValueError(
+            "direct-sum placement is missing its constructor-owned summand data"
+        ) from error
     if labels != selected_labels:
         raise ValueError("the stated summand labels differ from the constructor-owned labels")
     if any(selected[label] is not family[label] for label in labels):
