@@ -71,7 +71,7 @@ def test_group_algebra_functor_carries_a_nonidentity_map_between_infinite_free_g
     source = Groups.Free(1, names="s")
     target = Groups.Free(2, names=("x", "y"))
     source_generator = source.group_generators()[0]
-    target_generators = tuple(target.group_generators())
+    target_generators = target.group_generators()
     morphism = group_homset(source, target)(
         {source_generator: target_generators[0] * target_generators[1]}
     )
@@ -116,7 +116,8 @@ def test_group_algebra_multiplication_remembers_whether_the_group_commutes() -> 
     )
 
     symmetric = Groups.S(3)
-    left, right = tuple(symmetric.group_generators())[:2]
+    left = symmetric.group_generators()[0]
+    right = symmetric.group_generators()[1]
     assert left * right != right * left
     symmetric_algebra = GroupAlgebraFunctor(ZZ)(symmetric)
     assert (
