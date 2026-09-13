@@ -106,7 +106,7 @@ def test_restricted_scalar_view_retains_the_extension_module_and_scalar_map() ->
     scalars, i, structure_map = _gaussian_extension()
     module = FreeModule(scalars, 1)
     generator = module.module_generator(0)
-    restriction = Modules(QQ).restriction_of_scalars(structure_map)
+    restriction = Modules(scalars).restriction_of_scalars(structure_map)
     restricted = restriction(module)
 
     assert restricted.ring_map() is structure_map

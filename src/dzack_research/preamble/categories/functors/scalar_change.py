@@ -259,10 +259,6 @@ class BaseChangeAdjunction(Adjunction):
     def unit(self, module):
         extended = self.left_adjoint()(module)
         restricted = self.right_adjoint()(extended)
-        if restricted not in FramedModules(module.base_ring()):
-            raise NotImplementedError(
-                "the current module Hom surface cannot yet materialize the unit into an unframed restriction"
-            )
         return module_homset(module, restricted)(
             lambda label: restricted(extended.module_generator(label))
         )
