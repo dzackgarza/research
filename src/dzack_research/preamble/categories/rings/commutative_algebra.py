@@ -693,10 +693,12 @@ class QuotientRings(OwnedCategory):
             self._preamble_defining_ideal = defining_ideal
             self._preamble_engine_ring = _engine_ring
             self._preamble_algebra_base_ring = source
-            # The module level above needs the ring this quotient is an
-            # algebra over; a level supplies what the one above declares, and
-            # the module level records it.
-            super().__init__(base_ring=source, **rest)
+            # The quotient is already placed in ``Algebras(source)`` by its
+            # category, and that algebra owner reads the exact scalar source
+            # from ``_preamble_algebra_base_ring`` above.  The generic Sage
+            # parent constructor accepts ``base=`` but has no ``base_ring=``
+            # construction datum at this level.
+            super().__init__(base=source, **rest)
 
             self._preamble_quotient_map = ring_morphism(
                 source,
