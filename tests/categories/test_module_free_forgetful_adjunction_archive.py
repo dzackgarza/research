@@ -69,6 +69,12 @@ def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
         }
     )
 
+    # Generic functor provenance may contain other presentations of the same
+    # free parent.  The free-module adjunction reads its source from the
+    # constructor-owned framing, not from reverse provenance.
+    adjunction.left_adjoint().adopt_object_image(
+        finite_ordered_set(("other-left", "other-right")), free
+    )
     transpose = adjunction.hom_set_isomorphism_forward(morphism)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose, module)
 
