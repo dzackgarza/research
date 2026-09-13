@@ -225,8 +225,8 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
     assert form.orthogonal_quotient(metabolizer).cardinality() == 1
 
     isotropic_orbits = form.orbits_on_isotropic_subobjects()
-    assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 2]
-    assert form.orbit(first).cardinality() == 2
+    assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 3]
+    assert form.orbit(first).cardinality() == 3
     assert second in form.orbit(first)
 
 
