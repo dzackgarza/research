@@ -985,6 +985,8 @@ def predicate_subring(ambient_ring, predicate, description, category=None):
 class OwnedSemirings(OwnedCategory):
     """Semirings on the owned operation spine."""
 
+    _HomCategory = RingHomCategoryConstruction
+
     def an_object(self):
         r"""The integers, which are in particular a semiring."""
         return _own_ring(SageZZ)
@@ -995,6 +997,8 @@ class OwnedSemirings(OwnedCategory):
 
 class OwnedRngs(OwnedCategory):
     """Rngs on the owned operation spine."""
+
+    _HomCategory = RingHomCategoryConstruction
 
     def an_object(self):
         r"""The integers, which happen to be unital."""
