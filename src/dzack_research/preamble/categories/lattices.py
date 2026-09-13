@@ -355,8 +355,13 @@ class LocalGenusSymbol:
 class Genus:
     r"""The genus determined by signature and discriminant quadratic form."""
 
-    def __init__(self, signature_pair, discriminant_quadratic_form) -> None:
-        self._signature_pair = signature_pair
+    def __init__(self, signature, discriminant_quadratic_form) -> None:
+        try:
+            positive = signature.first()
+            negative = signature.second()
+        except AttributeError:
+            positive, negative = signature
+        self._signature_pair = signature_pair(positive, negative)
         self._discriminant_quadratic_form = discriminant_quadratic_form
 
     def signature_pair(self):
