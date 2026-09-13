@@ -196,6 +196,11 @@ class _SparseFreeModuleParent:
     def _element_constructor_(self, value):
         if isinstance(value, _SparseFreeModuleElement) and value.parent() is self:
             return value
+        underlying = getattr(value, "underlying_element", None)
+        if callable(underlying):
+            candidate = underlying()
+            if getattr(candidate, "parent", lambda: None)() is self:
+                return candidate
         if isinstance(value, dict):
             labels = self.module_generating_set()
             ring = self.base_ring()

@@ -73,7 +73,9 @@ def test_group_module_retains_its_owned_set_carrier() -> None:
 
     assert module in Sets()
     assert equip.parent() is Sets().Mor(line, module)
-    assert equip(line.module_generator(label)).parent() is module
+    equipped = equip(line.module_generator(label))
+    assert equipped.parent() is module
+    assert line(equipped) == line.module_generator(label)
 
 
 def test_scalar_restriction_along_R_to_RG_recovers_the_exact_coefficient_module() -> None:
