@@ -86,6 +86,14 @@ class AdditiveMonoids(OwnedCategory):
 
 
 class AdditiveGroups(OwnedCategory):
+    def an_object(self):
+        r"""The additive group of the owned integers."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [AdditiveMonoids()]
 
