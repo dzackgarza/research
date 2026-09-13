@@ -2360,11 +2360,13 @@ class NaturalNumberSets(OwnedCategory):
             return hash(self._value)
 
         def __eq__(self, other: Any) -> bool:
-            # The argument is genuinely arbitrary here, so the question is
-            # membership rather than what class it is.
-            if other not in self.parent():
+            # Normalize once.  Asking membership first constructs the same
+            # natural number and can recurse through equality during ranking.
+            try:
+                normalized = self.parent()(other)
+            except (TypeError, ValueError):
                 return False
-            return self.parent()(other)._value == self._value
+            return normalized._value == self._value
 
         def __ne__(self, other):
             return not self == other
