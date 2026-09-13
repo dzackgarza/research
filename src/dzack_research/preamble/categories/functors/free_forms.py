@@ -219,14 +219,13 @@ class BilinearFreeFormAdjunction(_FreeFormAdjunction):
     def _counit_value_map(self, free_formed, formed):
         module = self.right_adjoint()(formed)
         target_values = _represented_value_module(formed)
-        target_form = formed._formed_form()
         bilinear = BilinearMap(
             module,
             module,
             target_values,
             lambda left_label, right_label: _value_as_module_element(
                 formed,
-                target_form(
+                formed.b(
                     module.module_generator(left_label),
                     module.module_generator(right_label),
                 ),
@@ -247,11 +246,10 @@ class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
     def _counit_value_map(self, free_formed, formed):
         self.right_adjoint()(formed)
         target_values = _represented_value_module(formed)
-        target_form = formed._formed_form()
         return free_formed.value_module().from_quadratic(
             lambda element: _value_as_module_element(
                 formed,
-                target_form(element),
+                formed.norm(element),
             ),
             target_values,
         )

@@ -257,15 +257,15 @@ class FormedModuleMorphism(Morphism):
             and self.value_morphism() is module_homset(source_values, source_values).identity()
         ):
             return
-        source_form = self.domain()._formed_form()
-        target_form = self.codomain()._formed_form()
+        source_form = self.domain().form()
+        target_form = self.codomain().form()
         source_generators = tuple(self.domain().module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
                 raise TypeError("bilinear formed modules map to bilinear formed modules")
             commutes = all(
-                self.map_value(source_form(left, right))
-                == target_form(
+                self.map_value(self.domain().b(left, right))
+                == self.codomain().b(
                     self.module_morphism()(left), self.module_morphism()(right)
                 )
                 for left in source_generators
@@ -280,8 +280,8 @@ class FormedModuleMorphism(Morphism):
                 for right in source_generators[index + 1 :]
             )
             commutes = all(
-                self.map_value(source_form(element))
-                == target_form(self.module_morphism()(element))
+                self.map_value(self.domain().norm(element))
+                == self.codomain().norm(self.module_morphism()(element))
                 for element in probes
             )
         else:
@@ -569,15 +569,15 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def _check_form_square(self) -> None:
         changed = self.base_changed_domain()
-        source_form = changed._formed_form()
-        target_form = self.codomain()._formed_form()
+        source_form = changed.form()
+        target_form = self.codomain().form()
         generators = tuple(changed.module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
                 raise TypeError("bilinear formed modules map to bilinear formed modules")
             commutes = all(
-                self.map_value(source_form(left, right))
-                == target_form(
+                self.map_value(changed.b(left, right))
+                == self.codomain().b(
                     self.module_morphism()(left), self.module_morphism()(right)
                 )
                 for left in generators
@@ -592,8 +592,8 @@ class FiberedFormedModuleMorphism(Morphism):
                 for right in generators[index + 1 :]
             )
             commutes = all(
-                self.map_value(source_form(element))
-                == target_form(self.module_morphism()(element))
+                self.map_value(changed.norm(element))
+                == self.codomain().norm(self.module_morphism()(element))
                 for element in probes
             )
         else:
@@ -894,7 +894,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
 
         def pairing(self, left, right):
-            return self._formed_form()(left, right)
+            return self.b(left, right)
 
         def left_module(self):
             return self
@@ -934,19 +934,23 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Evaluate the (polar) bilinear form on two elements of this module."""
             if left not in self or right not in self:
                 raise TypeError("a form pairs two elements of one formed module")
-            form = self._formed_form()
+            form = self.form()
+            forget = self.forget_form_morphism()
+            unformed_left = forget(left)
+            unformed_right = forget(right)
             if _is_quadratic_form(form):
-                return form.b(left, right)
-            return form(left, right)
+                return form.b(unformed_left, unformed_right)
+            return form(unformed_left, unformed_right)
 
         def norm(self, element):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
             if element not in self:
                 raise TypeError("the norm is defined on elements of this formed module")
-            form = self._formed_form()
+            form = self.form()
+            unformed = self.forget_form_morphism()(element)
             if _is_quadratic_form(form):
-                return form(element)
-            return form(element, element)
+                return form(unformed)
+            return form(unformed, unformed)
 
         def gram_tensor(self):
             r"""Return the scalar Gram as its intrinsic type-``(0,2)`` tensor."""
@@ -1244,7 +1248,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             r"""Evaluate the equipped quadratic form on ``element``."""
             if element not in self:
                 raise TypeError("the quadratic form is defined on this module")
-            return self._formed_form()(element)
+            return self.norm(element)
 
         def associated_bilinear_module(self):
             r"""Return the bilinear module polarized from this quadratic form.
