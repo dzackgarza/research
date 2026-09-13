@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generic owned group surface."""
 
-from dzack_research.preamble.all import GF, Groups
+from dzack_research.preamble.all import GF, Groups, Product
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
@@ -32,6 +32,14 @@ def test_native_group_constructors_cross_into_owned_property_categories() -> Non
     assert free in GroupsWithChosenFinitePresentation()
     assert free.is_finitely_generated() is True
     assert free.is_finitely_presented() is True
+
+
+def test_finite_group_product_retains_group_structure_and_order() -> None:
+    product = Product(Groups.C(2), Groups.C(3))
+
+    assert product in Groups()
+    assert product.order() == 6
+    assert product.is_isomorphic_to(Groups.C(6))
 
 
 def test_generated_subgroup_retains_an_actual_inclusion_into_its_supergroup() -> None:
