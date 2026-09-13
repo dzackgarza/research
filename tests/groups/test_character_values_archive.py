@@ -8,22 +8,25 @@ def test_character_from_class_values_round_trips_owned_character_arithmetic() ->
     irreducibles = group.irreducible_characters()
     source = irreducibles[0] + irreducibles[1]
 
-    reconstructed = group.character(tuple(source.values()))
+    reconstructed = group.character(source.values())
 
     assert reconstructed.group() is group
     assert reconstructed.codomain() is source.codomain()
-    assert tuple(reconstructed.values()) == tuple(source.values())
+    assert reconstructed.values() == source.values()
     assert reconstructed.degree() == source.degree()
     assert reconstructed.irreducible_constituents() == source.irreducible_constituents()
 
 
 def test_character_value_count_is_the_conjugacy_class_count() -> None:
     group = Groups.S(3)
-    values = tuple(group.trivial_character().values())
+    values = group.trivial_character().values()
 
-    assert len(values) == int(group.conjugacy_classes_representatives().cardinality())
+    assert values.cardinality() == group.conjugacy_classes_representatives().cardinality()
+    omitted = values.index_set().ranking_map().inverse()(int(values.cardinality()) - 1)
     try:
-        group.character(values[:-1])
+        group.character(
+            values.value(index) for index in values.index_set() if index != omitted
+        )
     except ValueError as error:
         assert "one value for each conjugacy class" in str(error)
     else:
@@ -32,12 +35,14 @@ def test_character_value_count_is_the_conjugacy_class_count() -> None:
 
 def test_arbitrary_class_function_values_are_not_relabelled_as_a_character() -> None:
     group = Groups.S(3)
-    values = tuple(group.trivial_character().values())
-    noncharacter = list(values)
-    noncharacter[0] = noncharacter[0] + 1
+    values = group.trivial_character().values()
+    first = values.index_set().ranking_map().inverse()(0)
 
     try:
-        group.character(tuple(noncharacter))
+        group.character(
+            values.value(index) + 1 if index == first else values.value(index)
+            for index in values.index_set()
+        )
     except ValueError as error:
         assert "ordinary character" in str(error)
     else:
