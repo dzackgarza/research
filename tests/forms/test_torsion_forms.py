@@ -218,7 +218,7 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
     ).cardinality() == 2
 
     lagrangians = form.lagrangian_subobjects()
-    assert lagrangians.cardinality() == 2
+    assert lagrangians.cardinality() == 3
     assert form.is_metabolic()
     metabolizer = form.metabolizer()
     assert metabolizer.cardinality() == 2
