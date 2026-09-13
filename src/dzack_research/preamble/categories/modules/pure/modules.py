@@ -1934,7 +1934,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 return self.whole_subobject()
             try:
                 generators = morphism.matrix()._kernel_spanning_family()
-            except NotImplementedError:
+            except (AttributeError, NotImplementedError):
                 return NotImplemented
             return self.subobject_on(generators)
 
@@ -2287,7 +2287,9 @@ class RestrictedScalarsModuleView(Parent):
                 if extension_ring in FinitelyGeneratedModules(base_ring) and module in FinitelyGeneratedModules(extension_ring):
                     categories.append(FinitelyGeneratedModules(base_ring))
                 if extension_ring in FinitelyGeneratedFreeModules(base_ring):
-                    if module in FinitelyPresentedModules(extension_ring):
+                    if module in ModulesWithChosenFinitePresentation(extension_ring):
+                        categories.append(ModulesWithChosenFinitePresentation(base_ring))
+                    elif module in FinitelyPresentedModules(extension_ring):
                         categories.append(FinitelyPresentedModules(base_ring))
                     if module in FinitelyGeneratedFreeModules(extension_ring):
                         categories.append(FinitelyGeneratedFreeModules(base_ring))
@@ -2310,6 +2312,7 @@ class RestrictedScalarsModuleView(Parent):
             category=Category.join(tuple(categories)),
         )
         realize_owned_category(self)
+
 
     def __call__(self, value):
         r"""Construct through the owned restriction-of-scalars element parser."""
@@ -2394,9 +2397,85 @@ class RestrictedScalarsModuleView(Parent):
         )
 
     def framing_morphism(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FreshFreeModuleOn,
+        )
 
-        source = self.extension_ring()._fresh_free_module_on(self.module_generating_set())
+        source = FreshFreeModuleOn(self.base_ring(), self.module_generating_set())
         return framing_morphism(source, self, self.module_generator)
+
+    @cached_method
+    def presentation(self):
+        r"""Return the finite presentation induced by restriction of scalars."""
+        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
+            raise TypeError("this scalar restriction has no selected finite presentation")
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _presentation_from_relation_rows,
+        )
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            MatrixSpace,
+        )
+
+        rows = self._selected_presentation_rows()
+        labels = self.module_generating_set()
+        relations = MatrixSpace(
+            self.base_ring(), len(rows), int(labels.cardinality())
+        ).from_rows(rows)
+        return _presentation_from_relation_rows(
+            self.base_ring(),
+            labels,
+            Sets.Δ[len(rows) - 1],
+            relations,
+        )
+
+    def _represented_kernel_of_morphism(self, morphism):
+        if self not in (morphism.domain(), morphism.codomain()):
+            return NotImplemented
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _selected_presentation_kernel,
+        )
+
+        return _selected_presentation_kernel(morphism)
+
+    def _represented_cokernel_of_morphism(self, morphism):
+        if morphism.codomain() is not self:
+            return NotImplemented
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            FinitelyPresentedModule,
+        )
+
+        return FinitelyPresentedModule(morphism, _cokernel_morphism=morphism)
+
+    @cached_method
+    def _selected_presentation_model(self):
+        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
+            raise NotImplementedError(
+                "this scalar restriction has no selected finite-presentation model"
+            )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            FinitelyPresentedModule,
+        )
+
+        return FinitelyPresentedModule(self.presentation())
+
+    def is_zero(self):
+        return self._selected_presentation_model().is_zero()
+
+    def subobject_on(self, module_generators):
+        r"""Return the selected-presentation subobject after scalar restriction."""
+        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
+            raise NotImplementedError(
+                "this scalar restriction has no selected finite-presentation subobject backend"
+            )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
+        )
+
+        return _SelectedFinitePresentationModules.ParentMethods.subobject_on(
+            self, module_generators
+        )
+
+    submodule = subobject_on
 
     def _selected_presentation_rows(self):
         r"""Return the induced finite-presentation rows over the smaller ring.

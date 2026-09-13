@@ -56,3 +56,31 @@ def test_restricting_along_the_identity_keeps_the_action_of_the_endomorphism() -
     assert restricted_swap.codomain() is space
     assert restricted_swap(space(e0)) == space(e1)
     assert restricted_swap(space(2 * e0 + 3 * e1)) == space(3 * e0 + 2 * e1)
+
+
+
+def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and_images() -> None:
+    from dzack_research.preamble.all import (
+        GF,
+        FinitelyPresentedAlgebra,
+        ModulesWithChosenFinitePresentation,
+        SymmetricAlgebraOn,
+    )
+
+    prime = GF(2)
+    presentation = SymmetricAlgebraOn(prime, ("x",))
+    x = presentation.algebra_generator("x")
+    extension = FinitelyPresentedAlgebra(presentation, (x**2,))
+    ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
+    line = FreeModule(extension, 1)
+    restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
+
+    assert restricted in ModulesWithChosenFinitePresentation(prime)
+    assert restricted.presentation().codomain().base_ring() is prime
+
+    identity = module_homset(restricted, restricted).identity()
+    kernel = identity.kernel()
+    image = identity.image()
+
+    assert kernel.is_zero()
+    assert image.inclusion().codomain() is restricted

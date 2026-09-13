@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
     _engine_ring,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -88,7 +89,7 @@ class FormValueObjects(OwnedCategory):
     r"""Represented scalar rings and modules allowed as values of a pairing."""
 
     def an_object(self):
-        return _owned_ring(SageZZ)
+        return _own_ring(SageZZ)
 
     def super_categories(self):
         return [Objects()]
@@ -100,6 +101,8 @@ class FormValueObjects(OwnedCategory):
         try:
             ring = candidate.base_ring()
         except (AttributeError, TypeError):
+            return False
+        if ring not in OwnedRings():
             return False
         return candidate in Modules(ring)
 

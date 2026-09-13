@@ -676,7 +676,11 @@ class Algebras(OwnedCategoryOverBaseRing):
             if selected is not None:
                 return bool(selected)
             labels = self.module_generating_set()
-            if labels.cardinality().is_finite() is not True:
+            try:
+                finite = labels.cardinality().is_finite()
+            except NotImplementedError:
+                return Unknown
+            if finite is not True:
                 return Unknown
             return _multiplication_is_commutative(self.multiplication_morphism())
 
