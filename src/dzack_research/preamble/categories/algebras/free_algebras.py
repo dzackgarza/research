@@ -122,8 +122,19 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
 
 
 def SymmetricAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
     base = _owned_ring(base_ring)
+    if (
+        algebra_generating_set in Sets()
+        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+    ):
+        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+            SparseSymmetricAlgebraOf,
+        )
+
+        return SparseSymmetricAlgebraOf(
+            FreeModuleOn(base, algebra_generating_set)
+        )
+    labels = _finite_labels(algebra_generating_set)
     algebra = PolynomialRing(base, _variable_names(labels))
 
     return refine_algebra(
@@ -137,8 +148,19 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
 
 
 def TensorAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
     base = _owned_ring(base_ring)
+    if (
+        algebra_generating_set in Sets()
+        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+    ):
+        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+            SparseTensorAlgebraOf,
+        )
+
+        return SparseTensorAlgebraOf(
+            FreeModuleOn(base, algebra_generating_set)
+        )
+    labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
     return refine_algebra(

@@ -244,6 +244,10 @@ class FixedSizeSelections(Parent):
             source_is_finite = False
         if source_is_finite:
             categories.append(FiniteSets())
+        elif self._selection_size == 0:
+            categories.append(FiniteSets())
+        elif source_cardinality.is_countably_infinite():
+            categories.append(Sets().Countable().Infinite())
         Parent.__init__(self, facade=False, category=Cat().meet(categories))
 
     def source(self) -> Parent:

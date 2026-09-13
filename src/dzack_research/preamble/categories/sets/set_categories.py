@@ -1433,8 +1433,15 @@ def _cartesian_product_of[IndexT](index_set: Parent, family: Callable[[IndexT], 
     product_category = CartesianProductsOfSets()
     placements = [product_category]
     if index_set in FiniteSets() and index_set in EnumeratedSets():
-        if all(family(index) in FiniteSets() for index in index_set):
-            if all(family(index) in EnumeratedSets() for index in index_set):
+        factor_cardinalities = tuple(
+            cardinal(family(index).cardinality()) for index in index_set
+        )
+        product_cardinality = Cardinalities().product(*factor_cardinalities)
+        if product_cardinality.is_finite():
+            if all(
+                family(index) in FiniteSets() and family(index) in EnumeratedSets()
+                for index in index_set
+            ):
                 category = FiniteEnumeratedCartesianProductsOfSets()
                 return product_category.ObjectType(
                     category=category,
@@ -1442,6 +1449,8 @@ def _cartesian_product_of[IndexT](index_set: Parent, family: Callable[[IndexT], 
                     family=family,
                 )
             placements.append(FiniteSets())
+        elif product_cardinality.is_countably_infinite():
+            placements.append(Sets().Countable().Infinite())
     category = Category.join(placements)
     return product_category.ObjectType(category=category, index_set=index_set, family=family)
 
@@ -1553,7 +1562,7 @@ class CartesianProductsOfSets(OwnedCategory):
             if callable(components):
                 return self.element_class(self, components)
             if not self.has_finite_index_set() or self.index_set() not in EnumeratedSets():
-                raise TypeError("a positional product element requires a finite enumerated index set; otherwise supply a section")
+                raise TypeError("a positional product element requires a finite enumerated index set; otherwise supply a callable section")
             values = iter(components)
             assignment = {}
             for position, index in enumerate(self.index_set()):
@@ -1592,28 +1601,75 @@ class CartesianProductsOfSets(OwnedCategory):
 
         def __iter__(self):
             if not self.has_finite_index_set():
-                raise TypeError("only a product over a finite index set is enumerated here")
-            for index in self.index_set():
-                try:
-                    if not cardinal(self.factor(index).cardinality()).is_finite():
-                        raise TypeError("product enumeration here requires every represented factor to be finite")
-                except (AttributeError, NotImplementedError, ValueError) as error:
-                    raise TypeError("product enumeration here requires every represented factor to be finite") from error
+                raise TypeError(
+                    "an infinite-index product is specified by a callable section and has no represented enumeration here"
+                )
 
             ranking = self.index_set().ranking_map()
+            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
+            factors = tuple(
+                self.factor(ranking.inverse()(position))
+                for position in range(index_count)
+            )
+            factor_cardinalities = tuple(
+                cardinal(factor.cardinality()) for factor in factors
+            )
 
-            def sections(position, assignment):
-                if position == int(cardinal(self.index_set().cardinality()).finite_value()):
-                    frozen = dict(assignment)
-                    yield self(lambda index: frozen[int(ranking(index))])
+            if all(size.is_finite() for size in factor_cardinalities):
+                def sections(position, assignment):
+                    if position == index_count:
+                        frozen = dict(assignment)
+                        yield self(lambda index: frozen[int(ranking(index))])
+                        return
+                    for value in factors[position]:
+                        assignment[position] = value
+                        yield from sections(position + 1, assignment)
+                    assignment.pop(position, None)
+
+                return sections(0, {})
+
+            if not all(
+                factor in EnumeratedSets() and size.is_countable()
+                for factor, size in zip(factors, factor_cardinalities, strict=True)
+            ):
+                raise TypeError(
+                    "a finite-index product is enumerable here only when every factor is finite or countably enumerated"
+                )
+
+            bounds = tuple(
+                int(size.finite_value()) if size.is_finite() else None
+                for size in factor_cardinalities
+            )
+
+            def weak_compositions(total, parts):
+                if parts == 0:
+                    if total == 0:
+                        yield ()
                     return
-                index = ranking.inverse()(position)
-                for value in self.factor(index):
-                    assignment[position] = value
-                    yield from sections(position + 1, assignment)
-                assignment.pop(position, None)
+                if parts == 1:
+                    yield (total,)
+                    return
+                for first in range(total + 1):
+                    for rest in weak_compositions(total - first, parts - 1):
+                        yield (first, *rest)
 
-            return sections(0, {})
+            def countable_sections():
+                for total in count():
+                    for positions in weak_compositions(total, index_count):
+                        if any(
+                            bound is not None and position >= bound
+                            for position, bound in zip(positions, bounds, strict=True)
+                        ):
+                            continue
+                        values = tuple(
+                            factor.ranking_map().inverse()(position)
+                            for factor, position in zip(factors, positions, strict=True)
+                        )
+                        yield self(
+                            lambda index, values=values: values[int(ranking(index))]
+                        )
+
+            return countable_sections()
 
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"

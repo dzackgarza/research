@@ -4,7 +4,7 @@ from typing import Any, cast
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
+    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
@@ -223,6 +224,16 @@ class SparseFreeAlgebraDegreeModule(Parent):
         element = self(element)
         return self.from_algebra_element(self.algebra().scalar_multiple(scalar, element.algebra_element()))
 
+    @cached_method
+    def inclusion(self):
+        r"""Return this homogeneous module's canonical inclusion into its algebra."""
+        return module_embedding(
+            self,
+            self.algebra(),
+            lambda label: self.module_generator(label).algebra_element(),
+            verify_linearity=False,
+        )
+
     def realize(self, element):
         return self(element).algebra_element()
 
@@ -345,6 +356,20 @@ class SparseFreeAlgebra(Parent):
     def module_generator(self, label):
         label = self.module_generating_set()(label)
         return self._from_dict({label: self.base_ring().one()})
+
+    def homogeneous_degree(self, element):
+        r"""Return the unique coproduct degree supporting a homogeneous element."""
+        element = self(element)
+        if element == self.zero():
+            raise ValueError("zero has no selected homogeneous degree here")
+        degrees = {
+            int(label.summand_index())
+            for label, coefficient in element.monomial_coefficients().items()
+            if coefficient
+        }
+        if len(degrees) != 1:
+            raise ValueError("the algebra element is not homogeneous")
+        return NN(degrees.pop())
 
     def graded_piece(self, degree):
         degree = int(degree)
