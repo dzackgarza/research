@@ -6,7 +6,8 @@ def test_binary_indefinite_isometry_has_an_exact_integral_witness() -> None:
     target = Lattices(ZZ)([[2, 3], [3, 2]])
 
     assert source.signature_pair() == target.signature_pair()
-    assert source.discriminant() == target.discriminant() == -5
+    assert source.determinant() == target.determinant() == -5
+    assert source.discriminant() == target.discriminant() == 5
     assert not source.is_definite()
     assert not target.is_definite()
 

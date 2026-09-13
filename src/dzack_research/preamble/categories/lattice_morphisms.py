@@ -1960,7 +1960,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             self._definite_witness_matrix = domain_gram.parent().one()
             return False
         rank = domain.module_rank()
-        if rank <= rank.parent().one():
+        if int(rank.finite_value()) <= 1:
             return True
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
             return True
