@@ -1876,6 +1876,15 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _represented_vector_space_basis_generator_labels(self):
             return self.module_generating_set()
 
+        def is_zero(self) -> bool:
+            r"""Return whether this finite free module is the zero module.
+
+            A finite free module is zero exactly when every vector in its
+            chosen basis is the additive identity; this also handles the zero
+            coefficient ring without replacing the basis by a rank heuristic.
+            """
+            return all(generator == self.zero() for generator in self.module_generators())
+
         def _selected_presentation_rows(self):
             return ()
 

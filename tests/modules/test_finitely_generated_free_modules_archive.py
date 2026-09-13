@@ -31,6 +31,7 @@ def test_archived_based_free_module_is_the_live_free_module_on_ordered_labels() 
     assert int(module.number_of_module_generators()) == 2
     assert module.relations().cardinality() == 0
     assert not module.is_torsion()
+    assert not module.is_zero()
 
     generators = module.module_generators()
     assert generators["e"] == module.module_generator("e")
@@ -62,4 +63,5 @@ def test_zero_rank_free_module_keeps_empty_basis_and_zero_relation_presentation(
     assert zero.module_generating_set().cardinality() == 0
     assert zero.relations().cardinality() == 0
     assert zero.is_torsion()
+    assert zero.is_zero()
     assert zero.zero() == zero(())
