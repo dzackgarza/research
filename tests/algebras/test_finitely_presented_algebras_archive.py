@@ -1,6 +1,6 @@
 """Archive reconciliation for finitely presented algebras."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import QQ, Sets
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
@@ -28,7 +28,9 @@ def test_archived_finite_presentation_retains_ring_relations_and_generators() ->
 
     assert algebra in AlgebrasWithChosenFinitePresentation(QQ)
     assert algebra.presentation_ring() is presentation
-    assert tuple(algebra.relations()) == (x * y,)
+    relations = algebra.relations()
+    assert relations.index_set() is Sets.Δ[0]
+    assert relations.value(relations.index_set()[0]) == x * y
 
     projection = algebra.algebra_presentation_morphism()
     assert projection.domain() is presentation
@@ -72,4 +74,4 @@ def test_selected_finite_presentation_constructor_is_owned_by_its_category() -> 
     assert notation in AlgebrasWithChosenFinitePresentation(QQ)
     assert declared.presentation_ring() is presentation
     assert notation.presentation_ring() is presentation
-    assert tuple(declared.relations()) == tuple(notation.relations())
+    assert declared.relations() == notation.relations()
