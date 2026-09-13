@@ -144,9 +144,18 @@ class RingMorphism(Morphism):
         assert ideal.ring() is domain, (
             f"an ideal extended along this morphism must be an ideal of {domain}"
         )
-        return self.codomain().ideal(
-            *(self(generator) for generator in ideal.ideal_generators())
+        codomain = self.codomain()
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            AdicCompletions,
         )
+
+        if codomain in AdicCompletions() and domain in OwnedNoetherianRings():
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                _flat_extension_commutative_ideal,
+            )
+
+            return _flat_extension_commutative_ideal(ideal, self)
+        return codomain.ideal(*(self(generator) for generator in ideal.ideal_generators()))
 
     def contraction_of_ideal(self, ideal):
         r"""Return ``f^{-1}(J)``, the contraction of an ideal of the codomain.
