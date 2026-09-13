@@ -420,6 +420,8 @@ class ModuleMorphism(Morphism):
             labels = tuple(label_set)
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             return None
+        if not labels:
+            return (domain.zero(),)
         scalars = _enumerated_ring_elements(ring)
         if scalars is None:
             return None
