@@ -121,6 +121,49 @@ class AdditiveMorphism(Morphism):
     def _call_(self, element):
         return self.codomain()(self._function(self.domain()(element)))
 
+    def _add_(self, other):
+        if not isinstance(other, Morphism) or other.parent() is not self.parent():
+            return NotImplemented
+        return self.parent().elementwise(
+            lambda element: self(element) + other(element)
+        )
+
+    def _neg_(self):
+        return self.parent().elementwise(lambda element: -self(element))
+
+    def __rmul__(self, scalar):
+        return self.parent()._owned_scalar_multiple(scalar, self)
+
+    def _lmul_(self, scalar):
+        return self.parent()._owned_scalar_multiple(scalar, self)
+
+    def _rmul_(self, scalar):
+        return self.parent()._owned_scalar_multiple(scalar, self)
+
+    def _acted_upon_(self, actor, self_on_left):
+        try:
+            scalar = self.parent().base_ring()(actor)
+        except (AttributeError, TypeError, ValueError):
+            return None
+        return self.parent()._owned_scalar_multiple(scalar, self)
+
+    def _composition(self, right):
+        r"""Compose inside the owned additive Hom family.
+
+        Sage's generic map composition constructs a Sage Homset before it
+        composes.  Owned rings also have a ring-Hom hook, so that generic route
+        can ask for the wrong mathematical Hom.  The additive morphism already
+        knows its Hom packet; compose there directly.
+        """
+        if not isinstance(right, Morphism) or right.codomain() is not self.domain():
+            return NotImplemented
+        if not right.parent().homset_category().is_subcategory(
+            self.parent().homset_category()
+        ):
+            return NotImplemented
+        hom = self.parent().hom_family().Of(right.domain(), self.codomain())
+        return hom.elementwise(lambda element: self(right(element)))
+
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
