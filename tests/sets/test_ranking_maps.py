@@ -194,3 +194,13 @@ def test_finite_ordered_image_positional_access_does_not_run_inverse_lookup() ->
 
     assert image[0] == "left"
     assert image[1] == "right"
+
+
+def test_finite_ordinal_positional_access_does_not_enumerate(monkeypatch) -> None:
+    ordinal = Sets.Δ[7]
+
+    def refuse_iteration(_self):
+        raise AssertionError("positional access to a finite ordinal is direct")
+
+    monkeypatch.setattr(type(ordinal), "__iter__", refuse_iteration)
+    assert ordinal[5] == NN(5)

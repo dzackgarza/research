@@ -112,6 +112,13 @@ class FiniteOrdinalSets(OwnedCategory):
         def __iter__(self):
             return (NN(index) for index in range(self._size))
 
+        def __getitem__(self, position):
+            r"""Return the point at ``position`` without enumerating preceding points."""
+            position = int(position)
+            if position < 0 or position >= self._size:
+                raise IndexError(position)
+            return NN(position)
+
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: an ordinal already *is* the ordinal counting it."""
