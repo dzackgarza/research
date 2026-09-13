@@ -340,6 +340,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     zero,
                 )
 
+            target_labels = degree_zero.module_generating_set()
             relation_matrix = _engine_matrix(self.presentation_matrix()).row_module().basis_matrix()
             relation_labels = Sets.Δ[int(relation_matrix.nrows()) - 1]
             degree_one = _free_cover_owner(self)._fresh_free_module_on(relation_labels)
