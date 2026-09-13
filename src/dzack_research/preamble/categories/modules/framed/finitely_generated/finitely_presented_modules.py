@@ -818,7 +818,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             diagonal = normalization.codomain().arrow()
             ring = self.base_ring()
             target_rank = int(diagonal.codomain().module_generating_set().cardinality())
-            diagonal_rank = min(diagonal.parent().nrows(), diagonal.parent().ncols())
+            diagonal_rank = min(
+                int(diagonal.domain().module_generating_set().cardinality()),
+                target_rank,
+            )
             return tuple(diagonal[position, position] if position < diagonal_rank else ring.zero() for position in range(target_rank))
 
         def module_rank(self):
