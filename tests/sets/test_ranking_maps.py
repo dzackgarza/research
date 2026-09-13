@@ -158,6 +158,9 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
     assert tuple(image) == tuple(image_notation) == ("x", "y", "z")
     assert tuple(ordered) == ("u", "v", "w")
     assert tuple(filtered) == tuple(filtered_notation) == ("a", "c")
+    assert filtered[0] == "a"
+    assert filtered[1] == "c"
+    assert filtered_notation[0] == "a"
     assert int(image.ranking_map()("z")) == 2
 
 

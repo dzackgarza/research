@@ -484,6 +484,10 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         def __iter__(self):
             return (element for element in self.source() if self.predicate()(element))
 
+        def __getitem__(self, position):
+            r"""Return the surviving member at ``position`` in inherited order."""
+            return self.ranking_map().inverse()(position)
+
         def cardinality(self) -> Parent:
             return cardinal(sum(1 for _element in self))
 
