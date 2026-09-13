@@ -545,7 +545,26 @@ class Cat(CategoryPacketMethods, Category):
         """
         members = tuple(categories)
         assert members, "the meet of no categories is not represented"
-        return Category.join(members)
+
+        # ``Category.join`` builds one dynamic class from every supplied
+        # branch.  A strict supercategory contributes no new mathematics to
+        # an intersection once one of its subcategories is already present,
+        # and retaining both can make Sage linearize the same inherited
+        # method provider twice.  Remove only strict supercategories; leave
+        # incomparable or merely equivalent categories intact.
+        reduced = []
+        for member in members:
+            if any(
+                other is not member
+                and other.is_subcategory(member)
+                and not member.is_subcategory(other)
+                for other in members
+            ):
+                continue
+            if all(member is not known for known in reduced):
+                reduced.append(member)
+
+        return reduced[0] if len(reduced) == 1 else Category.join(tuple(reduced))
 
     def join(self, categories: Iterable[Category]) -> Category:
         r"""Return the smallest category containing all of ``categories``.
