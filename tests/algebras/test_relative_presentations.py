@@ -50,6 +50,17 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
     )
 
 
+def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
+    presentation = PolynomialRing(QQ, "x")
+    x = presentation.algebra_generator("x")
+    algebra = FinitelyPresentedAlgebra(presentation, ())
+    xbar = algebra.algebra_generator("x")
+
+    assert algebra.lift_to_presentation(xbar) == x
+    radical = algebra.ideal(xbar).radical()
+    assert radical.contains_ambient_element(xbar)
+
+
 def test_pushout_accepts_maps_from_a_presented_source() -> None:
     source_presentation = PolynomialRing(QQ, "t")
     t = source_presentation.algebra_generator("t")

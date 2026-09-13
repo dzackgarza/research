@@ -480,6 +480,11 @@ def _finitely_presented_algebra_from_data(
             ]
         )
     quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
+    presentation_lift = (
+        (lambda element: element)
+        if quotient_engine is quotient_presentation_engine
+        else None
+    )
     labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
@@ -510,6 +515,7 @@ def _finitely_presented_algebra_from_data(
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
+        presentation_lift=presentation_lift,
     )
 
 
