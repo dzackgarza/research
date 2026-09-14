@@ -186,15 +186,38 @@ sage-init-check: sage-init-install
     trap 'gio trash "${probe}" 2>/dev/null || true' EXIT
     cat > "${probe}" <<'PY'
     import os
+    from pathlib import Path
 
     from jupyter_client.manager import start_new_kernel
+    from sage.env import SAGE_STARTUP_FILE
+
+    expected_startup = Path("{{justfile_directory()}}/sage-init.sage").resolve()
+    assert Path(SAGE_STARTUP_FILE).resolve() == expected_startup, (
+        f"installed Sage startup resolves to {Path(SAGE_STARTUP_FILE).resolve()}, "
+        f"expected {expected_startup}"
+    )
 
     km, kc = start_new_kernel(kernel_name="sagemath", env=os.environ.copy())
     try:
         results = {}
-        # The rule under test is that the tracked preamble startup is loaded,
-        # installs the public research vocabulary, and typesets an owned
-        # mathematical object while leaving ordinary text alone.
+        # The rule under test is that an ordinary fresh Sage Jupyter kernel uses
+        # the installed startup link, imports preamble.all into its user scope,
+        # and installs the implicit typesetter without any test-only env override.
+        namespace = {"stdout": ""}
+
+        def capture_namespace(message):
+            if message["msg_type"] == "stream":
+                namespace["stdout"] += message["content"]["text"]
+
+        kc.execute_interactive(
+            "import sys; print('preamble=' + str('dzack_research.preamble.all' in sys.modules)); "
+            "print('Cat=' + str('Cat' in globals())); print('Lattices=' + str('Lattices' in globals()))",
+            timeout=180,
+            output_hook=capture_namespace,
+        )
+        stdout = namespace["stdout"]
+        assert "preamble=True" in stdout, "fresh Sage kernel did not import dzack_research.preamble.all"
+        assert "Cat=True" in stdout and "Lattices=True" in stdout, "research preamble names are absent from fresh Sage kernel"
         for label, code in [("typeset", "Lattices(ZZ)('A2')"), ("plain", "'a plain string'")]:
             got = {}
             kc.execute_interactive(
@@ -204,13 +227,12 @@ sage-init-check: sage-init-install
             results[label] = got
         assert results["typeset"].get("text/latex"), "Sage object did not render as LaTeX"
         assert not results["plain"].get("text/latex"), "plain string was typeset; it should not be"
-        print("sage-init-check: ok — Sage objects typeset, plain text left alone")
+        print("sage-init-check: ok — fresh Jupyter kernel imported preamble.all and typesets Sage objects")
     finally:
         kc.stop_channels()
         km.shutdown_kernel()
     PY
-    SAGE_STARTUP_FILE="{{justfile_directory()}}/sage-init.sage" \
-        "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
+    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
         -c "exec(open('${probe}').read())"
 
 # Rebuild the Sage-owned research environment.

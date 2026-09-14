@@ -447,7 +447,7 @@ class ExactRealField(UniqueRepresentation, Field):
     def __init__(self) -> None:
         Field.__init__(
             self,
-            base_ring=self,
+            base=self,
             category=Cat().meet((OwnedFields(), UncountableSets())),
         )
         realize_owned_category(self)
