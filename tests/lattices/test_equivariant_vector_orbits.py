@@ -34,7 +34,7 @@ def test_representatives_are_the_same_live_orbit_package() -> None:
     decorated, first, _second = _swap_equipped_a1_squared()
     decomposition = decorated.equivariant_vector_orbit_decomposition(first.q())
 
-    assert tuple(decorated.equivariant_vector_orbit_representatives(first.q())) == tuple(
-        decomposition.representatives()
-    )
+    assert decorated.equivariant_vector_orbit_representatives(
+        first.q()
+    ) == decomposition.representatives()
     assert decomposition.orbits().cardinality() == 1

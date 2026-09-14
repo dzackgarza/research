@@ -3863,7 +3863,12 @@ class RootLattices(OwnedCategory):
                 raise ValueError("a reducible root system has one highest root per irreducible component")
             coefficients = tuple(RootSystem(cartan_type).root_lattice().highest_root().to_vector())
             return sum(
-                (coefficient * root for coefficient, root in zip(coefficients, self.simple_roots(), strict=True)),
+                (
+                    self.scalar_multiple(self.base_ring()(int(coefficient)), root)
+                    for coefficient, root in zip(
+                        coefficients, self.simple_roots(), strict=True
+                    )
+                ),
                 self.zero(),
             )
 
@@ -3878,10 +3883,10 @@ class RootLattices(OwnedCategory):
             norm = self.simple_roots()[0].norm()
             if norm not in (2, -2):
                 raise ValueError(f"a simply-laced root framing has simple-root square +/-2, got {norm}")
-            sign = SageZZ(norm) // 2
+            sign = norm // self.base_ring()(2)
             return finite_ordered_image(
                 self.dual_basis(),
-                lambda weight: sign * weight,
+                lambda weight: weight.parent().scalar_multiple(sign, weight),
             )
 
     class ElementMethods:
@@ -3892,17 +3897,25 @@ class RootLattices(OwnedCategory):
             return bool((-self).is_positive_root())
 
         def height(self):
-            return sum(self.monomial_coefficients().values(), SageZZ.zero())
+            return sum(
+                self.monomial_coefficients().values(),
+                self.parent().base_ring().zero(),
+            )
 
         def coroot(self):
             r"""Return ``alpha^vee = 2*b(alpha,-)/b(alpha,alpha)`` in ``L^#``."""
             parent = self.parent()
             if not self.is_root():
                 raise ValueError("the coroot in this lattice is defined for an integral root")
-            norm = SageZZ(self.norm())
+            norm = self.norm()
+            two = parent.base_ring()(2)
             dual_lattice = parent.dual_lattice()
             return dual_lattice.linear_combination(
-                {label: SageZZ(2 * parent.module_generator(label).b(self) / norm) for label in parent.module_generating_set() if parent.module_generator(label).b(self) != 0}
+                {
+                    label: two * parent.module_generator(label).b(self) / norm
+                    for label in parent.module_generating_set()
+                    if parent.module_generator(label).b(self) != 0
+                }
             )
 
 

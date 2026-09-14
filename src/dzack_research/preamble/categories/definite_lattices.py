@@ -333,12 +333,15 @@ def vectors_of_square(lattice, square):
     square = lattice.base_ring()(square)
     target = sign * square
     if target < 0:
-        return tuple()
+        return finite_ordered_set(())
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
-        return tuple()
-    return tuple(_element_from_coordinates(lattice, coordinates) for coordinates in lists[int(target)])
+        return finite_ordered_set(())
+    return finite_ordered_set(tuple(
+        _element_from_coordinates(lattice, coordinates)
+        for coordinates in lists[int(target)]
+    ))
 
 
 def roots(lattice):
@@ -349,8 +352,10 @@ def roots(lattice):
 def roots_of_square(lattice, square):
     square = lattice.base_ring()(square)
     if square == 0:
-        return tuple()
-    return tuple(vector for vector in vectors_of_square(lattice, square) if vector.is_root())
+        return finite_ordered_set(())
+    return finite_ordered_set(tuple(
+        vector for vector in vectors_of_square(lattice, square) if vector.is_root()
+    ))
 
 
 def root_sublattice(lattice):
@@ -410,7 +415,11 @@ def root_sublattice(lattice):
 
 def vectors_of_square_and_divisibility(lattice, square, divisibility):
     divisibility = lattice.base_ring()(divisibility)
-    return tuple(vector for vector in vectors_of_square(lattice, square) if vector.div() == divisibility)
+    return finite_ordered_set(tuple(
+        vector
+        for vector in vectors_of_square(lattice, square)
+        if vector.div() == divisibility
+    ))
 
 
 def shortest_vectors(lattice):

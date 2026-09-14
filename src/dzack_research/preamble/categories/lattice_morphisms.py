@@ -1883,7 +1883,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 raise ArithmeticError(
                     "an indefinite vector-orbit representative has the wrong square"
                 )
-            return representatives
+            return finite_ordered_set(representatives)
         remaining = {
             tuple(vector.to_tuple()): vector
             for vector in lattice.vectors_of_square(square)
@@ -1895,7 +1895,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             for automorphism in self:
                 image = automorphism(representative)
                 remaining.pop(tuple(image.to_tuple()), None)
-        return tuple(representatives)
+        return finite_ordered_set(representatives)
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
 

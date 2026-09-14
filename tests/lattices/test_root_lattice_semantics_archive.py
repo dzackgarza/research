@@ -7,7 +7,7 @@ reflections, fundamental weights, root signs/heights, and coroots.  The
 mere root enumeration.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ConditionSet, Set, ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage",
@@ -50,12 +50,15 @@ def test_archived_simple_reflections_act_on_the_selected_root_framing() -> None:
 
 def test_archived_fundamental_weights_and_coroots_live_in_the_metric_dual() -> None:
     lattice = Lattices(ZZ)("A2")
-    roots = tuple(lattice.simple_roots())
-    weights = tuple(lattice.fundamental_weights())
-    dual_basis = tuple(lattice.dual_basis())
+    roots = lattice.simple_roots()
+    weights = lattice.fundamental_weights()
+    dual_basis = lattice.dual_basis()
 
-    assert len(weights) == 2
-    assert weights == tuple(-weight for weight in dual_basis)
+    assert weights.cardinality() == 2
+    assert all(
+        weight == -dual_weight
+        for weight, dual_weight in zip(weights, dual_basis, strict=True)
+    )
 
     correlation = lattice.correlation_morphism()
     dual_lattice = lattice.dual_lattice()
@@ -67,13 +70,17 @@ def test_archived_fundamental_weights_and_coroots_live_in_the_metric_dual() -> N
 
 def test_archived_a2_root_sign_partition_is_exact() -> None:
     lattice = Lattices(ZZ)("A2")
-    roots = tuple(lattice.roots())
-    positive = tuple(root for root in roots if root.is_positive_root())
-    negative = tuple(root for root in roots if root.is_negative_root())
+    roots = lattice.roots()
+    positive = ConditionSet(roots, lambda root: root.is_positive_root())
+    negative = ConditionSet(roots, lambda root: root.is_negative_root())
 
-    assert len(roots) == 6
-    assert len(positive) == 3
-    assert len(negative) == 3
-    assert {root.height() for root in positive} == {1, 2}
-    assert {root.height() for root in negative} == {-1, -2}
-    assert set(negative) == {-root for root in positive}
+    assert roots.cardinality() == 6
+    assert positive.cardinality() == 3
+    assert negative.cardinality() == 3
+    positive_heights = Set(root.height() for root in positive)
+    negative_heights = Set(root.height() for root in negative)
+    assert positive_heights.cardinality() == 2
+    assert ZZ(1) in positive_heights and ZZ(2) in positive_heights
+    assert negative_heights.cardinality() == 2
+    assert ZZ(-1) in negative_heights and ZZ(-2) in negative_heights
+    assert all(-root in negative for root in positive)
