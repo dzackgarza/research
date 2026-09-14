@@ -298,7 +298,11 @@ class TwoUEichlerModel(SageObject):
         r"""Return the exact entries of an owned ``SL_2(ZZ)`` element."""
         matrix = element._backend().matrix()
         ring = self.lattice().base_ring()
-        return tuple(ring(matrix[row, column]) for row in range(2) for column in range(2))
+        return tuple(
+            ring._from_engine_element(matrix[row, column])
+            for row in range(2)
+            for column in range(2)
+        )
 
     def _left_isometry(self, element):
         r"""Return the isometry induced by ``X |-> A X`` on the determinant model."""
@@ -1032,8 +1036,8 @@ __all__ = [
     "EichlerCoveringOrbitDatum",
     "EichlerOrthogonalFactorizationDatum",
     "EichlerRecursiveStabilizerDatum",
-    "TwoUFullGeneratingDatum",
     "TwoUEichlerModel",
+    "TwoUFullGeneratingDatum",
     "are_in_one_stable_orbit",
     "covering_discriminant_classes",
     "eichler_criterion_applies",

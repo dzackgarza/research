@@ -12,7 +12,9 @@ from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    TensorProduct,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleHomset,
     TensorProductModuleMorphism,
@@ -536,7 +538,9 @@ def Pairings(left_module, right_module, value_module):
 
     if _value_module_over(value_module, left_module.base_ring()):
         try:
-            tensor_product = TensorProduct(left_module, right_module)
+            tensor_product = left_module.module_category().tensor_product(
+                (left_module, right_module)
+            )
         except NotImplementedError:
             pass
         else:
@@ -549,7 +553,7 @@ def BilinearForms(module, value_module):
 
     if _value_module_over(value_module, module.base_ring()):
         try:
-            tensor_product = TensorProduct(module, module)
+            tensor_product = module.module_category().tensor_product((module, module))
         except NotImplementedError:
             pass
         else:

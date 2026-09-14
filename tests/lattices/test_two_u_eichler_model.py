@@ -18,7 +18,7 @@ def _model():
 def test_left_and_right_sl2_actions_are_actual_action_functors() -> None:
     model = _model()
     group = model.special_linear_group()
-    generators = tuple(group.group_generators())
+    generators = group.group_generators()
     left = model.left_action_functor()
     right = model.right_action_functor()
     point = group.classifying_category().an_object()
@@ -26,15 +26,26 @@ def test_left_and_right_sl2_actions_are_actual_action_functors() -> None:
 
     assert left.domain() == group.classifying_category()
     assert right.domain() == group.classifying_category()
-    assert left.codomain().Mor(model.lattice(), model.lattice()) is model.lattice().O()
-    assert left(arrows(generators[0])) == model.left_action(generators[0])
-    assert right(arrows(generators[0])) == model.right_action(generators[0])
+    lattice = model.lattice()
+    lattice_hom = left.codomain().Mor(lattice, lattice)
+    assert lattice_hom is lattice.Mor(lattice)
+    left_arrow = left(arrows(generators[0]))
+    right_arrow = right(arrows(generators[0]))
+    left_isometry = model.left_action(generators[0])
+    right_isometry = model.right_action(generators[0])
+    assert left_arrow.parent() is lattice.O()
+    assert right_arrow.parent() is lattice.O()
+    assert lattice_hom(left_arrow) is left_arrow
+    assert lattice_hom(right_arrow) is right_arrow
+    assert left_arrow == left_isometry
+    assert right_arrow == right_isometry
 
 
 def test_the_determinant_model_actions_preserve_the_group_law_and_commute() -> None:
     model = _model()
     group = model.special_linear_group()
-    first, second = tuple(group.group_generators())[:2]
+    generators = group.group_generators()
+    first, second = generators[0], generators[1]
 
     assert model.left_action(first * second) == (model.left_action(first) * model.left_action(second))
     assert model.right_action(first * second) == (model.right_action(first) * model.right_action(second))
