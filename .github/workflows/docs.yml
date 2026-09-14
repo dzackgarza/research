@@ -5,6 +5,7 @@ name: docs
       - main
     paths:
       - docs/**
+      - scripts/**
       - .github/workflows/docs.yml
   workflow_dispatch: null
 permissions:
@@ -18,41 +19,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          tinytex: true
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2
       - name: Provision shared Pandoc filters
         run: git clone --depth 1 https://github.com/dzackgarza/pandoc-config "$HOME/.pandoc"
       - name: Install TikZ rendering dependencies
+        # texlive-full, the same TeX the figures are authored against locally.
+        # A partial install diverges the moment a figure reaches for a package
+        # nobody listed.
         run: |
           sudo apt-get update
-          sudo apt-get install --yes pdf2svg poppler-utils
-          tlmgr install \
-            bookmark \
-            centernot \
-            dynkin-diagrams \
-            enumitem \
-            esint \
-            import \
-            mathrsfs \
-            mathtools \
-            microtype \
-            pgfplots \
-            slashed \
-            standalone \
-            stmaryrd \
-            subcaption \
-            tikz-cd \
-            was \
-            xypic
-      - name: Fetch shared bibliography
-        run: curl -sSL https://raw.githubusercontent.com/dzackgarza/pandoc-config/main/bib/references.bib
-          -o docs/references.bib
+          sudo apt-get install --yes pdf2svg poppler-utils texlive-full
+      - name: Fetch shared bibliography and MathJax macros
+        # From the pandoc-config clone above, the same way `just docs-assets`
+        # takes them from ~/.pandoc. Fetching the bib over raw.githubusercontent
+        # instead let CI read a different revision than the filters beside it.
+        run: |
+          cp "$HOME/.pandoc/bib/references.bib" docs/references.bib
+          cp "$HOME/.pandoc/templates/css/mathjax-macros.html" docs/_mathjax-macros.html
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+        # The runner has no uv, and quarto-actions already provisioned quarto.
+        # docs_check.py takes the command from $QUARTO; locally that default
+        # (uvx --from quarto-cli quarto) is what keeps the workstation free of
+        # a pinned install.
+        env:
+          QUARTO: quarto
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: docs/_site
   deploy:
@@ -63,4 +57,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

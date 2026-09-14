@@ -33,16 +33,17 @@ semantic-types:
     @cat /tmp/research-pyrefly-negative.log
     @rm -f /tmp/research-pyrefly-negative.log
 
-# Refresh the docs bibliography from the shared ~/.pandoc bib (never frozen in-repo; CI fetches it from the pandoc-config repo)
-docs-bib:
-    cp ~/.pandoc/bib/references.bib docs/references.bib
+# Refresh the docs bibliography and MathJax macro include from the shared ~/.pandoc sources (never frozen in-repo; CI fetches them from the pandoc-config repo). The macros are the generated corpus: the book defines none of its own.
+docs-assets:
+    cp --remove-destination ~/.pandoc/bib/references.bib docs/references.bib
+    cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html docs/_mathjax-macros.html
 
 # Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
-docs-check: docs-bib
+docs-check: docs-assets
     python3 scripts/docs_check.py
 
 # Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint framework/Mathematical-Framework.md`
-docs-lint FILE: docs-bib
+docs-lint FILE: docs-assets
     cd docs && uvx --from quarto-cli quarto render "{{FILE}}" --to html
 
 # Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`
@@ -88,7 +89,7 @@ graph:
     python3 scripts/build_graph.py
 
 # Serve the docs site locally with live reload (quarto provisioned via uvx)
-docs-preview: docs-bib
+docs-preview: docs-assets
     # ponytail: two previews on the same dir cross-trigger each other's watchers
     # (each renders output back into docs/) → endless ~10s reload loop. Kill any
     # stale instance first so this always replaces rather than duplicates.

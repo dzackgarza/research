@@ -17,6 +17,7 @@ site/
 docs/_site/
 docs/.quarto/
 docs/references.bib
+docs/_mathjax-macros.html
 
 # Per-run test reports: a log, not source.
 tests/.report/
