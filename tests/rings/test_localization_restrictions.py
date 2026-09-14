@@ -9,10 +9,10 @@ prime to its germ.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
-    PolynomialRing,
     QQ,
     ZZ,
+    BasedFreeModule,
+    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

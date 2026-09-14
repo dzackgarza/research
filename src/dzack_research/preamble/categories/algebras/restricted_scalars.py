@@ -35,7 +35,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
 
-
 _RESTRICTED_SCALAR_ALGEBRAS = {}
 
 

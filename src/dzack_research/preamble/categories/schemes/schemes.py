@@ -13,7 +13,6 @@ from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
 from sage.schemes.generic.algebraic_scheme import AlgebraicScheme_subscheme as _SageAlgebraicSchemeSubscheme
 from sage.schemes.generic.scheme import AffineScheme as _SageAffineScheme
 from sage.schemes.generic.scheme import Scheme as _SageScheme
-from sage.schemes.generic.spec import Spec as _SageSpec
 from sage.schemes.product_projective.space import (
     ProductProjectiveSpaces as _SageProductProjectiveSpaces,
 )
@@ -71,7 +70,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _proper_restriction_base_ring,
     ring_homset,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,

@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
     FramedAlgebras,
     algebra_structure_view,
@@ -58,11 +57,11 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     OpenImmersions,
-    Schemes,
     SchemeMorCategory,
-    _affine_structure_morphism_to_base,
     SchemeMorphism,
+    Schemes,
     Spec,
+    _affine_structure_morphism_to_base,
     _fresh_affine_spectrum,
     refine_scheme,
 )
