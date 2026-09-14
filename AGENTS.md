@@ -821,7 +821,8 @@ Top-level directories (this is a navigational map; each tree owns its own README
   Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused.
   Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
 
-- **`computations/notebooks/`** — **the user's audit and control plane, not agent work.** It is the JupyterLab `root_dir`. It is not subject to QC, to layout conventions, to naming or taxonomy rules, or to agent tidying: no agent proposes reorganizing it, splitting it, imposing folder schemes on it, or holding its contents to the standards that govern `src/` and the spikes.
+- **`computations/`** is the JupyterLab `root_dir`, so the live research control surface opens at the computational workspace rather than at `$HOME` or only the notebook subtree.
+- **`computations/notebooks/`** — **the user's notebook audit and control plane, not agent work.** It is not subject to QC, to layout conventions, to naming or taxonomy rules, or to agent tidying: no agent proposes reorganizing it, splitting it, imposing folder schemes on it, or holding its contents to the standards that govern `src/` and the spikes.
   Agents write here only when explicitly asked.
   What agents *may* do is make things reachable from it — see the symlinks below.
 

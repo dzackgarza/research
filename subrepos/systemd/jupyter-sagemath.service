@@ -4,24 +4,13 @@ After=default.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/dzack
+WorkingDirectory=/home/dzack/research/computations
 ExecStartPre=/home/dzack/.config/systemd/user/check-port-8888.py
-# Start JupyterLab from Sage's own virtualenv, not through the source tree's
-# top-level ./sage script.  Two reasons, both properties of the meson-era Sage:
-#
-#   * ./sage is the classic wrapper.  It expects the SAGE_LOCAL layout that
-#     ./configure && make produced (local/var/lib/sage/venv-python3.x).  This
-#     checkout is a meson build installed into .venv and has no local/, so the
-#     wrapper runs src/bin/sage-notebook under a Python without Sage:
-#     "ModuleNotFoundError: No module named 'sage'".
-#   * sage.cli's -n/--notebook accepts no further options and calls
-#     jupyterlab.labapp.main([]), so --ip, --port and the IdentityProvider
-#     settings below could not be passed through it in any case.
-#
-# jupyter_client rewrites a kernelspec's bare "python" argv[0] to the launching
-# server's sys.executable, so running the server from .venv is also what makes
-# the sagemath kernelspec resolve Sage's interpreter.
-ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/.venv/bin/jupyter lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --no-browser
+# This unit is owned by the research repository. project-management exposes its
+# localhost route/card but must not generate or restart this service.
+# Run JupyterLab from Sage's meson-era virtualenv directly: the source-tree
+# ./sage notebook wrapper does not run against this installation layout.
+ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/.venv/bin/jupyter-lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ServerApp.disable_check_xsrf=True --ServerApp.local_hostnames=localhost --ServerApp.local_hostnames=jupyterlab.localhost --ip=127.0.0.1 --port=8888 --ServerApp.root_dir=/home/dzack/research/computations --no-browser
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/home/dzack
