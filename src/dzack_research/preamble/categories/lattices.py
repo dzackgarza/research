@@ -727,7 +727,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         categories = []
         if lattice.module_rank() != Infinity:
             categories.append(FiniteRankLattices(lattice.base_ring()))
-        if lattice.is_nondegenerate():
+        nondegenerate = lattice.is_nondegenerate()
+        if nondegenerate is True:
             categories.append(NondegenerateLattices(lattice.base_ring()))
         try:
             is_even = lattice.is_even()
@@ -1639,9 +1640,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _BiproductGram():
                     return all(summand.is_nondegenerate() for summand in gram._summands)
                 case _ColimitGram():
-                    # The represented colimit forms used here are orthogonal
-                    # unions of nondegenerate finite stages.
-                    return all(stage.is_nondegenerate() for stage in gram._objects)
+                    # A stage callable represents every finite restriction, but
+                    # no finite sample decides nondegeneracy of the full colimit.
+                    return Unknown
                 case _:
                     if not self.module_rank().is_finite():
                         raise NotImplementedError("nondegeneracy of this infinite Gram presentation is not decided")
@@ -3002,7 +3003,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Iinf = Lattices(ZZ)(ZZ^NN)
                 sage: Iinf.module_generator(0).is_root()
                 True
-                sage: Iinf((2, 1)).is_root()
+                sage: Iinf.linear_combination({0: ZZ(2), 1: ZZ(1)}).is_root()
                 False
             """
 
