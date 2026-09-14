@@ -2551,6 +2551,33 @@ class Lattices(OwnedCategoryOverBaseRing):
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
 
+        def is_elliptic(self) -> bool:
+            r"""Return whether this finite-rank lattice is negative definite.
+
+            In the reflection-lattice convention used by the project, an
+            elliptic form has signature ``(0,n,0)``.  The public signature pair
+            records only the positive and negative indices, while the rank
+            determines the radical dimension.
+            """
+
+            return self.is_negative_definite()
+
+        def is_parabolic(self) -> bool:
+            r"""Return whether the form has signature ``(0,n-1,1)``.
+
+            Thus a parabolic lattice is negative semidefinite with a
+            one-dimensional radical; negative-definite (elliptic) lattices are
+            deliberately excluded.
+            """
+
+            rank = self.module_rank()
+            if not rank.is_finite():
+                return False
+            finite_rank = int(rank.finite_value())
+            if finite_rank < 2:
+                return False
+            return self.signature_pair() == signature_pair(0, finite_rank - 1)
+
         def lll_reduction(self):
 
             return lll_reduction(self)
