@@ -1,6 +1,6 @@
 r"""Structured subgroup constructors retain the mathematics that defines them."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices, Set
 from dzack_research.preamble.categories.group.groups import GeneratedSubgroups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,
@@ -25,7 +25,8 @@ def test_generated_subgroup_retains_the_selected_generating_family() -> None:
     subgroup = group.subgroup((generator,))
 
     assert subgroup in GeneratedSubgroups(group)
-    assert tuple(subgroup.selected_subgroup_generators()) == (generator,)
+    assert subgroup.selected_subgroup_generators().cardinality() == 1
+    assert subgroup.selected_subgroup_generators()[0] == generator
     assert subgroup.supergroup() is group
 
 
@@ -72,13 +73,14 @@ def test_stabilizer_centralizer_and_intersection_retain_their_defining_objects()
     assert centralizer.centralizing_element() is identity
 
     assert intersection in IntersectionSubgroups(group)
-    assert intersection.intersected_subgroups() == (setwise, centralizer)
+    assert intersection.intersected_subgroups() == Set((setwise, centralizer))
 
 
 def test_predicate_subgroup_notation_and_structured_routes_use_category_constructors() -> None:
     _lattice, group = _orthogonal_group()
     identity = group.one()
-    predicate = lambda element: element * identity == identity * element
+    def predicate(element):
+        return element * identity == identity * element
 
     declared = PredicateSubgroups(group)(predicate, "g commutes with 1")
     notation = predicate_subgroup(group, predicate, "g commutes with 1")

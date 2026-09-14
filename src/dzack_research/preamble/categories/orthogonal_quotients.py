@@ -3,6 +3,7 @@ from sage.libs.gap.libgap import libgap
 
 from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Set
 
 
 class OrthogonalCharacterQuotient:
@@ -138,10 +139,12 @@ class OrthogonalCharacterQuotient:
         return True
 
     def image_keys(self):
-        return frozenset(self._witnesses)
+        return Set(tuple(self._witnesses))
 
     def subgroup_image_keys(self):
-        return frozenset(key for key in self._witnesses if self._allowed(key))
+        return Set(
+            tuple(key for key in self._witnesses if self._allowed(key))
+        )
 
     def _generated_keys(self, generators):
         identity = self.image(self.supergroup.one())
@@ -256,7 +259,7 @@ class OrthogonalCharacterQuotient:
                 "the selected right-coset representatives repeat a character-image coset"
             )
         covered = frozenset().union(*owned_cosets) if owned_cosets else frozenset()
-        if covered != self.image_keys():
+        if Set(covered) != self.image_keys():
             raise ArithmeticError(
                 "the selected right cosets do not cover the full character image"
             )

@@ -4,7 +4,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
-    _canonical_subgroup_inclusion,
     _owned_group,
 )
 from dzack_research.preamble.categories.orthogonal_quotients import (
@@ -15,6 +14,7 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     subgroup_vectors_are_equivalent,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.set_categories import Set
 from dzack_research.preamble.owned_category import object_of
 
 
@@ -106,8 +106,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             supergroup_cardinality = self.supergroup().cardinality()
             if self.contains_character_kernel():
                 quotient = self.finite_character_quotient()
-                image_size = len(quotient.image_keys())
-                subgroup_image_size = len(quotient.subgroup_image_keys())
+                image_size = int(quotient.image_keys().cardinality())
+                subgroup_image_size = int(quotient.subgroup_image_keys().cardinality())
                 if supergroup_cardinality.is_finite():
                     order = int(supergroup_cardinality.finite_value())
                     return cardinal(order * subgroup_image_size // image_size)
@@ -312,7 +312,8 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         if morphism.domain() is not group:
             raise ValueError("the preimage morphism has the wrong domain group")
         if predicate is None:
-            predicate = lambda element: morphism(element) in subgroup
+            def predicate(element):
+                return morphism(element) in subgroup
         if description is None:
             description = f"{morphism}(g) lies in {subgroup}"
         return object_of(
@@ -456,7 +457,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
 
     class ParentMethods:
         def __init__(self, intersected_subgroups, **rest) -> None:
-            self._preamble_intersected_subgroups = tuple(intersected_subgroups)
+            self._preamble_intersected_subgroups = Set(tuple(intersected_subgroups))
             super().__init__(**rest)
 
         def intersected_subgroups(self):

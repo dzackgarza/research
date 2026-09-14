@@ -1,6 +1,6 @@
 r"""The polarized Enriques arithmetic group as an owned intersection."""
 
-from dzack_research.preamble.all import Involutions, NamedLattices
+from dzack_research.preamble.all import Involutions, NamedLattices, Set
 from dzack_research.preamble.categories.lattice_centralizers import (
     PolarizedEquivariantLattice,
 )
@@ -41,4 +41,4 @@ def test_enriques_polarization_retains_invariant_lift_and_group_maps() -> None:
     assert negation in centralizer
     assert negation not in stabilizer
     assert negation not in group
-    assert set(group.intersected_subgroups()) == {centralizer, stabilizer}
+    assert group.intersected_subgroups() == Set((centralizer, stabilizer))
