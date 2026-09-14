@@ -7,7 +7,7 @@ polyhedron and relevant vectors; these specimens retain the literature facts
 that were not present in the current regression surface.
 """
 
-from dzack_research.preamble.all import QQ, Lattices
+from dzack_research.preamble.all import QQ, Lattices, Set, tensor
 
 
 def test_square_lattice_voronoi_cell_is_the_unit_area_half_cube() -> None:
@@ -16,8 +16,8 @@ def test_square_lattice_voronoi_cell_is_the_unit_area_half_cube() -> None:
 
     assert cell.volume() == 1
     assert cell.n_vertices() == 4
-    assert sorted(tuple(vertex) for vertex in cell.vertices()) == sorted(
-        (QQ(a) / 2, QQ(b) / 2)
+    assert Set(cell.vertices()) == Set(
+        tensor.vector(QQ, (QQ(a) / 2, QQ(b) / 2))
         for a in (-1, 1)
         for b in (-1, 1)
     )

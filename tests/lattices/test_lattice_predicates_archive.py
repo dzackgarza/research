@@ -10,7 +10,7 @@ def test_elliptic_and_parabolic_are_distinct_lattice_predicates() -> None:
 
 
 def test_isotropy_in_the_hyperbolic_plane_is_exactly_zero_norm() -> None:
-    e, f = tuple(NamedLattices.U.module_generators())
+    e, f = NamedLattices.U.module_generators()
 
     assert e.norm() == 0
     assert f.norm() == 0

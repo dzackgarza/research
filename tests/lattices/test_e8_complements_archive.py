@@ -10,7 +10,7 @@ from dzack_research.preamble.all import Lattices
 
 
 def _adjacent_pair(lattice):
-    generators = tuple(lattice.module_generators())
+    generators = lattice.module_generators()
     return next(
         (left, right)
         for position, left in enumerate(generators)

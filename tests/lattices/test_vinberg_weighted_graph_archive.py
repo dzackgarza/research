@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.vinberg_invariants import (
     VinbergInvariantMatrices,
     projective_weighted_graph,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 def test_induced_weighted_subgraph_retains_exact_vertex_and_edge_weights() -> None:
@@ -15,11 +16,11 @@ def test_induced_weighted_subgraph_retains_exact_vertex_and_edge_weights() -> No
         CoxeterDiagrams().from_cartan_type(["A", 3])
     )
     graph = matrix.weighted_graph()
-    vertices = tuple(graph.vertices())
-    selected = (vertices[0], vertices[1])
+    vertices = graph.vertices()
+    selected = finite_ordered_set((vertices[0], vertices[1]))
     subgraph = graph.induced_subgraph(selected)
 
-    assert tuple(subgraph.vertices()) == selected
+    assert subgraph.vertices() == selected
     assert subgraph.is_symmetric()
     assert not subgraph.is_directed()
     for vertex in selected:
@@ -33,7 +34,7 @@ def test_symmetric_weighted_graph_round_trips_to_its_vinberg_invariants() -> Non
     )
     reconstructed = original.weighted_graph().vinberg_invariant_matrix()
 
-    assert tuple(reconstructed.index_set()) == tuple(original.index_set())
+    assert reconstructed.index_set() == original.index_set()
     for left in original.index_set():
         for right in original.index_set():
             assert (

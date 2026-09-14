@@ -1,4 +1,5 @@
 from dzack_research.preamble.all import (
+    Set,
     ZZ,
     Lattices,
     finite_ordered_set,
@@ -15,14 +16,17 @@ def test_pairing_configuration_exposes_canonical_gram_and_position_certificate()
 
     assert canonical.nrows() == canonical.ncols() == 3
     assert certificate.index_set() is configuration.configuration_positions()
-    assert finite_ordered_set(tuple(certificate)).cardinality() == 3
+    assert Set(certificate) == Set(certificate.index_set())
 
 
 def test_canonical_pairing_matrix_is_invariant_under_reversing_an_A3_framing() -> None:
     lattice = Lattices(ZZ)("A3")
-    basis = tuple(lattice.module_generators())
+    basis = lattice.module_generators()
     forward = vector_configuration(lattice, basis)
-    reversed_configuration = vector_configuration(lattice, tuple(reversed(basis)))
+    reversed_configuration = vector_configuration(
+        lattice,
+        finite_ordered_set((basis[2], basis[1], basis[0])),
+    )
 
     assert forward.canonical_pairing_matrix(algorithm="sage") == (
         reversed_configuration.canonical_pairing_matrix(algorithm="sage")

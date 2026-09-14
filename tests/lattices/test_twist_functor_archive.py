@@ -36,7 +36,7 @@ def test_twist_functor_scales_the_form_and_caches_the_selected_image() -> None:
 def test_nonidentity_isometry_keeps_its_matrix_after_twisting() -> None:
     integers = _own_ring(SageZZ)
     plane = Lattices(integers)("U")
-    labels = tuple(plane.module_generating_set())
+    labels = plane.module_generating_set()
     swap = plane.Aut()(
         {
             labels[0]: plane.module_generator(labels[1]),

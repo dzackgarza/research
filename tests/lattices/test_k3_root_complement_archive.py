@@ -13,19 +13,26 @@ from dzack_research.preamble.all import Lattices
 
 def test_primitive_k3_root_has_the_nikulin_complement_discriminant_form() -> None:
     k3 = Lattices.LK3
-    e, f = tuple(k3.module_generators())[:2]
+    generators = k3.module_generators()
+    e, f = generators[0], generators[1]
     root = k3.subobject_on((e - f,))
     complement = root.orthogonal_complement()
+    root_signature = root.signature_pair()
+    complement_signature = complement.signature_pair()
 
     assert root.is_primitive()
     assert root.gram_matrix().determinant() == -2
-    assert root.signature_pair() == (0, 1)
+    assert root_signature.first() == 0
+    assert root_signature.second() == 1
 
     assert complement.module_rank() == 21
-    assert complement.signature_pair() == (3, 18)
+    assert complement_signature.first() == 3
+    assert complement_signature.second() == 18
     assert complement.is_even()
     assert abs(complement.gram_matrix().determinant()) == 2
-    assert tuple(complement.discriminant_group().invariants()) == (2,)
+    invariants = complement.discriminant_group().invariants()
+    assert invariants.cardinality() == 1
+    assert invariants[0] == 2
     assert complement.discriminant_group().is_anti_isometric(
         root.discriminant_group()
     )

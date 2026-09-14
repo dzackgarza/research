@@ -33,14 +33,14 @@ def test_nikulins_classification_has_seventy_five_types() -> None:
     assert TwoElementary.cardinality() == 75
 
 
-@pytest.mark.parametrize("triple", tuple(TwoElementary), ids=_name)
+@pytest.mark.parametrize("triple", TwoElementary, ids=_name)
 def test_each_hyperbolic_type_is_realised(triple) -> None:
     lattice = TwoElementary[triple]
 
     assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
 
 
-@pytest.mark.parametrize("triple", tuple(NegativeDefTwoElementary), ids=_name)
+@pytest.mark.parametrize("triple", NegativeDefTwoElementary, ids=_name)
 def test_each_negative_definite_type_is_realised(triple) -> None:
     for lattice in NegativeDefTwoElementary[triple]:
         assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)

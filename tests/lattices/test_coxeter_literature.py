@@ -32,7 +32,13 @@ and is not enumerated here.
 import pytest
 from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
-from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
+from dzack_research.preamble.all import (
+    ConditionSet,
+    ZZ,
+    CoxeterDiagrams,
+    Lattices,
+    finite_ordered_set,
+)
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -72,7 +78,7 @@ def bracket_diagram(*bonds: int):
     consecutive bonds are \(p_1,\dots,p_k\) and whose remaining bonds are
     \(2\).
     """
-    rank = len(bonds) + 1
+    rank = sum(1 for _bond in bonds) + 1
     entries = [
         [
             1 if i == j else (bonds[min(i, j)] if abs(i - j) == 1 else 2)
@@ -136,13 +142,13 @@ AFFINE_TYPES = (
 )
 
 
-@pytest.mark.parametrize("bonds", sorted(BRACKET_ORDERS))
+@pytest.mark.parametrize("bonds", BRACKET_ORDERS)
 def test_a_bracket_symbol_names_an_elliptic_diagram_of_the_tabulated_order(bonds) -> None:
     r"""Each bracket symbol denotes an elliptic diagram whose group has the tabulated order."""
     name, order = BRACKET_ORDERS[bonds]
     diagram = bracket_diagram(*bonds)
 
-    assert diagram.cardinality() == len(bonds) + 1
+    assert diagram.cardinality() == sum(1 for _bond in bonds) + 1
     assert diagram.is_connected()
     assert diagram.is_elliptic(), f"{name} is a finite Coxeter group"
     assert diagram.coxeter_group().order() == order
@@ -289,7 +295,7 @@ def test_the_root_gram_of_a_simply_laced_diagram_is_minus_its_schlaefli_matrix(
             assert gram[row, column] == -2 * schlafli[row, column]
 
 
-@pytest.mark.parametrize("cartan_type", sorted(EXCEPTIONAL_ORDERS))
+@pytest.mark.parametrize("cartan_type", EXCEPTIONAL_ORDERS)
 def test_an_exceptional_finite_group_has_the_tabulated_order(cartan_type) -> None:
     r"""\(|W(F_4)| = 1152\), \(|W(G_2)| = 12\), \(|W(H_3)| = 120\)."""
     letter, rank = cartan_type
@@ -298,7 +304,7 @@ def test_an_exceptional_finite_group_has_the_tabulated_order(cartan_type) -> Non
     assert diagram.coxeter_group().order() == EXCEPTIONAL_ORDERS[cartan_type]
 
 
-@pytest.mark.parametrize("cartan_type", sorted(DIAGRAM_INVARIANTS))
+@pytest.mark.parametrize("cartan_type", DIAGRAM_INVARIANTS)
 def test_diagram_invariants_match_the_literature(cartan_type) -> None:
     r"""Node count, edge count and \(|\operatorname{Aut}|\) of the diagram.
 
@@ -351,7 +357,7 @@ def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> N
 
 def test_archived_b3_root_roundtrip_retains_gram_bonds_and_group() -> None:
     rooted = CoxeterDiagrams().from_cartan_type(["B", 3], rooted=True)
-    recovered = CoxeterDiagrams().from_roots(tuple(rooted.roots()))
+    recovered = CoxeterDiagrams().from_roots(rooted.roots())
 
     assert recovered.root_gram_tensor() == rooted.root_gram_tensor()
     assert recovered.coxeter_matrix() == rooted.coxeter_matrix()
@@ -411,7 +417,7 @@ def test_archived_large_exceptional_orders_are_the_products_of_invariant_degrees
     }
 
     for cartan_type, (order, coxeter_number) in expected.items():
-        degrees = CoxeterDiagrams().from_cartan_type(list(cartan_type)).coxeter_group().degrees()
+        degrees = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group().degrees()
         from math import prod
 
         assert prod(int(degree) for degree in degrees) == order
@@ -429,7 +435,7 @@ def test_archived_longest_elements_have_one_step_per_positive_root() -> None:
     }
 
     for cartan_type, expected in expected_lengths.items():
-        group = CoxeterDiagrams().from_cartan_type(list(cartan_type)).coxeter_group()
+        group = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group()
         assert group.long_element().length() == expected
 
 
@@ -443,9 +449,9 @@ def test_archived_root_counts_positive_roots_and_highest_root_heights_agree() ->
     for name, (root_count, positive_count, coxeter_number) in expected.items():
         lattice = getattr(Lattices, name)
         roots = lattice.roots()
-        positive = tuple(root for root in roots if root.is_positive_root())
+        positive = ConditionSet(roots, lambda root: root.is_positive_root())
 
         assert roots.cardinality() == root_count
-        assert len(positive) == positive_count
+        assert positive.cardinality() == positive_count
         assert lattice.coxeter_number() == coxeter_number
         assert lattice.highest_root().height() == coxeter_number - 1

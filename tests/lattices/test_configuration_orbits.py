@@ -30,7 +30,7 @@ ROOT_BASES = {
 }
 
 
-@pytest.mark.parametrize("name", sorted(ROOT_BASES))
+@pytest.mark.parametrize("name", ROOT_BASES)
 def test_a_root_basis_pairing_graph_has_the_diagram_automorphisms(name) -> None:
     diagram_order, isometry_order, weyl_order = ROOT_BASES[name]
     root_lattice = Lattices(ZZ)(name)

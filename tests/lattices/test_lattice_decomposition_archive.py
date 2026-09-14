@@ -15,12 +15,12 @@ def test_archived_orthogonal_sum_decomposition_retains_actual_summand_embeddings
     lattice = hyperbolic + root
 
     decomposition = lattice.decomposition()
-    summands = tuple(lattice.summands())
+    summands = lattice.summands()
 
     assert decomposition is not None
     assert lattice.is_decomposable()
-    assert len(summands) == 2
-    assert tuple(decomposition.summands()) == summands
+    assert summands.cardinality() == 2
+    assert decomposition.summands() == summands
 
     for summand in summands:
         assert summand.ambient_lattice() is lattice

@@ -29,7 +29,7 @@ def test_target_stabilizer_left_adjusts_an_O_transporter_into_SO() -> None:
             [0, 0, 1],
         ]
     )
-    first, second, _third = tuple(lattice.module_generators())
+    first, second, _third = lattice.module_generators()
     special = lattice.SO()
 
     witness = special.vector_equivalence_witness(first, second)

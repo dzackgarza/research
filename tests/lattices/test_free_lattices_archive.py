@@ -30,7 +30,7 @@ def test_gram_constructor_is_the_live_finite_rank_free_lattice() -> None:
 def test_lattice_form_and_underlying_module_are_the_same_represented_object() -> None:
     lattice = Lattices(ZZ)(((0, 1), (1, 0)))
     form = lattice.form()
-    first, second = tuple(lattice.module_generators())
+    first, second = lattice.module_generators()
 
     assert lattice.unformed_module() is lattice
     assert form.module() is lattice

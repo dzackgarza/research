@@ -18,7 +18,7 @@ def test_archived_vinberg_algorithm_is_the_live_owned_root_family() -> None:
     archived_name = lattice.vinberg_algorithm(max_decompositions=200)
     live_name = lattice.vinberg_simple_roots(max_decompositions=200)
 
-    assert tuple(archived_name) == tuple(live_name)
+    assert archived_name == live_name
     assert all(root.parent() is lattice for root in archived_name)
 
 

@@ -410,7 +410,7 @@ class IsotropicFlag:
         return self._basis
 
     def terms(self):
-        return self._terms
+        return finite_ordered_set(self._terms)
 
     def flag_length(self):
         r"""Return how many terms this flag has.

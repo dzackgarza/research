@@ -2339,7 +2339,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 _subobject_inclusion_factory=target_inclusion,
             )
 
-            target_subgroup = second_discriminant.unformed_module().subgroup_on(tuple(second_forget(target_class) for target_class in target_classes))
+            target_subgroup = second_discriminant.unformed_module().subobject_on(
+                tuple(second_forget(target_class) for target_class in target_classes)
+            )
             extension_index = first.sum(second).index()
             if source_form.cardinality() != extension_index:
                 raise ArithmeticError("the recovered glue subgroup does not have order [L:S+R]")

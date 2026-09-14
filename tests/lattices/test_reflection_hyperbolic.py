@@ -23,7 +23,7 @@ import pytest
 from py_polyhedral.binaries import binary_available
 from sage.all import ZZ as SageZZ
 
-from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
+from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ, finite_ordered_set
 from dzack_research.preamble.engine_capabilities import EngineCapabilityUnavailable
 
 
@@ -38,7 +38,8 @@ def test_a_lattice_enters_the_category_by_its_signature() -> None:
     signature = lattice.signature_pair()
 
     assert lattice in HyperbolicLattices(ZZ)
-    assert (signature.first(), signature.second()) == (1, 2)
+    assert signature.first() == 1
+    assert signature.second() == 2
 
     definite = Lattices(ZZ)("A2")
     assert definite not in HyperbolicLattices(ZZ)
@@ -62,10 +63,23 @@ def test_vinbergs_criterion_bounds_the_root_lengths_of_the_bogachev_kolpakov_lat
     with_roots = HyperbolicLattices(ZZ)(Lattices.BogachevKolpakovNonReflective)
     without_roots = HyperbolicLattices(ZZ)(Lattices.BogachevKolpakovWithoutRoots)
 
-    assert tuple(with_roots.possible_root_lengths()) == (1, 2, 7, 14, 49, 98)
+    expected_lengths = finite_ordered_set(
+        (ZZ(1), ZZ(2), ZZ(7), ZZ(14), ZZ(49), ZZ(98))
+    )
+    lengths = with_roots.possible_root_lengths()
+    assert lengths.cardinality() == expected_lengths.cardinality()
+    assert all(
+        lengths[position] == expected_lengths[position]
+        for position in range(int(lengths.cardinality()))
+    )
 
     lengths = without_roots.possible_root_lengths()
-    assert tuple(lengths) == tuple(SageZZ(4802).divisors())
+    expected_divisors = ZZ(4802).divisors()
+    assert lengths.cardinality() == expected_divisors.cardinality()
+    assert all(
+        lengths[position] == expected_divisors[position]
+        for position in range(int(lengths.cardinality()))
+    )
     for candidate in (49, 98, 2401, 4802):
         assert candidate in lengths, "a candidate length the paper had to exclude"
 
@@ -195,9 +209,8 @@ def test_the_edgewalk_decides_reflectivity_where_vinbergs_algorithm_semi_decides
 
         absence = refusal.value.absent
         assert refusal.value.capability == "lorentzian_edgewalk_fundamental_domain"
-        assert tuple(entry.provider for entry in absence) == (
-            "polyhedral-common-via-py-polyhedral",
-        )
+        assert absence[0].provider == "polyhedral-common-via-py-polyhedral"
+        assert not absence[1:]
         assert "LORENTZ_ReflectiveEdgewalk" in absence[0].provisioning
         return
 

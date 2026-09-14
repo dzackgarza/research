@@ -113,9 +113,10 @@ def test_finite_ordered_image_over_owned_labels_retains_the_value_map() -> None:
         lambda label: ("value", label),
     )
 
+    expected = finite_ordered_set((("value", "left"), ("value", "right")))
     assert image.index_set() is labels
-    assert tuple(image) == (("value", "left"), ("value", "right"))
-    assert image[0] == ("value", "left")
+    assert image == expected
+    assert image[0] == expected[0]
     assert int(image.ranking_map()(("value", "right"))) == 1
 
 
@@ -154,10 +155,10 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
     )
     filtered_notation = finite_ordered_filter(declared, lambda value: value != "b")
 
-    assert tuple(declared) == tuple(notation) == ("a", "b", "c")
-    assert tuple(image) == tuple(image_notation) == ("x", "y", "z")
-    assert tuple(ordered) == ("u", "v", "w")
-    assert tuple(filtered) == tuple(filtered_notation) == ("a", "c")
+    assert declared == notation == finite_ordered_set(("a", "b", "c"))
+    assert image == image_notation == finite_ordered_set(("x", "y", "z"))
+    assert ordered == finite_ordered_set(("u", "v", "w"))
+    assert filtered == filtered_notation == finite_ordered_set(("a", "c"))
     assert filtered[0] == "a"
     assert filtered[1] == "c"
     assert filtered_notation[0] == "a"
@@ -176,8 +177,8 @@ def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -
 
     assert zero is not even
     assert direct is not even
-    assert tuple(zero) == (0,)
-    assert tuple(direct) == (2,)
+    assert zero == finite_ordered_set((0,))
+    assert direct == finite_ordered_set((2,))
     assert zero.cardinality() == 1
     assert direct.cardinality() == 1
 

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import Set, ZZ, Lattices
 
 
 def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:
@@ -25,8 +25,8 @@ def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:
 def test_a2_voronoi_facets_are_indexed_by_the_six_relevant_vectors() -> None:
     lattice = Lattices(ZZ)("A2")
     cell = lattice.voronoi_cell()
-    facet_normals = {tuple(facet.relevant_vector().to_tuple()) for facet in cell.facets()}
-    relevant = {tuple(vector.to_tuple()) for vector in lattice.voronoi_relevant_vectors()}
+    facet_normals = Set(facet.relevant_vector() for facet in cell.facets())
+    relevant = Set(lattice.voronoi_relevant_vectors())
 
     assert cell.n_vertices() == 6
     assert cell.n_facets() == 6

@@ -15,7 +15,7 @@ def _lorentz_plane():
 
 def test_selected_positive_component_distinguishes_the_two_sheets() -> None:
     lattice = _lorentz_plane()
-    timelike, spacelike = tuple(lattice.module_generators())
+    timelike, spacelike = lattice.module_generators()
     component = lattice.positive_cone_component(timelike)
 
     assert timelike in component
@@ -36,7 +36,7 @@ def test_projectivized_light_cone_has_ideal_vertices() -> None:
     lattice = _lorentz_plane()
     timelike = lattice.module_generator(0)
     dual = lattice.dual_module()
-    first, second = tuple(dual.module_generators())
+    first, second = dual.module_generators()
     cone = rational_polyhedral_cone(lattice, (first - second, first + second), complete=True)
 
     polyhedron = lattice.hyperbolic_space(timelike).projectivize_cone(cone)

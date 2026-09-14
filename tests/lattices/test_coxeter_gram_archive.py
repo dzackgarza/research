@@ -27,9 +27,11 @@ def test_signed_discriminant_keeps_the_owned_determinant_sign() -> None:
 
 def test_a2_root_lattice_has_archived_determinant_signature_and_discriminant() -> None:
     lattice = CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True).root_lattice()
+    signature = lattice.signature_pair()
 
     assert lattice.gram_matrix().determinant() == 3
-    assert tuple(lattice.signature_pair()) == (0, 2)
+    assert signature.first() == 0
+    assert signature.second() == 2
     assert lattice.discriminant() == -3
     assert lattice.is_nondegenerate()
 
@@ -37,25 +39,31 @@ def test_a2_root_lattice_has_archived_determinant_signature_and_discriminant() -
 def test_a_series_root_gram_determinants_retain_the_alternating_sign() -> None:
     for rank, determinant in ((1, -2), (2, 3), (3, -4), (4, 5)):
         lattice = CoxeterDiagrams().from_cartan_type(["A", rank], rooted=True).root_lattice()
+        signature = lattice.signature_pair()
         assert int(lattice.module_rank()) == rank
         assert lattice.gram_matrix().determinant() == determinant
-        assert tuple(lattice.signature_pair()) == (0, rank)
+        assert signature.first() == 0
+        assert signature.second() == rank
 
 
 def test_affine_a2_and_ultraparallel_edge_distinguish_radical_from_indefiniteness() -> None:
     affine_lattice = Lattices(ZZ)([[-2, 1, 1], [1, -2, 1], [1, 1, -2]])
     affine_diagram = CoxeterDiagrams().from_cartan_type(["A", 2, 1])
+    affine_signature = affine_lattice.signature_pair()
 
     assert affine_lattice.gram_matrix().determinant() == 0
-    assert tuple(affine_lattice.signature_pair()) == (0, 2)
+    assert affine_signature.first() == 0
+    assert affine_signature.second() == 2
     assert affine_lattice.radical().module_rank() == 1
     assert affine_diagram.is_parabolic()
     assert not affine_diagram.is_elliptic()
 
     hyperbolic_lattice = Lattices(ZZ)([[-2, 3], [3, -2]])
     hyperbolic_diagram = CoxeterDiagrams().from_roots(hyperbolic_lattice.module_generators())
+    hyperbolic_signature = hyperbolic_lattice.signature_pair()
     assert hyperbolic_lattice.gram_matrix().determinant() == -5
-    assert tuple(hyperbolic_lattice.signature_pair()) == (1, 1)
+    assert hyperbolic_signature.first() == 1
+    assert hyperbolic_signature.second() == 1
     assert hyperbolic_lattice.is_nondegenerate()
     assert not hyperbolic_diagram.is_elliptic()
     assert not hyperbolic_diagram.is_parabolic()

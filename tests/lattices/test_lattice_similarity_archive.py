@@ -12,7 +12,7 @@ from dzack_research.preamble.all import ZZ, Lattices
 def test_archived_scale_two_similarity_is_an_actual_isometry_from_the_twist() -> None:
     source = Lattices(ZZ)("U")
     target = source.twist(2)
-    images = tuple(target.module_generators())
+    images = target.module_generators()
 
     similarity = source.similarity(2, images, codomain=target)
 

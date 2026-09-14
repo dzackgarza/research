@@ -7,7 +7,7 @@ parent: a subgroup still consists of lattice isometries, while its ambient
 more specific generated-subgroup category.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices, finite_ordered_set
 from dzack_research.preamble.categories.group.groups import (
     GeneratedSubgroups,
     Subgroups,
@@ -25,7 +25,7 @@ def test_generated_lattice_isometry_subgroup_keeps_the_actual_orthogonal_group()
     assert subgroup in Subgroups(orthogonal)
     assert subgroup in GeneratedSubgroups(orthogonal)
     assert subgroup.supergroup() is orthogonal
-    assert tuple(subgroup.selected_subgroup_generators()) == (reflection,)
+    assert subgroup.selected_subgroup_generators() == finite_ordered_set((reflection,))
     assert reflection in subgroup
     assert subgroup.one() in subgroup
 

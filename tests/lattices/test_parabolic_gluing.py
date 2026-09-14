@@ -1,6 +1,6 @@
 r"""Non-unimodular cusp gluing can restrict the Levi image."""
 
-from dzack_research.preamble.all import ZZ, Lattices, primitive_isotropic
+from dzack_research.preamble.all import ZZ, Lattices, finite_ordered_set, primitive_isotropic
 
 
 def _glued_divisibility_two_cusp():
@@ -15,7 +15,7 @@ def _glued_divisibility_two_cusp():
             [-1, 0, 0, 0, 0, -2],
         ]
     )
-    g, _f, r1, r2, r3, r4 = tuple(lattice.module_generators())
+    g, _f, r1, r2, r3, r4 = lattice.module_generators()
     isotropic = 2 * g - r1 - r2 - r3 - r4
     line = primitive_isotropic(lattice, (isotropic,))
     return lattice, isotropic, line
@@ -50,9 +50,11 @@ def test_every_reported_Levi_generator_is_the_descent_of_a_parabolic_generator()
     reduction = line.isotropic_reduction()
     levi = reduction.levi_action()
     parabolic_generators = lattice.O().isotropic_stabilizer_generators(line)
-    descended = {levi(generator) for generator in parabolic_generators}
+    descended = finite_ordered_set(
+        [levi(generator) for generator in parabolic_generators]
+    )
 
-    assert set(reduction.levi_image_generators()) == descended
+    assert reduction.levi_image_generators() == descended
     assert all(generator in reduction.O() for generator in descended)
 
 

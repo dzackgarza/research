@@ -31,7 +31,7 @@ def test_cell_stabilizer_is_an_actual_subgroup_of_the_lattice_group() -> None:
     lattice = Lattices(integers)([[1, 0], [0, 1]])
     cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
     orthogonal_group = lattice.O()
-    labels = tuple(lattice.module_generating_set())
+    labels = lattice.module_generating_set()
     swap = orthogonal_group(
         {
             labels[0]: lattice.module_generator(labels[1]),

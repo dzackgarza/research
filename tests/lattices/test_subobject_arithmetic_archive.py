@@ -5,7 +5,7 @@ from dzack_research.preamble.all import ZZ, Lattices
 
 def test_lattice_subobject_sum_and_intersection_are_actual_embedded_operations() -> None:
     square = Lattices(ZZ)(ZZ**2)
-    e1, e2 = tuple(square.module_generators())
+    e1, e2 = square.module_generators()
     even = square.subobject_on((2 * e1, 2 * e2))
     triple = square.subobject_on((3 * e1, 3 * e2))
 

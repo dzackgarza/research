@@ -17,7 +17,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_integral_valued_is_the_base_lattice_contract() -> None:
     lattice = Lattices(ZZ)([[1, 2], [2, 3]])
-    first, second = tuple(lattice.module_generators())
+    first, second = lattice.module_generators()
 
     assert lattice.b(first, first) in ZZ
     assert lattice.b(first, second) in ZZ

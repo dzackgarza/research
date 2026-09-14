@@ -11,7 +11,7 @@ approximation.
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.rings.infinity import Infinity
 
-from dzack_research.preamble.all import CoxeterDiagrams
+from dzack_research.preamble.all import CoxeterDiagrams, finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage",
@@ -50,10 +50,10 @@ def test_two_three_seven_triangle_is_lanner_not_quasi_lanner() -> None:
     assert invariants.is_compact_hyperbolic()
     assert not invariants.is_paracompact_hyperbolic()
 
-    vertices = tuple(diagram.index_set())
+    vertices = diagram.index_set()
     for omitted in vertices:
         subdiagram = diagram.induced_subdiagram(
-            tuple(vertex for vertex in vertices if vertex != omitted)
+            finite_ordered_set([vertex for vertex in vertices if vertex != omitted])
         )
         assert subdiagram.is_elliptic()
 
@@ -72,10 +72,10 @@ def test_three_infinity_triangle_is_quasi_lanner_not_lanner() -> None:
 
     ideal_vertex = diagram.induced_subdiagram((1, 2))
     assert ideal_vertex.is_parabolic()
-    vertices = tuple(diagram.index_set())
+    vertices = diagram.index_set()
     for omitted in vertices:
         subdiagram = diagram.induced_subdiagram(
-            tuple(vertex for vertex in vertices if vertex != omitted)
+            finite_ordered_set([vertex for vertex in vertices if vertex != omitted])
         )
         assert subdiagram.is_elliptic() or subdiagram.is_parabolic()
 

@@ -1,12 +1,17 @@
 r"""Higher finite-order lattice centralizers retain cyclotomic gluing data."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import (
+    ZZ,
+    Lattices,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets import finite_indexed_family
 
 
 def _cubic_rotation():
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    labels = tuple(lattice.module_generating_set())
-    first, second, third = tuple(lattice.module_generators())
+    labels = lattice.module_generating_set()
+    first, second, third = lattice.module_generators()
     rotation = lattice.O()(
         {labels[0]: second, labels[1]: third, labels[2]: first}
     )
@@ -14,14 +19,19 @@ def _cubic_rotation():
 
 
 def _negation(lattice):
-    return lattice.O()(tuple(-generator for generator in lattice.module_generators()))
+    return lattice.O()(
+        {
+            label: -lattice.module_generator(label)
+            for label in lattice.module_generating_set()
+        }
+    )
 
 
 def test_order_three_cyclotomic_decomposition_retains_nontrivial_glue() -> None:
     decorated = _cubic_rotation()
     decomposition = decorated.cyclotomic_decomposition(3)
 
-    assert tuple(int(divisor) for divisor in decomposition.nonzero_divisors()) == (1, 3)
+    assert decomposition.nonzero_divisors() == finite_ordered_set((ZZ(1), ZZ(3)))
     assert decomposition.summand(1).module_rank() == 1
     assert decomposition.summand(3).module_rank() == 2
     assert decomposition.index() == 3
@@ -94,8 +104,12 @@ def _same_sublattice(left, right) -> bool:
 def test_equivariant_coordinate_lines_have_exact_centralizer_orbits_and_transporters() -> None:
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     decorated = lattice.with_isometry(_negation(lattice))
-    generators = tuple(lattice.module_generators())
-    lines = tuple(lattice.subobject_on((generator,)) for generator in generators)
+    generators = lattice.module_generators()
+    lines = finite_indexed_family(
+        generators.index_set(),
+        lambda label: lattice.subobject_on((generators[label],)),
+        name="Coordinate lines",
+    )
 
     decomposition = decorated.equivariant_sublattice_orbit_decomposition(lines)
 
@@ -116,31 +130,45 @@ def test_equivariant_coordinate_lines_have_exact_centralizer_orbits_and_transpor
 def test_equivariant_line_plane_flags_have_exact_centralizer_orbits_and_transporters() -> None:
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     decorated = lattice.with_isometry(_negation(lattice))
-    generators = tuple(lattice.module_generators())
-    lines = tuple(lattice.subobject_on((generator,)) for generator in generators)
+    generators = lattice.module_generators()
+    lines = finite_indexed_family(
+        generators.index_set(),
+        lambda label: lattice.subobject_on((generators[label],)),
+        name="Coordinate lines",
+    )
     planes = {
-        frozenset((left, right)): lattice.subobject_on(
+        (left, right): lattice.subobject_on(
             (generators[left], generators[right])
         )
         for left in range(3)
         for right in range(left + 1, 3)
     }
-    flags = tuple(
-        decorated.equivariant_flag((lines[line], planes[frozenset((line, other))]))
+    flag_labels = finite_ordered_set([
+        (line, other)
         for line in range(3)
         for other in range(3)
         if line != other
+    ])
+    flags = finite_indexed_family(
+        flag_labels,
+        lambda pair: decorated.equivariant_flag(
+            (
+                lines[pair[0]],
+                planes[(min(pair), max(pair))],
+            )
+        ),
+        name="Coordinate line-plane flags",
     )
 
     decomposition = decorated.equivariant_flag_orbit_decomposition(flags)
 
     assert decomposition.orbits().cardinality() == 1
     assert decomposition.representatives().cardinality() == 1
-    transporter = decomposition.transporter(flags[0], flags[-1])
+    transporter = decomposition.transporter(flags[flag_labels[0]], flags[flag_labels[-1]])
     assert transporter is not None
     assert transporter in decorated.centralizer_group()
-    source_terms = tuple(flags[0].terms())
-    target_terms = tuple(flags[-1].terms())
+    source_terms = flags[flag_labels[0]].terms()
+    target_terms = flags[flag_labels[-1]].terms()
     assert all(
         _same_sublattice((transporter * source.inclusion()).image(), target)
         for source, target in zip(source_terms, target_terms, strict=True)

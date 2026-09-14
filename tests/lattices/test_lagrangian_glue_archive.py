@@ -11,7 +11,7 @@ from dzack_research.preamble.all import ZZ, Lattices
 def test_rank_one_sign_pair_diagonal_glue_is_lagrangian_and_unimodular() -> None:
     lattice = Lattices(ZZ)([[2]]) + Lattices(ZZ)([[-2]])
     form = lattice.discriminant_group()
-    first, second = tuple(form.module_generators())
+    first, second = form.module_generators()
     diagonal = first + second
     glue = form.subobject_generated_by((diagonal,))
     inclusion = form.overlattice_from_isotropic_subobject(glue)

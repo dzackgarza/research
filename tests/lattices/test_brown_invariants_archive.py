@@ -14,16 +14,20 @@ def test_elementary_u_k_forms_have_brown_invariant_zero_and_are_isotropic() -> N
         scale = 2**exponent
         lattice = Lattices(ZZ)([[0, scale], [scale, 0]])
         form = lattice.discriminant_group()
+        invariants = form.invariants()
 
-        assert tuple(form.invariants()) == (scale, scale)
+        assert invariants.cardinality() == 2
+        assert invariants[0] == invariants[1] == scale
         assert form.brown_invariant() == 0
         assert not form.is_anisotropic()
 
 
 def test_v1_is_the_anisotropic_d4_form_of_brown_invariant_four() -> None:
     form = Lattices.D4.discriminant_group()
+    invariants = form.invariants()
 
-    assert tuple(form.invariants()) == (2, 2)
+    assert invariants.cardinality() == 2
+    assert invariants[0] == invariants[1] == 2
     assert form.brown_invariant() == 4
     assert form.is_anisotropic()
 

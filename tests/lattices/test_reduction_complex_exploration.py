@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices, finite_ordered_set
 from dzack_research.preamble.categories.reduction_complexes import (
     rational_reduction_cell,
     rational_reduction_complex_exploration,
@@ -7,20 +7,22 @@ from dzack_research.preamble.categories.reduction_complexes import (
 
 def _quadrants():
     lattice = Lattices(ZZ)(ZZ**2)
-    cells = (
+    cells = finite_ordered_set(
+        (
         rational_reduction_cell(lattice, ((1, 0), (0, 1))),
         rational_reduction_cell(lattice, ((-1, 0), (0, 1))),
         rational_reduction_cell(lattice, ((-1, 0), (0, -1))),
         rational_reduction_cell(lattice, ((1, 0), (0, -1))),
+        )
     )
     group = lattice.O()
     adjacencies = []
     for position, cell in enumerate(cells):
-        target = cells[(position + 1) % len(cells)]
+        target = cells[(position + 1) % int(cells.cardinality())]
         adjacency = cell.adjacency_to(target, group)
         assert adjacency is not None
         adjacencies.append(adjacency)
-    return lattice, cells, tuple(adjacencies)
+    return lattice, cells, finite_ordered_set(adjacencies)
 
 
 def test_complete_quadrant_exploration_pairs_every_facet_and_generates_o_i2() -> None:
@@ -43,8 +45,8 @@ def test_finite_prefix_is_not_promoted_to_a_complete_reduction_domain() -> None:
     lattice, cells, adjacencies = _quadrants()
     prefix = rational_reduction_complex_exploration(
         lattice,
-        cells[:2],
-        adjacencies[:1],
+        finite_ordered_set((cells[0], cells[1])),
+        finite_ordered_set((adjacencies[0],)),
         complete=False,
     )
 
@@ -63,8 +65,8 @@ def test_incomplete_facet_data_cannot_be_declared_complete() -> None:
     try:
         rational_reduction_complex_exploration(
             lattice,
-            cells[:2],
-            adjacencies[:1],
+            finite_ordered_set((cells[0], cells[1])),
+            finite_ordered_set((adjacencies[0],)),
             complete=True,
         )
     except ValueError:

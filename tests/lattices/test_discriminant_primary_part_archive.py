@@ -14,4 +14,5 @@ def test_a2_discriminant_has_trivial_two_primary_part() -> None:
     primary = discriminant.primary_part(2)
 
     assert primary.cardinality() == 1
-    assert tuple(primary.embedded_elements()) == (discriminant.zero(),)
+    assert primary.embedded_elements().cardinality() == 1
+    assert primary.embedded_elements()[0] == discriminant.zero()

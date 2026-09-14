@@ -12,11 +12,15 @@ from dzack_research.preamble.all import Lattices
 def test_enriques_lattice_and_its_unimodular_complement_sum_to_k3_lattice() -> None:
     enriques = Lattices.E10
     complement = Lattices.U + Lattices.U + Lattices.E8
+    enriques_signature = enriques.signature_pair()
+    complement_signature = complement.signature_pair()
 
-    assert enriques.signature_pair() == (1, 9)
-    assert complement.signature_pair() == (2, 10)
+    assert enriques_signature.first() == 1
+    assert enriques_signature.second() == 9
+    assert complement_signature.first() == 2
+    assert complement_signature.second() == 10
     assert enriques.is_even() and enriques.is_unimodular()
     assert complement.is_even() and complement.is_unimodular()
-    assert tuple(enriques.discriminant_group().invariants()) == ()
-    assert tuple(complement.discriminant_group().invariants()) == ()
+    assert enriques.discriminant_group().invariants().cardinality() == 0
+    assert complement.discriminant_group().invariants().cardinality() == 0
     assert (enriques + complement).is_isometric(Lattices.LK3) is True

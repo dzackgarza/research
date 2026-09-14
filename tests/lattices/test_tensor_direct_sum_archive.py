@@ -16,9 +16,11 @@ ARCHIVE_RECONCILIATION = {
 
 def test_sum_of_a_list_is_the_orthogonal_direct_sum() -> None:
     summed = sum((Lattices.U, Lattices.U, Lattices.E8))
+    signature = summed.signature_pair()
 
     assert summed.module_rank() == 12
-    assert summed.signature_pair() == (2, 10)
+    assert signature.first() == 2
+    assert signature.second() == 10
 
 
 def test_orthogonal_sum_has_the_biproduct_inclusion_projection_identities() -> None:
@@ -94,7 +96,7 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
     assert universal.left_factor() is left
     assert universal.right_factor() is right
     assert universal.codomain() is tensor
-    x1, x2 = tuple(left.module_generators())
+    x1, x2 = left.module_generators()
     y = right.module_generator(0)
     assert universal(x1 + x2, y) == universal(x1, y) + universal(x2, y)
     assert universal(2 * x1, y) == 2 * universal(x1, y)

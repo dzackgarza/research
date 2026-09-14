@@ -18,12 +18,14 @@ def test_structured_lattice_specializations_retain_their_defining_data() -> None
 
     group = Groups.C(2)
     plane = Lattices(ZZ)("U")
+    labels = plane.module_generating_set()
+    left, right = plane.module_generators()
+    swap_isometry = plane.Aut()({labels[0]: right, labels[1]: left})
 
     def swap(group_element, vector):
         if group_element == group.one():
             return vector
-        left, right = vector.to_tuple()
-        return plane((right, left))
+        return swap_isometry(vector)
 
     acted = Lattices(ZZ[group])(plane, swap)
     assert acted.action().domain() is group

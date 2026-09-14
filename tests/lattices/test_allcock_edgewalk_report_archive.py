@@ -36,6 +36,6 @@ def test_edgewalk_report_retains_vertices_walls_and_polyhedron_isometries(monkey
     assert vertex.lattice() is lattice
     assert vertex.square() == 0
     assert vertex.is_ideal()
-    assert tuple(vertex.incident_roots()) == tuple(report.simple_roots())
+    assert vertex.incident_roots() == report.simple_roots()
     assert report.polyhedron_isometry_generators().cardinality() == 1
     assert report.polyhedron_isometry_group().supergroup() is lattice.O()

@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.eichler_criterion import (
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.set_categories import Set
 
 
 def test_covering_classes_retain_stabilizers_and_actual_full_orbit_transporters() -> None:
@@ -37,8 +38,7 @@ def test_covering_data_does_not_assert_distinct_full_orbits() -> None:
     model = two_u_eichler_model(Lattices(integers)("A2"))
     data = model.covering_orbit_data(integers(-2))
 
-    full_orbit_targets = tuple(
-        tuple(data[index].full_orbit_representative().to_tuple())
-        for index in data.index_set()
+    full_orbit_targets = Set(
+        data[index].full_orbit_representative() for index in data.index_set()
     )
-    assert len(full_orbit_targets) == int(data.cardinality())
+    assert full_orbit_targets.cardinality() <= data.cardinality()

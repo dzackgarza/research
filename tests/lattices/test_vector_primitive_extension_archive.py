@@ -7,7 +7,7 @@ subgroup in the discriminant form of that sum, and the quotient identification
 the current ``VectorPrimitiveExtension`` object.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import Set, ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage",
@@ -38,7 +38,7 @@ def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> No
     # e1+2e2, so Zw + w^perp has determinant-two inclusion in A2.
     assert extension.index == 2
     assert extension.gluing_subgroup.cardinality() == 2
-    assert len(extension.gluing_images) == 2
+    assert extension.gluing_images.cardinality() == 2
 
     for glued in extension.gluing_images:
         assert extension.sum_form.b(
@@ -75,11 +75,11 @@ def test_archived_line_and_complement_discriminant_maps_land_in_the_sum_form() -
     assert complement_map.domain() is complement_form
     assert complement_map.codomain() is extension.sum_form
 
-    generated = extension.sum_form.subobject_generated_by(
-        tuple(line_map(element) for element in line_form.module_generators())
-        + tuple(
+    mapped = Set(line_map(element) for element in line_form.module_generators()).union(
+        Set(
             complement_map(element)
             for element in complement_form.module_generators()
         )
     )
+    generated = extension.sum_form.subobject_generated_by(mapped)
     assert generated.cardinality() == extension.sum_form.cardinality()

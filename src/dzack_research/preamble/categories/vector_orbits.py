@@ -88,7 +88,7 @@ class VectorPrimitiveExtension:
         gluing_subgroup = sum_form.subgroup_on(tuple(gluing_classes))
         if int(gluing_subgroup.cardinality()) != int(index):
             raise ArithmeticError("the gluing subgroup does not have order [L:M]")
-        gluing_images = tuple(gluing_subgroup.embedded_elements())
+        gluing_images = gluing_subgroup.embedded_elements()
         if any(
             sum_form.b(left, right) != sum_form.bilinear_value_module().zero()
             for left in gluing_images

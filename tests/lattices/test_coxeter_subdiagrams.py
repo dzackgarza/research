@@ -8,7 +8,7 @@ distinguish the elliptic subdiagrams from the parabolic one.
 
 from sage.all import Infinity
 
-from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
+from dzack_research.preamble.all import Set, ZZ, CoxeterDiagrams, Lattices, finite_ordered_set
 
 
 def affine_a2():
@@ -51,12 +51,8 @@ def test_the_empty_subdiagram_is_elliptic_and_is_the_least_subdiagram() -> None:
     assert diagram.elliptic_subdiagrams(connected=True).cardinality() == 6
 
     poset = diagram.subdiagram_poset()
-    least = poset.minimal_elements()
-    greatest = poset.maximal_elements()
-    assert len(least) == 1
-    assert len(greatest) == 1
-    assert least[0].cardinality() == 0
-    assert greatest[0].cardinality() == 3
+    assert poset.bottom().cardinality() == 0
+    assert poset.top().cardinality() == 3
 
 
 def test_the_maximal_elliptic_subdiagrams_of_the_affine_triangle_are_its_edges() -> None:
@@ -116,33 +112,42 @@ def test_triality_orders_the_subdiagram_orbits_of_d4_by_the_orbit_relation() -> 
     assert diagram.elliptic_subdiagrams().cardinality() == 16
 
     poset = diagram.elliptic_subdiagram_orbit_poset()
-    orbits = {frozenset(member.index_set()): member for member in poset}
+    expected_indices = finite_ordered_set(
+        (
+            finite_ordered_set(()),
+            finite_ordered_set((1,)),
+            finite_ordered_set((2,)),
+            finite_ordered_set((1, 2)),
+            finite_ordered_set((1, 3)),
+            finite_ordered_set((1, 2, 3)),
+            finite_ordered_set((1, 3, 4)),
+            finite_ordered_set((1, 2, 3, 4)),
+        )
+    )
+    assert poset.cardinality() == expected_indices.cardinality()
+    assert all(
+        any(member.index_set() == expected for member in poset)
+        for expected in expected_indices
+    )
 
-    assert set(orbits) == {
-        frozenset(),
-        frozenset({1}),
-        frozenset({2}),
-        frozenset({1, 2}),
-        frozenset({1, 3}),
-        frozenset({1, 2, 3}),
-        frozenset({1, 3, 4}),
-        frozenset({1, 2, 3, 4}),
-    }
+    def member_on(indices):
+        expected = finite_ordered_set(indices)
+        return next(member for member in poset if member.index_set() == expected)
 
-    centre = orbits[frozenset({2})]
-    outer_node = orbits[frozenset({1})]
-    outer_pair = orbits[frozenset({1, 3})]
-    centre_and_outer = orbits[frozenset({1, 2})]
-    three_outer = orbits[frozenset({1, 3, 4})]
+    centre = member_on((2,))
+    outer_node = member_on((1,))
+    outer_pair = member_on((1, 3))
+    centre_and_outer = member_on((1, 2))
+    three_outer = member_on((1, 3, 4))
 
     assert not poset.is_lequal(centre, three_outer)
     assert not poset.is_lequal(centre_and_outer, three_outer)
     assert poset.is_lequal(outer_node, three_outer)
     assert poset.is_lequal(outer_pair, three_outer)
-    assert poset.is_lequal(outer_pair, orbits[frozenset({1, 2, 3})])
+    assert poset.is_lequal(outer_pair, member_on((1, 2, 3)))
 
-    assert poset.bottom() is orbits[frozenset()]
-    assert poset.top() is orbits[frozenset({1, 2, 3, 4})]
+    assert poset.bottom() is member_on(())
+    assert poset.top() is member_on((1, 2, 3, 4))
 
 
 def test_the_triangle_is_its_own_only_parabolic_subdiagram_orbit() -> None:
@@ -156,7 +161,7 @@ def test_the_triangle_is_its_own_only_parabolic_subdiagram_orbit() -> None:
 
     assert poset.cardinality() == 1
     assert poset.top() is poset.bottom()
-    assert frozenset(poset.top().index_set()) == frozenset({0, 1, 2})
+    assert poset.top().index_set() == finite_ordered_set((0, 1, 2))
 
 
 def test_a_disconnected_diagram_splits_into_its_components() -> None:
@@ -188,8 +193,8 @@ def test_the_root_morphism_carries_the_abstract_root_lattice_into_the_realizatio
     assert morphism.domain() is abstract
     assert morphism.codomain() is realization
     assert abstract.module_rank() == 2
-    generators = tuple(abstract.module_generators())
-    roots = tuple(diagram.roots())
+    generators = abstract.module_generators()
+    roots = diagram.roots()
     for left_index, left in enumerate(generators):
         assert morphism(left) == roots[left_index]
         for right_index, right in enumerate(generators):
@@ -207,7 +212,7 @@ def test_the_root_intersection_graph_records_squares_as_loops_and_pairings_as_ed
     realization = Lattices(ZZ)([[-2, 1], [1, -2]])
     diagram = CoxeterDiagrams().from_roots(realization.module_generators())
     graph = diagram.root_intersection_graph()
-    vertices = tuple(diagram.index_set())
+    vertices = diagram.index_set()
 
     assert graph.num_verts() == 2
     assert graph.edge_label(vertices[0], vertices[0]) == -2
@@ -263,4 +268,8 @@ def test_diagram_automorphisms_keep_nonordinal_vertex_labels_at_the_public_bound
 
     assert diagram.Aut().order() == 6
     orbit = diagram._orbit_vertex_sets(diagram.induced_subdiagram(("left",)))
-    assert set(orbit) == {frozenset({label}) for label in labels}
+    assert Set(
+        Set(vertex_set) for vertex_set in orbit
+    ) == Set(
+        Set((label,)) for label in labels
+    )

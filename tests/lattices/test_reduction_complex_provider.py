@@ -112,5 +112,9 @@ def test_gap_face_indices_are_normalized_to_an_incidence_vector(monkeypatch) -> 
         [[1, 0], [0, 1]],
         "total",
     )
-    assert records[0]["x"]["GRP"] == [[1, 0]]
-    assert records[0]["ListAdj"][0]["x"]["eInc"] == [0, 1]
+    group_row = records[0]["x"]["GRP"][0]
+    incidence = records[0]["ListAdj"][0]["x"]["eInc"]
+    assert group_row[0] == 1
+    assert group_row[1] == 0
+    assert incidence[0] == 0
+    assert incidence[1] == 1

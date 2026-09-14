@@ -12,7 +12,7 @@ from dzack_research.preamble.all import Lattices
 
 def test_a2_root_reflection_has_the_defining_action() -> None:
     lattice = Lattices.A2
-    first, second = tuple(lattice.module_generators())
+    first, second = lattice.module_generators()
     reflection = lattice.reflection(first)
 
     assert reflection(first) == -first

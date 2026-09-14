@@ -24,7 +24,7 @@ def test_face_stabilizer_retains_the_cell_face_incidence() -> None:
     cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
     face = cell.facet((1, 0))
     orthogonal = lattice.O()
-    labels = tuple(lattice.module_generating_set())
+    labels = lattice.module_generating_set()
     e0 = lattice.module_generator(labels[0])
     e1 = lattice.module_generator(labels[1])
     identity = orthogonal.one()

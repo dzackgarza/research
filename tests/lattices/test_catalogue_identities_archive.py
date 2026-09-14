@@ -29,15 +29,19 @@ def test_named_period_lattices_retain_their_defining_rank_and_signature() -> Non
 
     for name, (rank, signature) in expected.items():
         lattice = getattr(NamedLattices, name)
+        actual_signature = lattice.signature_pair()
         assert int(lattice.module_rank()) == rank
-        assert tuple(lattice.signature_pair()) == signature
+        assert actual_signature.first() == signature[0]
+        assert actual_signature.second() == signature[1]
 
 
 def test_ade_root_lattices_use_the_selected_negative_definite_convention() -> None:
     category = Lattices(ZZ)
     for name, rank in (("A2", 2), ("D4", 4), ("E8", 8)):
         lattice = category(name)
-        assert tuple(lattice.signature_pair()) == (0, rank)
+        signature = lattice.signature_pair()
+        assert signature.first() == 0
+        assert signature.second() == rank
 
 
 def test_named_lattice_aliases_are_literal_parent_identity() -> None:

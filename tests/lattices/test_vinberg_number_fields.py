@@ -23,31 +23,40 @@ def _belolipetsky_lattice():
     )
     lattice = Lattices(order)(gram)
     real_algebraics = _own_ring(SageAA)
-    selected = next(
-        embedding
-        for embedding in field.embeddings(real_algebraics)
-        if embedding(s) > 0
-    )
+    selected = None
+    for embedding in field.embeddings(real_algebraics):
+        try:
+            number_field_vinberg_lattice(lattice, embedding)
+        except ValueError:
+            continue
+        assert selected is None, "the Vinberg signature conditions select one real place"
+        selected = embedding
+    assert selected is not None, "the Vinberg signature conditions select a real place"
     return lattice, selected
 
 
 def test_belolipetsky_number_field_vinberg_roots_stay_over_the_maximal_order() -> None:
     r"""Archive engine seam: VinbergsAlgorithmNF raises exact maximal-order roots."""
-    assert engine_capabilities.provider_names(
-        "number_field_vinberg_root_enumeration"
-    ) == ("VinbergsAlgorithmNF-via-sage-julia-bridge",)
+    providers = engine_capabilities.provider_names("number_field_vinberg_root_enumeration")
+    assert providers[0] == "VinbergsAlgorithmNF-via-sage-julia-bridge"
+    assert not providers[1:]
 
     lattice, selected = _belolipetsky_lattice()
     vinberg = number_field_vinberg_lattice(lattice, selected)
 
     assert vinberg.lattice() is lattice
     assert vinberg.real_embedding() == selected
-    assert vinberg.signature_at_selected_place() == (3, 1)
-    assert all(signature == (4, 0) for signature in vinberg.other_signatures())
+    selected_signature = vinberg.signature_at_selected_place()
+    assert selected_signature.first() == 3
+    assert selected_signature.second() == 1
+    assert all(
+        signature.first() == 4 and signature.second() == 0
+        for signature in vinberg.other_signatures()
+    )
 
     complete, roots = vinberg.vinberg_simple_roots(count=4)
     assert complete
-    assert len(roots) == 4
+    assert roots.cardinality() == 4
     assert all(root.parent() is lattice for root in roots)
     assert all(root.q() > 0 for root in roots)
 
@@ -66,4 +75,4 @@ def test_belolipetsky_number_field_vinberg_roots_stay_over_the_maximal_order() -
             )
         ),
     )
-    assert roots == expected
+    assert all(root == expected[position] for position, root in enumerate(roots))

@@ -37,12 +37,13 @@ def test_stable_orthogonal_group_has_owned_line_plane_and_flag_orbits() -> None:
     assert plane_cusps.cardinality() > 0
     assert incidences.cardinality() > 0
 
-    for cusp in tuple(line_cusps) + tuple(plane_cusps):
-        assert cusp.subgroup() is subgroup
-        assert cusp.representative() in cusp
-        stabilizer = cusp.stabilizer()
-        assert stabilizer.supergroup() is subgroup
-        assert stabilizer.one() in stabilizer
+    for cusp_family in (line_cusps, plane_cusps):
+        for cusp in cusp_family:
+            assert cusp.subgroup() is subgroup
+            assert cusp.representative() in cusp
+            stabilizer = cusp.stabilizer()
+            assert stabilizer.supergroup() is subgroup
+            assert stabilizer.one() in stabilizer
 
     for incidence in incidences:
         line = incidence.line()

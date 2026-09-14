@@ -13,7 +13,7 @@ from collections import Counter
 from pathlib import Path
 
 import dzack_research
-from dzack_research.preamble.all import Sterk
+from dzack_research.preamble.all import Set, Sterk
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -80,7 +80,7 @@ _ARCHIVED_TOTALS = {
 
 def test_sterk_connected_elliptic_populations_match_the_committed_archive() -> None:
     diagrams = Sterk.diagrams()
-    assert set(diagrams) == set(_ARCHIVED_TOTALS)
+    assert Set(diagrams) == Set(_ARCHIVED_TOTALS)
 
     for name, expected_total in _ARCHIVED_TOTALS.items():
         diagram = diagrams[name]
@@ -98,7 +98,7 @@ def test_sterk_artifact_rank_type_multisets_match_live_diagrams() -> None:
     diagrams = Sterk.diagrams()
     for name, expected_total in _ARCHIVED_TOTALS.items():
         parsed = []
-        for path in sorted((_ARTIFACTS / name).iterdir()):
+        for path in (_ARTIFACTS / name).iterdir():
             match = _FILENAME.fullmatch(path.name)
             assert match is not None
             parsed.append((int(match.group("rank")), match.group("label")))

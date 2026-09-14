@@ -33,9 +33,8 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
 
 
 def test_catalogue_tables_expose_owned_cardinalities() -> None:
-    assert TwoElementary.cardinality() == len(TwoElementary)
+    assert TwoElementary.cardinality() == 75
     assert NegativeDefTwoElementary.cardinality() == 51
-    assert NegativeDefTwoElementary.cardinality() == len(NegativeDefTwoElementary)
 
 
 def test_starred_row_retains_its_live_gluing_inclusion() -> None:

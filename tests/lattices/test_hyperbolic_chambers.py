@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 def test_root_halfspaces_retain_the_bilinear_covectors(monkeypatch) -> None:
     integers = _own_ring(SageZZ)
     lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
-    positive, negative = tuple(lattice.module_generators())
+    positive, negative = lattice.module_generators()
     root = negative
     monkeypatch.setattr(lattice, "_vinberg_search", lambda *_args, **_kw: (True, (root,)))
 
@@ -26,7 +26,7 @@ def test_unbounded_cone_retains_rays_facets_and_lineality() -> None:
     integers = _own_ring(SageZZ)
     lattice = Lattices(integers)([[1, 0], [0, 1]])
     dual = lattice.dual_module()
-    first, second = tuple(dual.module_generators())
+    first, second = dual.module_generators()
     from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
 
     cone = rational_polyhedral_cone(lattice, (first, second))
@@ -41,7 +41,7 @@ def test_exact_engine_faces_cross_back_as_owned_cones() -> None:
     integers = _own_ring(SageZZ)
     lattice = Lattices(integers)([[1, 0], [0, 1]])
     dual = lattice.dual_module()
-    first, second = tuple(dual.module_generators())
+    first, second = dual.module_generators()
     from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
 
     cone = rational_polyhedral_cone(lattice, (first, second))
@@ -57,7 +57,7 @@ def test_hyperbolic_containment_uses_rays_and_lineality_not_the_origin() -> None
     integers = _own_ring(SageZZ)
     lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
     dual = lattice.dual_module()
-    first, second = tuple(dual.module_generators())
+    first, second = dual.module_generators()
     from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
 
     future = rational_polyhedral_cone(lattice, (first - second, first + second))
@@ -80,4 +80,5 @@ def test_root_defined_chamber_owns_its_reflection_group_and_diagram(monkeypatch)
     assert reflection in group
     assert group.supergroup() is lattice.O()
     diagram = chamber.coxeter_diagram()
-    assert tuple(diagram.roots()) == (root,)
+    assert diagram.roots().cardinality() == 1
+    assert diagram.roots()[0] == root

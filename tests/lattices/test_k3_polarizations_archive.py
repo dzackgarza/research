@@ -17,13 +17,16 @@ def _polarization_complement(vector):
 
 def test_degree_two_polarization_has_order_two_transcendental_discriminant() -> None:
     k3 = Lattices.LK3
-    e, f = tuple(k3.module_generators())[:2]
+    generators = k3.module_generators()
+    e, f = generators[0], generators[1]
     polarization, transcendental = _polarization_complement(e + f)
 
     assert polarization.is_primitive()
     assert polarization.gram_matrix().determinant() == 2
     assert transcendental.module_rank() == 21
-    assert tuple(transcendental.discriminant_group().invariants()) == (2,)
+    invariants = transcendental.discriminant_group().invariants()
+    assert invariants.cardinality() == 1
+    assert invariants[0] == 2
     assert transcendental.discriminant_group().is_anti_isometric(
         polarization.discriminant_group()
     )
@@ -31,14 +34,17 @@ def test_degree_two_polarization_has_order_two_transcendental_discriminant() -> 
 
 def test_degree_four_polarization_has_distinct_order_four_discriminant() -> None:
     k3 = Lattices.LK3
-    e, f = tuple(k3.module_generators())[:2]
+    generators = k3.module_generators()
+    e, f = generators[0], generators[1]
     degree_two, transcendental_two = _polarization_complement(e + f)
     degree_four, transcendental_four = _polarization_complement(2 * e + f)
 
     assert degree_four.is_primitive()
     assert degree_four.gram_matrix().determinant() == 4
     assert transcendental_four.module_rank() == 21
-    assert tuple(transcendental_four.discriminant_group().invariants()) == (4,)
+    invariants = transcendental_four.discriminant_group().invariants()
+    assert invariants.cardinality() == 1
+    assert invariants[0] == 4
     assert transcendental_four.discriminant_group().is_anti_isometric(
         degree_four.discriminant_group()
     )

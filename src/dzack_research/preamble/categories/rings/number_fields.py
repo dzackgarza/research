@@ -265,9 +265,25 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                         )
 
             positions = finite_ordered_set(range(len(engine_embeddings)))
+
+            primitive = self.primitive_element()
+
+            def embedding_position(embedding):
+                if (
+                    getattr(embedding, "domain", lambda: None)() is not self
+                    or getattr(embedding, "codomain", lambda: None)() is not target
+                ):
+                    raise ValueError(embedding)
+                primitive_image = embedding(primitive)
+                for position in positions:
+                    if embedding_at(position)(primitive) == primitive_image:
+                        return position
+                raise ValueError(embedding)
+
             return finite_ordered_image(
                 positions,
                 embedding_at,
+                index_of=embedding_position,
                 name=f"Embeddings of {self} into {target}",
             )
 

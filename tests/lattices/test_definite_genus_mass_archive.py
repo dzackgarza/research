@@ -17,7 +17,7 @@ def test_archived_e8_genus_has_one_owned_representative() -> None:
     assert genus.exists()
     assert genus.determinant() == 1
     assert genus.class_number() == 1
-    assert len(representatives) == 1
+    assert representatives.cardinality() == 1
     assert representatives[0].genus() == genus
     assert representatives[0].is_isometric(lattice) is True
 

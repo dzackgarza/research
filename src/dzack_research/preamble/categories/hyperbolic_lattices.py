@@ -30,13 +30,13 @@ from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector as engine_vector
-from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA as SageAA
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -235,12 +235,13 @@ def _signature_at_real_embedding(lattice, embedding):
             image = embedding_engine(field_engine(order_engine(entry)))
             row.append(SageAA(image))
         rows.append(row)
-    positive, negative, radical = QuadraticForm(
-        SageAA, engine_matrix(SageAA, rows)
-    ).signature_vector()
+    eigenvalues = engine_matrix(SageAA, rows).eigenvalues()
+    positive = sum(value > 0 for value in eigenvalues)
+    negative = sum(value < 0 for value in eigenvalues)
+    radical = sum(value == 0 for value in eigenvalues)
     if radical:
         raise ValueError("a Vinberg lattice must be nondegenerate at every real place")
-    return int(positive), int(negative)
+    return signature_pair(int(positive), int(negative))
 
 
 class NumberFieldVinbergLattice(SageObject):
@@ -274,21 +275,28 @@ class NumberFieldVinbergLattice(SageObject):
         if real_embedding.domain() is not field or real_embedding.codomain() is not real_algebraics:
             raise ValueError("the distinguished place is an exact embedding K -> AA")
 
-        embeddings = tuple(field.embeddings(real_algebraics))
+        embeddings = field.embeddings(real_algebraics)
         if real_embedding not in embeddings:
             raise ValueError("the distinguished real place is not an embedding of this field")
+        selected_position = embeddings.ranking_map()(real_embedding)
         selected_signature = _signature_at_real_embedding(lattice, real_embedding)
         rank = int(lattice.module_rank())
-        if selected_signature != (rank - 1, 1):
+        if (
+            selected_signature.first() != rank - 1
+            or selected_signature.second() != 1
+        ):
             raise ValueError(
                 "the distinguished real place must give signature (rank-1, 1)"
             )
-        other_signatures = tuple(
-            _signature_at_real_embedding(lattice, embedding)
-            for embedding in embeddings
-            if embedding != real_embedding
-        )
-        if any(other != (rank, 0) for other in other_signatures):
+        other_signatures = finite_ordered_set(tuple(
+            _signature_at_real_embedding(lattice, embeddings[position])
+            for position in embeddings.index_set()
+            if position != selected_position
+        ))
+        if any(
+            other.first() != rank or other.second() != 0
+            for other in other_signatures
+        ):
             raise ValueError(
                 "every conjugate away from the distinguished place must be positive definite"
             )
@@ -383,7 +391,7 @@ class NumberFieldVinbergLattice(SageObject):
             self._selected_primitive_approximation(),
             int(count),
         )
-        roots = tuple(self._cross_root(row) for row in rows)
+        roots = finite_ordered_set(tuple(self._cross_root(row) for row in rows))
         return complete, roots
 
     def __repr__(self) -> str:
@@ -636,7 +644,12 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "lattice has a radical, so its discriminant group is infinite "
                 "and no finite set of lengths bounds its roots"
             )
-            return finite_ordered_set(tuple(divisors(2 * invariant_factors[-1])))
+            return finite_ordered_set(
+                tuple(
+                    self.base_ring()(int(length))
+                    for length in divisors(2 * invariant_factors[-1])
+                )
+            )
 
         def _engine_gram_of_signature_n_1(self):
             r"""Return a Gram matrix in the engine's \((n,1)\) convention.

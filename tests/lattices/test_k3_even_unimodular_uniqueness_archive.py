@@ -12,9 +12,11 @@ from dzack_research.preamble.all import Lattices
 
 def test_k3_lattice_is_the_even_unimodular_signature_3_19_model() -> None:
     k3 = Lattices.LK3
+    signature = k3.signature_pair()
 
     assert k3.module_rank() == 22
-    assert tuple(k3.signature_pair()) == (3, 19)
+    assert signature.first() == 3
+    assert signature.second() == 19
     assert k3.is_even()
     assert k3.is_unimodular()
 

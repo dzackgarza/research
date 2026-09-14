@@ -27,6 +27,7 @@ published root configurations into them needs the projection
 import pytest
 
 from dzack_research.preamble.all import (
+    Set,
     NamedLattices,
     Sterk,
     cusps,
@@ -46,7 +47,7 @@ STERK_CUSPS = {
 }
 
 
-@pytest.mark.parametrize("name", sorted(STERK_CUSPS))
+@pytest.mark.parametrize("name", STERK_CUSPS)
 def test_a_sterk_cusp_reduces_to_its_recorded_rank_ten_lattice(name) -> None:
     reduction_lattice, (rank, length, delta) = STERK_CUSPS[name]
     period_lattice = NamedLattices.TEn
@@ -74,7 +75,7 @@ def test_the_five_sterk_cusps_split_into_two_reduction_classes() -> None:
         name: primitive_isotropic(period_lattice, (vector,)).isotropic_reduction()
         for name, vector in Sterk.selected_isotropic_vectors().items()
     }
-    assert len(reductions) == 5
+    assert Set(reductions) == Set(STERK_CUSPS)
     assert not reductions["Sterk_1"].is_isometric(reductions["Sterk_2"])
     assert reductions["Sterk_2"].is_isometric(reductions["Sterk_3"])
     assert reductions["Sterk_2"].is_isometric(reductions["Sterk_4"])

@@ -1,6 +1,6 @@
 from sage.all import Infinity
 
-from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices, finite_ordered_set
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -86,15 +86,19 @@ def test_coxeter_diagram_morphisms_preserve_all_bonds_and_compose() -> None:
     a2 = CoxeterDiagrams().from_cartan_type(["A", 2])
     a3 = CoxeterDiagrams().from_cartan_type(["A", 3])
     a4 = CoxeterDiagrams().from_cartan_type(["A", 4])
-    a2_vertices = tuple(a2.index_set())
-    a3_vertices = tuple(a3.index_set())
-    a4_vertices = tuple(a4.index_set())
+    a2_vertices = a2.index_set()
+    a3_vertices = a3.index_set()
+    a4_vertices = a4.index_set()
 
-    first = CoxeterDiagrams().Mor(a2, a3)(a3_vertices[1:])
-    second = CoxeterDiagrams().Mor(a3, a4)(a4_vertices[1:])
+    first = CoxeterDiagrams().Mor(a2, a3)(
+        finite_ordered_set((a3_vertices[1], a3_vertices[2]))
+    )
+    second = CoxeterDiagrams().Mor(a3, a4)(
+        finite_ordered_set((a4_vertices[1], a4_vertices[2], a4_vertices[3]))
+    )
     composite = second * first
 
-    assert tuple(composite.images()) == a4_vertices[2:]
+    assert composite.images() == finite_ordered_set((a4_vertices[2], a4_vertices[3]))
     assert composite.domain() is a2
     assert composite.codomain() is a4
     assert CoxeterDiagrams().Mor(a2, a2).identity().is_identity()

@@ -42,7 +42,7 @@ def test_two_elementary_catalogues_and_searches_retain_the_archive_mathematics()
 
 
 def test_named_k3_involutions_retain_the_archived_block_actions() -> None:
-    generators = tuple(NamedLattices.LK3.module_generators())
+    generators = NamedLattices.LK3.module_generators()
     identity = NamedLattices.LK3.Aut().one()
 
     assert Involutions.I_dP * Involutions.I_dP == identity
@@ -64,9 +64,9 @@ def test_named_k3_involutions_retain_the_archived_block_actions() -> None:
 
 
 def test_primitive_embedding_chain_retains_the_archived_generator_maps() -> None:
-    tco = tuple(NamedLattices.Tco.module_generators())
-    ten = tuple(NamedLattices.TEn.module_generators())
-    tdp = tuple(NamedLattices.TdP.module_generators())
+    tco = NamedLattices.Tco.module_generators()
+    ten = NamedLattices.TEn.module_generators()
+    tdp = NamedLattices.TdP.module_generators()
 
     assert Embeddings.TCo_into_TEn(tco[0]) == ten[0] + ten[1]
     assert Embeddings.TCo_into_TEn(tco[1]) == ten[2]

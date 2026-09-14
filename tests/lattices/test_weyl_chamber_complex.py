@@ -46,4 +46,4 @@ def test_a_double_wall_word_returns_to_the_original_root_orientation() -> None:
 
     assert transporter == complex_.lattice().O().one()
     returned = complex_.chamber_from_word((0, 0))
-    assert tuple(returned.wall_roots()) == tuple(chamber.wall_roots())
+    assert returned.wall_roots() == chamber.wall_roots()
