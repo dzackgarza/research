@@ -961,12 +961,13 @@ Take `terminal-reference` now.
 ### The sage-categories pin is unresolvable, and the cause is in that repository
 
 `pyproject.toml` pins `sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203`.
-That revision exists — it is ten hours old and an ancestor of that project's local `main` — but it
-is not on the remote this pin fetches from: `origin/main` there is `10e14a53`, and local `main` is
-**1341 commits ahead of it**. So the resolution failure `terminal-execution` recorded is not a
-defect in this repository and cannot be repaired from here by choosing a different revision;
-every revision this project actually wants is equally absent from the remote, and the newest one
-that is present is 1341 commits stale.
+That revision exists locally and is an ancestor of the producer's active
+`codex/functorial-core-kernel` branch, but it is not on any published `origin/*` ref. Reverified
+2026-09-14: local `main` and `origin/main` are both `10e14a53`; the active producer branch is
+`5660e01a`, **1577 commits ahead of `origin/main`**, and no remote branch contains the required
+`66efc15b` revision. So the resolution failure `terminal-execution` recorded is not a defect in
+this repository and cannot be repaired from here by choosing another local producer revision;
+the required producer history has not been published to the GitHub route this dependency declares.
 
 Do not work around it by switching to a filesystem path dependency. That hides a publication gap
 that affects every consumer, and the declared route between these projects is GitHub. Treat the
