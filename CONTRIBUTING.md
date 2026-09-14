@@ -1296,6 +1296,13 @@ from the breadth of this specification.
   display useful.  Conversely, adding more internal words does not make a display
   informative if those words describe routing rather than mathematics.
 
+  A public preamble-owned object must never fall back to Python's object-address
+  representation (`<... object at 0x...>`), and a public `_repr_`/`_latex_` must
+  never delegate wholesale to a private backend/engine object's display.  Even
+  when that backend currently prints familiar mathematics, its notation and
+  future changes are implementation details.  Cross the represented data back
+  into owned mathematical syntax and render that syntax here.
+
   Display must not perform expensive classification, enumerate an unknown or
   infinite object, mutate caches in a mathematically significant way, or create
   missing structure.  It observes the defining data fixed under `OWN-15` through

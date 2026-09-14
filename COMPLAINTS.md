@@ -42,6 +42,20 @@ belong at their mathematical declarations or in CONTRIBUTING, not solely here.
 - **Why this matters:** a type/name paraphrase can be correct yet tell the user nothing about the particular categorical arrow in hand, and duplicated display code drifts from actual endpoints.
 - **Owner:** common `Functor`/`Adjunction` display protocol.  Standard names/symbols should be optional semantic labels layered on endpoint data owned by the base construction.
 
+### Public group/ring/field displays delegate directly to private engines
+
+- **Expected architecture:** engine values may realize computation privately, but public display is owned mathematical syntax.  The public parent/element decides how its defining mathematical data are shown; backend `repr`/LaTeX is not part of the preamble API.
+- **Observed:** `_OwnedGroupElement._repr_()` returns `repr(self._backend())`; `OwnedGroup._repr_()` returns `repr(self._engine)`; owned ring elements and ring parents in `ring_foundation.py` do the same; fraction-field quotient elements/parents and `ExactFieldMorphism` likewise delegate their public display to backend/engine objects.
+- **Why this matters:** the output can change with Sage/GAP implementation, can expose engine-specific names/coordinates, and makes the backend representation look like the mathematical object.  A coincidentally good backend string is not an owned display contract.
+- **Owner:** the corresponding owned group/ring/quotient/morphism semantic objects.  Define mathematical rendering from retained owned data or one shared owned rendering protocol; use engine display only inside debugging/adapter surfaces.
+
+### Public mathematical data objects can fall back to Python memory-address representations
+
+- **Expected architecture:** every public preamble-owned mathematical object has an informative stable display derived from its defining data, even when there is no compact canonical symbol.
+- **Observed:** several public `SageObject` classes define neither `_repr_` nor `__repr__`.  Direct specimens include `LorentzianE10Application()` and `EquivariantVectorOrbit(...)`, which currently print `<dzack_research.... object at 0x...>`.  In contrast, `VoronoiFacet` already provides a mathematical display (`Voronoi facet of L normal to v`), demonstrating the expected pattern.
+- **Why this matters:** an address repr is maximally implementation-specific, nondeterministic across runs, and supplies no mathematical understanding of the object.  It also makes notebook inspection substantially worse exactly for high-level research data packages.
+- **Owner:** public `SageObject`/comparison/application data classes.  Audit classes without an owned repr and render their retained defining data; do not add generic class-name-only fallbacks, which would merely replace one tautology with another.
+
 ### Generic family displays still receive refinement- and implementation-flavoured names from callers
 
 - **Mathematics:** an indexed family is the map \(I\to X\) (or the corresponding values with their index set).  A public operation such as `module_generators()` or morphism generator images is owned at its weakest semantic level; internal realization refinements do not change that result.
