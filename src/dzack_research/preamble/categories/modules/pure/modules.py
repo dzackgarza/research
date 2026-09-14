@@ -2078,6 +2078,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 zero,
             )
 
+        @cached_method
         def dual_module(self):
             return self._fresh_free_module_on(self.module_generating_set())
 

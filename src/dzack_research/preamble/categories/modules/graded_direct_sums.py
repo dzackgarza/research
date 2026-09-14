@@ -7,7 +7,11 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.modules.graded_modules import (
+    GradedModules,
+    grading_identity,
+    require_grading_monoid,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -27,7 +31,7 @@ class GradedDirectSumElement(ModuleElement):
         ModuleElement.__init__(self, parent)
         normalized = {}
         for degree, component in components.items():
-            degree = int(degree)
+            degree = parent.normalize_degree(degree)
             piece = parent.graded_piece(degree)
             if component.parent() is not piece:
                 component = piece(component)
@@ -39,7 +43,7 @@ class GradedDirectSumElement(ModuleElement):
         return dict(self._components)
 
     def homogeneous_component(self, degree):
-        degree = int(degree)
+        degree = self.parent().normalize_degree(degree)
         return self._components.get(degree, self.parent().graded_piece(degree).zero())
 
     def is_homogeneous(self) -> bool:
@@ -47,7 +51,7 @@ class GradedDirectSumElement(ModuleElement):
 
     def degree(self):
         if not self._components:
-            return 0
+            return grading_identity(self.parent().grading_monoid())
         if len(self._components) != 1:
             raise ValueError("a nonhomogeneous element has no single degree")
         return next(iter(self._components))
@@ -59,7 +63,9 @@ class GradedDirectSumElement(ModuleElement):
             for label, coefficient in module_coefficients(
                 component, self.parent().graded_piece(degree)
             ).items():
-                coefficients[labels(degree, label)] = coefficient
+                coefficients[
+                    labels(self.parent().degree_index_set()(degree), label)
+                ] = coefficient
         return coefficients
 
     def _add_(self, other):
@@ -115,7 +121,7 @@ class GradedDirectSumElement(ModuleElement):
             return "0"
         return " + ".join(
             f"[{degree}]({component})"
-            for degree, component in sorted(self._components.items())
+            for degree, component in self._components.items()
         )
 
 
@@ -139,6 +145,7 @@ class GradedDirectSumModule(Parent):
         realized_object=None,
         from_realization=None,
         degree_index_set=None,
+        grading_monoid=None,
         extra_categories=(),
         extra_construction_data=None,
     ) -> None:
@@ -150,12 +157,13 @@ class GradedDirectSumModule(Parent):
         self._realized_object = realized_object
         self._from_realization = from_realization
         self._degree_index_set = NN if degree_index_set is None else degree_index_set
+        self._grading_monoid = require_grading_monoid(grading_monoid)
         for key, value in dict(extra_construction_data or {}).items():
             setattr(self, f"_preamble_{key}", value)
-        self._pieces: dict[int, Any] = {}
+        self._pieces: dict[Any, Any] = {}
         self._indices = None
         categories = [
-            GradedModules(self._base_ring),
+            GradedModules(self._base_ring, self._grading_monoid),
             FramedModules(self._base_ring),
             *tuple(extra_categories),
         ]
@@ -169,14 +177,18 @@ class GradedDirectSumModule(Parent):
     def base_ring(self):
         return self._base_ring
 
-    def graded_piece(self, degree):
+    def grading_monoid(self):
+        return self._grading_monoid
+
+    def normalize_degree(self, degree):
         try:
-            normalized_degree = self.degree_index_set()(degree)
+            selected = self.degree_index_set()(degree)
+            return self.grading_monoid()(selected)
         except (TypeError, ValueError) as error:
-            raise ValueError(
-                f"{degree} is not a degree of {self}"
-            ) from error
-        degree = int(normalized_degree)
+            raise ValueError(f"{degree} is not a degree of {self}") from error
+
+    def graded_piece(self, degree):
+        degree = self.normalize_degree(degree)
         cached = self._pieces.get(degree)
         if cached is not None:
             return cached
@@ -193,13 +205,13 @@ class GradedDirectSumModule(Parent):
         if self._indices is None:
             self._indices = CoproductOfFamily(
                 self.degree_index_set(),
-                lambda degree: self.graded_piece(int(degree)).module_generating_set(),
+                lambda degree: self.graded_piece(degree).module_generating_set(),
             )
         return self._indices
 
     def module_generator(self, label):
         label = self.module_generating_set()(label)
-        degree = int(label.summand_index())
+        degree = self.normalize_degree(label.summand_index())
         piece_label = label.summand_element()
         return self.from_component(
             degree, self.graded_piece(degree).module_generator(piece_label)
@@ -211,7 +223,7 @@ class GradedDirectSumModule(Parent):
             if not coefficient:
                 continue
             label = self.module_generating_set()(raw_label)
-            degree = int(label.summand_index())
+            degree = self.normalize_degree(label.summand_index())
             piece_label = label.summand_element()
             piece = self.graded_piece(degree)
             contribution = piece.scalar_multiple(
@@ -221,7 +233,7 @@ class GradedDirectSumModule(Parent):
         return self.from_components(by_degree)
 
     def from_component(self, degree, component):
-        return self.element_class(self, {int(degree): component})
+        return self.element_class(self, {self.normalize_degree(degree): component})
 
     def from_graded_piece(self, degree, component):
         r"""Include one homogeneous piece into the represented direct sum."""
@@ -259,7 +271,7 @@ class GradedDirectSumModule(Parent):
             raise NotImplementedError("this direct sum has no selected realization")
         label = self.module_generating_set()(label)
         return self._realize_generator(
-            int(label.summand_index()),
+            self.normalize_degree(label.summand_index()),
             label.summand_element(),
         )
 
@@ -293,7 +305,7 @@ class GradedDirectSumModule(Parent):
     # prevents it from falsely treating the component labels as free.
     def module_component_key(self, label):
         label = self.module_generating_set()(label)
-        return int(label.summand_index())
+        return self.normalize_degree(label.summand_index())
 
     def module_component(self, key):
         return self.graded_piece(key)
@@ -302,7 +314,10 @@ class GradedDirectSumModule(Parent):
         return self.module_generating_set()(label).summand_element()
 
     def module_label_from_component(self, key, component_label):
-        return self.module_generating_set()(int(key), component_label)
+        return self.module_generating_set()(
+            self.degree_index_set()(self.normalize_degree(key)),
+            component_label,
+        )
 
     def _repr_(self):
         return self._name or "Graded direct sum module"

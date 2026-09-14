@@ -1608,6 +1608,10 @@ def _cartesian_product_of[IndexT](index_set: Parent, family: Callable[[IndexT], 
     product_category = CartesianProductsOfSets()
     placements = [product_category]
     if index_set in FiniteSets() and index_set in EnumeratedSets():
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+        if all(family(index) in AdditiveMonoids() for index in index_set):
+            placements.append(CartesianProductsOfAdditiveMonoids())
         factor_cardinalities = tuple(
             cardinal(family(index).cardinality()) for index in index_set
         )
@@ -1617,7 +1621,9 @@ def _cartesian_product_of[IndexT](index_set: Parent, family: Callable[[IndexT], 
                 family(index) in FiniteSets() and family(index) in EnumeratedSets()
                 for index in index_set
             ):
-                category = FiniteEnumeratedCartesianProductsOfSets()
+                category = Category.join(
+                    [FiniteEnumeratedCartesianProductsOfSets(), *placements]
+                )
                 return product_category.ObjectType(
                     category=category,
                     index_set=index_set,
@@ -1881,6 +1887,28 @@ class CartesianProductsOfSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+
+class CartesianProductsOfAdditiveMonoids(OwnedCategory):
+    r"""Cartesian products with the componentwise additive-monoid structure."""
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+        return [CartesianProductsOfSets(), AdditiveMonoids()]
+
+    class ElementMethods:
+        def __add__(self, other):
+            other = self.parent()(other)
+            return self.parent()(
+                lambda index: self.component(index) + other.component(index)
+            )
+
+        __radd__ = __add__
+
+    class ParentMethods:
+        def zero(self):
+            return self(lambda index: self.factor(index).zero())
 
 
 def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:

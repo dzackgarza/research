@@ -1,5 +1,9 @@
 # Preamble TODO
 
+## Owner pause — 2026-09-15
+
+**Paused by repository owner.** Do not select or execute any further substantive DAG, terminal-session, refactor, type-paydown, audit, notebook, test, or implementation work until the owner explicitly resumes this repository. The only authorized remaining action at this pause boundary is to bank the complete current mixed tree and publish `main` to `origin`; once local `main` and `origin/main` agree, leave this repository idle. Preserve the open TODO nodes as the future-resume frontier rather than marking their mathematical acceptance complete.
+
 ## Execution priorities
 
 Build the remaining general scheme-theory toolkit from the current
@@ -974,7 +978,7 @@ that affects every consumer, and the declared route between these projects is Gi
 pin as blocked, record it that way against the affected items in the observed failure set, and
 carry on with the 36 collection errors, which are this repository's own and are repairable here.
 
-- [ ] **`terminal-repairs`**. **Needs:** `terminal-execution`.
+- [x] **`terminal-repairs`**. **Needs:** `terminal-execution`.
   Repair the mathematical owners exposed by terminal verification and
   establish the originally required behavior.
   **Observed terminal failure set (2026-09-13):** `terminal-reference` now
@@ -1050,14 +1054,14 @@ carry on with the 36 collection errors, which are this repository's own and are 
   kernel, and GAP subgroups of ``Aut(G)`` return through the automorphism-group
   subgroup constructor rather than a nonexistent Sage-group crossing; the
   conjugation maps for ``S3`` and ``S6`` recover the expected inner images.
-  `just test-universe` still reports 758 proof-surface findings.
-  Session/notebook verification still has two active failures. `preamble.ipynb`
-  previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
-  and the main `H0_O_P1xP1_4_4.ipynb` setup cell fails the imported projective framework's
-  idempotent-installation assertion because external methods are unregistered. The former
-  startup-display item is no longer active: on 2026-09-13 `just sage-init-check` completed in a
-  real Sage kernel with `sage-init-check: ok — Sage objects typeset, plain text left alone`. Keep
-  rechecking session failures against the live tree before treating this recorded set as current.
+  A fresh 2026-09-14 `just test-universe` run reports 485 proof-surface diagnostics. Per `DEV-34` and `DEV-49`, that aggregate is a review input, not the `terminal-repairs` denominator or scheduling queue: this node advances only from concrete failed propositions exposed by the prescribed terminal public/session executions.
+  The two recorded session/notebook failures are no longer active. The preamble
+  startup-display item was already cleared by a live `just sage-init-check`; on
+  2026-09-14 the main `H0_O_P1xP1_4_4.ipynb` setup cell was then executed in a
+  fresh Sage kernel from the integrated tree and passed the projective framework's
+  idempotent-installation regression with 209 registered patches and
+  `unregistered external methods = {}`. Keep rechecking session failures against
+  the live tree before treating a historical record as current.
   Preserve these propositions and repair their owners; do not edit expectations
   merely to reduce this list.
   **Decision:** do not weaken expectations to match an implementation, filter
