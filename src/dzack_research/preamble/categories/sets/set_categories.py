@@ -1700,12 +1700,10 @@ class CartesianProductsOfSets(OwnedCategory):
         def __hash__(self) -> int:
             if not self.parent().has_finite_index_set():
                 return hash(id(self.parent()))
-            if self._positional_components is not None:
-                return hash((id(self.parent()), self._positional_components))
-            value_hash = 0
-            for index in self.parent().index_set():
-                value_hash = hash((value_hash, self.component(index)))
-            return hash((id(self.parent()), value_hash))
+            components = tuple(
+                self.component(index) for index in self.parent().index_set()
+            )
+            return hash((id(self.parent()), components))
 
     def _call_(self, index_set, family):
         r"""Construct the dependent product of the stated family of sets."""

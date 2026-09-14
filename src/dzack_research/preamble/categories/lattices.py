@@ -47,6 +47,7 @@ from dzack_research.preamble.categories._lattice import (
     signature_pair,
     signature_pair_of_gram,
     signature_pairs,
+    tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
@@ -951,6 +952,13 @@ class Lattices(OwnedCategoryOverBaseRing):
     _IsoCategory = LatticeIsoCategoryConstruction
 
     class SubcategoryMethods:
+        def tensor_product(self, factors):
+            r"""Return the tensor product lattice with the product pairing."""
+            return tensor_product_lattice(factors)
+
+        def _categorical_tensor_product(self, left, right):
+            return self.tensor_product((left, right))
+
         def biproduct(self, summands):
             r"""Return $\bigoplus_{i \in I} L_i$, the orthogonal sum of a family.
 
@@ -2744,6 +2752,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                         module_generators=self.module_generating_set(),
                     )
 
+        def __matmul__(self, other):
+            r"""Return the tensor product lattice ``self \otimes other``."""
+            category = Lattices(self.base_ring())
+            match other in category:
+                case True:
+                    return category.tensor_product((self, other))
+                case False:
+                    return NotImplemented
+
         def __add__(self, other):
             r"""Return the orthogonal direct sum of the two summands.
 
@@ -3038,6 +3055,137 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
 
             return tensor.vector(self.parent().base_ring(), self.to_list())
+
+
+class BiproductLattices(OwnedCategoryOverBaseRing):
+    r"""Lattice biproducts in their concatenated lattice framing."""
+
+    def an_object(self):
+        lattice = Lattices(self.base_ring()).an_object()
+        return Lattices(self.base_ring()).biproduct((lattice, lattice))
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "chosen lattice biproducts"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            BiproductModules,
+        )
+
+        return [Lattices(self.base_ring()), BiproductModules(self.base_ring())]
+
+    class ParentMethods:
+        def _biproduct_factor_position(self, index):
+            factors = self.biproduct_factors()
+            normalized = factors.index_set()(index)
+            return int(factors.index_set().ranking_map()(normalized))
+
+        def injection(self, index):
+            r"""Return the selected summand inclusion into this orthogonal sum."""
+            factors = self.biproduct_factors()
+            normalized = factors.index_set()(index)
+            position = self._biproduct_factor_position(normalized)
+            summand = factors[normalized]
+            gram = self.gram_tensor()
+            source_labels = summand.module_generating_set()
+            target_labels = self.module_generating_set()
+            offset = gram._offsets[position]
+
+            def image(label):
+                source_position = int(source_labels.ranking_map()(label))
+                target_label = target_labels.ranking_map().inverse()(
+                    offset + source_position
+                )
+                return self.module_generator(target_label)
+
+            return module_homset(summand, self)(image)
+
+        def projection(self, index):
+            r"""Return the selected projection from this orthogonal sum."""
+            factors = self.biproduct_factors()
+            normalized = factors.index_set()(index)
+            position = self._biproduct_factor_position(normalized)
+            summand = factors[normalized]
+            gram = self.gram_tensor()
+            source_labels = self.module_generating_set()
+            target_labels = summand.module_generating_set()
+
+            def image(label):
+                source_position = int(source_labels.ranking_map()(label))
+                which, place = gram._block_of(source_position)
+                match which == position:
+                    case True:
+                        target_label = target_labels.ranking_map().inverse()(place)
+                        return summand.module_generator(target_label)
+                    case False:
+                        return summand.zero()
+
+            return module_homset(self, summand)(image)
+
+        def from_coproduct_cocone(self, legs):
+            r"""Return the unique map out of this biproduct with the stated legs."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            factors = self.biproduct_factors()
+            legs = _finite_factor_family(legs, name="Coproduct cocone legs")
+            assert legs.index_set() == factors.index_set(), (
+                "a cocone under a biproduct has one leg per factor"
+            )
+            first = factors.index_set().ranking_map().inverse()(0)
+            target = legs[first].codomain()
+            assert all(leg.codomain() is target for leg in legs), (
+                "a cocone has one apex"
+            )
+            assert all(
+                legs.value(index).domain() is factors.value(index)
+                for index in factors.index_set()
+            ), "each leg of the cocone starts at its own factor"
+            gram = self.gram_tensor()
+            source_labels = self.module_generating_set()
+
+            def image(label):
+                source_position = int(source_labels.ranking_map()(label))
+                which, place = gram._block_of(source_position)
+                factor_index = factors.index_set().ranking_map().inverse()(which)
+                factor = factors[factor_index]
+                factor_label = factor.module_generating_set().ranking_map().inverse()(place)
+                return legs[factor_index](factor.module_generator(factor_label))
+
+            return module_homset(self, target)(image)
+
+        def from_product_cone(self, legs):
+            r"""Return the unique map into this biproduct with the stated legs."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            factors = self.biproduct_factors()
+            legs = _finite_factor_family(legs, name="Product cone legs")
+            assert legs.index_set() == factors.index_set(), (
+                "a cone over a biproduct has one leg per factor"
+            )
+            first = factors.index_set().ranking_map().inverse()(0)
+            source = legs[first].domain()
+            assert all(leg.domain() is source for leg in legs), "a cone has one apex"
+            assert all(
+                legs.value(index).codomain() is factors.value(index)
+                for index in factors.index_set()
+            ), "each leg of the cone lands in its own factor"
+
+            def image(label):
+                generator = source.module_generator(label)
+                return sum(
+                    (
+                        self.injection(index)(legs.value(index)(generator))
+                        for index in factors.index_set()
+                    ),
+                    self.zero(),
+                )
+
+            return module_homset(source, self)(image)
 
 
 class FiniteRankLattices(OwnedCategoryOverBaseRing):

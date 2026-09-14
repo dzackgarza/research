@@ -148,6 +148,27 @@ def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
     assert {first: "same"}[same] == "same"
 
 
+def test_equal_product_points_hash_identically_across_constructor_forms() -> None:
+    left = Sets.Δ[1]
+    right = Sets.Δ[2]
+    product = CartesianProductOfSets(left, right)
+    positional = product((left[1], right[2]))
+    def component(index):
+        match int(index):
+            case 0:
+                return left[1]
+            case 1:
+                return right[2]
+            case _:
+                raise ValueError("the binary product has only two components")
+
+    functional = product(component)
+
+    assert positional == functional
+    assert hash(positional) == hash(functional)
+    assert {positional: "same point"}[functional] == "same point"
+
+
 def test_finite_product_equality_uses_component_equality_before_inverse_ranking() -> None:
     labels = Sets.Δ[1]
     inverse_calls = []

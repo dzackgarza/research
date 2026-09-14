@@ -12,7 +12,8 @@ tensors of type $(0,2)$.
 
 import re
 from bisect import bisect_right
-from itertools import accumulate
+from itertools import accumulate, product
+from math import prod as product_value
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
@@ -36,7 +37,9 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
+from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+    ProductCategory,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreeModule,
@@ -343,13 +346,14 @@ class Lattice(Parent, IndexedGenerators):
                 (parent_category, ModuleSubobjects(category.base_ring()))
             )
         if isinstance(gram, _BiproductGram):
-            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
-                DirectSumObjects,
-            )
+            from dzack_research.preamble.categories.lattices import BiproductLattices
 
+            self._preamble_biproduct_factors = gram._summands
             self._preamble_direct_sum_summands = gram._summands
             self._preamble_direct_sum_index_set = gram._summands.index_set()
-            parent_category = Cat().meet((parent_category, DirectSumObjects()))
+            parent_category = Cat().meet(
+                (parent_category, BiproductLattices(category.base_ring()))
+            )
         IndexedGenerators.__init__(
             self,
             _basis_keys(module),
@@ -874,6 +878,111 @@ class _BiproductGram(_PairingGram):
         return " ⊕ ".join(_gram_name(block.gram_tensor()) for block in self._blocks)
 
 
+class _TensorProductGram(_PairingGram):
+    r"""The product pairing on a represented tensor product of lattices."""
+
+    def __init__(self, module, factors) -> None:
+        self._factors = factors
+        self._become_tensor_on(module)
+
+    def _basis_pairing(self, left_label, right_label):
+        ring = self.base_ring()
+        return product_value(
+            (
+                lattice_factor.b(
+                    lattice_factor.module_generator(left_label.component(index)),
+                    lattice_factor.module_generator(right_label.component(index)),
+                )
+                for index in self._factors.index_set()
+                for lattice_factor in (self._factors[index],)
+            ),
+            start=ring.one(),
+        )
+
+    def __getitem__(self, index):
+        labels = _basis_keys(self._module)
+        left = _resolve_key(labels, index[0])
+        right = _resolve_key(labels, index[1])
+        return self._basis_pairing(left, right)
+
+    def pairings_against(self, vector):
+        labels = _basis_keys(self._module)
+        factors = self._factors
+        factor_indices = tuple(factors.index_set())
+        result = {}
+        for source_label, source_coefficient in _vector_coefficients(
+            vector, self._module
+        ).items():
+            pairing_data = tuple(
+                tuple(
+                    generator_pairings(
+                        factors[index],
+                        factors[index].module_generator(source_label.component(index)),
+                    ).items()
+                )
+                for index in factor_indices
+            )
+            for selected in product(*pairing_data):
+                selected_labels = {
+                    index: entry[0]
+                    for index, entry in zip(factor_indices, selected, strict=True)
+                }
+                target_label = labels(
+                    lambda index, selected_labels=selected_labels: selected_labels[index]
+                )
+                value = source_coefficient * product_value(
+                    (entry[1] for entry in selected), start=self.base_ring().one()
+                )
+                result[target_label] = result.get(
+                    target_label, self.base_ring().zero()
+                ) + value
+        nonzero = {}
+        zero = self.base_ring().zero()
+        for label, value in result.items():
+            match value == zero:
+                case True:
+                    pass
+                case False:
+                    nonzero[label] = value
+        return nonzero
+
+    def __call__(self, left, right):
+        left_coefficients = _vector_coefficients(left, self._module)
+        right_coefficients = _vector_coefficients(right, self._module)
+        return sum(
+            (
+                left_coefficient
+                * right_coefficient
+                * self._basis_pairing(left_label, right_label)
+                for left_label, left_coefficient in left_coefficients.items()
+                for right_label, right_coefficient in right_coefficients.items()
+            ),
+            self.base_ring().zero(),
+        )
+
+    def signature_pair(self):
+        positive = SageZZ.one()
+        negative = SageZZ.zero()
+        for lattice_factor in self._factors:
+            pair = lattice_factor.signature_pair()
+            new_positive = positive * pair.first() + negative * pair.second()
+            new_negative = positive * pair.second() + negative * pair.first()
+            positive, negative = new_positive, new_negative
+        return signature_pair(positive, negative)
+
+    def _latex_(self) -> str:
+        return r" \otimes ".join(
+            str(latex(lattice_factor.gram_tensor()))
+            for lattice_factor in self._factors
+        )
+
+    def _pairing_name(self) -> str:
+        return " ⊗ ".join(
+            _gram_name(lattice_factor.gram_tensor())
+            for lattice_factor in self._factors
+        )
+
+
 class _ColimitGram(_PairingGram):
     r"""The Gram of \(\operatorname{colim}_n L_n\) along \(x\mapsto(x,0)\).
 
@@ -1022,6 +1131,45 @@ def orthogonal_sum(summands):
     module = FreeModuleOn(ring, _as_generating_set(None, total))
     gram = _BiproductGram(module, summands, offsets)
     return _lattice_parent(module, gram, category, None, names=None)
+
+
+
+def tensor_product_lattice(factors):
+    r"""Return the tensor product lattice with the product bilinear form."""
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        _finite_factor_family,
+    )
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        Modules,
+        TensorProductModules,
+    )
+
+    factors = _finite_factor_family(factors, name="Lattice tensor factors")
+    values = tuple(factors)
+    match values:
+        case ():
+            raise ValueError("a lattice tensor product requires at least one factor")
+        case _:
+            pass
+    ring = values[0].base_ring()
+    category = Lattices(ring)
+    match all(lattice_factor in category for lattice_factor in values):
+        case True:
+            pass
+        case False:
+            raise ValueError("a lattice tensor product requires lattices over one ring")
+    module = Modules(ring).tensor_product(factors)
+    gram = _TensorProductGram(module, factors)
+    result = Lattice(
+        module,
+        gram,
+        category,
+        None,
+        extra_categories=(TensorProductModules(ring),),
+        construction_data=(("tensor_factors", factors),),
+    )
+    return category._refine_lattice_object(result)
 
 
 def colimit_lattice(stage, *, category):
