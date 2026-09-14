@@ -662,6 +662,9 @@ class Algebras(OwnedCategoryOverBaseRing):
         def is_algebra(self) -> bool:
             return True
 
+        def is_framed(self) -> bool:
+            return False
+
         def is_commutative(self):
             r"""Return whether the selected multiplication commutes when decided.
 
@@ -1450,6 +1453,9 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def is_framed(self) -> bool:
+            return True
+
         def cardinality(self):
             base_cardinality = self.base_ring().cardinality()
             generator_cardinality = self.algebra_generating_set().cardinality()
