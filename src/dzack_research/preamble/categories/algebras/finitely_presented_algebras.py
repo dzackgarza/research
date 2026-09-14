@@ -105,8 +105,9 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
     def _free_word(self, word):
         engine = self.ring()
         result = engine.one()
+        ranking = self._labels.ranking_map()
         for label in word:
-            result *= engine.gen(self._labels.index(label))
+            result *= engine.gen(int(ranking(label)))
         return result
 
     def reduce(self, element):
