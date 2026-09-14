@@ -68,6 +68,15 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
     assert completion.completion_map().codomain() is completion
 
 
+def test_power_series_over_integers_does_not_require_a_maximal_ideal_decision() -> None:
+    series = PowerSeriesRing(ZZ, "q")
+
+    assert series in FormalPowerSeriesRings(ZZ)
+    assert series.base_ring() is ZZ
+    assert series.completion_source().base_ring() is ZZ
+    assert series.formal_parameter_set().cardinality() == 1
+
+
 def test_p_adic_notation_is_the_same_selected_adic_completion() -> None:
     ideal = ZZ.ideal(ZZ(5))
 

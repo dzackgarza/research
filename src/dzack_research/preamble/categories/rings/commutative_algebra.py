@@ -2117,21 +2117,50 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         placements = [AdicCompletions(), *extra_categories]
         if source in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
-        is_maximal = bool(defining_ideal.is_maximal())
         formal_base = algebra_base
         match formal_base:
             case None:
                 formal_base_is_local = False
+                formal_base_is_complete_local = False
             case _:
                 formal_base = _own_ring(formal_base)
                 formal_base_is_local = (
                     formal_parameter_labels is not None
                     and formal_base in OwnedLocalRings()
                 )
-        match is_maximal or formal_base_is_local:
-            case True:
+                formal_base_is_complete_local = (
+                    formal_parameter_labels is not None
+                    and formal_base in OwnedCompleteLocalRings()
+                )
+
+        # A formal-power-series specialization knows the quotient by its
+        # represented ideal of variables exactly: R[x_1,...,x_n]/(x_1,...,x_n)
+        # is R.  Thus that ideal is maximal when the coefficient ring is a
+        # field, without asking a backend ideal predicate that may not decide
+        # maximality over a general base such as ZZ.  For arbitrary adic
+        # completions, preserve an unavailable maximality algorithm as
+        # undecided; absence of an algorithm is not evidence that the ideal is
+        # nonmaximal.
+        if formal_parameter_labels is not None and formal_base is not None:
+            defining_ideal_is_maximal = (
+                True if formal_base in OwnedFields() else None
+            )
+        else:
+            try:
+                defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
+            except NotImplementedError:
+                defining_ideal_is_maximal = None
+
+        match (
+            defining_ideal_is_maximal,
+            formal_base_is_complete_local,
+            formal_base_is_local,
+        ):
+            case (True, _, _) | (_, True, _):
                 placements.append(OwnedCompleteLocalRings())
-            case False:
+            case (_, _, True):
+                placements.append(OwnedLocalRings())
+            case _:
                 pass
         _OwnedAlgebraParent.__init__(
             self,
@@ -2170,7 +2199,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
         if algebra_base is None or algebra_base is source:
             self._preamble_structure_map = self._preamble_completion_map
-        match (formal_base_is_local, is_maximal):
+        match (formal_base_is_local, defining_ideal_is_maximal):
             case (True, _):
                 formal_parameters = tuple(
                     self._preamble_completion_map(
@@ -2184,12 +2213,12 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     formal_parameters,
                 )
                 self._preamble_residue_field = formal_base.residue_field()
-            case (False, True):
+            case (_, True):
                 self._preamble_maximal_ideal = self._preamble_completion_map.extension_of_ideal(
                     defining_ideal
                 )
                 self._preamble_residue_field = ResidueField(source, defining_ideal)
-            case (False, False):
+            case _:
                 pass
 
     def completion_arithmetic_mode(self):
