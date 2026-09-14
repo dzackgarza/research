@@ -36,7 +36,7 @@ def test_twist_carries_a_discriminant_automorphism_to_the_twisted_form() -> None
     assert form.twist(-1) is twisted
 
     group = form.automorphism_group()
-    assert group.order() > 1
+    assert group.order() > ZZ.one()
 
     for automorphism in group:
         image = twist(automorphism)

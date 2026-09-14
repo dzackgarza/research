@@ -89,13 +89,17 @@ def test_the_pyramid_over_a_finite_type_polygon_is_a_lattice_polytope() -> None:
     assert pair.cover_toric_threefold().dimension() == 3
 
 
-def test_the_affine_a_family_places_the_apex_at_a_half_integral_point() -> None:
-    r"""``p* = (n/2, 1)`` for the affine ``A`` family, so the pyramid over the
-    polygon is rational rather than integral and carries no toric threefold."""
-    pair = ADELogPair("A", 3, QQ, affine=True)
+def test_an_affine_a_pyramid_is_rational_when_the_half_rank_parameter_is_odd() -> None:
+    r"""The archived affine formula is ``p*=(n/2,1)``.
+
+    For ``A_1`` the selected parameter is ``n=1``, so the apex is genuinely
+    half-integral.  Even ``n`` gives an integral apex instead; half-integrality
+    is not a property of the entire affine ``A`` family.
+    """
+    pair = ADELogPair("A", 1, QQ, affine=True)
 
     assert pair.is_affine_type()
-    assert pair.polygon().vertices().cardinality() == 4
+    assert pair.distinguished_point()[0] == QQ(1) / QQ(2)
     assert not pair.pyramid().is_lattice_polytope()
 
 

@@ -5,17 +5,17 @@ module.
 """
 
 from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
     CountableSets,
     CountablyInfiniteSets,
-    FiniteSets,
     FinitelySupportedFunctionSets,
+    FiniteSets,
     InfiniteSets,
     NaturalNumber,
     NaturalNumbers,
-    NN,
     PartiallyOrderedSets,
-    SetSubcategoryMethods,
     Sets,
+    SetSubcategoryMethods,
     TotallyOrderedSets,
     UncountableSets,
     placement_of,

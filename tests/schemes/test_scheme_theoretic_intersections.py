@@ -6,13 +6,11 @@ rather than the intersection of the point sets is what distinguishes a
 tangential meeting from a transverse one.
 """
 
-import pytest
-
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     ClosedEmbeddings,
     IntegralSchemes,
-    QQ,
     scheme_fiber_product,
 )
 
@@ -69,11 +67,19 @@ def test_a_tangent_line_meets_the_parabola_in_a_non_reduced_double_point() -> No
     assert pullback_x != pullback.coordinate_algebra().zero()
 
 
-def test_intersection_multiplicity_states_the_one_operation_it_lacks() -> None:
+def test_tangent_intersection_has_local_multiplicity_two() -> None:
     plane, algebra, x, y = _plane()
     parabola = plane.closed_subscheme(y - x**2)
     tangent = plane.closed_subscheme(y)
     origin = plane.underlying_space()(algebra.ideal(x, y))
 
-    with pytest.raises(AssertionError, match="composition length"):
-        tangent.intersection_multiplicity(parabola, origin)
+    assert tangent.intersection_multiplicity(parabola, origin) == 2
+
+
+def test_transverse_intersection_has_local_multiplicity_one() -> None:
+    plane, algebra, x, y = _plane()
+    horizontal = plane.closed_subscheme(y)
+    vertical = plane.closed_subscheme(x)
+    origin = plane.underlying_space()(algebra.ideal(x, y))
+
+    assert horizontal.intersection_multiplicity(vertical, origin) == 1

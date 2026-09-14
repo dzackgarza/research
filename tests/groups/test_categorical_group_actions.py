@@ -66,7 +66,11 @@ def test_generic_g_object_is_an_actual_functor_and_equivariant_maps_are_natural(
     assert acted.arrow().functor() is action
     assert category.forgetful_functor()(acted) is represented
 
+    endomorphisms = Sets().Mor(represented, represented)
+    action_map = represented.action()
+    assert action_map.parent() is Sets().Mor(group, endomorphisms)
     component = represented.action_of(generator)
+    assert action_map(generator) == component
     equivariant = category.Mor(acted, acted)(lambda _point: component)
     classifying = group.classifying_category()
     generator_arrow = classifying.Mor(

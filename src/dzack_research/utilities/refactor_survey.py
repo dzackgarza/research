@@ -33,7 +33,7 @@ import json
 import pathlib
 import sys
 from collections import Counter
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 
 DEFAULT_ROOTS = ("src", "tests")
 

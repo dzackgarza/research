@@ -16,8 +16,8 @@ import operator
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -25,9 +25,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Set
 from dzack_research.preamble.owned_category import object_of
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,6 +60,9 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _rmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def __rmul__(self, scalar):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
@@ -178,10 +180,19 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             """
             if isinstance(value, self.category().ElementType):
                 value = value.underlying_element()
-            assert value in self.underlying_set(), (
-                f"{value!r} is not in the set this module is built on"
+            underlying = self.underlying_set()
+            if value in underlying:
+                return value
+            try:
+                normalized = underlying(value)
+            except (TypeError, ValueError) as error:
+                raise AssertionError(
+                    f"{value!r} is not in the set this module is built on"
+                ) from error
+            assert normalized in underlying, (
+                f"{normalized!r} is not in the set this module is built on"
             )
-            return value
+            return normalized
 
         def _element_constructor_(self, value):
             if isinstance(value, self.category().ElementType) and value.parent() is self:
@@ -269,6 +280,12 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             if self.is_finite() is not True:
                 _LOGGER.debug(
                     "General module over %s accepted without exhaustive module-law verification",
+                    self.base_ring(),
+                )
+                return
+            if self.underlying_set() not in EnumeratedSets():
+                _LOGGER.debug(
+                    "Finite general module over %s accepted without exhaustive module-law verification; its underlying set has no selected enumeration",
                     self.base_ring(),
                 )
                 return

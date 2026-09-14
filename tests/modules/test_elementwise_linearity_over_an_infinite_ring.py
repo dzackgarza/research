@@ -13,12 +13,15 @@ is ``x``.
 """
 
 from dzack_research.preamble.all import (
+    AA,
     GF,
+    BasedFreeModule,
     GeneralModule,
     PolynomialRing,
     Set,
     module_homset,
 )
+from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _group_algebra_of_the_cyclic_group_of_order_three():
@@ -61,3 +64,11 @@ def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
         raise AssertionError(
             "cubing is additive and fixes the constants, so only the check on x rejects it"
         )
+
+
+def test_zero_module_over_a_non_enumerated_ring_has_one_verification_element() -> None:
+    zero_module = BasedFreeModule(AA, finite_ordered_set(()))
+    identity = module_homset(zero_module, zero_module).elementwise(lambda element: element)
+
+    assert zero_module.cardinality() == 1
+    assert identity(zero_module.zero()) == zero_module.zero()

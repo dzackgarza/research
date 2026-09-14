@@ -2,18 +2,20 @@ import pytest
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     Cardinalities,
+    ConditionSet,
     FiniteGroups,
     Lattices,
     MatrixSpace,
     MatrixSpaces,
-    QQ,
     Set,
+    finite_ordered_set,
+    primitive_isotropic,
     signature_pair,
     tensor,
-    ZZ,
 )
-from dzack_research.preamble.tensors import Tensor
 
 
 def test_lll_is_a_change_of_framing_with_actual_isometry_witness() -> None:
@@ -260,7 +262,12 @@ def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
     inclusions = lattice.even_overlattice_inclusions()
 
     assert inclusions.cardinality() == 3
-    assert sorted(int(inclusion.index()) for inclusion in inclusions) == [1, 2, 2]
+    assert ConditionSet(
+        inclusions, lambda inclusion: inclusion.index() == ZZ(1)
+    ).cardinality() == 1
+    assert ConditionSet(
+        inclusions, lambda inclusion: inclusion.index() == ZZ(2)
+    ).cardinality() == 2
     assert all(inclusion.codomain().is_even() for inclusion in inclusions)
     assert sum(inclusion.codomain().is_unimodular() for inclusion in inclusions) == 2
 
@@ -332,10 +339,11 @@ def test_discriminant_functor_and_representation_use_live_form_isometries() -> N
     )
 
     special = lattice.SO()
-    determinant_one = tuple(
-        automorphism for automorphism in automorphisms if automorphism.determinant() == 1
+    determinant_one = ConditionSet(
+        automorphisms,
+        lambda automorphism: automorphism.determinant() == 1,
     )
-    assert len(determinant_one) == 6
+    assert determinant_one.cardinality() == 6
     assert all(automorphism in special for automorphism in determinant_one)
     assert all(
         (automorphism in special) == (automorphism.determinant() == 1)
@@ -448,7 +456,7 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
     assert Set(subgroup).cardinality() == subgroup.order()
     assert subgroup.one() in subgroup
     assert generator in subgroup
-    assert all(element.parent() is lattice.Aut() for element in elements)
+    assert all(element.parent() is lattice.Aut() for element in subgroup)
 
 
 def test_cyclic_subgroup_does_not_assume_an_indefinite_isometry_has_finite_order() -> None:
@@ -463,7 +471,8 @@ def test_cyclic_subgroup_does_not_assume_an_indefinite_isometry_has_finite_order
     assert subgroup.is_finite() is Unknown
     assert subgroup.order() is Unknown
     with pytest.raises(NotImplementedError, match="enumerating a cyclic subgroup"):
-        tuple(subgroup)
+        for _element in subgroup:
+            pass
 
 
 def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monkeypatch) -> None:
@@ -513,30 +522,44 @@ def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monke
     assert stabilizer[0](f) == -f
 
     representatives = group.vector_orbit_representatives(1)
-    assert representatives == (e,)
+    assert representatives.cardinality() == 1
+    assert representatives[0] == e
 
 
 def test_indefinite_complement_gluing_route_uses_full_finite_discriminant_orthogonal_group() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)([[12]])
-    vector = tuple(lattice.module_generators())[-1]
+    generators = lattice.module_generators()
+    vector = generators[int(generators.cardinality()) - 1]
     extension = lattice.vector_primitive_extension(vector)
 
     assert extension.complement.signature_pair() == signature_pair(1, 1)
     assert extension.index == 1
     assert extension.gluing_subgroup.cardinality() == 1
 
+    line_form = extension.line_discriminant_inclusion.domain()
+    line_label = line_form.module_generating_set()[0]
+    line_generator = line_form.module_generator(line_label)
+    times_five_morphism = line_form.Mor(line_form)(
+        {line_label: line_form.scalar_multiple(ZZ(5), line_generator)}
+    )
+    times_five = line_form.O()(times_five_morphism)
+    assert times_five(line_generator) == line_form.scalar_multiple(ZZ(5), line_generator)
+    assert times_five(line_generator) != line_generator
+    assert times_five(line_generator) != -line_generator
+
     classes = lattice.gluing_route_discriminant_classes(vector, vector)
     discriminant_group = lattice.discriminant_group().O()
     assert classes.cardinality() == discriminant_group.order()
     assert all(automorphism.parent() is discriminant_group for automorphism in classes)
-    assert set(classes) == set(discriminant_group)
+    assert Set(classes) == Set(discriminant_group)
 
 
 def test_stable_complement_root_reflections_use_indefinite_root_orbit_representatives(monkeypatch) -> None:
     from py_polyhedral import binaries as polyhedral
 
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A1")
-    vector = tuple(lattice.module_generators())[-1]
+    generators = lattice.module_generators()
+    vector = generators[int(generators.cardinality()) - 1]
 
     def representatives(_gram, square):
         if square == 2:
@@ -601,7 +624,10 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
     assert plane.module_rank() == 2 and plane.is_primitive()
     assert flag.module_rank() == 2
     assert flag.module_rank() in Cardinalities()
-    assert tuple(term.module_rank() for term in flag.terms()) == (1, 2)
+    terms = flag.terms()
+    assert terms.cardinality() == 2
+    assert terms[0].module_rank() == 1
+    assert terms[1].module_rank() == 2
 
     line_witness = lattice.O().isotropic_equivalence_witness(line, line)
     plane_witness = lattice.O().isotropic_equivalence_witness(plane, plane)
@@ -657,11 +683,17 @@ def test_finite_character_quotient_splits_isotropic_line_orbit_under_so_u(monkey
     special = lattice.SO()
     representatives = special.isotropic_orbit_representatives(1)
     assert representatives.cardinality() == 2
-    lines = {
-        tuple(abs(entry) for entry in representative.inclusion()(representative.module_generators()[0]).to_tuple())
-        for representative in representatives
-    }
-    assert lines == {(ZZ(1), ZZ(0)), (ZZ(0), ZZ(1))}
+    first, second = lattice.module_generators()
+    expected_lines = finite_ordered_set(
+        (
+            primitive_isotropic(lattice, (first,)),
+            primitive_isotropic(lattice, (second,)),
+        )
+    )
+    assert all(
+        any(representative == expected for representative in representatives)
+        for expected in expected_lines
+    )
     assert not special.isotropic_are_equivalent(
         representatives[0], representatives[1]
     )

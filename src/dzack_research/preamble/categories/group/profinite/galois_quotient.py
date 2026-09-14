@@ -5,6 +5,7 @@ from typing import cast
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -103,7 +104,7 @@ class FiniteGaloisExtension(SageObject):
             raise ValueError(
                 "a represented finite extension must be separable over its base field"
             )
-        self._automorphisms: tuple[ExactFieldMorphism, ...] | None = None
+        self._automorphisms = None
 
     def base_field(self):
         return self._base_field
@@ -123,7 +124,7 @@ class FiniteGaloisExtension(SageObject):
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
 
-    def automorphisms(self) -> tuple[ExactFieldMorphism, ...]:
+    def automorphisms(self):
         if self._automorphisms is None:
             automorphisms = []
             base_generators = field_generators(self.base_field())
@@ -139,7 +140,7 @@ class FiniteGaloisExtension(SageObject):
                     f"{self.field()} is not represented as a finite Galois extension "
                     f"of {self.base_field()}"
                 )
-            self._automorphisms = tuple(automorphisms)
+            self._automorphisms = finite_ordered_set(tuple(automorphisms))
         return self._automorphisms
 
     def is_galois(self) -> bool:
@@ -263,7 +264,7 @@ class FiniteGaloisQuotient(Parent):
     def base_field(self):
         return self._extension.base_field()
 
-    def automorphisms(self) -> tuple[ExactFieldMorphism, ...]:
+    def automorphisms(self):
         return self._automorphisms
 
     def __call__(self, datum):
@@ -349,12 +350,58 @@ class FiniteGaloisQuotient(Parent):
         return f"Gal({self.top_field()} / {self.base_field()})"
 
 
+class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
+    r"""The finite group ``Aut_K(E)`` of one represented separable extension.
+
+    Unlike :class:`FiniteGaloisQuotient`, this group does not require
+    ``E/K`` to be Galois.  It enumerates all exact self-embeddings of ``E``
+    fixing ``K`` and reuses the same owned finite-group operations on those
+    exact field maps.
+    """
+
+    def __init__(self, extension: FiniteGaloisExtension) -> None:
+        if not isinstance(extension, FiniteGaloisExtension):
+            raise TypeError(
+                "a finite extension automorphism group requires represented extension data"
+            )
+        self._extension = extension
+        base_generators = field_generators(extension.base_field())
+        self._automorphisms = finite_ordered_set(
+            tuple(
+                candidate
+                for candidate in exact_embeddings(extension.field(), extension.field())
+                if all(
+                    candidate(extension.base_embedding()(generator))
+                    == extension.base_embedding()(generator)
+                    for generator in base_generators
+                )
+            )
+        )
+        self._signatures = {
+            _morphism_signature(automorphism): index
+            for index, automorphism in enumerate(self._automorphisms)
+        }
+        identity_signature = tuple(field_generators(extension.field()))
+        try:
+            self._identity_index = self._signatures[identity_signature]
+        except KeyError as error:
+            raise ValueError(
+                "the exact K-automorphisms omit the identity"
+            ) from error
+        Parent.__init__(self, category=OwnedFiniteGroups())
+
+    def _repr_(self) -> str:
+        return f"Aut_{self.base_field()}({self.top_field()})"
+
+
 class ContinuousGroupHomset(Homset):
     def __init__(self, domain, codomain) -> None:
         Homset.__init__(self, domain, codomain, category=SageGroups())
 
 
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def continuous_group_homset(domain, codomain):
+    r"""Return the canonical continuous-group Hom for these exact endpoints."""
     return ContinuousGroupHomset(domain, codomain)
 
 
@@ -410,6 +457,10 @@ class LiftCoset(SageObject):
 
     def supergroup(self):
         return self._restriction_map.domain()
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group containing this coset."""
+        return self.supergroup()
 
     def finite_automorphism(self):
         return self._element
@@ -487,6 +538,7 @@ __all__ = [
     "FiniteGaloisAutomorphism",
     "FiniteGaloisExtension",
     "FiniteGaloisQuotient",
+    "FiniteExtensionAutomorphismGroup",
     "GaloisRestrictionMap",
     "LiftCoset",
     "continuous_group_homset",

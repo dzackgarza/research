@@ -2,34 +2,31 @@ r"""Free bilinear/quadratic formed objects and their forgetful adjunctions."""
 
 from sage.misc.cachefunc import cached_function
 
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearForms,
+    QuadraticMap,
+)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedQuadraticFormModules,
-    FormModule,
     FormedModuleMorphism,
+    FormModule,
     _represented_value_module,
     _value_as_module_element,
     formed_module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.powers import (
     DividedSquare,
     divided_square_morphism,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
-from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, FinitelyPresentedModules, Modules
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.forms.forms import (
-    BilinearForms,
-    QuadraticMap,
-)
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class _UnderlyingFormModuleFunctor(Functor):
@@ -222,14 +219,13 @@ class BilinearFreeFormAdjunction(_FreeFormAdjunction):
     def _counit_value_map(self, free_formed, formed):
         module = self.right_adjoint()(formed)
         target_values = _represented_value_module(formed)
-        target_form = formed.form()
         bilinear = BilinearMap(
             module,
             module,
             target_values,
             lambda left_label, right_label: _value_as_module_element(
                 formed,
-                target_form(
+                formed.b(
                     module.module_generator(left_label),
                     module.module_generator(right_label),
                 ),
@@ -248,13 +244,12 @@ class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
         )
 
     def _counit_value_map(self, free_formed, formed):
-        module = self.right_adjoint()(formed)
+        self.right_adjoint()(formed)
         target_values = _represented_value_module(formed)
-        target_form = formed.form()
         return free_formed.value_module().from_quadratic(
             lambda element: _value_as_module_element(
                 formed,
-                target_form(element),
+                formed.norm(element),
             ),
             target_values,
         )

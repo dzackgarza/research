@@ -22,23 +22,31 @@ site rather than assumed, and the roots come back negated because negating the
 form reverses every half-space condition \(b(x,r)\leq 0\).
 """
 
+from importlib.util import find_spec
+from pathlib import Path
+
 from sage.arith.misc import divisors
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector as engine_vector
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.qqbar import AA as SageAA
+from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _engine_element,
+    _engine_ring,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-
 
 _VINAL_PROVISIONING = (
     "install VinAl into the Sage environment with "
@@ -49,6 +57,350 @@ _EDGEWALK_PROVISIONING = (
     "build polyhedral_common (github.com/MathieuDutSik/polyhedral_common) and "
     "put LORENTZ_ReflectiveEdgewalk on PATH"
 )
+
+_VINBERG_NF_PROJECT = (
+    Path(__file__).resolve().parents[4]
+    / "src.bak"
+    / "backends"
+    / "external"
+    / "vinbergs_algorithm"
+    / "references"
+    / "VinbergsAlgorithmNF"
+)
+
+_VINBERG_NF_PROVISIONING = (
+    "install github.com/dzackgarza/sage-julia-bridge into Sage's environment, "
+    "make Julia available to that bridge, and instantiate the pinned "
+    f"VinbergsAlgorithmNF project at {_VINBERG_NF_PROJECT}"
+)
+
+_VINBERG_NF_ADAPTER_SOURCE = r'''
+module DzackResearchVinbergNFAdapter
+using Hecke
+using VinbergsAlgorithmNF
+const VA = VinbergsAlgorithmNF
+
+_qq(pair) = QQ(BigInt(pair[1])) // QQ(BigInt(pair[2]))
+
+function _field(polynomial_coefficients)
+    polynomial_ring, x = Hecke.polynomial_ring(QQ, "x")
+    polynomial = polynomial_ring(0)
+    for (index, coefficient) in enumerate(polynomial_coefficients)
+        polynomial += _qq(coefficient) * x^(index - 1)
+    end
+    return Hecke.number_field(polynomial, "a")
+end
+
+function _element(field, generator, coefficients)
+    value = field(0)
+    for (index, coefficient) in enumerate(coefficients)
+        value += field(_qq(coefficient)) * generator^(index - 1)
+    end
+    return value
+end
+
+function _pair(value)
+    q = QQ(value)
+    return [string(numerator(q)), string(denominator(q))]
+end
+
+function _serialize(field, value)
+    degree = Hecke.degree(field)
+    return [_pair(coeff(value, index)) for index in 0:degree-1]
+end
+
+function vinberg_roots(
+    polynomial_coefficients,
+    gram_coefficients,
+    selected_primitive_approximation,
+    count,
+)
+    field, generator = _field(polynomial_coefficients)
+    degree = Hecke.degree(field)
+    if degree != 2
+        error("the represented VinbergsAlgorithmNF adapter currently supports real quadratic fields")
+    end
+
+    places = Hecke.infinite_places(field)
+    if length(places) != 2
+        error("the represented VinbergsAlgorithmNF adapter requires a totally real quadratic field")
+    end
+    target = parse(BigFloat, selected_primitive_approximation)
+    first = BigFloat(Hecke.conjugates_real(generator, 128)[1])
+    second = BigFloat(Hecke.conjugates_real(generator, 128)[2])
+    swap = abs(second - target) < abs(first - target)
+    linear_coefficient = _qq(polynomial_coefficients[2])
+    selected_generator = swap ? -linear_coefficient - generator : generator
+
+    dimension = length(gram_coefficients)
+    flat = Any[]
+    for row in gram_coefficients
+        if length(row) != dimension
+            error("the Vinberg Gram matrix is not square")
+        end
+        append!(flat, [_element(field, selected_generator, entry) for entry in row])
+    end
+    gram = Hecke.matrix(field, dimension, dimension, flat)
+    data = VA.VinbergData(field, gram)
+    status, (roots, _dict, _diagram) = VA.next_n_roots!(data, n = Int(count))
+
+    inverse_generator = selected_generator
+    serialized = Any[]
+    for root in roots
+        row = Any[]
+        for entry in root
+            if swap
+                coefficients = [coeff(entry, index) for index in 0:degree-1]
+                entry = _element(field, inverse_generator, [_pair(c) for c in coefficients])
+            end
+            push!(row, _serialize(field, entry))
+        end
+        push!(serialized, row)
+    end
+    return [Bool(status), serialized]
+end
+end
+'''
+
+
+def _vinberg_nf_available() -> bool:
+    return find_spec("sage_julia_bridge") is not None and _VINBERG_NF_PROJECT.is_dir()
+
+
+def _rational_pair(value):
+    value = SageQQ(value)
+    return (int(value.numerator()), int(value.denominator()))
+
+
+def _number_field_coefficients(field_engine, value):
+    value = field_engine(value)
+    degree = int(field_engine.degree())
+    coefficients = tuple(value.list())
+    return tuple(
+        _rational_pair(coefficients[index] if index < len(coefficients) else SageQQ.zero())
+        for index in range(degree)
+    )
+
+
+def _vinberg_nf_bridge():
+    from sage_julia_bridge import julia
+
+    if not julia.sage("isdefined(Main, :DzackResearchVinbergNFAdapter)"):
+        old_project = julia.sage("Base.active_project()")
+        julia.eval(f'import Pkg; Pkg.activate("{_VINBERG_NF_PROJECT}")')
+        try:
+            julia.eval("using Hecke; using VinbergsAlgorithmNF")
+            julia.eval(_VINBERG_NF_ADAPTER_SOURCE)
+        finally:
+            if old_project:
+                julia.eval(f'import Pkg; Pkg.activate("{Path(old_project).parent}")')
+    return julia
+
+
+def _vinberg_nf_roots(polynomial, gram, selected_primitive_approximation, count):
+    result = _vinberg_nf_bridge().call(
+        "DzackResearchVinbergNFAdapter.vinberg_roots",
+        polynomial,
+        gram,
+        selected_primitive_approximation,
+        int(count),
+    )
+    if not isinstance(result, list) or len(result) != 2:
+        raise RuntimeError("VinbergsAlgorithmNF returned malformed root data")
+    complete, roots = result
+    return bool(complete), tuple(tuple(entry for entry in row) for row in roots)
+
+
+engine_capabilities.register(
+    "number_field_vinberg_root_enumeration",
+    "VinbergsAlgorithmNF-via-sage-julia-bridge",
+    _vinberg_nf_roots,
+    available=_vinberg_nf_available,
+    provisioning=_VINBERG_NF_PROVISIONING,
+)
+
+
+def _signature_at_real_embedding(lattice, embedding):
+    order = lattice.base_ring()
+    field = order.fraction_field()
+    field_engine = _engine_ring(field)
+    order_engine = _engine_ring(order)
+    embedding_engine = embedding._engine_morphism_crossing()
+    rank = int(lattice.module_rank())
+    rows = []
+    for i in range(rank):
+        row = []
+        for j in range(rank):
+            entry = _engine_element(order, lattice.gram_tensor()[i, j])
+            image = embedding_engine(field_engine(order_engine(entry)))
+            row.append(SageAA(image))
+        rows.append(row)
+    eigenvalues = engine_matrix(SageAA, rows).eigenvalues()
+    positive = sum(value > 0 for value in eigenvalues)
+    negative = sum(value < 0 for value in eigenvalues)
+    radical = sum(value == 0 for value in eigenvalues)
+    if radical:
+        raise ValueError("a Vinberg lattice must be nondegenerate at every real place")
+    return signature_pair(int(positive), int(negative))
+
+
+class NumberFieldVinbergLattice(SageObject):
+    r"""A lattice over ``O_K`` together with its distinguished hyperbolic real place.
+
+    This is the arithmetic convention used by Bottinelli's
+    ``VinbergsAlgorithmNF``: at the distinguished place the form has signature
+    ``(n,1)``, while every other real conjugate is positive definite.  It is
+    deliberately a different equipped object from :class:`HyperbolicLattices`,
+    whose integral ``ZZ`` convention negates the form so roots have negative
+    square.
+    """
+
+    def __init__(self, lattice, real_embedding) -> None:
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        real_algebraics = _own_ring(SageAA)
+        if int(field.degree()) != 2:
+            raise NotImplementedError(
+                "the represented VinbergsAlgorithmNF crossing currently supports real quadratic fields"
+            )
+        signature = field.signature()
+        if int(signature.second()) != 0:
+            raise ValueError("VinbergsAlgorithmNF requires a totally real number field")
+        if int(field.class_number()) != 1:
+            raise NotImplementedError(
+                "the pinned VinbergsAlgorithmNF realization uses principal-ideal element gcds"
+            )
+        if _engine_ring(order) != _engine_ring(field).ring_of_integers():
+            raise ValueError("the Vinberg lattice must be defined over the maximal order O_K")
+        if real_embedding.domain() is not field or real_embedding.codomain() is not real_algebraics:
+            raise ValueError("the distinguished place is an exact embedding K -> AA")
+
+        embeddings = field.embeddings(real_algebraics)
+        if real_embedding not in embeddings:
+            raise ValueError("the distinguished real place is not an embedding of this field")
+        selected_position = embeddings.ranking_map()(real_embedding)
+        selected_signature = _signature_at_real_embedding(lattice, real_embedding)
+        rank = int(lattice.module_rank())
+        if (
+            selected_signature.first() != rank - 1
+            or selected_signature.second() != 1
+        ):
+            raise ValueError(
+                "the distinguished real place must give signature (rank-1, 1)"
+            )
+        other_signatures = finite_ordered_set(tuple(
+            _signature_at_real_embedding(lattice, embeddings[position])
+            for position in embeddings.index_set()
+            if position != selected_position
+        ))
+        if any(
+            other.first() != rank or other.second() != 0
+            for other in other_signatures
+        ):
+            raise ValueError(
+                "every conjugate away from the distinguished place must be positive definite"
+            )
+
+        self._lattice = lattice
+        self._real_embedding = real_embedding
+        self._selected_signature = selected_signature
+        self._other_signatures = other_signatures
+
+    def lattice(self):
+        return self._lattice
+
+    def real_embedding(self):
+        return self._real_embedding
+
+    def signature_at_selected_place(self):
+        return self._selected_signature
+
+    def other_signatures(self):
+        return self._other_signatures
+
+    def _serialized_field(self):
+        field = self.lattice().base_ring().fraction_field()
+        engine = _engine_ring(field)
+        degree = int(engine.degree())
+        coefficients = tuple(engine.defining_polynomial().list())
+        return tuple(
+            _rational_pair(
+                coefficients[index]
+                if index < len(coefficients)
+                else SageQQ.zero()
+            )
+            for index in range(degree + 1)
+        )
+
+    def _serialized_gram(self):
+        lattice = self.lattice()
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        field_engine = _engine_ring(field)
+        order_engine = _engine_ring(order)
+        rank = int(lattice.module_rank())
+        return tuple(
+            tuple(
+                _number_field_coefficients(
+                    field_engine,
+                    field_engine(
+                        order_engine(
+                            _engine_element(order, lattice.gram_tensor()[i, j])
+                        )
+                    ),
+                )
+                for j in range(rank)
+            )
+            for i in range(rank)
+        )
+
+    def _selected_primitive_approximation(self):
+        field = self.lattice().base_ring().fraction_field()
+        image = self.real_embedding()(field.primitive_element())
+        backend = _engine_element(_own_ring(SageAA), image)
+        return str(backend.n(128))
+
+    def _cross_root(self, serialized_row):
+        lattice = self.lattice()
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        field_engine = _engine_ring(field)
+        order_engine = _engine_ring(order)
+        generator = field_engine.gen()
+        coefficients = []
+        for serialized_entry in serialized_row:
+            value = field_engine.zero()
+            for exponent, pair in enumerate(serialized_entry):
+                numerator, denominator = pair
+                value += SageQQ(numerator) / SageQQ(denominator) * generator**exponent
+            integral = order_engine(value)
+            coefficients.append(order._from_engine_element(integral))
+        root = lattice(tuple(coefficients))
+        if root.q() <= 0:
+            raise ArithmeticError("VinbergsAlgorithmNF returned a non-positive root")
+        return root
+
+    def vinberg_simple_roots(self, *, count):
+        r"""Return ``(complete, roots)`` from the pinned number-field Vinberg engine."""
+        if int(count) <= 0:
+            raise ValueError("a number-field Vinberg search asks for a positive root count")
+        complete, rows = engine_capabilities.compute(
+            "number_field_vinberg_root_enumeration",
+            self._serialized_field(),
+            self._serialized_gram(),
+            self._selected_primitive_approximation(),
+            int(count),
+        )
+        roots = finite_ordered_set(tuple(self._cross_root(row) for row in rows))
+        return complete, roots
+
+    def __repr__(self) -> str:
+        return f"Number-field Vinberg lattice ({self.lattice()}, {self.real_embedding()})"
+
+
+def number_field_vinberg_lattice(lattice, real_embedding):
+    r"""Equip a maximal-order lattice with the real place used by Vinberg's algorithm."""
+    return NumberFieldVinbergLattice(lattice, real_embedding)
 
 
 def _vinal_is_available() -> bool:
@@ -81,20 +433,73 @@ def _edgewalk_is_available() -> bool:
 
 
 def _polyhedral_common_edgewalk(gram):
-    r"""Run Allcock's edgewalk on a Gram matrix of signature \((n,1)\).
+    r"""Run Allcock's edgewalk and normalize its full fundamental-domain record.
 
-    Returns the reflectivity decision and the coordinate rows of the simple
-    roots.  ``LORENTZ_ReflectiveEdgewalk`` is the driver of
-    ``polyhedral_common`` that calls ``StandardEdgewalkAnalysis`` with early
-    termination on a non-reflective input, so the decision is total and the
-    simple roots are reported exactly when the fundamental polyhedron exists.
+    ``LORENTZ_ReflectiveEdgewalk`` calls ``StandardEdgewalkAnalysis`` and its
+    Python serializer returns the simple roots, orbit representatives of the
+    polyhedron vertices, the reflectivity decision, and generators of the
+    finite isometry group of the Coxeter polyhedron.  This adapter verifies
+    the integral root/isometry data against ``gram`` before it crosses into
+    owned lattice objects.
     """
     from py_polyhedral.binaries import lorentzian_reflective_edgewalk
 
     record = lorentzian_reflective_edgewalk([list(row) for row in gram.rows()])
     reflective = bool(record["is_reflective"])
-    rows = record["ListSimpleRoots"] if reflective else ()
-    return reflective, tuple(tuple(row) for row in rows)
+    match reflective:
+        case True:
+            simple_root_rows = tuple(
+                tuple(SageZZ(entry) for entry in row)
+                for row in record["ListSimpleRoots"]
+            )
+        case False:
+            simple_root_rows = ()
+    for row in simple_root_rows:
+        root = engine_matrix(SageZZ, [row])
+        square = (root * gram * root.transpose())[0, 0]
+        match square == 0:
+            case True:
+                raise ArithmeticError("an edgewalk simple root is isotropic")
+            case False:
+                pass
+        pairings = gram * root.transpose()
+        match any((2 * entry[0]) % square != 0 for entry in pairings.rows()):
+            case True:
+                raise ArithmeticError(
+                    "an edgewalk simple root does not define an integral lattice reflection"
+                )
+            case False:
+                pass
+
+    vertices = tuple(
+        (
+            tuple(SageZZ(entry) for entry in vertex["gen"]),
+            tuple(
+                tuple(SageZZ(entry) for entry in row)
+                for row in vertex["l_roots"]
+            ),
+        )
+        for vertex in record["ListVertices"]
+    )
+    isometry_rows = tuple(
+        tuple(tuple(SageZZ(entry) for entry in row) for row in generator)
+        for generator in record["GrpIsomCoxMatr"]
+    )
+    for rows in isometry_rows:
+        generator = engine_matrix(SageZZ, rows)
+        match generator * gram * generator.transpose() == gram:
+            case True:
+                pass
+            case False:
+                raise ArithmeticError(
+                    "an edgewalk polyhedron-isometry generator does not preserve the lattice form"
+                )
+    return {
+        "simple_root_rows": simple_root_rows,
+        "vertices": vertices,
+        "is_reflective": reflective,
+        "isometry_generator_rows": isometry_rows,
+    }
 
 
 engine_capabilities.register(
@@ -112,6 +517,74 @@ engine_capabilities.register(
     available=_edgewalk_is_available,
     provisioning=_EDGEWALK_PROVISIONING,
 )
+
+
+class AllcockFundamentalVertex(SageObject):
+    r"""One vertex orbit representative of an Allcock fundamental polyhedron."""
+
+    def __init__(self, lattice, generator, incident_roots) -> None:
+        self._lattice = lattice
+        self._generator = generator
+        self._incident_roots = finite_ordered_set(tuple(incident_roots))
+
+    def lattice(self):
+        return self._lattice
+
+    def generator(self):
+        return self._generator
+
+    def incident_roots(self):
+        return self._incident_roots
+
+    def square(self):
+        return self.generator().q()
+
+    def is_ideal(self) -> bool:
+        return self.square() == self.lattice().base_ring().zero()
+
+    def __repr__(self) -> str:
+        return f"Allcock fundamental vertex generated by {self.generator()}"
+
+
+class AllcockEdgewalkReport(SageObject):
+    r"""Owned fundamental-domain data returned by Allcock's edgewalk."""
+
+    def __init__(
+        self,
+        lattice,
+        *,
+        reflective,
+        simple_roots,
+        vertices,
+        isometry_generators,
+    ) -> None:
+        self._lattice = lattice
+        self._reflective = bool(reflective)
+        self._simple_roots = finite_ordered_set(tuple(simple_roots))
+        self._vertices = finite_ordered_set(tuple(vertices))
+        self._isometry_generators = finite_ordered_set(tuple(isometry_generators))
+
+    def lattice(self):
+        return self._lattice
+
+    def is_reflective(self) -> bool:
+        return self._reflective
+
+    def simple_roots(self):
+        return self._simple_roots
+
+    def vertices(self):
+        return self._vertices
+
+    def polyhedron_isometry_generators(self):
+        return self._isometry_generators
+
+    @cached_method
+    def polyhedron_isometry_group(self):
+        return self.lattice().O().subgroup(self.polyhedron_isometry_generators())
+
+    def __repr__(self) -> str:
+        return f"Allcock edgewalk report for {self.lattice()}"
 
 
 class HyperbolicLattices(OwnedCategoryOverBaseRing):
@@ -171,7 +644,12 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "lattice has a radical, so its discriminant group is infinite "
                 "and no finite set of lengths bounds its roots"
             )
-            return finite_ordered_set(tuple(divisors(2 * invariant_factors[-1])))
+            return finite_ordered_set(
+                tuple(
+                    self.base_ring()(int(length))
+                    for length in divisors(2 * invariant_factors[-1])
+                )
+            )
 
         def _engine_gram_of_signature_n_1(self):
             r"""Return a Gram matrix in the engine's \((n,1)\) convention.
@@ -246,6 +724,23 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             )
             return finite_ordered_set(roots)
 
+        def vinberg_algorithm(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the roots accepted by Vinberg's algorithm.
+
+            This is the archived public mathematical name for the same owned
+            root family exposed by :meth:`vinberg_simple_roots`.  Historical
+            engine controls such as progress output and CoxIter selection are
+            not part of the mathematical operation and are deliberately not
+            restored at the public boundary.
+            """
+            return self.vinberg_simple_roots(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
+
         def is_reflective(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
         ):
@@ -298,6 +793,22 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_decompositions=max_decompositions,
             )
             return self.O().subgroup([self.reflection(root) for root in roots])
+
+        def weyl_group(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the reflection/Weyl subgroup \(W(L)\leq O(L)\).
+
+            ``weyl_group`` is the archived public vocabulary for the same
+            subgroup now constructed by :meth:`reflection_group`; retaining
+            both names does not create a second group or a second root
+            enumeration.
+            """
+            return self.reflection_group(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
 
         def reflection_coxeter_diagram(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
@@ -373,75 +884,142 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def fundamental_chamber(self):
-            r"""Return the fundamental polyhedron of \(W(L)\) in \(L\otimes\mathbb R\).
-
-            The category's stated contract, and its open work.  The walls are
-            the mirrors of the roots :meth:`vinberg_simple_roots` enumerates,
-            so the polyhedron is given by half-spaces, and the owned polytope
-            surface (``categories/schemes/polytopes.py``) constructs a convex
-            polytope from its vertices only.  Building this needs a
-            half-space-presented polyhedron over \(L\otimes\mathbb R\), which
-            the preamble does not own; :meth:`is_cocompact` reads the one fact
-            that can be had without it.
-            """
-            assert False, (
-                "the fundamental polyhedron needs a half-space-presented "
-                "polyhedron over L tensor RR; the owned polytope surface "
-                "builds a polytope from its vertices and cannot state a "
-                "chamber by its walls"
+        @cached_method
+        def positive_cone_component(self, timelike):
+            r"""Return the chosen component of ``{x:q(x)>0}`` containing ``timelike``."""
+            from dzack_research.preamble.categories.hyperbolic_geometry import (
+                positive_cone_component,
             )
 
-        def dominant_cone(self):
-            r"""Return the dominant cone of \(W(L)\) inside \(L\otimes\mathbb R\).
+            return positive_cone_component(self, timelike)
 
-            The closed cone cut out by the walls of
-            :meth:`fundamental_chamber`.  The category's stated contract; it
-            waits on the same half-space-presented surface.  The object lives
-            in the base-changed parent \(L\otimes\mathbb R\) and not in \(L\),
-            a cone being closed under positive real scaling.
+        @cached_method
+        def hyperbolic_space(self, timelike):
+            r"""Return the projectivization of the positive-cone component containing ``timelike``."""
+            return self.positive_cone_component(timelike).projectivization()
+
+        def fundamental_chamber(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the exact root-half-space cone cut out by Vinberg's walls.
+
+            The chamber is ``{x : b(r,x) >= 0 for every accepted wall r}``.
+            It retains those roots and their actual correlation covectors; the
+            completion flag records whether the Vinberg search established the
+            full wall set or only a bounded exploration prefix.
             """
-            assert False, (
-                "the dominant cone lives in L tensor RR and needs the same "
-                "half-space-presented surface as fundamental_chamber"
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                rational_polyhedral_cone,
             )
 
-        def chamber_complex(self):
-            r"""Return the complex of \(W(L)\)-translates of the fundamental chamber.
-
-            The category's stated contract.  The union of the translates is the
-            Tits cone, on whose interior \(W(L)\) acts properly
-            discontinuously.  It needs :meth:`fundamental_chamber` and a
-            complex surface, and the preamble owns neither.
-            """
-            assert False, (
-                "the chamber complex needs fundamental_chamber and a complex "
-                "surface, neither of which the preamble owns"
+            complete, roots = self._vinberg_search(
+                controlling_vector, max_roots, max_decompositions
             )
+            correlation = self.algebraic_correlation_morphism()
+            return rational_polyhedral_cone(
+                self,
+                tuple(correlation(root) for root in roots),
+                wall_roots=roots,
+                complete=complete,
+            )
+
+        def coxeter_polyhedron(
+            self, timelike, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Projectivize the exact root chamber in the component selected by ``timelike``."""
+            chamber = self.fundamental_chamber(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
+            return self.hyperbolic_space(timelike).projectivize_cone(chamber)
+
+        def dominant_cone(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the closed dominant cone defined by the selected simple roots."""
+            return self.fundamental_chamber(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
+
+        def chamber_complex(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the lazy Weyl complex generated by the exact fundamental chamber.
+
+            The object does not enumerate the generally infinite chamber set.
+            It retains the fundamental chamber, the simple reflections and the
+            exact wall-crossing transporters, and materializes any chamber from
+            a finite simple-reflection word.
+            """
+            return self.fundamental_chamber(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            ).chamber_complex()
 
         def isotropic_elements_below_height(self, timelike, height):
             r"""Return the isotropic \(v\in L\) with \(\lvert b(v,t)\rvert\leq h\).
 
-            The category's stated contract, and the enumeration a walk along
-            the light cone needs.  On a hyperbolic lattice \(\{v : q(v)=0\}\)
-            is infinite and a bound on the square bounds nothing, so the
-            chosen timelike element is what makes the set finite and is a
-            required argument.
+            Put \(d=q(t)\) and \(a=b(v,t)\).  Then
 
-            What is missing is the orthogonal complement of ``timelike`` as a
-            subobject of \(L\): the complement is definite, the two bounds
-            confine \(v\) to a finite region of it, and the definite
-            short-vector enumeration then answers.  The live lattice surface
-            has that enumeration and no operation producing the complement of a
-            vector as a lattice with its inclusion.
+            \[
+              w=dv-at\in t^\perp, \qquad q(w)=-a^2d,
+            \]
+
+            and conversely \(v=(w+at)/d\) whenever that quotient is integral.
+            Thus the height bound leaves only the finitely many integers
+            \(-h\leq a\leq h\); for each one the possible \(w\)'s form one
+            finite shell in the definite lattice \(t^\perp\).  The final
+            divisibility check is exactly the condition that the rational
+            reconstruction lies back in \(L\).
             """
-            assert False, (
-                "the height-bounded isotropic enumeration needs the orthogonal "
-                "complement of the timelike vector as a definite sublattice "
-                "with its inclusion, which the live lattice surface does not "
-                "produce; the definite short-vector enumeration cannot be "
-                "applied to a hyperbolic lattice directly"
+            integers = _own_ring(SageZZ)
+            assert self.base_ring() is integers, (
+                "the exact height enumeration currently uses integral shells over ZZ"
             )
+            if timelike.parent() is not self:
+                timelike = self(timelike)
+            height = integers(height)
+            assert height >= integers.zero(), "a height bound is nonnegative"
+
+            square = timelike.q()
+            assert square != integers.zero(), "a timelike vector has nonzero square"
+            complement = timelike.orthogonal_complement()
+            assert complement.is_definite(), (
+                "the chosen vector is timelike exactly when its orthogonal complement is definite"
+            )
+            inclusion = complement.inclusion()
+
+            isotropic = []
+            for height_value in range(-int(height), int(height) + 1):
+                pairing = integers(height_value)
+                target_square = -(pairing * pairing * square)
+                match pairing == integers.zero():
+                    case True:
+                        shell = (complement.zero(),)
+                    case False:
+                        shell = complement.vectors_of_square(target_square)
+                for perpendicular in shell:
+                    numerator = inclusion(perpendicular) + pairing * timelike
+                    coordinates = numerator.to_tuple()
+                    if not all(square.divides(coordinate) for coordinate in coordinates):
+                        continue
+                    candidate = self(
+                        tuple(coordinate // square for coordinate in coordinates)
+                    )
+                    if candidate.q() != integers.zero():
+                        raise ArithmeticError(
+                            "the height-shell reconstruction produced a non-isotropic vector"
+                        )
+                    if self.b(candidate, timelike) != pairing:
+                        raise ArithmeticError(
+                            "the height-shell reconstruction produced the wrong pairing"
+                        )
+                    isotropic.append(candidate)
+            return finite_ordered_set(tuple(isotropic))
 
         @cached_method
         def _edgewalk(self):
@@ -463,12 +1041,46 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "here walks one over a wider ring"
             )
             gram, negated = self._engine_gram_of_signature_n_1()
-            reflective, rows = engine_capabilities.compute(
+            record = engine_capabilities.compute(
                 "lorentzian_edgewalk_fundamental_domain",
                 gram,
             )
-            roots = tuple(self(tuple(row)) for row in rows)
-            return reflective, tuple(-root for root in roots) if negated else roots
+            roots = tuple(self(tuple(row)) for row in record["simple_root_rows"])
+            match negated:
+                case True:
+                    roots = tuple(-root for root in roots)
+                case False:
+                    pass
+
+            vertices = []
+            for generator_row, incident_rows in record["vertices"]:
+                generator = self(tuple(generator_row))
+                incident = tuple(self(tuple(row)) for row in incident_rows)
+                match negated:
+                    case True:
+                        incident = tuple(-root for root in incident)
+                    case False:
+                        pass
+                vertices.append(
+                    AllcockFundamentalVertex(self, generator, incident)
+                )
+
+            automorphisms = self.O()
+            isometry_generators = tuple(
+                automorphisms._from_backend_row_action(rows)
+                for rows in record["isometry_generator_rows"]
+            )
+            return AllcockEdgewalkReport(
+                self,
+                reflective=record["is_reflective"],
+                simple_roots=roots,
+                vertices=tuple(vertices),
+                isometry_generators=isometry_generators,
+            )
+
+        def allcock_edgewalk(self):
+            r"""Return Allcock's full owned fundamental-domain report."""
+            return self._edgewalk()
 
         def edgewalk_is_reflective(self) -> bool:
             r"""Return whether \(W(L)\) has finite index in \(O(L)\).
@@ -480,8 +1092,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             same mathematical question and are kept apart because they prove
             different things, not because they use different engines.
             """
-            reflective, _roots = self._edgewalk()
-            return reflective
+            return self._edgewalk().is_reflective()
 
         def edgewalk_simple_roots(self):
             r"""Return the simple roots of the polyhedron the edgewalk walked.
@@ -493,8 +1104,13 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             :meth:`edgewalk_is_reflective` to tell that case from a lattice
             whose polyhedron has no walls.
             """
-            _reflective, roots = self._edgewalk()
-            return finite_ordered_set(roots)
+            return self._edgewalk().simple_roots()
 
 
-__all__ = ["HyperbolicLattices"]
+__all__ = [
+    "AllcockEdgewalkReport",
+    "AllcockFundamentalVertex",
+    "HyperbolicLattices",
+    "NumberFieldVinbergLattice",
+    "number_field_vinberg_lattice",
+]

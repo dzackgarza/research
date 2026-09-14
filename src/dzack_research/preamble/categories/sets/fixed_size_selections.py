@@ -1,26 +1,25 @@
 """Fixed-size subsets and multisets of ordered enumerated sets."""
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Mapping
 from itertools import count
 from typing import SupportsInt, TypeVar
 
-from sage.misc.cachefunc import cached_function, cached_method
 from sage.arith.misc import binomial
-from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
-from dzack_research.preamble.categories.sets.set_categories import TotallyOrderedSets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets, ranking_isomorphism
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
 )
-
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, TotallyOrderedSets, ranking_isomorphism
 
 PointT = TypeVar("PointT")
 
@@ -67,7 +66,7 @@ class FixedSizeSelectionElement(Element):
 
     def __init__(
         self,
-        parent: "FixedSizeSelections",
+        parent: FixedSizeSelections,
         combinatorial_rank: int,
     ) -> None:
         Element.__init__(self, parent)
@@ -143,7 +142,7 @@ class FixedSizeSelectionElement(Element):
             name="Selection support",
         )
 
-    def add_label(self, label: PointT) -> "FixedSizeSelectionElement":
+    def add_label(self, label: PointT) -> FixedSizeSelectionElement:
         target = self.parent().with_size(self.degree() + 1)
         position = int(self.parent().source().ranking_map()(label))
         if not self.allows_repetition() and self.multiplicity(label):
@@ -154,8 +153,8 @@ class FixedSizeSelectionElement(Element):
 
     def merged_with(
         self,
-        other: "FixedSizeSelectionElement",
-    ) -> "FixedSizeSelectionElement":
+        other: FixedSizeSelectionElement,
+    ) -> FixedSizeSelectionElement:
         if (
             not isinstance(other, FixedSizeSelectionElement)
             or other.parent().source() is not self.parent().source()
@@ -173,8 +172,8 @@ class FixedSizeSelectionElement(Element):
 
     def wedge_with(
         self,
-        other: "FixedSizeSelectionElement",
-    ) -> tuple["FixedSizeSelectionElement", int] | None:
+        other: FixedSizeSelectionElement,
+    ) -> tuple[FixedSizeSelectionElement, int] | None:
         if self.allows_repetition() or other.allows_repetition():
             raise TypeError("wedge is defined here for subset indices")
         for label in self.support():
@@ -244,8 +243,12 @@ class FixedSizeSelections(Parent):
         except NotImplementedError:
             source_is_finite = False
         if source_is_finite:
-            categories.append(FiniteEnumeratedSets())
-        Parent.__init__(self, facade=False, category=Category.join(tuple(categories)))
+            categories.append(FiniteSets())
+        elif self._selection_size == 0:
+            categories.append(FiniteSets())
+        elif source_cardinality.is_countably_infinite():
+            categories.append(Sets().Countable().Infinite())
+        Parent.__init__(self, facade=False, category=Cat().meet(categories))
 
     def source(self) -> Parent:
         return self._source
@@ -256,7 +259,7 @@ class FixedSizeSelections(Parent):
     def allows_repetition(self) -> bool:
         return self._repetition
 
-    def with_size(self, selection_size: int) -> "FixedSizeSelections":
+    def with_size(self, selection_size: int) -> FixedSizeSelections:
         return fixed_size_selections(
             self.source(),
             selection_size,

@@ -8,6 +8,8 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
@@ -15,14 +17,16 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
+    CategoricalIsomorphism,
+    category_packet,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
+    OwnedCategoryOverBaseRing,
     OwnedOrders,
     OwnedRings,
     _engine_element,
     _engine_ring,
-    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -35,7 +39,56 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     Sets,
 )
+
 _LOGGER = logging.getLogger(__name__)
+
+
+class ModuleCokernelCompletionComparison(SageObject):
+    r"""The finite-module comparison ``coker(f)^ ~= coker(f^)``."""
+
+    def __init__(
+        self,
+        source_morphism,
+        completion,
+        completed_morphism,
+        completed_cokernel,
+        cokernel_after_completion,
+        forward,
+        inverse,
+    ) -> None:
+        self._source_morphism = source_morphism
+        self._completion = completion
+        self._completed_morphism = completed_morphism
+        self._completed_cokernel = completed_cokernel
+        self._cokernel_after_completion = cokernel_after_completion
+        self._forward = forward
+        self._inverse = inverse
+
+    def source_morphism(self):
+        return self._source_morphism
+
+    def completion_ring(self):
+        return self._completion
+
+    def completed_morphism(self):
+        return self._completed_morphism
+
+    def completed_cokernel(self):
+        return self._completed_cokernel
+
+    def cokernel_after_completion(self):
+        return self._cokernel_after_completion
+
+    def forward(self):
+        return self._forward
+
+    isomorphism = forward
+
+    def inverse(self):
+        return self._inverse
+
+    def _repr_(self):
+        return f"Completion of coker({self.source_morphism()}) ~= coker({self.completed_morphism()})"
 
 
 def _has_finite_free_framing(module) -> bool:
@@ -55,10 +108,7 @@ def _solve_left_integrally_element(system, target, ring):
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), "integral solving requires an owned coefficient ring"
-    assert system.parent() in MatrixSpaces(ring), (
-        f"an integral linear system over {ring} is an element of a matrix homset "
-        f"over it, and {system.parent()} is not one"
-    )
+    assert system.parent() in MatrixSpaces(ring), f"an integral linear system over {ring} is an element of a matrix homset over it, and {system.parent()} is not one"
 
     transposed = system.transpose()
     smith, left, right = transposed.smith_form()
@@ -203,9 +253,7 @@ def _scalar_linearity_generating_scalars(ring):
     labels = ring.algebra_generating_set()
     if not labels.cardinality().is_finite():
         return None
-    return tuple(ring(scalar) for scalar in base_elements) + tuple(
-        ring.algebra_generator(label) for label in labels
-    )
+    return tuple(ring(scalar) for scalar in base_elements) + tuple(ring.algebra_generator(label) for label in labels)
 
 
 class ModuleMorphism(Morphism):
@@ -259,20 +307,41 @@ class ModuleMorphism(Morphism):
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, dict):
-            if not labels.cardinality().is_finite():
+            size = labels.cardinality()
+            if not size.is_finite():
                 raise TypeError("dictionary generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
-            normalized_images = {}
-            for label, value in images.items():
-                normalized_label = labels(label)
-                normalized_images[normalized_label] = value
-            missing = [label for label in labels if label not in normalized_images]
-            if missing:
-                raise ValueError(f"generator assignment omits {missing}")
-            self._generator_images = indexed_family(
-                labels,
-                normalized_images.__getitem__,
-                name="Module-morphism generator-image family",
-            )
+            if labels in EnumeratedSets():
+                ranking = labels.ranking_map()
+                missing_value = object()
+                normalized_values = [missing_value] * int(size.finite_value())
+                for label, value in images.items():
+                    normalized_label = labels(label)
+                    normalized_values[int(ranking(normalized_label))] = value
+                missing = [
+                    label
+                    for position, label in enumerate(labels)
+                    if normalized_values[position] is missing_value
+                ]
+                if missing:
+                    raise ValueError(f"generator assignment omits {missing}")
+                self._generator_images = indexed_family(
+                    labels,
+                    lambda label: normalized_values[int(ranking(label))],
+                    name="Module-morphism generator-image family",
+                )
+            else:
+                normalized_images = {}
+                for label, value in images.items():
+                    normalized_label = labels(label)
+                    normalized_images[normalized_label] = value
+                missing = [label for label in labels if label not in normalized_images]
+                if missing:
+                    raise ValueError(f"generator assignment omits {missing}")
+                self._generator_images = indexed_family(
+                    labels,
+                    normalized_images.__getitem__,
+                    name="Module-morphism generator-image family",
+                )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, (tuple, list)):
@@ -332,7 +401,7 @@ class ModuleMorphism(Morphism):
 
         try:
             source_finite = bool(domain.is_finite())
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             source_finite = False
 
         if not source_finite:
@@ -346,7 +415,7 @@ class ModuleMorphism(Morphism):
 
         try:
             source_elements = tuple(domain)
-        except AttributeError, TypeError:
+        except (AttributeError, TypeError):
             self._check_elementwise_zero_when_possible()
             _LOGGER.debug(
                 "Elementwise module morphism %s -> %s accepted without exhaustive linearity verification; finite source has no represented enumeration",
@@ -371,8 +440,10 @@ class ModuleMorphism(Morphism):
             if not label_set.cardinality().is_finite():
                 return None
             labels = tuple(label_set)
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return None
+        if not labels:
+            return (domain.zero(),)
         scalars = _enumerated_ring_elements(ring)
         if scalars is None:
             return None
@@ -419,7 +490,9 @@ class ModuleMorphism(Morphism):
         scalars = _scalar_linearity_generating_scalars(ring)
         if scalars is None:
             _LOGGER.debug(
-                "Elementwise map %s -> %s is exhaustively additive on its finite source, but %s has no represented ring generating set, so scalar-linearity was not exhaustively verified",
+                "Elementwise map %s -> %s is exhaustively additive on its finite source, "
+                "but %s has no represented ring generating set, so scalar-linearity was "
+                "not exhaustively verified",
                 domain,
                 codomain,
                 ring,
@@ -435,7 +508,7 @@ class ModuleMorphism(Morphism):
             source_zero = self.domain().zero()
             target_zero = self.codomain().zero()
             image = self._element_function(source_zero)
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return
         if image != target_zero:
             raise ValueError("an elementwise module morphism must send zero to zero")
@@ -508,8 +581,22 @@ class ModuleMorphism(Morphism):
         equal = all(self(domain.module_generator(label)) == other(domain.module_generator(label)) for label in domain.module_generating_set())
         return equal if op == op_EQ else not equal
 
-    def __rmul__(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+    def __rmul__(self, actor):
+        # A specialized right operand such as ModuleEmbedding gets reflected
+        # multiplication before Python tries the less-specialized left
+        # ModuleMorphism.__mul__.  In that case the operation is composition,
+        # not scalar multiplication.  Delegate to the left morphism so the
+        # ordinary endpoint check and composition constructor remain the one
+        # owner of the operation.
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            LinearHomModules,
+        )
+
+        match element_parent(actor) in LinearHomModules(self.domain().base_ring()):
+            case True:
+                return actor.__mul__(self)
+            case False:
+                return self.parent().scalar_multiple(actor, self)
 
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
@@ -521,7 +608,7 @@ class ModuleMorphism(Morphism):
         r"""Use the canonical pointwise scalar action of the Hom module."""
         try:
             scalar = self.parent().base_ring()(actor)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return None
         return self.parent().scalar_multiple(scalar, self)
 
@@ -558,18 +645,47 @@ class ModuleMorphism(Morphism):
         return self._linear_combination_of_generator_images(coefficients)
 
     def matrix(self):
-        r"""Return the underlying free-module morphism under the matrix-Hom identification.
+        r"""Return the canonical coordinate matrix of this finite free map.
 
-        If this already lies in the full module Hom, it is returned literally.
-        A stricter structured morphism (for example a lattice isometry) is
-        first regarded as the corresponding element of the full ``R``-module
-        Hom with the same endpoints.
+        Coordinates live in the canonical matrix Hom
+        ``Hom_R(F_R([n]), F_R([m]))``.  A map whose endpoints already are
+        those canonical free modules is literally that matrix element; an
+        arbitrary framed map is transported only at this coordinate-view
+        boundary.
         """
 
         if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
             raise NotImplementedError("a coordinate matrix requires finitely generated framed free endpoints")
-        homset = module_homset(self.domain(), self.codomain())
-        return self if self.parent() is homset else homset(self)
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            MatrixSpace,
+        )
+
+        domain_labels = tuple(self.domain().module_generating_set())
+        codomain_labels = tuple(self.codomain().module_generating_set())
+        coordinate_parent = MatrixSpace(
+            self.domain().base_ring(),
+            len(codomain_labels),
+            len(domain_labels),
+        )
+        if self.parent() is coordinate_parent:
+            return self
+        columns = {
+            domain_label: module_coefficients(
+                self(self.domain().module_generator(domain_label)),
+                self.codomain(),
+            )
+            for domain_label in domain_labels
+        }
+        zero = self.codomain().base_ring().zero()
+        return coordinate_parent.from_rows(
+            tuple(
+                tuple(
+                    columns[domain_label].get(codomain_label, zero)
+                    for domain_label in domain_labels
+                )
+                for codomain_label in codomain_labels
+            )
+        )
 
     def stack(self, other):
         r"""Return ``(self,other)`` into the biproduct of the codomains."""
@@ -582,6 +698,26 @@ class ModuleMorphism(Morphism):
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
+        completion_source = getattr(
+            self,
+            "_preamble_adic_completion_source_morphism",
+            None,
+        )
+        if completion_source is not None:
+            completion = self._preamble_adic_completion_ring
+            if not completion.is_flat_over_source():
+                raise ArithmeticError("the retained completion map was expected to be flat over its Noetherian source")
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            source_kernel = completion_source.kernel()
+            extension = Modules(completion_source.domain().base_ring()).scalar_extension(completion.completion_map())
+            extension.adopt_object_image(completion_source.domain(), self.domain())
+            extension(source_kernel)
+            completed_inclusion = extension(source_kernel.inclusion())
+            if completed_inclusion.codomain() is not self.domain():
+                raise ArithmeticError("the completed source-kernel inclusion has the wrong ambient module")
+            return completed_inclusion.image()
+
         localization_functor = self._preamble_localization_functor
         if localization_functor is not None:
             from dzack_research.preamble.categories.modules.pure.modules import (
@@ -599,6 +735,42 @@ class ModuleMorphism(Morphism):
             if localized_kernel.inclusion() is not localized_inclusion:
                 raise ArithmeticError("localized kernel inclusion is not the inclusion carried by the transported subobject")
             return localized_kernel
+
+        ring = self.domain().base_ring()
+        if ring in LocalRings():
+            from dzack_research.preamble.categories.modules.localizations import (
+                LocalizedModules,
+            )
+
+            domain = self.domain()
+            codomain = self.codomain()
+            if domain in LocalizedModules(ring) and codomain in LocalizedModules(ring):
+                functor = domain.localization_functor()
+                if codomain.localization_functor() is functor:
+                    source_domain = domain.localization_source_module()
+                    source_codomain = codomain.localization_source_module()
+                    labels = tuple(source_domain.module_generating_set())
+                    images = tuple(self(domain.module_generator(label)) for label in labels)
+                    denominators = tuple(image.denominator() for image in images)
+
+                    source_images = {}
+                    for position, (label, image) in enumerate(zip(labels, images, strict=True)):
+                        multiplier = source_domain.base_ring().one()
+                        for other_position, denominator in enumerate(denominators):
+                            if other_position != position:
+                                multiplier *= denominator
+                        source_images[label] = source_codomain.scalar_multiple(
+                            multiplier,
+                            image.numerator(),
+                        )
+
+                    source_morphism = module_homset(source_domain, source_codomain)(source_images)
+                    source_kernel = source_morphism.kernel()
+                    localized_kernel = functor(source_kernel)
+                    localized_inclusion = functor(source_kernel.inclusion())
+                    if localized_inclusion.codomain() is not domain:
+                        raise ArithmeticError("the descended local kernel inclusion does not return to the direct local domain")
+                    return localized_kernel
 
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)
@@ -619,9 +791,45 @@ class ModuleMorphism(Morphism):
             )
         )
 
+    def preimage(self, element):
+        r"""Return one preimage of ``element`` when it lies in the represented image.
+
+        Resolution lifting repeatedly needs a preimage under a map whose
+        domain is finite free.  If the map is onto its free codomain, use the
+        existing projective section.  Otherwise the represented image is
+        generated by the images of the domain's selected generators, with the
+        same labels; lifting into that image therefore gives coefficients that
+        reconstruct a preimage in the original domain.
+        """
+        domain = self.domain()
+        codomain = self.codomain()
+        element = element if element.parent() is codomain else codomain(element)
+        if element == codomain.zero():
+            return domain.zero()
+        if not _has_finite_free_framing(domain):
+            elements = getattr(domain, "elements", None)
+            if callable(elements) and domain.cardinality().is_finite():
+                for candidate in elements():
+                    if self(candidate) == element:
+                        return candidate
+                raise ValueError("the selected element does not lie in the represented image")
+            raise NotImplementedError(
+                "represented preimages require a finitely framed free domain or an enumerable finite domain"
+            )
+        if self.is_surjective() and bool(getattr(codomain, "is_free", lambda: False)()):
+            return self.section()(element)
+
+        image = self.image()
+        image_element = image.inclusion().lift(element)
+        coefficients = module_coefficients(image_element, image)
+        domain_labels = domain.module_generating_set()
+        if any(label not in domain_labels for label in coefficients):
+            raise ArithmeticError("the represented image framing no longer records the source-generator labels")
+        return domain.linear_combination({label: coefficient for label, coefficient in coefficients.items() if coefficient})
+
     def is_injective(self) -> bool:
         r"""Return whether ``ker(self)=0`` when the kernel is computable."""
-        return self.kernel().module_rank() == 0
+        return self.kernel().is_zero()
 
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
@@ -680,9 +888,7 @@ class ModuleMorphism(Morphism):
         if custom is not None:
             return custom(element)
         ring = self.domain().base_ring()
-        assert _has_finite_free_framing(self.domain()), (
-            f"a lift is solved for the coefficients of a framing, and {self.domain()} has none"
-        )
+        assert _has_finite_free_framing(self.domain()), f"a lift is solved for the coefficients of a framing, and {self.domain()} has none"
         if not _has_finite_free_framing(self.codomain()):
             return self._lift_through_the_extension_framing(element)
         if element.parent() is not self.codomain():
@@ -696,6 +902,74 @@ class ModuleMorphism(Morphism):
             ring,
         )
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
+
+    def factor_through(self, target_embedding):
+        r"""Return the unique factor through a represented module embedding.
+
+        For ``f:A -> X`` and a monomorphism ``j:B -> X`` this constructs the
+        commuting-triangle map ``A -> B`` exactly when every selected generator
+        image of ``f`` lies in ``j(B)``.  The source map need not itself be a
+        monomorphism; uniqueness comes from ``j``.
+        """
+        if target_embedding.codomain() is not self.codomain():
+            raise ValueError("module factorization through a subobject requires one common codomain")
+        images = {}
+        for label in self.domain().module_generating_set():
+            image = self(self.domain().module_generator(label))
+            try:
+                images[label] = (
+                    target_embedding.lift(image)
+                    if _has_finite_free_framing(target_embedding.domain())
+                    else target_embedding.preimage(image)
+                )
+            except (TypeError, ValueError) as error:
+                raise ValueError("the morphism image is not contained in the target subobject") from error
+        return module_homset(self.domain(), target_embedding.domain())(images)
+
+    @cached_method
+    def selected_presentation_morphism(self):
+        r"""Lift this map to a commuting square of selected presentations.
+
+        For ``f : M -> N`` with selected presentations ``p : F_1 -> F_0``
+        and ``q : G_1 -> G_0``, first lift each image of a selected generator of
+        ``M`` to the chosen free cover ``G_0``.  This gives ``b : F_0 -> G_0``
+        with ``pi_N b = f pi_M``.  Consequently ``b p`` lands in ``ker(pi_N)``;
+        the selected presentation identifies that kernel with ``im(q)``, so
+        lifting the images of the relation generators through ``q`` gives
+        ``a : F_1 -> G_1`` and the commuting square ``q a = b p``.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModulesWithChosenFinitePresentation,
+        )
+
+        source = self.domain()
+        target = self.codomain()
+        ring = source.base_ring()
+        if source not in ModulesWithChosenFinitePresentation(ring) or target not in ModulesWithChosenFinitePresentation(ring):
+            raise TypeError("a selected-presentation morphism requires presented source and target")
+
+        source_presentation = source.presentation()
+        target_presentation = target.presentation()
+        source_cover = source_presentation.codomain()
+        target_cover = target_presentation.codomain()
+
+        def lift_target(element):
+            coordinates = target._framing_coordinates(element)
+            return target_cover.linear_combination({label: coordinates[label] for label in target.module_generating_set() if coordinates[label]})
+
+        cover_map = module_homset(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
+        relation_map = module_homset(source_presentation.domain(), target_presentation.domain())(
+            {
+                label: target_presentation.lift(cover_map(source_presentation(source_presentation.domain().module_generator(label))))
+                for label in source_presentation.domain().module_generating_set()
+            }
+        )
+
+        category = ModulesWithChosenFinitePresentation(ring).presentation_category()
+        return category.Mor(source.presentation_object(), target.presentation_object())(
+            relation_map,
+            cover_map,
+        )
 
     def _lift_through_the_extension_framing(self, element):
         r"""Return the preimage of ``element`` in a restriction of scalars to ``R``.
@@ -722,13 +996,10 @@ class ModuleMorphism(Morphism):
 
         domain, codomain = self.domain(), self.codomain()
         ring = domain.base_ring()
-        assert codomain in RestrictedScalarsModules(ring), (
-            f"an unframed lift is stated here for a restriction of scalars, and {codomain} is not one"
-        )
+        assert codomain in RestrictedScalarsModules(ring), f"an unframed lift is stated here for a restriction of scalars, and {codomain} is not one"
         fractions = codomain.extension_ring()
         assert fractions is ring.fraction_field(), (
-            f"the integrality test reads denominators in {ring}, so the restricted scalars must be "
-            f"its fraction field; {codomain} restricts {fractions}"
+            f"the integrality test reads denominators in {ring}, so the restricted scalars must be its fraction field; {codomain} restricts {fractions}"
         )
         extension = codomain.module_over_extension()
         assert extension in FramedModules(fractions) and extension in FinitelyGeneratedModules(fractions), (
@@ -748,31 +1019,23 @@ class ModuleMorphism(Morphism):
         target_coordinates = module_coefficients(element.underlying_element(), extension)
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
-            tuple(
-                coefficient
-                for coordinates in (*image_coordinates.values(), target_coordinates)
-                for coefficient in coordinates.values()
-            ),
+            tuple(coefficient for coordinates in (*image_coordinates.values(), target_coordinates) for coefficient in coordinates.values()),
             ring.one(),
         )
         scale = codomain.ring_map()(denominator)
         cleared_module = FreshFreeModuleOn(ring, extension.module_generating_set())
 
         def cleared(coordinates):
-            return cleared_module.linear_combination(
-                {label: ring(scale * coefficient) for label, coefficient in coordinates.items()}
-            )
+            return cleared_module.linear_combination({label: ring(scale * coefficient) for label, coefficient in coordinates.items()})
 
-        cleared_span = module_homset(domain, cleared_module)(
-            {label: cleared(coordinates) for label, coordinates in image_coordinates.items()}
-        )
+        cleared_span = module_homset(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
         return cleared_span.lift(cleared(target_coordinates))
 
     def is_in_image(self, element) -> bool:
         r"""Return whether ``element`` has a preimage when the lift is decidable."""
         try:
             self.lift(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         return True
 
@@ -839,6 +1102,78 @@ class ModuleMorphism(Morphism):
             }
         )
 
+    def adic_completion(self, ideal, *, precision=20):
+        r"""Return ``self tensor_R R_hat`` using one shared completion parent.
+
+        The endpoint objects are the same completed modules returned by their
+        module constructors; the scalar-extension functor adopts those exact
+        images before transporting this morphism.
+        """
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring:
+            raise ValueError("adic completion of a module morphism requires one scalar ring")
+        if ideal.ring() is not ring:
+            raise ValueError("the completion ideal belongs to the morphism scalar ring")
+        completion = ring.adic_completion(ideal, precision=precision)
+        return self.base_change_to_completion(completion)
+
+    def base_change_to_completion(self, completion):
+        r"""Return ``self tensor_R R_hat`` for one already selected completion."""
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring:
+            raise ValueError("adic completion of a module morphism requires one scalar ring")
+        if completion.completion_source() is not ring:
+            raise ValueError("the completion has the wrong source ring for this morphism")
+        source = self.domain().base_change_to_completion(completion)
+        target = self.codomain().base_change_to_completion(completion)
+
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        extension = Modules(ring).scalar_extension(completion.completion_map())
+        extension.adopt_object_image(self.domain(), source)
+        extension.adopt_object_image(self.codomain(), target)
+        completed = extension(self)
+        completed._preamble_adic_completion_source_morphism = self
+        completed._preamble_adic_completion_ring = completion
+        return completed
+
+    def completion_cokernel_comparison(self, ideal, *, precision=20):
+        r"""Return the canonical ``coker(self)^ ~= coker(self^)`` comparison.
+
+        The source ring is required to be in the represented Noetherian
+        regime, where completion is flat.  Both sides use one selected
+        completion parent; the comparison maps are induced by the retained
+        finite presentations, not by dimensions or invariant factors.
+        """
+        ring = self.domain().base_ring()
+        completion = ring.adic_completion(ideal, precision=precision)
+        if not completion.is_flat_over_source():
+            raise ArithmeticError("cokernel/completion comparison requires flat Noetherian completion")
+        completed_morphism = self.base_change_to_completion(completion)
+        source_cokernel = self.cokernel()
+        completed_cokernel = source_cokernel.base_change_to_completion(completion)
+        cokernel_after_completion = completed_morphism.cokernel()
+        left_labels = completed_cokernel.module_generating_set()
+        right_labels = cokernel_after_completion.module_generating_set()
+        if left_labels.cardinality() != right_labels.cardinality():
+            raise ArithmeticError("completion changed the selected cokernel framing cardinality")
+
+        forward = module_homset(completed_cokernel, cokernel_after_completion)(
+            {label: cokernel_after_completion.module_generator(right_labels[int(left_labels.ranking_map()(label))]) for label in left_labels}
+        )
+        inverse = module_homset(cokernel_after_completion, completed_cokernel)(
+            {label: completed_cokernel.module_generator(left_labels[int(right_labels.ranking_map()(label))]) for label in right_labels}
+        )
+        return ModuleCokernelCompletionComparison(
+            self,
+            completion,
+            completed_morphism,
+            completed_cokernel,
+            cokernel_after_completion,
+            forward,
+            inverse,
+        )
+
     def _is_the_identity(self) -> bool:
         r"""Return whether this morphism is its Hom object's identity."""
         if self.domain() is not self.codomain():
@@ -866,12 +1201,24 @@ class ModuleMorphism(Morphism):
             )
         try:
             return self.parent().scalar_multiple(other, self)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
 
     @cached_method
     def cokernel(self):
         r"""Return the selected quotient ``codomain(self) / image(self)``."""
+        completion_source = getattr(
+            self,
+            "_preamble_adic_completion_source_morphism",
+            None,
+        )
+        if completion_source is not None:
+            completion = self._preamble_adic_completion_ring
+            source_cokernel = completion_source.cokernel()
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            extension = Modules(completion_source.domain().base_ring()).scalar_extension(completion.completion_map())
+            return extension(source_cokernel)
         quotient = self.codomain()._represented_cokernel_of_morphism(self)
         if quotient is NotImplemented:
             quotient = self.domain()._represented_cokernel_of_morphism(self)
@@ -890,9 +1237,7 @@ class ModuleMorphism(Morphism):
         """
         quotient = self.cokernel()
         codomain = self.codomain()
-        return module_homset(codomain, quotient)(
-            lambda label: quotient.module_generator(label)
-        )
+        return module_homset(codomain, quotient)(lambda label: quotient.module_generator(label))
 
     def section(self):
         r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
@@ -906,10 +1251,7 @@ class ModuleMorphism(Morphism):
 
         codomain = self.codomain()
         assert self.is_surjective(), "only an epimorphism has a section"
-        assert codomain.is_free(), (
-            f"a section chooses a preimage of each generator, and {codomain} must be "
-            "free for those choices to respect no relation"
-        )
+        assert codomain.is_free(), f"a section chooses a preimage of each generator, and {codomain} must be free for those choices to respect no relation"
         return module_homset(codomain, self.domain())(
             lambda label: self.lift(codomain.module_generator(label))
         )
@@ -938,21 +1280,54 @@ class ModuleMorphism(Morphism):
         return module_homset(codomain, self.domain())(image)
 
     def inverse(self):
-        r"""Return the two-sided inverse of an isomorphism.
+        r"""Return the two-sided inverse, with coordinate inversion on matrix objects.
 
-        A bijection has one preimage of each generator of the codomain, so the
-        same construction that gives a section gives the inverse, and it needs
-        no freeness: where a section had to choose, this has nothing to choose.
-        The linear extension of those preimages is checked against the
-        codomain's relations by the constructor, which is where the assembled
-        map either is a morphism or is not.
+        A general module morphism must be an isomorphism.  The canonical
+        matrix Hom is also the coordinate-matrix object, where inversion is
+        the ordinary matrix operation and may extend coefficients to the
+        backend inverse's scalar ring (for example ``ZZ`` to ``QQ``).
         """
+        if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                MatrixSpace,
+            )
+
+            domain_labels = tuple(self.domain().module_generating_set())
+            codomain_labels = tuple(self.codomain().module_generating_set())
+            coordinate_parent = MatrixSpace(
+                self.domain().base_ring(),
+                len(codomain_labels),
+                len(domain_labels),
+            )
+            if self.parent() is coordinate_parent:
+                if len(domain_labels) != len(codomain_labels):
+                    raise ValueError("a matrix inverse requires a square matrix")
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _engine_matrix,
+                )
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    _own_ring,
+                )
+
+                backend = _engine_matrix(self).inverse()
+                result_ring = _own_ring(backend.base_ring())
+                target = MatrixSpace(result_ring, backend.nrows(), backend.ncols())
+                return target.from_rows(
+                    tuple(
+                        tuple(
+                            result_ring._from_engine_element(backend[row, column])
+                            for column in range(backend.ncols())
+                        )
+                        for row in range(backend.nrows())
+                    )
+                )
 
         assert self.is_injective(), "only a bijection has a two-sided inverse"
         assert self.is_surjective(), "only a bijection has a two-sided inverse"
         codomain = self.codomain()
+        inverse_image = self.lift if _has_finite_free_framing(self.domain()) else self.preimage
         return module_homset(codomain, self.domain())(
-            lambda label: self.lift(codomain.module_generator(label))
+            lambda label: inverse_image(codomain.module_generator(label))
         )
 
     def as_automorphism(self):
@@ -972,9 +1347,7 @@ class ModuleMorphism(Morphism):
         assert self.codomain() is module, "an automorphism is an endomorphism"
         # The inverse was constructed as one, so the pair is mutually inverse by
         # construction and is not re-derived here.
-        return Modules(module.base_ring()).Aut(module)(
-            CategoricalIsomorphism(self.parent(), self, self.inverse(), verify=False)
-        )
+        return Modules(module.base_ring()).Aut(module)(CategoricalIsomorphism(self.parent(), self, self.inverse(), verify=False))
 
 
 class FramingMorphism(ModuleMorphism):
@@ -989,23 +1362,6 @@ class ModuleEmbedding(ModuleMorphism):
 
     def is_injective(self) -> bool:
         return True
-
-    def factor_through(self, target_embedding):
-        r"""Return the unique factor through ``target_embedding`` when it exists.
-
-        For inclusions ``i:A -> X`` and ``j:B -> X`` this constructs the
-        commuting-triangle map ``A -> B`` exactly when ``i(A) <= j(B)``.
-        """
-        if target_embedding.codomain() is not self.codomain():
-            raise ValueError("subobject factorization requires one common codomain")
-        images = {}
-        for label in self.domain().module_generating_set():
-            image = self(self.domain().module_generator(label))
-            try:
-                images[label] = target_embedding.lift(image)
-            except (TypeError, ValueError) as error:
-                raise ValueError("the first subobject is not contained in the second") from error
-        return module_homset(self.domain(), target_embedding.domain())(images)
 
 
 def _model_smith_engine(homset):
@@ -1036,7 +1392,7 @@ def _initialize_module_hom_parent(
     """
     ring = _owned_ring(domain.base_ring())
     assert codomain in domain.module_category(), f"{codomain} is not placed as a module over {ring}"
-    parent._preamble_base_ring = ring if ring in OwnedRings().Commutative() else _own_ring(SageZZ)
+    parent._preamble_base_ring = ring if ring in OwnedRings().Commutative() else ring.ring_center()
     parent._preamble_algebra_base_ring = parent._preamble_base_ring
     placement = domain.module_category()._hom_parent_placement(
         domain,
@@ -1128,6 +1484,16 @@ class _ModuleHomsetCommonMethods:
 
     def base_ring(self):
         return self._preamble_base_ring
+
+    def is_projective(self) -> bool:
+        r"""Return whether this represented Hom has a selected finite-free model.
+
+        Matrix Hom objects install their free-module constructor before category
+        refinement, so projectivity is a theorem of the retained representation
+        rather than a category label used to certify itself.  General internal
+        Homs without that model make no projectivity claim here.
+        """
+        return callable(self.__dict__.get("_preamble_free_module_constructor"))
 
     def scalar_multiple(self, scalar, morphism):
         return self._owned_scalar_multiple(scalar, morphism)
@@ -1389,17 +1755,12 @@ class SubFramingMorphism(ModuleEmbedding):
         if element.parent() is not self.codomain():
             return False
         source_labels = self.domain().module_generating_set()
-        return all(
-            label in source_labels
-            for label in module_coefficients(element, self.codomain())
-        )
+        return all(label in source_labels for label in module_coefficients(element, self.codomain()))
 
     def lift(self, element):
         r"""Return the unique element of the smaller free module mapping here."""
         assert self.is_in_image(element), f"{element} is not in the image of {self}"
-        return self.domain().linear_combination(
-            module_coefficients(element, self.codomain())
-        )
+        return self.domain().linear_combination(module_coefficients(element, self.codomain()))
 
 
 def sub_framing_morphism(domain, codomain) -> SubFramingMorphism:
@@ -1505,6 +1866,152 @@ class TensorProductModuleMorphism(ModuleMorphism):
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
 
 
+
+class ModuleAutomorphism(CategoricalIsomorphism):
+    r"""An invertible module endomorphism, as an element of ``Aut_R(M)``."""
+
+    def as_morphism(self):
+        return self.forward()
+
+    def matrix(self):
+        return self.forward().matrix()
+
+    def order(self):
+        return self.matrix().multiplicative_order()
+
+    def __eq__(self, other):
+        if self is other:
+            return True
+        if not isinstance(other, ModuleAutomorphism) or other.parent() is not self.parent():
+            return False
+        return self.forward() == other.forward()
+
+    def __ne__(self, other):
+        equal = self == other
+        from sage.misc.unknown import Unknown
+
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self):
+        return hash(id(self.parent()))
+
+    def inverse(self):
+        return self.parent()._from_known_inverse_pair(self._inverse, self.forward())
+
+    __invert__ = inverse
+
+    def __mul__(self, other):
+        if isinstance(other, ModuleAutomorphism):
+            if other.parent() is not self.parent():
+                return NotImplemented
+            return self.parent()._from_known_inverse_pair(
+                self.forward() * other.forward(),
+                other._inverse * self._inverse,
+            )
+        if isinstance(other, ModuleMorphism):
+            return self.forward() * other
+        return NotImplemented
+
+
+class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
+    r"""The groups ``Aut_R(M)`` of invertible module endomorphisms."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "module automorphism groups"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return [OwnedGroups()]
+
+    class ParentMethods:
+        @cached_method
+        def identity(self):
+            identity = module_homset(self.domain(), self.domain()).identity()
+            return self._from_known_inverse_pair(identity, identity)
+
+        one = identity
+        identity_automorphism = identity
+
+
+class ModuleAutomorphismGroup(CategoricalHomset):
+    r"""The unit group of ``End_R(M)``, retaining its actual module maps."""
+
+    Element = ModuleAutomorphism
+
+    def __init__(self, hom_family, module) -> None:
+        self._preamble_base_ring = _owned_ring(module.base_ring())
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            module,
+            module,
+            category=ModuleAutomorphismGroups(self._preamble_base_ring),
+        )
+
+    def base_ring(self):
+        return self._preamble_base_ring
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        forward = module_homset(self.domain(), self.domain())(forward)
+        inverse = module_homset(self.domain(), self.domain())(inverse)
+        return self.element_class(self, forward, inverse, verify=False)
+
+    def __call__(self, datum):
+        r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
+        if isinstance(datum, ModuleAutomorphism) and datum.parent() is self:
+            return datum
+        return self._element_constructor_(datum)
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, ModuleAutomorphism):
+            if datum.parent() is self:
+                return datum
+            datum = datum.as_morphism()
+        if isinstance(datum, CategoricalIsomorphism):
+            return self._from_known_inverse_pair(datum.forward(), datum.inverse())
+        forward = module_homset(self.domain(), self.domain())(datum)
+        return self._from_known_inverse_pair(forward, forward.inverse())
+
+    @cached_method
+    def identity(self):
+        identity = module_homset(self.domain(), self.domain()).identity()
+        return self._from_known_inverse_pair(identity, identity)
+
+    one = identity
+    identity_automorphism = identity
+
+    def module(self):
+        return self.domain()
+
+    def __contains__(self, candidate):
+        return isinstance(candidate, ModuleAutomorphism) and candidate.parent() is self
+
+    def is_finite(self):
+        try:
+            return bool(self.module().is_finite())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            from sage.misc.unknown import Unknown
+
+            return Unknown
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        module = self.domain()
+        supers = [
+            packet.Homs().Of(module, module),
+            packet.Monos().Of(module, module),
+            packet.Epis().Of(module, module),
+        ]
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(module))
+        return supers
+
+    def _repr_(self):
+        return f"Aut_{self.base_category()}({self.module()})"
+
+
 class TensorProductModuleHomset(ModuleHomset):
     r"""The ordinary module Hom with tensor-domain bilinear constructor syntax."""
 
@@ -1519,7 +2026,7 @@ class TensorProductModuleHomset(ModuleHomset):
 
             parameters = signature(function)
             parameters.bind(None, None)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         try:
             parameters.bind(None)

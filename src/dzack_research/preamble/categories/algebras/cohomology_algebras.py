@@ -1,11 +1,34 @@
-r"""Graded cohomology algebras of represented differential graded algebras."""
+r"""Graded cohomology algebras of represented differential graded algebras.
+
+The cohomology computation is deliberately the common owned cochain-complex
+construction: each homogeneous piece is literally ``Cohomology(dga, p)``, so
+its cycle inclusion, boundary-in-cycles map, quotient projection and selected
+representatives remain available to multiplication and induced maps.  Sage's
+``CommutativeDifferentialGradedAlgebra`` backend is not a replacement for this
+boundary: in its supported field regime ``cocycles`` and ``coboundaries`` are
+coordinate vector subspaces and ``cohomology`` is an abstract free module,
+which does not retain those comparison maps.  The maintained module backends
+used by ``Cohomology`` therefore remain the private computation authority for
+both commutative and noncommutative source DGAs.
+"""
+
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from sage.categories.morphism import Morphism
-
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    CommutativeDifferentialGradedAlgebras,
+    DifferentialGradedAlgebras,
+    StrictlyCommutativeDifferentialGradedAlgebras,
+    dga_homset,
+)
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
+    GradedCommutativeAlgebras,
+    StrictlyGradedCommutativeAlgebras,
+)
 from dzack_research.preamble.categories.modules.cochain_complexes import Cohomology
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -15,8 +38,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     ring_morphism,
 )
-from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
 
 class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -29,18 +50,36 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The cohomology of the de Rham algebra of the polynomial algebra."""
-        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebra
         from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
-        return CohomologyAlgebra(DeRhamAlgebras(self.base_ring()).an_object())
+        return self(DeRhamAlgebras(self.base_ring()).an_object())
+
+    def _call_(self, dga):
+        r"""Construct ``H^*(dga)`` with its descended graded multiplication.
+
+        The source DGA is the defining datum.  This category constructor owns
+        both identity caching and the private graded-direct-sum realization;
+        :func:`CohomologyAlgebra` is notebook notation for this operation and
+        the cohomology-algebra functor lands here through the same path.
+        """
+        dgas = DifferentialGradedAlgebras(self.base_ring())
+        if dga not in dgas:
+            raise TypeError(
+                "a cohomology algebra is constructed from a differential graded algebra over the same base ring"
+            )
+        cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
+        if cached is not None and cached.source_dga() is dga:
+            return cached
+        result = _CohomologyAlgebra(dga)
+        _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
+        return result
 
     @classmethod
     def _repr_object_names(cls):
         return "cohomology algebras"
 
     def super_categories(self):
-
-        return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
+        return [GradedAlgebras(self.base_ring())]
 
     _HomCategory = CohomologyAlgebraHomCategoryConstruction
 
@@ -60,12 +99,17 @@ class _CohomologyAlgebra(GradedDirectSumModule):
     def __init__(self, dga) -> None:
         self._preamble_cohomology_source_dga = dga
         self._preamble_algebra_base_ring = dga.base_ring()
+        extra_categories = [CohomologyAlgebras(dga.base_ring())]
+        if dga in CommutativeDifferentialGradedAlgebras(dga.base_ring()):
+            extra_categories.append(GradedCommutativeAlgebras(dga.base_ring()))
+        if dga in StrictlyCommutativeDifferentialGradedAlgebras(dga.base_ring()):
+            extra_categories.append(StrictlyGradedCommutativeAlgebras(dga.base_ring()))
         GradedDirectSumModule.__init__(
             self,
             dga.base_ring(),
             lambda degree: Cohomology(dga, degree),
             name=f"H^*({dga})",
-            extra_categories=(CohomologyAlgebras(dga.base_ring()),),
+            extra_categories=tuple(extra_categories),
         )
 
     def source_dga(self):
@@ -191,13 +235,8 @@ _COHOMOLOGY_ALGEBRA_CACHE = {}
 
 
 def CohomologyAlgebra(dga):
-    r"""Return the graded algebra ``H^*(dga)`` with descended multiplication."""
-    cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
-    if cached is not None and cached.source_dga() is dga:
-        return cached
-    result = _CohomologyAlgebra(dga)
-    _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
-    return result
+    r"""Notebook notation for ``CohomologyAlgebras(R)(dga)``."""
+    return CohomologyAlgebras(dga.base_ring())(dga)
 
 
 __all__ = [

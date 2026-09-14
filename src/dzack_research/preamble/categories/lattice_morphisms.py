@@ -1,40 +1,52 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
+from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.categories.category import Category
+from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-    ModuleMorphism,
-)
+import dzack_research.preamble.categories.lattice_engines as lattice_engines
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     category_packet,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFinitePresentation,
     OwnedFiniteGroups,
     OwnedGroups,
 )
-from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
+from dzack_research.preamble.categories.group.predicate_subgroups import (
+    intersection_subgroup,
+    kernel_subgroup,
+    preimage_subgroup,
+    stabilizer_subgroup,
+)
 from dzack_research.preamble.categories.isotropic_orbits import (
+    PrimitiveIsotropicSublatticeLocus,
+    PrimitiveIsotropicSublatticeOrbitDecomposition,
+    PrimitiveIsotropicVectorLocus,
+    PrimitiveIsotropicVectorOrbitDecomposition,
     isotropic_equivalence_witness,
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
 )
-from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+    ModuleMorphism,
     module_coefficients,
     module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
@@ -54,6 +66,195 @@ def _engine_gram_rows(lattice):
     rank = int(lattice.module_rank())
     gram = lattice.gram_tensor()
     return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
+
+
+def _binary_form_from_gram(gram):
+    r"""Return the integral binary quadratic form ``x^T gram x``."""
+    return BinaryQF(
+        SageZZ(gram[0, 0]),
+        SageZZ(2 * gram[0, 1]),
+        SageZZ(gram[1, 1]),
+    )
+
+
+def _proper_reduced_binary_equivalence_matrix(source, target):
+    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target``, or ``None``.
+
+    Both forms are reduced indefinite forms of the same non-square
+    discriminant.  Sage supplies their proper reduced cycle.  Consecutive
+    forms differ alternately by a ``_Rho`` step and its conjugate by
+    ``diag(1,-1)``.  Their right-action matrices are respectively
+    ``[[0,-1],[1,s]]`` and ``[[0,1],[-1,s]]``.  Recovering ``s`` from the two
+    consecutive exact forms avoids reproducing the reduction algorithm.
+    """
+    identity = engine_matrix(SageZZ, ((1, 0), (0, 1)))
+    cycle = tuple(source.cycle(proper=True))
+    try:
+        target_position = cycle.index(target)
+    except ValueError:
+        return None
+    transformation = identity
+    for position in range(target_position):
+        current = cycle[position]
+        following = cycle[position + 1]
+        denominator = SageZZ(2) * SageZZ(current[2])
+        if denominator == 0:
+            raise ArithmeticError(
+                "a non-square reduced indefinite binary form has zero c-coefficient"
+            )
+        numerator = SageZZ(following[1]) + SageZZ(current[1])
+        candidates = []
+        for sign in (SageZZ.one(), -SageZZ.one()):
+            signed_numerator = sign * numerator
+            step_parameter = signed_numerator // denominator
+            if denominator * step_parameter != signed_numerator:
+                continue
+            if sign == SageZZ.one():
+                step = engine_matrix(
+                    SageZZ,
+                    ((0, -1), (1, step_parameter)),
+                )
+            else:
+                step = engine_matrix(
+                    SageZZ,
+                    ((0, 1), (-1, step_parameter)),
+                )
+            if current.matrix_action_right(step) == following:
+                candidates.append(step)
+        if not candidates:
+            raise ArithmeticError(
+                "the proper binary cycle step did not determine a unimodular transformation"
+            )
+        step = candidates[0]
+        transformation = transformation * step
+    if source.matrix_action_right(transformation) != target:
+        raise ArithmeticError("the reconstructed proper binary equivalence is incorrect")
+    return transformation
+
+
+def _rho_step_matrix(current, following):
+    r"""Return the exact ``SL_2(ZZ)`` matrix carrying ``current`` to ``following=current._Rho()``."""
+    denominator = SageZZ(2) * SageZZ(current[2])
+    if denominator == 0:
+        raise ArithmeticError("a Rho step from c=0 is undefined")
+    numerator = SageZZ(following[1]) + SageZZ(current[1])
+    step_parameter = numerator // denominator
+    if denominator * step_parameter != numerator:
+        raise ArithmeticError("the Rho step parameter is not integral")
+    step = engine_matrix(
+        SageZZ,
+        ((0, -1), (1, step_parameter)),
+    )
+    if current.matrix_action_right(step) != following:
+        raise ArithmeticError("the reconstructed Rho matrix gives the wrong reduced form")
+    return step
+
+
+def _split_binary_reduction_to_zero_c(form):
+    r"""Reduce a split indefinite binary form to ``c=0`` and retain the change of variables."""
+    reduced, transformation = form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    current = reduced
+    while current[2] != 0:
+        following = current._Rho()
+        transformation = transformation * _rho_step_matrix(current, following)
+        current = following
+    if form.matrix_action_right(transformation) != current:
+        raise ArithmeticError("the split binary reduction matrix gives the wrong form")
+    return current, transformation
+
+
+def _proper_split_binary_equivalence_matrix(source, target):
+    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target`` for split indefinite forms."""
+    source_reduced, source_reduction = _split_binary_reduction_to_zero_c(source)
+    target_reduced, target_reduction = _split_binary_reduction_to_zero_c(target)
+    if source_reduced[1] != target_reduced[1]:
+        return None
+    b = SageZZ(source_reduced[1])
+    if b == 0:
+        raise ArithmeticError("a split indefinite reduced form with c=0 has nonzero b")
+    difference = SageZZ(target_reduced[0]) - SageZZ(source_reduced[0])
+    shear_parameter = difference // b
+    if b * shear_parameter != difference:
+        return None
+    shear = engine_matrix(
+        SageZZ,
+        ((1, 0), (shear_parameter, 1)),
+    )
+    if source_reduced.matrix_action_right(shear) != target_reduced:
+        raise ArithmeticError("the split binary shear gives the wrong reduced form")
+    transformation = source_reduction * shear * target_reduction.inverse()
+    if source.matrix_action_right(transformation) != target:
+        raise ArithmeticError("the split binary proper equivalence matrix is incorrect")
+    return transformation
+
+
+def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
+    r"""Return a binary indefinite isometry matrix, ``False``, or ``Unknown``.
+
+    A returned matrix ``P`` satisfies ``P^T codomain_gram P = domain_gram``.
+    The non-square-discriminant classification is complete by binary reduction
+    cycles.  For square discriminant, Sage's split reduction terminates at a
+    form ``a*x^2+b*x*y``; Conway--Sloane's criterion is then constructive via
+    an integral shear, with one fixed determinant-minus-one twist handling the
+    improper-equivalence case.
+    """
+    domain_form = _binary_form_from_gram(domain_gram)
+    codomain_form = _binary_form_from_gram(codomain_gram)
+    if domain_form.discriminant() != codomain_form.discriminant():
+        return False
+    if domain_form.discriminant().is_square():
+        transformation = _proper_split_binary_equivalence_matrix(
+            codomain_form,
+            domain_form,
+        )
+        if transformation is None:
+            improper_twist = engine_matrix(SageZZ, ((-1, 0), (0, 1)))
+            twisted_codomain = codomain_form.matrix_action_right(improper_twist)
+            proper_after_twist = _proper_split_binary_equivalence_matrix(
+                twisted_codomain,
+                domain_form,
+            )
+            if proper_after_twist is None:
+                return False
+            transformation = improper_twist * proper_after_twist
+        if codomain_form.matrix_action_right(transformation) != domain_form:
+            raise ArithmeticError("the split binary equivalence matrix does not preserve the lattice form")
+        return transformation
+    domain_reduced, domain_reduction = domain_form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    codomain_reduced, codomain_reduction = codomain_form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    reduced_transport = _proper_reduced_binary_equivalence_matrix(
+        codomain_reduced,
+        domain_reduced,
+    )
+    if reduced_transport is None:
+        swap = engine_matrix(SageZZ, ((0, 1), (1, 0)))
+        swapped = codomain_reduced.matrix_action_right(swap)
+        proper_after_swap = _proper_reduced_binary_equivalence_matrix(
+            swapped,
+            domain_reduced,
+        )
+        if proper_after_swap is None:
+            return False
+        reduced_transport = swap * proper_after_swap
+    transformation = (
+        codomain_reduction
+        * reduced_transport
+        * domain_reduction.inverse()
+    )
+    if transformation.base_ring() is not SageZZ:
+        transformation = transformation.change_ring(SageZZ)
+    if codomain_form.matrix_action_right(transformation) != domain_form:
+        raise ArithmeticError("the binary equivalence matrix does not preserve the lattice form")
+    return transformation
 
 
 def _tensor_view(morphism):
@@ -163,7 +364,6 @@ class LatticeEmbedding(LatticeMorphism):
         Levi action on \(K_I\) and its unipotent radical are all read off that
         retained data.
         """
-        from dzack_research.preamble.categories._lattice import Lattice
         from dzack_research.preamble.categories.lattices import IsotropicReductions
 
         source = self.domain()
@@ -217,11 +417,8 @@ class LatticeEmbedding(LatticeMorphism):
             )
             prototype = lattice_category(gram, module_generators=labels)
 
-        reduction = Lattice(
-            prototype._module,
-            prototype.gram_tensor(),
-            lattice_category,
-            prototype._sage_lattice,
+        return lattice_category._specialize_existing_lattice(
+            prototype,
             extra_categories=(IsotropicReductions(ring),),
             construction_data=(
                 ("isotropic_embedding", self),
@@ -231,7 +428,6 @@ class LatticeEmbedding(LatticeMorphism):
                 ("reduction_normalization", normalization),
             ),
         )
-        return lattice_category._refine_lattice_object(reduction)
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
@@ -414,6 +610,35 @@ class LatticeIsometry(LatticeEmbedding):
         return self.invariant_lattice().orthogonal_complement()
 
     @cached_method
+    def primitive_extension(self):
+        r"""Return the invariant/coinvariant primitive extension cut out by this isometry."""
+        if self.domain() is not self.codomain():
+            raise ValueError("a primitive extension is cut out by a lattice automorphism")
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            isometry_primitive_extension,
+        )
+
+        return isometry_primitive_extension(self)
+
+    def centralizer_group(self):
+        r"""Return ``Z_{O(L)}(self)`` through the owned primitive-extension data."""
+        return self.primitive_extension().centralizer_group()
+
+    def cyclotomic_summand(self, order):
+        r"""Return ``ker(Phi_order(self))`` as a primitive lattice subobject."""
+        if self.domain() is not self.codomain():
+            raise ValueError("a cyclotomic summand is cut out by a lattice automorphism")
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            cyclotomic_summand,
+        )
+
+        return cyclotomic_summand(self, order)
+
+    def equivariant_vector_orbit_representatives(self, square):
+        r"""Return vector-orbit representatives under ``Z_{O(L)}(self)`` in the supported regime."""
+        return self.primitive_extension().equivariant_vector_orbit_representatives(square)
+
+    @cached_method
     def _discriminant_forward_morphism(self):
         r"""Return the induced module map on discriminant groups."""
         source = self.domain().discriminant_group()
@@ -464,6 +689,14 @@ class LatticeIsometry(LatticeEmbedding):
         return form.orthogonal_group().from_morphism(
             self._discriminant_forward_morphism()
         )
+
+    def is_involution(self) -> bool:
+        r"""Return whether this lattice automorphism satisfies ``self^2 = 1``."""
+        match self.domain() is self.codomain():
+            case False:
+                return False
+            case True:
+                return self * self == self.parent().one()
 
     def cyclic_subgroup(self):
         r"""Return the literal subgroup ``<self> <= O(L)``."""
@@ -603,7 +836,7 @@ class LatticeHomset(CategoricalHomset):
     Element = LatticeMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        ring = domain.base_ring()
+        domain.base_ring()
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
             raise TypeError("a lattice homset has lattices as its domain and codomain")
@@ -732,6 +965,119 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         r"""Return the finite even-overlattice sweep used by Nikulin existence."""
         return self.domain().even_overlattice_inclusions()
 
+    @cached_method
+    def _target_primitive_embedding_data(self):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            _engine_ring(source.base_ring()) is not SageZZ
+            or _engine_ring(target.base_ring()) is not SageZZ
+            or not source.module_rank().is_finite()
+            or not target.module_rank().is_finite()
+            or not source.is_nondegenerate()
+            or not target.is_nondegenerate()
+            or source.module_rank() >= target.module_rank()
+            or target.is_definite()
+        ):
+            return None
+        if not engine_capabilities.is_available("lattice.target_primitive_embedding"):
+            return None
+        return lattice_engines.target_primitive_embedding(
+            source.gram_tensor(),
+            target.gram_tensor(),
+        )
+
+    def _target_primitive_embedding(self):
+        data = self._target_primitive_embedding_data()
+        if data is None:
+            raise NotImplementedError(
+                "target-specific primitive embeddings require an integral nondegenerate target and the OSCAR embedding provider"
+            )
+        if data is False:
+            raise ValueError("the primitive embedding homset is empty")
+        return self._reconstruct_target_primitive_embedding(data)
+
+    def _reconstruct_target_primitive_embedding(self, data):
+        target_prime_gram, source_prime_gram, embedding_matrix = data
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        source = self.domain()
+        target = self.codomain()
+        lattices = Lattices(source.base_ring())
+        source_prime = lattices(source_prime_gram)
+        target_prime = lattices(target_prime_gram)
+        source_to_prime = source.Isom(source_prime).an_element()
+        target_prime_to_target = target_prime.Isom(target).an_element()
+        target_prime_generators = tuple(target_prime.module_generators())
+        inclusion = source_prime.Emb(target_prime)(
+            tuple(
+                sum(
+                    (
+                        target_prime.scalar_multiple(
+                            embedding_matrix[row, column],
+                            target_prime_generators[row],
+                        )
+                        for row in range(int(target_prime.module_rank()))
+                        if embedding_matrix[row, column]
+                    ),
+                    target_prime.zero(),
+                )
+                for column in range(int(source_prime.module_rank()))
+            )
+        )
+        composed = target_prime_to_target * inclusion * source_to_prime
+        embedding = self(
+            tuple(
+                composed(source.module_generator(label))
+                for label in source.module_generating_set()
+            )
+        )
+        if not embedding.is_primitive():
+            raise ArithmeticError("a reconstructed OSCAR primitive embedding is not primitive")
+        return embedding
+
+    def primitive_embedding_class_representatives(self, classification="emb"):
+        r"""Return OSCAR/Nikulin representatives of primitive-embedding classes.
+
+        ``classification='sub'`` classifies primitive sublattices up to the
+        actions of ``O(source)`` and the target discriminant group, whereas
+        ``classification='emb'`` retains the source marking and quotients only
+        by the target discriminant action.  These are finite class
+        representatives, not an enumeration of every embedding.
+        """
+        if classification not in ("sub", "emb"):
+            raise ValueError("primitive embedding classes are 'sub' or 'emb'")
+        source = self.domain()
+        target = self.codomain()
+        if (
+            _engine_ring(source.base_ring()) is not SageZZ
+            or _engine_ring(target.base_ring()) is not SageZZ
+            or not source.module_rank().is_finite()
+            or not target.module_rank().is_finite()
+            or not source.is_nondegenerate()
+            or not target.is_nondegenerate()
+            or source.module_rank() > target.module_rank()
+        ):
+            raise NotImplementedError(
+                "OSCAR primitive-embedding classes currently require finite nondegenerate integral lattices"
+            )
+        if not engine_capabilities.is_available("lattice.target_primitive_embedding_classes"):
+            raise NotImplementedError(
+                "primitive-embedding class representatives require the OSCAR lattice provider"
+            )
+        data = lattice_engines.target_primitive_embedding_classes(
+            source.gram_tensor(),
+            target.gram_tensor(),
+            classification,
+        )
+        if data is None:
+            raise NotImplementedError(
+                "OSCAR's target-specific primitive-embedding classification is unavailable"
+            )
+        return finite_ordered_set(
+            tuple(self._reconstruct_target_primitive_embedding(record) for record in data)
+        )
+
     def __iter__(self):
         r"""Enumerate all embeddings when the target lattice is definite.
 
@@ -780,8 +1126,20 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             for _embedding in self:
                 return False
             return True
+        source = self.domain()
+        target = self.codomain()
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+        ):
+            return source.Isom(target).is_empty()
+        target_embedding_data = self._target_primitive_embedding_data()
+        if target_embedding_data is False:
+            return True
+        if target_embedding_data is not None:
+            return False
         if self._codomain_is_even_unimodular_indefinite():
-            source = self.domain()
             if not source.is_even():
                 return True
             _signature = self.codomain().signature_pair()
@@ -799,6 +1157,23 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             for embedding in self:
                 return embedding
             raise ValueError("the embedding homset is empty")
+        source = self.domain()
+        target = self.codomain()
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+        ):
+            isometry = source.Isom(target).an_element()
+            return self(
+                tuple(
+                    isometry(source.module_generator(label))
+                    for label in source.module_generating_set()
+                )
+            )
+        target_embedding_data = self._target_primitive_embedding_data()
+        if target_embedding_data is not None:
+            return self._target_primitive_embedding()
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
                 raise ValueError("the embedding homset is empty")
@@ -841,12 +1216,13 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
+                categories.append(GroupsWithChosenFinitePresentation())
         LatticeEmbeddingHomset.__init__(
             self,
             hom_family,
             domain,
             codomain,
-            category=Category.join(tuple(categories)) if categories else None,
+            category=Cat().meet(tuple(categories)) if categories else None,
         )
 
     def _element_constructor_(self, images):
@@ -900,11 +1276,69 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def one(self):
         return self.identity()
 
+    def ambient_lattice(self):
+        r"""Return the lattice acted on by this orthogonal group."""
+        return self.lattice()
+
+    def gens(self):
+        r"""Return the selected exact generating family of this orthogonal group."""
+        return self.group_generators()
+
+    def element(self, matrix):
+        r"""Construct the isometry having the stated coordinate matrix.
+
+        Matrix columns are generator images, matching the repository's
+        ``MatrixSpaces`` convention.  The ordinary isometry constructor then
+        verifies form preservation and invertibility; this method does not
+        trust a matrix merely because it has the right shape.
+        """
+        lattice = self.lattice()
+        if not lattice.module_rank().is_finite():
+            raise TypeError("a coordinate-matrix isometry requires a finite-rank lattice")
+        rank = int(lattice.module_rank())
+        if int(matrix.nrows()) != rank or int(matrix.ncols()) != rank:
+            raise ValueError("the isometry matrix has the wrong lattice rank")
+        labels = tuple(lattice.module_generating_set())
+        ring = lattice.base_ring()
+        images = tuple(
+            lattice.linear_combination(
+                {
+                    labels[row]: ring(matrix[row, column])
+                    for row in range(rank)
+                    if ring(matrix[row, column]) != ring.zero()
+                }
+            )
+            for column in range(rank)
+        )
+        return self(images)
+
+    def contains(self, element) -> bool:
+        r"""Return whether ``element`` is an isometry in this fixed orthogonal group."""
+        try:
+            return self(element).parent() is self
+        except (TypeError, ValueError):
+            return False
+
     identity_automorphism = identity
 
     def acting_group(self):
         r"""Return ``O(codomain)`` acting by postcomposition on this homset."""
         return self.codomain().Aut()
+
+    def cardinality(self):
+        r"""Return the cardinality of ``Isom(L,M)`` from its torsor structure.
+
+        An empty isometry Hom has cardinality zero.  A nonempty one is a
+        torsor under ``O(M)`` by postcomposition and therefore has the same
+        cardinality as ``O(M)``.  When emptiness is genuinely undecided, keep
+        that three-valued boundary instead of turning it into a cardinal.
+        """
+        empty = self.is_empty()
+        if empty is True:
+            return cardinal(0)
+        if empty is False:
+            return self.acting_group().cardinality()
+        return Unknown
 
     def act(self, automorphism, isometry):
         r"""Postcompose an isometry by a codomain automorphism."""
@@ -923,7 +1357,19 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
 
     def transporter(self, source, target):
-        r"""Return the unique ``g in O(M)`` with ``g ∘ source = target``."""
+        r"""Return an orthogonal transporter.
+
+        For lattice vectors this is an exact orbit witness ``g(source)=target``.
+        For two isometries in ``Isom(L,M)`` it retains the torsor operation
+        ``g ∘ source = target``.
+        """
+        lattice = self.codomain()
+        if (
+            self.domain() is lattice
+            and getattr(source, "parent", lambda: None)() is lattice
+            and getattr(target, "parent", lambda: None)() is lattice
+        ):
+            return self.vector_equivalence_witness(source, target)
         for candidate in (source, target):
             if (
                 not isinstance(candidate, LatticeIsometry)
@@ -947,6 +1393,56 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             tuple(generator.discriminant_morphism() for generator in self.group_generators())
         )
 
+    def discriminant_lift(self, automorphism):
+        r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
+
+        The image of ``O(L) -> O(A_L)`` is finite.  Starting from the known
+        arithmetic generators of ``O(L)``, enumerate that finite image while
+        retaining one live lattice isometry above every image element.  The
+        search is exhaustive in the generated image and therefore returns
+        ``None`` exactly when the selected discriminant automorphism is not in
+        that image; no denominator bound or lattice-vector search is used.
+        """
+        if self.domain() is not self.codomain():
+            raise ValueError("a discriminant lift is defined for an automorphism group")
+        target = self.domain().discriminant_group().orthogonal_group()
+        automorphism = target(automorphism)
+        identity = self.one()
+        identity_image = identity.discriminant_morphism()
+        if automorphism == identity_image:
+            return identity
+
+        witnesses = {identity_image: identity}
+        steps = []
+        for generator in self.group_generators():
+            image = generator.discriminant_morphism()
+            steps.append((image, generator))
+            inverse = ~generator
+            steps.append((~image, inverse))
+        frontier = [identity_image]
+        bound = int(target.cardinality())
+        while frontier:
+            current_image = frontier.pop()
+            current_witness = witnesses[current_image]
+            for step_image, step_witness in steps:
+                candidate_image = step_image * current_image
+                if candidate_image in witnesses:
+                    continue
+                candidate_witness = step_witness * current_witness
+                if candidate_witness.discriminant_morphism() != candidate_image:
+                    raise ArithmeticError(
+                        "the retained discriminant-image witness has the wrong induced action"
+                    )
+                witnesses[candidate_image] = candidate_witness
+                if candidate_image == automorphism:
+                    return candidate_witness
+                frontier.append(candidate_image)
+                if len(witnesses) > bound:
+                    raise ArithmeticError(
+                        "the generated discriminant image exceeds O(A_L)"
+                    )
+        return None
+
     def discriminant_preimage(self, subgroup):
         r"""Return ``rho_L^{-1}(subgroup)`` as a predicate subgroup of ``O(L)``."""
         if self.domain() is not self.codomain():
@@ -966,21 +1462,61 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise ValueError("the subgroup must lie in O(A_L)")
 
         if int(subgroup.cardinality()) == 1:
-
             form = target.domain()
             identity = module_homset(form, form).identity()
-            predicate = (
-                lambda automorphism: automorphism._discriminant_forward_morphism()
-                == identity
-            )
+
+            def predicate(automorphism):
+                return automorphism._discriminant_forward_morphism() == identity
         else:
-            predicate = lambda automorphism: automorphism.discriminant_morphism() in subgroup
-        return predicate_subgroup(
-            self,
-            predicate,
-            f"rho_L(g) lies in {subgroup}",
+            def predicate(automorphism):
+                return automorphism.discriminant_morphism() in subgroup
+        return preimage_subgroup(
+            self.discriminant_representation(),
+            subgroup,
+            predicate=predicate,
+            description=f"rho_L(g) lies in {subgroup}",
             character_data={"discriminant_preimages": (subgroup,)},
         )
+
+    def discriminant_representation(self):
+        r"""Return ``rho_A: O(L) -> O(A_L)``."""
+        return self.lattice().discriminant_representation()
+
+    def component_character(self):
+        r"""Return the positive-cone component character when defined."""
+        return self.lattice().component_character()
+
+    def preimage(self, morphism, subgroup):
+        r"""Return the subgroup ``morphism^{-1}(subgroup)`` of this group."""
+        if morphism.domain() is not self:
+            raise ValueError("a group preimage requires a morphism whose domain is this group")
+        return preimage_subgroup(morphism, subgroup)
+
+    def kernel(self, morphism):
+        r"""Return the kernel subgroup of a represented group morphism."""
+        if morphism.domain() is not self:
+            raise ValueError("a group kernel requires a morphism whose domain is this group")
+        return kernel_subgroup(morphism)
+
+    def stable_subgroup(self):
+        r"""Return ``ker(O(L) -> O(A_L))``."""
+        return self.lattice().stable_orthogonal_group()
+
+    def component_subgroup(self):
+        r"""Return the positive-cone-preserving subgroup when defined."""
+        return self.lattice().positive_cone_subgroup()
+
+    def centralizer(self, isometry):
+        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            centralizer,
+        )
+
+        return centralizer(self, isometry)
+
+    def intersection(self, *subgroups):
+        r"""Return the intersection of represented subgroups of this orthogonal group."""
+        return intersection_subgroup(self, subgroups)
 
     def lattice(self):
         r"""Return \(L\), the lattice this orthogonal group acts on."""
@@ -989,22 +1525,38 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
         return self.domain()
 
-    def stabilizer(self, vector):
-        r"""Return \(\operatorname{Stab}_{O(L)}(v)=\{g\in O(L): g(v)=v\}\).
+    def stabilizer(self, target, action="setwise"):
+        r"""Return a vector or sublattice stabilizer in ``O(L)``.
 
-        The subgroup is cut out by its defining condition, so it is
-        constructed for indefinite \(L\) as well, where \(O(L)\) is infinite
-        and cannot be enumerated.  When the engine computes a generating set
-        of this subgroup, :meth:`vector_stabilizer_generators` supplies it.
+        A lattice vector is fixed pointwise.  A represented lattice subobject
+        accepts ``action='setwise'`` or ``action='pointwise'`` and delegates to
+        the existing inclusion-based subgroup constructions.
         """
         lattice = self.lattice()
-        assert vector.parent() is lattice, (
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModuleSubobjects,
+        )
+
+        if target in ModuleSubobjects(lattice.base_ring()):
+            embedding = target.inclusion()
+            if embedding.codomain() is not lattice:
+                raise ValueError("a sublattice stabilizer requires a subobject of the acted lattice")
+            if action == "setwise":
+                return self.setwise_stabilizer(embedding)
+            if action == "pointwise":
+                return self.pointwise_stabilizer(embedding)
+            raise ValueError("a sublattice stabilizer action is 'setwise' or 'pointwise'")
+        if action != "setwise":
+            raise ValueError("the action option applies only to represented sublattices")
+        assert target.parent() is lattice, (
             "a point stabilizer in O(L) fixes a vector of L"
         )
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
-            lambda automorphism: automorphism(vector) == vector,
-            f"g fixes {vector}",
+            target,
+            "pointwise",
+            lambda automorphism: automorphism(target) == target,
+            description=f"g fixes {target}",
         )
 
     def pointwise_stabilizer(self, embedding):
@@ -1021,12 +1573,14 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         embedded = tuple(
             embedding(generator) for generator in source.module_generators()
         )
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
+            source,
+            "pointwise",
             lambda automorphism: all(
                 automorphism(vector) == vector for vector in embedded
             ),
-            f"g fixes {source} pointwise",
+            description=f"g fixes {source} pointwise",
         )
 
     def setwise_stabilizer(self, embedding):
@@ -1059,10 +1613,12 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 for vector in embedded
             )
 
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
+            source,
+            "setwise",
             preserves_image,
-            f"g(I)=I for I={source}",
+            description=f"g(I)=I for I={source}",
         )
 
     @cached_method
@@ -1101,7 +1657,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         codomain = self.codomain()
         ring = codomain.base_ring()
         generators = tuple(codomain.module_generators())
-        rank = len(generators)
+        len(generators)
         images = []
         for source_position in range(int(self.domain().module_rank())):
             row = row_action_matrix[source_position]
@@ -1122,19 +1678,47 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             )
         return self(tuple(images))
 
-    def _to_engine(self, automorphism):
-        r"""Transport one live automorphism to the private row-action engine."""
+    def _row_action_matrix(self, automorphism):
+        r"""Return the private row-action matrix of one live lattice isometry."""
         if (
             not isinstance(automorphism, LatticeIsometry)
             or automorphism.domain() is not self.domain()
             or automorphism.codomain() is not self.codomain()
         ):
-            raise ValueError("the engine crossing takes an automorphism in this orthogonal group")
+            raise ValueError(
+                "the engine crossing takes an automorphism in this orthogonal group"
+            )
+        # Publicly the linear map acts on columns. Sage matrix groups act on
+        # coordinate rows on the right, hence one transpose at this boundary.
+        return _engine_matrix(automorphism.matrix()).transpose()
 
-        # Publicly the linear map acts on columns. Sage's GroupOfIsometries
-        # acts on coordinate rows on the right, hence one transpose here.
-        engine_matrix = _engine_matrix(automorphism.matrix()).transpose()
-        return self._engine_group()(engine_matrix)
+    def _to_engine(self, automorphism):
+        r"""Transport one live automorphism to the full private engine."""
+        return self._engine_group()(self._row_action_matrix(automorphism))
+
+    def _engine_subgroup_from_generators(self, generators):
+        r"""Build only the matrix group generated by the selected isometries.
+
+        This does not require a presentation of the full orthogonal group.
+        In particular, explicit isometries returned by an indefinite-lattice
+        computation can generate their represented subgroup even when Sage has
+        no engine for all of ``O(L)``.
+        """
+        matrices = tuple(self._row_action_matrix(generator) for generator in generators)
+        if not matrices:
+            rank = int(self.domain().module_rank())
+            identity = engine_matrix.identity(SageZZ, rank)
+            ambient = MatrixGroup((identity,))
+            return ambient.subgroup(())
+        return MatrixGroup(matrices)
+
+    def _to_subgroup_engine(self, automorphism, engine_subgroup):
+        r"""Cross a live isometry directly into a generated matrix subgroup."""
+        return engine_subgroup(self._row_action_matrix(automorphism))
+
+    def _from_subgroup_engine(self, engine_element):
+        r"""Raise an element of a generated matrix subgroup to a live isometry."""
+        return self._from_backend_row_action(engine_element.matrix())
 
     @cached_method
     def group_generators(self):
@@ -1165,6 +1749,24 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return the cardinality of the chosen generating set of ``O(L)``."""
         return self.group_generators().cardinality()
 
+    def structure_description(self):
+        r"""Return GAP's descriptive structure label for a finite ``O(L)``.
+
+        The maintained Sage ``GroupOfIsometries`` backend is GAP-backed and
+        supplies ``StructureDescription``.  This method is intentionally
+        descriptive only: GAP does not promise that the returned string is an
+        isomorphism invariant, so no equality or subgroup decision in the
+        owned layer depends on it.
+        """
+        lattice = self.domain()
+        match lattice.is_definite():
+            case True:
+                return str(self._engine_group().structure_description())
+            case False:
+                raise NotImplementedError(
+                    "GAP StructureDescription is exposed here for finite definite orthogonal groups"
+                )
+
     def __iter__(self):
         return (self._from_engine(element) for element in self._engine_group())
 
@@ -1180,6 +1782,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise ValueError("vector equivalence is an orthogonal-group operation")
         left = left if getattr(left, "parent", lambda: None)() is lattice else lattice(left)
         right = right if getattr(right, "parent", lambda: None)() is lattice else lattice(right)
+        if left == right:
+            return self.one()
         if lattice.q(left) != lattice.q(right):
             return None
         if not lattice.is_definite():
@@ -1279,7 +1883,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 raise ArithmeticError(
                     "an indefinite vector-orbit representative has the wrong square"
                 )
-            return representatives
+            return finite_ordered_set(representatives)
         remaining = {
             tuple(vector.to_tuple()): vector
             for vector in lattice.vectors_of_square(square)
@@ -1291,11 +1895,27 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             for automorphism in self:
                 image = automorphism(representative)
                 remaining.pop(tuple(image.to_tuple()), None)
-        return tuple(representatives)
+        return finite_ordered_set(representatives)
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
 
         return isotropic_orbit_representatives(self, rank, flag=flag)
+
+    def orbit_decomposition(self, locus):
+        r"""Return exact orbit data on a represented locus supported by this group.
+
+        The first supported infinite locus is the primitive isotropic vector
+        locus.  It uses the exact rank-one isotropic backend and returns a
+        structured finite list of orbits, each retaining its representative,
+        stabilizer and transporter operation.
+        """
+        if isinstance(locus, PrimitiveIsotropicVectorLocus):
+            return PrimitiveIsotropicVectorOrbitDecomposition(self, locus)
+        if isinstance(locus, PrimitiveIsotropicSublatticeLocus):
+            return PrimitiveIsotropicSublatticeOrbitDecomposition(self, locus)
+        raise NotImplementedError(
+            "orbit_decomposition currently owns primitive isotropic vector and sublattice loci; other loci require their exact orbit owner"
+        )
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):
 
@@ -1340,7 +1960,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             self._definite_witness_matrix = domain_gram.parent().one()
             return False
         rank = domain.module_rank()
-        if rank <= rank.parent().one():
+        if int(rank.finite_value()) <= 1:
             return True
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
             return True
@@ -1397,6 +2017,17 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             self._definite_witness_matrix = transformation
             return False
 
+        if int(domain.module_rank()) == 2:
+            binary_witness = _binary_indefinite_isometry_matrix(
+                domain_gram,
+                codomain_gram,
+            )
+            if binary_witness is False:
+                return True
+            if binary_witness is not Unknown:
+                self._definite_witness_matrix = binary_witness
+                return False
+
         # The absence of this program is not fatal here: the classification
         # theorems below still decide some pairs, so the capability is asked
         # for first rather than demanded.
@@ -1409,6 +2040,22 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             if witness_rows is None:
                 return True
             witness = self._from_backend_row_action(witness_rows)
+            self._indefinite_witness = witness
+            return False
+
+        if engine_capabilities.is_available("lattice.oscar_isometry_witness"):
+            witness_rows = lattice_engines.integral_isometry_witness(
+                domain.gram_tensor(),
+                codomain.gram_tensor(),
+            )
+            if witness_rows is None:
+                return True
+            witness = self._from_backend_row_action(witness_rows)
+            if any(
+                witness(domain.module_generator(label)).parent() is not codomain
+                for label in domain.module_generating_set()
+            ):
+                raise ArithmeticError("the OSCAR isometry witness has the wrong codomain")
             self._indefinite_witness = witness
             return False
 
@@ -1481,7 +2128,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         return f"Isom({self.domain()}, {self.codomain()})"
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_homset(domain, codomain) -> LatticeHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
@@ -1489,7 +2136,7 @@ def lattice_homset(domain, codomain) -> LatticeHomset:
     return domain.lattice_category().Mor(domain, codomain)
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
@@ -1497,7 +2144,7 @@ def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
     return domain.lattice_category().Mono(domain, codomain)
 
 
-@cached_function
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:

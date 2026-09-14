@@ -4,6 +4,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -12,7 +13,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _proper_restriction_base_ring,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class LieAlgebraMorphism(ModuleMorphism):
@@ -127,18 +127,12 @@ class LieAlgebras(OwnedCategoryOverBaseRing):
         # an associative algebra is, so the two towers have the same shape.
         base = _proper_restriction_base_ring(ring)
         if base is not None:
-            return [Modules(ring), LieAlgebras(base)]
-        return [Modules(ring)]
-
-    # Without this the Hom family walks up to the one Modules declares and
-    # reuses it, which is what a *full* subcategory of modules would want.
-    # Lie algebras are not one: their morphisms are the linear maps that
-    # respect the bracket.
-    _HomCategory = LieAlgebraHomCategoryConstruction
+            return [Algebras(ring).Lie(), LieAlgebras(base)]
+        return [Algebras(ring).Lie()]
 
     class ParentMethods:
         def bracket(self, left, right):
-            return self(left).bracket(self(right))
+            return self.product(left, right)
 
 
 class CommutatorLieAlgebras(LieAlgebras):
@@ -170,15 +164,15 @@ class CommutatorLieAlgebras(LieAlgebras):
         return [LieAlgebras(ring)]
 
 
-def lie_algebra_homset(domain, codomain) -> LieAlgebraHomset:
+def lie_algebra_homset(domain, codomain):
     r"""``Hom_{R-Lie}(domain, codomain)`` for ``R`` the base of ``domain``.
 
-    The session spelling, as ``algebra_homset`` is for algebras.  A
-    subcategory of Lie algebras that states no morphisms of its own reaches
-    this same object when asked, so which category is asked does not change
-    the answer.
+    This is the ordinary general-algebra Hom for the Lie multiplication: a
+    linear map is a Lie morphism exactly when it preserves that selected
+    multiplication.  The legacy dedicated Hom classes remain importable while
+    callers migrate, but they are no longer the construction owner.
     """
-    return LieAlgebras(domain.base_ring()).Mor(domain, codomain)
+    return Algebras(domain.base_ring()).Lie().Mor(domain, codomain)
 
 
 __all__ = [

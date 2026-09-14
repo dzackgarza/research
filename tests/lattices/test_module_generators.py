@@ -1,13 +1,13 @@
 from sage.all import SR
 
 from dzack_research.preamble.all import (
+    ZZ,
     Cardinalities,
-    diagonal_gram,
     Lattices,
     QuadraticField,
-    Set,
+    diagonal_gram,
     signature_pair,
-    ZZ,
+    signature_pairs,
 )
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
@@ -148,6 +148,15 @@ def test_lattices_over_an_order_do_not_sniff_cartan_type() -> None:
     assert f * f == 1
     assert not lattice.is_even()
     assert even_lattice.is_even()
+
+
+def test_signature_pair_uses_the_public_cardinal_product_parent() -> None:
+    pair = signature_pair(1, 2)
+
+    # ``pair`` is itself an object/Parent of Card x Card; ``category()`` is
+    # its mathematical owner.  Sage ``parent()`` on a Parent exposes runtime
+    # class infrastructure and is not the categorical parent of an element.
+    assert pair.category() is signature_pairs()
 
 
 def test_signature_pair_uses_the_fraction_field() -> None:

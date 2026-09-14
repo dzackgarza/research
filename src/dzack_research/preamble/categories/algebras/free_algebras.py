@@ -5,12 +5,13 @@ from typing import Any, cast
 from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
 from sage.all import (
     LaurentPolynomialRing as _SageLaurentPolynomialRing,
+)
+from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
-from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -20,27 +21,35 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebraMorphism,
     Algebras,
     AlgebrasWithChosenFinitePresentation,
-    AlgebraMorphism,
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    OwnedAlgebras,
-    _OwnedAlgebraParent,
     _AlgebraHomsetCommonMethods,
-    _default_structure_map,
+    _OwnedAlgebraParent,
     algebra_homset,
     refine_algebra,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.powers import (
+    AlternatingPower,
+    DividedPower,
+    SymmetricPower,
+    TensorPower,
+)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -56,16 +65,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
-    DividedPower,
-    SymmetricPower,
-    TensorPower,
-)
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
 
 def _finite_labels(labels):
@@ -123,8 +122,19 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
 
 
 def SymmetricAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
     base = _owned_ring(base_ring)
+    if (
+        algebra_generating_set in Sets()
+        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+    ):
+        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+            SparseSymmetricAlgebraOf,
+        )
+
+        return SparseSymmetricAlgebraOf(
+            FreeModuleOn(base, algebra_generating_set)
+        )
+    labels = _finite_labels(algebra_generating_set)
     algebra = PolynomialRing(base, _variable_names(labels))
 
     return refine_algebra(
@@ -138,8 +148,19 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
 
 
 def TensorAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
     base = _owned_ring(base_ring)
+    if (
+        algebra_generating_set in Sets()
+        and not cardinal(algebra_generating_set.cardinality()).is_finite()
+    ):
+        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+            SparseTensorAlgebraOf,
+        )
+
+        return SparseTensorAlgebraOf(
+            FreeModuleOn(base, algebra_generating_set)
+        )
+    labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
     return refine_algebra(
@@ -415,7 +436,7 @@ def _presented_algebra_on_engine(
     )
 
 
-def FinitelyPresentedAlgebra(
+def _finitely_presented_algebra_from_data(
     presentation_ring,
     relations,
     *,
@@ -434,7 +455,7 @@ def FinitelyPresentedAlgebra(
         # first rather than needing a tower of quotient objects.
         source = presentation_ring.presentation_ring()
         existing = presentation_ring.relations()
-        return FinitelyPresentedAlgebra(
+        return _finitely_presented_algebra_from_data(
             source,
             (
                 *(existing.value(index) for index in existing.index_set()),
@@ -481,6 +502,11 @@ def FinitelyPresentedAlgebra(
             ]
         )
     quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
+    presentation_lift = (
+        (lambda element: element)
+        if quotient_engine is quotient_presentation_engine
+        else None
+    )
     labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
@@ -511,6 +537,26 @@ def FinitelyPresentedAlgebra(
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
+        presentation_lift=presentation_lift,
+    )
+
+
+def FinitelyPresentedAlgebra(
+    presentation_ring,
+    relations,
+    *,
+    _extra_categories=(),
+    _extra_construction_data=None,
+    _free_source_module=None,
+):
+    r"""Notebook notation for the selected finite-presentation algebra constructor."""
+    category = AlgebrasWithChosenFinitePresentation(presentation_ring.base_ring())
+    return category._call_(
+        presentation_ring,
+        relations,
+        extra_categories=_extra_categories,
+        extra_construction_data=_extra_construction_data,
+        free_source_module=_free_source_module,
     )
 
 
@@ -537,6 +583,13 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def _algebra_homset_class(self):
             return FramedFreeAlgebraHomset
 
+        def Mor(self, codomain, category=None):
+            r"""Use the free-algebra universal Hom before the inherited ring Hom."""
+            ordinary = Algebras(self.base_ring()).Associative().Unital()
+            if category is None:
+                return ordinary.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
@@ -555,6 +608,137 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def _realize_graded_piece_basis_label(self, degree, label):
+            r"""Return the algebra monomial represented by one basis label of ``A_degree``.
+
+            The authoritative basis is the basis of :meth:`graded_piece`; this
+            method only realizes that basis element back in the algebra.  It
+            does not construct a second monomial system.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            if degree == 0:
+                return self.one()
+            if degree == 1:
+                return self.algebra_generator(label)
+
+            piece = self.graded_piece(degree)
+            from dzack_research.preamble.categories.algebras.power_algebras import (
+                PowerAlgebra,
+            )
+            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+                SparseFreeAlgebra,
+            )
+
+            if isinstance(self, PowerAlgebra):
+                return self.from_component(degree, piece.module_generator(label))
+            if isinstance(self, SparseFreeAlgebra):
+                return self.module_generator(self.basis_label(degree, label))
+
+            ring = self.algebra_base_ring()
+            result = self.one()
+            if self in TensorAlgebras(ring):
+                from dzack_research.preamble.categories.modules.tensor_products import (
+                    _flatten_tensor_label,
+                )
+
+                for source_label in _flatten_tensor_label(label, degree):
+                    result *= self.algebra_generator(source_label)
+                return result
+
+            if self in SymmetricAlgebras(ring):
+                for source_label in label.support():
+                    for _ in range(int(label.multiplicity(source_label))):
+                        result *= self.algebra_generator(source_label)
+                return result
+
+            raise TypeError(f"the graded-piece basis of {self} has no represented realization")
+
+        def from_graded_piece(self, degree, element):
+            r"""Include an element of the canonical degree piece into this algebra."""
+            degree = int(degree)
+            piece = self.graded_piece(degree)
+            element = piece(element)
+            coefficients = module_coefficients(element, piece)
+            return sum(
+                (
+                    coefficient
+                    * self._realize_graded_piece_basis_label(degree, label)
+                    for label, coefficient in coefficients.items()
+                    if coefficient
+                ),
+                self.zero(),
+            )
+
+        def degree_on_module_generator(self, module_generator):
+            r"""Return the degree of one represented homogeneous algebra basis element."""
+            return self.homogeneous_degree(module_generator)
+
+        def graded_piece_monomials(self, degree):
+            r"""Return the selected algebra basis of the canonical degree piece.
+
+            The index set is literally the framing of :meth:`graded_piece`;
+            values are those basis generators realized in this algebra.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            if degree == 0:
+                labels = finite_ordered_set((0,))
+            else:
+                try:
+                    labels = self.graded_piece(degree).module_generating_set()
+                except ValueError:
+                    labels = finite_ordered_set(())
+            return indexed_family(
+                labels,
+                lambda label: self._realize_graded_piece_basis_label(degree, label),
+                name=f"Degree-{degree} algebra monomial basis of {self}",
+            )
+
+        def ideal_generators_in_degree(self, relations, degree):
+            r"""Return generators of the degree-``degree`` ideal generated in degree one.
+
+            For tensor/symmetric/exterior algebras this is
+            ``sum_{i+j=d-1} A_i K A_j``.  For divided powers the divided
+            powers of the selected degree-one relations are included as well,
+            which is the divided-power ideal rather than an ordinary
+            polynomial ideal.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            selected = tuple(self(relation) for relation in relations)
+            if any(self.homogeneous_degree(relation) != 1 for relation in selected):
+                raise ValueError("these graded-ideal generators must lie in degree one")
+            if degree == 0:
+                return ()
+
+            generators = []
+            for relation in selected:
+                for left_degree in range(degree):
+                    right_degree = degree - 1 - left_degree
+                    left_basis = self.graded_piece_monomials(left_degree)
+                    right_basis = self.graded_piece_monomials(right_degree)
+                    for left_label in left_basis.index_set():
+                        for right_label in right_basis.index_set():
+                            generators.append(
+                                left_basis[left_label] * relation * right_basis[right_label]
+                            )
+
+            ring = self.algebra_base_ring()
+            if self in DividedPowerAlgebras(ring):
+                for relation in selected:
+                    for divided_degree in range(2, degree + 1):
+                        divided = self.divided_power(relation, divided_degree)
+                        complementary = self.graded_piece_monomials(
+                            degree - divided_degree
+                        )
+                        for label in complementary.index_set():
+                            generators.append(divided * complementary[label])
+            return tuple(generators)
+
         def graded_piece(self, degree):
             r"""Return the canonical degree piece of this free construction.
 
@@ -576,10 +760,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                     return AlternatingPower(self.free_source_module(), degree)
                 case _ if self in DividedPowerAlgebras(ring):
                     return DividedPower(self.free_source_module(), degree)
-                # These free constructions are connected: their canonical
-                # degree-zero algebra and module is the scalar ring itself.
-                case _ if degree == 0:
-                    return ring
+                # Every flavor uses its authoritative module-power owner in
+                # every degree.  In degree zero this is the rank-one scalar
+                # module, not the ring parent viewed through an unrelated API.
                 case _ if self in TensorAlgebras(ring):
                     return TensorPower(self.free_source_module(), degree)
                 case _ if self in SymmetricAlgebras(ring):
@@ -614,6 +797,75 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def homogeneous_degree(self, element):
+            r"""Return the degree of a homogeneous tensor-algebra element.
+
+            Sage's free associative algebra stores monomials on free-monoid
+            words.  Word length is the tensor grading, and the coefficient
+            dictionary is the maintained exact representation of a finite
+            algebra element.
+            """
+            element = self(element)
+            if element == self.zero():
+                raise ValueError("zero has no selected homogeneous degree here")
+            backend = _engine_element(self, element)
+            degrees = {
+                len(word)
+                for word, coefficient in backend.monomial_coefficients().items()
+                if coefficient
+            }
+            if len(degrees) != 1:
+                raise ValueError("the algebra element is not homogeneous")
+            return self.grading_monoid()(degrees.pop())
+
+        def from_component(self, degree, component):
+            r"""Embed ``T^degree(M)`` through the shared graded-piece inclusion."""
+            return self.from_graded_piece(degree, component)
+
+        def homogeneous_component(self, element, degree):
+            r"""Project an element onto the authoritative tensor-power piece."""
+            degree = int(degree)
+            element = self(element)
+            piece = self.graded_piece(degree)
+            backend = _engine_element(self, element)
+            coefficients = backend.monomial_coefficients()
+            word_to_label = {}
+            for label in piece.module_generating_set():
+                monomial = _engine_element(
+                    self,
+                    self._realize_graded_piece_basis_label(degree, label),
+                )
+                entries = tuple(monomial.monomial_coefficients().items())
+                if len(entries) != 1 or entries[0][1] != 1:
+                    raise ArithmeticError(
+                        "a tensor-power basis element did not realize as one monomial"
+                    )
+                word_to_label[entries[0][0]] = label
+            ring = self.algebra_base_ring()
+            engine_ring = _engine_ring(ring)
+            return piece.linear_combination(
+                {
+                    word_to_label[word]: ring._from_engine_element(engine_ring(coefficient))
+                    for word, coefficient in coefficients.items()
+                    if coefficient and len(word) == degree
+                }
+            )
+
+        def homogeneous_components(self, element):
+            r"""Return all nonzero tensor-degree components as tensor-power elements."""
+            backend = _engine_element(self, self(element))
+            degrees = sorted(
+                {
+                    len(word)
+                    for word, coefficient in backend.monomial_coefficients().items()
+                    if coefficient
+                }
+            )
+            return {
+                degree: self.homogeneous_component(element, degree)
+                for degree in degrees
+            }
+
         # The module a construction selected to build this algebra on.
         # Declared here so a reader of this category sees the field, and so an
         # algebra reached by a route that selected none answers below.
@@ -636,6 +888,40 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 self.algebra_base_ring(),
                 self.algebra_generating_set(),
             )
+
+        @cached_method
+        def ring_center(self):
+            r"""Return the exact center of the represented free tensor algebra.
+
+            On zero or one generator the tensor algebra is commutative.  On at
+            least two generators, comparison of coefficients in the word basis
+            shows that an element commuting with two distinct generators has no
+            nonconstant word, so the center is exactly the scalar ring.
+            """
+            size = self.algebra_generating_set().cardinality()
+            if size.is_finite() and int(size.finite_value()) <= 1:
+                return self
+            return self.algebra_base_ring()
+
+        @cached_method
+        def center_inclusion(self):
+            r"""Return the inclusion ``Z(T) -> T`` under the selected center identification."""
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                ring_morphism,
+            )
+
+            center = self.ring_center()
+            if center is self:
+                return ring_morphism(self, self, lambda element: element)
+            return ring_morphism(center, self, lambda scalar: self(scalar))
+
+
+    class ElementMethods:
+        def homogeneous_components(self):
+            return self.parent().homogeneous_components(self)
+
+        def homogeneous_component(self, degree):
+            return self.parent().homogeneous_component(self, degree)
 
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
@@ -680,11 +966,81 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
                 self.algebra_generating_set(),
             )
 
+        def from_component(self, degree, component):
+            r"""Embed ``Sym^degree(M)`` through the shared graded-piece inclusion."""
+            return self.from_graded_piece(degree, component)
+
+        def homogeneous_component(self, element, degree):
+            r"""Project onto the canonical symmetric-power degree piece."""
+            degree = int(degree)
+            element = self(element)
+
+            def monomial_degree(exponent):
+                try:
+                    return sum(exponent)
+                except TypeError:
+                    return int(exponent)
+            piece = self.graded_piece(degree)
+            backend = _engine_element(self, element)
+            coefficients = backend.monomial_coefficients()
+            exponent_to_label = {}
+            for label in piece.module_generating_set():
+                monomial = _engine_element(
+                    self,
+                    self._realize_graded_piece_basis_label(degree, label),
+                )
+                entries = tuple(monomial.monomial_coefficients().items())
+                if len(entries) != 1 or entries[0][1] != 1:
+                    raise ArithmeticError(
+                        "a symmetric-power basis element did not realize as one monomial"
+                    )
+                exponent_to_label[entries[0][0]] = label
+            ring = self.algebra_base_ring()
+            engine_ring = _engine_ring(ring)
+            return piece.linear_combination(
+                {
+                    exponent_to_label[exponent]: ring._from_engine_element(
+                        engine_ring(coefficient)
+                    )
+                    for exponent, coefficient in coefficients.items()
+                    if coefficient and monomial_degree(exponent) == degree
+                }
+            )
+
+        def homogeneous_components(self, element):
+            r"""Return all nonzero polynomial-degree components."""
+            backend = _engine_element(self, self(element))
+
+            def monomial_degree(exponent):
+                try:
+                    return sum(exponent)
+                except TypeError:
+                    return int(exponent)
+
+            degrees = sorted(
+                {
+                    monomial_degree(exponent)
+                    for exponent, coefficient in backend.monomial_coefficients().items()
+                    if coefficient
+                }
+            )
+            return {
+                degree: self.homogeneous_component(element, degree)
+                for degree in degrees
+            }
+
         def _commutative_algebra_coproduct(self, left, right):
             return _commutative_algebra_coproduct_backend(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
             return _commutative_algebra_pushout_backend(left_map, right_map)
+
+    class ElementMethods:
+        def homogeneous_components(self):
+            return self.parent().homogeneous_components(self)
+
+        def homogeneous_component(self, degree):
+            return self.parent().homogeneous_component(self, degree)
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
@@ -823,7 +1179,7 @@ def _quotient_by_algebra_elements_backend(
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )
-    quotient_map = algebra.Mor(quotient)(
+    quotient_map = algebra_homset(algebra, quotient)(
         {
             label: quotient.algebra_generator(label)
             for label in algebra.algebra_generating_set()
@@ -980,7 +1336,10 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         except (AttributeError, ValueError):
             source_module = None
         if source_module is not None:
-            module_homset(source_module, self.codomain())(self._images.value)
+            module_homset(
+                source_module,
+                self.codomain().underlying_module(),
+            )(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()

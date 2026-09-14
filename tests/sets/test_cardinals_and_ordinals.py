@@ -9,6 +9,17 @@ from dzack_research.preamble.all import (
     omega,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_cardinalities.sage",
+    "live_owner": "tests/sets/test_cardinals_and_ordinals.py",
+    "owner_overrides": {
+        "test_cardinality_functor_preserves_set_coproducts_and_products": "tests/sets/test_cardinality_construction_comparisons.py",
+        "test_power_set_of_naturals_and_real_line_have_the_continuum": "tests/sets/test_cardinality_construction_comparisons.py",
+        "test_standard_mathematical_objects_have_their_exact_cardinals": "tests/sets/test_standard_cardinals_archive.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_initial_ordinals_have_the_corresponding_aleph_cardinals() -> None:
     assert omega(0).cardinality() == aleph(0)
@@ -49,12 +60,18 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
 
 
 def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
-    from dzack_research.preamble.all import Core, Sets, ZZ, cardinality_functor
+    from dzack_research.preamble.all import ZZ, Core, Sets, cardinality_functor
 
     source = Sets.Δ[2]
     target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
-    forward = Sets().Mor( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.ranking_map()(value)]))
-    backward = Sets().Mor( dzack, esearc)(lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)))
+    forward = Sets().Mor(source, target)(
+        lambda value: target(
+            (ZZ(10), ZZ(20), ZZ(30))[source.ranking_map()(value)]
+        )
+    )
+    backward = Sets().Mor(target, source)(
+        lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value))
+    )
     core = Core(Sets())
     isomorphism = core.Mor(source, target)(forward, backward)
     cardinality = cardinality_functor()

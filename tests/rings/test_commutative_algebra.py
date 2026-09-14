@@ -15,6 +15,7 @@ from dzack_research.preamble.all import (
     QQ,
     Set,
     ZZ,
+    Zmod,
 )
 
 
@@ -34,6 +35,13 @@ def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
     assert algebra.algebra_structure_morphism()(ZZ(1)) == field.one()
 
 
+def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
+    assert Zmod(2).spectrum().cardinality() == 1
+    assert Zmod(8).spectrum().cardinality() == 1
+    assert Zmod(12).spectrum().cardinality() == 2
+    assert Zmod(30).spectrum().cardinality() == 3
+
+
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     inverted_two = ZZ.localization(2)
     assert inverted_two.localization_source() is ZZ
@@ -48,6 +56,18 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert local_at_five in LocalRings()
     assert int(local_at_five.residue_field().cardinality()) == 5
     assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
+
+
+def test_localizing_a_polynomial_ring_at_one_keeps_an_exact_engine_realization() -> None:
+    polynomial = PolynomialRing(QQ, "x")
+    localized = polynomial.localization(polynomial.one())
+
+    assert localized.localization_source() is polynomial
+    assert tuple(localized.inverted_elements()) == (polynomial.one(),)
+    assert localized.localization_map()(polynomial.algebra_generator("x")) == (
+        localized(polynomial.algebra_generator("x"))
+    )
+    assert localized._selected_engine_ring() is not None
 
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
@@ -98,7 +118,7 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
     assert power_series in CompleteLocalRings()
     assert power_series.residue_field() is field
     (uniformizer,) = power_series.maximal_ideal().ideal_generators()
-    assert uniformizer == power_series.algebra_generator("t")
+    assert uniformizer == power_series.power_series_variable()
 
 
 def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
@@ -683,7 +703,7 @@ def test_general_module_localization_uses_fraction_model_and_detects_s_torsion()
 def test_ideal_localization_extension_contraction_colon_and_saturation() -> None:
     integer_ideal = ZZ.ideal(6)
     inverted_two = ZZ.localization(2)
-    extended_integer_ideal = integer_ideal.extension(inverted_two)
+    extended_integer_ideal = integer_ideal.extension_to_localization(inverted_two)
 
     assert extended_integer_ideal.inclusion().is_injective()
     assert 3 in extended_integer_ideal
@@ -699,7 +719,7 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert ideal.saturation(divisor) == ring.ideal(ring(y))
 
     localized_ring = ring.localization(x)
-    extended = ideal.extension(localized_ring)
+    extended = ideal.extension_to_localization(localized_ring)
     assert extended.inclusion().is_injective()
     assert localized_ring(y) in extended
     assert localized_ring.one() not in extended
@@ -762,7 +782,7 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
     assert localized.one() != localized.zero()
 
     origin = axes.ideal(xbar, ybar)
-    localized_origin = origin.extension(localized)
+    localized_origin = origin.extension_to_localization(localized)
     assert localized_origin.contraction() == axes.ideal(axes.one())
     assert localized_origin.contains_ambient_element(localized.one())
 
@@ -937,7 +957,15 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     assert induced(half) * to_fractions(ring(2)) == to_fractions(ring.one())
 
     plane = PolynomialRing(QQ, ("x", "y"))
-    with pytest.raises(AssertionError, match="a localization at a single element"):
-        plane.localization(
-            plane.algebra_generator("x"), plane.algebra_generator("y")
-        ).induced_morphism(plane.fraction_field_map())
+    x_plane, y_plane = plane.algebra_generators()
+    inverted_plane = plane.localization(x_plane, y_plane)
+    plane_to_fractions = plane.fraction_field_map()
+    plane_induced = inverted_plane.induced_morphism(plane_to_fractions)
+
+    assert plane_induced(inverted_plane.localization_map()(x_plane + y_plane)) == (
+        plane_to_fractions(x_plane + y_plane)
+    )
+    inverse_product = inverted_plane.fraction(plane.one(), x_plane * y_plane)
+    assert plane_induced(inverse_product) * plane_to_fractions(x_plane * y_plane) == (
+        plane_to_fractions(plane.one())
+    )

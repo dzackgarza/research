@@ -1,6 +1,5 @@
 """Owned ringed-space structure used by the scheme hierarchy."""
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
@@ -8,6 +7,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -182,8 +183,26 @@ def _localization_restriction_map(source, target):
     return ring_morphism(source, target, restrict)
 
 
+class DistinguishedAffineCovers(OwnedCategory):
+    r"""The owned category of represented distinguished affine covers."""
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        return isinstance(candidate, DistinguishedAffineCover)
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "distinguished affine covers"
+
+
 class DistinguishedAffineCover(SageObject):
     r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
+
+    def _cache_key(self) -> int:
+        r"""Use identity when this cover parametrizes a descent category."""
+        return id(self)
 
     def __init__(self, scheme, elements) -> None:
         algebra = scheme.coordinate_algebra()
@@ -613,8 +632,17 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         return module.presentation()
 
 
-class RingedSpaces(CategoryPacketMethods, Category):
+class RingedSpaces(CategoryPacketMethods, OwnedCategory):
     r"""Ringed spaces ``(X,O_X)``."""
+
+    def an_object(self):
+        r"""The affine ringed space ``Spec(ZZ)``."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.categories.schemes.schemes import Spec
+
+        return Spec(_own_ring(SageZZ))
 
     @classmethod
     def _repr_object_names(cls):
@@ -642,8 +670,12 @@ class RingedSpaces(CategoryPacketMethods, Category):
             return SchemeUnderlyingSpace(self)
 
 
-class LocallyRingedSpaces(CategoryPacketMethods, Category):
+class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
     r"""Ringed spaces whose stalks are local rings."""
+
+    def an_object(self):
+        r"""The locally ringed affine scheme ``Spec(ZZ)``."""
+        return RingedSpaces().an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -659,11 +691,38 @@ class LocallyRingedSpaces(CategoryPacketMethods, Category):
         def stalk(self, point):
             return self.structure_sheaf().stalk(point)
 
+        def covering_family(
+            self,
+            charts,
+            embeddings,
+            overlaps,
+            *,
+            ambient_chart_index,
+        ):
+            r"""Return a represented finite covering family of this ringed space.
+
+            The currently verified regime contains this ambient space as one
+            chart.  Non-affine overlaps remain spaces with their two embeddings;
+            they are never replaced by spectra of global sections.
+            """
+            from dzack_research.preamble.categories.schemes.covering_families import (
+                ringed_covering_family,
+            )
+
+            return ringed_covering_family(
+                self,
+                charts,
+                embeddings,
+                overlaps,
+                ambient_chart_index=ambient_chart_index,
+            )
+
 
 __all__ = [
     "AffineModuleSheaf",
     "CoverRefinement",
     "DistinguishedAffineCover",
+    "DistinguishedAffineCovers",
     "LocallyRingedSpaces",
     "QuasiCoherentSheaves",
     "RingedSpaces",

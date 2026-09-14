@@ -1,6 +1,6 @@
 r"""Kähler differentials of represented commutative algebras."""
 
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
+    finite_ordered_set,
 )
 
 
@@ -41,18 +42,28 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
     r"""Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``."""
 
     def an_object(self):
-        r"""``Omega^1_{R[x]/R}``, the differentials of the polynomial algebra.
+        r"""``Omega^1_{A/R}`` for the coefficient algebra ``A`` of this category."""
+        return self(self.base_ring())
 
-        Kähler differentials are taken of a commutative algebra over the
-        parameter.  The parameter is such an algebra over itself through the
-        identity, but that placement is not represented, so the witness is the
-        polynomial algebra on one generator.
+    def _call_(self, algebra):
+        r"""Construct ``Omega^1_{A/R}`` from the algebra ``A`` itself.
+
+        ``KahlerDifferentialModules(A)`` is a category of ``A``-modules, so
+        the parameter and the source algebra are definitionally the same
+        object.  Localization and conormal-sequence realizations are private
+        branches of this constructor; :func:`KahlerDifferentials` is notebook
+        notation for this operation rather than another factory.
         """
-        from dzack_research.preamble.categories.algebras.algebras import (
-            CommutativeAlgebras,
-        )
-
-        return KahlerDifferentials(CommutativeAlgebras(self.base_ring()).an_object())
+        if algebra is not self.base_ring():
+            raise ValueError(
+                "KahlerDifferentialModules(A) constructs the differentials of that same algebra A"
+            )
+        cached = _KAHLER_DIFFERENTIAL_CACHE.get(id(algebra))
+        if cached is not None and cached.source_algebra() is algebra:
+            return cached
+        result = _construct_kahler_differentials(algebra)
+        _KAHLER_DIFFERENTIAL_CACHE[id(algebra)] = result
+        return result
 
     @classmethod
     def _repr_object_names(cls):
@@ -258,9 +269,11 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         representing_isomorphism = derivation_classifier_isomorphism
 
 
-@cached_function(key=lambda algebra: id(algebra))
-def KahlerDifferentials(algebra):
-    r"""Return ``Omega^1_{A/R}`` with its universal ``R``-derivation."""
+_KAHLER_DIFFERENTIAL_CACHE = {}
+
+
+def _construct_kahler_differentials(algebra):
+    r"""Private realization selected by ``KahlerDifferentialModules(A)(A)``."""
     if algebra in LocalizationRings():
         source = algebra.localization_source()
         if source.base_ring() is not algebra.base_ring():
@@ -295,9 +308,8 @@ def KahlerDifferentials(algebra):
     presentation, labels, _variables, relations, _lift = _commutative_presentation_data(
         algebra
     )
-    differential_labels = finite_ordered_image(
-        labels,
-        lambda label: ("d", label),
+    differential_labels = finite_ordered_set(
+        tuple(("d", label) for label in labels)
     )
     if relations.cardinality() != 0:
         from dzack_research.preamble.categories.functors.scalar_change import (
@@ -341,9 +353,7 @@ def KahlerDifferentials(algebra):
         relation_map = module_homset(
             relation_module,
             ambient_differentials,
-        )(
-            lambda label: conormal_morphism(conormal_module.module_generator(label))
-        )
+        )(conormal_morphism.module_generator_images().value)
         omega = FinitelyPresentedModule(
             relation_map,
             _cokernel_morphism=relation_map,
@@ -363,6 +373,11 @@ def KahlerDifferentials(algebra):
             _extra_construction_data={"source_algebra": algebra},
         )
     return omega
+
+
+def KahlerDifferentials(algebra):
+    r"""Notebook notation for ``KahlerDifferentialModules(A)(A)``."""
+    return KahlerDifferentialModules(algebra)(algebra)
 
 
 __all__ = ["KahlerDifferentialModules", "KahlerDifferentials"]

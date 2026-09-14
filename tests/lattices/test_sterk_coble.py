@@ -1,4 +1,10 @@
-from dzack_research.preamble.all import Coble, Sterk, ZZ, tensor
+from dzack_research.preamble.all import Set, ZZ, Coble, Sterk, tensor
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/coble.sage",
+    "live_owner": "src/dzack_research/preamble/coble.py",
+    "disposition": "reconciled-live-owner",
+}
 
 _STERK_NORM_COUNTS = {
     "Sterk_1": {-4: 12, -2: 0},
@@ -26,7 +32,7 @@ def test_five_sterk_diagrams_retain_the_exact_root_pairings() -> None:
     configurations = Sterk.sterk_roots()
     diagrams = Sterk.diagrams()
 
-    assert set(diagrams) == set(configurations)
+    assert Set(diagrams) == Set(configurations)
     for name, roots in configurations.items():
         diagram = diagrams[name]
         assert diagram.is_rooted()
@@ -75,7 +81,9 @@ def test_sterk_diagram_layouts_are_exact_optional_presentation_data() -> None:
     layouts = Sterk.diagram_layouts()
     diagrams = Sterk.diagrams()
 
-    assert layouts["Sterk_1"][9] == (13 / 4, -19 / 4)
+    selected_position = layouts["Sterk_1"][9]
+    assert selected_position[0] == 13 / 4
+    assert selected_position[1] == -19 / 4
     for name, diagram in diagrams.items():
         assert diagram.preferred_positions() == layouts[name]
         vertex = diagram.index_set()[0]

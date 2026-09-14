@@ -55,13 +55,30 @@ def test_the_character_pairing_is_the_duality_of_the_two_frames() -> None:
     assert characters is not cocharacters
     first, second = tuple(cocharacters.module_generating_set())
 
-    assert pairing(characters.module_generator(first), cocharacters.module_generator(first)) == 1
-    assert pairing(characters.module_generator(first), cocharacters.module_generator(second)) == 0
-    assert pairing(characters.module_generator(second), cocharacters.module_generator(second)) == 1
+    assert pairing.codomain().module_rank() == 1
+    assert fans.character_cocharacter_value(
+        characters.module_generator(first), cocharacters.module_generator(first)
+    ) == ZZ(1)
+    assert fans.character_cocharacter_value(
+        characters.module_generator(first), cocharacters.module_generator(second)
+    ) == ZZ(0)
+    assert fans.character_cocharacter_value(
+        characters.module_generator(second), cocharacters.module_generator(second)
+    ) == ZZ(1)
 
     doubled = cocharacters.linear_combination({first: ZZ(3), second: ZZ(-2)})
-    assert pairing(characters.module_generator(first), doubled) == 3
-    assert pairing(characters.module_generator(second), doubled) == -2
+    assert fans.character_cocharacter_value(
+        characters.module_generator(first), doubled
+    ) == ZZ(3)
+    assert fans.character_cocharacter_value(
+        characters.module_generator(second), doubled
+    ) == ZZ(-2)
+
+    scalar = fans.character_cocharacter_value(
+        characters.module_generator(first), doubled
+    )
+    assert scalar.parent() is ZZ
+    assert scalar == ZZ(3)
 
 
 def test_the_a_one_cone_needs_three_semigroup_generators_and_is_singular() -> None:

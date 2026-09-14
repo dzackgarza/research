@@ -1,6 +1,6 @@
 r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 
-from sage.misc.cachefunc import cached_function
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
     StrictlyCommutativeDifferentialGradedAlgebras,
@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
+from dzack_research.preamble.categories.algebras.power_algebras import AlternatingAlgebraOf
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     RestrictedGradedAlgebra,
 )
@@ -16,17 +17,49 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.powers import alternating_power_product
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOf
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
-        r"""The algebraic de Rham algebra of the polynomial algebra on one generator."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        r"""The de Rham algebra of a finite dual-number presentation.
+
+        The witness must inhabit the same represented cohomology route used by
+        downstream DGA constructions.  A polynomial algebra over ``R`` is
+        infinite as an ``R``-module, while the current cohomology owner retains
+        finite presentations of cycles and boundaries.  The selected quotient
+        ``R[x]/(x^2)`` is still nontrivial Kähler calculus and is finite free
+        over ``R``.
+        """
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FinitelyPresentedAlgebra,
+        )
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        polynomial = CommutativeAlgebras(ring).an_object()
+        label = next(iter(polynomial.algebra_generating_set()))
+        generator = polynomial.algebra_generator(label)
+        return self(FinitelyPresentedAlgebra(polynomial, (generator**2,)))
+
+    def _call_(self, algebra):
+        r"""Construct ``Omega^*_{A/R}`` from the represented ``R``-algebra ``A``.
+
+        The source algebra is the defining datum.  This category constructor
+        owns the Kähler-differential/exterior-algebra realization and identity
+        cache; :func:`DeRhamAlgebra` is notation for this operation.
+        """
+        if algebra not in CommutativeAlgebras(self.base_ring()):
+            raise TypeError(
+                "an algebraic de Rham algebra is constructed from a commutative algebra over the same base ring"
+            )
+        cached = _DE_RHAM_CACHE.get(id(algebra))
+        if cached is not None and cached.de_rham_source_algebra() is algebra:
+            return cached
+        omega = KahlerDifferentials(algebra)
+        exterior = AlternatingAlgebraOf(omega)
+        ring_map = algebra.algebra_structure_morphism()
+        result = _DeRhamAlgebra(algebra, exterior, omega, ring_map)
+        _DE_RHAM_CACHE[id(algebra)] = result
+        return result
 
     @classmethod
     def _repr_object_names(cls):
@@ -48,7 +81,10 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
     result = exterior_algebra.zero()
     for degree, component in element.homogeneous_components().items():
         source_piece = exterior_algebra.graded_piece(degree)
-        target_piece = exterior_algebra.graded_piece(degree + 1)
+        target_degree = degree + 1
+        if target_degree not in exterior_algebra.degree_index_set():
+            continue
+        target_piece = exterior_algebra.graded_piece(target_degree)
         target_component = target_piece.zero()
         for label, coefficient in module_coefficients(component, source_piece).items():
             d_coefficient = universal_derivation(coefficient)
@@ -67,7 +103,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
                 )
             target_component += contribution
         if target_component != target_piece.zero():
-            result += exterior_algebra._from_component(degree + 1, target_component)
+            result += exterior_algebra._from_component(target_degree, target_component)
     return result
 
 
@@ -98,7 +134,9 @@ class _DeRhamAlgebra(RestrictedGradedAlgebra):
         self._preamble_differential = Differential(self, differential)
 
 
-@cached_function(key=lambda algebra: id(algebra))
+_DE_RHAM_CACHE = {}
+
+
 def DeRhamAlgebra(algebra):
     r"""Return the strictly commutative DGA ``Omega^*_{A/R}``.
 
@@ -108,10 +146,7 @@ def DeRhamAlgebra(algebra):
     constants ``R`` along the selected algebra structure morphism.
     """
 
-    omega = KahlerDifferentials(algebra)
-    exterior = AlternatingAlgebraOf(omega)
-    ring_map = algebra.algebra_structure_morphism()
-    return _DeRhamAlgebra(algebra, exterior, omega, ring_map)
+    return DeRhamAlgebras(algebra.base_ring())(algebra)
 
 
 __all__ = ["DeRhamAlgebra", "DeRhamAlgebras"]

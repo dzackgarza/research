@@ -4,11 +4,381 @@ This document defines the contribution policies for the repository.
 All contributions must follow the categorized policy index below.
 Each policy has a unique alphanumeric identifier.
 
+For a new addition, begin with
+[mathematical dependency tracing](#mathematical-dependency-tracing).
+For construction, representation, or engine work, then apply the normative
+[preamble architecture specification](#preamble-architecture-specification).
+Its `OWN-*` policies specify the intended architecture, not implementation status.
+Record observed foundational gaps and papercuts in [COMPLAINTS.md](COMPLAINTS.md)
+under [DEV-59](#dev-59-record-observed-foundational-gaps-and-papercuts).
+
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
+
+For current work selection and corrections, apply `DEV-50` through `DEV-58`:
+[future-only TODOs](#dev-50-todos-contain-only-unfinished-work),
+[mathematical representation](#dev-51-a-computational-image-is-not-the-object),
+and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 * * *
 
 ## Preamble design philosophy
+
+**The preamble primarily stitches together, organizes, and composes existing
+mathematics and existing implementations behind one fully owned mathematical
+interface. It is not a mandate to build another computer algebra system from
+first principles.** A feature request ordinarily asks the contributor to make
+an established construction available in the right category, with the right
+objects, maps, hypotheses, and relationships. It does not ordinarily ask the
+contributor to invent or reimplement the algorithm that computes it.
+
+The public language is owned throughout. Sage, GAP, Julia, OSCAR, Singular,
+Macaulay2, PARI/GP, and other suitable maintained systems provide private
+computation. The preamble supplies the mathematical organization and the
+necessary integration between their results and its own objects. A uniform
+interface must make these capabilities compose without requiring the researcher
+to know which engine was called, speak its vocabulary, or handle its objects.
+
+This is the integration philosophy of `sage-categories`, applied to the
+preamble's stricter recursively owned public boundary. Its
+[README](https://github.com/dzackgarza/sage-categories/blob/main/README.md)
+names categories, functors, and universal constructions as the reuse model;
+its [repository-role instructions](https://github.com/dzackgarza/sage-categories/blob/main/AGENTS.md#repository-role-integration-framework-and-engine-delegation)
+make stitching and engine delegation the engineering purpose. The
+[architecture specification](#preamble-architecture-specification) below turns
+that purpose into construction, dependency, and encapsulation contracts.
+
+### Mathematical dependency tracing
+
+**First formulate the addition in mathematics, independently of the current
+implementation. Then unfold the mathematics it needs. Only afterwards select
+its implementation.** This applies to a new operation, category, object,
+morphism, specialization, research example, or repair that introduces new
+mathematical behavior. It is not a preliminary search for a convenient class
+whose existing methods can be made to resemble the requested answer.
+
+Start with the mathematical question a researcher is asking. State the input
+objects and their categories, the desired object or morphism, its defining
+datum or universal property, and the hypotheses under which it exists. Include
+the maps that make the result useful in subsequent mathematics. Establish these
+facts from the project's mathematical specifications and actual mathematical
+sources, not from recalled definitions or the current backend's capabilities.
+
+Express the request in the vocabulary an ideal mathematical API should support:
+sets, indexed families, maps, categories, functors, groups, actions, rings,
+modules, subobjects, quotients, tensor products, schemes, sheaves, complexes,
+and the other standard notions the question actually uses. Pseudocode may
+express this account, but it is mathematical notation, not a claim that the
+displayed Python names exist. Name the mathematical operation before discussing
+classes, storage, registration, adapters, callbacks, or dispatch.
+
+For each notion in that account, recursively ask what makes it meaningful:
+
+- What are its defining objects, operations and laws? What additional datum is
+  supplied, rather than inferred from a property or chosen silently?
+- In which category do its morphisms live? What are their source and target,
+  their composition, and the maps retained by the construction?
+- Which subobjects, quotients, limits, colimits, or other standard constructions
+  does it use? What diagram, indexing object, or equivalence relation defines
+  them, and which existence or preservation hypotheses are needed?
+- Which structure is forgotten, transported, or added? If a construction on
+  underlying objects is used, what theorem supplies the desired structured
+  object and its maps? Faithfulness alone does not supply that theorem.
+- Which properties refer to which mathematical object? Specify, for example,
+  the notion of integrality or reflexivity in use rather than transferring a
+  familiar property name between unrelated theories.
+- What do these prerequisites themselves require, down to the chosen
+  set-theoretic and categorical foundations: sets and families, functions,
+  relations, objects and morphisms, identities and composition, and the
+  relevant universal constructions? Retain size and finiteness hypotheses;
+  a category is not assumed to have a finite enumerable set of objects.
+
+The result is a mathematical dependency account, not a flat list of associated
+subjects or a list of files to create. Each dependency must explain what datum,
+map, theorem, or construction it supplies to its dependent notion. A phrase
+such as "needs category theory" does not explain the dependency. Neither does
+adding a class named after the missing notion.
+
+#### Unfold through established foundations, not repeated reconstruction
+
+The trace must reach the foundations, but it need not rewrite their definitions
+for every leaf. Follow and cite an existing source-backed mathematical account
+when it already unfolds a prerequisite. Make the path to that account explicit;
+do not stop at an unexplained term such as module, action, or sheaf because a
+similarly named class exists. Expand precisely the uncertain or new part of the
+dependency account, and retain consequential choices at the existing mathematical
+declaration or specification. No separate trace registry is required.
+
+Distinguish three sorts of dependency without weakening any of them:
+
+- **Defining mathematics:** what the requested object and maps mean, and the
+  general theory needed to express them. These requirements do not shrink to
+  match the current implementation.
+- **A computational realization:** the additional hypotheses, presentation,
+  coordinates, resolution, cover, or finiteness that a selected algorithm uses.
+  Its comparison with the defined object is part of the obligation.
+- **A related extension:** a broader theory or further research question not
+  required by this request. Record a concrete discovered need when appropriate,
+  but do not make every mathematically related generalization a prerequisite.
+
+Different presentations of the same mathematics may yield different computation
+routes. Establish their comparison rather than treating the easiest one as the
+definition. Conversely, do not demand every possible computational route before
+using one justified route. For example, a particular sheaf-cohomology computation
+may use an acyclic cover while another uses a resolution. The underlying sheaf
+and complex categories and the comparison remain mathematical requirements;
+this does not force every calculation to construct a spectral sequence. An
+unimplemented required general interface remains owed even when one computation
+can already be performed.
+
+#### An example of the reasoning, not a prescribed workstream
+
+Consider a request involving an equivariant morphism of modules. The existing
+[action-functor account](src/dzack_research/preamble/categories/functors/group_actions.py)
+describes actions as functors and forgetting the action as evaluation. A
+mathematical trace can therefore begin as follows:
+
+```text
+Requested: a morphism between two R-modules with G-actions.
+Needed: the two R-modules, their G-actions, and an equivariant linear map.
+Actions: functors from the one-object category BG to R-modules.
+Maps: natural transformations between those functors.
+Unfold BG: the group, its elements, multiplication, identity, and inverses.
+Unfold R-modules: the ring, underlying additive groups, and scalar actions.
+Unfold both: underlying sets, functions, products, and their defining laws.
+Unfold the categorical language: objects, Homs, identities, composition,
+functors, and naturality, with the actual source and target of each map.
+```
+
+If the request also asks for a kernel, scalar change, or invariant submodule,
+continue the trace through that construction and its hypotheses. Do not append
+an unrelated collection of matrix routines. The point is to identify which
+general mathematics supplies the requested result, so that a module action,
+a geometric action, and another structured action can share the appropriate
+theory without pretending their computations are identical.
+
+The same reasoning applies in geometry, homological algebra, arithmetic,
+polyhedral geometry, and every other preamble domain. A sheaf operation unfolds
+through its site or space, covering and restriction data, category of values,
+and relevant functors. A metric or convex construction must specify its space
+and geometric hypotheses before importing a Euclidean computation into another
+geometry. These are examples of how to ask the questions, not a fixed list of
+foundations to implement on every task, and not a toric-cohomology checklist.
+
+#### Compare the mathematical account with the available language
+
+After the mathematical trace, inspect the owned declarations, generated
+reference, live source and consumers, and then the relevant maintained packages.
+For each required notion, establish whether the available path supplies its
+defining data, maps, hypotheses, inherited structure, and computational case.
+The name of a method, a numerical answer, a category label, or a foreign engine
+object is not sufficient evidence that the mathematical prerequisite exists.
+
+Distinguish a missing general notion from a missing operation on an existing
+notion, a missing comparison or inherited datum, a specialization that bypasses
+its foundation, and an unavailable computational case. These require different
+repairs. In particular, an operation can exist in Sage while remaining absent
+from the owned mathematical language; that calls for integration, not reinvention.
+An API may also express the correct object while a requested decision procedure
+is unavailable or undecidable. Do not confuse that with nonexistence of the object.
+
+When this comparison exposes an actual gap, record it in
+[COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing general
+mathematics and the dependency path that exposed it, not only the failing leaf
+method. Search broadly enough to distinguish absent machinery from undiscovered
+machinery; record the inspected boundary and unresolved questions honestly.
+The complaint should let another mathematician understand the required theory
+without first understanding this repository's implementation.
+
+Then select the remaining implementation delta under `OWN-01` and `DEV-56`.
+Repair the required foundation through its owner and connect the real consumer.
+Record newly discovered independent needs without silently expanding the active
+task. Do not turn the trace or complaint into a substitute for a repair already
+required by that task. Equally, do not suppress a foundational finding merely
+because it is outside the file, workstream, or session currently being edited.
+
+### What the preamble contributes
+
+The distinctive work is making separate capabilities form one usable mathematical
+language. That includes identifying the correct owner of an operation, retaining
+the data that defines an object, transporting additional structure, constructing
+the maps that relate results, and reconciling engine representations with those
+requirements. This is substantive mathematical design even when the final
+implementation consists mostly of declarations and short compositions.
+
+For a typical feature, the intended contribution consists of:
+
+- An owned mathematical declaration with its defining data and hypotheses.
+- Construction through existing categories and sanctioned constructors.
+- Reuse of inherited operations, structural functors, and universal maps.
+- A private integration of a suitable maintained computational operation.
+- Complete raising of results, including elements and constituent maps.
+- Mathematical specimens that distinguish the requested construction from a
+  plausible substitute, executed only in the authorized verification phase.
+
+These responsibilities do not imply a new file, class, or adapter for every
+feature. An existing owner may already supply several of them, and an existing
+adapter may already contain the needed computation. The contribution is the
+actual missing integration, not a restatement of everything the dependencies do.
+
+### Two kinds of reuse are required together
+
+**Mathematical reuse** means deriving behavior from structure already represented
+in the category framework. A differential graded algebra uses the common graded
+algebra and complex structures. A special localization uses the general
+localization construction. A new structured category uses the existing object,
+element, morphism, and functor machinery rather than reimplementing them under
+new names. The hypotheses that justify inheritance or transport remain part of
+the mathematics; a forgetful functor does not preserve every construction merely
+because it forgets structure.
+
+**Computational reuse** means leaving established algorithms with systems that
+already maintain them. A generic owned cohomology interface does not justify a
+new local homology algorithm. A common owned category does not justify rebuilding
+finite-diagram or path-reduction computations. The same prior-art requirement
+applies at the framework level as at a specialized mathematical level.
+
+Neither kind substitutes for the other. Calling Sage directly from a specialized
+constructor can reuse an algorithm while bypassing the owned mathematical
+construction. Conversely, expressing the right mathematical definition in a
+generic module can still duplicate an entire maintained computational system.
+The intended architecture combines a shared semantic construction with suitable
+maintained computations behind its private boundaries.
+
+**Owning an API does not mean owning the algorithm; delegating the algorithm does
+not mean surrendering the API.** All publicly reachable constituents remain
+preamble objects. A private engine can compute a presentation or representative,
+but its result must become the owned object with the structural maps the public
+contract requires. Neither a thin facade over foreign objects nor a fresh
+implementation of all their arithmetic satisfies this division of responsibility.
+
+### Shared foundations should make later work smaller
+
+The framework exists so that a new mathematical specialization supplies its new
+data and immediate structural relationships, then receives the consequences from
+the existing construction machinery. The author of a formed module should not
+also implement general set behavior. A geometric cohomology consumer should not
+also implement general module kernels. A new action should not bring another
+implementation of identity, composition, or scalar change.
+
+When several apparent methods require the same missing foundation, treat that
+foundation as the common dependency. Supply it at its owner, connect the first
+real consumer, and let other consumers use it. Do not preserve a method-by-method
+backlog that assumes every consequence needs an independent implementation.
+Equally, do not use the word foundation to justify constructing an entire new
+framework before the selected mathematical operation can begin. Reuse the
+available framework and repair the exact prerequisite that the consumer needs.
+
+A claim of reusable foundations must be visible in a real consumer. The new
+construction should obtain its data, maps, and inherited operations through the
+shared route. Merely placing duplicate algorithms in one file, adding an abstract
+base, or declaring a category does not establish that later work has become
+simpler. If each new specialization still needs to understand transitive runtime
+initialization or reconstruct structural maps, repair the framework contract.
+
+### Select dependencies by the responsibility they can discharge
+
+A computation package need not implement the preamble's class compiler, public
+ontology, or whole research workflow to be useful. Ask whether it supplies the
+specific computation with the required inputs, hypotheses, and outputs. A
+different object model or method spelling normally calls for an adapter, not
+rejection of the computation. A result missing necessary maps calls for further
+capability research or a precise integration decision, not an unsupported claim
+that an invariant is the full construction.
+
+The [sage-categories complaints](https://github.com/dzackgarza/sage-categories/blob/main/COMPLAINTS.md)
+illustrate why this separation matters: inability to use CAP as an abstract
+Python class compiler was treated as a reason to discard its concrete category
+computations too. The relevant principle is responsibility-specific evaluation.
+Inspect the shared framework, Sage, and the appropriate specialized packages for
+their respective jobs; no single dependency has to replace the whole project.
+
+The preamble can coordinate more than one engine through the existing private
+bridges. Requiring an unnecessary direct connection between every pair of
+engines creates work that the mathematical task did not require. Conversely,
+inventing a new bridge when a suitable one exists transfers another maintained
+responsibility into this repository. Integration follows the established
+transport owners and raises owned values before returning to mathematical code.
+
+Search for the full semantic operation, not just its easiest primitive. A
+homology package can discharge more responsibility than a matrix routine used
+inside a home-written homology implementation. A module-presentation operation
+can discharge more than a long local sequence of intermediate syzygy operations.
+Use the highest suitable maintained operation that supplies the actual contract;
+compose established operations when no single call does. The
+[computation references](#existing-computation-references) are starting points,
+not a reason to restrict discovery to the first familiar engine.
+
+### Integration code has a specific job
+
+Local code is justified by the semantic difference between an existing capability
+and the owned operation. Typical differences include expressing the source and
+target as owned objects, reconciling grading or variance conventions, preserving
+chosen presentation data, constructing the required comparison maps, and
+converting complete results into their owned parents. State that difference at
+the construction or adapter that owns it.
+
+An adapter is not a place where arbitrary new algorithms become acceptable by
+being hidden. Renaming a computation, moving it to a private helper, translating
+it into Julia, or putting it inside the generic category layer does not transfer
+its maintenance to an upstream project. A dependency import also proves no such
+transfer if the repository still implements most of the dependency's job itself.
+Review which system actually performs the semantic operation.
+
+Some integration is necessarily substantial. Engine presentations can differ,
+maps may need transport, and exactness or coefficient hypotheses may differ.
+Investigate that difficulty rather than assuming every operation is a one-line
+call. But the difficulty must be an identified semantic or integration gap, not
+an unexamined presumption that locally implementing familiar mathematics is the
+normal route. Fix defective packaging or bridges at their established owner;
+they are not mathematical evidence that a replacement algorithm is necessary.
+
+### Invention is an explicit research responsibility
+
+The repository supports mathematical research; this philosophy does not prohibit
+new mathematics. It distinguishes a research contribution from the ordinary
+engineering work of exposing established mathematics. A request to make an
+existing construction available does not silently authorize a new algorithm,
+new correctness argument, or new long-term maintenance obligation.
+
+When the relevant mature systems and standard compositions do not supply the
+required computation, state the precise remaining gap. Preserve the original
+mathematical domain while distinguishing the representations and cases for which
+an algorithm exists. General undecidability does not invalidate an available
+specialized algorithm, and a useful special case does not justify claiming a
+general decision procedure.
+
+Owning a genuinely new nontrivial algorithm requires the deliberate decision in
+`ENG-06`, its source-grounded mathematical contract, and its own correctness
+burden. The decision concerns that algorithm, not permission to rebuild adjacent
+infrastructure. Discovery can establish that the operation needs further research;
+it cannot turn an unmet interface into a guessed answer, a weaker substitute, or
+an assertion that the requested mathematics does not exist.
+
+### Progress means useful composition with controlled ownership
+
+Assess a feature by what mathematical work a researcher can perform through the
+owned interface, whether the result retains its required structure, and which
+system maintains each necessary computation. This includes the cost imposed on
+future changes: a shared correction should reach its consumers through their
+existing contracts rather than require the same repair in every theory.
+
+More locally implemented mathematics is not inherently more progress. A feature
+that duplicates a mature algorithm adds a correctness and maintenance burden
+even when its examples give the right answers. Fewer lines are not inherently
+better either: deleting structural maps or exposing raw engine results makes
+the implementation shorter by abandoning the contract. The objective is full
+mathematical capability through principled composition, not a source-line quota,
+dependency count, passing-test count, or administrative completion signal.
+
+Evaluate work over time against that objective. Identify the new usable
+construction, the existing capability reused, the necessary local integration,
+and whether later work preserves those boundaries. An unexpectedly prolonged
+implementation warrants revisiting missing reuse and structural dependencies;
+elapsed time alone does not prove reinvention. Returning repeatedly to local
+repairs while retaining the same bypass is not a forward trajectory merely
+because each repair is individually substantive.
+
+### Interactive discovery is the user-facing consequence
 
 The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations they own.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
 
@@ -55,6 +425,664 @@ Write the example at the existing owning test surface, subject to the expectatio
 Keep the category declaration, constructor signature, and executable contract as the discoverable source; derive reports from them.
 
 These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, ownership, locality, and dependency-direction model to new code even when no existing example names the exact violation.
+
+## Preamble architecture specification
+
+This section is the authoritative specification of construction ownership,
+entrypoints, encapsulation, and computational delegation in the preamble.
+It applies to new features, repairs, internal consumers, engine adapters,
+catalogues, and session integration. An importable implementation is not thereby
+a sanctioned entrypoint. A policy permitting private implementation machinery
+does not permit a second mathematical API.
+
+`AGENTS.md` routes contributors here. The category declaration, constructor,
+and their docstrings give each operation's concrete contract; this specification
+gives the architecture those declarations must realize. TODOs contain only the
+unfinished delta to that architecture. They do not own architectural decisions
+that would disappear when an item is completed. Historical proposals and examples
+are reference material, not exceptions to this contract.
+
+### Ownership and permitted dependencies
+
+| Layer | Owns | Permitted dependency | Forbidden responsibility |
+| --- | --- | --- | --- |
+| Session and notation | The selected preamble language | Owned mathematical entrypoints | Backend exports, adoption helpers, alternative constructor languages |
+| Mathematical categories and constructions | Defining objects and maps, hypotheses, elements, functorial behavior, public result types | Immediate mathematical owners and their sanctioned operations | Engine data inspection; reimplementation of inherited structure |
+| Shared categorical runtime | Construction dispatch, generated owned types, cooperative initialization | Its declared framework interfaces and private host primitives | Theory-specific branches, backend mathematical identity, a second category graph |
+| Private computation adapters | Lowering, established engine calls, representation correspondence, raising | Owned semantic inputs and the selected engines' supported interfaces | Public mathematical identity or taxonomy; raw results returned to mathematical consumers |
+| External engines | Their maintained computational algorithms and internal representations | Their own dependencies and supported bridges | Defining the preamble's public API or accepting owned objects as foreign parents |
+
+The shared framework boundary remains `sage-categories`: reuse its suitable
+released interfaces for generic categorical/runtime work. Repair an existing
+in-repo owner when that is the necessary current integration point; do not build
+a competing framework or import a sibling checkout by filesystem path.
+Suitability for class construction and suitability for mathematical computation
+are separate questions. A package can supply the latter without supplying the
+former.
+
+### `OWN-01`: Name the semantic owner before selecting an implementation
+
+- **Rule:** First perform the
+  [mathematical dependency trace](#mathematical-dependency-tracing), independent
+  of the implementation's current shape. Then read its defining category, immediate
+  structure owners, current entrypoints, and consumers. Identify the owned input,
+  output, structural maps, and exact operation needed. Search the megadoc and live
+  source beyond the selected subtree for that operation, then inspect relevant
+  upstream implementations. Reuse both the owned mathematical construction and
+  the maintained computation; satisfying only one half is insufficient.
+  Record actual missing foundations, missing structural relationships, and
+  observed workflow friction in `COMPLAINTS.md` under `DEV-59`, even when found
+  outside the selected implementation task. The complaint states the mathematical
+  need; it does not authorize a bespoke replacement or a change of scope.
+- **Rationale:** A private Sage call can bypass an owned localization just as a
+  correctly named owned kernel can conceal a redundant local elimination algorithm.
+- **Violation Example:** Start a geometry-specific matrix kernel because the
+  selected geometry file does not implement kernels; reject CAP's computational
+  categories because CAP does not generate Python classes.
+- **Correct Example:** Geometry asks the owned complex for cohomology; the complex
+  and module owners supply the structure, and their private adapters reuse an
+  applicable established homology or module algorithm.
+
+### `OWN-02`: Every construction route converges on one semantic constructor
+
+- **Rule:** Each mathematical construction has one authoritative construction
+  contract at its owning category or object. Operator notation, literal ingress,
+  catalogue specimens, functor images, direct morphism construction, and raised
+  engine results establish that same contract. Specialized routes supply the
+  general constructor's defining datum; they do not allocate an alternative
+  parent and attach enough methods to resemble its output.
+
+  The public spelling follows `ARC-07` and `ARC-12`: morphisms are asked through
+  `Mor`; operations are asked of their owners. A private implementation function
+  is not a second public constructor. A named convenience route requires an
+  actual mathematical input form and factors through the owner. No `from_engine`,
+  `from_raw`, `trusted`, `unchecked`, or validation-disabling route admits weaker
+  data. Host allocation and `_element_constructor_` implement this contract;
+  they do not exempt a caller from it.
+- **Rationale:** One semantic funnel makes an invariant apply to every way an
+  object is obtained, instead of making correctness depend on caller diligence.
+- **Violation Example:** The direct module constructor establishes a scalar
+  action, but the backend-result constructor returns a parent without it.
+- **Correct Example:** The owner establishes the defining action once; each
+  supported representation supplies that action through the same construction.
+  Backend specialization changes computation, not the constructor obligations.
+
+### `OWN-03`: Construction establishes all inherited data before exposure
+
+- **Rule:** Each category level introduces only its own mathematical datum and
+  constructs through its immediate structure owners. The returned object has
+  every datum required by its actual placement, including its element and
+  morphism structures. Accessors recover that established datum; they do not
+  reconstruct it from descendants, probe for hidden state, or repair placement
+  when first called. Lazy realization is allowed only from complete defining
+  data with a fixed owned codomain, not as delayed provision of missing structure.
+
+  A property refinement retains the existing data. Adding a choice, action,
+  multiplication, framing, or presentation supplies that structure through its
+  constructor. Category membership alone never supplies missing data. The same
+  rules apply to zero objects, empty families, identity maps, and boundary degrees.
+  A specialization threads that construction by honest inheritance or composition
+  with its actual owned instance, as required by `OWN-14`; equivalent independent
+  implementations do not satisfy this rule.
+- **Rationale:** Inherited method names without inherited construction data make
+  invalid objects available for subsequent features to build upon.
+- **Violation Example:** A DGA gets a cochain-complex category label but its
+  differential interface cannot supply the zero components its declared grading
+  requires; a formed object implements its own set operations.
+- **Correct Example:** The DGA construction supplies the graded module and
+  differential contract, then adds multiplication; generic complex operations
+  consume that same differential. Each lower level owns its own inherited data.
+
+### `OWN-04`: Public ownership is recursive and includes implicit operations
+
+- **Rule:** Every mathematical value reachable through a public preamble operation
+  is owned. This includes coefficients, base rings, indexing sets, family values,
+  iterated elements, morphism endpoints, structural maps, cycles, boundaries,
+  quotients, chosen representatives, and results of arithmetic and coercion.
+  A lazy family or callable must return owned values when evaluated; owning its
+  outer container is not enough. Public coordinate objects are themselves owned
+  mathematics tied to their chosen framing, never foreign arrays.
+
+  Public signatures, inherited methods, parser bindings, introspection-visible
+  conveniences, and serialization/reconstruction routes obey the same closure.
+  Python syntax/support values expressly allowed by the session contract are
+  not permission to return foreign mathematical values. There is no exception
+  for small integers, singleton rings, fast arithmetic, or a backend's
+  particularly convenient element type.
+
+  Encapsulation hides representation, not the mathematics: the defining action,
+  form, framing, inclusion, projection, and other required structure remain
+  available through their owned APIs. Returning opaque handles in place of
+  these objects is not stronger encapsulation.
+- **Rationale:** One reachable foreign constituent gives every downstream consumer
+  a second API even when the outer parent appears owned.
+- **Violation Example:** An owned cohomology module returns Sage cycle vectors;
+  an owned family yields GAP elements; inherited arithmetic returns Sage scalars.
+- **Correct Example:** A cycle representative is an element of the owned cycle
+  module, its inclusion lands in the owned complex component, and its quotient
+  image has the owned cohomology module as parent.
+
+### `OWN-05`: Private means confined to a named owner, not merely underscored
+
+- **Rule:** Store private representation fields only at their owning runtime or
+  adapter boundary. Mathematical consumers use owned public operations, including
+  when the consumer lives in the same repository or file. An underscore, a helper
+  module, a friend-like import, or omission from `preamble.all` is not permission
+  to access another owner's storage. Do not expose raw state through a newly
+  public accessor, a neutral name such as `data`, an iterator, or a closure.
+
+  A protected framework contract must be declared at its owner with its exact
+  purpose, permitted implementing/calling roles, input/output types, maintained
+  invariants, and reason ordinary public operations cannot implement that
+  framework responsibility. It is invoked through the designated dispatcher.
+  A comment at a consuming call site cannot create that authority. Protected
+  mathematical contracts exchange owned values. Raw handles may move only among
+  helpers of the same declared private computation/transport boundary; they do
+  not cross into another mathematical subsystem.
+- **Rationale:** Broad permission for a documented private call makes every
+  inconvenient public contract optional.
+- **Violation Example:** A lattice module imports a ring's private engine accessor
+  and documents the import as a protected extension so it can run its own algebra.
+- **Correct Example:** The ring or module owner exposes the missing mathematical
+  operation. Its private adapter may share transport helpers internally while
+  mathematical callers receive only the owned result.
+
+### `OWN-06`: Engine inspection is local to an already selected computation
+
+- **Rule:** Mathematical dispatch follows owned structure and hypotheses. Only
+  the designated adapter may inspect foreign representation types or invoke
+  engine-specific APIs after the owned operation is selected. Prefer supported
+  upstream APIs. If an upstream private function is genuinely required, first
+  check the public alternatives; document the exact upstream symbol, source,
+  assumptions, and consuming adapter at that adapter's declaration. This grants
+  no permission to inspect unrelated preamble internals or to export that function.
+
+  No dynamic attribute forwarding, blanket delegation of unknown methods,
+  runtime class mutation, public engine selector, backend option bag, or raw
+  adoption constructor belongs on an owned object. Private host initialization
+  and dispatch hooks are runtime implementation contracts, not escape routes.
+- **Rationale:** Foreign implementation details need one repair site when upstream
+  changes, and must not become the language used by mathematical consumers.
+- **Violation Example:** Ordinary toric code spreads calls to private Sage sheaf
+  helpers through several consumers; `__getattr__` forwards missing owned methods
+  to a Sage parent.
+- **Correct Example:** One toric adapter calls the source-grounded Sage helper
+  when no suitable public operation supplies the needed data; it raises the
+  result through the owned complex construction before returning.
+
+### `OWN-07`: Raise results through the same construction without losing maps
+
+- **Rule:** A private adapter lowers already-owned defining data, performs the
+  engine computation, and raises the result through the relevant owned
+  construction. Preserve the selected base ring, grading, action, presentation,
+  and structural arrows. Record actual comparison morphisms whenever a change
+  of representation requires them. An engine normal form cannot replace a
+  chosen presentation silently. Matching an invariant such as dimension does
+  not supply the required chosen isomorphism or presentation-comparison map.
+
+  The computation and construction steps must not recurse: raising computed
+  defining data enters the same semantic constructor without requesting the same
+  engine computation again. Make that dependency explicit at the owning methods;
+  do not solve recursion with a second unchecked constructor. If an engine
+  supplies only dimensions, it supplies a dimension computation, not class
+  representatives or induced maps. Obtain the missing data through an existing
+  suitable operation before claiming the richer construction.
+- **Rationale:** Correct numerical answers do not reconstruct the relationships
+  that subsequent mathematics needs.
+- **Violation Example:** Wrap the dimension of cohomology in a fresh vector space
+  and expose it as the cycle quotient; discard basis-change maps during lowering.
+- **Correct Example:** Raise the computed cycle and boundary data into the owned
+  modules and maps, retain their quotient map, and derive the induced map from
+  the supplied chain map through those structures.
+
+### `OWN-08`: Reuse the highest suitable maintained operation
+
+- **Rule:** Search by mathematical operation, equivalent standard formulations,
+  required maps, and coefficient hypotheses, not only by the desired Python
+  method name. Inspect existing dependencies first, then appropriate maintained
+  systems. Compare the full result contract: exactness, characteristic, torsion,
+  grading, presentations, representatives, and morphism action where required.
+  Compose established operations when that supplies the contract. Calling one
+  matrix routine inside a new local homology engine does not establish that
+  the existing homology implementations were considered.
+
+  Record the selected upstream operation and its actual uncovered semantic delta
+  at the private adapter or owning construction. For a planned task, record the
+  selection in the unfinished item and retain the durable contract at delivery.
+  A new nontrivial algorithm needs the demonstrated gap and explicit ownership
+  decision required by `ENG-06`. Moving a local algorithm to Julia, Singular,
+  or a generic helper does not make it upstream-maintained.
+- **Rationale:** Mature dependencies reduce the project's algorithmic correctness
+  burden only when they actually own the corresponding computation.
+- **Violation Example:** Rebuild syzygy or chain-reduction logic because a package
+  has an inconvenient return type, a different class model, or missing packaging.
+- **Correct Example:** Adapt an existing module-presentation or homology operation,
+  adding only the owned construction and map conversion that the engine does not
+  supply. Repair a bridge or packaging defect at its existing owner.
+
+### Existing computation references
+
+These are discovery starting points, not claims that one package computes every
+instance. Check the relevant current documentation and local adapter contract.
+
+| Required computation | Existing implementations to inspect |
+| --- | --- |
+| Chain-complex homology and cycle representatives | [Sage chain complexes](https://doc.sagemath.org/html/en/reference/homology/sage/homology/chain_complex.html); its documented implemented homology cases include integer coefficients and fields |
+| Commutative DGA cohomology and products | [Sage commutative DGAs](https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/commutative_dga.html); inspect the grading and degree range of each operation |
+| Toric sheaf cohomology | [Sage toric divisors](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/divisor.html) and [equivariant bundle complexes](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/sheaf/klyachko.html) |
+| Linear categories, presented modules, complexes | [CAP constructors](https://homalg-project.github.io/docs/CAP_project-based/constructors): LinearAlgebraForCAP, ModulePresentationsForCAP, FreydCategoriesForCAP, ComplexesAndFilteredObjectsForCAP |
+| Polynomial and module algorithms | Sage, Singular, Macaulay2, and OSCAR through the existing private bridges; inspect the needed presentation and map outputs, not only an invariant |
+| Standard polynomial-ring completions | [Sage multivariable polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html) and [lazy series](https://doc.sagemath.org/html/en/reference/power_series/sage/rings/lazy_series_ring.html) |
+
+The [sage-categories README](https://github.com/dzackgarza/sage-categories/blob/main/README.md),
+[complaints and reuse catalogue](https://github.com/dzackgarza/sage-categories/blob/main/COMPLAINTS.md),
+and [engine-boundary specification](https://github.com/dzackgarza/sage-categories/blob/main/specs/leaves.md#computation-engine-boundary)
+provide additional discovery context. Their historical findings are not a current
+capability audit, and their framework-specific exceptions do not relax the
+preamble's recursively owned public universe.
+
+### `OWN-09`: Transport through structure, with the actual preservation theorem
+
+- **Rule:** Construct functors on objects and morphisms, with their declared
+  domain, codomain, variance, and required comparison maps. Inherited operations
+  follow those structural functors only where the relevant preservation or
+  creation result applies. Reuse the framework's composition, identities, and
+  universal-construction interfaces; a leaf adds its new datum and genuinely
+  specialized computation, not another implementation of general map calculus.
+
+  Neither forgetfulness nor faithfulness implies preservation of every limit,
+  colimit, quotient, or cohomology operation. State the theorem and its hypotheses
+  at the owner; do not generate runtime boolean proofs of general categorical
+  identities or undecidable equality. Distinct mathematical choices remain
+  distinct even when an engine represents them by the same data.
+- **Rationale:** Generic reuse without its hypotheses can propagate incorrect
+  mathematics just as efficiently as correct mathematics.
+- **Violation Example:** Treat every algebraic cokernel as the cokernel of the
+  underlying linear map; implement scalar extension by changing stored ring
+  fields without transporting the module and its structure maps.
+- **Correct Example:** The relevant quotient owner constructs the required ideal
+  closure before the quotient; scalar extension acts on the module and the
+  defining action or multiplication through the same functorial construction.
+
+### Required construction factorizations
+
+These are semantic obligations, not additional global function names or a runtime
+registry. Each row names the general owner through which its special cases pass.
+
+| Family | Required construction and retained data | Specialization boundary |
+| --- | --- | --- |
+| Limits and colimits | The owned indexing category, diagram, universal cone/cocone, and induced maps under the [general contract](#limits-colimits-and-structured-specialization) | Product/equalizer and coproduct/coequalizer constructions, directed systems, and category-specific realizations implement the same construction through inheritance or composition |
+| Ring localization | The commutative ring's localization at an owned multiplicative submonoid, with its structure map and universal factorization | Element inversion uses the generated submonoid; prime localization uses the prime complement; a domain's fraction field uses its nonzero elements |
+| Scalar change | The existing scalar-change construction along an owned ring morphism, acting on objects and morphisms | Module localization uses the localization ring map; extra algebra/action/form structure is transported under the applicable hypotheses |
+| Completion | The owned inverse system of ideal-power quotients, its transition maps, limit, source map, and projections | Series and adic engines realize supported instances privately; no finite stage becomes the completed object |
+| Complexes and cohomology | The owned graded components and differentials; cycle inclusion, boundary inclusion, quotient, and induced maps | Chain/cochain conventions, coefficient hypotheses, and boundedness belong to the stated construction or computational case, never an implicit matrix convention |
+| Differential graded algebras | The common complex and graded algebra structures, with the differential and multiplication compatibility | Cohomology multiplication is induced through those structures; a commutative-DGA engine does not cover arbitrary DGAs by renaming |
+| Subobjects, quotients, and Homs | The existing inclusion/projection and fixed-endpoint `Mor` constructions | Coordinates enter only through the appropriate chosen framing/presentation and the same morphism constructor |
+
+For localization, use [Stacks 02C5](https://stacks.math.columbia.edu/tag/02C5).
+Locality is a consequence with hypotheses, not a property of every localization:
+prime localization is local, whereas `ZZ[1/2]` retains distinct maximal ideals
+generated by 3 and by 5. For completion use
+[Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9): the objects are the inverse
+limits of `R/I^n` and `M/I^n M`. General completion is not assumed exact; comparison
+with scalar extension requires its stated hypotheses. The limit contract does
+not claim a general algorithm for computing arbitrary inverse limits. This is
+not permission to restrict the general mathematical interface to finite diagrams:
+apply the general contract below and specialize its realization.
+
+### Limits, colimits, and structured specialization
+
+**Place the theory at its most general mathematical owner, then specialize by
+threading that owner through every refinement.** A completion, a directed union,
+or a geometric construction does not own a separate theory of diagrams. This
+section specifies the common architecture; `OWN-14` makes the same threading
+requirement binding on all specialized constructions, not just limits.
+
+#### Diagrams and universal constructions
+
+For an ordinary category `C`, a diagram is a functor `D: J -> C`; maps of
+diagrams of fixed shape are natural transformations. A limit is a terminal
+cone over `D`; a colimit is an initial cocone under `D`. Their structural maps
+and universal factorizations are part of the construction, not optional output.
+Use the definitions in [Stacks, Limits and colimits](https://stacks.math.columbia.edu/tag/002D).
+
+The owned language must express the index category, object and arrow families,
+their source/target and composition, the functor, cone/cocone legs, and maps
+between these objects. All constituents, including lazily returned values, use
+the existing owned categories, Homs, functors and indexed families. A Python
+iterator of engine values is not a diagram. A finite list of arrows does not
+define an arbitrary category without its identities, composites and relations.
+
+Smallness is relative to the declared foundations. Do not confuse small,
+finite, countable, enumerable, and computationally presented. Support arbitrary
+represented small shapes at this level, including parallel arrows and infinite
+indexing; do not define the general interface using integer degrees, a maximum
+stage, a matrix size, or finite traversal. Size hypotheses belong to the
+mathematical contract; representation limitations belong to specific operations.
+
+Establish functoriality, compatibility and universality through the sanctioned
+mathematical constructions and their hypotheses. Do not try to validate an
+infinite diagram by traversing every arrow, or treat a finite sample as proof
+of its laws. Represented input must meet its declared construction contract;
+an arbitrary callable plus a boolean claiming compatibility is not a substitute.
+This is not permission to add an unchecked ingress or a runtime theorem registry.
+
+A chosen universal construction retains its actual diagram and universal
+cone/cocone, with access to their constituents through owned mathematics. Its
+underlying result object alone need not determine its presentation. Distinct
+diagrams may have isomorphic results, or share one canonical result object.
+Keep each construction's data at that construction; never overwrite shared
+object state with the latest caller's diagram. Nor should equality of result
+objects be defined by equality of their chosen presentations.
+
+#### Construction theorems supply general realizations
+
+For a small diagram `D: J -> C`, the following formula constructs its limit
+when the displayed products and equalizer exist:
+
+```text
+P = product over objects j of D(j)
+Q = product over arrows a: i -> j of D(j)
+u, v: P -> Q
+component_a(u) = projection_j
+component_a(v) = D(a) composed with projection_i
+limit(D) = equalizer(u, v), with its induced projections
+```
+
+Thus the appropriate small products and equalizers suffice for small limits.
+Empty products include the terminal-object case. The formula is categorical,
+not an instruction to enumerate all factors or compute all compatible tuples.
+See [Stacks 002N](https://stacks.math.columbia.edu/tag/002N).
+
+The corresponding colimit construction is:
+
+```text
+A = coproduct over arrows a: i -> j of D(i)
+B = coproduct over objects j of D(j)
+u, v: A -> B
+restriction_to_a(u) = coprojection_i
+restriction_to_a(v) = coprojection_j composed with D(a)
+colimit(D) = coequalizer(u, v), with its induced coprojections
+```
+
+The appropriate small coproducts and coequalizers suffice; the empty coproduct
+supplies the initial object. Products alone do not impose compatibility, and
+coproducts alone do not impose identifications. See
+[Stacks 002P](https://stacks.math.columbia.edu/tag/002P).
+These displays are mathematical pseudocode, not new public factory names.
+
+Implement these theorem-backed realizations through the common construction's
+sanctioned specialization boundary. Do not introduce a competing public
+product-based limit API. Products and equalizers are themselves limits, so an
+implementation must distinguish their defining diagram from a request to solve
+that diagram again. The primitive category-specific realization supplies its
+universal data to the common constructor without recursively requesting itself.
+The same rule applies to coproducts and coequalizers. A general reduction is
+not an excuse for constructor recursion or an unchecked allocation path.
+
+For every specialized realization, identify the applicability theorem and the
+actual computational operations it delegates to. An optimized realization
+overrides the realization step of the inherited general construction, or
+operates through the composed general instance under its declared contract.
+It does not maintain a parallel limit implementation. Both the generic reduction
+and its specialization use the same diagram, map, restriction, and
+universal-factorization machinery. Select the applicable realization
+by the established category/representation mechanism, not by catching an error
+and silently trying a mathematically different construction.
+
+#### Directed systems and finite restrictions
+
+Use the common diagram language for directed and inverse systems. For a directed
+poset `I`, direct systems use arrows `i -> j` for `i <= j`; inverse systems
+use the opposite direction. Filtered categories generalize directed posets and
+need not have at most one arrow between two objects. Their hypotheses must not
+be replaced by a sequence convention. See
+[Stacks, Filtered categories](https://stacks.math.columbia.edu/tag/002V).
+
+Restriction is precomposition: an indexing functor `u: K -> J` gives `D o u`.
+Retain `u` and the restricted diagram. In particular, expose requested finite
+restrictions of represented systems without evaluating the whole infinite
+diagram. A sequential system admits finite prefixes; a general directed system
+requires explicit selected indexing data, not an invented canonical prefix.
+A finite selection of objects is not necessarily a finite full subcategory:
+its arrow sets can still be infinite. State what was selected.
+
+When the relevant constructions exist, restriction induces
+
+```text
+limit_J(D) -> limit_K(D o u)
+colimit_K(D o u) -> colimit_J(D)
+```
+
+These directions follow the universal maps, not a common untyped projection
+operation. Diagram transformations induce maps between limits and between
+colimits, preserving identity and composition. Reindexing comparisons follow
+the appropriate initial/cofinal theorem when an isomorphism is claimed; neither
+a finite sample nor a convenient subsequence is automatically sufficient.
+See [Stacks, induced maps](https://stacks.math.columbia.edu/tag/002D).
+
+Separate the full system, a restricted system, a stage object, the (co)limit of
+a restriction, and finite information about an element. A stage can itself be
+infinite. Finite restriction never turns the full object into a finite stage.
+In inverse systems, compatible finite data need not extend to a compatible
+global family. In direct systems, later arrows may identify elements distinct
+at earlier stages; coprojections are not automatically injections.
+
+For completion, the maps to `R/I^n` come from the retained quotient diagram;
+the ideal and its powers supply the interpretation of a stage as precision.
+That interpretation is completion-specific, while restriction and comparison
+are general. Increasing precision cannot invent a lift from a bare residue or
+certify equality from finitely many agreeing components (`OWN-10`).
+
+#### Structured categories specialize the same mathematics
+
+In `R`-modules, equalizers are kernels of differences and coequalizers are
+cokernels of differences. Consequently the displayed reductions become a
+submodule of a product and a quotient of a direct sum. Preserve the inclusion,
+projection and universal maps, not just a module with matching invariants. The
+direct-system quotient and its maps are described in
+[Stacks 00D5](https://stacks.math.columbia.edu/tag/00D5).
+
+Use the actual categorical products and coproducts. In commutative rings,
+products are ring products, while binary coproducts are tensor products over
+`ZZ`; the pushout of commutative ring maps `R -> A` and `R -> B` is
+`A tensor_R B`. They are not coproducts of underlying modules. See the explicit
+cones and universal maps in
+[Mathlib's commutative-ring constructions](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Category/Ring/Constructions.html).
+Do not transfer this commutative formula to arbitrary associative algebras.
+
+Limits computed on underlying objects and colimits requiring further algebraic
+or sheaf constructions must follow their own creation/preservation theorems
+(`OWN-09`). An infinite product of finite-rank modules need not have finite
+rank; a subcategory restriction must not silently change the target category.
+Use maintained algebra, module, series, and geometric computations privately.
+The general constructor owns the mathematical relationships, not a second CAS
+implementation of every product or quotient.
+
+#### Representation, existence, and homotopical structure
+
+Keep distinct the ability to represent a diagram, the existence of its universal
+object in the declared category, a chosen representation of that object, and
+the computability of a requested operation. A source-backed construction may
+represent an infinite universal object exactly without an eager enumeration or
+general equality algorithm. Conversely, retaining a diagram alone is not a
+proof of existence in a category lacking that limit. A formal system must stay
+identified as a system; it cannot be relabeled an existing object of that
+category. Any use of a different completion of the category requires its actual
+mathematical construction and declared target.
+
+Ordinary strict limits and homotopy limits are different mathematical requests.
+Name the relevant category, equivalences and coherence before selecting their
+realization; the ordinary equalizer formula is not a homotopy-invariant recipe
+merely because its factors are spaces. Reuse established homotopical machinery
+with its hypotheses. See
+[Shulman, Homotopy limits and colimits and enriched homotopy theory](https://arxiv.org/abs/math/0610194).
+
+For example, sequential spectra have pointed spaces and bonding maps
+`Sigma X_n -> X_(n+1)`, with morphisms compatible with those maps; they are not
+ordinary sequences `X_n -> X_(n+1)` obtained by forgetting suspension. Retain
+the suspension/loop relationship and the chosen spectral and homotopical
+structure when expressing finite portions or universal constructions. See
+[Malkiewich, Definition 2.1.1](https://people.math.binghamton.edu/malkiewich/spectra_book_2026Jan09.pdf#page=84).
+This example sets a generality boundary, not a prerequisite to implement stable
+homotopy theory before repairing ring completion.
+
+#### Evidence that a specialization remains threaded
+
+For a selected realization, follow its inherited or composed general object
+from construction through stage access, restrictions, universal factorization,
+and a nonidentity induced morphism. All use the same diagram and structural
+maps. A comparison with another valid realization respects those maps; agreement
+of dimensions, printed expressions, or finite residues is insufficient.
+
+Distinguishing specimens include a diagram with parallel arrows, both an empty
+limit and empty colimit, a directed index with incomparable elements, an inverse
+system with non-surjective transitions, and a direct system with non-injective
+transitions. Select specimens for the contract being delivered, preserve broader
+unfinished cases in TODO, and follow terminal T for execution (`DEV-58`). Record
+observed missing foundations in COMPLAINTS, not invented failures inferred merely
+from the breadth of this specification.
+
+### `OWN-10`: Representation state cannot alter mathematical meaning
+
+- **Rule:** Defining owned data is authoritative. Backend workspaces, caches,
+  finite precision, normalization state, and transport handles are private
+  realizations of that data. Reuse existing cache/lifetime mechanisms with keys
+  respecting the owned construction's actual choices. Replacing an engine,
+  increasing precision, or populating a cache does not by itself change the
+  object's mathematical identity, defining maps, or category. A newly established
+  mathematical property may justify refinement; engine identity never does.
+
+  Exact equality, zero, membership, and hashing cannot be inferred from a lossy
+  projection or an engine's inconclusive boolean. Apply `DEV-51` and `DEV-52`.
+  Unsupported computation fails at its documented boundary; it never returns
+  a foreign object, an approximation under an exact name, or an invented answer.
+- **Rationale:** Private storage otherwise becomes a second source of mathematical
+  truth and can contradict the structure the constructor established.
+- **Violation Example:** Treat one truncated series residue as the exact element,
+  or cache two differently framed objects under the same engine normal form.
+- **Correct Example:** Retain the exact defining object and its projection maps;
+  precision describes available computational information about its elements.
+  A new presentation comes with the owned change-of-presentation map.
+
+### `OWN-11`: A missing shared operation is repaired at its owner
+
+- **Rule:** If the sanctioned path is absent, recursive, awkward, slow, or
+  insufficient, identify the exact missing datum or operation at its owner.
+  Repair that prerequisite and route the selected consumer through it. Source
+  locality, elapsed effort, a passing example, or a smaller diff cannot justify
+  a second constructor, a private-field read, or a copied algorithm. Existing
+  violations are repair sites, not precedents for new code.
+
+  Keep the repair bounded to the actual dependency and its affected consumers.
+  Do not prebuild all of category theory, add a new registry, or start a framework
+  rewrite to avoid the concrete construction. If the required owner cannot be
+  changed within the granted scope, report that owner and obstruction; continue
+  independent work, but leave the dependent capability unfinished. An exception
+  requires an explicit user architectural decision, recorded here and at the
+  affected contract, not a worker-authored justification for convenience.
+- **Rationale:** Otherwise the easiest local route becomes the rewarded route,
+  while each apparent feature increases future repair and maintenance work.
+- **Violation Example:** Add another direct fraction-field allocation because
+  routing through localization would require repairing localization.
+- **Correct Example:** Complete that localization case and its map, then obtain
+  the fraction field through it; other localization consumers share the repair.
+
+### `OWN-12`: Acceptance includes the path, not just the final invariant
+
+- **Rule:** Review the actual public entrypoint, defining-data construction,
+  inherited operation, private lowering/computation/raising boundary, and a
+  nonidentity induced map where the feature has one. Compare every alternative
+  route touched by the work against the same semantic contract. Reject a correct
+  invariant obtained through an unsanctioned path. A conforming specimen must
+  expose the owned constituents and their mathematical relationships, not merely
+  an outer type, engine call count, or dimension.
+
+  Establish architectural reuse by reading the implementation and upstream
+  contract. Mathematical specimens establish observable behavior; do not turn
+  them into source scanners or mock expectations that a particular helper was
+  called. Respect the protected expectation subtrees and `DEV-58`: written
+  specimens remain unverified until the authorized execution phase. A policy
+  edit specifies the architecture; it does not establish code conformance.
+- **Rationale:** Numerical agreement alone rewards a shortcut that leaves the
+  construction and its future consumers structurally wrong.
+- **Violation Example:** Close a cohomology task after matching Betti numbers
+  while representatives or induced maps still escape to Sage; call a moved
+  private algorithm delegated because its Python caller became shorter.
+- **Correct Example:** Source review follows the shared construction and real
+  maintained algorithm. The mathematical specimen composes the owned inclusion,
+  quotient map, and induced morphism and distinguishes the promised behavior
+  from a dimension-only substitute.
+
+### `OWN-13`: Declarations identify sanctioned entrypoints and private boundaries
+
+- **Rule:** At each construction's existing declaration, document its owning
+  category/object, canonical signature, defining datum and maps, admissible input
+  forms, required output structure, and how each specialization factors through
+  it. At each adapter declaration, document the semantic operation it implements,
+  its owning caller, the upstream operation, representation hypotheses, and
+  lowering/raising correspondence. Keep these contracts beside their source,
+  not in a second constructor registry or manually synchronized status table.
+
+  Public mathematical names describe mathematics. Private implementation classes,
+  allocation helpers, conversions, and adapter-only imported engine symbols use
+  leading underscores and are excluded from public exports. Engine names belong
+  in private adapter names where that makes their boundary clearer, never in
+  public operation names. Internal consumers import the defining owner rather
+  than a session aggregator, and invoke its sanctioned operation rather than an
+  implementation class. Access scope follows the declared role, not the physical
+  file: putting consumer and adapter code together does not authorize raw access.
+- **Rationale:** A constructor or helper whose allowed callers are unspecified
+  becomes an alternate API through ordinary imports and copied examples.
+- **Violation Example:** Export a concrete module implementation because one
+  sibling needs its unchecked initializer; call a raw conversion `normalize`
+  and omit its backend-specific input/output contract.
+- **Correct Example:** The module category documents its presentation constructor;
+  a private adapter documents its one computational responsibility. Their source
+  declarations and exports make the mathematical entrypoint distinguishable from
+  the backend conversion without requiring another policy registry.
+
+### `OWN-14`: Specializations inherit or compose their general construction
+
+- **Rule:** A specialized construction is implemented by honest inheritance from
+  the general owned construction, or by composition with an actual instance of
+  it. Declare which relationship is used at the existing owner (`OWN-13`). This
+  applies to every mathematical refinement, not only the
+  [limit and colimit contract](#limits-colimits-and-structured-specialization).
+
+  Inheritance initializes the general defining datum and retains its operational
+  contract. Overrides supply only the specialized datum or theorem-backed
+  realization. A category label, class ancestry, or copied method body is not
+  enough when inherited operations have missing state or disagree with the leaf.
+
+  Composition stores the actual owned general construction and delegates its
+  general operations to that instance. The specialized object adds its own
+  mathematical structure and the maps relating the two. A diagram accessor or
+  metadata-only object attached to an independent implementation is not this
+  relationship. Neither is a second general object reconstructed for each call.
+
+  Keep a single authority for defining data, universal maps, restrictions and
+  induced morphisms. Do not keep parallel mutable copies in the specialized and
+  general objects. A mathematical comparison between distinct presentations is
+  allowed and must be owned, but an isomorphism does not excuse duplicating the
+  general implementation. Thread specialized computation through the shared
+  constructor without eagerly computing a second, generic realization merely
+  to prove that the architecture was followed.
+
+  Change the shared contract and its dependent consumers together. A leaf may
+  not hide an inherited operation, weaken its inputs, discard its maps, or add
+  a second implementation because the general owner is awkward to use. Repair
+  that owner under `OWN-11`. Runtime optimization changes a realization, not
+  which construction defines the object.
+- **Rationale:** Parallel implementations can agree on one answer while drifting
+  on inherited operations, maps, precision, and subsequent refinements.
+- **Violation Example:** construct a series ring independently, attach an inverse
+  system for display, and separately implement truncation and induced maps; claim
+  that matching a generic limit on examples establishes architectural reuse.
+- **Correct Example:** a completion inherits the chosen inverse-limit
+  construction or contains that construction and delegates to it. A maintained
+  series engine realizes its supported ring operations privately. Diagram
+  restriction and universal maps still come from that same general construction.
 
 ## Corrective implementation style guide (`STY-*`)
 
@@ -3019,6 +4047,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 | Family | Governs |
 | --- | --- |
+| `OWN-*` | [normative architecture](#preamble-architecture-specification): sanctioned construction paths, recursive ownership, encapsulation, and reuse |
 | `ARC-*` | mathematical architecture and ownership |
 | `API-*` | the public mathematical surface of owned objects |
 | `CON-*` | constructors, witnesses, actions, and structural transport |
@@ -4278,6 +5307,9 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `ENG-04`: Native Engine Implementation with Preamble Category Wrappers
 
 - **Rule**: When an algorithm requires multi-step engine computations, implement the engine logic directly in the target engine language (such as Julia/OSCAR or Singular) and wrap it with preamble category interfaces, whenever this reduces complexity or eliminates excessive cross-bridge data transport.
+  First apply `OWN-08`: use an existing suitable high-level engine operation.
+  Native engine glue composes maintained operations; writing a replacement
+  algorithm in the engine's language still requires the `ENG-06` ownership decision.
   The Python mathematical layer should prepare the owned mathematical input, cross once into the engine routine, and reconstruct the owned mathematical output; it should not become a line-by-line orchestration language for the engine's matrices, syzygies, lifts, or stabilizer workspaces.
 
 - **Rationale**: Executes compute-heavy algebra natively in the host engine while exposing a uniform categorical interface to Sage sessions.
@@ -4319,7 +5351,10 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: Durable backend state is private to the owned object or private adapter that owns that computational realization.
   A backend datum has one private accessor or boundary helper at its owning layer; do not create public accessors, aliases, or unrelated direct field reads.
-  A protected crossing used by another owned subsystem must be explicitly documented at its declaration and kept narrower than the public mathematical API.
+  Protected contracts satisfy `OWN-05`: name the owner, permitted roles, exact
+  types and invariants at the declaration. Mathematical subsystems exchange
+  owned values, not raw handles. A comment authorizing a convenient private
+  read is not a protected contract.
 
 - **Rationale**: Multiple ways to reach the same engine are multiple APIs.
   A single visible crossing makes the representation dependency auditable and prevents backend operations from spreading through ordinary mathematical consumers.
@@ -4379,15 +5414,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the owned graph is fixed by mathematics; a private/versioned bridge records each meaningful backend realization and the operations it can supply.  Multiple backend realizations may inhabit the same capability fiber, and updating Sage versions changes only the bridge, not the mathematical ontology.
 
-#### `BND-07`: Choose Incumbent-Library Coupling Deliberately: Owned Semantics, Ephemeral Computation, or Audited Runtime Adoption
+#### `BND-07`: Reuse Engine Computation Without Adopting Its Public Objects
 
-- **Rule**: For each subsystem overlapping Sage/GAP/another incumbent, use exactly the coupling appropriate to the mathematics: (1) own/rewrite the semantic identity layer when the incumbent ontology is what the preamble replaces; (2) use an ephemeral backend realization for large standard algorithms returning owned mathematical data; or (3) adopt/extend an incumbent runtime type only for an adjacent structure whose ontology is mathematically sound and whose inherited surface has been audited for leaks.  Never drift accidentally between these modes.
+- **Rule**: The preamble owns mathematical identity and all public objects;
+  maintained engines own their computations. Private engine representations
+  may be ephemeral or privately cached under `OWN-10`. Reuse of host runtime
+  primitives for generated owned types does not authorize adopting, reclassing,
+  subclassing, or returning an engine's concrete mathematical parent or elements
+  as preamble objects. An audit does not waive `ARC-05`, `ARC-06`, or `OWN-04`.
 
-- **Rationale**: Rewriting large mature algorithms is waste; durably wrapping the very ontology being replaced imports its assumptions; indiscriminate subclassing leaks host vocabulary.  Separating the modes keeps the public mathematics owned while still exploiting mature computation and legitimate host runtime structures.
+- **Rationale**: Algorithm reuse and independent public ownership are simultaneous
+  requirements. Treating runtime adoption as another public ownership mode
+  makes an engine's inherited API an alternate mathematical language.
 
-- **Violation Example**: own a Python Smith-normal-form implementation (Mode 1 where Mode 2 is appropriate); store a Sage ambient-lattice object as the public/private identity of an owned lattice (Mode 3 on the replaced ontology); subclass a backend type without auditing inherited `ambient`/coordinate methods.
+- **Violation Example**: Replace a Sage algorithm with local Smith reduction to
+  obtain owned elements; alternatively, return Sage elements from an owned parent
+  because its concrete runtime type was declared audited.
 
-- **Correct Example**: the preamble owns lattice/subobject/Hom semantics; a private ephemeral Sage/Singular object computes SNF/genus/syzygies and is discarded; an adjacent backend group/matrix/runtime type may be adopted privately when its mathematical role is correct and its leakage is contained by the owned API/bridge.
+- **Correct Example**: The preamble owns the module and its selected presentation;
+  a private Sage/Singular computation returns data that the adapter raises into
+  owned elements and an owned normalization isomorphism through the sanctioned
+  constructor. Sage `Parent`/`Element` primitives may implement the owned runtime
+  without making Sage's concrete modules the public objects.
 
 #### `BND-04`: Never Repair an Ownership Violation with Compatibility Machinery
 
@@ -4462,7 +5510,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
-- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its priorities, remediation, mathematical requirements, organization findings, and work coordination.
+- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
   Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; if the generated document may be stale, run `just preamble-megadoc` and then read the generated output.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
@@ -4948,7 +5996,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: When an assessment enumerates defects and an execution order is written from it, every catalogued defect appears in that order -- as a step, as an explicitly deferred item with the reason, or as a decision that it is not a defect.  A defect that survives the assessment but not the ordering is unowned, and unowned defects grow.
 
-- **Rationale**: Producing the assessment is the visible work and feels like the hard part, so the ordering is written from the severe rows and the rest fall out silently.  Nothing then measures the dropped ones, and every new file adds to them.  The observed instance: of seventeen defects catalogued in [the organization findings](TODO.md#organization-findings), three reached no priority.  One of them was the duck-typed capability probing that grew from 52 recorded sites to 78 in a single day of work on the very subsystem the assessment had examined.
+- **Rationale**: Producing the assessment is the visible work and feels like the hard part, so the ordering is written from the severe rows and the rest fall out silently.  Nothing then measures the dropped ones, and every new file adds to them.  The observed instance: of seventeen defects catalogued in [the historical organization assessment](https://github.com/dzackgarza/research/blob/b5ff721fb94b030a637a527d449e628003c2b842/TODO.md#earlier-assessment), three reached no priority.  One of them was the duck-typed capability probing that grew from 52 recorded sites to 78 in a single day of work on the very subsystem the assessment had examined.
 
 - **Violation Example**: an execution order derived only from the items marked severe; a defect whose absence from the plan is discovered by re-reading the assessment months later.
 
@@ -5013,6 +6061,245 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: choosing a return type because it silences a type error; deciding a Hom belongs in one place because a checker complains about another; letting a failing test dictate the shape of the operation it tests; treating a finding count as the definition of done.
 
 - **Correct Example**: deciding that a rank is a cardinal because ranks can be infinite and the repository owns cardinals, then applying that and using the type checker to find the sites; settling the design in discussion, then measuring.
+
+#### `DEV-50`: TODOs Contain Only Unfinished Work
+
+- **Rule**: Write each TODO from the current implementation and the desired mathematical behavior. Remove delivered work; do not retain checked boxes, completion claims, release histories, or retrospective audits in the queue. The implementation commit records the evidence and reasoning. For a partial delivery, remove only the delivered obligations and retain every required unfinished object, map, hypothesis, and generalization. A newly observed defect gets a new task describing the current source and the required repair, not a reopened historical claim.
+
+  Read the current owner before scheduling it. A stale unchecked row does not establish missing implementation, and an old checked row does not establish correctness. Preserve already supplied constructions as inputs to the remaining work. Under deferred verification, delivery of implementation and written specimens does not discharge the separate terminal execution obligation. Keep that obligation open without retaining a history of implemented tasks.
+
+- **Rationale**: A TODO directs the next action. Mixing it with past work makes future contributors either repeat finished constructions or inherit unsupported assumptions from status labels. Removing completed work must not remove broader requirements that one example did not satisfy.
+
+- **Violation Example**: restoring an old release row to unchecked after discovering a new defect; leaving a completed toric algorithm as work to implement again; deleting the general non-toric requirement because its toric specialization exists.
+
+- **Correct Example**: name the present completion constructor, the finite quotient it currently uses, and the new exact completion behavior required. Keep completed implementation history in git and pending execution in terminal T.
+
+#### `DEV-51`: A Computational Image Is Not the Object
+
+- **Rule**: Before substituting an engine representation or a derived object, identify the mathematical map into that representation and what information it loses. A consumer may infer a property back at the source only with the theorem that makes that inference valid under its actual hypotheses. Implement the object at its mathematical owner and expose projections, localization, scalar extension, or other comparison maps explicitly. A convenient computation cannot silently change the parent, category, or codomain promised to the user.
+
+  Apply this to new instances, not only familiar names: a finite quotient is not a completion; a fraction field is not a prime-local ring; a finite group image is not the group; and cohomology dimensions are not cohomology modules or their induced maps. More methods on the substitute do not recover information it discarded.
+
+- **Rationale**: The same wrong representation can produce many individually plausible downstream operations. Each new consumer then compounds one foundational error instead of extending the intended construction.
+
+- **Violation Example**: computing in an exact quotient by a power of an ideal and advertising its arithmetic as completed-ring arithmetic; deciding a local-ring unit question after moving to the fraction field.
+
+- **Correct Example**: construct the completion and its separate finite quotients, with source and projection maps. A polynomial image can be nonzero in the completion while its projection to one finite quotient is zero. Use the definition in [Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9).
+
+#### `DEV-52`: Exact Decisions Require Sufficient Information
+
+- **Rule**: State what makes each implemented equality, zero, unit, membership, or isomorphism decision decidable on its represented input. Finite agreement proves agreement at that finite level; it does not prove exact equality. A detected difference may prove inequality, but exhausting a bounded search does not prove nonexistence. Keep computational precision separate from exact defining relations. When a supported exact answer cannot be obtained, use the established assertion-gated computational frontier, never a guessed boolean, fabricated witness, or silent change of output type.
+
+  Propagate the same semantics through element arithmetic, projections, refinement, comparisons, and hashing where defined. Increasing available precision must not change an exact mathematical object or invalidate its identity in a cache. Do not infer unseen coefficients from one finite residue.
+
+- **Rationale**: Relabeling a parent leaves its element decisions unchanged. An interface is still wrong if a low-precision zero becomes an exact zero through truthiness, membership, or inherited quotient arithmetic.
+
+- **Violation Example**: treating a series as exactly zero because its available coefficients vanish; treating a failed search for an isometry as proof that the lattices are not isometric.
+
+- **Correct Example**: distinguish an actual zero, an element that first differs from zero beyond the initial precision, and a genuinely nilpotent element in a ring with nilpotents. State exact equality only when the represented data or a valid decision algorithm establishes it.
+
+#### `DEV-53`: A Correction Must Survive Other Construction Routes
+
+- **Rule**: Translate a correction into the invariant it establishes, then follow that invariant through the affected public constructor, alternative constructors, elements, morphisms, and structural functors. Repair the common mathematical owner where the invariant belongs. Preserve both the new behavior and the already required behavior at that boundary; a fix to one route must not silently leave a second route with the same defect.
+
+  Write separating mathematical specimens at the existing proof surface, subject to `DEV-58`. Include a nontrivial positive case and a nearby case that would expose overgeneralization. Migrate implementation consumers, not the mathematician's expectations. The protected expectation subtrees and their catalogue remain unchanged except for a justified mathematical correction recorded in its commit, as required by `AGENTS.md`.
+
+- **Rationale**: A local spelling or constructor repair can leave the generating error intact. Another coefficient regime, direct Hom constructor, or dependent functor then recreates the violation without copying its original code.
+
+- **Violation Example**: repairing transported local-module kernels while direct local-module Homs still use the wrong scalar ring; making only the principal completion route distinguish truncation from completion.
+
+- **Correct Example**: preserve the local ring and its structural maps in both directly constructed and transported module morphisms, and express their compatibility through the actual comparison maps. Add the corresponding multivariable completion specimen when changing the shared completion contract.
+
+#### `DEV-54`: Repair a Required Input Before Extending Its Consumers
+
+- **Rule**: Before extending a dependent construction, read the particular upstream path it will consume and establish its required objects, maps, and hypotheses by source analysis. A method name, category label, completed TODO row, or upstream specification is not that input. If the required path constructs the wrong mathematical object, repair it and adapt the first dependent construction before expanding the dependent API.
+
+  Dependencies attach to specific mathematical outputs. Do not wait for an unrelated upstream workstream to finish, and do not let one broken input freeze consumers that do not use it. A computational specialization is acceptable only when its stated regime actually supplies the required input; it is not permission for a fallback object.
+
+- **Rationale**: Adding module completion, formal fibers, and flatness decisions on top of finite-quotient arithmetic multiplies the repair surface. Fixing the shared input first removes the cause rather than requiring a separate correction in every consumer.
+
+- **Violation Example**: extending formal-family operations because a completion class and truncation accessors exist, without inspecting its element arithmetic; declaring all geometry blocked by a completion defect.
+
+- **Correct Example**: establish the corrected ring completion before finite-module completion, and use the Noetherian finite-module comparison with its actual hypotheses ([Stacks 00MA](https://stacks.math.columbia.edu/tag/00MA)). Independent scheme gluing proceeds on its own established inputs.
+
+#### `DEV-55`: Review the Complete Affected Control Flow
+
+- **Rule**: After editing a shared source file, read the complete affected methods and enclosing class boundaries, not only added diff lines. Follow conditionals, indentation, early returns, and the paths that equip returned objects with inherited structure. Review neighboring operations whose control flow or shared helpers changed. Compare with the relevant pre-edit contract and retain its mathematical obligations.
+
+  Write preservation specimens for exposed regressions at their existing mathematical owner. During deferred verification, perform the source review and leave those specimens explicitly unverified; do not claim that reading source proves runtime correctness.
+
+- **Rationale**: An operation can retain its name, most of its body, and its tests while an indentation or return-path edit makes its essential construction unreachable. A diff limited to the intended new operation can miss that loss.
+
+- **Violation Example**: adding an ideal quotient beside an algebra center and reviewing only the quotient lines, while a changed return path prevents the center from receiving algebra structure.
+
+- **Correct Example**: read the full center and quotient methods, including all branches that produce the central submodule or subalgebra; retain specimens for the inclusion, multiplication, and the unit when required, alongside the new quotient specimen.
+
+#### `DEV-56`: Decide the Next Construction in the TODO
+
+- **Rule**: A substantive TODO names its current owner, the remaining mathematical delta, required input maps and hypotheses, the chosen representation boundary, and an acceptance statement that a mathematician could falsify. Name the first concrete specimen and the neighboring case that distinguishes the intended construction from its tempting substitute. Settle consequential mathematical forks before delegating the item; when source research is genuinely necessary, name the exact unresolved question and the construction it blocks.
+
+  Preserve the full requested regime. State what an existing specialization supplies and what remains to generalize. Derive dependency order from the maps the consumer actually needs. Name the sanctioned constructor, reusable owned operations, selected upstream computation, and the actual missing integration; an unresolved backend search names the specific capability question, not a presumed mandate to implement an algorithm. Link the durable architecture contract in this document and the declaration-side contract required by `OWN-13`, so removing a delivered item does not erase its architectural decisions. Keep task details with the unfinished item; do not create a parallel readiness ledger, checklist system, or new gate to certify the prose.
+
+- **Rationale**: A heading such as "add completion" leaves the next worker to choose between an exact object and the easiest finite approximation. Explicit mathematical decisions prevent that choice from being made implicitly inside an adapter.
+
+- **Violation Example**: "finish local geometry" with no next object or input; "verify the new API" without a proposition; treating a toric dimension formula as completion of general geometric cohomology.
+
+- **Correct Example**: require the image of a specific polynomial to remain nonzero in its adic completion while its projections at two stated orders differ, then require the completed module maps that consume that ring. This defines both the first repair and its downstream obligation.
+
+#### `DEV-57`: Judge Progress by Mathematical Change Over Time
+
+- **Rule**: Select work and assess trajectory against the user's substantive objective and the time-ordered mathematical changes. Distinguish newly supplied behavior, preserved behavior, regressions, their repairs, and dependencies that remain unresolved. Commit counts, checkbox counts, document volume, and the fraction of administrative commits do not measure that trajectory. A short repair interval does not erase productive work elsewhere; a long unobserved interval is not evidence of inactivity.
+
+  A blocker names the exact unavailable input or authority, its owner, the affected construction, and the next action that can change it. Read the current scope and verification rules before treating a tool or hook failure as a blocker. Continue independent required work when its inputs exist. Assess a repeated failure as a recurrence of its mathematical or operational cause, not as a new spelling-specific exception.
+
+- **Rationale**: Local activity can move a proxy while leaving the intended construction wrong. Conversely, counting administrative artifacts can hide genuine mathematical progress between them. Time-ordered evidence is needed to distinguish those cases.
+
+- **Violation Example**: inferring stagnation from many documentation commits; inferring correctness from a shrinking TODO; stopping all work because one engine operation or an inapplicable hook is unavailable.
+
+- **Correct Example**: identify which constructions became available during the observed interval, whether later edits preserved them, and whether dependent work consumed the repaired contract. State unobserved intervals and runtime verification gaps without converting them into conclusions about effort.
+
+#### `DEV-58`: Observe the Current Verification Phase
+
+- **Where the condition is checked**: this rule suspends execution *while the architecture,
+  implementation, integration and transfer work remains open*, and whether it is open is not
+  recorded here — it is the state of the work nodes in [TODO.md](TODO.md). Read them before
+  concluding the suspension applies. A worker that treats the suspension as permanent has no
+  way to reach T, and the repository accumulates unexecuted constructions for as long as that
+  lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
+  Closing a node does not reopen the condition, and neither does discovering a further repair.
+
+- **Rule**: Terminal T is the final verification phase of the preamble programme, after the required architecture, mathematical implementation, integration, and transfer work in `TODO.md`. While that work remains open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
+
+  Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
+
+  Classify hook applicability by the staged paths, not unrelated dirty files or a remembered failure. Under `AGENTS.md`'s QC integration rule, a prose-only commit uses `--no-verify`; the explicit notebook/preamble scope exemption also remains binding. Do not change shared QC configuration to obtain that authorized path, and do not extend an exemption to unrelated executable changes.
+
+- **Rationale**: Runtime checks during the unsettled rewrite can redirect work into repairing a temporary architecture. Forgetting a declared exemption can also make an irrelevant hook result stop work that is expressly authorized. Neither error is repaired by adding another tracking artifact.
+
+- **Violation Example**: running Sage to obtain a green completion specimen while required architecture remains open; repeatedly invoking whole-repo hooks for a TODO-only commit; describing a written but unexecuted assertion as a passing regression test.
+
+- **Correct Example**: review the source and new mathematical assertions, commit them as unverified under the current scope rule, retain terminal T as unfinished work, and execute the required evidence only at that phase. For a TODO and policy edit, inspect the intended diff and commit only those prose paths with the prescribed hook exemption.
+
+#### `DEV-59`: Record Observed Foundational Gaps and Papercuts
+
+- **Rule**: [COMPLAINTS.md](COMPLAINTS.md) is the repository's canonical local
+  record of unresolved observed problems, primarily missing foundational
+  mathematics and missing structural relationships, and also actual papercuts
+  in research use or contribution workflows. Record a finding when it arises
+  during mathematical tracing, source reading, implementation, review, notebook
+  use, or permitted execution. Discovery is not restricted to the selected TODO
+  item. Capture before leaving the relevant work, not at a future audit.
+
+  For a foundational complaint, begin with the desired mathematics in standard
+  terminology. State the input/output objects and maps, hypotheses, and the
+  recursive dependency path exposing the gap. Identify the earliest missing
+  general construction or relationship, with the mathematical sources that
+  justify it. Include a small ideal-API mathematical expression or specimen
+  where useful, explicitly distinguishing illustrative pseudocode from an
+  existing callable API. Do not title the complaint after a proposed manager,
+  registry, helper, adapter, or feature-specific programming class.
+
+  Then give the observed evidence: inspected source and symbols or the actual
+  workflow and output, the existing partial construction, the precise unmet
+  contract, affected consumers, confidence, and uninspected scope. Distinguish
+  source evidence from executed failures. For an absence claim, use the
+  epistemic-integrity fields Searched, Found, Conclusion, Confidence, and Gaps;
+  a failed name search alone does not establish absent mathematics. An unresolved
+  availability question may be recorded as such, but not as a confirmed defect.
+  Name relevant maintained implementations and the exact capability question
+  where known; their presence is not permission to leak foreign objects.
+
+  A papercut entry names the real user action, expected behavior, actual friction,
+  owning boundary, and observed example. Record it even when it is small. Do not
+  invent a defect from a possible future inconvenience, and do not inflate a
+  local ergonomic issue into a missing theory without a mathematical trace.
+
+  Search existing complaint headings and the related TODO before adding an
+  entry. Extend the existing mathematical complaint when a new consumer exposes
+  the same missing foundation; retain genuinely different hypotheses or gaps.
+  One general complaint can link several consumers. Its title and links should
+  remain useful when those consumers move between files.
+
+  **Division of responsibility:** CONTRIBUTING and mathematical declarations
+  specify the enduring design; COMPLAINTS explains the observed unmet need and
+  its evidence; TODO supplies selected execution work, dependencies and acceptance.
+  Link the existing TODO item when it already owns remediation. If the current
+  task requires the fix, update that item with the actual remaining delta and
+  continue it. An independent finding can remain recorded without starting a new
+  workstream. External issues own upstream repair; link them from the local
+  complaint without copying their live status or surrendering the owned API's
+  obligation. Filing or recording a complaint never completes its repair.
+
+  **Maintenance:** use the shared-checkout transaction mutex for edits and commits
+  of COMPLAINTS, as for TODO. Preserve concurrent entries. On delivery, compare
+  the fix with the complaint's full mathematical requirement and its affected
+  paths, then remove the resolved entry in that commit or an immediate companion.
+  For partial delivery, retain only the unresolved need, evidence and links.
+  Keep diagnosis and resolution history in git, not in resolved sections or
+  completion rows. Preserve enduring mathematical decisions at their declaration
+  before removing the entry. Source-based remediation does not certify runtime
+  behavior; required execution remains in terminal T under `DEV-58`. An observed
+  runtime failure is not resolved merely because a speculative source fix exists.
+
+- **Rationale**: A leaf-level workaround can hide a reusable mathematical
+  prerequisite from every later contributor. Recording the underlying theory
+  makes that prerequisite visible without confusing discovery with implementation
+  or turning an isolated symptom into another bespoke subsystem.
+- **Violation Example**: discover that a specialization bypasses localization,
+  add another fraction constructor, and mention the missing relationship only
+  in chat; record "needs a backend manager" instead of the missing morphism.
+- **Correct Example**: record the missing localization factorization with its
+  submonoid and universal map, link the existing repair item, and complete the
+  shared construction with its consumer. Remove the complaint only when that
+  requirement is delivered, retaining any still-unverified execution obligation.
+
+#### `DEV-60`: Close One Front at a Time in Dependency Order
+
+- **Rule**: Work exactly one `TODO.md` node at a time, in the DAG's dependency
+  order, and drive it to its stated acceptance before opening any other front.
+  Shared-substrate (preamble) edits are in scope only when the current node's
+  contract requires them. If multiple fronts are already open, close the
+  nearest-to-acceptance front before any new authoring. During the refactor,
+  commits use `--no-verify` per `DEV-58`; address real defects observed in the
+  work itself as they arise, but do not run hooks, test suites, or type-check
+  gates mid-refactor, and do not spend effort making files pass checks while
+  the architecture around them is incomplete.
+
+- **Rationale**: Parallel half-open fronts multiply integration debt, hide
+  which mathematical contract is actually blocked, and leave abandoned
+  mid-flight work that no later contributor can distinguish from delivered
+  construction. One closed node is progress; several open ones are risk.
+
+- **Violation Example**: open a second construction because the first grew
+  difficult, touch shared preamble modules for a node that never named them,
+  and leave a large refactor uncommitted and unowned across many files while
+  starting new authoring elsewhere.
+
+- **Correct Example**: select the next unblocked `TODO.md` node, complete and
+  commit it to its stated acceptance, release it, and only then claim the
+  following node; when a prior front is already open, finish the one closest
+  to acceptance first.
+
+#### `DEV-61`: Author Only Under a Live TODO Claim
+
+- **Rule**: All authoring requires a live claim in the `TODO.md` claim ledger.
+  Before claiming, reconcile the ledger against actual repository state so the
+  claim reflects work already delivered or in flight; reconcile again at
+  release. Batch-committing a body of work authored without a claim is
+  prohibited.
+
+- **Rationale**: The claim ledger is the only surface by which concurrent
+  workers avoid duplicate or colliding construction. Unclaimed authoring is
+  invisible until it lands as an unreviewable batch, and a stale ledger routes
+  the next worker into work that is already done or already owned.
+
+- **Violation Example**: author a many-file change with no ledger entry and
+  commit it as one batch; claim a node from a ledger last reconciled before
+  another worker's release landed.
+
+- **Correct Example**: reconcile the ledger against the repository, record the
+  claim for the selected node, author and commit under that claim, then
+  release the claim with the delivered state reflected in the ledger.
 
 
 * * *

@@ -1,15 +1,24 @@
 r"""Base change of schemes along a ring map, and the slice adjunction along a base morphism."""
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
     FiberProductSchemes,
     FinitelyPresentedAlgebra,
+    FiniteTypeSchemes,
+    IntegralSchemes,
+    NormalSchemes,
     PolynomialRing,
-    QQ,
+    ProjectiveSchemes,
+    ProjectiveSpace,
+    ProjectiveSpaces,
     QuadraticField,
+    QuasiProjectiveSchemes,
     Schemes,
+    SeparatedSchemes,
+    SmoothSchemes,
     Spec,
     SpecFunctor,
     scheme_base_change_functor,
@@ -31,11 +40,14 @@ def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> 
     cusp = plane.closed_subscheme(y**2 - x**3)
     change = scheme_base_change_functor(ring_map)
 
+    ordinary_changed_plane = AffineSpace(2, field, names=("x", "y"))
     changed_plane = change(plane)
     changed_cusp = change(cusp)
     # The session spelling names the object, not the functor.
     assert plane.base_change(ring_map) is changed_plane
     assert cusp.base_change(ring_map) is changed_cusp
+    assert changed_plane is not ordinary_changed_plane
+    assert ordinary_changed_plane not in FiberProductSchemes(field)
     assert changed_plane in AffineSpaces(field)
     assert changed_cusp in AffineSchemes(field)
     assert changed_cusp in FiberProductSchemes(field)
@@ -151,3 +163,42 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
     assert transposed == counit
     back = adjunction.hom_set_isomorphism_forward(transposed, source=special_fibre)
     assert back == identity
+
+
+def test_projective_space_base_change_is_the_selected_nonaffine_pullback() -> None:
+    field, ring_map = _extension()
+    line = ProjectiveSpace(1, QQ)
+    change = scheme_base_change_functor(ring_map)
+
+    ordinary_target_line = ProjectiveSpace(1, field)
+    changed = change(line)
+
+    assert changed is not ordinary_target_line
+    assert ordinary_target_line not in FiberProductSchemes(field)
+    assert changed in FiberProductSchemes(field)
+    assert changed in ProjectiveSpaces(field)
+    assert changed in ProjectiveSchemes(field)
+    assert changed in QuasiProjectiveSchemes(field)
+    assert changed in SeparatedSchemes(field)
+    assert changed in FiniteTypeSchemes(field)
+    assert changed in SmoothSchemes(field)
+    assert changed in IntegralSchemes(field)
+    assert changed in NormalSchemes(field)
+    assert changed.scheme_base_ring() is field
+    assert changed.relative_dimension() == 1
+    assert changed.fiber_product_base() is Spec(QQ)
+    assert changed.left_projection().codomain() is line
+    assert changed.right_projection().codomain() is Spec(field)
+
+    left_square = line.structure_morphism() * changed.left_projection()
+    right_square = change.base_morphism() * changed.right_projection()
+    assert left_square == right_square
+
+    factor = changed.from_pullback_cone(
+        changed.left_projection(),
+        changed.right_projection(),
+    )
+    assert factor.domain() is changed
+    assert factor.codomain() is changed
+    assert changed.left_projection() * factor == changed.left_projection()
+    assert changed.right_projection() * factor == changed.right_projection()

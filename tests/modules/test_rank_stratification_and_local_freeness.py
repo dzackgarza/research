@@ -11,10 +11,10 @@ from the origin and has a two-dimensional fibre there.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -65,6 +65,27 @@ def test_the_module_is_free_away_from_the_origin_and_not_at_it() -> None:
 
     assert spectrum.generic_point() in locus
     assert spectrum(ring.ideal(x)) not in locus
+
+
+def test_the_free_locus_supplies_its_actual_local_trivialization() -> None:
+    ring, x, module = _torsion_plus_free()
+    spectrum = ring.spectrum()
+    generic = spectrum.generic_point()
+    origin = spectrum(ring.ideal(x))
+
+    trivialization = module.local_free_trivialization_at(generic)
+
+    assert trivialization.codomain() is module.localize_at_prime(generic)
+    assert trivialization.domain().module_rank() == module.rank_at(generic)
+    assert trivialization.forward().is_injective()
+    assert trivialization.forward().is_surjective()
+
+    try:
+        module.local_free_trivialization_at(origin)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("a point outside the local-freeness locus cannot be trivialized")
 
 
 def test_the_annihilator_of_a_sum_of_cyclic_modules_over_a_non_pid() -> None:

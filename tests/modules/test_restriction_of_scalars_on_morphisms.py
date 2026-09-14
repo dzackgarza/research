@@ -56,3 +56,55 @@ def test_restricting_along_the_identity_keeps_the_action_of_the_endomorphism() -
     assert restricted_swap.codomain() is space
     assert restricted_swap(space(e0)) == space(e1)
     assert restricted_swap(space(2 * e0 + 3 * e1)) == space(3 * e0 + 2 * e1)
+
+
+
+def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and_images() -> None:
+    from dzack_research.preamble.all import (
+        GF,
+        FinitelyPresentedAlgebra,
+        ModulesWithChosenFinitePresentation,
+        SymmetricAlgebraOn,
+    )
+
+    prime = GF(2)
+    presentation = SymmetricAlgebraOn(prime, ("x",))
+    x = presentation.algebra_generator("x")
+    extension = FinitelyPresentedAlgebra(presentation, (x**2,))
+    ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
+    line = FreeModule(extension, 1)
+    restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
+
+    assert restricted in ModulesWithChosenFinitePresentation(prime)
+    assert restricted.presentation().codomain().base_ring() is prime
+
+    identity = module_homset(restricted, restricted).identity()
+    kernel = identity.kernel()
+    image = identity.image()
+
+    assert kernel.is_zero()
+    assert image.inclusion().codomain() is restricted
+
+def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_under_addition() -> None:
+    from dzack_research.preamble.all import GF, FinitelyPresentedAlgebra, SymmetricAlgebraOn
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_coefficients,
+    )
+
+    prime = GF(2)
+    presentation = SymmetricAlgebraOn(prime, ("x",))
+    x = presentation.algebra_generator("x")
+    extension = FinitelyPresentedAlgebra(presentation, (x**2,))
+    ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
+    line = FreeModule(extension, 1)
+    restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
+    labels = tuple(restricted.module_generating_set())
+
+    assert len(labels) == 2
+    total = restricted.module_generator(labels[0]) + restricted.module_generator(labels[1])
+    coefficients = module_coefficients(total, restricted)
+
+    assert len(coefficients) == 2
+    assert coefficients[labels[0]] == prime.one()
+    assert coefficients[labels[1]] == prime.one()
+

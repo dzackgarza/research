@@ -12,10 +12,69 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpace,
     FiniteTypeSchemes,
     IntegralSchemes,
+    ProjectiveSchemes,
     ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
     SeparatedSchemes,
+    SmoothSchemes,
 )
+from dzack_research.preamble.refine import refine
+
+
+def Curve(equation, ambient=None):
+    r"""Return the integral one-dimensional closed subscheme cut out by ``equation``.
+
+    With an explicit ambient scheme this is its existing closed-subscheme
+    construction, followed by the verified placement in ``Curves(R)``.  With
+    no ambient, ``equation`` must belong to a represented polynomial algebra;
+    its base ring and selected algebra-generator labels determine the affine
+    space in which the curve is cut out.
+
+    A reducible or otherwise non-variety one-dimensional subscheme is rejected
+    rather than being placed in ``Curves(R)`` merely because its dimension is
+    one.
+    """
+    match ambient:
+        case None:
+            source = equation.parent()
+            try:
+                base = source.base_ring()
+                labels = tuple(source.algebra_generating_set())
+            except AttributeError as error:
+                raise TypeError(
+                    "Curve(f) requires f in a represented polynomial algebra; "
+                    "otherwise supply the ambient scheme explicitly"
+                ) from error
+            ambient = AffineSpace(
+                len(labels),
+                base,
+                names=tuple(str(label) for label in labels),
+            )
+            target = ambient.coordinate_algebra()
+            match source is target:
+                case True:
+                    ambient_equation = equation
+                case False:
+                    images = {
+                        label: target.algebra_generator(str(label))
+                        for label in labels
+                    }
+                    ambient_equation = source.Mor(target)(images)(equation)
+        case _:
+            base = ambient.scheme_base_ring()
+            ambient_equation = equation
+
+    curve = ambient.closed_subscheme(ambient_equation)
+    category = Curves(base)
+    match curve in category:
+        case False:
+            raise ValueError(
+                f"the closed subscheme cut out by {equation} in {ambient} is not an integral curve over {base}"
+            )
+        case True:
+            pass
+    return refine(curve, category)
 
 
 class Varieties(OwnedCategoryOverBaseRing):
@@ -78,6 +137,72 @@ class Curves(_DimensionSubcategoryOfVarieties):
     def _repr_object_names(self):
         return f"curves over {self.base_ring()}"
 
+    class ParentMethods:
+        def arithmetic_genus(self):
+            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
+
+            For a projective curve the Hilbert polynomial is the defining
+            projective invariant whose constant term gives ``1-p_a``.  The
+            computation therefore belongs to the projective presentation and
+            remains distinct from normalization/geometric-genus algorithms.
+            """
+            base = self.scheme_base_ring()
+            if self not in ProjectiveSchemes(base):
+                raise NotImplementedError(
+                    "arithmetic genus here requires a represented projective curve"
+                )
+            if self in ProjectiveSpaces(base):
+                return 0
+            defining_ideal = self.defining_ideal_owned()
+            polynomial = defining_ideal._engine_ideal().hilbert_polynomial()
+            return int(1 - polynomial(0))
+
+        def normalization_data(self):
+            data = getattr(self, "_preamble_curve_normalization_data", None)
+            if data is None:
+                raise ValueError("this projective curve has no selected normalization map")
+            return data
+
+        def normalization_morphism(self):
+            return self.normalization_data().normalization_morphism()
+
+        def normalization_curve(self):
+            return self.normalization_data().normalization_curve()
+
+        def local_delta_contributions(self):
+            return self.normalization_data().local_contributions()
+
+        def genus_comparison(self):
+            return self.normalization_data().genus_comparison()
+
+        def geometric_genus(self):
+            r"""Return geometric genus from a selected normalization, or smoothness.
+
+            A smooth projective integral curve has no normalization defect, so
+            its geometric and arithmetic genera agree.  For singular curves
+            they need not agree; this method deliberately refuses to route
+            those curves through Sage's unchecked generic ``genus()``.  Their
+            geometric genus must instead come from an explicitly represented
+            normalization/geometric-integrality construction.
+            """
+            base = self.scheme_base_ring()
+            if self not in ProjectiveSchemes(base):
+                raise NotImplementedError(
+                    "geometric genus here requires a represented projective curve"
+                )
+            normalization = getattr(self, "_preamble_curve_normalization_data", None)
+            if normalization is not None:
+                return normalization.geometric_genus()
+            if self not in SmoothSchemes(base):
+                raise NotImplementedError(
+                    "geometric genus of a singular curve requires its normalization, not the arithmetic genus"
+                )
+            return self.arithmetic_genus()
+
+        def genus(self):
+            r"""Return geometric genus, never arithmetic genus by convention."""
+            return self.geometric_genus()
+
 
 class Surfaces(_DimensionSubcategoryOfVarieties):
     r"""Varieties of relative dimension two over the stated base."""
@@ -92,4 +217,4 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
         return f"surfaces over {self.base_ring()}"
 
 
-__all__ = ["Curves", "Surfaces", "Varieties"]
+__all__ = ["Curve", "Curves", "Surfaces", "Varieties"]

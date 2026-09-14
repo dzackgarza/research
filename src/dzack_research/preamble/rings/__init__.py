@@ -1,73 +1,15 @@
 r"""Owned ring implementations and the public ring-construction surface."""
 
-from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.rings.real import (
-    ExactRealField,
-    ExactRealNumber,
-    RR,
-    RealApproximation,
-    RealNumber,
+from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    LaurentPolynomialRing as _LaurentPolynomialRing,
 )
-from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
-from dzack_research.preamble.rings.unit_interval import UnitInterval
-
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    AdicallyCompleteRings,
-    ArtinianRings,
-    CommutativeRings,
-    CompleteLocalRings,
-    ComplexField as _ComplexField,
-    DivisionRings,
-    Fields,
-    FiniteField as _FiniteField,
-    GF as _GF,
-    IntegerModRing as _IntegerModRing,
-    Integers as _Integers,
-    IntegralDomains,
-    LocalRings,
-    NoetherianRings,
-    OrderedRings,
-    OwnedAdicallyCompleteRings,
-    OwnedArtinianRings,
-    OwnedCategoryOverBaseRing,
-    OwnedCommutativeRings,
-    OwnedRings,
-    OwnedCompleteLocalRings,
-    OwnedDivisionRings,
-    OwnedFields,
-    OwnedIntegralDomains,
-    OwnedLocalRings,
-    OwnedNoetherianRings,
-    OwnedOrders,
-    OwnedOrderedRings,
-    OwnedPrincipalIdealDomains,
-    OwnedRings,
-    OwnedRngs,
-    OwnedSemirings,
-    PredicateSubrings,
-    PrimeField as _PrimeField,
-    PrimeFields,
-    PrincipalIdealDomains,
-    Qp as _Qp,
-    RealField as _RealField,
-    RingHomset,
-    RingMorphism,
-    Rings,
-    Zmod as _Zmod,
-    _engine_element,
-    _engine_ring,
-    _own_ring,
-    _owned_ring,
-    predicate_subring,
-    ring_homset,
-    ring_morphism,
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    PolynomialRing as _PolynomialRing,
 )
-from dzack_research.preamble.categories.rings.commutative_ideals import (
-    CommutativeIdeal,
-    CommutativeIdeals,
-)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletion,
     AdicCompletions,
@@ -86,21 +28,88 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     ZariskiClosedSubobject,
     Zp,
 )
+from dzack_research.preamble.categories.rings.commutative_ideals import (
+    CommutativeIdeal,
+    CommutativeIdeals,
+)
 from dzack_research.preamble.categories.rings.number_fields import (
     CyclotomicField as _CyclotomicField,
+)
+from dzack_research.preamble.categories.rings.number_fields import (
     NumberField as _NumberField,
+)
+from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
-    QuadraticField as _QuadraticField,
     _refine_number_field_view,
     _refine_order_view,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    LaurentPolynomialRing as _LaurentPolynomialRing,
-    PolynomialRing as _PolynomialRing,
+from dzack_research.preamble.categories.rings.number_fields import (
+    QuadraticField as _QuadraticField,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
-from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    GF as _GF,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    AdicallyCompleteRings,
+    ArtinianRings,
+    CommutativeRings,
+    CompleteLocalRings,
+    DivisionRings,
+    Fields,
+    IntegralDomains,
+    LocalizationRings,
+    LocalRings,
+    NoetherianRings,
+    OrderedRings,
+    OwnedAdicallyCompleteRings,
+    OwnedArtinianRings,
+    OwnedCategoryOverBaseRing,
+    OwnedCommutativeRings,
+    OwnedCompleteLocalRings,
+    OwnedDivisionRings,
+    OwnedFields,
+    OwnedIntegralDomains,
+    OwnedLocalRings,
+    OwnedNoetherianRings,
+    OwnedOrderedRings,
+    OwnedOrders,
+    OwnedPrincipalIdealDomains,
+    OwnedRings,
+    OwnedRngs,
+    OwnedSemirings,
+    PredicateSubrings,
+    PrimeFields,
+    PrincipalIdealDomains,
+    RingHomset,
+    RingMorphism,
+    Rings,
+    _own_ring,
+    predicate_subring,
+    ring_homset,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    ComplexField as _ComplexField,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    Qp as _Qp,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    RealField as _RealField,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    Zmod as _Zmod,
+)
+from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
+from dzack_research.preamble.rings.real import (
+    RR,
+    ExactRealField,
+    ExactRealNumber,
+    RealApproximation,
+    RealNumber,
+)
+from dzack_research.preamble.rings.unit_interval import UnitInterval
 
 
 def _public_commutative_ring(ring):
@@ -179,9 +188,9 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import CC as SageCC
     from sage.all import CDF as SageCDF
     from sage.all import QQ as SageQQ
-    from sage.all import QQbar as SageQQbar
     from sage.all import RDF as SageRDF
     from sage.all import ZZ as SageZZ
+    from sage.all import QQbar as SageQQbar
 
     integers = _refine_order_view(_own_ring(SageZZ))
     rationals = _refine_number_field_view(_own_ring(SageQQ))

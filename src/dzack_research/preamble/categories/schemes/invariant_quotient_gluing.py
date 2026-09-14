@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.categories.schemes.schemes import (
+    AffineGSchemes,
     AffineSchemes,
     OpenImmersions,
     SchemeMorphism,
@@ -245,6 +246,7 @@ class FiniteGluedInvariantQuotient(SageObject):
         acted_charts: IndexedFamily,
         source_transitions: IndexedFamily,
         quotient_transitions: IndexedFamily,
+        source_scheme: Scheme | None = None,
     ) -> None:
         if acting_group not in FiniteGroups():
             raise NotImplementedError("glued invariant quotients currently require a finite group")
@@ -305,10 +307,25 @@ class FiniteGluedInvariantQuotient(SageObject):
         self._quotient_morphism: SchemeMorphism | None = None
 
         self._verify_source_transition_equivariance()
-        self._source_scheme = Schemes(base_ring).glue_affine_atlas(
-            self.source_charts(),
-            self.source_transitions(),
-        )
+        if source_scheme is None:
+            self._source_scheme = Schemes(base_ring).glue_affine_atlas(
+                self.source_charts(),
+                self.source_transitions(),
+            )
+        else:
+            datum = source_scheme.gluing_datum()
+            if tuple(datum.chart_indices()) != tuple(self.chart_index_set()):
+                raise ValueError("the supplied glued source has a different chart index set")
+            for index in self.chart_index_set():
+                if datum.chart(index) is not self.source_chart(index):
+                    raise ValueError("the supplied glued source does not use the acted affine charts")
+            for left, right in self.pair_index_set():
+                if (
+                    datum.transition_between(left, right).forward()
+                    != self.source_transition_between(left, right).forward()
+                ):
+                    raise ValueError("the supplied glued source has different overlap transitions")
+            self._source_scheme = source_scheme
         self._local_quotients = finite_indexed_family(
             self.chart_index_set(),
             lambda index: self.acted_charts()[index].affine_quotient(),
@@ -686,6 +703,43 @@ class FiniteGluedInvariantQuotient(SageObject):
         action_morphism: SchemeMorphism = self.action()(group_element)
         return action_morphism
 
+    def fixed_locus_is_empty(self, group_element) -> bool:
+        r"""Decide emptiness of ``X^g`` on the invariant affine atlas.
+
+        The source atlas is preserved by the global action, so the fixed locus
+        is empty exactly when its intersection with every affine chart is
+        empty.  Each chart computes the full scheme-theoretic fixed ideal; no
+        reduction is taken here.
+        """
+        normalized = self.acting_group()(group_element)
+        return all(
+            self.acted_chart(index).fixed_subobject_of(normalized).is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def common_fixed_locus_is_empty(self) -> bool:
+        r"""Decide whether ``X^G`` is empty by the represented invariant atlas."""
+        return all(
+            self.acted_chart(index).fixed_subscheme().is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def nontrivial_stabilizer_locus_is_empty(self) -> bool:
+        r"""Decide whether every nonidentity stabilizer locus misses every chart."""
+        return all(
+            self.acted_chart(index).nontrivial_stabilizer_subscheme().is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def action_is_free(self):
+        r"""Decide freeness locally on the represented invariant affine cover.
+
+        Freeness is local on the source.  This deliberately tests the union of
+        all nonidentity fixed loci chartwise, rather than the common fixed
+        locus ``X^G``.
+        """
+        return self.nontrivial_stabilizer_locus_is_empty()
+
     def quotient_morphism(self) -> SchemeMorphism:
         if self._quotient_morphism is None:
             local_maps = finite_indexed_family(
@@ -787,11 +841,184 @@ class FiniteGluedInvariantQuotient(SageObject):
 
     factor_through_quotient = factor_invariant_affine_morphism
 
+    def descend_invariant_family(self, family_morphism: SchemeMorphism) -> SchemeMorphism:
+        r"""Descend an invariant family map from the glued source to an affine base.
+
+        The local factors are the affine quotient universal maps and their
+        compatibility on overlaps is already verified by
+        :meth:`factor_invariant_affine_morphism`.  Thus this is the family
+        spelling of the same universal quotient, not an additional descent
+        algorithm.
+        """
+        return self.factor_invariant_affine_morphism(family_morphism)
+
     def _repr_(self) -> str:
         return (
             f"Finite glued invariant quotient over {self.base_ring()} "
             f"by {self.acting_group()}"
         )
+
+
+def _c2_invariant_localization_lift(
+    acted_chart,
+    source_overlap,
+    quotient_overlap,
+    element,
+):
+    r"""Lift one invariant of ``A[d^-1]`` to ``A^G[N(d)^-1]`` for C2.
+
+    If ``element=n/e`` is invariant and ``g`` is the nonidentity element, then
+    ``n g(e)`` and ``e g(e)`` are invariant.  The latter is a power/unit
+    multiple of the norm defining the quotient principal open, so its image is
+    invertible there.  This avoids choosing a semi-invariant sign for ``d``.
+    """
+    group = acted_chart.acting_group()
+    if int(group.order()) != 2:
+        raise NotImplementedError("this stable-principal-open descent is currently represented for C2")
+    generator = next(iter(group.group_generators()))
+    overlap_ring = source_overlap.coordinate_algebra()
+    numerator, denominator = overlap_ring.localization_fraction_data(element)
+    source_algebra = acted_chart.coordinate_algebra()
+    action_pullback = acted_chart.action_of(generator).coordinate_algebra_morphism()
+    numerator = source_algebra(numerator)
+    denominator = source_algebra(denominator)
+    conjugate_denominator = action_pullback(denominator)
+    invariant_numerator = numerator * conjugate_denominator
+    invariant_denominator = denominator * conjugate_denominator
+    numerator_lift = acted_chart.invariant_algebra_element(invariant_numerator)
+    denominator_lift = acted_chart.invariant_algebra_element(invariant_denominator)
+    quotient_ring = quotient_overlap.coordinate_algebra()
+    localization = quotient_ring.localization_map()
+    denominator_image = localization(denominator_lift)
+    if not denominator_image.is_unit():
+        raise ArithmeticError(
+            "the norm of an overlap denominator is not invertible on the descended quotient open"
+        )
+    return localization(numerator_lift) * denominator_image.inverse_of_unit()
+
+
+def _c2_quotient_overlap_transition(
+    datum,
+    acted_charts,
+    quotient_opens,
+    source_index,
+    target_index,
+):
+    source_overlap = datum.overlap(source_index, target_index)
+    target_overlap = datum.overlap(target_index, source_index)
+    transition = datum.transition_between(source_index, target_index).forward()
+    transition_pullback = transition.coordinate_algebra_morphism()
+    source_acted = acted_charts[source_index]
+    target_acted = acted_charts[target_index]
+    source_quotient_open = quotient_opens[source_index, target_index]
+    target_quotient_open = quotient_opens[target_index, source_index]
+    target_inclusion = target_acted.invariant_algebra_inclusion()
+    target_localization = target_overlap.coordinate_algebra().localization_map()
+    target_quotient_ring = target_quotient_open.coordinate_algebra()
+    source_quotient_ring = source_quotient_open.coordinate_algebra()
+
+    def pullback(element):
+        numerator, denominator = target_quotient_ring.localization_fraction_data(element)
+
+        def map_invariant(value):
+            target_value = target_localization(target_inclusion(value))
+            source_value = transition_pullback(target_value)
+            return _c2_invariant_localization_lift(
+                source_acted,
+                source_overlap,
+                source_quotient_open,
+                source_value,
+            )
+
+        numerator_image = map_invariant(numerator)
+        denominator_image = map_invariant(denominator)
+        if not denominator_image.is_unit():
+            raise ArithmeticError(
+                "a descended quotient-overlap denominator is not invertible"
+            )
+        return numerator_image * denominator_image.inverse_of_unit()
+
+    return source_quotient_open.Mor(target_quotient_open)(
+        ring_morphism(target_quotient_ring, source_quotient_ring, pullback)
+    )
+
+
+def c2_chartwise_glued_invariant_quotient(
+    source_scheme: Scheme,
+    acting_group: Parent,
+    local_actions: IndexedFamily,
+) -> FiniteGluedInvariantQuotient:
+    r"""Quotient a glued scheme by a chart-preserving C2 action.
+
+    Every source overlap is a stable distinguished open.  Its defining element
+    ``d`` need only be semi-invariant: the norm ``d g(d)`` is invariant and
+    defines the descended principal open in the affine quotient chart.  The
+    quotient transition is obtained by transporting invariant rational
+    functions through the source transition and expressing them in the source
+    invariant algebra via the common invariant-ring certificate.
+    """
+    if int(acting_group.order()) != 2:
+        raise NotImplementedError("automatic chartwise quotient descent is currently represented for C2")
+    datum = source_scheme.gluing_datum()
+    indices = datum.chart_index_set()
+    if tuple(local_actions.index_set()) != tuple(indices):
+        raise ValueError("the local action family must use the source chart labels")
+    base = source_scheme.scheme_base_ring()
+    group_generator = next(iter(acting_group.group_generators()))
+    acted_charts = finite_indexed_family(
+        indices,
+        lambda index: AffineGSchemes(acting_group, base)(
+            datum.chart(index),
+            lambda element, index=index: (
+                datum.chart(index).categorical_identity_morphism()
+                if acting_group(element) == acting_group.one()
+                else local_actions[index]
+            ),
+        ),
+        name="Acted affine charts of a chartwise C2 quotient",
+    )
+    pair_indices = finite_ordered_set(tuple(datum.transition_index_set()))
+    source_transitions = finite_indexed_family(
+        pair_indices,
+        lambda pair: datum.transition_between(*pair),
+        name="Source transitions of a chartwise C2 quotient",
+    )
+    quotient_opens = {}
+    for source_index, target_index in datum.transition_index_set():
+        for left, right in ((source_index, target_index), (target_index, source_index)):
+            source_overlap = datum.overlap(left, right)
+            source_algebra = datum.chart(left).coordinate_algebra()
+            defining = source_algebra(source_overlap.distinguished_open_element())
+            action_pullback = acted_charts[left].action_of(
+                group_generator
+            ).coordinate_algebra_morphism()
+            norm = defining * action_pullback(defining)
+            invariant_norm = acted_charts[left].invariant_algebra_element(norm)
+            quotient_opens[left, right] = acted_charts[left].affine_quotient().distinguished_open(
+                invariant_norm
+            )
+    quotient_transitions_by_pair = {}
+    for left, right in datum.transition_index_set():
+        forward = _c2_quotient_overlap_transition(
+            datum, acted_charts, quotient_opens, left, right
+        )
+        inverse = _c2_quotient_overlap_transition(
+            datum, acted_charts, quotient_opens, right, left
+        )
+        quotient_transitions_by_pair[left, right] = Isomorphism(forward, inverse)
+    quotient_transitions = finite_indexed_family(
+        pair_indices,
+        lambda pair: quotient_transitions_by_pair[pair],
+        name="Descended quotient transitions of a chartwise C2 quotient",
+    )
+    return FiniteGluedInvariantQuotient(
+        base,
+        acting_group,
+        acted_charts,
+        source_transitions,
+        quotient_transitions,
+        source_scheme=source_scheme,
+    )
 
 
 def glued_invariant_quotient(
@@ -800,6 +1027,7 @@ def glued_invariant_quotient(
     acted_charts: IndexedFamily,
     source_transitions: IndexedFamily,
     quotient_transitions: IndexedFamily,
+    source_scheme: Scheme | None = None,
 ) -> FiniteGluedInvariantQuotient:
     r"""Construct a verified finite glued invariant quotient."""
 
@@ -809,7 +1037,12 @@ def glued_invariant_quotient(
         acted_charts,
         source_transitions,
         quotient_transitions,
+        source_scheme=source_scheme,
     )
 
 
-__all__ = ["FiniteGluedInvariantQuotient", "glued_invariant_quotient"]
+__all__ = [
+    "FiniteGluedInvariantQuotient",
+    "c2_chartwise_glued_invariant_quotient",
+    "glued_invariant_quotient",
+]

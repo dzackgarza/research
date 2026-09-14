@@ -6,7 +6,7 @@ their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -39,11 +39,13 @@ from dzack_research.preamble.categories.modules.powers import (
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring as _engine_ring,
+    OwnedRings,
+    _owned_ring,
+    predicate_subring,
+    ring_morphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    _owned_ring,
-    ring_morphism,
+    _engine_ring as _engine_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -146,7 +148,7 @@ class PowerAlgebra(GradedDirectSumModule):
             return self.from_component(1, self.free_source_module()(value))
         try:
             scalar = self.base_ring()(value)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             if isinstance(value, dict):
                 return GradedDirectSumModule._element_constructor_(self, value)
             raise TypeError(f"{value!r} does not define an element of {self}") from None
@@ -163,6 +165,9 @@ class PowerAlgebra(GradedDirectSumModule):
         product = alternating_power_product if self.flavor() == "alternating" else divided_power_product
         for left_degree, left_component in left.homogeneous_components().items():
             for right_degree, right_component in right.homogeneous_components().items():
+                target_degree = left_degree + right_degree
+                if target_degree not in self.degree_index_set():
+                    continue
                 component = product(
                     self.free_source_module(),
                     left_degree,
@@ -170,7 +175,7 @@ class PowerAlgebra(GradedDirectSumModule):
                     right_degree,
                     right_component,
                 )
-                result += self.from_component(left_degree + right_degree, component)
+                result += self.from_component(target_degree, component)
         return result
 
     def divided_power(self, value, exponent):
@@ -212,10 +217,18 @@ class PowerAlgebra(GradedDirectSumModule):
 
     algebra_structure_morphism = _ring_morphism_defining_algebra_structure
 
+    @cached_method
     def ring_center(self):
         if self.flavor() == "divided":
             return self
-        raise NotImplementedError("the ordinary center of an exterior algebra is not represented by a scalar-only shortcut")
+        if self.is_commutative():
+            return self
+        return predicate_subring(
+            self,
+            self.is_central,
+            "z commutes with every element",
+            OwnedRings().Commutative(),
+        )
 
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
@@ -329,9 +342,74 @@ def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
     return DividedPowerAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
 
 
+def alternating_extension(module_morphism):
+    r"""Extend an alternating linear map uniquely to ``Lambda(M) -> A``.
+
+    The target is an arbitrary represented unital associative algebra over the
+    same base ring.  The selected generator images must square to zero and
+    anticommute, exactly the relations defining the exterior algebra.  The
+    current verification is finite-framing based; no finite subset is sampled
+    from an infinite framing.
+    """
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
+    from dzack_research.preamble.categories.algebras.comparison_maps import (
+        construction_algebra_homset,
+    )
+
+    if not isinstance(module_morphism, ModuleMorphism):
+        raise TypeError("an alternating extension starts from a represented module morphism")
+    module = module_morphism.domain()
+    target = module_morphism.codomain()
+    base = module.base_ring()
+    if target not in Algebras(base).Associative().Unital():
+        raise TypeError("an alternating extension requires a unital associative algebra target")
+    labels = module.module_generating_set()
+    cardinality = labels.cardinality()
+    if not cardinality.is_finite():
+        raise NotImplementedError(
+            "verification of the exterior-algebra relations currently requires a finite selected framing"
+        )
+    labels = tuple(labels)
+    images = {
+        label: target(module_morphism(module.module_generator(label)))
+        for label in labels
+    }
+    zero = target.zero()
+    if any(image * image != zero for image in images.values()):
+        raise ValueError("alternating generator images must square to zero")
+    if any(
+        images[left] * images[right] + images[right] * images[left] != zero
+        for position, left in enumerate(labels)
+        for right in labels[position + 1 :]
+    ):
+        raise ValueError("alternating generator images must anticommute")
+
+    source = AlternatingAlgebraOf(module)
+
+    def evaluate(element):
+        element = source(element)
+        result = target.zero()
+        for degree, component in element.homogeneous_components().items():
+            piece = source.graded_piece(degree)
+            for basis_label, coefficient in module_coefficients(component, piece).items():
+                if degree == 0:
+                    value = target.one()
+                elif degree == 1:
+                    value = images[basis_label]
+                else:
+                    value = target.one()
+                    for generator_label in basis_label:
+                        value *= images[generator_label]
+                result += coefficient * value
+        return result
+
+    return construction_algebra_homset(source, target)(evaluate)
+
+
 __all__ = [
     "AlternatingAlgebraOf",
     "AlternatingAlgebraOn",
+    "alternating_extension",
     "DividedPowerAlgebraOf",
     "DividedPowerAlgebraOn",
     "PowerAlgebra",

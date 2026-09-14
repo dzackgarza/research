@@ -1,27 +1,26 @@
 r"""Convex polytopes and integral lattice polytopes."""
 
-from math import factorial
+from math import atan2, factorial
 
-from sage.categories.category import Category
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as engine_parent
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
-from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
+    finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.tensors.tensor import tensor
 
 
 def _owned_rational(coordinate):
@@ -36,6 +35,86 @@ def _owned_rational(coordinate):
     if engine_parent(coordinate) in (SageZZ, SageQQ):
         return _own_ring(SageQQ)._from_engine_element(SageQQ(coordinate))
     return _own_ring(SageQQ)(coordinate)
+
+
+class RegularPolytopes(OwnedCategory):
+    r"""Finite spherical regular abstract polytopes named by Schlaefli symbols.
+
+    The Schlaefli symbol ``{p_1,...,p_{n-1}}`` determines the string Coxeter
+    diagram ``[p_1,...,p_{n-1}]`` of the full reflection symmetry group.  This
+    owner records that abstract regular-polytope datum; it is distinct from the
+    rational-coordinate convex-polytope owner below, since examples such as the
+    dodecahedron require ``sqrt(5)`` coordinates in a Euclidean realization.
+    """
+
+    def an_object(self):
+        return self.from_schlafli_symbol((3, 3))
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "finite spherical regular polytopes"
+
+    def super_categories(self):
+        return [Sets()]
+
+    def from_schlafli_symbol(self, symbol):
+        r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""
+        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+
+        from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+
+        if isinstance(symbol, str):
+            written = symbol.strip()
+            if not (written.startswith("{") and written.endswith("}")):
+                raise ValueError("a Schlaefli symbol is written {p1,...,pr}")
+            body = written[1:-1].strip()
+            bonds = () if not body else tuple(int(part.strip()) for part in body.split(","))
+        else:
+            bonds = tuple(int(bond) for bond in symbol)
+        if not bonds or any(bond < 3 for bond in bonds):
+            raise ValueError("a finite regular polytope symbol has bond orders at least three")
+        rank = len(bonds) + 1
+        entries = tuple(
+            tuple(
+                1
+                if row == column
+                else bonds[min(row, column)]
+                if abs(row - column) == 1
+                else 2
+                for column in range(rank)
+            )
+            for row in range(rank)
+        )
+        diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
+        if not diagram.is_elliptic():
+            raise ValueError("this Schlaefli symbol does not define a finite spherical regular polytope")
+        return object_of(
+            self,
+            schlafli_bonds=finite_ordered_set(bonds),
+            symmetry_coxeter_diagram=diagram,
+        )
+
+    class ParentMethods:
+        def __init__(self, schlafli_bonds, symmetry_coxeter_diagram, **rest) -> None:
+            self._preamble_schlafli_bonds = schlafli_bonds
+            self._preamble_symmetry_coxeter_diagram = symmetry_coxeter_diagram
+            super().__init__(**rest)
+
+        def schlafli_symbol(self):
+            return self._preamble_schlafli_bonds
+
+        def dimension(self):
+            return _own_ring(SageZZ)(self.schlafli_symbol().cardinality() + 1)
+
+        def symmetry_coxeter_diagram(self):
+            return self._preamble_symmetry_coxeter_diagram
+
+        def symmetry_group(self):
+            return self.symmetry_coxeter_diagram().coxeter_group()
+
+        def _repr_(self):
+            symbol = ",".join(str(bond) for bond in self.schlafli_symbol())
+            return f"Regular polytope {{{symbol}}}"
 
 
 class ConvexPolytopes(OwnedCategory):
@@ -149,6 +228,20 @@ class ConvexPolytopes(OwnedCategory):
             r"""Return the private exact polyhedral computation object."""
             return self._polyhedron
 
+        def threejs_html(self):
+            r"""Return a local Three.js HTML view of a three-dimensional polytope.
+
+            The private exact Sage polyhedron remains the rendering engine.
+            This method does not attach display data to the owned polytope: it
+            asks Sage's existing ``Graphics3d`` Three.js serializer for a
+            self-contained local HTML representation at the view boundary.
+            """
+            if int(self._engine_polyhedron().ambient_dim()) != 3:
+                raise ValueError("a Three.js polytope view currently requires ambient dimension three")
+            graphic = self._engine_polyhedron().plot()
+            rich = graphic._rich_repr_threejs(online=False)
+            return rich.html.get_str()
+
         def _owned_rational_coordinate(self, coordinate):
             rationals = _own_ring(SageQQ)
             return rationals._from_engine_element(SageQQ(coordinate))
@@ -185,12 +278,11 @@ class ConvexPolytopes(OwnedCategory):
                 integers = _own_ring(SageZZ)
                 return finite_ordered_set(
                     tuple(
-                        tensor.vector(
-                            integers,
+                        self.ambient_lattice()(
                             tuple(
                                 self._owned_integral_coordinate(coordinate)
                                 for coordinate in vertex
-                            ),
+                            )
                         )
                         for vertex in self._engine_polyhedron().vertices()
                     )
@@ -312,9 +404,11 @@ class ConvexPolytopes(OwnedCategory):
             )
             return finite_ordered_image(
                 engine_points,
-                lambda point: tensor.vector(
-                    integers,
-                    (self._owned_integral_coordinate(coordinate) for coordinate in point),
+                lambda point: self.ambient_lattice()(
+                    tuple(
+                        self._owned_integral_coordinate(coordinate)
+                        for coordinate in point
+                    )
                 ),
                 name="Integral points",
             )
@@ -516,6 +610,64 @@ class ConvexPolygons(OwnedCategory):
     def super_categories(self):
         return [ConvexPolytopes()]
 
+    class ParentMethods:
+        def _repr_svg_(self):
+            r"""Render this live polygon as a deterministic notebook SVG view.
+
+            The mathematical object remains the exact owned polygon.  Floating
+            point conversion is confined to this display boundary: the exact
+            engine vertices are sorted cyclically about their centroid and
+            affinely rescaled into a fixed SVG viewport.
+            """
+            vertices = tuple(
+                tuple(float(coordinate) for coordinate in vertex)
+                for vertex in self._engine_polyhedron().vertices_list()
+            )
+            if len(vertices) < 3:
+                return None
+
+            center_x = sum(vertex[0] for vertex in vertices) / len(vertices)
+            center_y = sum(vertex[1] for vertex in vertices) / len(vertices)
+            ordered = tuple(
+                sorted(
+                    vertices,
+                    key=lambda vertex: atan2(
+                        vertex[1] - center_y,
+                        vertex[0] - center_x,
+                    ),
+                )
+            )
+            minimum_x = min(vertex[0] for vertex in ordered)
+            maximum_x = max(vertex[0] for vertex in ordered)
+            minimum_y = min(vertex[1] for vertex in ordered)
+            maximum_y = max(vertex[1] for vertex in ordered)
+            span_x = maximum_x - minimum_x
+            span_y = maximum_y - minimum_y
+            scale = 260.0 / max(span_x, span_y, 1.0)
+            margin = 30.0
+
+            def screen_point(vertex):
+                x, y = vertex
+                return (
+                    margin + (x - minimum_x) * scale,
+                    margin + (maximum_y - y) * scale,
+                )
+
+            points = " ".join(
+                f"{x:.6g},{y:.6g}" for x, y in map(screen_point, ordered)
+            )
+            width = 2 * margin + span_x * scale
+            height = 2 * margin + span_y * scale
+            return (
+                f'<svg xmlns="http://www.w3.org/2000/svg" '
+                f'viewBox="0 0 {width:.6g} {height:.6g}" '
+                f'width="{width:.6g}" height="{height:.6g}">'
+                '<polygon points="'
+                + points
+                + '" fill="none" stroke="currentColor" stroke-width="2"/>'
+                "</svg>"
+            )
+
 
 
 class LatticePolygons(OwnedCategory):
@@ -605,4 +757,5 @@ __all__ = [
     "LatticePolygons",
     "LatticePolytope",
     "LatticePolytopes",
+    "RegularPolytopes",
 ]

@@ -32,7 +32,43 @@ and is not enumerated here.
 import pytest
 from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
-from dzack_research.preamble.all import CoxeterDiagrams
+from dzack_research.preamble.all import (
+    ConditionSet,
+    ZZ,
+    CoxeterDiagrams,
+    Lattices,
+    finite_ordered_set,
+)
+
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "owner_overrides": {
+            "test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form": "tests/lattices/test_coxeter.py",
+            "test_b3_root_gram_matrix_is_symmetric_with_one_double_bond": "tests/lattices/test_coxeter.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "owner_overrides": {
+            "test_a_schlafli_symbol_names_a_polytope_whose_symmetry_group_is_its_coxeter_group": "tests/schemes/test_polytopes.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def bracket_diagram(*bonds: int):
@@ -42,7 +78,7 @@ def bracket_diagram(*bonds: int):
     consecutive bonds are \(p_1,\dots,p_k\) and whose remaining bonds are
     \(2\).
     """
-    rank = len(bonds) + 1
+    rank = sum(1 for _bond in bonds) + 1
     entries = [
         [
             1 if i == j else (bonds[min(i, j)] if abs(i - j) == 1 else 2)
@@ -106,13 +142,13 @@ AFFINE_TYPES = (
 )
 
 
-@pytest.mark.parametrize("bonds", sorted(BRACKET_ORDERS))
+@pytest.mark.parametrize("bonds", BRACKET_ORDERS)
 def test_a_bracket_symbol_names_an_elliptic_diagram_of_the_tabulated_order(bonds) -> None:
     r"""Each bracket symbol denotes an elliptic diagram whose group has the tabulated order."""
     name, order = BRACKET_ORDERS[bonds]
     diagram = bracket_diagram(*bonds)
 
-    assert diagram.cardinality() == len(bonds) + 1
+    assert diagram.cardinality() == sum(1 for _bond in bonds) + 1
     assert diagram.is_connected()
     assert diagram.is_elliptic(), f"{name} is a finite Coxeter group"
     assert diagram.coxeter_group().order() == order
@@ -252,13 +288,14 @@ def test_the_root_gram_of_a_simply_laced_diagram_is_minus_its_schlaefli_matrix(
     schlafli = diagram.schlafli_tensor()
     gram = diagram.root_gram_tensor()
 
+    assert all(entry.parent() is schlafli.base_ring() for entry in schlafli)
     assert diagram.vinberg_invariant_matrix().is_simply_laced()
     for row in range(rank):
         for column in range(rank):
             assert gram[row, column] == -2 * schlafli[row, column]
 
 
-@pytest.mark.parametrize("cartan_type", sorted(EXCEPTIONAL_ORDERS))
+@pytest.mark.parametrize("cartan_type", EXCEPTIONAL_ORDERS)
 def test_an_exceptional_finite_group_has_the_tabulated_order(cartan_type) -> None:
     r"""\(|W(F_4)| = 1152\), \(|W(G_2)| = 12\), \(|W(H_3)| = 120\)."""
     letter, rank = cartan_type
@@ -267,7 +304,7 @@ def test_an_exceptional_finite_group_has_the_tabulated_order(cartan_type) -> Non
     assert diagram.coxeter_group().order() == EXCEPTIONAL_ORDERS[cartan_type]
 
 
-@pytest.mark.parametrize("cartan_type", sorted(DIAGRAM_INVARIANTS))
+@pytest.mark.parametrize("cartan_type", DIAGRAM_INVARIANTS)
 def test_diagram_invariants_match_the_literature(cartan_type) -> None:
     r"""Node count, edge count and \(|\operatorname{Aut}|\) of the diagram.
 
@@ -303,3 +340,118 @@ def test_an_extended_diagram_is_parabolic_with_vanishing_schlaeflian(cartan_type
     assert diagram.schlaflian() == 0
     assert diagram.zero_inertia_index() == 1
     assert diagram.negative_inertia_index() == 0
+
+
+def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> None:
+    diagram = CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
+    lattice = Lattices(ZZ)("A2")
+    gram = diagram.root_gram_tensor()
+
+    assert gram == lattice.gram_tensor()
+    assert gram[0, 0] == -2
+    assert gram[1, 1] == -2
+    assert gram[0, 1] == gram[1, 0] == 1
+    assert diagram.coxeter_entry(0, 1) == 3
+    schlafli = diagram.schlafli_tensor()
+    assert schlafli[0, 1] == -schlafli.base_ring().one() / schlafli.base_ring()(2)
+
+def test_archived_b3_root_roundtrip_retains_gram_bonds_and_group() -> None:
+    rooted = CoxeterDiagrams().from_cartan_type(["B", 3], rooted=True)
+    recovered = CoxeterDiagrams().from_roots(rooted.roots())
+
+    assert recovered.root_gram_tensor() == rooted.root_gram_tensor()
+    assert recovered.coxeter_matrix() == rooted.coxeter_matrix()
+    assert recovered.coxeter_group().order() == 48
+
+
+def test_archived_c3_construction_paths_reach_the_same_coxeter_system() -> None:
+    by_type = CoxeterDiagrams().from_cartan_type(["C", 3])
+    by_matrix = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(["C", 3]))
+    by_roots = CoxeterDiagrams().from_cartan_type(["C", 3], rooted=True)
+
+    assert by_type.coxeter_matrix() == by_matrix.coxeter_matrix()
+    assert by_roots.coxeter_matrix() == by_type.coxeter_matrix()
+    assert {
+        diagram.coxeter_group().order()
+        for diagram in (by_type, by_matrix, by_roots)
+    } == {48}
+
+
+def test_archived_e6_rank_agrees_across_diagram_and_root_realization() -> None:
+    diagram = CoxeterDiagrams().from_cartan_type(["E", 6], rooted=True)
+
+    assert diagram.cardinality() == 6
+    assert diagram.root_lattice().module_rank() == 6
+    assert diagram.root_realization().module_rank() == 6
+    assert diagram.coxeter_group().degree() == 6
+
+
+def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:
+    h3 = Lattices.root_lattice("H", 3)
+    h4 = Lattices.root_lattice("H", 4)
+
+    assert h3.base_ring() is h4.base_ring()
+    assert h3.base_ring() is not ZZ
+    assert int(h3.base_ring().fraction_field().degree()) == 2
+    assert h3.module_rank() == 3
+    assert h4.module_rank() == 4
+    assert h3.roots().cardinality() == 30
+    assert h4.roots().cardinality() == 120
+    assert h3.coxeter_number() == 10
+    assert h4.coxeter_number() == 30
+
+    rooted = CoxeterDiagrams().from_cartan_type(["H", 3], rooted=True)
+    assert rooted.root_realization().base_ring() is h3.base_ring()
+    assert rooted.root_gram_tensor().base_ring() is h3.base_ring()
+    assert rooted.coxeter_matrix() == CoxeterMatrix(["H", 3])
+
+
+
+def test_archived_large_exceptional_orders_are_the_products_of_invariant_degrees() -> None:
+    expected = {
+        ("E", 6): (51840, 12),
+        ("E", 7): (2903040, 18),
+        ("E", 8): (696729600, 30),
+        ("F", 4): (1152, 12),
+        ("H", 4): (14400, 30),
+    }
+
+    for cartan_type, (order, coxeter_number) in expected.items():
+        degrees = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group().degrees()
+        from math import prod
+
+        assert prod(int(degree) for degree in degrees) == order
+        assert max(int(degree) for degree in degrees) == coxeter_number
+
+
+def test_archived_longest_elements_have_one_step_per_positive_root() -> None:
+    expected_lengths = {
+        ("A", 3): 6,
+        ("B", 3): 9,
+        ("D", 4): 12,
+        ("G", 2): 6,
+        ("H", 3): 15,
+        ("I", 5): 5,
+    }
+
+    for cartan_type, expected in expected_lengths.items():
+        group = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group()
+        assert group.long_element().length() == expected
+
+
+def test_archived_root_counts_positive_roots_and_highest_root_heights_agree() -> None:
+    expected = {
+        "A3": (12, 6, 4),
+        "D4": (24, 12, 6),
+        "E6": (72, 36, 12),
+    }
+
+    for name, (root_count, positive_count, coxeter_number) in expected.items():
+        lattice = getattr(Lattices, name)
+        roots = lattice.roots()
+        positive = ConditionSet(roots, lambda root: root.is_positive_root())
+
+        assert roots.cardinality() == root_count
+        assert positive.cardinality() == positive_count
+        assert lattice.coxeter_number() == coxeter_number
+        assert lattice.highest_root().height() == coxeter_number - 1

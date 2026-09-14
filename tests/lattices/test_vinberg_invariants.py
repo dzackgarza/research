@@ -15,12 +15,32 @@ crystallographic restriction.
 from sage.all import AA, CoxeterMatrix, Infinity, sqrt
 
 from dzack_research.preamble.all import (
+    ZZ,
     CoxeterDiagrams,
     Lattices,
     VinbergInvariantMatrices,
-    ZZ,
     reflection_cosines,
 )
+from dzack_research.preamble.categories.vinberg_invariants import (
+    ProjectiveWeightedGraphs,
+    projective_weighted_graph,
+)
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage",
+    "live_owner": "src/dzack_research/preamble/categories/vinberg_invariants.py",
+    "owner_overrides": {
+        "ProjectiveWeightedGraphs.ParentMethods.subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.parabolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.maximal_parabolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.elliptic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.maximal_elliptic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.hyperbolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.find_all_parabolics": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.find_maximal_parabolics": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def rooted_diagram(gram_rows):
@@ -180,12 +200,38 @@ def test_the_invariant_matrix_restricts_and_draws_its_weighted_graph() -> None:
     invariants = diagram.vinberg_invariant_matrix()
 
     assert invariants.cardinality() == 3
-    assert invariants.weighted_graph().num_edges() == 2, "one pair is orthogonal"
+    weighted = invariants.weighted_graph()
+    assert weighted in ProjectiveWeightedGraphs(weighted.base_ring())
+    assert weighted.num_edges() == 2, "one pair is orthogonal"
+    assert weighted.is_symmetric()
+    assert not weighted.is_directed()
+    assert weighted.vertex_weight(0) == invariants.vinberg_invariant(0, 0)
+    assert weighted.edge_weight(1, 2) == invariants.vinberg_invariant(1, 2)
+    assert weighted.edge_weight(2, 1) == invariants.vinberg_invariant(1, 2)
+    assert weighted.projectivization() is weighted
 
     edge = invariants.submatrix((1, 2))
     assert edge.cardinality() == 2
     assert edge.coxeter_entry(1, 2) == 3
     assert edge.is_elliptic()
+
+
+def test_projective_weighted_digraphs_keep_orientation_and_exact_weights() -> None:
+    graph = projective_weighted_graph(
+        ZZ,
+        ("a", "b"),
+        {("a", "b"): (2, 3)},
+        vertex_weights={"a": (1, 2), "b": (3, 4)},
+        directed=True,
+        symmetric=False,
+    )
+
+    assert graph.is_directed()
+    assert not graph.is_symmetric()
+    assert graph.has_edge("a", "b")
+    assert not graph.has_edge("b", "a")
+    assert graph.edge_weight("a", "b") == graph.projective_line()([2, 3])
+    assert graph.vertex_weight("b") == graph.projective_line()([3, 4])
 
 
 def test_the_invariant_matrix_can_be_stated_without_any_mirrors() -> None:

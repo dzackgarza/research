@@ -12,17 +12,18 @@ tensors of type $(0,2)$.
 
 import re
 from bisect import bisect_right
-from itertools import accumulate
+from itertools import accumulate, product
+from math import prod as product_value
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module_element import FreeModuleElement
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -35,29 +36,10 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-    _own_ring,
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+    ProductCategory,
 )
-from dzack_research.static_types import ProductOfNaturalNumbers
-from dzack_research.preamble.categories.sets.set_categories import (
-    EnumeratedSets,
-    NN,
-    Sets,
-    ranking_isomorphism,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
-from dzack_research.preamble.tensors.tensor import (
-    Tensor,
-    TensorModule,
-    tensor,
-)
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreeModule,
@@ -65,15 +47,34 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
     MatrixSpace,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
     aleph0,
     cardinal,
 )
-from dzack_research.preamble.tensors.tensor import (
-    _component_shape,
-    _tensor_richcmp,
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    EnumeratedSets,
+    Sets,
+    ranking_isomorphism,
+)
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    TensorModule,
+    _component_shape,
+    _engine_component_matrix,
+    _tensor_richcmp,
+    tensor,
+)
+from dzack_research.static_types import ProductOfNaturalNumbers
 
 
 def _formal_symbol(index):
@@ -96,7 +97,7 @@ def _formal_symbol_index(elt):
     if not rest.isdigit():
         raise ValueError(elt)
     index = int(rest)
-    if symbol != _formal_symbol(index):
+    if text != f"e_{index}":
         raise ValueError(elt)
     return index
 
@@ -118,7 +119,7 @@ class _FormalSymbols(UniqueRepresentation, Parent):
     def __contains__(self, elt):
         try:
             self.ranking_map()(elt)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         return True
 
@@ -223,9 +224,69 @@ def _vector_coefficients(vector, module):
 def _lattice_vector_from_coefficients(lattice, coefficients):
     r"""The lattice vector with the given basis coefficients."""
     return sum(
-        (lattice.module_generator(key) * coefficient for key, coefficient in coefficients.items()),
+        (
+            lattice.scalar_multiple(coefficient, lattice.module_generator(key))
+            for key, coefficient in coefficients.items()
+        ),
         lattice.element_class(lattice, lattice._module.zero()),
     )
+
+
+def _normalized_lattice_names(names, basis_keys):
+    r"""Normalize the named-generator datum for a finite lattice framing.
+
+    Sage's ``L.<a1,...,a8> =`` preparser supplies the literal three-name tuple
+    ``("a1", "Ellipsis", "a8")``.  The lattice constructor owns the rank, so
+    it is the responsible place to expand that syntactic datum to the eight
+    mathematical generator names.  Ordinary strings remain Sage's native
+    comma-separated naming syntax.
+    """
+    match names:
+        case None | str():
+            return names
+        case _:
+            selected = tuple(names)
+    size = basis_keys.cardinality()
+    assert size.is_finite(), "explicit lattice generator names require a finite framing"
+    rank = int(size.finite_value())
+    ellipsis_positions = tuple(
+        position
+        for position, name in enumerate(selected)
+        if name is Ellipsis or str(name) == "Ellipsis"
+    )
+    match ellipsis_positions:
+        case ():
+            assert len(selected) == rank, (
+                f"{len(selected)} lattice generator names were supplied for rank {rank}"
+            )
+            return selected
+        case (position,):
+            assert position > 0 and position + 1 < len(selected), (
+                "an ellipsis in lattice generator names needs indexed endpoints"
+            )
+            assert len(selected) == 3 and position == 1, (
+                "lattice generator ellipsis syntax has the form a1, ..., an"
+            )
+            first = re.fullmatch(r"(.*?)(\d+)", str(selected[0]))
+            last = re.fullmatch(r"(.*?)(\d+)", str(selected[2]))
+            assert first is not None and last is not None, (
+                "lattice generator ellipsis endpoints must end in integers"
+            )
+            assert first.group(1) == last.group(1), (
+                "lattice generator ellipsis endpoints require one common prefix"
+            )
+            start = int(first.group(2))
+            stop = int(last.group(2))
+            assert start <= stop, "lattice generator ellipsis endpoints are increasing"
+            expanded = tuple(
+                f"{first.group(1)}{index}" for index in range(start, stop + 1)
+            )
+            assert len(expanded) == rank, (
+                f"{len(expanded)} lattice generator names were supplied for rank {rank}"
+            )
+            return expanded
+        case _:
+            raise ValueError("lattice generator names contain more than one ellipsis")
 
 
 class Lattice(Parent, IndexedGenerators):
@@ -263,7 +324,7 @@ class Lattice(Parent, IndexedGenerators):
         for name, value in construction_data:
             setattr(self, f"_preamble_{name}", value)
         parent_category = (
-            Category.join((category, *tuple(extra_categories)))
+            Cat().meet((category, *tuple(extra_categories)))
             if extra_categories
             else category
         )
@@ -281,17 +342,18 @@ class Lattice(Parent, IndexedGenerators):
             self._preamble_subobject_lift = subobject_lift
             self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
             self._preamble_subobject_verify_linearity = subobject_verify_linearity
-            parent_category = Category.join(
+            parent_category = Cat().meet(
                 (parent_category, ModuleSubobjects(category.base_ring()))
             )
         if isinstance(gram, _BiproductGram):
-            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
-                DirectSumObjects,
-            )
+            from dzack_research.preamble.categories.lattices import BiproductLattices
 
+            self._preamble_biproduct_factors = gram._summands
             self._preamble_direct_sum_summands = gram._summands
             self._preamble_direct_sum_index_set = gram._summands.index_set()
-            parent_category = Category.join((parent_category, DirectSumObjects()))
+            parent_category = Cat().meet(
+                (parent_category, BiproductLattices(category.base_ring()))
+            )
         IndexedGenerators.__init__(
             self,
             _basis_keys(module),
@@ -304,7 +366,9 @@ class Lattice(Parent, IndexedGenerators):
             "category": parent_category,
         }
         if names is not None:
-            parent_arguments["names"] = names
+            parent_arguments["names"] = _normalized_lattice_names(
+                names, _basis_keys(module)
+            )
         Parent.__init__(self, **parent_arguments)
 
     def __call__(self, x):
@@ -402,7 +466,7 @@ class Lattice(Parent, IndexedGenerators):
                     key=lambda term: print_options["sorting_key"](term[0]),
                     reverse=print_options["sorting_reverse"],
                 )
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 pass
             return terms
 
@@ -490,7 +554,13 @@ class _PairingGram(ModuleElement, Tensor):
 
     def tensor_indices(self):
         keys = _basis_keys(self._module)
-        return ((), (keys, keys))
+        upper = finite_ordered_set(())
+        lower = finite_ordered_image(
+            finite_ordered_set((0, 1)),
+            lambda _slot: keys,
+            name="Gram-tensor index generating sets",
+        )
+        return upper, lower
 
     def _pairing_name(self) -> str:
         return "pairing"
@@ -808,6 +878,111 @@ class _BiproductGram(_PairingGram):
         return " ⊕ ".join(_gram_name(block.gram_tensor()) for block in self._blocks)
 
 
+class _TensorProductGram(_PairingGram):
+    r"""The product pairing on a represented tensor product of lattices."""
+
+    def __init__(self, module, factors) -> None:
+        self._factors = factors
+        self._become_tensor_on(module)
+
+    def _basis_pairing(self, left_label, right_label):
+        ring = self.base_ring()
+        return product_value(
+            (
+                lattice_factor.b(
+                    lattice_factor.module_generator(left_label.component(index)),
+                    lattice_factor.module_generator(right_label.component(index)),
+                )
+                for index in self._factors.index_set()
+                for lattice_factor in (self._factors[index],)
+            ),
+            start=ring.one(),
+        )
+
+    def __getitem__(self, index):
+        labels = _basis_keys(self._module)
+        left = _resolve_key(labels, index[0])
+        right = _resolve_key(labels, index[1])
+        return self._basis_pairing(left, right)
+
+    def pairings_against(self, vector):
+        labels = _basis_keys(self._module)
+        factors = self._factors
+        factor_indices = tuple(factors.index_set())
+        result = {}
+        for source_label, source_coefficient in _vector_coefficients(
+            vector, self._module
+        ).items():
+            pairing_data = tuple(
+                tuple(
+                    generator_pairings(
+                        factors[index],
+                        factors[index].module_generator(source_label.component(index)),
+                    ).items()
+                )
+                for index in factor_indices
+            )
+            for selected in product(*pairing_data):
+                selected_labels = {
+                    index: entry[0]
+                    for index, entry in zip(factor_indices, selected, strict=True)
+                }
+                target_label = labels(
+                    lambda index, selected_labels=selected_labels: selected_labels[index]
+                )
+                value = source_coefficient * product_value(
+                    (entry[1] for entry in selected), start=self.base_ring().one()
+                )
+                result[target_label] = result.get(
+                    target_label, self.base_ring().zero()
+                ) + value
+        nonzero = {}
+        zero = self.base_ring().zero()
+        for label, value in result.items():
+            match value == zero:
+                case True:
+                    pass
+                case False:
+                    nonzero[label] = value
+        return nonzero
+
+    def __call__(self, left, right):
+        left_coefficients = _vector_coefficients(left, self._module)
+        right_coefficients = _vector_coefficients(right, self._module)
+        return sum(
+            (
+                left_coefficient
+                * right_coefficient
+                * self._basis_pairing(left_label, right_label)
+                for left_label, left_coefficient in left_coefficients.items()
+                for right_label, right_coefficient in right_coefficients.items()
+            ),
+            self.base_ring().zero(),
+        )
+
+    def signature_pair(self):
+        positive = SageZZ.one()
+        negative = SageZZ.zero()
+        for lattice_factor in self._factors:
+            pair = lattice_factor.signature_pair()
+            new_positive = positive * pair.first() + negative * pair.second()
+            new_negative = positive * pair.second() + negative * pair.first()
+            positive, negative = new_positive, new_negative
+        return signature_pair(positive, negative)
+
+    def _latex_(self) -> str:
+        return r" \otimes ".join(
+            str(latex(lattice_factor.gram_tensor()))
+            for lattice_factor in self._factors
+        )
+
+    def _pairing_name(self) -> str:
+        return " ⊗ ".join(
+            _gram_name(lattice_factor.gram_tensor())
+            for lattice_factor in self._factors
+        )
+
+
 class _ColimitGram(_PairingGram):
     r"""The Gram of \(\operatorname{colim}_n L_n\) along \(x\mapsto(x,0)\).
 
@@ -958,6 +1133,45 @@ def orthogonal_sum(summands):
     return _lattice_parent(module, gram, category, None, names=None)
 
 
+
+def tensor_product_lattice(factors):
+    r"""Return the tensor product lattice with the product bilinear form."""
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        _finite_factor_family,
+    )
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        Modules,
+        TensorProductModules,
+    )
+
+    factors = _finite_factor_family(factors, name="Lattice tensor factors")
+    values = tuple(factors)
+    match values:
+        case ():
+            raise ValueError("a lattice tensor product requires at least one factor")
+        case _:
+            pass
+    ring = values[0].base_ring()
+    category = Lattices(ring)
+    match all(lattice_factor in category for lattice_factor in values):
+        case True:
+            pass
+        case False:
+            raise ValueError("a lattice tensor product requires lattices over one ring")
+    module = Modules(ring).tensor_product(factors)
+    gram = _TensorProductGram(module, factors)
+    result = Lattice(
+        module,
+        gram,
+        category,
+        None,
+        extra_categories=(TensorProductModules(ring),),
+        construction_data=(("tensor_factors", factors),),
+    )
+    return category._refine_lattice_object(result)
+
+
 def colimit_lattice(stage, *, category):
     r"""\(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
@@ -1056,13 +1270,15 @@ def discriminant_of_gram(gram: Tensor):
     r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$."""
     rank = gram.tensor_shape()[0]
     assert rank != Infinity
-    if isinstance(gram, _IdentityGram):
-        n = int(rank)
-        return (-1) ** (n * (n - 1) // 2)
     n = int(rank)
+    negative_sign = (n * (n - 1) // 2) % 2 == 1
+    if isinstance(gram, _IdentityGram):
+        unit = gram.base_ring().one()
+        return -unit if negative_sign else unit
 
     matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.components())
-    return (-1) ** (n * (n - 1) // 2) * matrix.determinant()
+    determinant = matrix.determinant()
+    return -determinant if negative_sign else determinant
 
 
 def _format_disc_latex(disc) -> str:
@@ -1130,8 +1346,8 @@ def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
     return "\n".join(lines)
 
 
-def _finite_simply_laced_cartan_type(data):
-    r"""Return the finite simply-laced Cartan type named by ``data``."""
+def _finite_crystallographic_cartan_type(data):
+    r"""Return the finite crystallographic Cartan type named by ``data``."""
     match data:
         case CartanType_abstract():
             cartan_type = data
@@ -1141,8 +1357,8 @@ def _finite_simply_laced_cartan_type(data):
             cartan_type = CartanType(list(data))
         case _:
             raise TypeError(f"{data} is not a Cartan type")
-    if not cartan_type.is_finite() or not cartan_type.is_simply_laced():
-        raise TypeError(f"{cartan_type} is not a finite simply-laced Cartan type")
+    if not cartan_type.is_finite() or not cartan_type.is_crystallographic():
+        raise TypeError(f"{cartan_type} is not a finite crystallographic Cartan type")
     return cartan_type
 
 
@@ -1160,16 +1376,25 @@ def _hyperbolic_plane_gram_tensor(ring) -> Tensor:
 
 
 def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
-    r"""Return the Gram tensor of the simply-laced root lattice.
+    r"""Return the negative Gram tensor of a finite crystallographic root lattice.
 
-    In the simple-root basis the pairing is the negative of the Cartan
-    form.  That form is type $(0,2)$; Sage's Cartan matrix is only the
-    array of those pairing components.
+    If ``A`` is the Cartan matrix and ``D`` its minimal positive integral
+    symmetrizer, then ``D A`` is the simple-root Gram matrix: its ``i``-th
+    diagonal entry is the square of the ``i``-th root.  The repository uses
+    negative-definite root lattices, hence ``-D A``.  In the simply-laced
+    case ``D=1`` and this is the existing ``-A`` construction.
     """
-    pairings = cartan_type.cartan_matrix()
+    cartan = cartan_type.cartan_matrix()
+    symmetrizer = cartan_type.symmetrizer()
+    if symmetrizer is None:
+        raise TypeError(f"{cartan_type} has no integral Cartan symmetrizer")
+    indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
     components = [
-        tuple(-ring._from_engine_element(pairings[i, j]) for j in range(rank))
+        tuple(
+            -ring._from_engine_element(symmetrizer[indices[i]] * cartan[i, j])
+            for j in range(rank)
+        )
         for i in range(rank)
     ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
@@ -1359,7 +1584,7 @@ def lattice(
                 category,
             )
         case str():
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,
@@ -1369,7 +1594,7 @@ def lattice(
                 root_cartan_type=cartan_type,
             )
         case CartanType_abstract():
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,
@@ -1387,7 +1612,7 @@ def lattice(
                 category,
             )
         case list() | tuple() if data and isinstance(data[0], str):
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,

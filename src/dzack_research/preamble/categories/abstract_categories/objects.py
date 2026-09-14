@@ -3,20 +3,17 @@
 from typing import Any
 
 from sage.categories.category import Category
-from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from sage.misc.abstract_method import abstract_method
+from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
 # Re-exported so the Hom packet can recognize one without reaching past this
 # module into the bases it is built from.
 from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
+    OwnedParent,
 )
-from sage.misc.abstract_method import abstract_method
-from sage.structure.parent import Parent
-from dzack_research.preamble.owned_category import OwnedParent
-from sage.misc.constant_function import ConstantFunction
-from sage.structure.category_object import CategoryObject
-from sage.structure.parent import Parent
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
 def membership_by_definition(category: Category, candidate: Parent) -> bool:

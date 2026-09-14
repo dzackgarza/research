@@ -26,7 +26,10 @@ def _session_categories():
     for name, candidate in sorted(globals().items()):
         if not (inspect.isclass(candidate) and issubclass(candidate, Category)):
             continue
-        if candidate is OwnedCategoryOverBaseRing:
+        # ``Category`` and ``OwnedCategoryOverBaseRing`` are abstract base
+        # classes for declaring categories, not concrete mathematical
+        # categories a session can instantiate and ask for a witness.
+        if candidate in (Category, OwnedCategoryOverBaseRing):
             continue
         if issubclass(candidate, OwnedCategoryOverBaseRing):
             over_ring.append(name)
@@ -60,7 +63,11 @@ def test_a_nullary_category_is_inhabited(name) -> None:
 def test_the_witness_of_a_nullary_category_has_elements(name) -> None:
     witness = globals()[name]().an_object()
     element = witness.an_element()
-    assert element.parent() is witness
+    facade_for = getattr(witness, "facade_for", lambda: None)()
+    if facade_for is None:
+        assert element.parent() is witness
+    else:
+        assert element.parent() in facade_for
     assert element in witness
 
 

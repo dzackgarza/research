@@ -13,12 +13,21 @@ import pytest
 
 from dzack_research.preamble.all import (
     GF,
-    PolynomialRing,
     QQ,
+    PolynomialRing,
     Schemes,
     Spec,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_cyclic_covers_and_involutions.sage",
+    "live_owner": "tests/schemes/test_cyclic_covers.py",
+    "owner_overrides": {
+        "test_involution_lifts_of_cyclic_cover": "tests/schemes/test_cyclic_covers_linearization.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _hyperelliptic_double_cover():
@@ -47,33 +56,61 @@ def test_the_cover_algebra_is_free_of_rank_two_on_the_powers_of_z() -> None:
 
 def test_the_deck_involution_scales_z_and_fixes_the_ramification_subscheme() -> None:
     _algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators()[0]
-    involution = cover.action_of(generator)
+    generator = covers.constant_deck_group().group_generators()[0]
+    acted = cover.constant_deck_action()
+    involution = acted.action_of(generator)
     z = cover.cover_variable()
 
     assert cover.deck_root_of_unity() == -QQ.one()
     assert involution.coordinate_algebra_morphism()(z) == -z
-    assert involution * involution == cover.categorical_identity_morphism()
+    assert involution * involution == acted.categorical_identity_morphism()
     # V(z) is the ramification locus: (zeta - 1) z generates the fixed ideal.
-    assert cover.fixed_ideal().contains_ambient_element(z)
-    assert not cover.fixed_ideal().contains_ambient_element(cover.coordinate_algebra().one())
-    assert cover.action_is_free() is False
+    assert acted.fixed_ideal().contains_ambient_element(z)
+    assert not acted.fixed_ideal().contains_ambient_element(cover.coordinate_algebra().one())
+    assert acted.action_is_free() is False
 
 
 def test_the_branch_subscheme_of_the_double_cover_is_four_points() -> None:
     algebra, x, _covers, cover = _hyperelliptic_double_cover()
     branch = cover.branch_subscheme()
 
+    assert cover.relative_dimension() == 1
+    assert branch.relative_dimension() == 0
+    assert cover.ramification_support_subscheme().relative_dimension() == 0
     assert branch.ambient_scheme() is cover.base_scheme()
     assert branch.defining_ideal_owned() == algebra.ideal(x**4 - algebra.one())
     # k[x]/(x^4 - 1) is free of rank four over the scalars: four branch points.
     assert branch.coordinate_algebra().module_generating_set().cardinality() == 4
 
 
+def test_double_cover_ramification_is_the_differential_fitting_scheme_over_the_branch() -> None:
+    _algebra, _x, _covers, cover = _hyperelliptic_double_cover()
+    ramification = cover.ramification_subscheme()
+    support = cover.ramification_support_subscheme()
+    z = cover.cover_variable()
+
+    assert ramification.defining_ideal_owned() == cover.coordinate_algebra().ideal(z)
+    assert support.defining_ideal_owned() == cover.coordinate_algebra().ideal(z)
+    ramification_to_branch = cover.ramification_to_branch_morphism()
+    assert ramification_to_branch.domain() is support
+    assert ramification_to_branch.codomain() is cover.branch_subscheme()
+
+
+def test_degree_three_ramification_retains_the_square_different() -> None:
+    finite_line = PolynomialRing(GF(7), "x")
+    cover = CyclicCovers(finite_line, 3)(finite_line.algebra_generator("x"))
+    z = cover.cover_variable()
+    ramification_ideal = cover.ramification_subscheme().defining_ideal_owned()
+
+    assert ramification_ideal.contains_ambient_element(z**2)
+    assert not ramification_ideal.contains_ambient_element(z)
+
+
 def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
-    algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators()[0]
+    algebra, _x, _covers, cover = _hyperelliptic_double_cover()
     quotient_morphism = cover.quotient_morphism()
+    action = cover.deck_group_scheme_action().action_morphism()
+    product = action.domain()
 
     assert cover in CyclicCovers(algebra, 2)
     assert cover.invariant_algebra() is algebra
@@ -81,12 +118,12 @@ def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
     assert quotient_morphism.domain() is cover
     assert quotient_morphism.codomain() is cover.affine_quotient()
     # The cover morphism is invariant, which is what makes it the quotient map.
-    assert quotient_morphism * cover.action_of(generator) == quotient_morphism
+    assert quotient_morphism * action == quotient_morphism * product.projection(1)
 
 
 def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base() -> None:
     algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators()[0]
+    generator = covers.constant_deck_group().group_generators()[0]
     schemes = Schemes(algebra)
     relative_schemes = schemes.slice_category()
     relative_cover = schemes.as_slice_object(cover)
@@ -97,11 +134,12 @@ def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base()
     # A deck transformation is an automorphism over the base, so its square
     # closes with the identity on the base.  That square commutes exactly
     # when pi sigma = pi, and the slice morphism checks it as it is built.
+    deck_transformation = cover.constant_deck_transformation(generator)
     deck_over_the_base = relative_schemes.Mor(relative_cover, relative_cover)(
-        cover.action_of(generator)
+        deck_transformation
     )
 
-    assert deck_over_the_base.left() == cover.action_of(generator)
+    assert deck_over_the_base.left() == deck_transformation
     assert deck_over_the_base.right() == schemes.Mor(
         covers.base_scheme(),
         covers.base_scheme(),
@@ -111,12 +149,14 @@ def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base()
 def test_the_trivial_cover_is_the_unramified_torsor_with_a_free_deck_action() -> None:
     algebra = PolynomialRing(QQ, "x")
     cover = CyclicCovers(algebra, 2)(algebra.one())
+    acted = cover.constant_deck_action()
     z = cover.cover_variable()
 
     assert z**2 == cover.coordinate_algebra().one()
     # z is a unit, so the deck fixed locus is empty and the action is free.
-    assert cover.fixed_ideal().contains_ambient_element(cover.coordinate_algebra().one())
-    assert cover.action_is_free() is True
+    assert acted.fixed_ideal().contains_ambient_element(cover.coordinate_algebra().one())
+    assert acted.action_is_free() is True
+    assert cover.is_etale_cover()
 
 
 def test_a_scalar_change_of_the_base_carries_the_cover_presentation() -> None:
@@ -134,10 +174,23 @@ def test_a_scalar_change_of_the_base_carries_the_cover_presentation() -> None:
     )
 
 
-def test_a_degree_three_cover_needs_a_primitive_cube_root_of_unity() -> None:
+def test_a_degree_three_cover_over_QQ_still_has_its_mu_three_action() -> None:
     rational_line = PolynomialRing(QQ, "x")
+    covers_over_QQ = CyclicCovers(rational_line, 3)
+    cover_over_QQ = covers_over_QQ(rational_line.algebra_generator("x"))
+
     with pytest.raises(AssertionError):
-        CyclicCovers(rational_line, 3).deck_root_of_unity()
+        covers_over_QQ.deck_root_of_unity()
+
+    mu_three = cover_over_QQ.deck_group_scheme()
+    action = cover_over_QQ.deck_group_scheme_action().action_morphism()
+    z_over_QQ = cover_over_QQ.cover_variable()
+    product = action.domain()
+    u = mu_three.scheme().coordinate_algebra().algebra_generator("u")
+    assert action.coordinate_algebra_morphism()(z_over_QQ) == (
+        product.projection(0).coordinate_algebra_morphism()(u)
+        * product.projection(1).coordinate_algebra_morphism()(z_over_QQ)
+    )
 
     # 7 = 1 mod 3, so GF(7) holds a primitive cube root of unity.
     finite_line = PolynomialRing(GF(7), "x")

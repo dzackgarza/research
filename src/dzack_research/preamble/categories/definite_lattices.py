@@ -4,17 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from sage.matrix.constructor import matrix as engine_matrix
+from sage.modules.free_module_element import vector as engine_vector
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ as SageQQ
-from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from sage.structure.sage_object import SageObject
+
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
+    ModuleSubobjects,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import PowerSeriesRing
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -24,7 +26,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytope
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
 def _definite_sign(lattice):
@@ -66,6 +72,133 @@ def _element_from_coordinates(lattice, coordinates):
     )
 
 
+class VoronoiFacet(SageObject):
+    r"""One oriented facet of a definite lattice's Voronoi cell.
+
+    The facet retains the exact relevant lattice vector ``v`` whose supporting
+    inequality is ``b(x,v) <= q(v)/2``.  This orientation matters: ``v`` and
+    ``-v`` define opposite facets, and the stabilizer of this facet is the
+    point stabilizer of ``v`` in ``O(L)``.
+    """
+
+    def __init__(self, cell, polytope, relevant_vector) -> None:
+        self._cell = cell
+        self._polytope = polytope
+        self._relevant_vector = relevant_vector
+
+    def cell(self):
+        return self._cell
+
+    def lattice(self):
+        return self.cell().lattice()
+
+    def polytope(self):
+        return self._polytope
+
+    def relevant_vector(self):
+        return self._relevant_vector
+
+    def vertices(self):
+        return self.polytope().vertices()
+
+    def stabilizer(self):
+        return self.lattice().O().stabilizer(self.relevant_vector())
+
+    def __repr__(self) -> str:
+        return f"Voronoi facet of {self.lattice()} normal to {self.relevant_vector()}"
+
+
+class VoronoiCell(SageObject):
+    r"""The exact rational Voronoi cell of a definite lattice.
+
+    The retained polytope is the existing owned convex-polytope object.  The
+    extra structure here is lattice-specific: every facet is paired with its
+    exact relevant vector, incidences retain actual facet and vertex objects,
+    and orthogonal-group stabilizers act on the same lattice that defined the
+    metric.
+    """
+
+    def __init__(self, lattice, polytope) -> None:
+        self._lattice = lattice
+        self._polytope = polytope
+
+    def lattice(self):
+        return self._lattice
+
+    def polytope(self):
+        return self._polytope
+
+    def _engine_polyhedron(self):
+        return self.polytope()._engine_polyhedron()
+
+    def volume(self):
+        return self.polytope().volume()
+
+    def vertices(self):
+        return self.polytope().vertices()
+
+    def n_vertices(self):
+        return self.polytope().n_vertices()
+
+    def facets(self):
+        lattice = self.lattice()
+        _sign, gram = _positive_gram(lattice)
+        rationals = lattice.base_ring().fraction_field()
+        dual_gram = gram.change_ring(rationals).dual_tensor()
+        result = []
+        for face in self._engine_polyhedron().facets():
+            inequalities = tuple(
+                inequality
+                for inequality in face.ambient_Hrepresentation()
+                if inequality.is_inequality()
+            )
+            if len(inequalities) != 1:
+                raise ArithmeticError(
+                    "a Voronoi facet must have one ambient supporting inequality"
+                )
+            inequality = inequalities[0]
+            coefficients = tuple(
+                rationals._from_engine_element(SageQQ(entry))
+                for entry in inequality.A()
+            )
+            covector = tensor(rationals, (), (len(coefficients),), coefficients)
+            vector_coordinates = -(dual_gram * covector)
+            relevant_vector = _element_from_coordinates(
+                lattice,
+                tuple(lattice.base_ring()(coordinate) for coordinate in vector_coordinates),
+            )
+            if relevant_vector == lattice.zero():
+                raise ArithmeticError("a Voronoi facet has a nonzero relevant vector")
+            result.append(
+                VoronoiFacet(
+                    self,
+                    ConvexPolytope(face.as_polyhedron().vertices_list(), lattice=lattice),
+                    relevant_vector,
+                )
+            )
+        return finite_ordered_set(tuple(result))
+
+    def n_facets(self):
+        return self.facets().cardinality()
+
+    def incidences(self):
+        r"""Return the exact facet--vertex incidences of this Voronoi cell."""
+        incidences = []
+        for facet in self.facets():
+            facet_vertices = facet.vertices()
+            for vertex in self.vertices():
+                if vertex in facet_vertices:
+                    incidences.append((facet, vertex))
+        return finite_ordered_set(tuple(incidences))
+
+    def stabilizer(self):
+        r"""Return the full orthogonal group preserving the origin-centred cell."""
+        return self.lattice().O()
+
+    def __repr__(self) -> str:
+        return f"Voronoi cell of {self.lattice()}"
+
+
 @dataclass(frozen=True)
 class LatticeReduction:
     original: object
@@ -103,8 +236,6 @@ def _reduction_from_transformation(lattice, basis_map):
 
     if basis_map.parent() not in MatrixSpaces(lattice.base_ring()):
         raise TypeError("a lattice reframing is an owned matrix-Hom morphism")
-    reduced_gram = lattice.gram_tensor().pullback(basis_map)
-    reduced = lattice.lattice_category()(reduced_gram)
     original_generators = tuple(lattice.module_generators())
     images = tuple(
         sum(
@@ -119,6 +250,27 @@ def _reduction_from_transformation(lattice, basis_map):
         )
         for column in range(len(original_generators))
     )
+    reduced_gram = lattice.gram_tensor().pullback(basis_map)
+    if lattice in ModuleSubobjects(lattice.base_ring()):
+        from dzack_research.preamble.categories.lattices import (
+            _lattice_subobject_spanning,
+        )
+
+        ambient = lattice.ambient_lattice()
+        old_inclusion = lattice.inclusion()
+        embedded_reduced_basis = finite_ordered_set(
+            tuple(old_inclusion(image) for image in images)
+        )
+        reduced = _lattice_subobject_spanning(
+            ambient,
+            embedded_reduced_basis,
+        )
+        if reduced.gram_tensor() != reduced_gram:
+            raise ArithmeticError(
+                "the reduced subobject framing does not have the pulled-back Gram form"
+            )
+    else:
+        reduced = lattice.lattice_category()(reduced_gram)
     isometry = reduced.Isom(lattice)(images)
     reduced._preamble_lll_isometry = isometry
     reduced._preamble_lll_change_of_basis = basis_map
@@ -181,12 +333,15 @@ def vectors_of_square(lattice, square):
     square = lattice.base_ring()(square)
     target = sign * square
     if target < 0:
-        return tuple()
+        return finite_ordered_set(())
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
-        return tuple()
-    return tuple(_element_from_coordinates(lattice, coordinates) for coordinates in lists[int(target)])
+        return finite_ordered_set(())
+    return finite_ordered_set(tuple(
+        _element_from_coordinates(lattice, coordinates)
+        for coordinates in lists[int(target)]
+    ))
 
 
 def roots(lattice):
@@ -197,8 +352,10 @@ def roots(lattice):
 def roots_of_square(lattice, square):
     square = lattice.base_ring()(square)
     if square == 0:
-        return tuple()
-    return tuple(vector for vector in vectors_of_square(lattice, square) if vector.is_root())
+        return finite_ordered_set(())
+    return finite_ordered_set(tuple(
+        vector for vector in vectors_of_square(lattice, square) if vector.is_root()
+    ))
 
 
 def root_sublattice(lattice):
@@ -258,7 +415,11 @@ def root_sublattice(lattice):
 
 def vectors_of_square_and_divisibility(lattice, square, divisibility):
     divisibility = lattice.base_ring()(divisibility)
-    return tuple(vector for vector in vectors_of_square(lattice, square) if vector.div() == divisibility)
+    return finite_ordered_set(tuple(
+        vector
+        for vector in vectors_of_square(lattice, square)
+        if vector.div() == divisibility
+    ))
 
 
 def shortest_vectors(lattice):
@@ -284,6 +445,7 @@ def _target_coordinates(lattice, target):
 def closest_vector(lattice, target):
     r"""Return the exact closest lattice vector to a rational target."""
     from itertools import product
+
     from sage.functions.other import ceil, floor, sqrt
 
     point = _target_coordinates(lattice, target)
@@ -330,6 +492,69 @@ def closest_vector(lattice, target):
     return _element_from_coordinates(lattice, best_coordinates)
 
 
+def close_vectors(lattice, target, square_bound):
+    r"""Return the lattice vectors within the stated quadratic bound of ``target``.
+
+    The target is a point of ``L tensor QQ`` in the selected lattice frame.
+    For a positive-definite lattice this returns the ``x in L`` with
+    ``q(x-target) <= square_bound``; for a negative-definite lattice the same
+    statement uses the lattice's own negative form, so ``square_bound`` is
+    negative and ``q(x-target) >= square_bound``.  The values of the returned
+    indexed family are the exact signed squares ``q(x-target)`` in the
+    fraction field of the base ring.
+
+    PARI's ``qfcvp`` supplies the finite candidate set for the positive metric
+    ``sign*q``.  Because its radius interface passes through a floating bound,
+    every candidate is filtered again against the exact rational quadratic
+    form before it crosses back into the owned lattice.
+    """
+    point = _target_coordinates(lattice, target)
+    sign, positive_gram = _positive_gram(lattice)
+    ring = lattice.base_ring()
+    rationals = ring.fraction_field()
+    bound = rationals(square_bound)
+    positive_bound = rationals(sign) * bound
+    if positive_bound < rationals.zero():
+        raise ValueError(
+            "a close-vector bound has the sign of the definite lattice form"
+        )
+
+    engine_gram = _engine_component_matrix(positive_gram)
+    engine_point = engine_vector(
+        SageQQ,
+        tuple(_engine_element(rationals, coordinate) for coordinate in point),
+    )
+    _count, _largest, raw_coordinates = engine_gram.__pari__().qfcvp(
+        engine_point.__pari__().Col(),
+        _engine_element(rationals, positive_bound) + SageQQ(1) / 2,
+    )
+    positive_gram_q = engine_gram.change_ring(SageQQ)
+    candidates = {}
+    for column in engine_matrix(SageQQ, raw_coordinates).columns():
+        displacement = column - engine_point
+        positive_square = displacement * positive_gram_q * displacement
+        if positive_square > _engine_element(rationals, positive_bound):
+            continue
+        coordinates = tuple(ring(int(entry)) for entry in column)
+        vector = _element_from_coordinates(lattice, coordinates)
+        signed_square = rationals._from_engine_element(
+            SageQQ(_engine_element(ring, sign)) * positive_square
+        )
+        candidates[tuple(vector.to_tuple())] = (vector, signed_square)
+
+    vectors = finite_ordered_set(
+        tuple(vector for vector, _square in candidates.values())
+    )
+    by_coordinates = {
+        coordinates: square for coordinates, (_vector, square) in candidates.items()
+    }
+    return finite_indexed_family(
+        vectors,
+        lambda vector: by_coordinates[tuple(vector.to_tuple())],
+        name=f"Vectors of {lattice} close to {point}",
+    )
+
+
 def babai(lattice, target):
     r"""Return Babai's LLL nearest-plane approximation."""
     point = _target_coordinates(lattice, target)
@@ -360,8 +585,9 @@ def voronoi_cell(lattice, bound=None):
     rank = gram.tensor_shape()[0]
     rationals = lattice.base_ring().fraction_field()
     if rank == 0:
-        return ConvexPolytope(
-            Polyhedron(vertices=[[]], base_ring=SageQQ)
+        return VoronoiCell(
+            lattice,
+            ConvexPolytope(Polyhedron(vertices=[[]], base_ring=SageQQ).vertices_list()),
         )
     gram_q = gram.change_ring(rationals)
     engine_gram = _engine_component_matrix(gram)
@@ -393,8 +619,12 @@ def voronoi_cell(lattice, bound=None):
                 inequalities.append(
                     [_engine_element(rationals, entry) for entry in owned_entries]
                 )
-        return ConvexPolytope(
-            Polyhedron(ieqs=inequalities, base_ring=SageQQ)
+        return VoronoiCell(
+            lattice,
+            ConvexPolytope(
+                Polyhedron(ieqs=inequalities, base_ring=SageQQ).vertices_list(),
+                lattice=lattice,
+            ),
         )
 
     if bound is not None:
@@ -666,9 +896,12 @@ def kissing_number(lattice):
 
 __all__ = [
     "LatticeReduction",
+    "VoronoiCell",
+    "VoronoiFacet",
     "babai",
     "bkz_reduction",
     "center_density",
+    "close_vectors",
     "closest_vector",
     "contact_polytope",
     "covering_radius",

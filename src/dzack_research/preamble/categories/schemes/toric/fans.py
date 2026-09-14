@@ -130,6 +130,25 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         )
         return TensorProduct(characters, cocharacters).from_bilinear(dual_frames)
 
+    def character_cocharacter_value(self, character, cocharacter):
+        r"""Return the scalar integer ``<character, cocharacter>``.
+
+        The bilinear classifier above lands in the rank-one module underlying
+        ``ZZ``.  Toric valuations use its scalar coefficient, which is extracted
+        here at the pairing owner rather than independently by each consumer.
+        """
+        pairing = self.character_cocharacter_pairing()
+        values = pairing.codomain()
+        labels = tuple(values.module_generating_set())
+        if len(labels) != 1:
+            raise ArithmeticError(
+                "the character-cocharacter pairing must take values in the rank-one integer module"
+            )
+        integers = _integers()
+        paired = pairing(character, cocharacter)
+        coefficients = module_coefficients(paired, values)
+        return integers(coefficients.get(labels[0], integers.zero()))
+
     def _repr_object_names(self):
         return f"rational polyhedral fans in {self.lattice()}"
 
@@ -256,6 +275,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         def character_cocharacter_pairing(self):
             r"""The perfect pairing ``M ⊗ N -> ZZ`` of the torus of this fan."""
             return self.category().character_cocharacter_pairing()
+
+        def character_cocharacter_value(self, character, cocharacter):
+            r"""Return the scalar integer ``<character, cocharacter>``."""
+            return self.category().character_cocharacter_value(character, cocharacter)
 
         def dimension(self):
             r"""The rank of ``N``, which is the dimension of the toric variety."""
@@ -469,9 +492,11 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             Returned as the finite ordered set of values ``<m, u>``, one for
             each primitive ray generator ``u`` of the cone.
             """
-            pairing = self.parent().character_cocharacter_pairing()
             return finite_ordered_set(
-                tuple(pairing(character, ray) for ray in self.rays())
+                tuple(
+                    self.parent().character_cocharacter_value(character, ray)
+                    for ray in self.rays()
+                )
             )
 
         def dual_cone_contains(self, character) -> bool:

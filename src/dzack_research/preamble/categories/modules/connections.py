@@ -1,21 +1,30 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
+from sage.categories.morphism import Morphism, SetMorphism
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.structure.element import Element
+
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
-from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.classcall_metaclass import typecall
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from sage.categories.morphism import Morphism, SetMorphism
-from sage.structure.element import Element
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
+from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -24,14 +33,6 @@ from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     alternating_power_product,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
-from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
-from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
-from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -39,6 +40,29 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     restrict_scalars,
 )
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+class CommutativeAlgebraParameters(OwnedCategory):
+    r"""The parameter domain of module categories with algebraic connection."""
+
+    def an_object(self):
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return CommutativeAlgebras(_own_ring(SageZZ)).an_object()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        try:
+            ring = candidate.base_ring()
+        except (AttributeError, TypeError):
+            return False
+        return candidate in CommutativeAlgebras(ring)
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -65,6 +89,9 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
     def algebra(self):
         return self.base()
+
+    def parameter_category(self):
+        return CommutativeAlgebraParameters()
 
     def super_categories(self):
 
@@ -127,6 +154,9 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
     def algebra(self):
         return self.base()
 
+    def parameter_category(self):
+        return CommutativeAlgebraParameters()
+
     def super_categories(self):
         return [ModulesWithConnection(self.algebra())]
 
@@ -176,7 +206,8 @@ class Connection(Element):
                 position: generator_images[position]
                 for position in range(len(generator_images))
             }
-            raw_image = lambda label: by_position[int(labels.ranking_map()(label))]
+            def raw_image(label):
+                return by_position[int(labels.ranking_map()(label))]
         else:
             raise TypeError(
                 "a connection is specified by a generator-indexed function or finite assignment"
@@ -259,7 +290,7 @@ class Connection(Element):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")
         if cached is not None:
             return cached
-        source = self.parent().restricted_source_module()
+        self.parent().restricted_source_module()
         target = self.parent().restricted_target_module()
         morphism = self.parent().arrow_set().elementwise(
             lambda element: target(self(element.underlying_element()))
@@ -436,7 +467,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
             if connection.parent() is self:
                 return connection
             return self(lambda label: connection.generator_image(label))
-        return self.element_class(self, generator_images)
+        return Connection(self, generator_images)
 
     def _repr_(self):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
@@ -557,12 +588,12 @@ class ConnectionHomset(RestrictedHomCategoryParent):
             tagged = getattr(images, "_preamble_connection_morphism", None)
             if tagged is not None and tagged.parent() is self:
                 return tagged
-        return self.element_class(self, images)
+        return ConnectionMorphism(self, images)
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
             raise ValueError("identity belongs to a connection endomorphism homset")
-        return self.element_class(
+        return ConnectionMorphism(
             self,
             self.arrow_set().identity(),
             verify_horizontality=False,
@@ -807,6 +838,7 @@ class ConnectionDeRhamModule:
 
 
 __all__ = [
+    "CommutativeAlgebraParameters",
     "Connection",
     "ConnectionDeRhamDifferential",
     "ConnectionDeRhamModule",

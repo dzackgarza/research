@@ -25,7 +25,7 @@ class OwnedHomset(Homset):
         return self.identity()
 
 
-__all__ = ["OwnedHomset", "UnderlyingSetHomset", "underlying_set_homset"]
+__all__ = ["CategoryPacketMethods", "OwnedHomset", "UnderlyingSetHomset", "has_category_packet_surface", "underlying_set_homset"]
 
 class UnderlyingSetHomset(OwnedHomset):
     r"""Plain-function Homset used only when an owned category declares no stronger arrows."""
@@ -63,6 +63,19 @@ def underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHoms
     result = UnderlyingSetHomset(domain, codomain)
     _underlying_set_homsets[key] = result
     return result
+
+
+def has_category_packet_surface(category) -> bool:
+    r"""Return whether ``category`` carries the coordinated Hom packet surface.
+
+    Owned category objects receive these operations through ``Cat.ParentMethods``
+    in their dynamic ``subcategory_class``.  That is a mathematical capability,
+    not reliably a Python ``isinstance`` relation: Sage requires nested method
+    providers themselves to have no superclass.
+    """
+    return callable(getattr(category, "_category_packet", None)) and callable(
+        getattr(category, "_hom_endpoint", None)
+    )
 
 
 class CategoryPacketMethods:

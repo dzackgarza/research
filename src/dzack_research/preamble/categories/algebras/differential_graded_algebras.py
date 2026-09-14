@@ -1,7 +1,7 @@
 r"""Differential graded algebra categories and their morphisms."""
 
 from sage.categories.morphism import Morphism
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -11,15 +11,20 @@ from dzack_research.preamble.categories.algebras.derivations import (
     GradedDerivation,
     GradedDerivations,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     GradedCommutativeAlgebras,
     StrictlyGradedCommutativeAlgebras,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -51,7 +56,6 @@ class DegreewiseLinearMorphism(Morphism):
         return self._call_(element)
 
     def represented_module_morphism(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
 
         source = self.domain()
         target = self.codomain()
@@ -83,11 +87,10 @@ class DifferentialComponentMorphism(DegreewiseLinearMorphism):
 class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, whose differential makes it a DGA."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -97,14 +100,13 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
         return [GradedAlgebras(self.base_ring()), CochainComplexes(self.base_ring())]
 
-    def Mor(self, domain, codomain):
-        if domain not in self or codomain not in self:
-            raise TypeError("a DGA Hom requires two differential graded algebras")
-        return dga_homset(domain, codomain)
-
     _HomCategory = None
 
     class ParentMethods:
+        def degree_index_set(self):
+            r"""Return the grading object as the inherited cochain degree set."""
+            return self.grading_monoid()
+
         def graded_algebra(self):
             return self
 
@@ -134,15 +136,29 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         def d(self, element):
             return self.differential()(element)
 
+        @cached_method
+        def _negative_cochain_zero_module(self):
+            r"""The represented zero module used by the inherited cochain complex."""
+            return BasedFreeModule(self.base_ring(), finite_ordered_set(()))
+
         def differential_component(self, degree):
             degree = int(degree)
             if degree < 0:
-                raise ValueError("a nonnegative DGA has no negative differential component")
+                source = self._negative_cochain_zero_module()
+                if degree == -1:
+                    target = self.graded_piece(0)
+                else:
+                    target = source
+                return DifferentialComponentMorphism(
+                    source,
+                    target,
+                    lambda _element: target.zero(),
+                )
             source = self.graded_piece(degree)
             target = self.graded_piece(degree + 1)
 
             def component(element):
-                source_element = self.from_component(degree, element)
+                source_element = self.from_graded_piece(degree, element)
                 image = self.d(source_element)
                 return image.homogeneous_component(degree + 1)
 
@@ -152,11 +168,10 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, which is graded-commutative."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -173,11 +188,10 @@ class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, strictly graded-commutative."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -224,12 +238,24 @@ class DGAMorphism(Morphism):
         )
         for generator in generators:
             image = self(generator)
-            if (
-                generator.is_homogeneous()
-                and image != target.zero()
-                and (not image.is_homogeneous() or image.degree() != generator.degree())
-            ):
-                raise ValueError("a DGA morphism must preserve homogeneous degree")
+            if generator != source.zero():
+                try:
+                    generator_degree = source.homogeneous_degree(generator)
+                except (ValueError, NotImplementedError) as error:
+                    raise ValueError(
+                        "a selected DGA generator must be homogeneous"
+                    ) from error
+                if image != target.zero():
+                    try:
+                        image_degree = target.homogeneous_degree(image)
+                    except (ValueError, NotImplementedError) as error:
+                        raise ValueError(
+                            "a DGA morphism must preserve homogeneous degree"
+                        ) from error
+                    if image_degree != generator_degree:
+                        raise ValueError(
+                            "a DGA morphism must preserve homogeneous degree"
+                        )
             if self(source.d(generator)) != target.d(image):
                 raise ValueError("a DGA morphism must commute with the differential")
         for left in generators:
@@ -250,12 +276,18 @@ class DGAMorphism(Morphism):
         r"""Return the degree-``degree`` linear component of this DGA map."""
         degree = int(degree)
         if degree < 0:
-            raise ValueError("the represented DGA is nonnegative")
+            source = self.domain()._negative_cochain_zero_module()
+            target = self.codomain()._negative_cochain_zero_module()
+            return DegreewiseLinearMorphism(
+                source,
+                target,
+                lambda _element: target.zero(),
+            )
         source = self.domain().graded_piece(degree)
         target = self.codomain().graded_piece(degree)
 
         def image(element):
-            source_element = self.domain().from_component(degree, element)
+            source_element = self.domain().from_graded_piece(degree, element)
             return self(source_element).homogeneous_component(degree)
 
         return DegreewiseLinearMorphism(source, target, image)

@@ -1,25 +1,27 @@
 r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    RestrictedHomCategoryOf,
-    RestrictedHomCategoryParent,
-    category_packet,
-)
 from typing import cast
 
-from sage.categories.category import Category
 from sage.categories.finite_fields import FiniteFields
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
+from sage.categories.number_fields import NumberFields
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
-from sage.misc.classcall_metaclass import typecall
+from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CosliceCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    RestrictedHomCategoryOf,
+    RestrictedHomCategoryParent,
+    category_packet,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
@@ -27,24 +29,11 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
+    _exact_field_morphism_from_engine,
     exact_embeddings,
     exact_field_homset,
-    _exact_field_morphism_from_engine,
     field_generators,
     first_exact_embedding,
-)
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    FiniteGaloisAutomorphism,
-    FiniteGaloisExtension,
-    FiniteGaloisQuotient,
-    GaloisRestrictionMap,
-    LiftCoset,
-    continuous_group_homset,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedFields,
-    _engine_ring,
-    _own_ring,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
@@ -57,7 +46,22 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     FrobeniusConjugacyClass,
     InertiaGroupConjugacyClass,
 )
-from dzack_research.preamble.categories.group.profinite.galois_quotient import _relative_degree
+from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    FiniteExtensionAutomorphismGroup,
+    FiniteGaloisAutomorphism,
+    FiniteGaloisExtension,
+    FiniteGaloisQuotient,
+    GaloisRestrictionMap,
+    LiftCoset,
+    _relative_degree,
+    continuous_group_homset,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class AbsoluteGaloisGroupElement(Element):
@@ -111,8 +115,10 @@ class AbsoluteGaloisGroupElement(Element):
     def exact_action(self):
         return self._exact_action
 
-    def realized_stages(self) -> tuple:
-        return tuple(stage for stage, _coordinate in self._coordinates)
+    def realized_stages(self):
+        return finite_ordered_set(
+            tuple(stage for stage, _coordinate in self._coordinates)
+        )
 
     def restriction_coordinate(self, stage):
         for known_stage, coordinate in self._coordinates:
@@ -260,6 +266,10 @@ class ElementConjugacyClass(SageObject):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``."""
+        return self.supergroup()
+
     def representative(self):
         return self._representative
 
@@ -387,6 +397,9 @@ class AbsoluteGaloisCategoryConstruction(RestrictedHomCategoryOf):
             return False
 
 
+_ABSOLUTE_GALOIS_GROUP_CACHE = {}
+
+
 class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     r"""The automorphism group of one exact extension object (K\to\bar K).
 
@@ -397,6 +410,36 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     """
 
     Element = AbsoluteGaloisGroupElement
+
+    @staticmethod
+    def __classcall__(cls, *args, **kwargs):
+        # Open subgroups inherit this Python method but have different
+        # construction data; their own constructor remains ordinary.
+        if cls is not AbsoluteGaloisGroup:
+            return typecall(cls, *args, **kwargs)
+        if len(args) != 1:
+            return typecall(cls, *args, **kwargs)
+
+        field = _own_ring(args[0])
+        closure = kwargs.get("closure")
+        embedding = kwargs.get("embedding")
+        extra_categories = tuple(kwargs.get("extra_categories", ()))
+        if closure is not None or embedding is not None or extra_categories:
+            return typecall(
+                cls,
+                field,
+                closure=closure,
+                embedding=embedding,
+                extra_categories=extra_categories,
+            )
+
+        key = id(field)
+        cached = _ABSOLUTE_GALOIS_GROUP_CACHE.get(key)
+        if cached is not None and cached.base_field() is field:
+            return cached
+        result = typecall(cls, field)
+        _ABSOLUTE_GALOIS_GROUP_CACHE[key] = result
+        return result
 
     def __init__(
         self,
@@ -417,7 +460,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         self._extension_cache: dict[object, FiniteGaloisExtension] = {}
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
-        category = Category.join(
+        category = Cat().meet(
             (absolute_galois_group_category(self._field), *tuple(extra_categories))
         )
         # The elements are field automorphisms of the closure, so this is the
@@ -446,6 +489,30 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         return self._embedding
 
     geometric_point = base_embedding
+
+    def choice_data(self):
+        r"""Return the explicit realization data retained by this parent.
+
+        The live realization records the chosen algebraic closure and base
+        embedding.  Later finite-stage embeddings and prolongations are
+        supplied as explicit mathematical data at their constructors rather
+        than being selected by a hidden global choice policy.
+        """
+        return {
+            "closure": self.algebraic_closure(),
+            "embedding": self.base_embedding(),
+        }
+
+    def has_canonical_realization(self) -> bool:
+        r"""Return whether this realized absolute Galois group is canonical.
+
+        For a finite field the selected profinite group is canonically
+        procyclic, with the arithmetic Frobenius as its distinguished
+        topological generator.  For a general field the concrete closure and
+        base embedding are chosen realization data rather than canonical
+        mathematical objects.
+        """
+        return self._is_finite_field()
 
     def slice_category(self):
         return self._slice_category
@@ -479,7 +546,22 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         return True if self._is_finite_field() else Unknown
 
     def is_finitely_generated(self):
-        return False if self._is_finite_field() else Unknown
+        r"""Return whether this absolute Galois group is algebraically finitely generated.
+
+        Finite-field absolute Galois groups are procyclic but not algebraically
+        generated by Frobenius.  If ``K`` is a number field, then for every
+        ``r`` there are multiquadratic finite Galois extensions of ``K`` with
+        Galois group ``(C_2)^r``.  Hence ``G_K`` has finite quotients whose
+        minimal number of generators is arbitrarily large, so no finite
+        algebraic generating set of ``G_K`` can exist.  Outside these two
+        represented regimes this parent does not decide the question.
+        """
+        if self._is_finite_field():
+            return False
+        computation_field = _engine_ring(self._field)
+        if computation_field is SageQQ or computation_field in NumberFields():
+            return False
+        return Unknown
 
     def _is_finite_field(self) -> bool:
         return _engine_ring(self._field) in FiniteFields()
@@ -504,7 +586,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                 raise ValueError(
                     "a global automorphism must be an endomorphism of the chosen closure"
                 )
-            element = self.element_class(self, exact_action=datum)
+            element = AbsoluteGaloisGroupElement(self, exact_action=datum)
         else:
             raise TypeError("an element requires an exact closure automorphism")
         if not element.fixes_base_field():
@@ -528,7 +610,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                 self._one_element = FrobeniusElement(self, ZZ.zero())
             else:
                 identity = exact_field_homset(self._closure, self._closure).identity()
-                self._one_element = self.element_class(self, exact_action=identity)
+                self._one_element = AbsoluteGaloisGroupElement(self, exact_action=identity)
         return self._one_element
 
     def an_element(self):
@@ -550,7 +632,15 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             raise NotImplementedError(
                 "no topological generating family is selected for this field"
             )
-        return (self.frobenius(),)
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+
+        return finite_ordered_set((self.frobenius(),))
+
+    def topological_generating_family(self):
+        r"""Return the selected topological generating family when represented."""
+        return self.topological_group_generators()
 
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():
@@ -817,6 +907,10 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``."""
+        return self.supergroup()
+
     def fixed_field(self):
         return self._fixed_extension.field()
 
@@ -924,6 +1018,16 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         )
         return self._supergroup.open_subgroup(stage)
 
+    def normalizer_quotient(self):
+        r"""Return ``N_{G_K}(G_E)/G_E = Aut_K(E)`` as exact field maps.
+
+        The infinite normalizer itself is not materialized.  The quotient is
+        the finite group of exact ``K``-automorphisms of the fixed extension,
+        which is canonically isomorphic to the normalizer quotient under the
+        Galois correspondence.
+        """
+        return FiniteExtensionAutomorphismGroup(self.fixed_extension())
+
     def __le__(self, other) -> bool:
         if (
             not isinstance(other, OpenAbsoluteGaloisSubgroup)
@@ -980,6 +1084,14 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
 
     def supergroup(self):
         return self._supergroup
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``.
+
+        ``supergroup`` is the generic subgroup vocabulary; ``ambient`` is the
+        arithmetic name retained by the open-subgroup construction data.
+        """
+        return self.supergroup()
 
     def fixed_field(self):
         return self._extension_field

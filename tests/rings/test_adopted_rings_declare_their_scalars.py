@@ -29,6 +29,8 @@ def test_an_adopted_number_field_declares_the_rationals_as_its_scalars() -> None
     assert gaussian.base_ring() is QQ
     assert gaussian in Algebras(QQ)
     assert gaussian in Modules(QQ)
+    primitive = gaussian.primitive_element()
+    assert gaussian.scalar_multiple(QQ(2), primitive) == primitive + primitive
 
 
 def test_an_adopted_polynomial_ring_declares_its_coefficient_ring() -> None:

@@ -31,20 +31,20 @@ from dzack_research.preamble.categories.algebras.group_algebras import (
     GroupAlgebra,
     GroupAlgebras,
 )
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.group.class_functions import (
     finite_group_class_function,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,
     _owned_group,
 )
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.group_modules.isotypic import (
     _split_irreducible_characters,
@@ -125,7 +125,10 @@ class ModulesOverGroupAlgebra(Modules):
         # are genuine functors, not literal category inclusions.  The group
         # module keeps both structures as defining data instead of obtaining
         # them from a false supercategory edge.
-        return [GObjects(self.acting_group(), Modules(self.coefficient_ring()))]
+        return [
+            GObjects(self.acting_group(), Modules(self.coefficient_ring())),
+            AdditiveGroups().AdditiveCommutative(),
+        ]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
@@ -148,6 +151,42 @@ class ModulesOverGroupAlgebra(Modules):
     def is_semisimple(self) -> bool:
         r"""Maschke's theorem, asked of the group algebra."""
         return self.base_ring().is_semisimple()
+
+    def splitting_field(self):
+        r"""Return a represented cyclotomic field splitting the finite acting group.
+
+        Brauer's theorem gives ``QQ(zeta_|G|)`` as a splitting field.  For
+        groups of order at most two the coefficient fraction field already
+        contains all character values, so it is retained literally.
+        """
+        from dzack_research.preamble.categories.rings.number_fields import (
+            CyclotomicField,
+        )
+
+        group = self.acting_group()
+        if group.is_finite() is not True:
+            raise NotImplementedError(
+                "the selected splitting field is currently represented for finite groups"
+            )
+        fraction_field = self.coefficient_ring().fraction_field()
+        order = int(group.order())
+        if order <= 2:
+            return fraction_field
+        cyclotomic = CyclotomicField(order)
+        from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+            exact_embeddings,
+        )
+
+        if exact_embeddings(fraction_field, cyclotomic).cardinality() == 0:
+            raise NotImplementedError(
+                "the composite of the coefficient fraction field with the cyclotomic splitting field is not represented"
+            )
+        return cyclotomic
+
+    def is_split(self) -> bool:
+        r"""Return whether the coefficient fraction field already contains the selected splitting field."""
+        fraction_field = self.coefficient_ring().fraction_field()
+        return bool(fraction_field.has_coerce_map_from(self.splitting_field()))
 
     # The three scalar-change functors along the augmentation R[G] -> R.
 
@@ -299,6 +338,10 @@ class ModulesOverGroupAlgebra(Modules):
         return self.restriction_coextension_adjunction(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"action", "underlying_category"}
+        )
+
         def __init__(
             self,
             acting_group,
@@ -412,6 +455,10 @@ class ModulesOverGroupAlgebra(Modules):
                 raise ValueError(f"{group_element} is not an element of {self.group()}")
             return self.action()(group_element)
 
+        def action_matrix(self, group_element):
+            r"""Return the matrix of the selected coefficient-linear action in the retained framing."""
+            return self.action_of(group_element).matrix()
+
         def act(self, group_element, element):
             r"""Act on an ``R[G]``-module element through its coefficient restriction."""
             if self._is_the_regular_module():
@@ -419,10 +466,44 @@ class ModulesOverGroupAlgebra(Modules):
             coefficient = self.forget_action_morphism()(element)
             return self.equip_action_morphism()(self.action_of(group_element)(coefficient))
 
+        @cached_method
         def is_trivial_action(self) -> bool:
+            r"""Decide whether every represented group element acts as the identity.
+
+            A constructor may record a known trivial action, but triviality is a
+            property of the action rather than provenance of the constructor.
+            For a finitely generated group acting on a finitely generated module,
+            it is enough to check the selected group generators on the selected
+            module generators.
+            """
             if self._is_the_regular_module():
                 return bool(self.group().cardinality() == 1)
-            return self._preamble_action_is_trivial
+            if self._preamble_action_is_trivial:
+                return True
+
+            group = self.group()
+            if group.is_finitely_generated() is not True:
+                raise NotImplementedError(
+                    "deciding triviality of this action requires a chosen finite group generating set"
+                )
+            module = self.unacted_module()
+            labels = module.module_generating_set()
+            if labels.cardinality().is_finite() is not True:
+                raise NotImplementedError(
+                    "deciding triviality of this action requires a chosen finite module generating set"
+                )
+            for group_generator in group.group_generators():
+                action = self.action_of(group_generator)
+                for label in labels:
+                    generator = module.module_generator(label)
+                    equal = action(generator) == generator
+                    if equal is False:
+                        return False
+                    if equal is not True:
+                        raise NotImplementedError(
+                            "triviality of the represented action is undecidable on a selected generator"
+                        )
+            return True
 
         def scalar_multiple(self, scalar, element):
             r"""Apply the actual ``R[G]`` scalar action."""

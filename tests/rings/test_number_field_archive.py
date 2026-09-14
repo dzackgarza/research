@@ -1,0 +1,46 @@
+r"""Archive reconciliation for multiplication endomorphisms of number fields."""
+
+from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
+
+
+def _quadratic_field():
+    polynomial_ring = PolynomialRing(QQ, "x")
+    x = polynomial_ring.algebra_generator("x")
+    return NumberField(x**2 - 2, "a")
+
+
+def test_number_field_element_retains_its_multiplication_endomorphism() -> None:
+    field = _quadratic_field()
+    element = field.primitive_element() + field.one()
+    morphism = element.multiplication_morphism()
+
+    assert morphism.domain().base_ring() is QQ
+    assert morphism.domain().module_rank() == field.degree()
+    assert morphism.codomain() is morphism.domain()
+    assert morphism.matrix() == element.multiplication_matrix()
+    assert element.matrix() == element.multiplication_matrix()
+    matrix = element.multiplication_matrix()
+    assert matrix[0, 0] == 1
+    assert matrix[1, 0] == 1
+    assert matrix[0, 1] == 2
+    assert matrix[1, 1] == 1
+
+
+def test_multiplication_matrix_recovers_norm_and_trace() -> None:
+    field = _quadratic_field()
+    element = field.primitive_element() + field.one()
+    matrix = element.multiplication_matrix()
+
+    assert matrix.determinant() == element.norm()
+    assert matrix.trace() == element.trace()
+
+
+def test_number_field_inverse_is_the_live_field_inverse() -> None:
+    field = _quadratic_field()
+    element = field.primitive_element() + field.one()
+    inverse = element.inverse()
+
+    assert element * inverse == field.one()
+    assert inverse * element == field.one()
+    assert inverse == element.inverse_of_unit()
+    assert inverse == ~element

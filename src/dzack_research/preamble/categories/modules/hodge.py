@@ -1,11 +1,11 @@
 r"""Determinant, Poincaré-duality, and Hodge constructions on finite free modules."""
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
+    module_homset,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     alternating_power_morphism,

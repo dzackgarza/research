@@ -1,6 +1,7 @@
 r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -87,7 +88,7 @@ class VectorPrimitiveExtension:
         gluing_subgroup = sum_form.subgroup_on(tuple(gluing_classes))
         if int(gluing_subgroup.cardinality()) != int(index):
             raise ArithmeticError("the gluing subgroup does not have order [L:M]")
-        gluing_images = tuple(gluing_subgroup.embedded_elements())
+        gluing_images = gluing_subgroup.embedded_elements()
         if any(
             sum_form.b(left, right) != sum_form.bilinear_value_module().zero()
             for left in gluing_images

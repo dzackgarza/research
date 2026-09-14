@@ -178,17 +178,41 @@ def render_markdown(report: AnalysisReport, *, top: int = 20) -> str:
             lines.append(f"- `{location.path}:{location.line}` `{location.symbol}`: `{location.detail}`")
 
     if p.exhaustive_mathematical_collection_loops:
-        lines.extend(["", "## Explicit loops over named mathematical collections", "", "Review whether the mathematics requires exhaustion or should use a semantic/lazy construction.", ""])
+        lines.extend(
+            [
+                "",
+                "## Explicit loops over named mathematical collections",
+                "",
+                "Review whether the mathematics requires exhaustion or should use a semantic/lazy construction.",
+                "",
+            ]
+        )
         for location in p.exhaustive_mathematical_collection_loops[:top]:
             lines.append(f"- `{location.path}:{location.line}` `{location.symbol}`: `{location.detail}`")
 
     if p.raw_matrix_coordinate_peeks:
-        lines.extend(["", "## Raw matrix/coordinate representation peeks", "", "Review whether rows/columns/bases are private engine serialization or premature semantic lowering.", ""])
+        lines.extend(
+            [
+                "",
+                "## Raw matrix/coordinate representation peeks",
+                "",
+                "Review whether rows/columns/bases are private engine serialization or premature semantic lowering.",
+                "",
+            ]
+        )
         for location in p.raw_matrix_coordinate_peeks[:top]:
             lines.append(f"- `{location.path}:{location.line}` `{location.symbol}`: `{location.detail}`")
 
     if p.variadic_keyword_signatures or p.variadic_positional_signatures or p.none_default_signatures:
-        lines.extend(["", "## Public-signature review triggers", "", "Review mathematical APIs for option bags, sentinel polymorphism, and ambiguous input shapes; private protocol adapters can be legitimate.", ""])
+        lines.extend(
+            [
+                "",
+                "## Public-signature review triggers",
+                "",
+                "Review mathematical APIs for option bags, sentinel polymorphism, and ambiguous input shapes; private protocol adapters can be legitimate.",
+                "",
+            ]
+        )
         for location in (*p.variadic_positional_signatures, *p.variadic_keyword_signatures, *p.none_default_signatures)[:top]:
             lines.append(f"- `{location.path}:{location.line}` `{location.symbol}`: `{location.detail}`")
 

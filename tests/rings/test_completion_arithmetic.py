@@ -1,0 +1,84 @@
+r"""Precision-aware arithmetic on represented adic completions.
+
+The completion is the inverse limit.  A private finite approximation may prove
+inequality, but agreement at its selected precision is never promoted to exact
+equality.  Exact source expressions and maintained exact/lazy series engines
+retain stronger information when it is genuinely available.
+"""
+
+import pytest
+
+from dzack_research.preamble.all import QQ, ZZ, FinitelyPresentedAlgebraOn, PolynomialRing
+from dzack_research.preamble.rings import Zp
+
+
+def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    completion = plane.adic_completion(plane.ideal(x, y), precision=3)
+    include = completion.completion_map()
+    late = include(x**5)
+
+    assert completion.adic_projection(3)(late) == completion.adic_truncation(3).zero()
+    assert late != completion.zero()
+    assert include(x + y) == include(x) + include(y)
+    assert include(x * y) == include(x) * include(y)
+
+
+def test_exact_zero_and_exact_lazy_inverse_are_decided_in_the_completion() -> None:
+    line = PolynomialRing(QQ, ("x",))
+    x = line.algebra_generator("x")
+    completion = line.adic_completion(line.ideal(x))
+    x_hat = completion.completion_map()(x)
+    zero = completion.completion_map()(line.zero())
+
+    assert zero.is_zero()
+    assert not zero
+    with pytest.raises(TypeError):
+        hash(zero)
+
+    unit = completion.one() - x_hat
+    inverse = unit.inverse_of_unit()
+    assert unit * inverse == completion.one()
+
+
+def test_finite_p_adic_agreement_does_not_become_exact_equality_and_can_refine() -> None:
+    coarse = Zp(5, 4, type="fixed-mod")
+    hidden = coarse(5**4)
+
+    assert hidden.precision_absolute() == 4
+    with pytest.raises(AssertionError, match="do not decide exact equality"):
+        hidden.is_zero()
+
+    refined = hidden.refine_precision(8)
+    assert not refined.is_zero()
+    assert refined.exact_source_expression() == ZZ(5**4)
+
+    approximate_inverse = coarse(1 + 5).inverse_of_unit()
+    with pytest.raises(AssertionError, match="exact retained source expression"):
+        approximate_inverse.refine_precision(8)
+
+
+def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpotence() -> None:
+    fat_plane = FinitelyPresentedAlgebraOn(QQ, ("x", "y"), ("x^2",))
+    x = fat_plane.algebra_generator("x")
+    y = fat_plane.algebra_generator("y")
+    maximal = fat_plane.ideal(x, y)
+    completion = fat_plane.adic_completion(maximal, precision=4)
+    include = completion.completion_map()
+    x_hat = include(x)
+    y_hat = include(y)
+
+    assert x_hat != completion.zero()
+    assert (x_hat**2).is_zero()
+    assert x_hat**2 == completion.zero()
+
+    # y^4 vanishes in the selected A/m^4 computation stage but not in the
+    # completed ring.  The finite approximation therefore cannot answer this
+    # exact equality question.
+    with pytest.raises(AssertionError, match="do not decide exact equality"):
+        (y_hat**4).is_zero()
+
+    assert completion.adic_projection(4)(y_hat**4) == completion.adic_truncation(4).zero()
+    assert completion.adic_projection(3)(y_hat**2) != completion.adic_truncation(3).zero()

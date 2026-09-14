@@ -1,11 +1,25 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+import shutil
 from functools import partial
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
-import shutil
 
+from sage.libs.gap.libgap import libgap
+from sage.matrix.constructor import matrix as engine_matrix
+from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
+
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.engine_capabilities import engine_capabilities
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    _engine_component_matrix,
+    tensor,
+)
 from py_polyhedral.binaries import (
     binary_available,
     indefinite_form_automorphism_group,
@@ -16,19 +30,8 @@ from py_polyhedral.binaries import (
     indefinite_form_test_equivalence,
     indefinite_form_test_equivalence_isotropic_k_plane,
     indefinite_form_test_equivalence_vector,
+    lorentzian_perfect_domain_traversal,
 )
-from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
-
-from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors.tensor import (
-    Tensor,
-    tensor,
-)
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def rational_positive_vector(gram):
@@ -132,6 +135,117 @@ function even_unimodular_primitive_embedding(gram_entries, positive, negative)
         change_base_ring(ZZ, gram_matrix(target)),
         change_base_ring(ZZ, embedding),
     ]
+end
+
+function target_primitive_embedding(source_gram_entries, target_gram_entries)
+    source_gram = _zz_matrix(source_gram_entries)
+    target_gram = _zz_matrix(target_gram_entries)
+    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
+    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
+    exists, representatives = primitive_embeddings(
+        genus(target),
+        source;
+        classification = :sub,
+    )
+    if !exists
+        return [1, 0]
+    end
+    target_specific = filter(
+        record -> is_isometric_with_isometry(record[1], target; ambient_representation = false)[1],
+        representatives,
+    )
+    if isempty(target_specific)
+        return [1, 0]
+    end
+    target_prime, source_prime, _complement = first(target_specific)
+    inclusion = solve(
+        basis_matrix(target_prime),
+        basis_matrix(source_prime);
+        side = :left,
+    )
+    return [
+        1,
+        1,
+        change_base_ring(ZZ, gram_matrix(target_prime)),
+        change_base_ring(ZZ, gram_matrix(source_prime)),
+        change_base_ring(ZZ, inclusion),
+    ]
+end
+
+function target_primitive_embedding_classes(
+    source_gram_entries,
+    target_gram_entries,
+    classification_name,
+)
+    source_gram = _zz_matrix(source_gram_entries)
+    target_gram = _zz_matrix(target_gram_entries)
+    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
+    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
+    classification = Symbol(classification_name)
+    @req classification in [:sub, :emb] "primitive embedding classes are :sub or :emb"
+    exists, representatives = primitive_embeddings(
+        genus(target),
+        source;
+        classification = classification,
+    )
+    if !exists
+        return [1, 0, []]
+    end
+    result = []
+    for (target_prime, source_prime, _complement) in representatives
+        is_target, _target_witness = is_isometric_with_isometry(
+            target_prime,
+            target;
+            ambient_representation = false,
+        )
+        if !is_target
+            continue
+        end
+        inclusion = solve(
+            basis_matrix(target_prime),
+            basis_matrix(source_prime);
+            side = :left,
+        )
+        push!(
+            result,
+            [
+                change_base_ring(ZZ, gram_matrix(target_prime)),
+                change_base_ring(ZZ, gram_matrix(source_prime)),
+                change_base_ring(ZZ, inclusion),
+            ],
+        )
+    end
+    if isempty(result)
+        return [1, 0, []]
+    end
+    return [1, 1, result]
+end
+
+function leech_gram_rows()
+    lattice = leech_lattice()
+    gram = change_base_ring(ZZ, gram_matrix(lattice))
+    rows, columns = size(gram)
+    return [[Int(gram[i, j]) for j in 1:columns] for i in 1:rows]
+end
+
+function integral_isometry_witness(source_gram_entries, target_gram_entries)
+    source_gram = _zz_matrix(source_gram_entries)
+    target_gram = _zz_matrix(target_gram_entries)
+    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
+    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
+    isometric, isometry = is_isometric_with_isometry(
+        source,
+        target;
+        ambient_representation = false,
+    )
+    if !isometric
+        return [0]
+    end
+    integral = change_base_ring(ZZ, isometry)
+    if integral * target_gram * transpose(integral) != source_gram
+        error("OSCAR returned an isometry with the wrong Gram identity")
+    end
+    return [1, integral]
 end
 end
 """
@@ -254,6 +368,159 @@ class _OscarLatticeAdapter:
             raise ArithmeticError("OSCAR's primitive-embedding target is not even")
         return target_gram, embedding
 
+    def target_primitive_embedding(self, source_gram, target_gram):
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.target_primitive_embedding",
+            _integer_engine_matrix(source_gram),
+            _integer_engine_matrix(target_gram),
+        )
+        if not isinstance(result, list) or not result:
+            raise RuntimeError("OSCAR returned malformed target-embedding data")
+        if int(result[0]) == 0:
+            return None
+        if len(result) < 2:
+            raise RuntimeError("OSCAR omitted the target-embedding existence flag")
+        if int(result[1]) == 0:
+            return False
+        if len(result) != 5:
+            raise RuntimeError("OSCAR returned malformed target-embedding witness data")
+        target_engine, source_engine, embedding_engine = result[2:]
+        ring = source_gram.base_ring()
+
+        def owned_gram(engine):
+            return tensor(
+                ring,
+                (),
+                (engine.nrows(), engine.ncols()),
+                tuple(
+                    tuple(ring._from_engine_element(entry) for entry in row)
+                    for row in engine.rows()
+                ),
+            )
+
+        target_prime_gram = owned_gram(target_engine)
+        source_prime_gram = owned_gram(source_engine)
+        embedding = MatrixSpace(
+            ring,
+            embedding_engine.ncols(),
+            embedding_engine.nrows(),
+        ).from_rows(
+            tuple(
+                tuple(
+                    ring._from_engine_element(embedding_engine[source, target])
+                    for source in range(embedding_engine.nrows())
+                )
+                for target in range(embedding_engine.ncols())
+            )
+        )
+        if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
+            raise ArithmeticError(
+                "OSCAR's target primitive embedding does not preserve the source-prime form"
+            )
+        return target_prime_gram, source_prime_gram, embedding
+
+    def target_primitive_embedding_classes(
+        self,
+        source_gram,
+        target_gram,
+        classification,
+    ):
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.target_primitive_embedding_classes",
+            _integer_engine_matrix(source_gram),
+            _integer_engine_matrix(target_gram),
+            str(classification),
+        )
+        if not isinstance(result, list) or not result:
+            raise RuntimeError("OSCAR returned malformed primitive-embedding class data")
+        if int(result[0]) == 0:
+            return None
+        if len(result) != 3:
+            raise RuntimeError("OSCAR returned malformed primitive-embedding class header")
+        if int(result[1]) == 0:
+            return ()
+        representatives = []
+        for record in result[2]:
+            if not isinstance(record, list) or len(record) != 3:
+                raise RuntimeError("OSCAR returned a malformed primitive-embedding class")
+            target_engine, source_engine, embedding_engine = record
+            ring = source_gram.base_ring()
+
+            def owned_gram(engine):
+                return tensor(
+                    ring,
+                    (),
+                    (engine.nrows(), engine.ncols()),
+                    tuple(
+                        tuple(ring._from_engine_element(entry) for entry in row)
+                        for row in engine.rows()
+                    ),
+                )
+
+            target_prime_gram = owned_gram(target_engine)
+            source_prime_gram = owned_gram(source_engine)
+            embedding = MatrixSpace(
+                ring,
+                embedding_engine.ncols(),
+                embedding_engine.nrows(),
+            ).from_rows(
+                tuple(
+                    tuple(
+                        ring._from_engine_element(embedding_engine[source, target])
+                        for source in range(embedding_engine.nrows())
+                    )
+                    for target in range(embedding_engine.ncols())
+                )
+            )
+            if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
+                raise ArithmeticError(
+                    "an OSCAR primitive-embedding class does not preserve the source-prime form"
+                )
+            representatives.append((target_prime_gram, source_prime_gram, embedding))
+        return tuple(representatives)
+
+    def leech_gram_rows(self):
+        rows = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.leech_gram_rows"
+        )
+        if not isinstance(rows, list) or len(rows) != 24:
+            raise RuntimeError("OSCAR returned malformed Leech Gram data")
+        matrix_rows = tuple(tuple(SageZZ(entry) for entry in row) for row in rows)
+        if any(len(row) != 24 for row in matrix_rows):
+            raise RuntimeError("OSCAR returned a non-square Leech Gram matrix")
+        gram = engine_matrix(SageZZ, matrix_rows)
+        if not gram.is_symmetric():
+            raise ArithmeticError("OSCAR returned a nonsymmetric Leech Gram matrix")
+        if abs(gram.det()) != 1:
+            raise ArithmeticError("OSCAR returned a non-unimodular Leech Gram matrix")
+        if any(gram[index, index] % 2 for index in range(24)):
+            raise ArithmeticError("OSCAR returned an odd Leech Gram matrix")
+        return matrix_rows
+
+    def integral_isometry_witness(self, source_gram, target_gram):
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.integral_isometry_witness",
+            _integer_engine_matrix(source_gram),
+            _integer_engine_matrix(target_gram),
+        )
+        if not isinstance(result, list) or not result:
+            raise RuntimeError("OSCAR returned malformed lattice-isometry data")
+        if int(result[0]) == 0:
+            return None
+        if len(result) != 2:
+            raise RuntimeError("OSCAR returned malformed lattice-isometry witness data")
+        witness = result[1]
+        if witness.nrows() != witness.ncols():
+            raise ArithmeticError("an OSCAR lattice isometry matrix is not square")
+        source_engine = _integer_engine_matrix(source_gram)
+        target_engine = _integer_engine_matrix(target_gram)
+        if witness * target_engine * witness.transpose() != source_engine:
+            raise ArithmeticError("an OSCAR lattice isometry does not preserve the Gram form")
+        return tuple(
+            tuple(SageZZ(entry) for entry in row)
+            for row in witness.rows()
+        )
+
 
 _oscar_lattices = _OscarLatticeAdapter()
 
@@ -275,6 +542,34 @@ engine_capabilities.register(
     "lattice.even_unimodular_primitive_embedding",
     _OSCAR_PROVIDER,
     _oscar_lattices.even_unimodular_primitive_embedding,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.target_primitive_embedding",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.target_primitive_embedding,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.target_primitive_embedding_classes",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.target_primitive_embedding_classes,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.leech_gram_rows",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.leech_gram_rows,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.oscar_isometry_witness",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.integral_isometry_witness,
     available=_oscar_lattices.available,
     provisioning=_OSCAR_PROVISIONING,
 )
@@ -302,6 +597,36 @@ def even_unimodular_primitive_embedding(gram, positive, negative):
         gram,
         positive,
         negative,
+    )
+
+
+def target_primitive_embedding(source_gram, target_gram):
+    return engine_capabilities.compute(
+        "lattice.target_primitive_embedding",
+        source_gram,
+        target_gram,
+    )
+
+
+def target_primitive_embedding_classes(source_gram, target_gram, classification):
+    return engine_capabilities.compute(
+        "lattice.target_primitive_embedding_classes",
+        source_gram,
+        target_gram,
+        classification,
+    )
+
+
+def leech_gram_rows():
+    r"""Return Hecke's exact positive-definite Leech Gram rows privately."""
+    return engine_capabilities.compute("lattice.leech_gram_rows")
+
+
+def integral_isometry_witness(source_gram, target_gram):
+    return engine_capabilities.compute(
+        "lattice.oscar_isometry_witness",
+        source_gram,
+        target_gram,
     )
 
 
@@ -409,6 +734,12 @@ _PORT_REALIZATIONS = (
         None,
         None,
     ),
+    (
+        "lattice.rational_integral_structure",
+        "MatrixIntegral_* / GroupAction.g",
+        "sage_indefinite_port.groups.integral_structures",
+        "integral_structure_action_for_group",
+    ),
 )
 
 for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
@@ -427,6 +758,61 @@ _POLYHEDRAL_BUILD = (
     "clone github.com/MathieuDutSik/polyhedral_common, build the indefinite-form "
     "programs with `make -C src_indefinite`, and link them into a directory on PATH"
 )
+
+_POLYHEDRAL_LORENTZIAN_BUILD = (
+    "clone github.com/MathieuDutSik/polyhedral_common, build "
+    "LORENTZ_MPI_PerfectLorentzian from src_lorentzian, and expose the binary on PATH"
+)
+
+
+def _lorentzian_perfect_domain_records(gram, option="total"):
+    r"""Cross polyhedral_common's GAP traversal records to plain exact data."""
+    output = lorentzian_perfect_domain_traversal(gram, option)
+    expression = output.strip()
+    if expression.startswith("return "):
+        expression = expression[len("return ") :]
+    if expression.endswith(";"):
+        expression = expression[:-1]
+    records = libgap.eval(expression)
+    result = []
+    for record in records:
+        obj = record["x"]
+        ext = obj["EXT"].sage()
+        group = obj["GRP"]
+        degree = len(ext)
+        permutations = []
+        for generator in group.GeneratorsOfGroup():
+            permutations.append(
+                [
+                    int(libgap.OnPoints(point, generator).sage()) - 1
+                    for point in range(1, degree + 1)
+                ]
+            )
+        adjacencies = []
+        for adjacency in record["ListAdj"]:
+            data = adjacency["x"]
+            selected_face_positions = {
+                int(position) for position in data["eInc"].sage()
+            }
+            adjacencies.append(
+                {
+                    "x": {
+                        "eInc": [
+                            int(position in selected_face_positions)
+                            for position in range(1, degree + 1)
+                        ],
+                        "eBigMat": data["eBigMat"].sage(),
+                    },
+                    "iOrb": int(adjacency["iOrb"].sage()),
+                }
+            )
+        result.append(
+            {
+                "x": {"EXT": ext, "GRP": permutations},
+                "ListAdj": adjacencies,
+            }
+        )
+    return tuple(result)
 
 
 def _polyhedral_no_program(kernel):
@@ -491,6 +877,12 @@ _POLYHEDRAL_REALIZATIONS = (
         "INDEF_FORM_TestEquivalenceIsotropicKplane",
         indefinite_form_test_equivalence_isotropic_k_plane,
         _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
+    ),
+    (
+        "lattice.lorentzian_perfect_domain_traversal",
+        "LORENTZ_MPI_PerfectLorentzian",
+        _lorentzian_perfect_domain_records,
+        _POLYHEDRAL_LORENTZIAN_BUILD,
     ),
 )
 

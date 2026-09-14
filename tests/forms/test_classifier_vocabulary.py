@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import NN, ZZ
 from dzack_research.preamble.categories.forms import (
     BilinearForms,
-    QuadraticForms,
     QuadraticMap,
     classifying_morphism,
     quadratic_map_from_morphism,
@@ -21,6 +20,65 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/forms/forms.sage",
+    "live_owner": "src/dzack_research/preamble/categories/forms/forms.py",
+    "owner_overrides": {
+        "QuadraticMapMorphism": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormHomset": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormHomset.module": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.parent": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.module": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.lift_form": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.polar_form": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.b": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.gram_matrix": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.pullback": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.descends_along": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.values_matrix": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMorphism.image": "src/dzack_research/preamble/categories/modules/powers.py",
+        "BilinearFormHomset": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormHomset.module": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.parent": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.module": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.gram_matrix": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.subdivide_gram_matrix": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.norm": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.polar_form": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.pullback": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.descends_along": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.values_matrix": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMorphism.image": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearForm": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py",
+        "QuadraticForm": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
+
+def test_archived_form_type_names_alias_the_universal_module_hom_owners() -> None:
+    from dzack_research.preamble.categories.forms.forms import (
+        BilinearFormHomset,
+        BilinearFormMorphism,
+        QuadraticFormHomset,
+        QuadraticFormMorphism,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        TensorProductModuleHomset,
+        TensorProductModuleMorphism,
+    )
+    from dzack_research.preamble.categories.modules.powers import (
+        QuadraticModuleHomset,
+        QuadraticModuleMorphism,
+    )
+
+    assert BilinearFormHomset is TensorProductModuleHomset
+    assert BilinearFormMorphism is TensorProductModuleMorphism
+    assert QuadraticFormHomset is QuadraticModuleHomset
+    assert QuadraticFormMorphism is QuadraticModuleMorphism
 
 
 def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations() -> None:

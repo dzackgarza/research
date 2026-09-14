@@ -1,66 +1,57 @@
 """Free modules with their canonical framing."""
 
-from itertools import islice
 
-from sage.categories.category import Category
-from sage.combinat.free_module import CombinatorialFreeModule
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.latex import latex
 from sage.modules.free_module import FreeModule as _SageFreeModule
-from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedRings,
-    _engine_element,
-    _engine_numeral,
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
-from dzack_research.preamble.categories.modules.pure.modules import (
-    BiproductModules,
-    FinitelyGeneratedFreeModules,
-    VectorSpaces,
-)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.modules.base_change import base_change_codomain
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.modules.base_change import base_change_codomain
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
     framing_morphism,
     module_coefficients,
-    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    BiproductModules,
+    FinitelyGeneratedFreeModules,
     FramedModules,
     FreeModules,
-    ModuleSubobjects,
     Modules,
+    ModuleSubobjects,
+    VectorSpaces,
     _refine_matrix_hom,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
+    OwnedCategoryOverBaseRing,
     OwnedFields,
+    OwnedRings,
     PrincipalIdealDomains,
+    _engine_element,
+    _engine_numeral,
+    _engine_ring,
     _own_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 def _finitely_generated_free_placement(ring, module_generating_set):
@@ -69,7 +60,11 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     categories = [_SparseFramedFreeModules(ring)]
     if ring in OwnedFields():
         categories.append(VectorSpaces(ring))
-    if module_generating_set.cardinality().is_finite():
+    try:
+        finite = module_generating_set.cardinality().is_finite()
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        finite = False
+    if finite:
         categories.append(FinitelyGeneratedFreeModules(ring))
     return categories
 
@@ -89,6 +84,36 @@ class _SparseFreeModuleElement(ModuleElement):
     def monomial_coefficients(self):
         return dict(self._coefficients)
 
+    def __iter__(self):
+        r"""Iterate coordinates when the selected framing is finite and ordered."""
+        labels = self.parent().module_generating_set()
+        match (labels in EnumeratedSets(), labels.cardinality().is_finite()):
+            case (True, True):
+                zero = self.parent().base_ring().zero()
+                return (self._coefficients.get(label, zero) for label in labels)
+            case _:
+                raise TypeError(
+                    "coordinate iteration requires a finite ordered module framing"
+                )
+
+    def underlying_set_element(self):
+        r"""Recover ``s`` when this is the canonical free generator ``[s]``.
+
+        This is the inverse of the unit ``S -> U(F_R(S))`` on its image.  A
+        general linear combination has no distinguished underlying element of
+        ``S`` and therefore refuses rather than selecting one support label.
+        """
+        if len(self._coefficients) != 1:
+            raise ValueError(
+                "only a canonical free generator has one underlying framing element"
+            )
+        label, coefficient = next(iter(self._coefficients.items()))
+        if coefficient != self.parent().base_ring().one():
+            raise ValueError(
+                "only a canonical free generator has one underlying framing element"
+            )
+        return label
+
     def _add_(self, other):
         ring = self.parent().base_ring()
         coefficients = dict(self._coefficients)
@@ -98,7 +123,7 @@ class _SparseFreeModuleElement(ModuleElement):
                 coefficients.pop(label, None)
             else:
                 coefficients[label] = value
-        return self.parent()._element_constructor_(coefficients)
+        return self.parent().element_class(self.parent(), coefficients)
 
     def _neg_(self):
         return self.parent()._element_constructor_(
@@ -183,6 +208,11 @@ class _SparseFreeModuleParent:
     def _element_constructor_(self, value):
         if isinstance(value, _SparseFreeModuleElement) and value.parent() is self:
             return value
+        underlying = getattr(value, "underlying_element", None)
+        if callable(underlying):
+            candidate = underlying()
+            if getattr(candidate, "parent", lambda: None)() is self:
+                return candidate
         if isinstance(value, dict):
             labels = self.module_generating_set()
             ring = self.base_ring()
@@ -197,7 +227,6 @@ class _SparseFreeModuleParent:
                 )
             return self.element_class(self, coefficients)
         labels = self.module_generating_set()
-
         if isinstance(value, (tuple, list)):
             if labels not in EnumeratedSets():
                 raise TypeError(
@@ -217,6 +246,18 @@ class _SparseFreeModuleParent:
                 if coefficient != 0
             }
             return self.element_class(self, coefficients)
+
+        # Sequence inputs are coordinate syntax, never candidate scalars.  Only
+        # after the structured ingress cases have been exhausted may an
+        # arbitrary-rank free module ask whether the input is the additive zero
+        # of its base ring.
+        try:
+            scalar = self.base_ring()(value)
+        except (TypeError, ValueError):
+            scalar = None
+        if scalar is not None and scalar == self.base_ring().zero():
+            return self.zero()
+
         if labels.cardinality().is_finite() and int(labels.cardinality().finite_value()) == 1:
             try:
                 scalar = self.base_ring()(value)
@@ -323,6 +364,17 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return module_subobject_on(self, module_generating_set)
 
+        def whole_subobject(self):
+            r"""Return this free module as the full subobject of itself.
+
+            The selected framing is already a basis, so this construction does
+            not ask a backend to row-reduce it.  That distinction is essential
+            over exact local PIDs, where echelon normalization can divide by a
+            nonunit even though the whole-span basis is already known.
+            """
+
+            return _module_subobject_spanning(self, self.module_generators())
+
         def base_ring(self):
             selected = self.__dict__.get("_preamble_base_ring")
             if selected is not None:
@@ -355,7 +407,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return framing_morphism(self, self, self.module_generator)
 
-        def _free_biproduct_over(self, labels, factors):
+        def _free_biproduct_over(
+            self,
+            labels,
+            factors,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
             r"""Return the free biproduct realization when every factor is framed free."""
             free = FramedFreeModules(self.base_ring())
             if not all(factor in free for factor in factors):
@@ -364,6 +423,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 self.base_ring(),
                 labels,
                 _biproduct_factors=factors,
+                _extra_categories=extra_categories,
+                _extra_construction_data=extra_construction_data,
             )
 
         def module_rank(self):
@@ -409,11 +470,27 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return whether the underlying free module is finite."""
             return self.cardinality().is_finite()
 
-        def base_change(self, ring_map):
+        def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
             target_ring = base_change_codomain(self, ring_map)
-            return FreshFreeModuleOn(target_ring, self.module_generating_set())
+            return FreshFreeModuleOn(
+                target_ring,
+                self.module_generating_set(),
+                _extra_construction_data=_extra_construction_data,
+            )
+
+        @cached_method
+        def vector_space(self):
+            r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map.
+
+            This is the archived ``vector_space`` construction: rationalization
+            is scalar extension, not a separately presented copy.  Structured
+            refinements such as formed modules inherit this method and dispatch
+            through their own ``base_change``, so the carried structure is
+            transported by the same canonical ring map.
+            """
+            return self.base_change(self.base_ring().fraction_field_map())
 
 
 class _SparseFramedFreeModules(OwnedCategoryOverBaseRing):
@@ -466,7 +543,7 @@ def _new_sparse_free_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return object_of(Category.join(tuple(categories)), **data)
+    return object_of(Cat().meet(tuple(categories)), **data)
 
 
 
@@ -529,6 +606,15 @@ def _span_basis_elements(module, module_generating_set):
         )
 
     generators = _known_finite_generator_family(module_generating_set)
+    if int(generators.cardinality()) == 1:
+        generator = next(iter(generators))
+        generator = generator if generator.parent() is module else module(generator)
+        if generator != module.zero():
+            # Over a PID, hence an integral domain, one nonzero vector is
+            # automatically a basis of the cyclic submodule it generates.
+            # Retain that mathematical basis instead of echelon-normalizing it;
+            # p-adic backends otherwise divide through nonunit pivots.
+            return finite_ordered_set((generator,))
     support_labels = _finite_support_labels(module, generators)
 
     # Private finite backend serialization.  Only the finite support window is

@@ -1,21 +1,14 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
-from sage.arith.misc import factor
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    FinitelyPresentedTorsionModules,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    _engine_ring,
-)
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
@@ -32,9 +25,14 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+    FinitelyPresentedTorsionModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     Zmod,
     _engine_element,
+    _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
@@ -76,6 +74,14 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         def dual_lattice(self):
             r"""Return the selected metric dual ``L^#`` covering this quotient."""
             return self._preamble_dual_lattice
+
+        def cover(self):
+            r"""Return the metric dual lattice whose quotient gives this discriminant module."""
+            return self.dual_lattice()
+
+        def correlation(self):
+            r"""Return ``L -> L^#``, the presentation defining the discriminant quotient."""
+            return self.source_lattice().correlation_morphism()
 
         @cached_method
         def projection(self):
@@ -130,6 +136,19 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
                 lambda prime: components[prime],
                 name=f"Primary components of {self}",
             )
+
+        def primary_part(self, prime):
+            r"""Return the ``prime``-primary subgroup ``A_prime <= A``.
+
+            This is the single-prime view of :meth:`primary_components`.  If
+            ``prime`` does not divide ``|A|`` the primary subgroup is the zero
+            subgroup, not a missing lookup.
+            """
+            prime = SageZZ(prime)
+            components = self.primary_components()
+            if prime in components.index_set():
+                return components[prime]
+            return self.subgroup_on(())
 
         def dual_lattice_lift(self, element):
             r"""Return a representative of ``element`` in the selected metric dual ``L^#``.
@@ -204,6 +223,68 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 for left in elements
                 for right in elements
             )
+
+        @cached_method
+        def isotropic_subgroups(self):
+            r"""Return all subgroups on which the bilinear form vanishes."""
+            return finite_ordered_filter(
+                self.subgroups(),
+                lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
+            )
+
+        @cached_method
+        def maximal_isotropic_subgroups(self):
+            r"""Return the isotropic subgroups maximal under inclusion."""
+            isotropic = self.isotropic_subgroups()
+
+            def is_maximal(subgroup):
+                subgroup_order = int(subgroup.cardinality())
+                return not any(
+                    int(larger.cardinality()) > subgroup_order
+                    and all(
+                        element in larger
+                        for element in subgroup.embedded_elements()
+                    )
+                    for larger in isotropic
+                )
+
+            return finite_ordered_filter(isotropic, is_maximal)
+
+        @cached_method
+        def lagrangian_subgroups(self):
+            r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
+            order = int(self.cardinality())
+            return finite_ordered_filter(
+                self.isotropic_subgroups(),
+                lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
+            )
+
+        def is_metabolic(self) -> bool:
+            return int(self.lagrangian_subgroups().cardinality()) != 0
+
+        def metabolizer(self):
+            r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
+            lagrangians = self.lagrangian_subgroups()
+            if int(lagrangians.cardinality()) == 0:
+                raise ValueError("this bilinear discriminant form is not metabolic")
+            return lagrangians[0]
+
+        def associated_quadratic_form(self):
+            r"""Return the canonical quadratic refinement when the source lattice is even.
+
+            A bare bilinear torsion form does not determine a quadratic
+            refinement.  A discriminant bilinear form does retain its source
+            lattice, and for an even source lattice that lattice canonically
+            supplies ``q : A_L -> K/2R``.  The construction therefore goes
+            back through the lattice rather than reinterpreting entries of a
+            ``K/R``-valued Gram matrix.
+            """
+            lattice = self.source_lattice()
+            if not lattice.is_even():
+                raise ValueError(
+                    "the discriminant quadratic refinement exists only for an even source lattice"
+                )
+            return lattice.discriminant_quadratic_form()
 
         def orthogonal_quotient(self, subgroup):
             r"""Return ``H^perp/H`` with its descended bilinear form.
@@ -281,12 +362,12 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             )
             normalization = formed.invariant_factor_form()
             forward = (
-                normalization.forward().module_morphism()
+                normalization.forward()
                 * formed.equip_form_morphism()
             )
             inverse = (
                 formed.forget_form_morphism()
-                * normalization.inverse().module_morphism()
+                * normalization.inverse()
             )
             return torsion_form_isometry(
                 forward,
@@ -367,6 +448,10 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def value_module(self):
             return self.quadratic_value_module()
 
+        def twist(self, scalar):
+            r"""Return the same discriminant module equipped with ``scalar*q``."""
+            return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
+
         def q(self, element):
             if element not in self:
                 raise TypeError("the discriminant quadratic form is defined on this module")
@@ -399,6 +484,24 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def maximal_isotropic_subgroups(self):
+            r"""Return the quadratic-isotropic subgroups maximal under inclusion."""
+            isotropic = self.isotropic_subgroups()
+
+            def is_maximal(subgroup):
+                subgroup_order = int(subgroup.cardinality())
+                return not any(
+                    int(larger.cardinality()) > subgroup_order
+                    and all(
+                        element in larger
+                        for element in subgroup.embedded_elements()
+                    )
+                    for larger in isotropic
+                )
+
+            return finite_ordered_filter(isotropic, is_maximal)
+
+        @cached_method
         def lagrangian_subgroups(self):
             r"""Return isotropic ``H`` with ``|H|^2=|A|``."""
 
@@ -411,11 +514,19 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def is_metabolic(self) -> bool:
             return int(self.lagrangian_subgroups().cardinality()) != 0
 
+        def metabolizer(self):
+            r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
+            lagrangians = self.lagrangian_subgroups()
+            if int(lagrangians.cardinality()) == 0:
+                raise ValueError("this quadratic discriminant form is not metabolic")
+            return lagrangians[0]
+
         def form_vanishes_on(self, elements) -> bool:
             r"""Return whether ``q`` vanishes on every supplied element."""
             zero = self.quadratic_value_module().zero()
             return all(self.q(element) == zero for element in elements)
 
+        @cached_method
         def associated_bilinear_form(self):
             r"""Return the ``QQ/ZZ``-valued polarization as a distinct object.
 
@@ -431,10 +542,19 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 tuple(self.b(left, right) for right in generators)
                 for left in generators
             )
-            return TorsionBilinearFormModules(self.base_ring()).from_module(
-                self,
-                gram,
-                self.bilinear_value_module(),
+            unformed = self.unformed_module()
+            return FormModule(
+                BilinearForms(unformed, self.bilinear_value_module())(gram),
+                _extra_categories=(
+                    TorsionBilinearFormModules(self.base_ring()),
+                    DiscriminantModules(self.base_ring()),
+                    DiscriminantBilinearModules(self.base_ring()),
+                ),
+                _extra_construction_data={
+                    "source_lattice": self.source_lattice(),
+                    "dual_lattice": self.dual_lattice(),
+                    "bilinear_value_module": self.bilinear_value_module(),
+                },
             )
 
         def orthogonal_quotient(self, subgroup):
@@ -507,12 +627,12 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
             normalization = formed.invariant_factor_form()
             forward = (
-                normalization.forward().module_morphism()
+                normalization.forward()
                 * formed.equip_form_morphism()
             )
             inverse = (
                 formed.forget_form_morphism()
-                * normalization.inverse().module_morphism()
+                * normalization.inverse()
             )
             return torsion_form_isometry(
                 forward,
@@ -592,6 +712,24 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                     return residues(residue)
             raise ArithmeticError(
                 "the normalized Gauss sum is not an eighth root of unity; the form may be degenerate"
+            )
+
+    class ElementMethods:
+        def is_characteristic(self) -> bool:
+            r"""Return whether this class is characteristic for the quadratic form.
+
+            A class ``v`` is characteristic when
+
+            ``q(x) - b(x, v)`` lies in ``ZZ`` for every ``x`` in the
+            discriminant group.  The quadratic and bilinear values live in
+            quotient value modules, so the comparison is made on their
+            selected rational lifts exactly as in the archived contract.
+            """
+            parent = self.parent()
+            return all(
+                parent.q(element).lift() - parent.b(element, self).lift()
+                in SageZZ
+                for element in parent.elements()
             )
 
 

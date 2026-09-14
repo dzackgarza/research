@@ -15,13 +15,15 @@ from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.group.groups import group_homset
 from dzack_research.preamble.categories.group.groups import (
     OwnedAbelianGroups,
     OwnedFiniteAbelianGroups,
     OwnedGroups,
+    _element_from_engine,
+    _element_to_engine,
     _gap_model,
     _own_group,
+    group_homset,
 )
 from dzack_research.preamble.refine import refine
 
@@ -71,12 +73,19 @@ class AbelianizationFunctor(Functor):
         target_projection = self.quotient_projection_from_image(target_abelianization).gap()
         source_model = _gap_model(source_abelianization)
         target_model = _gap_model(target_abelianization)
-        engine_morphism = morphism.gap()
+        source_group = morphism.domain()
+        target_group = morphism.codomain()
         generators = tuple(source_model.GeneratorsOfGroup())
         images = tuple(
             target_projection.Image(
-                engine_morphism.Image(
-                    source_projection.PreImagesRepresentative(generator)
+                _element_to_engine(
+                    target_group,
+                    morphism(
+                        _element_from_engine(
+                            source_group,
+                            source_projection.PreImagesRepresentative(generator),
+                        )
+                    ),
                 )
             )
             for generator in generators

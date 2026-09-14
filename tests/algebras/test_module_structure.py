@@ -1,7 +1,9 @@
-from sage.categories.homset import Hom
 import pytest
+from sage.categories.homset import Hom
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     Algebras,
     BasedFreeModule,
     BilinearMap,
@@ -10,21 +12,19 @@ from dzack_research.preamble.all import (
     MatrixSpace,
     Modules,
     OwnedRings,
-    QQ,
     QuadraticField,
     SymmetricAlgebraOn,
-    ZZ,
     algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.refine import refine
 
 
 def _gaussian_integers():
@@ -63,6 +63,14 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert polynomial_eta.domain() is QQ
     assert polynomial_eta.codomain() is polynomials.ring_center()
     assert polynomial_eta.codomain() is polynomials
+
+
+def test_forgetful_functor_wraps_an_unframed_ring_with_its_scalar_base() -> None:
+    underlying = algebra_underlying_module_functor(ZZ)(ZZ)
+
+    assert underlying.base_ring() is ZZ
+    assert underlying.realized_object() is ZZ
+    assert underlying(ZZ(2)).underlying_element() == ZZ(2)
 
 
 def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:

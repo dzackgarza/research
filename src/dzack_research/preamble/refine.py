@@ -9,18 +9,16 @@ through owned facades that hold the Sage parent as a private engine.
 
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
-from typing import TypeVar
 
 from sage.categories.category import Category
-from sage.structure.category_object import CategoryObject
 from sage.categories.morphism import Morphism
+from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
-SageObjectT = TypeVar("SageObjectT", bound=SageObject)
 
 
 # A methods class naming one of these among its bases is an implementation
@@ -50,20 +48,47 @@ def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
 
 
 def _rebuild_parent_class(parent: Parent, category: Category) -> None:
-    mixins = _owned_mixins(category, "ParentMethods")
-    if not mixins:
+    providers = _owned_mixins(category, "ParentMethods")
+    if not providers:
         return
     inherited = type(parent).__dict__.get("_preamble_inherited", type(parent))
     carried = frozenset(inherited.__mro__)
-    mixins = tuple(m for m in mixins if m is not object and m not in carried)
+    mixins = tuple(provider for provider in providers if provider is not object and provider not in carried)
     if not mixins:
         return
+
+    # ``inherited`` already contains the method providers reached by earlier
+    # construction steps.  A later refinement prepends only newly reached
+    # providers, which can otherwise let a *supercategory* method shadow the
+    # more specific operation already selected by the final category.  Keep
+    # the final category order authoritative for colliding public operations.
+    # The alias is the original provider's descriptor, not a second
+    # implementation.  Private construction hooks stay on their provider so
+    # ``run_construction_hooks`` still executes each level exactly once.
+    new_names = {
+        name
+        for provider in mixins
+        for name in vars(provider)
+        if not name.startswith("_")
+    }
+    preferred = {}
+    seen = set()
+    for provider in providers:
+        for name, value in vars(provider).items():
+            if name.startswith("_") or name in seen:
+                continue
+            seen.add(name)
+            if provider in carried and name in new_names:
+                preferred[name] = value
+
     concrete = type(parent).__dict__.get("_preamble_concrete", inherited)
     new_class = dynamic_class(
         f"Owned{concrete.__name__}",
         (*mixins, inherited),
         doccls=concrete,
     )
+    for name, value in preferred.items():
+        setattr(new_class, name, value)
     new_class._preamble_concrete = concrete
     new_class._preamble_inherited = inherited
     parent.__class__ = new_class
@@ -138,7 +163,7 @@ def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> N
         )
 
 
-def realize_owned_category(obj: SageObjectT) -> SageObjectT:
+def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObjectT:
     r"""Realize the owned methods of the category already chosen at construction.
 
     This is runtime plumbing, not mathematical refinement.  In particular it
@@ -194,7 +219,7 @@ def run_construction_hooks(obj: SageObject, reached: set[type]) -> None:
             provider.__init_extra__(obj)
 
 
-def refine(
+def refine[SageObjectT: SageObject](
     obj: SageObjectT,
     category: Category | Iterable[Category],
 ) -> SageObjectT:

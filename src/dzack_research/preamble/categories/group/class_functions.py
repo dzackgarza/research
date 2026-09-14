@@ -2,10 +2,10 @@ r"""Class functions on finite owned groups."""
 
 from sage.categories.morphism import SetMorphism
 
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.group.groups import _engine_group
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class FiniteGroupClassFunction(SetMorphism):

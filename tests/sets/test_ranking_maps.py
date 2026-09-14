@@ -9,11 +9,18 @@ rather than some bijection that happens to round-trip.
 
 import pytest
 
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteFilteredOrderedSets,
+    FiniteOrderedSets,
+    OrderedEnumeratedSets,
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
     CartesianProductOfSets,
     CoproductOfSets,
-    NN,
     Sets,
     counting_ordinal,
     finite_ordinal_set,
@@ -99,6 +106,20 @@ def test_a_finite_coproduct_is_enumerated_by_rank_layer() -> None:
     assert ranking.inverse()(1) == coproduct.injection(1)(right[0])
 
 
+def test_finite_ordered_image_over_owned_labels_retains_the_value_map() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    image = finite_ordered_image(
+        labels,
+        lambda label: ("value", label),
+    )
+
+    expected = finite_ordered_set((("value", "left"), ("value", "right")))
+    assert image.index_set() is labels
+    assert image == expected
+    assert image[0] == expected[0]
+    assert int(image.ranking_map()(("value", "right"))) == 1
+
+
 def test_a_product_of_infinite_factors_refuses_the_arrow_it_cannot_represent() -> None:
     r"""$\mathbb N \times \mathbb N$ is countable, but mixed radix does not enumerate it.
 
@@ -109,3 +130,81 @@ def test_a_product_of_infinite_factors_refuses_the_arrow_it_cannot_represent() -
     """
     with pytest.raises(AssertionError):
         CartesianProductOfSets(NN, NN).ranking_map()
+
+
+def test_ordered_collection_notation_routes_through_category_constructors() -> None:
+    declared = FiniteOrderedSets()(("a", "b", "c"))
+    notation = finite_ordered_set(("a", "b", "c"))
+    indices = Sets.Δ[2]
+    image = FiniteOrderedSets().from_indexed(
+        indices,
+        lambda index: ("x", "y", "z")[int(index)],
+    )
+    image_notation = finite_ordered_image(
+        indices,
+        lambda index: ("x", "y", "z")[int(index)],
+    )
+    ordered = OrderedEnumeratedSets()(
+        indices,
+        lambda index: ("u", "v", "w")[int(index)],
+        index_of=lambda value: {"u": indices[0], "v": indices[1], "w": indices[2]}[value],
+    )
+    filtered = FiniteFilteredOrderedSets()(
+        declared,
+        lambda value: value != "b",
+    )
+    filtered_notation = finite_ordered_filter(declared, lambda value: value != "b")
+
+    assert declared == notation == finite_ordered_set(("a", "b", "c"))
+    assert image == image_notation == finite_ordered_set(("x", "y", "z"))
+    assert ordered == finite_ordered_set(("u", "v", "w"))
+    assert filtered == filtered_notation == finite_ordered_set(("a", "c"))
+    assert filtered[0] == "a"
+    assert filtered[1] == "c"
+    assert filtered_notation[0] == "a"
+    assert int(image.ranking_map()("z")) == 2
+
+
+def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -> None:
+    source = finite_ordered_set((0, 1, 2, 3))
+    even = finite_ordered_filter(source, lambda value: value % 2 == 0, name="even")
+    zero = finite_ordered_filter(even, lambda value: value == 0, name="zero")
+    direct = FiniteFilteredOrderedSets()(
+        even,
+        lambda value: value == 2,
+        name="two",
+    )
+
+    assert zero is not even
+    assert direct is not even
+    assert zero == finite_ordered_set((0,))
+    assert direct == finite_ordered_set((2,))
+    assert zero.cardinality() == 1
+    assert direct.cardinality() == 1
+
+
+def test_finite_ordered_image_positional_access_does_not_run_inverse_lookup() -> None:
+    indices = Sets.Δ[1]
+    values = ("left", "right")
+
+    def inverse_lookup(_value):
+        raise AssertionError("positional access already has the enumeration index")
+
+    image = finite_ordered_image(
+        indices,
+        lambda index: values[int(index)],
+        index_of=inverse_lookup,
+    )
+
+    assert image[0] == "left"
+    assert image[1] == "right"
+
+
+def test_finite_ordinal_positional_access_does_not_enumerate(monkeypatch) -> None:
+    ordinal = Sets.Δ[7]
+
+    def refuse_iteration(_self):
+        raise AssertionError("positional access to a finite ordinal is direct")
+
+    monkeypatch.setattr(type(ordinal), "__iter__", refuse_iteration)
+    assert ordinal[5] == NN(5)

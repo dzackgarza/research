@@ -5,10 +5,9 @@ from typing import Any, cast
 import pytest
 
 from dzack_research.preamble.all import (
+    AffineGSchemes,
     AlgebrasWithChosenFinitePresentation,
-    GObjects,
     Groups,
-    Schemes,
     Spec,
     SpecFunctor,
 )
@@ -29,7 +28,7 @@ def _coordinate_swap_action() -> tuple:
     scheme = Spec(algebra)
     swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else swap,
     )
@@ -44,7 +43,7 @@ def _central_sign_action() -> tuple:
     scheme = Spec(algebra)
     sign = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": -x, "y": -y}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else sign,
     )
@@ -158,7 +157,7 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
             return rotation
         return rotation_squared
 
-    acted = GObjects(group, Schemes(QQ))(scheme, action)
+    acted = AffineGSchemes(group, QQ)(scheme, action)
     invariant_algebra = acted.invariant_algebra()
     inclusion = acted.invariant_algebra_inclusion()
     generator_pullback = acted.action_of(generator).coordinate_algebra_morphism()
@@ -184,7 +183,7 @@ def test_zero_dimensional_polynomial_space_is_its_own_invariant_quotient() -> No
     algebra = PolynomialRing(QQ, ())
     scheme = Spec(algebra)
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(scheme, lambda _element: identity)
+    acted = AffineGSchemes(group, QQ)(scheme, lambda _element: identity)
 
     assert acted.invariant_algebra() is algebra
     assert acted.invariant_algebra_inclusion() == algebra.Mor(algebra).identity()
@@ -212,7 +211,7 @@ def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend()
         algebra.Mor(algebra)({"x": -x, "y": y + x**3})
     )
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else nonlinear,
     )

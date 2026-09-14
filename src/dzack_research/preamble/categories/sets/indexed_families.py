@@ -1,19 +1,16 @@
 """Owned indexed families of mathematical values."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterator
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 
-IndexT = TypeVar("IndexT")
-ValueT = TypeVar("ValueT")
-MappedValueT = TypeVar("MappedValueT")
-
-
-class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
+class IndexedFamily[IndexT, ValueT](SageObject):
     r"""A family ``(x_i)_{i in I}`` retaining its indexing set.
 
     A family is not the set of its values: different indices may have equal
@@ -64,7 +61,7 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
             # Hashing is an implementation property, not a hypothesis on an
             # indexing set. Only labels actually requested are retained.
             for known, value in self._unhashable_value_cache:
-                if normalized == known:
+                if (normalized == known) is True:
                     return value
             value = self._value_function(normalized)
             self._unhashable_value_cache.append((normalized, value))
@@ -90,12 +87,12 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
     def __iter__(self) -> Iterator[ValueT]:
         return (self.value(index) for index in self.index_set())
 
-    def map(
+    def map[MappedValueT](
         self,
         function: Callable[[ValueT], MappedValueT],
         *,
         name: str | None = None,
-    ) -> "IndexedFamily[IndexT, MappedValueT]":
+    ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
             raise TypeError("a family map must be callable")
         return IndexedFamily(
@@ -149,7 +146,7 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
         return self._name or f"Family indexed by {self.index_set()}"
 
 
-def indexed_family(
+def indexed_family[IndexT, ValueT](
     index_set: Parent,
     value: Callable[[IndexT], ValueT],
     *,

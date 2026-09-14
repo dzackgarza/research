@@ -1,8 +1,7 @@
 r"""Direct and inverse image on fixed-ambient module subobject categories."""
 
+from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct, Subobjects
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.abstract_categories.constructions import Subobjects
-from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
 
 def _inverse_image_subobject(morphism, subobject):

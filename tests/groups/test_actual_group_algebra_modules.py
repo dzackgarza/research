@@ -6,18 +6,25 @@ unverified under the repository's terminal-T execution policy.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AdditiveGroups,
     FinitelyPresentedTorsionModules,
     FreeModule,
     Groups,
     Modules,
-    QQ,
-    ZZ,
+    Sets,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/group_modules/group_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _sign_module(ring):
@@ -57,6 +64,37 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     assert forget(vector) == line.module_generator(label)
     assert equip(forget(vector)) == vector
     assert module.module_rank() == line.module_rank()
+
+
+def test_regular_representation_linearizes_left_multiplication_on_the_exact_carrier() -> None:
+    group = Groups.S(3)
+    group_algebra = QQ[group]
+    regular = group_algebra.regular_representation()
+    carrier = group_algebra.underlying_module()
+    left, right = tuple(group.group_generators())[:2]
+
+    assert regular in Modules(group_algebra)
+    assert regular.scalar_restriction() is carrier
+    assert regular.module_rank() == carrier.module_rank() == 6
+    assert regular.action_of(left)(carrier.module_generator(right)) == (
+        carrier.module_generator(left * right)
+    )
+    equipped_right = regular.equip_action_morphism()(carrier.module_generator(right))
+    assert regular.act(left, equipped_right) == regular.equip_action_morphism()(
+        carrier.module_generator(left * right)
+    )
+
+
+def test_group_module_retains_its_owned_set_carrier() -> None:
+    _group, _group_algebra, line, _generator, module = _sign_module(QQ)
+    label = line.module_generating_set()[0]
+    equip = module.equip_action_morphism()
+
+    assert module in Sets()
+    assert equip.parent() is Sets().Mor(line, module)
+    equipped = equip(line.module_generator(label))
+    assert equipped.parent() is module
+    assert line(equipped) == line.module_generator(label)
 
 
 def test_scalar_restriction_along_R_to_RG_recovers_the_exact_coefficient_module() -> None:
@@ -132,3 +170,31 @@ def test_selected_integral_presentation_belongs_to_the_scalar_restriction() -> N
     assert module.module_rank() == cyclic.module_rank()
     assert module.module_invariants() is cyclic
     assert module.module_coinvariants() is cyclic
+
+
+def test_archived_action_matrix_and_splitting_field_are_owned_group_module_data() -> None:
+    group, group_algebra, line, generator, module = _sign_module(QQ)
+    category = Modules(group_algebra)
+
+    assert module.action_matrix(generator).nrows() == 1
+    assert module.action_matrix(generator).ncols() == 1
+    assert module.action_matrix(generator)[0, 0] == QQ(-1)
+    assert category.splitting_field() is QQ
+    assert category.is_split()
+
+    cubic_group = Groups.C(3)
+    cubic_category = Modules(QQ[cubic_group])
+    assert cubic_category.splitting_field().degree() == 2
+    assert not cubic_category.is_split()
+
+
+def test_nontrivial_sign_module_invariants_use_the_retained_action() -> None:
+    _group, _group_algebra, line, _generator, module = _sign_module(QQ)
+    label = line.module_generating_set()[0]
+    vector = module.module_generator(label)
+    invariants = module.module_invariants()
+
+    assert not module.is_invariant(vector)
+    assert module.is_invariant(module.zero())
+    assert invariants.module_rank() == 0
+    assert module.module_coinvariants().module_rank() == 0

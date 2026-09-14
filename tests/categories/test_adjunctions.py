@@ -1,10 +1,9 @@
-from sage.categories.sets_cat import Sets
-
 from dzack_research.preamble.all import (
     BasedFreeModule,
     Modules,
     Groups,
     QuadraticField,
+    Sets,
     ZZ,
     abelianization_adjunction,
     base_change_adjunction,
@@ -59,6 +58,8 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     coequalizer = Coequalizer(identity, negative_identity)
 
     assert equalizer.module_rank() == 0
+    assert coequalizer in Modules(ZZ)
+    assert coequalizer not in module.category()
     invariant_factors = coequalizer.invariant_factors()
     assert invariant_factors.cardinality() == 1
     assert invariant_factors[0] == ZZ(2)
@@ -399,6 +400,7 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert recovered(generator) == sign_to_six(generator)
 
     conjugation = group.Aut().one()
+    assert conjugation in group_homset(group, group)
     left, right = adjunction.unit_transformation().naturality_square(conjugation)
     for generator in group_generators:
         assert left(generator) == right(generator)
@@ -425,12 +427,19 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert second_triangle(element) == element
 
 
-def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:
+def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() -> None:
     from dzack_research.preamble.all import FormModules
 
     group, acted = _swap_group_module()
-    forget_action = category_inclusion(Modules(ZZ[group]), Modules(ZZ))
-    assert forget_action(acted) is acted
+    group_algebra = ZZ[group]
+    group_modules = Modules(group_algebra)
+    assert not group_modules.is_subcategory(Modules(ZZ))
+
+    forget_action = group_modules.restriction_of_scalars(
+        group_algebra._ring_morphism_defining_algebra_structure()
+    )
+    restricted = forget_action(acted)
+    assert restricted is acted.scalar_restriction()
 
     doubled = acted.Mor(acted)(
         {
@@ -438,8 +447,12 @@ def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:
             "f": 2 * acted.module_generator("f"),
         }
     )
-    assert forget_action(doubled) is doubled
-    assert forget_action(doubled)(acted.module_generator("e")) == 2 * acted.module_generator("e")
+    restricted_doubled = forget_action(doubled)
+    assert restricted_doubled.domain() is restricted
+    assert restricted_doubled.codomain() is restricted
+    assert restricted_doubled(restricted.module_generator("e")) == (
+        2 * restricted.module_generator("e")
+    )
 
     lattice = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     from dzack_research.preamble.all import BilinearForm, Lattices

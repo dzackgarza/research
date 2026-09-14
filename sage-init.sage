@@ -62,9 +62,9 @@ def latex_if_typesettable(obj):
 
 
 def install_implicit_typesetting(shell):
-    shell.display_formatter.formatters["text/latex"].for_type(
-        object, latex_if_typesettable
-    )
+    formatter = shell.display_formatter.formatters["text/latex"]
+    formatter.enabled = True
+    formatter.for_type(object, latex_if_typesettable)
 
 
 # One import, and it is the same one a script or a notebook cell makes.
@@ -87,6 +87,9 @@ install_implicit_typesetting(get_ipython())
 
 from sage_julia_bridge import JuliaHandle, julia
 
-julia.eval("using Oscar")
+# Do not initialize Oscar at session startup.  The maintained engine adapters
+# load the Julia packages they require when the corresponding computation is
+# first requested; eagerly evaluating ``using Oscar`` here can block an
+# otherwise usable Sage kernel before it becomes ready.
 
 import sageparse.preparser.research  # noqa: F401

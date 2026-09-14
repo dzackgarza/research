@@ -3,7 +3,6 @@ r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."
 from operator import index as integer_index
 from typing import SupportsIndex
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -12,15 +11,16 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalIsomorphism,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
     EnumeratedSets,
     InfiniteEnumeratedSets,
 )
-from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalIsomorphism,
-)
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -43,14 +43,14 @@ def integer_from_natural(n: SupportsIndex) -> Integer:
     return -n // 2
 
 
-def natural_from_integer(k: SupportsIndex) -> Integer:
+def natural_from_integer(k: SupportsIndex) -> int:
     r"""The inverse of :func:`integer_from_natural`."""
     k = ZZ(k)
     if k == 0:
-        return ZZ(0)
+        return 0
     if k > 0:
-        return 2 * k - 1
-    return -2 * k
+        return int(2 * k - 1)
+    return int(-2 * k)
 
 
 def indexed_symbol(
@@ -95,15 +95,29 @@ def index_of_symbol(
     return index
 
 
-class FunctionEnumeratedSets(Category):
+class FunctionEnumeratedSets(OwnedCategory):
     r"""Enumerated sets whose elements stand for functions."""
+
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
+            HermitePolynomials,
+        )
+
+        return HermitePolynomials()
 
     def super_categories(self):
         return [EnumeratedSets()]
 
 
-class EnumeratedByNaturals(Category):
+class EnumeratedByNaturals(OwnedCategory):
     r"""Infinite enumerated sets ranked by \(\mathbb N\)."""
+
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
+            HermitePolynomials,
+        )
+
+        return HermitePolynomials()
 
     def super_categories(self):
         return [InfiniteEnumeratedSets()]
@@ -116,18 +130,25 @@ class EnumeratedByNaturals(Category):
             return _nonnegative_integer(position, error_type=IndexError)
 
         def _rank_from_index(self, index):
-            return _nonnegative_integer(index, error_type=ValueError)
+            return int(_nonnegative_integer(index, error_type=ValueError))
 
         def function(self, index: SupportsIndex) -> Expression:
             return self[self._rank_from_index(index)]
 
 
-class EnumeratedByIntegers(Category):
+class EnumeratedByIntegers(OwnedCategory):
     r"""Infinite enumerated sets whose functions are indexed by \(\mathbb Z\).
 
     The ranking map still runs through \(\mathbb N\); :meth:`function` takes the
     integer index, and indexing takes the corresponding natural number.
     """
+
+    def an_object(self):
+        from dzack_research.preamble.categories.sets.enumerated.laurent_monomials import (
+            LaurentMonomials,
+        )
+
+        return LaurentMonomials()
 
     def super_categories(self):
         return [InfiniteEnumeratedSets()]
@@ -165,6 +186,15 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
     def cardinality(self) -> Parent:
         return aleph0
 
+    def _an_element_(self):
+        r"""Return the rank-zero function symbol."""
+        return self[0]
+
+    def __getitem__(self, position):
+        r"""Return the function at a nonnegative enumeration position."""
+        rank = int(_nonnegative_integer(position, error_type=IndexError))
+        return self.ranking_map().inverse()(rank)
+
     def _symbol_at_index(self, index):
         latex_prefix = (
             self._symbol_prefix
@@ -192,7 +222,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
     def __contains__(self, element):
         try:
             self.ranking_map()(element)
-        except IndexError, TypeError, ValueError:
+        except (IndexError, TypeError, ValueError):
             return False
         return True
 

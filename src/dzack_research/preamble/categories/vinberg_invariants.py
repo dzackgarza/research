@@ -40,16 +40,233 @@ from itertools import combinations
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
-from sage.schemes.projective.projective_space import ProjectiveSpace
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
     ordered_enumerated_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import object_of
+
+
+def _projective_line_over(base_ring):
+    r"""Return the owned projective line over the invariant coefficient ring."""
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+
+    return ProjectiveSpace(1, base_ring)
+
+
+class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
+    r"""Finite graphs or digraphs with exact projective vertex and edge weights."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "projectively weighted graphs"
+
+    def an_object(self):
+        return VinbergInvariantMatrices().from_coxeter_diagram(
+            CoxeterDiagrams().from_cartan_type(["A", 2])
+        ).weighted_graph()
+
+    def super_categories(self):
+        return [Sets()]
+
+    class ParentMethods:
+        def __init__(
+            self,
+            base_ring,
+            vertices,
+            edge_weights,
+            vertex_weights,
+            directed,
+            symmetric,
+            **rest,
+        ) -> None:
+            self._base_ring = base_ring
+            self._vertices = finite_ordered_set(vertices)
+            self._edge_weights = dict(edge_weights)
+            self._vertex_weights = dict(vertex_weights)
+            self._directed = bool(directed)
+            self._symmetric = bool(symmetric)
+            self._projective_line = _projective_line_over(base_ring)
+            super().__init__(**rest)
+
+        def base_ring(self):
+            return self._base_ring
+
+        def vertices(self):
+            return self._vertices
+
+        def cardinality(self):
+            return self._vertices.cardinality()
+
+        def is_directed(self) -> bool:
+            return self._directed
+
+        def is_symmetric(self) -> bool:
+            return self._symmetric
+
+        def projective_line(self):
+            return self._projective_line
+
+        def vertex_weight(self, vertex):
+            if vertex not in self._vertices:
+                raise ValueError("a vertex weight is indexed by a vertex of the graph")
+            return self._vertex_weights[vertex]
+
+        def has_edge(self, left, right) -> bool:
+            if (left, right) in self._edge_weights:
+                return True
+            if self._symmetric and (right, left) in self._edge_weights:
+                return True
+            return False
+
+        def edge_weight(self, left, right):
+            if (left, right) in self._edge_weights:
+                return self._edge_weights[left, right]
+            if self._symmetric and (right, left) in self._edge_weights:
+                return self._edge_weights[right, left]
+            raise ValueError("the selected vertices are not joined by an edge")
+
+        def edges(self):
+            return finite_ordered_set(tuple(self._edge_weights))
+
+        def num_edges(self):
+            return int(self.edges().cardinality())
+
+        def induced_subgraph(self, vertices):
+            r"""Return the projectively weighted subgraph on ``vertices``.
+
+            The selected labels remain the vertex set; every retained vertex
+            and every edge with both endpoints selected keeps its exact point
+            of ``P^1``.  This is an induced subgraph, so no new edge is inferred
+            from the ambient graph.
+            """
+            selected = finite_ordered_set(tuple(vertices))
+            if any(vertex not in self._vertices for vertex in selected):
+                raise ValueError("an induced weighted subgraph uses vertices of the ambient graph")
+            edge_weights = {
+                (left, right): weight
+                for (left, right), weight in self._edge_weights.items()
+                if left in selected and right in selected
+            }
+            vertex_weights = {
+                vertex: self.vertex_weight(vertex) for vertex in selected
+            }
+            return projective_weighted_graph(
+                self.base_ring(),
+                tuple(selected),
+                edge_weights,
+                vertex_weights=vertex_weights,
+                directed=self.is_directed(),
+                symmetric=self.is_symmetric(),
+            )
+
+        subgraph = induced_subgraph
+        subdiagram = induced_subgraph
+
+        def vinberg_invariant_matrix(self):
+            r"""Reconstruct the symmetric Vinberg matrix represented by this graph.
+
+            A Vinberg graph omits exactly the orthogonal pairs, whose invariant
+            is the projective point ``[0:1]``.  Vertex weights supply the
+            diagonal.  Thus a symmetric projectively weighted graph determines
+            one projective invariant matrix.  An asymmetric/directed graph is
+            more general data and is deliberately not coerced into a symmetric
+            reflection arrangement.
+            """
+            if self.is_directed() or not self.is_symmetric():
+                raise ValueError(
+                    "a Vinberg invariant matrix is reconstructed from a symmetric undirected weighted graph"
+                )
+            vertices = tuple(self.vertices())
+            ring = self.base_ring()
+            numerators = []
+            denominators = []
+            for left in vertices:
+                numerator_row = []
+                denominator_row = []
+                for right in vertices:
+                    if left == right:
+                        weight = self.vertex_weight(left)
+                    elif self.has_edge(left, right):
+                        weight = self.edge_weight(left, right)
+                    else:
+                        weight = self.projective_line()([ring.zero(), ring.one()])
+                    numerator_row.append(ring(weight[0]))
+                    denominator_row.append(ring(weight[1]))
+                numerators.append(numerator_row)
+                denominators.append(denominator_row)
+            return _vinberg_invariant_matrix(
+                ring,
+                vertices,
+                numerators,
+                denominators,
+            )
+
+        def projectivization(self):
+            r"""Return this graph: its weights already lie in ``P^1``."""
+            return self
+
+        def _repr_(self):
+            if self._directed:
+                orientation = "digraph"
+            else:
+                orientation = "graph"
+            return f"Projectively weighted {orientation} on {self.cardinality()} vertices"
+
+
+def projective_weighted_graph(
+    base_ring,
+    vertices,
+    edge_weights,
+    *,
+    vertex_weights=None,
+    directed=False,
+    symmetric=False,
+):
+    r"""Return the represented finite projectively weighted graph or digraph."""
+    vertices = finite_ordered_set(vertices)
+    projective_line = _projective_line_over(base_ring)
+    normalized_edges = {
+        tuple(edge): projective_line(weight)
+        for edge, weight in dict(edge_weights).items()
+    }
+    if any(
+        len(edge) != 2 or edge[0] not in vertices or edge[1] not in vertices
+        for edge in normalized_edges
+    ):
+        raise ValueError("a projectively weighted edge has two endpoints in the vertex set")
+    if vertex_weights is None:
+        normalized_vertices = {
+            vertex: projective_line([1, 1]) for vertex in vertices
+        }
+    else:
+        normalized_vertices = {
+            vertex: projective_line(weight)
+            for vertex, weight in dict(vertex_weights).items()
+        }
+    if set(normalized_vertices) != set(vertices):
+        raise ValueError("a projectively weighted graph requires one vertex weight per vertex")
+    if symmetric:
+        for left, right in normalized_edges:
+            if (right, left) in normalized_edges:
+                if normalized_edges[left, right] != normalized_edges[right, left]:
+                    raise ValueError(
+                        "a symmetric projective weighting has equal reverse edge weights"
+                    )
+    return object_of(
+        ProjectiveWeightedGraphs(base_ring),
+        base_ring=base_ring,
+        vertices=tuple(vertices),
+        edge_weights=normalized_edges,
+        vertex_weights=normalized_vertices,
+        directed=directed,
+        symmetric=symmetric,
+    )
 
 
 def _reflection_cosine(index):
@@ -162,7 +379,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             self._index_set = finite_ordered_set(index_set)
             self._numerators = numerators
             self._denominators = denominators
-            self._projective_line = ProjectiveSpace(base_ring, 1)
+            self._projective_line = _projective_line_over(base_ring)
             super().__init__(**rest)
 
         def base_ring(self):
@@ -258,20 +475,38 @@ class VinbergInvariantMatrices(OwnedCategory):
             )
 
         def weighted_graph(self):
-            r"""Return the graph of mirrors, edges labelled by the invariant.
+            r"""Return the projectively weighted graph of mirrors.
 
             An edge joins two mirrors whose invariant is nonzero, that is,
             every pair that is not orthogonal, and it carries the projective
-            invariant of that pair as its label.
+            invariant of that pair as its exact weight.  The diagonal Vinberg
+            invariant is retained as the vertex weight.
             """
-            from sage.graphs.graph import Graph
-
-            graph = Graph(multiedges=False, loops=False)
-            graph.add_vertices(tuple(self._index_set))
-            for left, right in combinations(self._index_set, 2):
-                if self.vinberg_ratio(left, right) != 0:
-                    graph.add_edge(left, right, self.vinberg_invariant(left, right))
-            return graph
+            vertices = tuple(self._index_set)
+            edge_weights = {}
+            for left, right in combinations(vertices, 2):
+                if self.vinberg_ratio(left, right) == 0:
+                    continue
+                i, j = self._positions(left, right)
+                edge_weights[left, right] = (
+                    self._numerators[i][j],
+                    self._denominators[i][j],
+                )
+            vertex_weights = {}
+            for vertex in vertices:
+                i, _j = self._positions(vertex, vertex)
+                vertex_weights[vertex] = (
+                    self._numerators[i][i],
+                    self._denominators[i][i],
+                )
+            return projective_weighted_graph(
+                self._base_ring,
+                vertices,
+                edge_weights,
+                vertex_weights=vertex_weights,
+                directed=False,
+                symmetric=True,
+            )
 
         def is_crystallographic(self) -> bool:
             r"""Return whether every bond is \(2, 3, 4, 6\) or \(\infty\).
@@ -461,4 +696,9 @@ def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators):
     )
 
 
-__all__ = ["VinbergInvariantMatrices", "reflection_cosines"]
+__all__ = [
+    "ProjectiveWeightedGraphs",
+    "VinbergInvariantMatrices",
+    "projective_weighted_graph",
+    "reflection_cosines",
+]

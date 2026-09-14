@@ -9,8 +9,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
     SymmetricAlgebraOf,
     TensorAlgebraOf,
 )
@@ -18,12 +16,15 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import power_algebra_homset
+from dzack_research.preamble.categories.algebras.power_algebras import (
+    AlternatingAlgebraOf,
+    DividedPowerAlgebraOf,
+    power_algebra_homset,
+)
 from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumModule,
 )
@@ -31,6 +32,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 

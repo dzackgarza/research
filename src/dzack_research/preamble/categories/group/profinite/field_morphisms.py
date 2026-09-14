@@ -7,10 +7,6 @@ cross precisely that boundary without replacing an embedding by a numerical
 approximation or by descriptive metadata.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
 from typing import Any, cast
 
 from sage.categories.fields import Fields as SageFields
@@ -20,10 +16,15 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-def field_generators(field) -> tuple:
+def field_generators(field):
     r"""Return exact elements which determine a unital map out of ``field``."""
     engine = _engine_ring(field)
     if isinstance(engine, AlgebraicField_common):
@@ -40,10 +41,12 @@ def field_generators(field) -> tuple:
         pass
     generators = tuple(engine.gens())
     if not generators:
-        return (field.one(),)
-    return tuple(
-        field._from_engine_element(engine(generator))
-        for generator in generators
+        return finite_ordered_set((field.one(),))
+    return finite_ordered_set(
+        tuple(
+            field._from_engine_element(engine(generator))
+            for generator in generators
+        )
     )
 
 
@@ -183,7 +186,7 @@ def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMo
     return exact_field_homset(domain, codomain)(backend)
 
 
-def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]:
+def exact_embeddings(domain, codomain):
     r"""Return all exact embeddings of ``domain`` into ``codomain``."""
     domain = _own_ring(domain)
     codomain = _own_ring(codomain)
@@ -195,15 +198,18 @@ def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]:
             backends = (source.Mor(target),)
         except (TypeError, ValueError):
             backends = ()
-    return tuple(
-        _exact_field_morphism_from_engine(domain, codomain, backend) for backend in backends
+    return finite_ordered_set(
+        tuple(
+            _exact_field_morphism_from_engine(domain, codomain, backend)
+            for backend in backends
+        )
     )
 
 
 def first_exact_embedding(domain, codomain) -> ExactFieldMorphism:
     r"""Choose the first exact Sage embedding in its deterministic ordering."""
     embeddings = exact_embeddings(domain, codomain)
-    if not embeddings:
+    if embeddings.cardinality() == 0:
         raise ValueError(f"no exact embedding of {domain} into {codomain} is available")
     return embeddings[0]
 

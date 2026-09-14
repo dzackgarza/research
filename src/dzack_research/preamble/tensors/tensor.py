@@ -23,24 +23,24 @@ from sage.matrix.constructor import matrix as _sage_matrix
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
-from dzack_research.static_types import ProductOfNaturalNumbers
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
+from dzack_research.preamble.categories.modules.pure.modules import (
+    MatrixSpaces,
+    Modules,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    _engine_matrix as _engine_module_matrix,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
-)
-from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
-from dzack_research.preamble.categories.modules.pure.modules import (
-    MatrixSpaces,
-    Modules,
-    _engine_matrix as _engine_module_matrix,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -48,8 +48,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-from dzack_research.preamble.categories.sets.set_categories import Sets
-
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.static_types import ProductOfNaturalNumbers
 
 _Rings = OwnedRings()
 
@@ -454,10 +454,92 @@ class Tensor:
             for j in range(second_rank)
         )
 
-    def contract(self, *vectors):
-        r"""Fully contract a purely covariant tensor with contravariant vectors."""
+    def _partial_contract(self, other, slot=0, other_slot=0):
+        r"""Contract upper ``slot`` of ``self`` with lower ``other_slot`` of ``other``."""
+        if not isinstance(other, Tensor):
+            raise TypeError("tensor contraction pairs two represented tensors")
+        if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("tensor contraction requires one base ring")
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        other_upper = other._upper_index_ranks()
+        other_lower = other._lower_index_ranks()
+        slot = int(slot)
+        other_slot = int(other_slot)
+        if slot < 0 or slot >= len(upper):
+            raise IndexError("the selected slot is not an upper index of the left tensor")
+        if other_slot < 0 or other_slot >= len(other_lower):
+            raise IndexError("the selected slot is not a lower index of the right tensor")
+        if upper[slot] != other_lower[other_slot]:
+            raise ValueError("contracted tensor slots must have the same rank")
+        if Infinity in self._index_ranks() + other._index_ranks():
+            raise NotImplementedError("coordinate contraction currently requires finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :] + other_upper
+        result_lower = lower + other_lower[:other_slot] + other_lower[other_slot + 1 :]
+        entries = {}
+        self_positions = cartesian_product(*(range(rank) for rank in self._index_ranks()))
+        other_positions = tuple(
+            cartesian_product(*(range(rank) for rank in other._index_ranks()))
+        )
+        for left_index in self_positions:
+            left_value = self[left_index]
+            if not left_value:
+                continue
+            left_upper = left_index[: len(upper)]
+            left_lower = left_index[len(upper) :]
+            contracted = left_upper[slot]
+            for right_index in other_positions:
+                right_upper = right_index[: len(other_upper)]
+                right_lower = right_index[len(other_upper) :]
+                if contracted != right_lower[other_slot]:
+                    continue
+                right_value = other[right_index]
+                if not right_value:
+                    continue
+                result_index = (
+                    left_upper[:slot]
+                    + left_upper[slot + 1 :]
+                    + right_upper
+                    + left_lower
+                    + right_lower[:other_slot]
+                    + right_lower[other_slot + 1 :]
+                )
+                entries[result_index] = entries.get(
+                    result_index, self.base_ring().zero()
+                ) + left_value * right_value
+
+        if not result_upper and not result_lower:
+            return entries.get((), self.base_ring().zero())
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
+        )
+
+    def contract(self, *vectors, slot=0, other_slot=0):
+        r"""Contract represented tensor slots or fully evaluate a covariant tensor.
+
+        When this tensor has an upper slot, ``contract(other, slot=i,
+        other_slot=j)`` pairs that upper slot with lower slot ``j`` of
+        ``other``.  The result has type ``(p-1+p', q+q'-1)``.  When this tensor
+        is purely covariant, the historical evaluation spelling is retained:
+        ``contract(v_1,...,v_q)`` fully evaluates it on contravariant vectors.
+        """
         if self._upper_index_ranks():
-            raise TypeError("full contraction here requires a purely covariant tensor")
+            if len(vectors) != 1:
+                raise TypeError("partial tensor contraction takes exactly one other tensor")
+            return self._partial_contract(vectors[0], slot=slot, other_slot=other_slot)
+        if int(slot) != 0 or int(other_slot) != 0:
+            raise TypeError("slot selectors apply only to upper/lower tensor contraction")
         if len(vectors) != len(self._lower_index_ranks()):
             raise TypeError(
                 f"a type-{self.tensor_valence()} tensor takes "
@@ -477,11 +559,226 @@ class Tensor:
         return sum(
             (
                 self[position]
-                * prod(vector[index] for vector, index in zip(vectors, position, strict=True))
+                * prod(
+                    (
+                        vector[index]
+                        for vector, index in zip(vectors, position, strict=True)
+                    ),
+                    start=self.base_ring().one(),
+                )
                 for position in cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
             ),
             self.base_ring().zero(),
         )
+
+    def trace(self, slot=0, other_slot=0):
+        r"""Contract one upper and one lower slot of this tensor."""
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        slot = int(slot)
+        other_slot = int(other_slot)
+        if slot < 0 or slot >= len(upper) or other_slot < 0 or other_slot >= len(lower):
+            raise IndexError("the tensor has no such upper/lower pair of slots")
+        if upper[slot] != lower[other_slot]:
+            raise ValueError("traced tensor slots must have the same rank")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate trace currently requires finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :]
+        result_lower = lower[:other_slot] + lower[other_slot + 1 :]
+        entries = {}
+        for index in cartesian_product(*(range(rank) for rank in self._index_ranks())):
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            if upper_index[slot] != lower_index[other_slot]:
+                continue
+            result_index = (
+                upper_index[:slot]
+                + upper_index[slot + 1 :]
+                + lower_index[:other_slot]
+                + lower_index[other_slot + 1 :]
+            )
+            entries[result_index] = entries.get(
+                result_index, self.base_ring().zero()
+            ) + self[index]
+
+        if not result_upper and not result_lower:
+            return entries.get((), self.base_ring().zero())
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
+        )
+
+    def tensor_product(self, other):
+        r"""Return the outer tensor product, preserving upper/lower slot order."""
+        if not isinstance(other, Tensor):
+            raise TypeError("tensor_product requires another represented tensor")
+        if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("a tensor product requires one base ring")
+        if Infinity in self._index_ranks() + other._index_ranks():
+            raise NotImplementedError("coordinate tensor products currently require finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        other_upper = other._upper_index_ranks()
+        other_lower = other._lower_index_ranks()
+        result_upper = upper + other_upper
+        result_lower = lower + other_lower
+        entries = {}
+        left_positions = cartesian_product(*(range(rank) for rank in self._index_ranks()))
+        right_positions = tuple(
+            cartesian_product(*(range(rank) for rank in other._index_ranks()))
+        )
+        for left_index in left_positions:
+            left_upper = left_index[: len(upper)]
+            left_lower = left_index[len(upper) :]
+            left_value = self[left_index]
+            if not left_value:
+                continue
+            for right_index in right_positions:
+                right_value = other[right_index]
+                if not right_value:
+                    continue
+                right_upper = right_index[: len(other_upper)]
+                right_lower = right_index[len(other_upper) :]
+                result_index = left_upper + right_upper + left_lower + right_lower
+                entries[result_index] = entries.get(
+                    result_index, self.base_ring().zero()
+                ) + left_value * right_value
+
+        shape = result_upper + result_lower
+        if not shape:
+            return entries.get((), self.base_ring().zero())
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
+        )
+
+    def raise_index(self, formed_module, slot=0):
+        r"""Raise one lower index with the inverse Gram tensor of ``formed_module``.
+
+        The selected lower slot must have the rank of the supplied formed
+        module.  Over an integral base this requires the inverse Gram entries
+        to remain integral; no automatic scalar extension is performed.
+        """
+        lower = self._lower_index_ranks()
+        upper = self._upper_index_ranks()
+        slot = int(slot)
+        if slot < 0 or slot >= len(lower):
+            raise IndexError("the selected slot is not a lower tensor index")
+        if _engine_ring(formed_module.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("raising an index requires the tensor and form over one base ring")
+        rank = int(formed_module.module_rank())
+        if lower[slot] != rank:
+            raise ValueError("the selected lower slot has the wrong rank for this form")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate index raising currently requires finite index ranks")
+
+        inverse = _engine_component_matrix(formed_module.gram_tensor()).inverse()
+        ring = self.base_ring()
+        coefficients = {}
+        for raised in range(rank):
+            for contracted in range(rank):
+                try:
+                    coefficients[raised, contracted] = ring._from_engine_element(
+                        inverse[raised, contracted]
+                    )
+                except (TypeError, ValueError) as error:
+                    raise ValueError(
+                        "raising an index over this ring requires the inverse Gram entries in the base ring"
+                    ) from error
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper + (rank,)
+        result_lower = lower[:slot] + lower[slot + 1 :]
+        entries = {}
+        for index in cartesian_product(*(range(index_rank) for index_rank in self._index_ranks())):
+            value = self[index]
+            if not value:
+                continue
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            contracted = lower_index[slot]
+            remaining_lower = lower_index[:slot] + lower_index[slot + 1 :]
+            for raised in range(rank):
+                coefficient = coefficients[raised, contracted]
+                if not coefficient:
+                    continue
+                result_index = upper_index + (raised,) + remaining_lower
+                entries[result_index] = entries.get(
+                    result_index, ring.zero()
+                ) + coefficient * value
+
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, ring.zero())
+            for index in cartesian_product(*(range(index_rank) for index_rank in shape))
+        )
+        return tensor(ring, result_upper, result_lower, _nested(values, shape))
+
+    def lower_index(self, formed_module, slot=0):
+        r"""Lower one upper index with the Gram tensor of ``formed_module``."""
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        slot = int(slot)
+        if slot < 0 or slot >= len(upper):
+            raise IndexError("the selected slot is not an upper tensor index")
+        if _engine_ring(formed_module.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("lowering an index requires the tensor and form over one base ring")
+        rank = int(formed_module.module_rank())
+        if upper[slot] != rank:
+            raise ValueError("the selected upper slot has the wrong rank for this form")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate index lowering currently requires finite index ranks")
+
+        gram = formed_module.gram_tensor()
+        ring = self.base_ring()
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :]
+        result_lower = lower + (rank,)
+        entries = {}
+        for index in cartesian_product(*(range(index_rank) for index_rank in self._index_ranks())):
+            value = self[index]
+            if not value:
+                continue
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            contracted = upper_index[slot]
+            remaining_upper = upper_index[:slot] + upper_index[slot + 1 :]
+            for lowered in range(rank):
+                coefficient = gram[lowered, contracted]
+                if not coefficient:
+                    continue
+                result_index = remaining_upper + lower_index + (lowered,)
+                entries[result_index] = entries.get(
+                    result_index, ring.zero()
+                ) + coefficient * value
+
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, ring.zero())
+            for index in cartesian_product(*(range(index_rank) for index_rank in shape))
+        )
+        return tensor(ring, result_upper, result_lower, _nested(values, shape))
 
     def dual_tensor(self):
         r"""Dualize a nondegenerate pairing or copairing.
@@ -791,63 +1088,54 @@ class _CoordinateTensor(ModuleElement, Tensor):
         return self.parent().tensor_valence()
 
     def __call__(self, *args):
-        r"""Contract every covariant slot against the given vectors.
+        r"""Feed vectors into the covariant slots, from left to right.
 
-        For $T$ of type $(p, q)$ and $q$ vectors $v_1, \ldots, v_q$, the value
-        is the type-$(p, 0)$ tensor
-
-        .. math::
-
-            T(v_1, \ldots, v_q)^{i_1 \ldots i_p}
-                = \sum_{j_1 \ldots j_q} T^{i_1 \ldots i_p}{}_{j_1 \ldots j_q}
-                  (v_1)^{j_1} \cdots (v_q)^{j_q}.
-
-        When $p = 0$ no index remains and the value is an element of the base
-        ring; that special case is the pairing of a covector with a vector and
-        the evaluation of a bilinear form on two vectors.
+        For a type-$(p,q)$ tensor, supplying $k\leq q$ vectors returns a
+        type-$(p,q-k)$ tensor.  Only when every slot is consumed and $p=0$
+        does evaluation return a scalar.
         """
         from itertools import product as _index_tuples
 
         _contravariant, covariant = self.tensor_valence()
-        # `args` is a Python tuple from `*args`, so its length is a Python
-        # count; lift it into NN once rather than crossing the slot count out.
-        if NN(len(args)) != covariant:
+        if NN(len(args)) > covariant:
             raise TypeError(
-                f"a type-{self.tensor_valence()} tensor takes "
-                f"{covariant} vector arguments, got {len(args)}"
+                f"a type-{self.tensor_valence()} tensor has only "
+                f"{covariant} covariant slots, got {len(args)} arguments"
             )
+        if not args:
+            return self
         ring = self.base_ring()
         upper = self._upper_index_ranks()
         lower = self._lower_index_ranks()
+        consumed = lower[: len(args)]
+        remaining = lower[len(args) :]
         for position, vector in enumerate(args):
-            slot = TensorModule(ring, (lower[position],), ())
+            slot = TensorModule(ring, (consumed[position],), ())
             if vector not in slot:
                 raise TypeError(
                     f"argument {position} must be an owned vector in {slot}, "
                     f"the contravariant module paired with covariant slot {position}"
                 )
 
-        def contracted(upper_index):
+        def contracted(output_index):
+            upper_index = output_index[: len(upper)]
+            remaining_index = output_index[len(upper) :]
             total = ring.zero()
-            for lower_index in _index_tuples(*(range(int(rank)) for rank in lower)):
-                term = self[upper_index + lower_index]
-                for position, index in enumerate(lower_index):
+            for eaten in _index_tuples(*(range(int(rank)) for rank in consumed)):
+                term = self[upper_index + eaten + remaining_index]
+                for position, index in enumerate(eaten):
                     term = term * args[position][index]
                 total = total + term
             return total
 
-        if not upper:
+        result_ranks = upper + remaining
+        if not result_ranks:
             return contracted(())
-
-        def components(prefix):
-            if len(prefix) == len(upper):
-                return contracted(prefix)
-            return [
-                components(prefix + (index,))
-                for index in range(int(upper[len(prefix)]))
-            ]
-
-        return tensor(ring, upper, (), components(()))
+        values = tuple(
+            contracted(index)
+            for index in _index_tuples(*(range(int(rank)) for rank in result_ranks))
+        )
+        return tensor(ring, upper, remaining, _nested(values, result_ranks))
 
     def _latex_(self) -> str:
         from sage.matrix.constructor import matrix as sage_matrix
@@ -1256,18 +1544,17 @@ class TensorModule(UniqueRepresentation, Parent):
         return modules_for(self._upper_ranks), modules_for(self._lower_ranks)
 
     def tensor_indices(self):
-        r"""Return the standard generating set of each finite index module."""
+        r"""Return the owned generating set of each index module, slot by slot."""
+        upper_modules, lower_modules = self.index_modules()
 
-        def keys(rank):
-            assert rank != Infinity, (
-                "an infinite index set is the generating set of its index module"
+        def generating_sets(modules):
+            return finite_ordered_image(
+                modules.index_set(),
+                lambda slot: modules[slot].module_generating_set(),
+                name="Tensor-index generating sets",
             )
-            return finite_ordered_set(range(int(rank)))
 
-        return (
-            tuple(keys(rank) for rank in self._upper_ranks),
-            tuple(keys(rank) for rank in self._lower_ranks),
-        )
+        return generating_sets(upper_modules), generating_sets(lower_modules)
 
     def _element_constructor_(self, entries: tuple) -> _CoordinateTensor:
         shape = self._index_ranks()
@@ -1303,6 +1590,246 @@ class TensorModule(UniqueRepresentation, Parent):
             self.base_ring(), self._upper_ranks, self._lower_ranks
         )
         return tex
+
+
+def _mixed_tensor_valence(valence) -> tuple[int, int]:
+    r"""Normalize one bidegree ``(p,q)`` of the mixed tensor algebra."""
+    point = (NN**2)(valence)
+    return int(point[0]), int(point[1])
+
+
+class MixedTensorAlgebraElement(ModuleElement):
+    r"""A finite-support sum of homogeneous mixed tensors."""
+
+    def __init__(self, parent, components) -> None:
+        ModuleElement.__init__(self, parent)
+        normalized = {}
+        for raw_valence, component in components.items():
+            valence = _mixed_tensor_valence(raw_valence)
+            piece = parent.homogeneous_piece(valence)
+            if component.parent() is not piece:
+                raise ValueError(
+                    "a mixed-tensor homogeneous component must belong to its exact tensor module"
+                )
+            if component != piece.zero():
+                normalized[valence] = component
+        self._components = normalized
+
+    def valences(self):
+        r"""Return the finite set of bidegrees with nonzero component."""
+        return finite_ordered_set(tuple(sorted(self._components)))
+
+    def homogeneous_components(self):
+        return dict(self._components)
+
+    def homogeneous_component(self, valence):
+        valence = _mixed_tensor_valence(valence)
+        return self._components.get(
+            valence,
+            self.parent().homogeneous_piece(valence).zero(),
+        )
+
+    def is_homogeneous(self) -> bool:
+        return len(self._components) <= 1
+
+    def _add_(self, other):
+        if other.parent() is not self.parent():
+            return NotImplemented
+        valences = set(self._components) | set(other._components)
+        return self.parent().from_components(
+            {
+                valence: self.homogeneous_component(valence)
+                + other.homogeneous_component(valence)
+                for valence in valences
+            }
+        )
+
+    def _neg_(self):
+        return self.parent().from_components(
+            {valence: -component for valence, component in self._components.items()}
+        )
+
+    def _lmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _rmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _mul_(self, other):
+        if other.parent() is not self.parent():
+            return NotImplemented
+        return self.parent().multiply(self, other)
+
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        equal = isinstance(other, MixedTensorAlgebraElement) and other.parent() is self.parent()
+        if equal:
+            valences = set(self._components) | set(other._components)
+            equal = all(
+                self.homogeneous_component(valence)
+                == other.homogeneous_component(valence)
+                for valence in valences
+            )
+        match op:
+            case _ if op == op_EQ:
+                return equal
+            case _:
+                return not equal
+
+    def _repr_(self):
+        if not self._components:
+            return "0"
+        return " + ".join(
+            f"[{p},{q}]({component})"
+            for (p, q), component in sorted(self._components.items())
+        )
+
+
+class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
+    r"""The bigraded algebra ``T(M) tensor T(M^*)`` of a finite framed module.
+
+    The current tensor owner realizes each homogeneous piece in the selected
+    frame of ``M``.  This parent adds only the finite-support direct sum across
+    bidegrees; homogeneous tensor arithmetic remains owned by
+    :class:`TensorModule` and :meth:`Tensor.tensor_product`.
+    """
+
+    Element = MixedTensorAlgebraElement
+
+    @staticmethod
+    def __classcall__(cls, module):
+        rank = module.module_rank()
+        if not rank.is_finite():
+            raise TypeError("the coordinate mixed tensor algebra currently requires finite rank")
+        return UniqueRepresentation.__classcall__(cls, module)
+
+    def __init__(self, module) -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        self._module = module
+        self._base_ring = _own_ring(module.base_ring())
+        self._rank = int(module.module_rank())
+        self._preamble_algebra_base_ring = self._base_ring
+        Parent.__init__(
+            self,
+            base=_engine_ring(self._base_ring),
+            category=Algebras(self._base_ring).Associative().Unital(),
+        )
+
+    def module(self):
+        return self._module
+
+    def dual_module(self):
+        r"""Return the linear dual ``M^*`` used by the covariant factor."""
+        return self.module().dual_module()
+
+    def vector_tensor_algebra(self):
+        r"""Return ``T(M)``, the contravariant tensor-algebra factor."""
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+            TensorAlgebraOf,
+        )
+
+        return TensorAlgebraOf(self.module())
+
+    def covector_tensor_algebra(self):
+        r"""Return ``T(M^*)``, the covariant tensor-algebra factor."""
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+            TensorAlgebraOf,
+        )
+
+        return TensorAlgebraOf(self.dual_module())
+
+    def base_ring(self):
+        return self._base_ring
+
+    def algebra_base_ring(self):
+        return self._base_ring
+
+    def homogeneous_piece(self, valence):
+        p, q = _mixed_tensor_valence(valence)
+        return TensorModule(
+            self.base_ring(),
+            (self._rank,) * p,
+            (self._rank,) * q,
+        )
+
+    def from_component(self, valence, component):
+        return self.element_class(self, {_mixed_tensor_valence(valence): component})
+
+    def from_components(self, components):
+        return self.element_class(self, components)
+
+    def include(self, tensor_element):
+        r"""Include one live homogeneous tensor in its bidegree."""
+        if not isinstance(tensor_element, Tensor):
+            raise TypeError("mixed tensor inclusion requires a represented tensor")
+        if _own_ring(tensor_element.base_ring()) is not self.base_ring():
+            raise ValueError("the tensor and mixed algebra require one base ring")
+        valence = tuple(int(entry) for entry in tensor_element.tensor_valence())
+        expected = self.homogeneous_piece(valence)
+        if tensor_element.parent() is not expected:
+            raise ValueError("the tensor does not use the selected frame rank of this mixed algebra")
+        return self.from_component(valence, tensor_element)
+
+    def _element_constructor_(self, value):
+        if isinstance(value, MixedTensorAlgebraElement):
+            if value.parent() is self:
+                return value
+            raise TypeError("the element belongs to a different mixed tensor algebra")
+        if isinstance(value, Tensor):
+            return self.include(value)
+        if isinstance(value, dict):
+            return self.from_components(value)
+        try:
+            scalar = self.base_ring()(value)
+        except (TypeError, ValueError) as error:
+            raise TypeError(f"{value!r} does not define an element of {self}") from error
+        scalar_tensor = self.homogeneous_piece((0, 0))((scalar,))
+        return self.from_component((0, 0), scalar_tensor)
+
+    def zero(self):
+        return self.from_components({})
+
+    def one(self):
+        return self(self.base_ring().one())
+
+    def scalar_multiple(self, scalar, element):
+        element = self(element)
+        scalar = self.base_ring()(scalar)
+        return self.from_components(
+            {
+                valence: component.parent().scalar_multiple(scalar, component)
+                for valence, component in element.homogeneous_components().items()
+            }
+        )
+
+    def multiply(self, left, right):
+        left = self(left)
+        right = self(right)
+        result = self.zero()
+        for left_component in left.homogeneous_components().values():
+            for right_component in right.homogeneous_components().values():
+                product = left_component.tensor_product(right_component)
+                result += self.include(product)
+        return result
+
+    def _ring_morphism_defining_algebra_structure(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
+        return ring_morphism(
+            self.base_ring(),
+            self,
+            lambda scalar: self(scalar),
+        )
+
+    def _repr_(self) -> str:
+        return f"Mixed tensor algebra T({self.module()}) tensor T({self.module()}^*)"
+
+
+def MixedTensorAlgebra(module):
+    r"""Return ``T(M) tensor T(M^*)`` with finite support across bidegrees."""
+    return MixedTensorAlgebraParent(module)
 
 
 def _tensor_module(

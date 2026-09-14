@@ -18,21 +18,22 @@ graded augmentation of the pointwise algebra is the projection onto the
 unit piece \(A\to L^\infty=A_u\).
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
-from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
-from sage.structure.element import ModuleElement, parent as element_parent
+from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
@@ -56,10 +57,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
+from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.rings.unit_interval import UnitInterval
-from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 
 
 def _real_ring():
@@ -353,6 +354,8 @@ class _GradedLebesgueElement(ModuleElement):
         )
 
     def _lmul_(self, scalar):
+        if scalar == self.parent().base_ring().zero():
+            return self.parent().zero()
         return self.parent()._from_components(
             {degree: scalar * function for degree, function in self._components.items()}
         )
@@ -453,7 +456,7 @@ def _lebesgue_multiplication(module, piece_product):
 
 
 def _transport_multiplication(multiplication, algebra):
-    module = multiplication.codomain()
+    multiplication.codomain()
     tensor = GradedTensorSquare(algebra)
     module_tensor = multiplication.domain()
 
@@ -503,7 +506,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
         Parent.__init__(
             self,
             base=_engine_ring(ring),
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(tuple(categories)),
         )
         self._preamble_multiplication_morphism = _transport_multiplication(
             multiplication,
@@ -583,7 +586,7 @@ class GradedLebesgueModule(UniqueRepresentation, Parent):
         Parent.__init__(
             self,
             base=_engine_ring(ring),
-            category=Category.join(
+            category=Cat().meet(
                 (
                     LebesgueGradedModules(ring),
                     GradedModules(ring, grading_monoid),
@@ -636,8 +639,9 @@ def graded_lebesgue_algebra():
     r"""The pointwise algebra \(\bigoplus_s L^{1/s}\), interned from its product."""
     ring = _real_ring()
     module = GradedLebesgueModule(NonNegativeReals)
-    return GradedAlgebras(ring, NonNegativeReals)(
-        _lebesgue_multiplication(module, _pointwise_piece_product)
+    return module.algebra_from_multiplication(
+        _lebesgue_multiplication(module, _pointwise_piece_product),
+        unital=True,
     )
 
 
@@ -646,6 +650,13 @@ def lebesgue_convolution_algebra():
     r"""The convolution algebra \(\bigoplus_{s\in[0,1]} L^{1/s}\), interned from its product."""
     ring = _real_ring()
     module = GradedLebesgueModule(UnitInterval)
-    return AssociativeAlgebras(ring)(
-        _lebesgue_multiplication(module, _convolution_piece_product)
+    return module.algebra_from_multiplication(
+        _lebesgue_multiplication(module, _convolution_piece_product),
+        unital=False,
     )
+
+
+# Session names are also module-level mathematical objects: direct imports and
+# the public aggregator must reach the same interned algebra parents.
+GradedLebesgueAlgebra = graded_lebesgue_algebra()
+LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()

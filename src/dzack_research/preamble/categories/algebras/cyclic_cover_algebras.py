@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.structure.sage_object import SageObject
 
@@ -15,6 +16,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     PolynomialRing,
 )
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    FiniteAtlasInvertibleSheaf,
     InvertibleSheaf,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -24,7 +26,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 if TYPE_CHECKING:
     from sage.structure.element import Element
@@ -117,38 +118,55 @@ class CyclicCoverAlgebra(SageObject):
             raise TypeError(
                 "the branch section must be a represented compatible section of L^n"
             ) from error
-        if branch_datum.cover() is not line_bundle.cover():
-            raise ValueError("the branch section and line bundle require one affine cover")
 
-        branch_power = InvertibleSheaf(branch_datum)
-        charts = Sets.Δ[len(line_bundle.cover().opens()) - 1]
-        for left in charts:
-            for right in charts:
-                if left >= right:
-                    continue
+        if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
+            branch_power = getattr(branch_parent, "_preamble_line_bundle", None)
+            if not isinstance(branch_power, FiniteAtlasInvertibleSheaf):
+                raise ValueError(
+                    "a finite-atlas cyclic branch must come from a represented line-bundle power"
+                )
+            if branch_power.gluing_datum() is not line_bundle.gluing_datum():
+                raise ValueError("the branch section and line bundle require one affine atlas")
+            charts = line_bundle.gluing_datum().chart_index_set()
+            for left, right in line_bundle.gluing_datum().transition_index_set():
                 expected = line_bundle.transition_unit(left, right) ** degree
                 actual = branch_power.transition_unit(left, right)
                 if actual != expected:
                     raise ValueError(
                         "the branch section is not represented as a section of the stated L^n"
                     )
+        else:
+            if branch_datum.cover() is not line_bundle.cover():
+                raise ValueError("the branch section and line bundle require one affine cover")
+            branch_power = InvertibleSheaf(branch_datum)
+            charts = line_bundle.cover().atlas()
+            for left in charts:
+                for right in charts:
+                    if left >= right:
+                        continue
+                    expected = line_bundle.transition_unit(left, right) ** degree
+                    actual = branch_power.transition_unit(left, right)
+                    if actual != expected:
+                        raise ValueError(
+                            "the branch section is not represented as a section of the stated L^n"
+                        )
 
         self._line_bundle = line_bundle
         self._branch_power = branch_power
         self._branch_section = branch_parent(branch_section)
         self._degree = degree
         self._chart_index_set = charts
-        self._local_branch_coefficients = tuple(
-            _rank_one_coefficient(
+        self._local_branch_coefficients = indexed_family(
+            charts,
+            lambda index: _rank_one_coefficient(
                 branch_power.local_module(index),
                 self._branch_section.component(index),
-            )
-            for index in charts
+            ),
+            name="Cyclic-cover local branch coefficients",
         )
-        self._local_algebras = tuple(self._build_local_algebra(index) for index in charts)
         self._local_algebra_family = indexed_family(
             charts,
-            lambda index: self._local_algebras[int(index)],
+            self._build_local_algebra,
             name="Cyclic cover chart algebras",
         )
         self._gluing_datum = self._build_algebra_gluing_datum()
@@ -169,25 +187,31 @@ class CyclicCoverAlgebra(SageObject):
         return self.line_bundle().cover()
 
     def chart_index_set(self) -> Parent:
-        r"""Return the atlas the charts are labelled by, the ordinal ``Δ[n-1]``."""
+        r"""Return the exact finite index set labelling the cyclic-cover atlas."""
 
         return self._chart_index_set
 
     def scheme(self) -> Parent:
         return self.line_bundle().scheme()
 
+    def _chart_scheme(self, index):
+        cover = self.cover()
+        if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
+            return cover.chart(index)
+        return cover.open(index)
+
     def local_branch_coefficient(self, index: Integer) -> Element:
-        return self._local_branch_coefficients[int(index)]
+        return self._local_branch_coefficients[self.chart_index_set()(index)]
 
     def _build_local_algebra(self, index: Integer) -> Parent:
         return cyclic_cover_presentation(
-            self.cover().open(index).coordinate_algebra(),
+            self._chart_scheme(index).coordinate_algebra(),
             self.local_branch_coefficient(index),
             self.degree(),
         )
 
     def local_algebra(self, index: Integer) -> Parent:
-        return self._local_algebras[int(index)]
+        return self._local_algebra_family[self.chart_index_set()(index)]
 
     def local_algebras(self) -> IndexedFamily:
         r"""Return the chart algebras as the family they are, labelled by the atlas."""
@@ -241,29 +265,121 @@ class CyclicCoverAlgebra(SageObject):
 
     def _build_algebra_gluing_datum(self) -> AlgebraGluingDatum:
         charts = self.chart_index_set()
-        # The descent datum in gluing.py addresses charts by position, so the
-        # labels are ranked back to positions at that boundary and nowhere else.
+        if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
+            from dzack_research.preamble.categories.schemes.gluing import (
+                FiniteAtlasAlgebraGluingDatum,
+            )
+
+            transitions = {}
+            for left, right in self.cover().transition_index_set():
+                left_unit = self.line_bundle().transition_unit(left, right)
+                right_unit = self.line_bundle().transition_unit(right, left)
+
+                def forward(label, _domain, codomain, unit=left_unit):
+                    return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
+
+                def inverse(label, _domain, codomain, unit=right_unit):
+                    return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
+
+                transitions[left, right] = (forward, inverse)
+            return FiniteAtlasAlgebraGluingDatum(
+                self.cover(),
+                self.local_algebras(),
+                transitions,
+            )
+
         transitions = {
             (int(left), int(right)): self._transition(left, right)
             for left in charts
             for right in charts
             if left < right
         }
-        return self.cover().glue_algebras(self._local_algebras, transitions)
+        return self.cover().glue_algebras(
+            tuple(self.local_algebra(index) for index in charts),
+            transitions,
+        )
 
     def gluing_datum(self) -> AlgebraGluingDatum:
         return self._gluing_datum
 
     def sheaf(self) -> GluedAlgebraSheaf:
-        return self.gluing_datum().sheaf()
+        sheaf = getattr(self.gluing_datum(), "sheaf", None)
+        if sheaf is None:
+            raise NotImplementedError(
+                "finite-atlas cyclic-cover algebra sheaves are represented through their descent datum and relative spectrum"
+            )
+        return sheaf()
 
     def underlying_module_datum(self) -> ModuleGluingDatum:
-        return self.gluing_datum().underlying_module_datum()
+        operation = getattr(self.gluing_datum(), "underlying_module_datum", None)
+        if operation is None:
+            raise NotImplementedError(
+                "finite-atlas cyclic-cover underlying modules are read chartwise from the algebra descent"
+            )
+        return operation()
 
     def global_sections(self) -> CompatibleLocalAlgebraSections:
-        return self.gluing_datum().compatible_sections()
+        operation = getattr(self.gluing_datum(), "compatible_sections", None)
+        if operation is None:
+            raise NotImplementedError(
+                "finite-atlas cyclic-cover global algebra sections are not used to replace its nonaffine relative spectrum"
+            )
+        return operation()
 
     sections = global_sections
+
+    @cached_method
+    def relative_spectrum(self):
+        r"""Return the finite cover as the relative spectrum of this descended algebra."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            relative_cyclic_cover,
+        )
+
+        return relative_cyclic_cover(self)
+
+    def local_deck_group_scheme_action(self, chart_index):
+        r"""Return the canonical ``mu_n`` action on one affine cover chart."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            local_relative_cyclic_deck_action,
+        )
+
+        return local_relative_cyclic_deck_action(self, chart_index)
+
+    def local_deck_transformation(self, chart_index, root_of_unity):
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            relative_cyclic_local_deck_transformation,
+        )
+
+        return relative_cyclic_local_deck_transformation(
+            self, chart_index, root_of_unity
+        )
+
+    def deck_transformation(self, root_of_unity):
+        r"""Return the global deck automorphism ``z_i -> root*z_i`` when ``root^n=1``."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            relative_cyclic_deck_transformation,
+        )
+
+        return relative_cyclic_deck_transformation(self, root_of_unity)
+
+    def base_change(self, ring_map):
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            cyclic_cover_base_change,
+        )
+
+        return cyclic_cover_base_change(self, ring_map)
+
+    def constant_deck_transformation(self):
+        r"""Return the deck generator when the scalar base contains a primitive ``n``-th root."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            _primitive_root_of_unity,
+        )
+
+        root = _primitive_root_of_unity(
+            self.scheme().scheme_base_ring(),
+            self.degree(),
+        )
+        return self.deck_transformation(root)
 
     def restricted_algebra(
         self,

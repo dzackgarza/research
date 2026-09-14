@@ -3,15 +3,23 @@ r"""Affine group actions and their scheme-theoretic fixed loci."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
+    AffineGSchemes,
     AffineSchemes,
     GObjects,
     Groups,
     PolynomialRing,
-    QQ,
+    ProjectiveSpace,
     Schemes,
     Spec,
     SpecFunctor,
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_fixed_loci.sage",
+    "live_owner": "tests/schemes/test_group_actions_fixed_loci.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _coordinate_swap_action() -> tuple:
@@ -22,7 +30,7 @@ def _coordinate_swap_action() -> tuple:
     scheme = Spec(algebra)
     swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else swap,
     )
@@ -50,6 +58,15 @@ def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -
     )
 
 
+def test_generic_gobjects_constructor_does_not_construct_affine_actions() -> None:
+    group = Groups.C(2)
+    scheme = Spec(PolynomialRing(QQ, "x"))
+    identity = scheme.categorical_identity_morphism()
+
+    with pytest.raises(TypeError):
+        GObjects(group, Schemes(QQ))(scheme, lambda _element: identity)
+
+
 def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
     group, algebra, x, y, _scheme, acted = _coordinate_swap_action()
     generator = group.group_generators()[0]
@@ -74,7 +91,7 @@ def test_affine_scheme_action_rejects_generator_images_that_violate_relators() -
     scheme = Spec(algebra)
     dilation = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": x + x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else dilation,
     )
@@ -92,3 +109,24 @@ def test_gobjects_of_schemes_has_a_trivial_affine_specimen() -> None:
     assert acted in category
     assert acted in AffineSchemes(QQ)
     assert acted.fixed_ideal() == algebra.ideal(algebra.zero())
+
+
+def test_projective_product_sign_and_swap_fixed_loci_keep_archive_dimensions() -> None:
+    line = ProjectiveSpace(1, QQ, names=("x0", "x1"))
+    product = line.product_with(line)
+    x0, x1 = line.coordinate_ring().gens()
+    sign = line.projective_morphism_from_coordinates(line, (x0, -x1))
+
+    diagonal_sign = product.from_product_cone(
+        (sign * product.projection(0), sign * product.projection(1))
+    )
+    fixed_sign = diagonal_sign.fixed_subscheme()
+    assert fixed_sign.dimension() == 0
+    assert len(fixed_sign.rational_points()) == 4
+
+    factor_swap = product.from_product_cone(
+        (product.projection(1), product.projection(0))
+    )
+    fixed_swap = factor_swap.fixed_subscheme()
+    assert fixed_swap.dimension() == 1
+    assert factor_swap * factor_swap == product.categorical_identity_morphism()

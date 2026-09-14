@@ -1,5 +1,8 @@
 r"""Restriction of scalar constants for represented graded power algebras."""
 
+import operator
+
+from sage.categories.action import Action
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
@@ -24,9 +27,42 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 
 
+class _DegreeZeroAlgebraMultiplication(Action):
+    r"""Multiplication of a graded algebra by its canonical degree-zero subalgebra."""
+
+    def __init__(self, degree_zero_algebra, graded_algebra, *, actor_on_left: bool):
+        self._graded_algebra = graded_algebra
+        self._actor_on_left = actor_on_left
+        super().__init__(
+            degree_zero_algebra,
+            graded_algebra,
+            is_left=actor_on_left,
+            op=operator.mul,
+        )
+
+    def _act_(self, actor, element):
+        embedded = self._graded_algebra.from_degree_zero(actor)
+        if self._actor_on_left:
+            return self._graded_algebra.multiply(embedded, element)
+        return self._graded_algebra.multiply(element, embedded)
+
+
 class RestrictedGradedAlgebraElement(GradedDirectSumElement):
     def _mul_(self, other):
         return self.parent().multiply(self, other)
+
+    def _acted_upon_(self, actor, self_on_left):
+        r"""Let the canonical degree-zero subalgebra multiply this element."""
+        parent = self.parent()
+        actor_parent = actor.parent() if hasattr(actor, "parent") else None
+        if actor_parent is parent.degree_zero_algebra():
+            actor = parent.from_degree_zero(actor)
+            return (
+                parent.multiply(self, actor)
+                if self_on_left
+                else parent.multiply(actor, self)
+            )
+        return super()._acted_upon_(actor, self_on_left)
 
 
 class RestrictedGradedAlgebra(GradedDirectSumModule):
@@ -73,7 +109,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         try:
             degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
             degree_one_labels = extension_algebra.free_source_module().module_generating_set()
-        except AttributeError, TypeError:
+        except (AttributeError, TypeError):
             self._preamble_algebra_generating_set = None
         else:
             framing = CoproductOfFamily(
@@ -103,6 +139,14 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             from_realization=from_realization,
             extra_categories=tuple(categories),
         )
+        for actor_on_left in (True, False):
+            self.degree_zero_algebra().register_action(
+                _DegreeZeroAlgebraMultiplication(
+                    self.degree_zero_algebra(),
+                    self,
+                    actor_on_left=actor_on_left,
+                )
+            )
 
     def extension_algebra(self):
         return self._extension_algebra
@@ -115,6 +159,33 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
     def algebra_base_ring(self):
         return self.base_ring()
+
+    def _element_constructor_(self, value):
+        r"""Include the degree-zero algebra into the restricted graded algebra.
+
+        The degree-zero algebra is part of this algebra's defining graded
+        structure, not an unrelated scalar parent.  Its canonical inclusion
+        is therefore valid ordinary element ingress in addition to the sparse
+        graded-direct-sum representation.
+        """
+        parent = value.parent() if hasattr(value, "parent") else None
+        if parent is self.degree_zero_algebra():
+            return self.from_degree_zero(value)
+        return super()._element_constructor_(value)
+
+    def _coerce_map_from_(self, source):
+        if source is self.degree_zero_algebra():
+            return True
+        return super()._coerce_map_from_(source)
+
+    def _get_action_(self, source, op, self_on_left):
+        if op is operator.mul and source is self.degree_zero_algebra():
+            return _DegreeZeroAlgebraMultiplication(
+                source,
+                self,
+                actor_on_left=not self_on_left,
+            )
+        return super()._get_action_(source, op, self_on_left)
 
     def multiply(self, left, right):
         return self.from_realization(self.realize(left) * self.realize(right))
@@ -136,6 +207,10 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
     def one(self):
         return self.from_realization(self.extension_algebra().one())
+
+    def _an_element_(self):
+        r"""Return the unit as a canonical live specimen of this algebra."""
+        return self.one()
 
     def algebra_generating_set(self):
         if self._preamble_algebra_generating_set is None:

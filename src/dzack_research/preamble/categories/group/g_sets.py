@@ -9,10 +9,8 @@ standard finite free/cofree constructions.
 
 from collections import deque
 
-from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -26,8 +24,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
+from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,
@@ -54,6 +52,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     ranking_isomorphism,
 )
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.refine import refine
 
 
 def GSets(group):
@@ -108,18 +107,21 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
     # Functors out of finite G-sets, sited on their domain.
 
+    @cached_method
     def orbits_functor(self):
         r"""``X |-> X/G : FinGSet_G -> FinSet``."""
         from dzack_research.preamble.categories.functors.g_sets import GSetOrbitsFunctor
 
         return GSetOrbitsFunctor(self.group())
 
+    @cached_method
     def fixed_points_functor(self):
         r"""``X |-> X^G : FinGSet_G -> FinSet``."""
         from dzack_research.preamble.categories.functors.g_sets import GSetFixedPointsFunctor
 
         return GSetFixedPointsFunctor(self.group())
 
+    @cached_method
     def orbits_trivial_adjunction(self):
         r"""``(-)/G -| Triv_G``."""
         from dzack_research.preamble.categories.functors.g_sets import (
@@ -128,6 +130,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         return g_set_orbits_trivial_adjunction(self.group())
 
+    @cached_method
     def underlying_cofree_adjunction(self):
         r"""``U -| Map(G, -)``: the underlying set is left adjoint to the cofree ``G``-set."""
         from dzack_research.preamble.categories.functors.g_sets import (
@@ -139,6 +142,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     _HomCategory = GSetHomCategoryConstruction
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"acting_group", "action", "underlying_category"}
+        )
+
         def __init__(self, point_set, permutation_representation, **rest) -> None:
             assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
             group = permutation_representation.domain()
@@ -218,14 +225,16 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             if point not in self:
                 raise ValueError(f"{point} is not a point of {self}")
             from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
+                stabilizer_subgroup,
             )
 
             group = self.acting_group()
-            return predicate_subgroup(
+            return stabilizer_subgroup(
                 group,
+                point,
+                "pointwise",
                 lambda group_element: self.act(group_element, point) == point,
-                f"stabilizer of {point} in {self}",
+                description=f"stabilizer of {point} in {self}",
             )
 
         def orbit_stabilizers(self):
@@ -601,30 +610,27 @@ def fixed_point_set(g_set):
     return finite_ordered_filter(finite_ordered_set(g_set), g_set.is_invariant)
 
 
-class Torsors(Category):
-    r"""The category of free transitive ``G``-sets."""
+class Torsors(OwnedParameterizedCategory):
+    r"""The owned category of free transitive ``G``-sets."""
 
     @staticmethod
     def __classcall__(cls, group):
-        return Category.__classcall__(cls, _owned_group(group))
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
-    def __init__(self, group):
-        self._group = group
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._group
+    def parameter_category(self):
+        r"""A torsor is parameterized by its actual acting group ``G``."""
+        return OwnedGroups()
 
     def group(self):
-        return self._group
+        return self.base()
 
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self._group)]
+        return [GSets(self.group())]
 
     def _repr_object_names(self):
-        return f"torsors under {self._group}"
+        return f"torsors under {self.group()}"
 
     def __contains__(self, candidate) -> bool:
         if candidate not in FiniteGSets(self.group()):
@@ -634,12 +640,17 @@ class Torsors(Category):
     def _call_(self, candidate):
         if candidate not in self:
             raise ValueError(f"{candidate} is not a torsor under {self.group()}")
-        return candidate
+        return refine(candidate, self)
 
     class ParentMethods:
-        @abstract_method
         def an_element(self):
-            r"""Return the chosen point trivializing this torsor."""
+            r"""Return the selected point trivializing this represented torsor.
+
+            A torsor has no canonical point.  The represented finite ``G``-set
+            already carries an ordered point set, so its first point is the
+            presentation's selected trivializing choice.
+            """
+            return next(iter(self.point_set()))
 
         def acting_group(self):
             r"""Return the group named by this torsor's category node."""

@@ -1,16 +1,12 @@
 r"""Finite algebra presentations backed by Sage polynomial quotients."""
 
-from collections.abc import Iterable
 
 from sage.rings.noncommutative_ideals import Ideal_nc
 
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
-    OwnedAlgebras,
-    algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
@@ -20,19 +16,16 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     _PresentedAlgebraParent,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-)
-
-
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 

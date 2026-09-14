@@ -5,10 +5,9 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _SelectedFinitePresentationModules,
     _presentation_rows,
+    _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -22,12 +21,13 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FinitelyPresentedModules,
     FramedModules,
-    ModuleSubobjects,
     Modules,
+    ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 class LocalizedModules(OwnedCategoryOverBaseRing):
@@ -35,11 +35,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``S^{-1}(R^2)`` for ``S^{-1}R`` this category's ring."""
-        from dzack_research.preamble.categories.functors.module_localization import (
-            ModuleLocalizationFunctor,
-        )
-        from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         localization_ring = self.base_ring()
@@ -50,7 +47,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         source = BasedFreeModule(
             localization_ring.localization_source(), finite_ordinal_set(2)
         )
-        return ModuleLocalizationFunctor(localization_ring)(source)
+        return localization_ring.localize_module(source)
 
     def super_categories(self):
 
@@ -125,6 +122,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return f"({self.numerator()})/({self.denominator()})"
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
+
         def __init__(
             self,
             source_module,
@@ -140,19 +139,17 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             framed_source = source_module in FramedModules(source_ring)
             if framed_source:
                 # Localization chooses no new framing: it carries the source
-                # generators to their images in S^{-1}M.
-                module_generating_set = source_module.module_generating_set()
-                module_generator_function = lambda label: self.fraction(
-                    source_module.module_generator(label)
+                # generators to their images in S^{-1}M.  This specialization
+                # owns that derived framing, so retain it here instead of
+                # depending on a particular ParentMethods MRO for the joined
+                # refinement categories.
+                self._preamble_module_generating_set = (
+                    source_module.module_generating_set()
+                )
+                self._preamble_module_generator_function = (
+                    lambda label: self.fraction(source_module.module_generator(label))
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
-                super().__init__(
-                    base_ring=localization_ring,
-                    module_generating_set=module_generating_set,
-                    module_generator_function=module_generator_function,
-                    **rest,
-                )
-                return
             super().__init__(base_ring=localization_ring, **rest)
 
         def _framing_coefficients(self, element):
@@ -485,6 +482,7 @@ def LocalizedModule(
     subobject_verify_linearity=True,
     extra_categories=(),
     extra_construction_data=None,
+    selected_presentation_data=None,
 ):
     r"""Return ``S^{-1}M``, placed by what the source module already is.
 
@@ -523,6 +521,8 @@ def LocalizedModule(
             data.update(
                 _transported_presentation(source_module, localization_ring)
             )
+            if selected_presentation_data is not None:
+                data.update(selected_presentation_data)
             placement.extend(
                 [
                     FinitelyPresentedModules(localization_ring),

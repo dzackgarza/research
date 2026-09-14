@@ -1,4 +1,5 @@
 from dzack_research.preamble.all import (
+    Set,
     ZZ,
     BasedFreeModule,
     FormedModules,
@@ -49,7 +50,7 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
     decomposition = acted.isotypic_decomposition()
 
     assert characters.cardinality() == 2
-    assert sorted(character.degree() for character in characters) == [1, 2]
+    assert Set(character.degree() for character in characters) == Set((ZZ(1), ZZ(2)))
     assert decomposition.trivial_component().module_rank() == 1
     assert decomposition.nontrivial_components()[0].module_rank() == 2
     assert decomposition.index() == 3

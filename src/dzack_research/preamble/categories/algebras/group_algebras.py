@@ -10,15 +10,17 @@ induced algebra morphism \(R[H]\to R[G]\).  Reference: Lam, *A First Course
 in Noncommutative Rings*, §1 and Theorem 6.1 (Maschke).
 """
 
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
+    CommutativeAlgebras,
+    UnitalMultiplicativeAlgebraMorphism,
     _unit_morphism_from_element,
     algebra_homset,
-    CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import AugmentedAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
@@ -29,10 +31,14 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
+    FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.tensor_products import (
+    tensor_product_morphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -89,6 +95,10 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             the conjugation orbit of its representative.
             """
             group = self.group()
+            if group not in FiniteGroups():
+                raise NotImplementedError(
+                    "the conjugacy-class-sum basis of the group-algebra center is materialized here only for finite groups"
+                )
             module = self.underlying_module()
             class_sums = finite_ordered_set(
                 [
@@ -130,10 +140,24 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def regular_representation(self):
-            r"""``R[G]`` as a module over itself by left multiplication."""
+            r"""``R[G]`` as a module over itself by left multiplication.
+
+            The algebra object and its coefficient-module carrier are distinct
+            objects: ``Alg_R -> Mod_R`` is the represented forgetful functor,
+            not a category-inclusion edge.  Linearize left multiplication on
+            that exact carrier, then let ``Modules(R[G])`` equip the resulting
+            group action with the group-algebra scalar action.
+            """
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-            return Modules(self)(self, lambda g, element: self(g) * element)
+            carrier = self.underlying_module()
+            inclusion = self.group_inclusion()
+
+            def left_action(group_element, element):
+                product = inclusion(group_element) * self(element)
+                return carrier(self._carrier_element(product))
+
+            return Modules(self)(carrier, left_action)
 
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).
@@ -162,26 +186,73 @@ def GroupAlgebra(base_ring, group):
     r"""The group algebra \(R[G]\): the free \(R\)-module on \(G\), multiplied by the group law."""
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
-    assert group in FiniteGroups(), (
-        "the free module on an infinite group needs a lazy framing, which this route lacks"
-    )
-    elements = finite_ordered_set(group)
-    module = BasedFreeModule(ring, elements)
-    multiplication = module_homset(TensorSquare(module), module)(
-        {
-            (left, right): module.module_generator(left * right)
-            for left in elements
-            for right in elements
-        }
+    module = FreeModuleOn(ring, group)
+    multiplication = TensorSquare(module).from_bilinear(
+        BilinearMap(
+            module,
+            module,
+            module,
+            lambda left, right: module.module_generator(left * right),
+        )
     )
     unit_element = module.module_generator(group.one())
     unit = _unit_morphism_from_element(module, unit_element, ring)
-    algebra = Algebras(ring).Associative().Unital()(module, multiplication, unit)
+
+    # The group law already decides the multiplication before the object is
+    # refined into the ring category: R[G] is commutative exactly when R and
+    # G are commutative.  Retain that defining datum before the unital
+    # refinement reaches OwnedRings; its construction hook legitimately asks
+    # the algebra for commutativity.  No finite enumeration of G is involved.
+    algebra = Algebras(ring)(module, multiplication)
+    algebra._preamble_multiplication_morphism = multiplication
+    algebra._preamble_algebra_is_commutative = bool(
+        ring.is_commutative() and group.is_abelian()
+    )
+    algebra = Algebras(ring).Associative().Unital()(algebra, unit)
     algebra._preamble_group = group
     refine(algebra, GroupAlgebras(ring))
-    if group.is_abelian():
+    if algebra.is_commutative():
         refine(algebra, CommutativeAlgebras(ring))
     return algebra
+
+
+class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
+    r"""The algebra map ``R[H] -> R[G]`` induced by a represented group map.
+
+    The multiplication law is not re-decided by equality of two linear maps on
+    the (possibly infinite) basis ``H``.  A group morphism already satisfies
+    ``f(hk)=f(h)f(k)`` and ``f(1)=1``; extending its basis map ``R``-linearly is
+    therefore the unique unital algebra morphism of group algebras.
+    """
+
+    def __init__(self, parent, group_morphism) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
+        if group_morphism.domain() is not source.group():
+            raise ValueError("the group map has the wrong source group algebra")
+        if group_morphism.codomain() is not target.group():
+            raise ValueError("the group map has the wrong target group algebra")
+
+        source_module = source.underlying_module()
+        target_module = target.underlying_module()
+        linear = module_homset(source_module, target_module)(
+            lambda label: target_module.module_generator(group_morphism(label))
+        )
+        source_multiplication = source.multiplication_morphism()
+        target_multiplication = target.multiplication_morphism()
+        self._underlying_morphism = linear
+        self._tensor_square_morphism = tensor_product_morphism(
+            linear,
+            linear,
+            source=source_multiplication.domain(),
+            target=target_multiplication.domain(),
+        )
+
+        source_identity = source_module.module_generator(source.group().one())
+        target_identity = target_module.module_generator(target.group().one())
+        if linear(source_identity) != target_identity:
+            raise ValueError("the induced group-algebra map does not preserve the unit")
 
 
 class GroupAlgebraFunctor(Functor):
@@ -206,15 +277,58 @@ class GroupAlgebraFunctor(Functor):
     def _apply_morphism(self, group_morphism):
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
-        source_module = source.underlying_module()
-        target_module = target.underlying_module()
-        linear = module_homset(source_module, target_module)(
-            {
-                label: target_module.module_generator(group_morphism(label))
-                for label in source.module_generating_set()
-            }
+        return GroupAlgebraMorphism(
+            algebra_homset(source, target),
+            group_morphism,
         )
-        return algebra_homset(source, target)(linear)
 
     def _repr_(self):
         return f"Group-algebra functor over {self._base_ring}"
+
+
+class GroupAlgebraUnderlyingModuleFunctor(Functor):
+    r"""The composite ``Grp -> Alg_R -> Mod_R``, ``G |-> R[G]`` as a module.
+
+    This is the archived ``FreeModuleOnGroupFunctor`` construction stated at
+    its actual owner: first form the group algebra, then forget only its
+    multiplication.  Object and morphism actions therefore reuse the live
+    group-algebra and algebra-underlying-module functors rather than rebuilding
+    the free module or its induced map.
+    """
+
+    def __init__(self, base_ring) -> None:
+        from dzack_research.preamble.categories.functors.algebra_modules import (
+            algebra_underlying_module_functor,
+        )
+
+        ring = _owned_ring(base_ring)
+        self._base_ring = ring
+        self._group_algebra_functor = GroupAlgebraFunctor(ring)
+        self._underlying_module_functor = algebra_underlying_module_functor(
+            ring,
+            self._group_algebra_functor.codomain(),
+        )
+        super().__init__(OwnedGroups(), self._underlying_module_functor.codomain())
+
+    def base_ring(self):
+        return self._base_ring
+
+    def group_algebra_functor(self):
+        return self._group_algebra_functor
+
+    def underlying_module_functor(self):
+        return self._underlying_module_functor
+
+    def _apply_object(self, group):
+        return self.underlying_module_functor()(self.group_algebra_functor()(group))
+
+    def _apply_morphism(self, group_morphism):
+        return self.underlying_module_functor()(
+            self.group_algebra_functor()(group_morphism)
+        )
+
+    def _repr_(self):
+        return f"Underlying-module-of-group-algebra functor over {self.base_ring()}"
+
+
+FreeModuleOnGroupFunctor = GroupAlgebraUnderlyingModuleFunctor

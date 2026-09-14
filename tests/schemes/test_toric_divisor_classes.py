@@ -10,12 +10,30 @@ by Prop. 4.3.3.
 import pytest
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
-    ClassGroups,
-    PicardGroups,
+    NN,
     QQ,
-    RationalPolyhedralFans,
     ZZ,
+    BasedFreeModule,
+    CartierDivisorGroups,
+    ChowGroups,
+    ClassGroups,
+    CompleteLinearSystems,
+    CoordinateHyperplaneSectionRestriction,
+    CoordinatePointJetEvaluation,
+    CoxRings,
+    FiniteAtlasInvertibleSheaf,
+    HomogeneousPolynomialSectionSpaces,
+    ImposedMultiplicityLinearSystem,
+    ImposedMultiplicityLinearSystems,
+    LineBundleCohomologySpaces,
+    PicardGroups,
+    ProjectiveJetSpaces,
+    RationalPolyhedralFans,
+    SectionRings,
+    SectionsVanishingToOrder,
+    TorusInvariantCycleGroups,
+    WeilDivisorGroups,
+    module_homset,
 )
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
@@ -63,12 +81,53 @@ def test_the_principal_divisor_of_every_character_is_trivial_in_the_class_group(
         assert plane.divisor_class(principal(character)) == classes.zero()
 
 
+def test_character_valuations_are_the_coefficients_of_their_principal_divisor() -> None:
+    plane = _projective_plane()
+    character = plane.character_lattice().module_generator(
+        next(iter(plane.character_lattice().module_generating_set()))
+    )
+    divisor = plane.principal_divisor_of_character(character)
+
+    for ray in plane.fan().cones(1):
+        assert plane.weil_multiplicity(divisor, ray) == (
+            plane.order_of_character_along_prime_divisor(character, ray)
+        )
+
+
 def test_the_anticanonical_class_of_the_projective_plane_is_three_times_a_line() -> None:
     plane = _projective_plane()
     line = plane.divisor_class(_prime_divisors(plane)[0])
 
     assert plane.divisor_class(plane.toric_boundary_divisor()) == ZZ(3) * line
     assert plane.divisor_class(plane.canonical_divisor()) == ZZ(-3) * line
+
+
+def test_projective_plane_canonical_and_anticanonical_bundles_retain_their_divisors() -> None:
+    plane = _projective_plane()
+    canonical = plane.canonical_line_bundle()
+    anticanonical = plane.anticanonical_line_bundle()
+
+    assert canonical.associated_divisor() == plane.canonical_divisor()
+    assert anticanonical.associated_divisor() == -plane.canonical_divisor()
+
+
+def test_squaring_on_projective_line_pulls_back_a_boundary_point_with_multiplicity_two() -> None:
+    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+    fan = fans.projective_space_fan()
+    cocharacters = fans.cocharacter_lattice()
+    label = next(iter(cocharacters.module_generating_set()))
+    doubling = module_homset(cocharacters, cocharacters)(
+        {label: ZZ(2) * cocharacters.module_generator(label)}
+    )
+    line = fan.toric_variety(QQ)
+    morphism = line.toric_morphism(doubling, line)
+    ray = next(iter(fan.cones(1)))
+    point = line.torus_invariant_prime_divisor(ray)
+    pulled = morphism.pullback_divisor(point)
+    bundle = line.invertible_sheaf_of_divisor(point)
+
+    assert pulled == ZZ(2) * point
+    assert morphism.pullback_line_bundle(bundle).associated_divisor() == pulled
 
 
 def test_only_a_fan_whose_rays_span_the_lattice_is_free_of_a_torus_factor() -> None:
@@ -107,6 +166,52 @@ def test_the_picard_group_is_constructed_on_a_smooth_fan_and_refused_otherwise()
         _quadric_cone().picard_group()
 
 
+def test_standard_smooth_toric_picard_groups_come_from_the_character_divisor_quotient() -> None:
+    affine_plane = _PLANE_FANS((((1, 0), (0, 1)),)).toric_variety(QQ)
+    projective_plane = _projective_plane()
+    product_of_lines = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+
+    assert affine_plane.picard_group().module_rank() == 0
+    assert affine_plane.class_group().module_rank() == 0
+    assert projective_plane.picard_group().module_rank() == 1
+    assert projective_plane.class_group().module_rank() == 1
+    assert product_of_lines.picard_group().module_rank() == 2
+    assert product_of_lines.class_group().module_rank() == 2
+
+
+def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
+    plane = _projective_plane()
+    weil = plane.weil_divisor_group()
+    cartier = plane.cartier_divisor_group()
+    classes = plane.class_group()
+    picard = plane.picard_group()
+
+    assert weil in WeilDivisorGroups()
+    assert cartier in CartierDivisorGroups()
+    assert classes in ClassGroups()
+    assert picard in PicardGroups()
+    assert cartier is not weil
+    assert picard is not classes
+
+    cartier_to_weil = plane.cartier_to_weil_morphism()
+    to_picard = plane.cartier_class_projection()
+    to_class = plane.class_group_projection()
+    picard_to_class = plane.picard_to_class_group_morphism().forward()
+
+    assert cartier_to_weil.domain() is cartier
+    assert cartier_to_weil.codomain() is weil
+    assert to_picard.domain() is cartier
+    assert to_picard.codomain() is picard
+    assert picard_to_class.domain() is picard
+    assert picard_to_class.codomain() is classes
+    assert to_class * cartier_to_weil == picard_to_class * to_picard
+
+    comparison = plane.picard_to_class_group_morphism()
+    assert comparison.inverse() * comparison.forward() == module_homset(
+        picard, picard
+    ).identity()
+
+
 def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_forms() -> None:
     r"""``h^0(P^2, O(1)) = 3`` and ``h^0(P^2, O(3)) = 10``: the polytope of a
     single torus-invariant line is a unimodular triangle and the polytope of
@@ -117,10 +222,77 @@ def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_for
     for divisor in _prime_divisors(plane):
         assert plane.divisor_polytope(divisor).n_integral_points() == 3
         assert plane.divisor_section_characters(divisor).cardinality() == 3
+        sections = plane.divisor_section_space(divisor)
+        assert sections.dimension() == 3
+        assert sections.module_generating_set() == plane.divisor_section_characters(divisor)
 
     boundary = plane.toric_boundary_divisor()
     assert plane.divisor_polytope(boundary).n_integral_points() == 10
     assert characters.zero() in plane.divisor_section_characters(boundary)
+    assert plane.divisor_section_space(boundary).dimension() == 10
+
+
+def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> None:
+    plane = _projective_plane()
+    line = _prime_divisors(plane)[0]
+    sections = plane.divisor_section_space(line)
+    system = plane.complete_linear_system(line)
+
+    assert system in CompleteLinearSystems(QQ)
+    assert system.linear_system_scheme() is plane
+    assert system.linear_system_divisor() == line
+    assert system.section_space() is sections
+    assert system.projective_dimension() == 2
+
+
+def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordinates() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    system = plane.complete_linear_system(line)
+    morphism = system.associated_morphism()
+
+    assert morphism.domain() is plane
+    assert morphism.codomain() is system
+    assert morphism._preamble_linear_system_divisor == line
+    assert len(morphism.native_morphism().defining_polynomials()) == 3
+
+
+def test_non_basepoint_free_divisor_has_no_everywhere_defined_associated_morphism() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(1).toric_variety(QQ)
+    divisor = _prime_divisors(surface)[0]
+
+    if not surface.is_basepoint_free(divisor):
+        with pytest.raises(ValueError, match="basepoint-free"):
+            surface.associated_projective_morphism(divisor)
+
+
+def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> None:
+    plane = _projective_plane()
+    line = _prime_divisors(plane)[0]
+    bundle = plane.invertible_sheaf_of_divisor(line)
+    square = plane.invertible_sheaf_of_divisor(ZZ(2) * line)
+
+    assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
+    assert bundle.scheme() is plane
+    assert bundle.associated_divisor() == line
+    assert bundle.global_sections() is plane.divisor_section_space(line)
+    assert bundle.global_sections().dimension() == 3
+    for cone in plane.fan().maximal_cones():
+        assert bundle.local_module(cone).module_rank() == 1
+    for pair in plane.gluing_datum().transition_index_set():
+        assert bundle.transition_unit(*pair).is_unit()
+        assert bundle.tensor_power(2).transition_unit(*pair) == square.transition_unit(*pair)
+
+
+def test_toric_projective_space_has_the_distinguished_hyperplane_bundle() -> None:
+    plane = _projective_plane()
+    hyperplane = plane.hyperplane_divisor()
+    line_bundle = plane.O1()
+
+    assert plane.divisor_class(hyperplane) != plane.class_group().zero()
+    assert line_bundle.associated_divisor() == hyperplane
+    assert line_bundle.global_sections().dimension() == 3
+    assert plane.complete_linear_system(hyperplane).projective_dimension() == 2
 
 
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:
@@ -148,6 +320,227 @@ def test_a_line_is_ample_on_the_projective_plane_and_the_canonical_class_is_not(
     assert plane.is_ample(plane.toric_boundary_divisor())
     assert not plane.is_basepoint_free(plane.canonical_divisor())
     assert not plane.is_ample(plane.canonical_divisor())
+
+
+def test_projective_plane_intersections_are_the_normalized_areas_of_divisor_polytopes() -> None:
+    plane = _projective_plane()
+    line = _prime_divisors(plane)[0]
+    cubic = plane.toric_boundary_divisor()
+
+    assert plane.ample_divisor_self_intersection(line) == 1
+    assert plane.ample_divisor_intersection(line, cubic) == 3
+    assert plane.ample_divisor_self_intersection(cubic) == 9
+
+
+def test_hirzebruch_zero_picard_pairing_is_the_hyperbolic_plane() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+    divisors = tuple(
+        surface.torus_invariant_prime_divisor(ray)
+        for ray in surface.fan().cones(1)
+    )
+    pairing = surface.picard_intersection_pairing()
+    projection = surface.cartier_class_projection()
+    classes = tuple(projection(divisor) for divisor in divisors)
+
+    isotropic_pair = None
+    for left in classes:
+        for right in classes:
+            if (
+                pairing(left, left) == 0
+                and pairing(right, right) == 0
+                and pairing(left, right) == 1
+            ):
+                isotropic_pair = (left, right)
+                break
+        if isotropic_pair is not None:
+            break
+
+    assert isotropic_pair is not None
+    left, right = isotropic_pair
+    assert pairing(right, left) == 1
+
+
+def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> None:
+    plane = _projective_plane()
+
+    for degree in (0, 1, 2):
+        group = plane.chow_group(degree)
+        assert group in ChowGroups(ZZ)
+        assert group.chow_scheme() is plane
+        assert group.cycle_dimension() == degree
+        assert group.module_rank() == 1
+        assert group.invariant_factors().cardinality() == 1
+        assert group.invariant_factors()[0] == ZZ.zero()
+
+
+def test_projective_plane_invariant_curves_surject_onto_the_chow_group() -> None:
+    plane = _projective_plane()
+    cycles = plane.torus_invariant_cycle_group(1)
+    projection = plane.torus_invariant_cycle_class_map(1)
+    rays = tuple(cycles.module_generating_set())
+
+    assert cycles in TorusInvariantCycleGroups(ZZ)
+    assert cycles.cycle_scheme() is plane
+    assert cycles.cycle_dimension() == 1
+    assert cycles.module_rank() == 3
+    assert projection.is_surjective()
+    images = tuple(projection(cycles.module_generator(ray)) for ray in rays)
+    assert images[0] == images[1] == images[2]
+
+
+def test_hirzebruch_surface_chow_group_has_rank_two_in_curve_degree() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+
+    assert surface.chow_group(0).module_rank() == 1
+    assert surface.chow_group(1).module_rank() == 2
+    assert surface.chow_group(2).module_rank() == 1
+
+
+def test_projective_plane_cox_ring_is_class_group_graded() -> None:
+    plane = _projective_plane()
+    cox = plane.cox_ring()
+    labels = tuple(cox.algebra_generating_set())
+
+    assert cox in CoxRings(plane)
+    assert cox.grading_monoid() is plane.class_group()
+    first_degree = cox.generator_degree(labels[0])
+    assert first_degree == plane.divisor_class(_prime_divisors(plane)[0])
+    assert all(cox.generator_degree(label) == first_degree for label in labels)
+    assert cox.homogeneous_degree(cox.algebra_generator(labels[0]) ** 3) == ZZ(3) * first_degree
+    assert cox.homogeneous_degree(
+        cox.algebra_generator(labels[0]) * cox.algebra_generator(labels[1])
+    ) == ZZ(2) * first_degree
+
+
+def test_hirzebruch_surface_cox_ring_retains_multidegrees() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+    cox = surface.cox_ring()
+    degrees = tuple(
+        cox.generator_degree(label) for label in cox.algebra_generating_set()
+    )
+
+    assert cox.grading_monoid() is surface.class_group()
+    assert any(degree != degrees[0] for degree in degrees[1:])
+
+
+def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    ring = plane.section_ring(line)
+    labels = tuple(ring.algebra_generating_set())
+
+    assert ring in SectionRings(QQ)
+    assert ring.section_scheme() is plane
+    assert ring.section_divisor() == line
+    assert all(ring.generator_degree(label) == 1 for label in labels)
+    assert ring.graded_piece(1).module_rank() == 3
+    assert ring.graded_piece(2).module_rank() == 6
+    assert ring.homogeneous_degree(
+        ring.algebra_generator(labels[0]) * ring.algebra_generator(labels[1])
+    ) == 2
+
+
+def test_projective_plane_sections_are_actual_homogeneous_cox_polynomials() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    source = plane.divisor_section_space(line)
+    polynomial_space = plane.homogeneous_polynomial_section_space(line)
+    identification = plane.section_homogeneous_polynomial_isomorphism(line)
+    cox = plane.cox_ring()
+
+    assert source.dimension() == 3
+    assert polynomial_space.dimension() == 3
+    assert identification.domain() is source
+    assert identification.codomain() is polynomial_space
+    for character in source.module_generating_set():
+        monomial = plane.cox_monomial_of_section(line, character)
+        assert monomial.parent() is cox
+        assert cox.homogeneous_degree(monomial) == plane.divisor_class(line)
+        assert identification.forward()(source.module_generator(character)) == (
+            polynomial_space.module_generator(monomial)
+        )
+
+
+def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    canonical = plane.canonical_divisor()
+
+    h0_line = plane.line_bundle_cohomology(line, 0)
+    h1_line = plane.line_bundle_cohomology(line, 1)
+    h2_canonical = plane.line_bundle_cohomology(canonical, 2)
+
+    assert h0_line in LineBundleCohomologySpaces(QQ)
+    assert h0_line.cohomology_scheme() is plane
+    assert h0_line.cohomology_divisor() == line
+    assert h0_line.cohomological_degree() == 0
+    assert h0_line.dimension() == 3
+    assert h1_line.dimension() == 0
+    assert h2_canonical.dimension() == 1
+    dimensions = plane.line_bundle_cohomology_dimensions(line)
+    assert tuple(int(degree) for degree in dimensions.index_set()) == (0, 1, 2)
+    assert tuple(dimensions) == (NN(3), NN(0), NN(0))
+    assert all(value in NN for value in dimensions)
+
+
+def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    restriction = CoordinateHyperplaneSectionRestriction(projective_plane, 2, 0)
+
+    assert restriction.domain() in HomogeneousPolynomialSectionSpaces(QQ)
+    assert restriction.codomain() in HomogeneousPolynomialSectionSpaces(QQ)
+    assert restriction.domain().dimension() == 6
+    assert restriction.codomain().dimension() == 3
+    assert restriction.kernel().dimension() == 3
+    assert restriction.cokernel().is_zero()
+    assert restriction._preamble_closed_subscheme.inclusion().codomain() is projective_plane
+
+
+def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 2)
+    singular_at_point = SectionsVanishingToOrder(projective_plane, 3, 0, 2)
+
+    assert jets.codomain() in ProjectiveJetSpaces(QQ)
+    assert jets.domain().dimension() == 10
+    assert jets.codomain().dimension() == 3
+    assert jets.is_surjective()
+    assert singular_at_point.dimension() == 7
+    assert singular_at_point.inclusion().codomain().dimension() == 10
+
+
+def test_higher_jets_record_the_expected_truncated_local_monomials() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 3)
+
+    assert jets.codomain().dimension() == 6
+    assert jets.kernel().dimension() == 4
+    assert jets.cokernel().is_zero()
+
+
+def test_imposed_double_point_sections_form_the_expected_projective_parameter_space() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    system = ImposedMultiplicityLinearSystem(projective_plane, 3, 0, 2)
+
+    assert system in ImposedMultiplicityLinearSystems(QQ)
+    assert system.relative_dimension() == 6
+    assert system.ambient_section_space().dimension() == 10
+    assert system.constrained_section_space().dimension() == 7
+    assert system.imposed_vanishing_order() == 2
+
+
+def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
+    plane = _projective_plane()
+    conic = ZZ(2) * plane.hyperplane_divisor()
+    ring = plane.section_ring(conic)
+
+    assert ring.graded_piece(1).module_rank() == 6
+    assert ring.algebra_generating_set().cardinality() == 6
+    assert ring.relations().cardinality() > 0
 
 
 def test_a_principal_divisor_is_basepoint_free_and_never_ample() -> None:

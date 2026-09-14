@@ -1,24 +1,21 @@
 r"""Exact embeddings of number fields and number-field orders."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
-from sage.categories.morphism import Morphism
-from sage.categories.rings import Rings as SageRings
-from sage.categories.sets_cat import Sets as SageSets
 from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     _engine_element,
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class NumberFieldEmbedding(Morphism):
@@ -51,7 +48,7 @@ class NumberFieldEmbedding(Morphism):
         return self._call_(element)
 
     def _call_(self, element):
-        source = _engine_ring(self.domain())
+        _engine_ring(self.domain())
         target = _engine_ring(self.codomain())
         backend_source = _engine_element(self.domain(), self.domain()(element))
         image = self._engine_morphism(backend_source)

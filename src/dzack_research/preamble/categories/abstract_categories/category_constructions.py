@@ -1,21 +1,23 @@
 r"""Opposite categories and binary products of categories."""
 
+from __future__ import annotations
+
 from typing import Any
+
+from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    _category_hom,
     _category_homset,
 )
-from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.categories.category import Category
-from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets as SageSets
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.owned_category import object_of
-from sage.structure.parent import Parent
-
 
 
 class OppositeMorphism(Morphism):
@@ -23,7 +25,7 @@ class OppositeMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "OppositeHomset",
+        parent: OppositeHomset,
         underlying_arrow: Morphism,
     ) -> None:
         Morphism.__init__(self, parent)
@@ -71,7 +73,7 @@ class OppositeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def opposite_category(self) -> "OppositeCategory":
+    def opposite_category(self) -> OppositeCategory:
         return self.base_category()
 
     def _element_constructor_(self, underlying_arrow):
@@ -82,7 +84,7 @@ class OppositeHomset(CategoricalHomset):
                 raise ValueError("the opposite morphism has the wrong endpoints")
             underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
-        if underlying_arrow not in _category_homset(
+        if underlying_arrow not in _category_hom(
             base, self.codomain().underlying_object(), self.domain().underlying_object()
         ):
             raise ValueError("the reversed arrow does not belong to the base category")
@@ -116,7 +118,7 @@ class OppositeCategory(OwnedCategory):
             self._underlying_object = underlying_object
             super().__init__(**rest)
 
-        def opposite_category(self) -> "OppositeCategory":
+        def opposite_category(self) -> OppositeCategory:
             return self.category()
 
         def underlying_object(self) -> Parent:
@@ -171,7 +173,7 @@ class ProductMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "ProductHomset",
+        parent: ProductHomset,
         first: Morphism,
         second: Morphism,
     ) -> None:
@@ -227,7 +229,7 @@ class ProductHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def product_category(self) -> "ProductCategory":
+    def product_category(self) -> ProductCategory:
         return self.base_category()
 
     def _element_constructor_(self, first, second=None):
@@ -240,9 +242,9 @@ class ProductHomset(CategoricalHomset):
         if second is None:
             first, second = first
         product = self.product_category()
-        if first not in _category_homset(product.first_category(), self.domain().first(), self.codomain().first()):
+        if first not in _category_hom(product.first_category(), self.domain().first(), self.codomain().first()):
             raise ValueError("the first map is not a morphism of the first category")
-        if second not in _category_homset(product.second_category(), self.domain().second(), self.codomain().second()):
+        if second not in _category_hom(product.second_category(), self.domain().second(), self.codomain().second()):
             raise ValueError("the second map is not a morphism of the second category")
         return ProductMorphism(self, first, second)
 
@@ -290,6 +292,28 @@ class ProductCategory(OwnedCategory):
         'a'
         sage: (hom(collapse) * hom(swap)).underlying_arrow()("a")
         'b'
+
+    Unverified specimens: equal endpoints alone do not admit an arrow of a
+    factor category whose morphisms are restricted::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: category = ProductCategory(injections, Sets())
+        sage: obj = category(points, points)
+        sage: category.Mor(obj, obj)(swap, swap).first() is swap
+        True
+        sage: category.Mor(obj, obj)(collapse, swap)
+        Traceback (most recent call last):
+        ...
+        ValueError: the first map is not a morphism of the first category
+        sage: opposite = OppositeCategory(injections)
+        sage: obj = opposite(points)
+        sage: opposite.Mor(obj, obj)(swap).underlying_arrow() is swap
+        True
+        sage: opposite.Mor(obj, obj)(collapse)
+        Traceback (most recent call last):
+        ...
+        ValueError: the reversed arrow does not belong to the base category
     """
 
     _HomCategory = ProductHomCategoryConstruction
@@ -309,7 +333,7 @@ class ProductCategory(OwnedCategory):
             self._second = second
             super().__init__(**rest)
 
-        def product_category(self) -> "ProductCategory":
+        def product_category(self) -> ProductCategory:
             return self.category()
 
         def first(self) -> Parent:
@@ -317,6 +341,15 @@ class ProductCategory(OwnedCategory):
 
         def second(self) -> Parent:
             return self._second
+
+        def __iter__(self):
+            r"""Iterate the two factors of this categorical product object.
+
+            This is presentation of the retained pair, not a replacement by a
+            Python tuple: the parent remains the object of ``C x D`` and its
+            two components keep their original mathematical owners.
+            """
+            return iter((self.first(), self.second()))
 
         def _repr_(self) -> str:
             return f"({self.first()}, {self.second()})"

@@ -13,6 +13,13 @@ from dzack_research.preamble.all import (
     Modules,
     ZZ,
 )
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebrasWithChosenFinitePresentation,
+    CommutativeAlgebras,
+)
+from dzack_research.preamble.categories.algebras.semigroup_algebras import (
+    AffineSemigroupAlgebras,
+)
 
 
 def test_the_meet_is_below_every_member() -> None:
@@ -39,3 +46,13 @@ def test_the_meet_of_one_family_sits_under_its_join() -> None:
     family = (Modules(ZZ), FiniteSets())
 
     assert Cat().meet(family).is_subcategory(Cat().join(family))
+
+
+def test_meet_drops_strict_supercategories_before_building_the_dynamic_class() -> None:
+    affine = AffineSemigroupAlgebras(ZZ)
+    commutative = CommutativeAlgebras(ZZ)
+    presented = AlgebrasWithChosenFinitePresentation(ZZ)
+
+    met = Cat().meet((affine, commutative, presented))
+
+    assert met is affine

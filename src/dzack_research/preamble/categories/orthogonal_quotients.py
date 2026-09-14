@@ -1,5 +1,9 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
+from sage.libs.gap.libgap import libgap
+
 from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Set
 
 
 class OrthogonalCharacterQuotient:
@@ -14,6 +18,10 @@ class OrthogonalCharacterQuotient:
 
     def __init__(self, subgroup) -> None:
         self.subgroup = subgroup
+        if not subgroup.character_data_is_complete():
+            raise ValueError(
+                "the retained finite characters do not define this whole subgroup"
+            )
         self.supergroup = subgroup.supergroup()
         self.lattice = self.supergroup.domain()
         data = subgroup.character_data()
@@ -131,10 +139,12 @@ class OrthogonalCharacterQuotient:
         return True
 
     def image_keys(self):
-        return frozenset(self._witnesses)
+        return Set(tuple(self._witnesses))
 
     def subgroup_image_keys(self):
-        return frozenset(key for key in self._witnesses if self._allowed(key))
+        return Set(
+            tuple(key for key in self._witnesses if self._allowed(key))
+        )
 
     def _generated_keys(self, generators):
         identity = self.image(self.supergroup.one())
@@ -156,34 +166,169 @@ class OrthogonalCharacterQuotient:
             tuple(self.image(generator) for generator in stabilizer_generators)
         )
 
+    def stabilizer_image_witnesses(self, stabilizer_generators):
+        r"""Return one live stabilizer element above every generated character image."""
+        identity = self.supergroup.one()
+        identity_key = self.image(identity)
+        witnesses = {identity_key: identity}
+        steps = []
+        for generator in stabilizer_generators:
+            steps.append((self.image(generator), generator))
+            inverse = ~generator
+            steps.append((self.image(inverse), inverse))
+        frontier = [identity_key]
+        while frontier:
+            current_key = frontier.pop()
+            current_witness = witnesses[current_key]
+            for step_key, step_witness in steps:
+                candidate_key = self._multiply(step_key, current_key)
+                if candidate_key in witnesses:
+                    continue
+                witnesses[candidate_key] = step_witness * current_witness
+                frontier.append(candidate_key)
+        return witnesses
+
+    def _gap_regular_model(self):
+        r"""Return the right-regular libGAP model of the finite character image.
+
+        The quotient keys remain the owned public representation.  GAP sees
+        only their right-regular permutations, so its finite-group algorithms
+        can compute subgroup and double-coset combinatorics without becoming
+        part of the mathematical API.
+        """
+        keys = tuple(self.image_keys())
+        positions = {key: position + 1 for position, key in enumerate(keys)}
+        permutations = {}
+        for key in keys:
+            images = [
+                positions[self._multiply(source, key)]
+                for source in keys
+            ]
+            permutations[key] = libgap.PermList(images)
+        group = libgap.Group(list(permutations.values()))
+        if int(group.Size()) != len(keys):
+            raise ArithmeticError(
+                "the libGAP right-regular model does not have the character-image order"
+            )
+        return keys, permutations, group
+
+    def right_coset_transversal(self):
+        r"""Return one live lift for every right coset ``H r`` in the image.
+
+        Here ``Q = rho(O(L))`` is the represented finite character image and
+        ``H = rho(Gamma)`` is the image of the selected arithmetic subgroup.
+        A right coset is therefore the subset ``H r = {h r : h in H}`` of
+        ``Q``.  GAP computes representatives in the private regular-action
+        model; before crossing them back, this method reconstructs those
+        subsets with :meth:`_multiply` and verifies that they are disjoint and
+        cover all of ``Q``.  The public result consists only of live lattice
+        isometries lifting the chosen quotient representatives.
+        """
+        subgroup = self.subgroup_image_keys()
+        keys, permutations, group = self._gap_regular_model()
+        gap_subgroup = libgap.Subgroup(
+            group,
+            [permutations[key] for key in subgroup],
+        )
+        quotient_representatives = []
+        for right_coset in libgap.RightCosets(group, gap_subgroup):
+            gap_representative = right_coset.Representative()
+            quotient_representative = next(
+                (
+                    key
+                    for key in keys
+                    if permutations[key] == gap_representative
+                ),
+                None,
+            )
+            if quotient_representative is None:
+                raise ArithmeticError(
+                    "a libGAP right-coset representative did not cross back to the character image"
+                )
+            quotient_representatives.append(quotient_representative)
+
+        owned_cosets = tuple(
+            frozenset(
+                self._multiply(subgroup_element, representative)
+                for subgroup_element in subgroup
+            )
+            for representative in quotient_representatives
+        )
+        if len(set(owned_cosets)) != len(owned_cosets):
+            raise ArithmeticError(
+                "the selected right-coset representatives repeat a character-image coset"
+            )
+        covered = frozenset().union(*owned_cosets) if owned_cosets else frozenset()
+        if Set(covered) != self.image_keys():
+            raise ArithmeticError(
+                "the selected right cosets do not cover the full character image"
+            )
+        return finite_ordered_set(
+            tuple(
+                self._witnesses[representative]
+                for representative in quotient_representatives
+            )
+        )
+
     def splitting_isometries(self, stabilizer_generators):
         r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
         stabilizer = self.stabilizer_image_keys(stabilizer_generators)
         subgroup = self.subgroup_image_keys()
-        remaining = set(self.image_keys())
+        keys, permutations, group = self._gap_regular_model()
+        left = libgap.Subgroup(
+            group,
+            [permutations[key] for key in stabilizer],
+        )
+        right = libgap.Subgroup(
+            group,
+            [permutations[key] for key in subgroup],
+        )
         representatives = []
-        while remaining:
-            representative = next(iter(remaining))
-            representatives.append(self._witnesses[representative])
-            double_coset = {
-                self._multiply(self._multiply(left, representative), right)
-                for left in stabilizer
-                for right in subgroup
-            }
-            remaining.difference_update(double_coset)
-        return tuple(representatives)
+        for double_coset in libgap.DoubleCosets(group, left, right):
+            gap_representative = double_coset.Representative()
+            quotient_representative = next(
+                (
+                    key
+                    for key in keys
+                    if permutations[key] == gap_representative
+                ),
+                None,
+            )
+            if quotient_representative is None:
+                raise ArithmeticError(
+                    "a libGAP double-coset representative did not cross back to the character image"
+                )
+            representatives.append(self._witnesses[quotient_representative])
+        return finite_ordered_set(tuple(representatives))
 
     def witness_meets_subgroup(self, witness, stabilizer_generators) -> bool:
+        return self.adjust_witness_into_subgroup(witness, stabilizer_generators) is not None
+
+    def adjust_witness_into_subgroup(self, witness, target_stabilizer_generators):
+        r"""Left-adjust ``witness`` by the target stabilizer until it lies in the subgroup.
+
+        If ``witness(x)=y`` and ``t`` stabilizes ``y``, then ``t*witness`` still
+        carries ``x`` to ``y``.  Thus the relevant finite-character condition
+        is ``rho(t) rho(witness) in rho(Gamma)``.  Right multiplication by a
+        target stabilizer would instead act on the source and is not the same
+        transporter problem.
+        """
         if witness in self.subgroup:
-            return True
-        target = self.image(witness)
-        stabilizer = self.stabilizer_image_keys(stabilizer_generators)
-        subgroup = self.subgroup_image_keys()
-        return any(
-            self._multiply(left, right) == target
-            for left in subgroup
-            for right in stabilizer
-        )
+            return witness
+        subgroup_keys = self.subgroup_image_keys()
+        for stabilizer_key, stabilizer_witness in self.stabilizer_image_witnesses(
+            target_stabilizer_generators
+        ).items():
+            candidate_key = self._multiply(stabilizer_key, self.image(witness))
+            if candidate_key not in subgroup_keys:
+                continue
+            candidate = stabilizer_witness * witness
+            if candidate not in self.subgroup:
+                raise ArithmeticError(
+                    "complete finite-character data accepted a transporter excluded by its subgroup predicate"
+                )
+            return candidate
+        return None
 
 
 _MISSING_ARITHMETIC_GENERATING_SET = (
@@ -228,7 +373,7 @@ def _finite_subgroup_vector_orbit_representatives(subgroup, square):
         representatives.append(representative)
         for automorphism in elements:
             remaining.pop(tuple(automorphism(representative).to_tuple()), None)
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
 def subgroup_vector_orbit_representatives(subgroup, square):
@@ -246,25 +391,33 @@ def subgroup_vector_orbit_representatives(subgroup, square):
             if key not in seen:
                 seen.add(key)
                 representatives.append(image)
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
-def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
+def subgroup_vector_equivalence_witness(subgroup, left, right):
     orthogonal_group = subgroup.supergroup()
     if not subgroup.contains_character_kernel():
         lattice = orthogonal_group.domain()
         source, target = lattice(left), lattice(right)
-        return any(
-            automorphism(source) == target
-            for automorphism in _finite_supergroup_elements(subgroup)
+        return next(
+            (
+                automorphism
+                for automorphism in _finite_supergroup_elements(subgroup)
+                if automorphism(source) == target
+            ),
+            None,
         )
     witness = orthogonal_group.vector_equivalence_witness(left, right)
     if witness is None:
-        return False
+        return None
     stabilizer = orthogonal_group.vector_stabilizer_generators(right)
-    return OrthogonalCharacterQuotient(subgroup).witness_meets_subgroup(
+    return OrthogonalCharacterQuotient(subgroup).adjust_witness_into_subgroup(
         witness, stabilizer
     )
+
+
+def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
+    return subgroup_vector_equivalence_witness(subgroup, left, right) is not None
 
 
 def _assert_isotropic_splitting_has_character_data(subgroup) -> None:
@@ -301,29 +454,37 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
             transport_isotropic_object(splitting, representative)
             for splitting in quotient.splitting_isometries(stabilizer)
         )
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
-def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
+def subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):
     _assert_isotropic_splitting_has_character_data(subgroup)
     orthogonal_group = subgroup.supergroup()
     witness = orthogonal_group.isotropic_equivalence_witness(
         left, right, flag=flag
     )
     if witness is None:
-        return False
+        return None
     stabilizer = orthogonal_group.isotropic_stabilizer_generators(
         right, flag=flag
     )
-    return OrthogonalCharacterQuotient(subgroup).witness_meets_subgroup(
+    return OrthogonalCharacterQuotient(subgroup).adjust_witness_into_subgroup(
         witness, stabilizer
     )
+
+
+def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
+    return subgroup_isotropic_equivalence_witness(
+        subgroup, left, right, flag=flag
+    ) is not None
 
 
 __all__ = [
     "OrthogonalCharacterQuotient",
     "subgroup_isotropic_are_equivalent",
+    "subgroup_isotropic_equivalence_witness",
     "subgroup_isotropic_orbit_representatives",
+    "subgroup_vector_equivalence_witness",
     "subgroup_vector_orbit_representatives",
     "subgroup_vectors_are_equivalent",
 ]

@@ -1,5 +1,6 @@
 """Owned scalar hierarchy and the boundary to Sage computation rings."""
 
+from collections.abc import Mapping
 from functools import wraps
 
 from sage.all import (
@@ -17,6 +18,12 @@ from sage.all import (
 from sage.all import (
     Zmod as _SageZmod,
 )
+from sage.arith.misc import (
+    euler_phi as _engine_euler_phi,
+)
+from sage.arith.misc import (
+    number_of_divisors as _engine_number_of_divisors,
+)
 from sage.categories.category import Category
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
@@ -25,19 +32,23 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
+from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import op_EQ, op_NE, richcmp
+from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
@@ -61,6 +72,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     continuum,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
@@ -124,7 +136,7 @@ class RingMorphism(Morphism):
             return False
         try:
             return bool(self._engine_morphism.is_identity())
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return False
 
     def extension_of_ideal(self, ideal):
@@ -141,9 +153,18 @@ class RingMorphism(Morphism):
         assert ideal.ring() is domain, (
             f"an ideal extended along this morphism must be an ideal of {domain}"
         )
-        return self.codomain().ideal(
-            *(self(generator) for generator in ideal.ideal_generators())
+        codomain = self.codomain()
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            AdicCompletions,
         )
+
+        if codomain in AdicCompletions() and domain in OwnedNoetherianRings():
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                _flat_extension_commutative_ideal,
+            )
+
+            return _flat_extension_commutative_ideal(ideal, self)
+        return codomain.ideal(*(self(generator) for generator in ideal.ideal_generators()))
 
     def contraction_of_ideal(self, ideal):
         r"""Return ``f^{-1}(J)``, the contraction of an ideal of the codomain.
@@ -190,13 +211,24 @@ class RingMorphism(Morphism):
         Hom-object's own domain, so nothing has to be carried on the morphism
         for it to be found.
         """
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            LinearHomModules,
+        from dzack_research.preamble.categories.group.additive_homsets import (
+            AdditiveEndomorphismRings,
         )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         codomain = self.codomain()
-        if codomain in LinearHomModules(self.domain()) and codomain.domain() is codomain.codomain():
-            return codomain.domain().annihilator()
+        if codomain in AdditiveEndomorphismRings(codomain.base_ring()):
+            module = codomain.domain()
+            if (
+                module is codomain.codomain()
+                and module in Modules(self.domain())
+                and module.scalar_action() is self
+            ):
+                return module.annihilator()
+            raise NotImplementedError(
+                "the kernel of a non-selected action into an additive endomorphism ring "
+                "has no represented contraction backend"
+            )
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
 
@@ -221,6 +253,17 @@ class RingHomset(CategoricalHomset):
             if datum.parent() is self:
                 return datum
             return self.elementwise(datum)
+        if isinstance(datum, Mapping):
+            from dzack_research.preamble.categories.algebras.algebras import (
+                _engine_algebra_morphism_from_generator_images,
+            )
+
+            engine_morphism = _engine_algebra_morphism_from_generator_images(
+                self.domain(),
+                self.codomain(),
+                datum,
+            )
+            return self._element_constructor_(engine_morphism)
         if isinstance(datum, Map):
             source_engine = _engine_ring(self.domain())
             target_engine = _engine_ring(self.codomain())
@@ -230,12 +273,14 @@ class RingHomset(CategoricalHomset):
                 raise ValueError("the engine ring map has the wrong codomain")
             return self.element_class(
                 self,
-                lambda element: target_engine(datum(source_engine(element))),
+                lambda element: self.codomain()._from_engine_element(
+                    datum(_engine_element(self.domain(), element))
+                ),
                 engine_morphism=datum,
             )
         if callable(datum):
             return self.elementwise(datum)
-        raise TypeError("a ring morphism is supplied by an exact map or engine morphism")
+        raise TypeError("a ring morphism is supplied by generator images, an exact map, or an engine morphism")
 
     def elementwise(self, function):
         return self.element_class(self, function)
@@ -314,7 +359,7 @@ class PredicateSubrings(OwnedCategory):
         def _element_constructor_(self, element):
             try:
                 candidate = self._ambient_ring(element)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
             if candidate not in self:
                 raise ValueError(f"{candidate} does not satisfy {self._description}")
@@ -378,7 +423,7 @@ class LocalizationRings(OwnedCategory):
                 try:
                     if other_parent.base_ring() is self.parent():
                         return other_parent.scalar_multiple(self, other)
-                except AttributeError, TypeError, ValueError:
+                except (AttributeError, TypeError, ValueError):
                     pass
             return NotImplemented
 
@@ -395,15 +440,9 @@ class LocalizationRings(OwnedCategory):
             parent = self.parent()
             assert self.is_unit(), f"{self} is not a unit of {parent}"
             engine = parent._selected_engine_ring()
-            source = parent.localization_source()
-            represented = engine(_engine_element(source, self.numerator())) / engine(_engine_element(source, self.denominator()))
-            inverse = represented**-1
-            source_engine = _engine_ring(source)
-            return parent.fraction(
-                source._from_engine_element(source_engine(inverse.numerator())),
-                source._from_engine_element(source_engine(inverse.denominator())),
-                _trusted_denominator=True,
-            )
+            represented = parent._engine_element(self)
+            inverse = engine(represented) ** -1
+            return parent._from_engine_element(inverse)
 
         def is_unit(self):
             r"""Return whether ``a/s`` is invertible in ``S^{-1}R``.
@@ -413,8 +452,8 @@ class LocalizationRings(OwnedCategory):
             the ideal ``(a)`` meets ``S``.  For ``S`` generated by
             ``f_1, ..., f_r`` a monomial in the ``f_i`` lies in ``(a)`` exactly
             when a power of their product does -- raise every factor to the
-            largest exponent the monomial uses -- so the criterion is that the
-            product lies in ``sqrt((a))``.
+            largest exponent the monomial uses -- so the criterion is that
+            saturating ``(a)`` by the product gives the unit ideal.
 
             This is an ideal computation and needs nothing of ``S^{-1}R``,
             which is what lets a localization of a ring with zero divisors
@@ -439,9 +478,11 @@ class LocalizationRings(OwnedCategory):
             inverted_product = bottom.one()
             for inverted in inverted_family:
                 inverted_product = inverted_product * inverted
-            return bottom.ideal(numerator).radical().contains_ambient_element(
-                inverted_product
-            )
+            numerator_ideal = bottom.ideal(numerator)
+            inverted_ideal = bottom.ideal(inverted_product)
+            return numerator_ideal.ideal_saturation(
+                inverted_ideal
+            ).contains_ambient_element(bottom.one())
 
         def __truediv__(self, other):
             other = self.parent()(other)
@@ -489,14 +530,16 @@ class LocalizationRings(OwnedCategory):
             _engine_ring=None,
             *,
             algebra_source=None,
+            fraction_field_realization=None,
             **rest,
         ) -> None:
             self._preamble_localization_source = source
             self._preamble_localization_submonoid = submonoid
             self._preamble_engine_ring = _engine_ring
+            self._preamble_fraction_field_realization = fraction_field_realization
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
-            super().__init__(base_ring=source.base_ring(), **rest)
+            super().__init__(base=source.base_ring(), **rest)
 
             self._preamble_localization_map = ring_morphism(
                 source,
@@ -517,22 +560,33 @@ class LocalizationRings(OwnedCategory):
                 raise NotImplementedError("this localization has no selected computation realization")
             return engine
 
+        @cached_method
+        def localization_functor(self):
+            r"""Return the canonical module-localization functor along this ring localization."""
+            from dzack_research.preamble.categories.functors.module_localization import (
+                ModuleLocalizationFunctor,
+            )
+
+            return ModuleLocalizationFunctor(self)
+
         def localize_module(self, module):
-            r"""Return ``S^{-1}M`` through the module-localization theory."""
+            r"""Return ``S^{-1}M`` through this localization's canonical functor."""
 
             if module.base_ring() is not self.localization_source():
                 raise ValueError("the module has the wrong source ring for this localization")
-            from dzack_research.preamble.categories.functors.module_localization import (
-                module_localization_functor,
-            )
-
-            return module_localization_functor(self)(module)
+            return self.localization_functor()(module)
 
         def _valid_denominator(self, denominator) -> bool:
             try:
                 return denominator in self.localization_submonoid()
             except NotImplementedError:
-                return False
+                source = self.localization_source()
+                if denominator == source.one():
+                    return True
+                try:
+                    return bool(self.localization_map()(denominator).is_unit())
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    return False
 
         def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
             source = self.localization_source()
@@ -561,7 +615,7 @@ class LocalizationRings(OwnedCategory):
                         source._from_engine_element(source_engine(represented.denominator())),
                         _trusted_denominator=trusted_denominator,
                     )
-                except AttributeError, TypeError, ValueError:
+                except (AttributeError, TypeError, ValueError):
                     pass
             return self.fraction(value)
 
@@ -573,7 +627,7 @@ class LocalizationRings(OwnedCategory):
                 return True
             try:
                 self(value)
-            except NotImplementedError, TypeError, ValueError:
+            except (NotImplementedError, TypeError, ValueError):
                 return False
             return True
 
@@ -583,9 +637,51 @@ class LocalizationRings(OwnedCategory):
                 raise NotImplementedError("this localization has no selected computation realization")
             represented = engine(value)
             source = self.localization_source()
+            source_engine = _engine_ring(source)
+
+            # A localization of a quotient is realized privately by the
+            # standard finite presentation
+            # ``P[u_i]/(I, u_i f_i - 1)``.  Decode a polynomial representative
+            # by sending the original variables through ``P -> P/I`` and each
+            # auxiliary variable to the represented inverse of its selected
+            # denominator.  This is exactly the universal localization map.
+            try:
+                engine_cover = engine.cover_ring()
+                source_cover = source_engine.cover_ring()
+                source_names = tuple(source_cover.variable_names())
+                inverted = tuple(self.inverted_elements())
+                engine_names = tuple(engine_cover.variable_names())
+                if (
+                    engine_names[: len(source_names)] == source_names
+                    and len(engine_names) == len(source_names) + len(inverted)
+                    and all(
+                        name.startswith("localization_inverse_")
+                        for name in engine_names[len(source_names) :]
+                    )
+                ):
+                    result = self.zero()
+                    for exponents, coefficient in represented.lift().dict().items():
+                        source_monomial = source_cover(coefficient)
+                        for position, exponent in enumerate(exponents[: len(source_names)]):
+                            source_monomial *= source_cover.gen(position) ** int(exponent)
+                        term = self.fraction(
+                            source._from_engine_element(source_engine(source_monomial))
+                        )
+                        for position, exponent in enumerate(exponents[len(source_names) :]):
+                            if exponent:
+                                term *= self.fraction(
+                                    source.one(),
+                                    inverted[position],
+                                    _trusted_denominator=True,
+                                ) ** int(exponent)
+                        result += term
+                    return result
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+
             return self.fraction(
-                source._from_engine_element(_engine_ring(source)(represented.numerator())),
-                source._from_engine_element(_engine_ring(source)(represented.denominator())),
+                source._from_engine_element(source_engine(represented.numerator())),
+                source._from_engine_element(source_engine(represented.denominator())),
                 _trusted_denominator=True,
             )
 
@@ -596,7 +692,16 @@ class LocalizationRings(OwnedCategory):
             element = self(value)
             numerator = _engine_element(self.localization_source(), element.numerator())
             denominator = _engine_element(self.localization_source(), element.denominator())
-            return engine(numerator) / engine(denominator)
+            try:
+                return engine(numerator) / engine(denominator)
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                # A quotient-localization realization is an auxiliary-variable
+                # polynomial quotient.  Sage has no direct coercion from the
+                # source quotient ``P/I`` to that presentation, so cross each
+                # source class through its chosen polynomial lift first.
+                numerator_lift = getattr(numerator, "lift", lambda: numerator)()
+                denominator_lift = getattr(denominator, "lift", lambda: denominator)()
+                return engine(numerator_lift) / engine(denominator_lift)
 
         def zero(self):
             return self.fraction(self.localization_source().zero())
@@ -629,7 +734,7 @@ class LocalizationRings(OwnedCategory):
                 try:
                     annihilator = source.ideal(source.zero()).colon(source.ideal(difference))
                     return any(not prime.contains_ambient_element(generator) for generator in annihilator.ideal_generators())
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -647,7 +752,7 @@ class LocalizationRings(OwnedCategory):
                             product *= generator
                         saturated = source.defining_ideal().saturation(source_ring.ideal(product))
                         return saturated.contains_ambient_element(representative)
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             # A selected exact coefficient presentation A = P/I contains the
@@ -659,7 +764,7 @@ class LocalizationRings(OwnedCategory):
             # product kills d, and conversely every such common power lies in S.
             try:
                 has_presentation = source._has_selected_exact_coefficient_presentation()
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 has_presentation = False
             if has_presentation:
                 try:
@@ -677,7 +782,7 @@ class LocalizationRings(OwnedCategory):
                     defining_ideal = presentation_ring.ideal(*(relations or (presentation_ring.zero(),)))
                     saturated = defining_ideal.saturation(presentation_ring.ideal(product))
                     return saturated.contains_ambient_element(representative)
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             try:
@@ -695,7 +800,7 @@ class LocalizationRings(OwnedCategory):
                         seen.append(current)
                         pending.extend(source(generator * current) for generator in generators)
                     return False
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 pass
             return Unknown
 
@@ -707,6 +812,55 @@ class LocalizationRings(OwnedCategory):
 
         def localization_submonoid(self):
             return self._preamble_localization_submonoid
+
+        def is_fraction_field_localization(self) -> bool:
+            r"""Whether this localizes a domain at all of its nonzero elements."""
+            return (
+                self.localization_submonoid().structure_data().get("kind")
+                == "nonzero_elements"
+            )
+
+        def fraction_field_realization(self):
+            r"""Return the canonical owned field privately realizing this localization."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            field = self._preamble_fraction_field_realization
+            if field is None:
+                raise ArithmeticError("a fraction-field localization has no selected field realization")
+            return field
+
+        @cached_method
+        def fraction_field_comparison(self):
+            r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _canonical_map,
+            )
+
+            source_to_field = _canonical_map(
+                self.localization_source(), self.fraction_field_realization()
+            )
+
+            def image(element):
+                fraction = self(element)
+                numerator = source_to_field(fraction.numerator())
+                denominator = source_to_field(fraction.denominator())
+                return numerator * denominator.inverse_of_unit()
+
+            return ring_morphism(self, self.fraction_field_realization(), image)
+
+        @cached_method
+        def fraction_field_comparison_inverse(self):
+            r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            field = self.fraction_field_realization()
+            return ring_morphism(
+                field,
+                self,
+                lambda element: self._from_engine_element(_engine_element(field, element)),
+            )
 
         def inverted_elements(self):
             try:
@@ -778,7 +932,34 @@ class LocalizationRings(OwnedCategory):
                     fraction.denominator()
                 ).inverse_of_unit()
 
-            return ring_morphism(self, morphism.codomain(), image)
+            engine_morphism = None
+            try:
+                engine_source = _engine_ring(source)
+                engine_target = _engine_ring(morphism.codomain())
+                engine_localization = self._selected_engine_ring()
+                source_generators = tuple(engine_source.gens())
+                localization_generators = tuple(engine_localization.gens())
+                if len(source_generators) == len(localization_generators):
+                    engine_images = [
+                        _engine_element(
+                            morphism.codomain(),
+                            morphism(source._from_engine_element(generator)),
+                        )
+                        for generator in source_generators
+                    ]
+                    engine_morphism = engine_localization.hom(
+                        engine_images,
+                        engine_target,
+                    )
+            except (AttributeError, NotImplementedError, TypeError, ValueError, RuntimeError):
+                pass
+
+            return ring_morphism(
+                self,
+                morphism.codomain(),
+                image,
+                engine_morphism=engine_morphism,
+            )
 
         def localization_map(self):
             return self._preamble_localization_map
@@ -889,7 +1070,7 @@ class _PredicateSubringParent(Parent):
     def _element_constructor_(self, element):
         try:
             candidate = self._ambient_ring(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
         if candidate not in self:
             raise ValueError(f"{candidate} does not satisfy {self._description}")
@@ -904,7 +1085,7 @@ class _PredicateSubringParent(Parent):
     def __contains__(self, element):
         try:
             candidate = self._ambient_ring(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         answer = self._predicate(candidate)
         if answer is True or answer is False:
@@ -927,6 +1108,8 @@ def predicate_subring(ambient_ring, predicate, description, category=None):
 class OwnedSemirings(OwnedCategory):
     """Semirings on the owned operation spine."""
 
+    _HomCategory = RingHomCategoryConstruction
+
     def an_object(self):
         r"""The integers, which are in particular a semiring."""
         return _own_ring(SageZZ)
@@ -937,6 +1120,8 @@ class OwnedSemirings(OwnedCategory):
 
 class OwnedRngs(OwnedCategory):
     """Rngs on the owned operation spine."""
+
+    _HomCategory = RingHomCategoryConstruction
 
     def an_object(self):
         r"""The integers, which happen to be unital."""
@@ -968,6 +1153,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
     def unit_group(self):
         r"""``R |-> R^x : Ring -> Grp``."""
         return UnitGroupFunctor()
+
+    def center_functor(self):
+        r"""Return ``Z : Core(Ring) -> CRing``."""
+        return RingCenterFunctor()
 
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
@@ -1107,7 +1296,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             integers = self if _engine_ring(self) is SageZZ else _own_ring(SageZZ)
             placements = [Algebras(integers).Associative().Unital()]
             if self.is_commutative() is True:
-                placements.extend((OwnedRings().Commutative(), CommutativeAlgebras(self)))
+                placements.append(OwnedRings().Commutative())
+                # An engine-backed algebra view already carries a selected
+                # scalar base while its Parent is still being initialized.
+                # Building ``Alg_self`` here asks Sage to linearize the
+                # self/base scalar tower before that category is stable and
+                # can make an otherwise valid join fail C3.  The algebra owner
+                # completes this canonical self-algebra placement after its
+                # defining scalar map has been installed.
+                if not hasattr(self, "_preamble_algebra_generating_set"):
+                    placements.append(CommutativeAlgebras(self))
             refine(self, placements)
 
         def _fresh_free_module_on(self, labels, **options):
@@ -1145,6 +1343,21 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
             return FreeModule(self, exponent)
+
+        @cached_method
+        def regular_module(self):
+            r"""Return ``{}_R R``, the rank-one left regular module.
+
+            The ring remains the scalar object; the module is the canonical
+            free rank-one carrier on which ``r`` acts by left multiplication.
+            This is the same owner used by ideals, duality, and scalar-change
+            constructions rather than a second ring-as-module presentation.
+            """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                ring_as_module,
+            )
+
+            return ring_as_module(self)
 
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
@@ -1277,16 +1490,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
         def fraction_field(self):
-            r"""Return the fraction field through the computation ring."""
+            r"""Return the fraction field through its nonzero-element localization."""
             if self in OwnedFields():
                 return self
-            engine = _engine_ring(self)
-            assert engine is not self, (
-                f"{self} has no selected computation realization to build a fraction field "
-                "in; a ring with zero divisors has none at all, and inverting its regular "
-                "elements gives the total quotient ring instead"
-            )
-            return _own_ring(engine.fraction_field())
+            if self not in OwnedIntegralDomains():
+                raise ValueError(
+                    f"{self} is not an integral domain, so it has no fraction field; "
+                    "inverting its regular elements is the total quotient-ring construction"
+                )
+            return self.fraction_field_localization().fraction_field_realization()
 
 
 class OwnedOrderedRings(OwnedCategory):
@@ -1320,6 +1532,29 @@ class OwnedIntegralDomains(OwnedCategory):
             return True
 
         @cached_method
+        def nonzero_multiplicative_submonoid(self):
+            r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _nonzero_element_submonoid,
+            )
+
+            return _nonzero_element_submonoid(self)
+
+        @cached_method
+        def fraction_field_localization(self):
+            r"""Return the represented localization ``(R-{0})^-1 R``."""
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _localization_at_submonoid,
+            )
+
+            if self in OwnedFields():
+                return self
+            return _localization_at_submonoid(
+                self,
+                self.nonzero_multiplicative_submonoid(),
+            )
+
+        @cached_method
         def fraction_field_map(self):
             r"""Return the localization map ``R -> Frac(R)``.
 
@@ -1329,14 +1564,13 @@ class OwnedIntegralDomains(OwnedCategory):
             torsion, and an ideal extends along it to the unit ideal exactly
             when it is nonzero.
             """
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _canonical_map,
-            )
-
-            field = self.fraction_field()
-            if field is self:
+            if self in OwnedFields():
                 return ring_homset(self, self).identity()
-            return _canonical_map(self, field)
+            localization = self.fraction_field_localization()
+            return (
+                localization.fraction_field_comparison()
+                * localization.localization_map()
+            )
 
 
 class OwnedPrincipalIdealDomains(OwnedCategory):
@@ -1422,11 +1656,13 @@ class OwnedLocalRings(OwnedCategory):
         def residue_map(self):
             r"""Return the local quotient map ``R -> kappa(m)``.
 
-            A local ring whose residue field is itself is a field, and there
-            the map is the identity.  Otherwise it is supplied by the level
-            that introduces the residue field, as a prime localization does
-            from the universal property of localization.
+            A field carries the identity map.  Other local-ring constructors
+            retain the quotient map together with the selected maximal ideal
+            and residue field.
             """
+            selected = getattr(self, "_preamble_residue_map", None)
+            if selected is not None:
+                return selected
             residue = self.residue_field()
             assert residue is self, (
                 f"the residue map {self} -> {residue} is not constructed here; the level "
@@ -1502,6 +1738,19 @@ class OwnedFields(OwnedCategory):
 
         def residue_map(self):
             return ring_homset(self, self).identity()
+
+        def absolute_galois_group(self):
+            r"""Return the absolute Galois group ``G_K`` of this field ``K``.
+
+            The group is the existing profinite owner; this field method is
+            only the mathematical construction site and creates no parallel
+            realization.
+            """
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+                AbsoluteGaloisGroup,
+            )
+
+            return AbsoluteGaloisGroup(self)
 
 
 class OwnedOrders(OwnedCategory):
@@ -1601,8 +1850,55 @@ class UnitGroupFunctor(Functor):
         return "Unit group functor"
 
 
+def _center_transport_of_ring_isomorphism(morphism):
+    r"""Restrict one ring isomorphism direction to represented centers."""
+    source = morphism.domain()
+    target = morphism.codomain()
+    source_center = source.ring_center()
+    target_center = target.ring_center()
+
+    def ambient_source(element):
+        if source_center is source:
+            return source(element)
+        return source_center.inclusion()(element)
+
+    return ring_morphism(
+        source_center,
+        target_center,
+        lambda element: target_center(morphism(ambient_source(element))),
+    )
+
+
+class RingCenterFunctor(Functor):
+    r"""The ring center functor on the maximal subgroupoid of owned rings.
+
+    A general ring morphism need not preserve centers.  An isomorphism does:
+    if ``f : R -> S`` is invertible, ``z`` commutes with every element of
+    ``R``, and ``s in S``, then writing ``s=f(r)`` gives
+    ``f(z)s=f(zr)=f(rz)=sf(z)``.  Thus the center construction is functorial
+    exactly on the core without a generator or surjectivity heuristic.
+    """
+
+    def __init__(self) -> None:
+        core = Core(OwnedRings())
+        super().__init__(core, CommutativeRings())
+
+    def _apply_object(self, ring):
+        return ring.ring_center()
+
+    def _apply_morphism(self, isomorphism):
+        return _center_transport_of_ring_isomorphism(isomorphism.forward())
+
+    def _repr_(self):
+        return "Ring center functor Core(Ring) -> CRing"
+
+
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""A category over a ring, normalized to the session's owned ring."""
+
+    def parameter_category(self):
+        r"""Return the mathematical domain of the base-ring parameter."""
+        return OwnedRings()
 
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
@@ -1628,7 +1924,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         try:
             if self in candidate.category().all_super_categories(proper=False):
                 return True
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             return False
         # Placement has not put the candidate here.  A category that states no
         # condition of its own is not decided by placement: its objects are
@@ -1645,6 +1941,54 @@ def _cross_engine_ring_value(value):
     if parent in SageRings():
         return _own_ring(parent)._from_engine_element(value)
     return value
+
+
+class OwnedFactorization(SageObject):
+    r"""A finite factorization retaining its unit and factor multiplicities."""
+
+    def __init__(self, parent, unit, factors) -> None:
+        self._parent = parent
+        self._unit = parent._from_engine_element(unit)
+        engine_pairs = tuple(factors)
+        owned_factors = tuple(
+            parent._from_engine_element(factor) for factor, _multiplicity in engine_pairs
+        )
+        indices = finite_ordered_set(owned_factors)
+        multiplicities = {
+            factor: _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity))
+            for factor, (_engine_factor, multiplicity) in zip(
+                owned_factors, engine_pairs, strict=True
+            )
+        }
+        self._factors = finite_indexed_family(
+            indices,
+            multiplicities.__getitem__,
+            name=f"Factor multiplicities in {parent}",
+        )
+
+    def parent_ring(self):
+        return self._parent
+
+    def unit(self):
+        return self._unit
+
+    def factor_multiplicities(self):
+        return self._factors
+
+    def cardinality(self):
+        return self._factors.cardinality()
+
+    def items(self):
+        return self._factors.items()
+
+    def reconstruct(self):
+        product = self.unit()
+        for factor, multiplicity in self.items():
+            product = product * factor ** int(multiplicity)
+        return product
+
+    def _repr_(self):
+        return f"Factorization of an element of {self.parent_ring()}"
 
 
 def _proper_restriction_base_ring(ring):
@@ -1696,7 +2040,7 @@ class _OwnedRingElement(RingElement):
     def __add__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._add_(other)
 
@@ -1705,20 +2049,29 @@ class _OwnedRingElement(RingElement):
     def __sub__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._add_(-other)
 
     def __rsub__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return other._add_(-self)
 
     def _mul_(self, other):
         parent = self.parent()
         return parent._from_engine_element(self._backend() * other._backend())
+
+    def _lmul_(self, scalar):
+        r"""Apply the selected scalar action when this ring is read as a module."""
+        parent = self.parent()
+        base = parent.base_ring()
+        scalar = base(scalar)
+        if base is parent:
+            return parent(scalar) * self
+        return parent(parent.algebra_structure_morphism()(scalar)) * self
 
     def __mul__(self, other):
         r"""``r x`` for a scalar of this ring and an element over it.
@@ -1742,18 +2095,18 @@ class _OwnedRingElement(RingElement):
             try:
                 if other_parent.base_ring() is self.parent():
                     return other_parent.scalar_multiple(self, other)
-            except AttributeError, TypeError, ValueError:
+            except (AttributeError, TypeError, ValueError):
                 return NotImplemented
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._mul_(other)
 
     def __rmul__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._mul_(other)
 
@@ -1764,14 +2117,35 @@ class _OwnedRingElement(RingElement):
         if not isinstance(other, _OwnedRingElement) or other.parent() is not self.parent():
             try:
                 other = self.parent()(other)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
+
+    def _ordered_comparison(self, other, op):
+        if self.parent() not in OwnedOrderedRings():
+            return NotImplemented
+        try:
+            other = self.parent()(other)
+        except (TypeError, ValueError):
+            return NotImplemented
+        return bool(richcmp(self._backend(), other._backend(), op))
+
+    def __lt__(self, other):
+        return self._ordered_comparison(other, op_LT)
+
+    def __le__(self, other):
+        return self._ordered_comparison(other, op_LE)
+
+    def __gt__(self, other):
+        return self._ordered_comparison(other, op_GT)
+
+    def __ge__(self, other):
+        return self._ordered_comparison(other, op_GE)
 
     def __eq__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             # Not this ring's decision: a cardinal, say, knows whether it
             # equals a natural number of the ring, so Python asks it next.
             return NotImplemented
@@ -1835,7 +2209,7 @@ class _OwnedRingElement(RingElement):
         if modulus is not None:
             try:
                 modulus = self.parent()(modulus)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return NotImplemented
             value = pow(self._backend(), exponent, modulus._backend())
         else:
@@ -1854,7 +2228,7 @@ class _OwnedRingElement(RingElement):
     def __rtruediv__(self, other):
         try:
             numerator = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return numerator.__truediv__(self)
 
@@ -1882,6 +2256,16 @@ class _OwnedRingElement(RingElement):
         other = self.parent()(other)
         return self.parent()._from_engine_element(self._backend().gcd(other._backend()))
 
+    def xgcd(self, other):
+        r"""Return ``(g,s,t)`` with ``g = s*self + t*other`` in this ring."""
+        other = self.parent()(other)
+        gcd, left, right = self._backend().xgcd(other._backend())
+        return (
+            self.parent()._from_engine_element(gcd),
+            self.parent()._from_engine_element(left),
+            self.parent()._from_engine_element(right),
+        )
+
     def lcm(self, other):
         other = self.parent()(other)
         return self.parent()._from_engine_element(self._backend().lcm(other._backend()))
@@ -1892,10 +2276,101 @@ class _OwnedRingElement(RingElement):
         return integers._from_engine_element(SageZZ(self._backend().valuation(prime._backend())))
 
     def prime_divisors(self):
-        return tuple(self.parent()._from_engine_element(prime) for prime in self._backend().prime_divisors())
+        r"""Return the distinct prime divisors as an owned finite ordered set."""
+        return finite_ordered_set(
+            tuple(
+                self.parent()._from_engine_element(prime)
+                for prime in self._backend().prime_divisors()
+            )
+        )
 
     def is_prime(self):
         return bool(self._backend().is_prime())
+
+    def divisors(self):
+        r"""Return the positive divisors as an owned finite ordered set."""
+        return finite_ordered_set(
+            tuple(
+                self.parent()._from_engine_element(divisor)
+                for divisor in self._backend().divisors()
+            )
+        )
+
+    def euler_phi(self):
+        r"""Return Euler's totient as an owned nonnegative integer."""
+        integers = _own_ring(SageZZ)
+        return integers._from_engine_element(SageZZ(_engine_euler_phi(self._backend())))
+
+    def number_of_divisors(self):
+        r"""Return the number of positive divisors as an owned integer."""
+        integers = _own_ring(SageZZ)
+        return integers._from_engine_element(
+            SageZZ(_engine_number_of_divisors(self._backend()))
+        )
+
+    def factor(self):
+        r"""Return the engine factorization crossed into owned factors and multiplicities."""
+        factorization = self._backend().factor()
+        return OwnedFactorization(
+            self.parent(),
+            factorization.unit(),
+            tuple(factorization),
+        )
+
+    def is_irreducible(self):
+        return bool(self._backend().is_irreducible())
+
+    def roots(self, ring=None):
+        r"""Return the finite family of roots indexed by the roots themselves."""
+        if ring is None:
+            backend_roots = tuple(self._backend().roots())
+        else:
+            ring = _owned_ring(ring)
+            backend_roots = tuple(self._backend().roots(_engine_ring(ring)))
+        if ring is None:
+            owned_pairs = tuple(
+                (
+                    _cross_engine_ring_value(root),
+                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                )
+                for root, multiplicity in backend_roots
+            )
+        else:
+            owned_pairs = tuple(
+                (
+                    ring._from_engine_element(root),
+                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                )
+                for root, multiplicity in backend_roots
+            )
+        indices = finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
+        multiplicities = dict(owned_pairs)
+        return finite_indexed_family(
+            indices,
+            multiplicities.__getitem__,
+            name=f"Roots of {self}",
+        )
+
+    def discriminant(self):
+        return _cross_engine_ring_value(self._backend().discriminant())
+
+    def resultant(self, other):
+        other = self.parent()(other)
+        return _cross_engine_ring_value(self._backend().resultant(other._backend()))
+
+    def splitting_field(self):
+        r"""Return the owned splitting field of this polynomial.
+
+        Sage requires a presentation name even though the splitting field is
+        the mathematical output.  Keep that choice private, then refine the
+        crossed ring through the number-field owner so field operations such
+        as ``degree`` remain available.
+        """
+        from dzack_research.preamble.categories.rings.number_fields import (
+            _own_number_field,
+        )
+
+        return _own_number_field(self._backend().splitting_field("a"))
 
     def factorial(self):
         return self.parent()._from_engine_element(self._backend().factorial())
@@ -1969,12 +2444,16 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         scalar action -- run on this route with nothing left to guess.
         """
         self._engine = engine
-        placement = _owned_ring_category(engine)
-        if category is not None:
-            placement = Category.join((placement, category))
         if base is None:
             scalars = _engine_scalar_ring(engine)
-            base = self if scalars is None else scalars
+            base = self if scalars is None else _own_ring(scalars)
+            category_base = None if scalars is None else base
+        else:
+            base = _own_ring(base)
+            category_base = base
+        placement = _owned_ring_category(engine, scalar_base=category_base)
+        if category is not None:
+            placement = Category.join((placement, category))
         self._preamble_algebra_base_ring = base
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
@@ -2000,8 +2479,12 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             try:
                 if parent in OwnedRings():
                     return self._from_engine_element(self._engine(_engine_element(parent, value)))
-            except TypeError, ValueError, AttributeError:
+            except (TypeError, ValueError, AttributeError):
                 pass
+            from dzack_research.preamble.categories.sets.set_categories import NN
+
+            if parent is NN:
+                return self._from_engine_element(self._engine(int(value)))
             if parent in SageRings() or parent is self._engine:
                 raise TypeError("raw backend ring elements are not accepted by the public preamble API")
         if isinstance(value, SageObject):
@@ -2009,7 +2492,12 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine(value))
 
     def __contains__(self, value) -> bool:
-        return isinstance(value, self.element_class) and value.parent() is self
+        r"""Return whether ``value`` represents an element of this owned ring."""
+        try:
+            self(value)
+        except (TypeError, ValueError):
+            return False
+        return True
 
     def zero(self):
         return self._from_engine_element(self._engine.zero())
@@ -2071,6 +2559,14 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _first_ngens(self, n):
         return tuple(self._from_engine_element(value) for value in self._engine.gens()[:n])
 
+    def elements(self):
+        r"""Return all elements when this ring is finite, as an owned ordered set."""
+        if self not in FiniteSets():
+            raise ValueError("elements() is represented only for a finite ring")
+        return finite_ordered_set(
+            tuple(self._from_engine_element(element) for element in self._engine.list())
+        )
+
     def _repr_(self):
         return repr(self._engine)
 
@@ -2094,19 +2590,25 @@ def _engine_scalar_ring(engine: Ring):
     return _own_ring(base)
 
 
-def _owned_ring_category(engine: Ring) -> Category:
-    """Return the strongest owned ring category witnessed by ``engine``."""
+def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
+    r"""Return the strongest owned ring category witnessed by ``engine``.
+
+    ``scalar_base`` is the owned base already selected by the constructor.
+    Re-reading an engine scalar parent here can create a second owned view of
+    the same mathematical base and hence two distinct parameterized algebra
+    categories.
+    """
     category = engine.category()
     extra = []
-    scalars = _engine_scalar_ring(engine)
-    if scalars is not None:
+    if scalar_base is not None:
+        scalars = scalar_base
         # The engine presents this ring as an algebra over a base -- a number
         # field over QQ, a p-adic ring over ZZ -- and that is the structure
         # ``base_ring()`` reports, so it is the placement recorded here.
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         extra.append(Algebras(scalars).Associative().Unital())
-    if category.is_subcategory(SageIntegralDomains()):
+    if engine in SageIntegralDomains():
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
         extra.append(OwnedOrderedRings())
@@ -2114,13 +2616,23 @@ def _owned_ring_category(engine: Ring) -> Category:
         extra.append(PrimeFields())
     if category.is_subcategory(SagePrincipalIdealDomains()):
         extra.append(OwnedPrincipalIdealDomains())
+    elif (
+        isinstance(engine, SageNumberFieldOrder)
+        and engine.is_maximal()
+        and engine.class_number() == 1
+    ):
+        # A maximal order is Dedekind, hence is a PID exactly when its
+        # ideal class group is trivial.  Sage does not place number-field
+        # orders in its PrincipalIdealDomains category, so retain this
+        # theorem at the owned boundary where the class number is exact.
+        extra.append(OwnedPrincipalIdealDomains())
     try:
         noetherian = engine.is_noetherian()
-    except AttributeError, NotImplementedError, TypeError, ValueError:
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
         noetherian = engine is SageZZ
     if noetherian is True or engine is SageZZ:
         extra.append(OwnedNoetherianRings())
-    if category.is_subcategory(SageFields()):
+    if engine in SageFields():
         placement = OwnedFields()
     elif category.is_subcategory(SageDivisionRings()):
         placement = OwnedDivisionRings()
@@ -2136,14 +2648,31 @@ def _owned_ring_size(engine):
     r"""Return the exact Set-cardinality placement known from the engine kind."""
     from sage.categories.number_fields import NumberFields
     from sage.categories.sets_cat import Sets as SageSets
+    from sage.rings.qqbar import AA as SageAA
     from sage.rings.qqbar import QQbar as SageQQbar
 
     if engine.category().is_subcategory(SageSets().Finite()):
         return FiniteSets()
     if not engine.is_exact():
         return UncountableSets()
-    if engine is SageZZ or engine is SageQQ or engine in NumberFields() or engine is SageQQbar:
+    if (
+        engine is SageZZ
+        or engine is SageQQ
+        or engine in NumberFields()
+        or engine is SageAA
+        or engine is SageQQbar
+    ):
         return CountablyInfiniteSets()
+    if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
+        coefficient_size = _owned_ring_size(engine.base_ring())
+        if engine.ngens() == 0:
+            return coefficient_size
+        if coefficient_size.is_subcategory(FiniteSets()) or coefficient_size.is_subcategory(CountablyInfiniteSets()):
+            return CountablyInfiniteSets()
+    if engine.category().is_subcategory(SageQuotientFields()):
+        source_size = _owned_ring_size(engine.ring())
+        if source_size.is_subcategory(FiniteSets()) or source_size.is_subcategory(CountablyInfiniteSets()):
+            return CountablyInfiniteSets()
     return Sets()
 
 
@@ -2290,7 +2819,37 @@ def PrimeField(characteristic):
 
 
 def Zmod(*args, **kwargs):
-    return _own_ring(_SageZmod(*args, **kwargs))
+    r"""Return ``ZZ/nZZ`` with its exact finite-ring refinements."""
+    engine = _SageZmod(*args, **kwargs)
+    ring = _own_ring(engine)
+    if engine is SageZZ:
+        return ring
+
+    modulus = SageZZ(engine.characteristic())
+    factors = tuple(modulus.factor())
+    if bool(engine.is_field()):
+        refine(ring, OwnedFields())
+        return ring
+
+    refine(ring, OwnedArtinianRings())
+    if len(factors) == 1:
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            GeneratedIdealView,
+        )
+
+        prime, _exponent = factors[0]
+        residue = GF(prime)
+        ring._preamble_maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
+        ring._preamble_residue_field = residue
+        ring._preamble_residue_map = ring_morphism(
+            ring,
+            residue,
+            lambda element: residue(
+                SageZZ(_engine_element(ring, element).lift())
+            ),
+        )
+        refine(ring, OwnedLocalRings())
+    return ring
 
 
 IntegerModRing = Zmod

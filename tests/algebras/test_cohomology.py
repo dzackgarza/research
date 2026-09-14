@@ -30,7 +30,17 @@ def test_dga_cohomology_is_a_graded_algebra_with_descended_product() -> None:
     alpha_class = cohomology.graded_piece(1).class_of_cycle(cycle)
     alpha = cohomology.from_component(1, alpha_class)
 
+    boundary = dga.d(dga.from_component(0, xbar)).homogeneous_component(1)
+    assert boundary != dga.graded_piece(1).zero()
+    assert cohomology.graded_piece(1).class_of_cycle(boundary) == cohomology.graded_piece(1).zero()
+    changed_cycle = cycle + boundary
+    changed_class = cohomology.graded_piece(1).class_of_cycle(changed_cycle)
+    changed_alpha = cohomology.from_component(1, changed_class)
+
     assert alpha != cohomology.zero()
+    assert changed_class == alpha_class
+    assert changed_alpha == alpha
     assert cohomology.one() * alpha == alpha
     assert alpha * cohomology.one() == alpha
+    assert cohomology.one() * changed_alpha == cohomology.one() * alpha
     assert alpha * alpha == cohomology.zero()

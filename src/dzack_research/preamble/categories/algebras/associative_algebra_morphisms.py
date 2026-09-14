@@ -79,6 +79,8 @@ class AssociativeAlgebraHomset(CategoricalHomset):
     Element = AssociativeAlgebraMorphism
 
     def __call__(self, images):
+        if self._already_parented_arrow(images):
+            return images
         return self._element_constructor_(images)
 
     def _element_constructor_(self, images):

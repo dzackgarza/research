@@ -1,0 +1,145 @@
+import pytest
+
+from dzack_research.preamble.all import (
+    QQ,
+    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
+    ProjectiveSpace,
+)
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_quotients_and_complete_intersections.sage",
+    "live_owner": "tests/schemes/test_complete_intersections.py",
+    "owner_overrides": {
+        "test_diagonal_sign_quotient_family_has_global_quotient_data": "tests/schemes/test_horikawa_enriques_family.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
+
+def test_projective_complete_intersection_retains_equations_multidegree_and_adjunction_integer() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    curve = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0 * x1 - x2**2, x0**3 + x1**3 + x3**3)
+    )
+
+    assert curve in ProjectiveCompleteIntersections(QQ)
+    assert curve.complete_intersection_ambient() is space
+    assert tuple(curve.defining_degrees()) == (2, 3)
+    assert curve.complete_intersection_codimension() == 2
+    assert curve.expected_dimension() == 1
+    assert curve.adjunction_twist_degree() == 1
+    assert curve.is_gorenstein()
+
+
+def test_redundant_homogeneous_equations_are_not_misclassified_as_a_complete_intersection() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, _x2, _x3 = space.gens()
+    redundant = space.closed_subscheme(x0, x0 * x1)
+
+    with pytest.raises(ValueError):
+        ProjectiveCompleteIntersection(redundant)
+
+
+def test_smooth_complete_intersection_surface_uses_adjunction_for_del_pezzo_degree() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    cubic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
+    )
+
+    assert cubic.expected_dimension() == 2
+    assert cubic.anticanonical_twist_degree() == 1
+    assert cubic.projective_degree() == 3
+    assert cubic.is_del_pezzo()
+    assert cubic.del_pezzo_degree() == 3
+
+
+def test_quartic_k3_boundary_is_not_misclassified_as_del_pezzo() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    quartic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
+    )
+
+    assert quartic.expected_dimension() == 2
+    assert quartic.adjunction_twist_degree() == 0
+    assert quartic.anticanonical_twist_degree() == 0
+    assert not quartic.is_del_pezzo()
+
+
+def test_normality_of_complete_intersections_uses_r1_not_smoothness() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, _x3 = space.gens()
+    quadric_cone = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0 * x1 - x2**2)
+    )
+
+    assert not quadric_cone.is_smooth()
+    assert quadric_cone.is_normal()
+    assert quadric_cone.is_gorenstein()
+
+
+def test_a_singular_complete_intersection_curve_is_not_normal() -> None:
+    plane = ProjectiveSpace(2, QQ)
+    x, y, z = plane.gens()
+    cusp = ProjectiveCompleteIntersection(plane.closed_subscheme(y**2 * z - x**3))
+
+    assert not cusp.is_smooth()
+    assert not cusp.is_normal()
+    assert cusp.is_gorenstein()
+
+
+def test_complete_intersection_adjunction_is_an_actual_line_bundle_isomorphism() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    curve = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0 * x1 - x2**2, x0**3 + x1**3 + x3**3)
+    )
+    comparison = curve.adjunction_comparison()
+    isomorphism = comparison.isomorphism()
+
+    assert comparison.scheme() is curve
+    assert comparison.canonical_line_bundle().scheme() is curve
+    assert comparison.canonical_line_bundle().degree() == 1
+    assert comparison.restricted_ambient_canonical_bundle().degree() == -4
+    assert comparison.normal_determinant_line_bundle().degree() == 5
+    assert comparison.adjunction_target().degree() == 1
+    assert isomorphism.domain() is comparison.canonical_line_bundle()
+    assert isomorphism.codomain() is comparison.adjunction_target()
+    assert isomorphism.inverse().domain() is comparison.adjunction_target()
+    assert curve.canonical_line_bundle() is comparison.canonical_line_bundle()
+
+
+def test_del_pezzo_complete_intersection_uses_actual_anticanonical_ampleness() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    cubic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
+    )
+
+    anticanonical = cubic.anticanonical_line_bundle()
+    assert anticanonical.scheme() is cubic
+    assert anticanonical.degree() == 1
+    assert anticanonical.is_ample()
+    assert cubic.is_del_pezzo()
+
+
+def test_two_quadrics_in_projective_four_space_form_a_degree_four_del_pezzo_surface() -> None:
+    space = ProjectiveSpace(4, QQ, names=("A", "B", "C", "D", "E"))
+    A, B, C, D, E = space.gens()
+    surface = ProjectiveCompleteIntersection(
+        space.closed_subscheme(B * D - A * E, C**2 - A * E)
+    )
+
+    assert tuple(surface.defining_degrees()) == (2, 2)
+    assert surface.expected_dimension() == 2
+    assert surface.anticanonical_twist_degree() == 1
+    assert surface.projective_degree() == 4
+    assert surface.is_gorenstein()
+    assert surface.is_del_pezzo()
+    assert surface.del_pezzo_degree() == 4
+    anticanonical = surface.anticanonical_line_bundle()
+    assert anticanonical.degree() == 1
+    assert anticanonical.is_ample()

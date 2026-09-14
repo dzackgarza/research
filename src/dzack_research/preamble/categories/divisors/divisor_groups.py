@@ -2,24 +2,23 @@
 
 from collections.abc import Mapping
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules, FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.owned_category_bases import Category
 
 
-def _module_in_role(module, category, message):
+def _module_in_role(module, category, message, *, construction_data=None):
     r"""Return a fresh represented module born in the stated divisor role."""
     constructor = getattr(module, "_same_presentation_module", None)
     if constructor is None:
@@ -27,11 +26,28 @@ def _module_in_role(module, category, message):
     return constructor(
         module.module_generating_set(),
         _extra_categories=(category,),
+        _extra_construction_data=construction_data,
+    )
+
+
+def _divisor_role_specimen(category):
+    r"""Return a one-generator owned free abelian group in ``category``."""
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    integers = _own_ring(SageZZ)
+    module = FreshFreeModuleOn(integers, finite_ordered_set(("D",)))
+    return _module_in_role(
+        module,
+        category,
+        "a divisor-role specimen requires a represented free-module presentation",
     )
 
 
 class DivisorGroups(Category):
     r"""Free abelian groups on specified prime divisors."""
+
+    def an_object(self):
+        return _divisor_role_specimen(self)
 
     @classmethod
     def _repr_object_names(cls):

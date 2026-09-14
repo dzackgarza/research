@@ -1,50 +1,44 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from typing import TypeVar, overload
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
-)
 from sage.categories.category import Category
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.categories.map import Map
-from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.parent import Parent
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
-from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
-    Functor,
-    IdentityFunctor,
-    NaturalTransformation,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
     OppositeCategory,
     OppositeMorphism,
     ProductCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coproduct,
-    Product,
-    _CoproductMorphism,
-    _ProductMorphism,
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+    _category_homset,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.functors.core import (
+    CompositeFunctor,
+    Functor,
+    IdentityFunctor,
+    NaturalTransformation,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
 
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
@@ -205,7 +199,7 @@ class CodomainFunctor(Functor):
 class DiscreteMorphism(Morphism):
     r"""The unique identity arrow of a discrete-category object."""
 
-    def __init__(self, parent: "DiscreteHomset") -> None:
+    def __init__(self, parent: DiscreteHomset) -> None:
         Morphism.__init__(self, parent)
         if self.domain() is not self.codomain():
             raise ValueError("a discrete category has no arrow between distinct objects")
@@ -238,7 +232,7 @@ class DiscreteHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def discrete_category(self) -> "DiscreteCategory":
+    def discrete_category(self) -> DiscreteCategory:
         return self.base_category()
 
     def cardinality(self) -> Parent:
@@ -308,7 +302,7 @@ class DiscreteCategory(OwnedCategory):
             self._value = value
             super().__init__(**rest)
 
-        def discrete_category(self) -> "DiscreteCategory":
+        def discrete_category(self) -> DiscreteCategory:
             return self.category()
 
         def value(self):
@@ -364,7 +358,7 @@ class DiscreteCategory(OwnedCategory):
         return f"Discrete category on {self.object_set()}"
 
 
-class DiscreteCategories(Category):
+class DiscreteCategories(OwnedCategory):
     r"""The category of represented discrete categories."""
 
     def an_object(self) -> Category:
@@ -372,7 +366,9 @@ class DiscreteCategories(Category):
         return DiscreteCategory(Sets().an_object())
 
     def super_categories(self):
-        return [Objects()]
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return [Cat()]
 
     def __contains__(self, candidate) -> bool:
 
@@ -498,12 +494,24 @@ def NaturalIsomorphism(
     target: Functor,
     components: Callable[[Parent], Morphism],
     inverse_components: Callable[[Parent], Morphism],
-) -> tuple[NaturalTransformation, NaturalTransformation]:
-    r"""Return mutually inverse natural transformations as a categorical pair."""
-    return (
-        NaturalTransformation(source, target, components),
-        NaturalTransformation(target, source, inverse_components),
+):
+    r"""Return the isomorphism in ``[C,D]`` selected by inverse components.
+
+    The two supplied component families define inverse natural transformations.
+    Their categorical packaging is therefore an isomorphism between the two
+    functor objects, not a Python pair of transformations.
+    """
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        _isomorphism_from_known_inverse_pair,
     )
+
+    forward = NaturalTransformations(source, target)(
+        NaturalTransformation(source, target, components)
+    )
+    inverse = NaturalTransformations(target, source)(
+        NaturalTransformation(target, source, inverse_components)
+    )
+    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
 __all__ = [
@@ -603,9 +611,61 @@ class DisjointUnionFunctor(CoproductFunctor):
         super().__init__(Sets())
 
 
-class LimitFunctor(ProductFunctor):
-    r"""The represented binary limit functor; binary products are its discrete case."""
+class LimitFunctor(Functor):
+    r"""The selected limit functor ``[J,C] -> C`` for one represented shape."""
+
+    def __init__(self, codomain: Category, index_category: Category) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            DiagramCategory,
+            LimitsOfCategory,
+        )
+
+        self._index_category = index_category
+        self._limits = LimitsOfCategory(index_category, codomain)
+        super().__init__(DiagramCategory(index_category, codomain), codomain)
+
+    def index_category(self) -> Category:
+        return self._index_category
+
+    @staticmethod
+    def _diagram(diagram_object):
+        return diagram_object.arrow().functor()
+
+    def _apply_object(self, diagram_object: Parent) -> Parent:
+        return self._limits.construction(self._diagram(diagram_object)).object()
+
+    def _apply_morphism(self, transformation_morphism: Map) -> Map:
+        transformation = transformation_morphism.transformation()
+        source = self._limits.construction(transformation.source())
+        target = self._limits.construction(transformation.target())
+        return source.induced_map(transformation, target)
 
 
-class ColimitFunctor(CoproductFunctor):
-    r"""The represented binary colimit functor; binary coproducts are its discrete case."""
+class ColimitFunctor(Functor):
+    r"""The selected colimit functor ``[J,C] -> C`` for one represented shape."""
+
+    def __init__(self, codomain: Category, index_category: Category) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            ColimitsOfCategory,
+            DiagramCategory,
+        )
+
+        self._index_category = index_category
+        self._colimits = ColimitsOfCategory(index_category, codomain)
+        super().__init__(DiagramCategory(index_category, codomain), codomain)
+
+    def index_category(self) -> Category:
+        return self._index_category
+
+    @staticmethod
+    def _diagram(diagram_object):
+        return diagram_object.arrow().functor()
+
+    def _apply_object(self, diagram_object: Parent) -> Parent:
+        return self._colimits.construction(self._diagram(diagram_object)).object()
+
+    def _apply_morphism(self, transformation_morphism: Map) -> Map:
+        transformation = transformation_morphism.transformation()
+        source = self._colimits.construction(transformation.source())
+        target = self._colimits.construction(transformation.target())
+        return source.induced_map(transformation, target)

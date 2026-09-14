@@ -176,7 +176,7 @@ sage-init-install:
     echo "sage-init-install: restart running kernels to pick it up"
 
 # Prove the installed startup file actually typesets in a real Sage kernel
-sage-init-check:
+sage-init-check: sage-init-install
     #!/usr/bin/env bash
     set -euo pipefail
     # Through ``sage -c``, which is the only way this Sage runs code: the CLI
@@ -185,14 +185,17 @@ sage-init-check:
     probe="$(mktemp --suffix=.py)"
     trap 'gio trash "${probe}" 2>/dev/null || true' EXIT
     cat > "${probe}" <<'PY'
+    import os
+
     from jupyter_client.manager import start_new_kernel
 
-    km, kc = start_new_kernel(kernel_name="sagemath")
+    km, kc = start_new_kernel(kernel_name="sagemath", env=os.environ.copy())
     try:
         results = {}
-        # The rule under test is that an object able to typeset does, and a
-        # matrix is a specimen the engine still supplies.
-        for label, code in [("typeset", "matrix(ZZ, [[1, 2], [3, 4]])"), ("plain", "'a plain string'")]:
+        # The rule under test is that the tracked preamble startup is loaded,
+        # installs the public research vocabulary, and typesets an owned
+        # mathematical object while leaving ordinary text alone.
+        for label, code in [("typeset", "Lattices(ZZ)('A2')"), ("plain", "'a plain string'")]:
             got = {}
             kc.execute_interactive(
                 code, timeout=180,
@@ -206,7 +209,8 @@ sage-init-check:
         kc.stop_channels()
         km.shutdown_kernel()
     PY
-    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
+    SAGE_STARTUP_FILE="{{justfile_directory()}}/sage-init.sage" \
+        "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
         -c "exec(open('${probe}').read())"
 
 # Rebuild the Sage-owned research environment.

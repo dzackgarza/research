@@ -38,25 +38,41 @@ from itertools import combinations
 from sage.matrix.constructor import matrix as _engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
+from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
-    PolynomialRing,
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+)
+from dzack_research.preamble.categories.algebras.semigroup_algebras import (
+    AffineSemigroupAlgebra,
+)
+from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
+    CartierDivisorGroup,
+)
+from dzack_research.preamble.categories.divisors.chow_groups import (
+    ChowGroup,
+    TorusInvariantCycleGroups,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
+    WeilDivisorGroup,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
     FreshFreeModuleOn,
+    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
@@ -65,12 +81,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     NormalSchemes,
+    SchemeMorphism,
     Schemes,
     SmoothSchemes,
     Spec,
     _has_scheme_placement,
+    categorical_scheme_morphism,
     refine_scheme,
-    refine_scheme_morphism,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
@@ -86,6 +103,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 def _integers():
@@ -99,8 +120,7 @@ def _ray_generator(ray):
 
 def _pairing_on_ray(fan, character, ray):
     r"""``<m, u_rho>``, an integer, for a character and a ray of the fan."""
-    pairing = fan.character_cocharacter_pairing()
-    return _integers()(pairing(character, _ray_generator(ray)))
+    return fan.character_cocharacter_value(character, _ray_generator(ray))
 
 
 def _character_names(count):
@@ -127,29 +147,13 @@ def _semigroup_algebra(cone, base_ring):
     transition out of a face localization is written.
     """
     generators = cone.semigroup_generators()
-    names = _character_names(int(generators.cardinality()))
-    presentation = PolynomialRing(base_ring, names)
-    engine_presentation = _engine_ring(presentation)
-    columns = _engine_matrix(
-        SageZZ,
-        [
-            list(_engine_vector(cone.character_lattice(), generator))
+    return AffineSemigroupAlgebra(
+        (
+            tuple(_engine_vector(cone.character_lattice(), generator))
             for generator in generators
-        ],
-    ).transpose()
-    engine_ideal = _SageToricIdeal(
-        columns,
-        names=names,
-        base_ring=_engine_ring(base_ring),
-    )
-    relations = tuple(
-        presentation._from_engine_element(engine_presentation(relation))
-        for relation in engine_ideal.gens()
-    )
-    return FinitelyPresentedAlgebra(
-        presentation,
-        relations,
-        _extra_categories=(OwnedIntegralDomains(),),
+        ),
+        base_ring,
+        extra_categories=(OwnedIntegralDomains(),),
     )
 
 
@@ -319,6 +323,147 @@ def _face_transition(source_cone, target_cone, base_ring):
     )
 
 
+def _pullback_character(character, lattice_morphism, domain_fan, codomain_fan):
+    r"""Return ``phi^*(m)`` in the domain character lattice.
+
+    If ``phi:N->N'`` is the cocharacter map, its dual is characterized by
+    ``<phi^*m,n>=<m,phi(n)>``.  The chosen frames of the dual lattices make
+    these pairings exactly the coordinates of the pulled-back character.
+    """
+    source_cocharacters = domain_fan.cocharacter_lattice()
+    source_characters = domain_fan.character_lattice()
+    target_pairing = codomain_fan.character_cocharacter_pairing()
+    integers = _integers()
+    return source_characters.linear_combination(
+        {
+            label: integers(
+                target_pairing(
+                    character,
+                    lattice_morphism(source_cocharacters.module_generator(label)),
+                )
+            )
+            for label in source_cocharacters.module_generating_set()
+            if integers(
+                target_pairing(
+                    character,
+                    lattice_morphism(source_cocharacters.module_generator(label)),
+                )
+            )
+        }
+    )
+
+
+def _target_maximal_cone(engine_morphism, source_cone, codomain_fan):
+    r"""Choose a maximal codomain cone containing the image of ``source_cone``."""
+    image = codomain_fan._cone(
+        engine_morphism.image_cone(source_cone._engine_cone())
+    )
+    for candidate in codomain_fan.maximal_cones():
+        if image.is_face_of(candidate):
+            return candidate
+    raise ArithmeticError("a compatible fan morphism has no target cone for a source cone")
+
+
+def _toric_chart_pullback(lattice_morphism, source_cone, target_cone, base_ring):
+    r"""The affine pullback ``k[S_tau] -> k[S_sigma]`` induced by ``phi``.
+
+    For ``phi(sigma) subset tau``, every ``m in S_tau`` pulls back to
+    ``phi^*m in S_sigma``.  On the chosen semigroup generators this is the
+    character monomial of that pulled-back lattice point.
+    """
+    source_chart = _affine_chart(source_cone, base_ring)
+    target_chart = _affine_chart(target_cone, base_ring)
+    source_algebra = source_chart.coordinate_algebra()
+    target_algebra = target_chart.coordinate_algebra()
+    target_labels = tuple(target_algebra.algebra_generating_set())
+    target_generators = target_cone.semigroup_generators()
+    domain_fan = source_cone.parent()
+    codomain_fan = target_cone.parent()
+    return target_algebra.Mor(source_algebra)(
+        {
+            target_labels[position]: _character_monomial(
+                _pullback_character(
+                    character,
+                    lattice_morphism,
+                    domain_fan,
+                    codomain_fan,
+                ),
+                source_cone,
+                source_chart,
+            )
+            for position, character in enumerate(target_generators)
+        }
+    )
+
+
+class ToricSchemeMorphism(SchemeMorphism):
+    r"""A toric scheme morphism retaining its lattice and affine-chart pullbacks."""
+
+    def __init__(
+        self,
+        native_morphism,
+        *,
+        domain,
+        codomain,
+        lattice_morphism,
+        chart_targets,
+        chart_pullbacks,
+    ) -> None:
+        super().__init__(native_morphism, domain=domain, codomain=codomain)
+        self._preamble_toric_lattice_morphism = lattice_morphism
+        self._preamble_toric_chart_targets = dict(chart_targets)
+        self._preamble_toric_chart_pullbacks = dict(chart_pullbacks)
+
+    def lattice_morphism(self):
+        return self._preamble_toric_lattice_morphism
+
+    def chart_target(self, source_cone):
+        return self._preamble_toric_chart_targets[source_cone]
+
+    def chart_pullback(self, source_cone):
+        r"""Return the pullback on the affine chart indexed by ``source_cone``."""
+        return self._preamble_toric_chart_pullbacks[source_cone]
+
+    def chart_morphism(self, source_cone):
+        r"""Return the represented affine map into the selected target chart."""
+        source_chart = self.domain().affine_chart(source_cone)
+        target_chart = self.codomain().affine_chart(self.chart_target(source_cone))
+        return source_chart.Mor(target_chart)(self.chart_pullback(source_cone))
+
+    def pullback_divisor(self, divisor):
+        r"""Pull back one represented torus-invariant Cartier divisor."""
+        codomain = self.codomain()
+        target_group = codomain.weil_divisor_group()
+        divisor = target_group(divisor)
+        if not codomain.is_cartier(divisor):
+            raise ValueError("toric divisor pullback is represented for Cartier divisors")
+        target_rays = codomain.fan().cones(1)
+        target_coefficients = module_coefficients(divisor, target_group)
+        zero = _integers().zero()
+        engine_divisor = codomain._toric_engine_variety().divisor(
+            [int(target_coefficients.get(ray, zero)) for ray in target_rays]
+        )
+        pulled = self.native_morphism().pullback_divisor(engine_divisor)
+        source = self.domain()
+        source_group = source.weil_divisor_group()
+        source_rays = source.fan().cones(1)
+        return source_group.linear_combination(
+            {
+                ray: _integers()(pulled.coefficient(position))
+                for position, ray in enumerate(source_rays)
+                if pulled.coefficient(position)
+            }
+        )
+
+    def pullback_line_bundle(self, bundle):
+        r"""Return ``f^* O_Y(D) = O_X(f^*D)`` for a selected toric divisor bundle."""
+        if bundle.scheme() is not self.codomain():
+            raise ValueError("line-bundle pullback requires a bundle on the morphism codomain")
+        return self.domain().invertible_sheaf_of_divisor(
+            self.pullback_divisor(bundle.associated_divisor())
+        )
+
+
 def _glued_toric_scheme(fan, base_ring):
     r"""``X_Sigma`` glued from the charts of the maximal cones (CLS Thm. 3.1.5).
 
@@ -334,6 +479,35 @@ def _glued_toric_scheme(fan, base_ring):
             for source_cone, target_cone in combinations(cones, 2)
         ),
     )
+
+
+class RepresentedToricSchemes(OwnedCategory):
+    r"""Represented toric schemes over arbitrary represented base rings.
+
+    This is the parameter domain for constructions such as ``CoxRings(X)``.
+    It does not recognize toric structure from coordinates: membership asks
+    the existing base-specific ``ToricSchemes(k)`` placement of ``X``.
+    """
+
+    def an_object(self):
+        return ToricSchemes(_own_ring(SageQQ)).an_object()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        base_method = getattr(candidate, "scheme_base_ring", None)
+        if not callable(base_method):
+            return False
+        try:
+            base = base_method()
+            return candidate in ToricSchemes(base)
+        except (AssertionError, AttributeError, TypeError, ValueError):
+            return False
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "represented toric schemes over arbitrary bases"
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -481,16 +655,126 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             orbit-cone correspondence restricted to codimension one: ``D_rho``
             is the closure of the orbit of ``rho``.
             """
-            from dzack_research.preamble.categories.divisors.divisor_groups import (
-                FormalDivisorGroup,
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreshFreeModuleOn,
             )
 
-            return FormalDivisorGroup(_integers(), tuple(self.fan().cones(1)))
+            module = FreshFreeModuleOn(
+                _integers(),
+                finite_ordered_set(tuple(self.fan().cones(1))),
+            )
+            return WeilDivisorGroup(module)
+
+        weil_divisor_group = torus_invariant_divisor_group
+
+        @cached_method
+        def cartier_divisor_group(self):
+            r"""Return the represented Cartier divisor group in the smooth toric regime.
+
+            On a smooth fan every torus-invariant Weil divisor is Cartier
+            (CLS Prop. 4.2.6), hence the selected toric Cartier group has the
+            same free presentation as ``Div_T(X)`` but remains a distinct
+            divisor-role object.  For singular fans the proper Cartier
+            subgroup is not yet represented as one common kernel, so individual
+            divisors continue to use ``is_cartier``.
+            """
+            assert self.fan().is_smooth(), (
+                "the represented Cartier divisor group is currently constructed "
+                "for a smooth fan, where every invariant Weil divisor is Cartier"
+            )
+            return CartierDivisorGroup(self.weil_divisor_group())
+
+        @cached_method
+        def cartier_to_weil_morphism(self):
+            r"""The inclusion ``CDiv_T(X) -> Div_T(X)`` on a smooth toric variety."""
+            cartier = self.cartier_divisor_group()
+            weil = self.weil_divisor_group()
+            return module_homset(cartier, weil)(
+                {
+                    label: weil.module_generator(label)
+                    for label in cartier.module_generating_set()
+                }
+            )
 
         def torus_invariant_prime_divisor(self, ray):
             r"""The prime divisor ``D_rho`` of one ray of the fan."""
             assert ray in self.fan(), "a torus-invariant prime divisor is indexed by a ray"
             return self.torus_invariant_divisor_group().module_generator(ray)
+
+        def weil_multiplicity(self, divisor, ray):
+            r"""Return the coefficient of ``D_rho`` in a torus-invariant Weil divisor."""
+            if ray not in self.fan().cones(1):
+                raise ValueError("a toric Weil multiplicity is indexed by a ray of the fan")
+            group = self.weil_divisor_group()
+            coefficients = module_coefficients(group(divisor), group)
+            return coefficients.get(ray, _integers().zero())
+
+        def order_of_character_along_prime_divisor(self, character, ray):
+            r"""Return ``ord_{D_rho}(chi^m)=<m,u_rho>`` (CLS Prop. 4.1.2)."""
+            character = self.character_lattice()(character)
+            if ray not in self.fan().cones(1):
+                raise ValueError("a toric valuation is indexed by a ray of the fan")
+            return _pairing_on_ray(self.fan(), character, ray)
+
+        def principal_divisor_of_character(self, character):
+            r"""Return ``div(chi^m)`` as an element of the represented Weil group."""
+            return self.character_divisor_morphism()(self.character_lattice()(character))
+
+        def torus_invariant_divisor_support_subscheme(self, divisor):
+            r"""Return the reduced union of torus-invariant primes in an effective divisor.
+
+            On ``U_sigma=Spec k[S_sigma]`` the invariant prime ``D_rho`` for
+            ``rho <= sigma`` is generated by the semigroup monomials
+            ``chi^m`` with ``<m,u_rho> > 0``.  Intersecting those prime ideals
+            gives the scheme-theoretic union of the selected components; the
+            common chartwise closed-subscheme owner then glues the result.
+            """
+            from dzack_research.preamble.categories.schemes.gluing import (
+                chartwise_closed_subscheme,
+            )
+
+            group = self.torus_invariant_divisor_group()
+            divisor = group(divisor)
+            coefficients = module_coefficients(divisor, group)
+            zero = _integers().zero()
+            if any(coefficient < zero for coefficient in coefficients.values()):
+                raise ValueError("divisor support here requires an effective torus-invariant divisor")
+            selected = tuple(
+                ray for ray in self.fan().cones(1)
+                if coefficients.get(ray, zero) > zero
+            )
+            local_closed = {}
+            for cone in self.gluing_datum().chart_indices():
+                chart = self.affine_chart(cone)
+                algebra = chart.coordinate_algebra()
+                labels = tuple(algebra.algebra_generating_set())
+                ideals = []
+                cone_rays = tuple(cone.faces(1))
+                for ray in selected:
+                    if ray not in cone_rays:
+                        continue
+                    generators = tuple(
+                        algebra.algebra_generator(labels[position])
+                        for position, character in enumerate(cone.semigroup_generators())
+                        if _pairing_on_ray(self.fan(), character, ray) > zero
+                    )
+                    ideals.append(algebra.ideal(*generators))
+                if not ideals:
+                    ideal = algebra.ideal(algebra.one())
+                else:
+                    ideal = ideals[0]
+                    for component_ideal in ideals[1:]:
+                        ideal = ideal.intersection(component_ideal)
+                local_closed[cone] = chart.closed_subscheme(
+                    tuple(ideal.ideal_generators())
+                )
+            support = chartwise_closed_subscheme(
+                self,
+                local_closed,
+                name="Support of a torus-invariant divisor",
+            )
+            support._preamble_toric_support_divisor = divisor
+            return support
 
         @cached_method
         def toric_boundary_divisor(self):
@@ -503,6 +787,20 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def canonical_divisor(self):
             r"""``K_X = -sum_rho D_rho`` (CLS Thm. 8.2.3)."""
             return -self.toric_boundary_divisor()
+
+        @cached_method
+        def canonical_line_bundle(self):
+            r"""Return ``omega_X = O_X(K_X)`` in the represented toric Cartier regime."""
+            return self.invertible_sheaf_of_divisor(self.canonical_divisor())
+
+        canonical_bundle = canonical_line_bundle
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            r"""Return ``omega_X^{-1} = O_X(-K_X)``."""
+            return self.invertible_sheaf_of_divisor(-self.canonical_divisor())
+
+        anticanonical_bundle = anticanonical_line_bundle
 
         @cached_method
         def character_divisor_morphism(self):
@@ -520,7 +818,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             def image(label):
                 character = characters.module_generator(label)
                 return group.linear_combination(
-                    {ray: _pairing_on_ray(fan, character, ray) for ray in rays}
+                    {
+                        ray: self.order_of_character_along_prime_divisor(
+                            character,
+                            ray,
+                        )
+                        for ray in rays
+                    }
                 )
 
             return module_homset(characters, group)(image)
@@ -710,6 +1014,43 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
             return PicardGroup(self.character_divisor_morphism().cokernel())
 
+        @cached_method
+        def cartier_class_projection(self):
+            r"""The quotient ``CDiv_T(X) ->> Pic(X)`` in the smooth toric regime."""
+            cartier = self.cartier_divisor_group()
+            picard = self.picard_group()
+            return module_homset(cartier, picard)(
+                {
+                    label: picard.module_generator(label)
+                    for label in cartier.module_generating_set()
+                }
+            )
+
+        @cached_method
+        def picard_to_class_group_morphism(self):
+            r"""The natural comparison ``Pic(X) -> Cl(X)`` for a smooth toric variety.
+
+            Since every invariant Weil divisor is Cartier on a smooth fan, the
+            comparison is an isomorphism.  The two quotient-role objects retain
+            the same presentation; this map records the comparison rather than
+            identifying them by object identity.
+            """
+            picard = self.picard_group()
+            classes = self.class_group()
+            forward = module_homset(picard, classes)(
+                {
+                    label: classes.module_generator(label)
+                    for label in picard.module_generating_set()
+                }
+            )
+            inverse = module_homset(classes, picard)(
+                {
+                    label: picard.module_generator(label)
+                    for label in classes.module_generating_set()
+                }
+            )
+            return Isomorphism(forward, inverse)
+
         def divisor_polytope(self, divisor):
             r"""``P_D = {m in M_R : <m,u_rho> >= -a_rho for all rho}`` (CLS (4.3.2)).
 
@@ -740,6 +1081,109 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 lattice=self.character_lattice(),
             )
 
+        @cached_method
+        def polarizing_divisor(self):
+            r"""Return the torus-invariant Cartier divisor whose polytope is the selected ``P``.
+
+            If ``P`` has normal fan ``Sigma`` then its support numbers are
+            ``a_rho=-min_{m in P}<m,u_rho>``.  Thus
+            ``P=P_D`` for ``D=sum a_rho D_rho``.  This is the inverse direction
+            to :meth:`divisor_polytope` for a toric variety constructed from a
+            chosen lattice polytope.
+            """
+            if not self.is_polarized():
+                raise ValueError("a polarizing divisor requires the polytope selected at construction")
+            polytope = self.polarizing_polytope()
+            characters = self.character_lattice()
+            group = self.torus_invariant_divisor_group()
+            coefficients = {}
+            for ray in self.fan().cones(1):
+                values = tuple(
+                    _pairing_on_ray(self.fan(), characters(vertex), ray)
+                    for vertex in polytope.vertices()
+                )
+                coefficients[ray] = -min(values)
+            divisor = group.linear_combination(coefficients)
+            if not self.is_cartier(divisor):
+                raise ArithmeticError("the divisor reconstructed from a lattice polytope is not Cartier")
+            return divisor
+
+        def compatible_divisor_section(self, divisor, section, *, line_bundle=None):
+            r"""Descend one character-basis section of ``O(D)`` to the toric affine atlas.
+
+            On ``U_sigma`` the Cartier datum ``m_sigma`` trivializes ``O(D)``.
+            Hence the global character ``chi^m`` has local coefficient
+            ``chi^(m-m_sigma)``.  The common finite-atlas equalizer verifies
+            these coefficients against the line-bundle transition functions.
+            """
+            divisor = self.torus_invariant_divisor_group()(divisor)
+            if not self.is_cartier(divisor):
+                raise ValueError("character-section descent requires a Cartier divisor")
+            selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
+            if selected_line.scheme() is not self:
+                raise ValueError("the selected line bundle belongs to a different toric scheme")
+            if selected_line.associated_divisor() != divisor:
+                raise ValueError("the selected line bundle represents a different toric divisor")
+            sections = self.divisor_section_space(divisor)
+            section = sections(section)
+            coefficients = module_coefficients(section, sections)
+            module_sheaf = selected_line.module_sheaf()
+            local_components = {}
+            for cone in self.gluing_datum().chart_indices():
+                chart = self.affine_chart(cone)
+                chart_ring = chart.coordinate_algebra()
+                scalar_map = chart_ring.algebra_structure_morphism()
+                cartier = self.cartier_datum(divisor, cone)
+                local_coefficient = chart_ring.zero()
+                for character, coefficient in coefficients.items():
+                    shifted = self.character_lattice()(character) - cartier
+                    if not cone.dual_cone_contains(shifted):
+                        raise ArithmeticError("a global toric section is not regular in one Cartier trivialization")
+                    local_coefficient += scalar_map(coefficient) * _character_monomial(
+                        shifted,
+                        cone,
+                        chart,
+                    )
+                module = module_sheaf.sections_on_chart(cone)
+                generator = module.module_generator(next(iter(module.module_generating_set())))
+                local_components[cone] = module.scalar_multiple(local_coefficient, generator)
+            compatible = selected_line.compatible_sections()(local_components)
+            compatible._preamble_global_section_source = section
+            compatible._preamble_toric_divisor = divisor
+            return compatible
+
+        def zero_subscheme_of_divisor_section(self, divisor, section, *, line_bundle=None):
+            r"""Return the effective Cartier zero scheme of a represented toric section."""
+            from dzack_research.preamble.categories.schemes.gluing import (
+                chartwise_closed_subscheme,
+            )
+
+            divisor = self.torus_invariant_divisor_group()(divisor)
+            selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
+            compatible = self.compatible_divisor_section(
+                divisor,
+                section,
+                line_bundle=selected_line,
+            )
+            local_closed = {}
+            for cone in self.gluing_datum().chart_indices():
+                module = selected_line.module_sheaf().sections_on_chart(cone)
+                label = next(iter(module.module_generating_set()))
+                coefficient = module_coefficients(compatible.component(cone), module).get(
+                    label,
+                    module.base_ring().zero(),
+                )
+                local_closed[cone] = self.affine_chart(cone).closed_subscheme(coefficient)
+            closed = chartwise_closed_subscheme(
+                self,
+                local_closed,
+                name="Zero scheme of a toric divisor section",
+            )
+            closed._preamble_defining_toric_section = section
+            closed._preamble_defining_toric_divisor = divisor
+            closed._preamble_defining_line_bundle = selected_line
+            return closed
+
         def divisor_section_characters(self, divisor):
             r"""The characters spanning ``H^0(X, O_X(D))`` (CLS Prop. 4.3.3).
 
@@ -754,9 +1198,459 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 name="Section characters",
             )
 
+        @cached_method
+        def divisor_section_space(self, divisor):
+            r"""Return ``H^0(X,O_X(D))`` with the character basis of ``P_D cap M``.
+
+            For a torus-invariant Cartier divisor on a complete toric variety,
+            the characters ``chi^m`` with ``m`` a lattice point of ``P_D`` form
+            a basis of global sections (CLS Prop. 4.3.3).  The represented
+            vector space therefore uses those actual character-lattice elements
+            as its basis labels rather than replacing them by positions.
+            """
+            if not self.is_cartier(divisor):
+                raise ValueError("the represented section space requires a Cartier divisor")
+            return BasedFreeModule(
+                self.scheme_base_ring(),
+                self.divisor_section_characters(divisor),
+            )
+
+        def cox_monomial_of_section(self, divisor, character):
+            r"""Return the Cox monomial representing ``chi^m`` as a section of ``O(D)``.
+
+            For ``D=sum a_rho D_rho`` and ``m in P_D cap M``, the homogeneous
+            Cox monomial is ``prod x_rho^(<m,u_rho>+a_rho)``.  Membership in
+            ``P_D`` is exactly the nonnegativity of these exponents.
+            """
+            divisor = self.weil_divisor_group()(divisor)
+            character = self.character_lattice()(character)
+            sections = self.divisor_section_characters(divisor)
+            if character not in sections:
+                raise ValueError("the character is not a global section of the stated divisor")
+            cox = self.cox_ring()
+            coefficients = module_coefficients(divisor, self.weil_divisor_group())
+            zero = _integers().zero()
+            monomial = cox.one()
+            for label in cox.algebra_generating_set():
+                ray = cox.cox_rays()[label]
+                exponent = self.order_of_character_along_prime_divisor(character, ray)
+                exponent += coefficients.get(ray, zero)
+                if exponent < zero:
+                    raise ArithmeticError("a divisor-polytope section produced a negative Cox exponent")
+                monomial *= cox.algebra_generator(label) ** int(exponent)
+            return monomial
+
+        @cached_method
+        def homogeneous_polynomial_section_space(self, divisor):
+            r"""Return ``H^0(X,O(D))`` with its actual Cox monomials as basis labels."""
+            divisor = self.weil_divisor_group()(divisor)
+            characters = self.divisor_section_characters(divisor)
+            monomials = finite_ordered_image(
+                characters,
+                lambda character: self.cox_monomial_of_section(divisor, character),
+                name="Homogeneous Cox monomial sections",
+            )
+            return BasedFreeModule(self.scheme_base_ring(), monomials)
+
+        @cached_method
+        def section_homogeneous_polynomial_isomorphism(self, divisor):
+            r"""Identify character sections with homogeneous Cox polynomials linearly."""
+            divisor = self.weil_divisor_group()(divisor)
+            source = self.divisor_section_space(divisor)
+            target = self.homogeneous_polynomial_section_space(divisor)
+            forward = module_homset(source, target)(
+                {
+                    character: target.module_generator(
+                        self.cox_monomial_of_section(divisor, character)
+                    )
+                    for character in source.module_generating_set()
+                }
+            )
+            inverse = module_homset(target, source)(
+                {
+                    monomial: source.module_generator(character)
+                    for character, monomial in zip(
+                        source.module_generating_set(),
+                        target.module_generating_set(),
+                        strict=True,
+                    )
+                }
+            )
+            return Isomorphism(forward, inverse)
+
+        def complete_linear_system(self, divisor):
+            r"""Return ``|D|`` as the projectivization of the represented section space."""
+            from dzack_research.preamble.categories.divisors.linear_systems import (
+                CompleteLinearSystem,
+            )
+
+            return CompleteLinearSystem(
+                self,
+                self.weil_divisor_group()(divisor),
+                self.divisor_section_space(divisor),
+            )
+
+        def _engine_toric_divisor(self, divisor):
+            r"""Return Sage's private toric divisor with the same ray coefficients."""
+            divisor = self.weil_divisor_group()(divisor)
+            coefficients = [
+                int(self.weil_multiplicity(divisor, ray))
+                for ray in self.fan().cones(1)
+            ]
+            return self._toric_engine_variety().divisor(coefficients)
+
+        def associated_projective_morphism(self, divisor):
+            r"""Return the morphism ``phi_|D|: X -> |D|`` for a basepoint-free divisor.
+
+            The monomial basis of ``H^0(X,O_X(D))`` indexed by ``P_D cap M``
+            is the same basis used by Sage's toric divisor engine.  Evaluating
+            those sections in homogeneous Cox coordinates gives the Kodaira
+            map to the ambient projective space of the complete linear system.
+            Basepoint-freeness is the exact condition ensuring this rational
+            map is everywhere defined.
+            """
+            divisor = self.weil_divisor_group()(divisor)
+            if not self.is_basepoint_free(divisor):
+                raise ValueError(
+                    "the associated projective map is a morphism only for a basepoint-free divisor"
+                )
+            system = self.complete_linear_system(divisor)
+            sections = self._engine_toric_divisor(divisor).sections_monomials()
+            native = self._toric_engine_variety().Hom(system)(list(sections))
+            result = categorical_scheme_morphism(
+                native,
+                domain=self,
+                codomain=system,
+            )
+            result._preamble_linear_system_divisor = divisor
+            return result
+
+        @cached_method
+        def line_bundle_cohomology(self, divisor, degree):
+            r"""Return ``H^degree(X,O_X(D))`` from the represented toric weight complexes."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricLineBundleCohomology,
+            )
+
+            return ToricLineBundleCohomology(self, divisor, degree)
+
+        def line_bundle_cohomology_dimensions(self, divisor):
+            r"""Return the degree-indexed dimensions of represented ``H^i(X,O_X(D))``."""
+            degrees = finite_ordered_set(
+                tuple(NN(degree) for degree in range(int(self.dimension()) + 1))
+            )
+            return finite_indexed_family(
+                degrees,
+                lambda degree: NN(
+                    self.line_bundle_cohomology(divisor, int(degree)).dimension()
+                ),
+                name=f"Line-bundle cohomology dimensions of {divisor}",
+            )
+
+        @cached_method
+        def integral_singular_cohomology(self, degree):
+            r"""Return ``H^degree(X(CC),ZZ)`` in the supported smooth complete toric ``QQ`` regime."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricIntegralSingularCohomology,
+            )
+
+            return ToricIntegralSingularCohomology(self, degree)
+
+        @cached_method
+        def cycle_class_isomorphism(self, codimension):
+            r"""Return the integral cycle-class isomorphism in the supported toric complex realization."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricCycleClassIsomorphism,
+            )
+
+            return ToricCycleClassIsomorphism(self, codimension)
+
+        @cached_method
+        def middle_cohomology_form(self):
+            r"""Return the cup-product form on ``H^2(X(CC),ZZ)`` for a smooth complete toric surface."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricMiddleCohomologyForm,
+            )
+
+            return ToricMiddleCohomologyForm(self)
+
+        @cached_method
+        def fundamental_group(self, base_point_cone=None):
+            r"""Return the pointed fundamental group of the supported complex realization."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricFundamentalGroup,
+            )
+
+            return ToricFundamentalGroup(self, base_point_cone)
+
+        @cached_method
+        def hodge_structure(self):
+            r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricHodgeStructure,
+            )
+
+            return ToricHodgeStructure(self)
+
+        def invertible_sheaf_of_divisor(self, divisor):
+            r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
+
+            If ``m_sigma`` is the selected Cartier datum on ``U_sigma``, then
+            ``chi^{m_sigma}`` is the local generator of ``O_X(D)``.  Hence on
+            ``U_sigma cap U_tau`` the transition is
+            ``chi^(m_sigma-m_tau)``.  These differences vanish on the common
+            face, so the characters are units on the overlap and satisfy the
+            cocycle additively.
+            """
+            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                FiniteAtlasInvertibleSheaf,
+            )
+
+            divisor = self.weil_divisor_group()(divisor)
+            if not self.is_cartier(divisor):
+                raise ValueError("an associated invertible sheaf requires a Cartier divisor")
+            datum = self.gluing_datum()
+            units = {}
+            for source_cone, target_cone in datum.transition_index_set():
+                face = source_cone.intersection(target_cone)
+                difference = self.cartier_datum(divisor, source_cone) - self.cartier_datum(
+                    divisor,
+                    target_cone,
+                )
+                units[source_cone, target_cone] = _character_on_overlap(
+                    difference,
+                    face,
+                    source_cone,
+                    self.scheme_base_ring(),
+                )
+            section_space = (
+                self.divisor_section_space(divisor)
+                if self.fan().is_complete()
+                else None
+            )
+            return FiniteAtlasInvertibleSheaf(
+                datum,
+                units,
+                section_space=section_space,
+                associated_divisor=divisor,
+            )
+
+        @cached_method
+        def hyperplane_divisor(self):
+            r"""Return a torus-invariant hyperplane divisor on toric ``P^n``.
+
+            Every ray divisor on the standard projective-space fan represents
+            the positive generator of ``Pic(P^n)``.  Thus after the exact fan
+            identification performed by ``is_projective_space``, selecting the
+            first ray gives one distinguished representative of that class.
+            """
+            assert self.is_projective_space(), (
+                "the hyperplane divisor constructor is supported on a toric projective space"
+            )
+            ray = next(iter(self.fan().cones(1)))
+            return self.torus_invariant_prime_divisor(ray)
+
+        @cached_method
+        def hyperplane_line_bundle(self):
+            r"""Return ``O_{P^n}(1)`` from the selected hyperplane divisor."""
+            return self.invertible_sheaf_of_divisor(self.hyperplane_divisor())
+
+        O1 = hyperplane_line_bundle
+
+        def ample_divisor_self_intersection(self, divisor):
+            r"""Return ``D^2`` from the normalized area of ``P_D``.
+
+            On a smooth complete toric surface a nef divisor satisfies
+            ``D^2 = Vol(P_D)`` for lattice-normalized volume.  The supported
+            interface asks for ampleness, which implies nefness and is already
+            decided by the toric support-function criterion above.
+            """
+            assert int(self.dimension()) == 2, (
+                "this intersection-number specialization is for toric surfaces"
+            )
+            assert self.fan().is_smooth() and self.fan().is_complete(), (
+                "polytope self-intersection is represented here on a smooth complete toric surface"
+            )
+            assert self.is_ample(divisor), (
+                "the represented polytope intersection formula currently requires an ample divisor"
+            )
+            return self.divisor_polytope(divisor).normalized_volume()
+
+        def ample_divisor_intersection(self, left, right):
+            r"""Return ``left . right`` by polarization on a smooth complete toric surface."""
+            group = self.weil_divisor_group()
+            left = group(left)
+            right = group(right)
+            assert self.is_ample(left) and self.is_ample(right), (
+                "the represented mixed intersection currently requires two ample Cartier divisors"
+            )
+            numerator = (
+                self.ample_divisor_self_intersection(left + right)
+                - self.ample_divisor_self_intersection(left)
+                - self.ample_divisor_self_intersection(right)
+            )
+            quotient, remainder = numerator.quo_rem(_integers()(2))
+            if remainder != _integers().zero():
+                raise ArithmeticError("polarization of an integral intersection form was not even")
+            return quotient
+
+        def divisor_intersection(self, left, right):
+            r"""Return ``left . right`` on a smooth complete toric surface.
+
+            The private Sage toric cohomology ring computes the exact divisor
+            classes and integration.  The public result is crossed back to the
+            owned integer ring; smoothness guarantees integrality.
+            """
+            if int(self.dimension()) != 2:
+                raise ValueError("the represented divisor intersection pairing is for surfaces")
+            if not self.fan().is_smooth() or not self.fan().is_complete():
+                raise ValueError("the represented divisor intersection requires a smooth complete toric surface")
+            group = self.weil_divisor_group()
+            left = group(left)
+            right = group(right)
+            rays = self.fan().cones(1)
+            zero = _integers().zero()
+
+            def engine_divisor(divisor):
+                coefficients = module_coefficients(divisor, group)
+                return self._toric_engine_variety().divisor(
+                    [int(coefficients.get(ray, zero)) for ray in rays]
+                )
+
+            engine = self._toric_engine_variety()
+            cohomology = engine.cohomology_ring()
+            value = engine.integrate(
+                cohomology(engine_divisor(left)) * cohomology(engine_divisor(right))
+            )
+            return _integers()(value)
+
+        @cached_method
+        def picard_intersection_pairing(self):
+            r"""Return the integral intersection pairing on ``Pic(X)`` for a smooth complete toric surface."""
+            if int(self.dimension()) != 2:
+                raise ValueError("the Picard intersection pairing is represented for surfaces")
+            if not self.fan().is_smooth() or not self.fan().is_complete():
+                raise ValueError("the Picard intersection pairing requires a smooth complete toric surface")
+            picard = self.picard_group()
+            weil = self.weil_divisor_group()
+            integers = _integers()
+            values = ring_as_module(integers)
+            return BilinearMap(
+                picard,
+                picard,
+                values,
+                lambda left_label, right_label: self.divisor_intersection(
+                    weil.module_generator(left_label),
+                    weil.module_generator(right_label),
+                ),
+            )
+
+        @cached_method
+        def chow_group(self, cycle_dimension):
+            r"""Return the integral Chow group ``A_k(X)`` in the selected degree.
+
+            Orbit closures generate the full Chow group of a toric variety,
+            and Sage's toric Chow implementation computes their exact rational-
+            equivalence quotient, including integral torsion.  The backend
+            returns a finitely generated ``ZZ``-module in invariant-factor
+            form; crossing those invariants back through a diagonal owned
+            presentation keeps the computation private while the public result
+            remains an owned module carrying ``X`` and ``k``.
+            """
+            cycle_dimension = int(cycle_dimension)
+            dimension = int(self.dimension())
+            if cycle_dimension < 0 or cycle_dimension > dimension:
+                raise ValueError("a Chow-group degree lies between zero and the scheme dimension")
+            engine = self._toric_engine_variety().Chow_group().degree(cycle_dimension).module()
+            invariants = tuple(int(value) for value in engine.invariants())
+            integers = _integers()
+            rank = len(invariants)
+            free = BasedFreeModule(integers, rank)
+            relations = BasedFreeModule(integers, rank)
+            relation = module_homset(relations, free)(
+                {
+                    position: (
+                        integers(invariant) * free.module_generator(position)
+                        if invariant != 0
+                        else free.zero()
+                    )
+                    for position, invariant in enumerate(invariants)
+                }
+            )
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                FinitelyPresentedModule,
+            )
+
+            return ChowGroup(
+                FinitelyPresentedModule(relation),
+                self,
+                cycle_dimension,
+            )
+
+        @cached_method
+        def torus_invariant_cycle_group(self, cycle_dimension):
+            r"""Return the free group on orbit closures of dimension ``cycle_dimension``."""
+            cycle_dimension = int(cycle_dimension)
+            dimension = int(self.dimension())
+            if cycle_dimension < 0 or cycle_dimension > dimension:
+                raise ValueError("a cycle degree lies between zero and the scheme dimension")
+            cone_dimension = dimension - cycle_dimension
+            return FreshFreeModuleOn(
+                _integers(),
+                self.fan().cones(cone_dimension),
+                _extra_categories=(TorusInvariantCycleGroups(_integers()),),
+                _extra_construction_data=(
+                    ("_preamble_cycle_scheme", self),
+                    ("_preamble_cycle_dimension", cycle_dimension),
+                ),
+            )
+
+        @cached_method
+        def torus_invariant_cycle_class_map(self, cycle_dimension):
+            r"""Return the rational-equivalence quotient from invariant cycles to ``CH_k(X)``."""
+            cycle_dimension = int(cycle_dimension)
+            source = self.torus_invariant_cycle_group(cycle_dimension)
+            target = self.chow_group(cycle_dimension)
+            engine_chow = self._toric_engine_variety().Chow_group()
+            engine_degree = engine_chow.degree(cycle_dimension).module()
+            target_labels = tuple(target.module_generating_set())
+            integers = _integers()
+
+            def image(cone):
+                coordinates = tuple(engine_degree(engine_chow(cone._engine_cone())).vector())
+                if len(coordinates) != len(target_labels):
+                    raise ArithmeticError("the Chow backend changed its invariant-factor coordinate rank")
+                return target.linear_combination(
+                    {
+                        label: integers(coefficient)
+                        for label, coefficient in zip(target_labels, coordinates, strict=True)
+                        if coefficient
+                    }
+                )
+
+            return module_homset(source, target)(image)
+
+        @cached_method
+        def cox_ring(self):
+            r"""Return the Cox homogeneous coordinate ring graded by ``Cl(X)``."""
+            from dzack_research.preamble.categories.divisors.cox_rings import CoxRing
+
+            return CoxRing(self)
+
+        @cached_method
+        def section_ring(self, divisor):
+            r"""Return ``oplus_{n>=0} H^0(X,O_X(nD))`` as an owned graded algebra."""
+            from dzack_research.preamble.categories.divisors.section_rings import (
+                SectionRing,
+            )
+
+            return SectionRing(self, self.weil_divisor_group()(divisor))
+
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""
-            from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPair
+            from dzack_research.preamble.categories.schemes.log_pairs import (
+                ToricLogPair,
+            )
 
             return ToricLogPair(self, self.toric_boundary_divisor())
 
@@ -823,14 +1717,34 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.fan(),
                 codomain.fan(),
             )
-            return refine_scheme_morphism(
-                self._toric_engine_variety().hom(
+            chart_targets = {
+                source_cone: _target_maximal_cone(
                     engine_morphism,
-                    codomain._toric_engine_variety(),
-                ),
-                self.scheme_base_ring(),
+                    source_cone,
+                    codomain.fan(),
+                )
+                for source_cone in self.fan().maximal_cones()
+            }
+            chart_pullbacks = {
+                source_cone: _toric_chart_pullback(
+                    lattice_morphism,
+                    source_cone,
+                    target_cone,
+                    self.scheme_base_ring(),
+                )
+                for source_cone, target_cone in chart_targets.items()
+            }
+            native = self._toric_engine_variety().hom(
+                engine_morphism,
+                codomain._toric_engine_variety(),
+            )
+            return ToricSchemeMorphism(
+                native,
                 domain=self,
                 codomain=codomain,
+                lattice_morphism=lattice_morphism,
+                chart_targets=chart_targets,
+                chart_pullbacks=chart_pullbacks,
             )
 
 
@@ -900,4 +1814,4 @@ def ToricVariety(fan, base_ring, polarizing_polytope=None):
     return refine_scheme(scheme, base, placements)
 
 
-__all__ = ["ToricSchemes", "ToricVariety"]
+__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes", "ToricVariety"]

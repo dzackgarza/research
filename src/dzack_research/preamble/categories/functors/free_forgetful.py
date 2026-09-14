@@ -1,14 +1,13 @@
 r"""The free-module/underlying-set adjunction ``F_R ⊣ U``."""
 
-from sage.categories.morphism import SetMorphism
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class FreeModuleFunctor(Functor):
@@ -46,10 +45,9 @@ class UnderlyingSetFunctor(Functor):
         return module
 
     def _apply_morphism(self, module_morphism):
-        return SetMorphism(
-            Sets().Mor(module_morphism.domain(), module_morphism.codomain()),
-            module_morphism,
-        )
+        return Sets().Mor(
+            module_morphism.domain(), module_morphism.codomain()
+        )(module_morphism)
 
     def _repr_(self):
         return f"Underlying-set functor on {self._base_ring}-modules"
@@ -67,10 +65,23 @@ class FreeForgetfulAdjunction(Adjunction):
 
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
-        return SetMorphism(
-            Sets().Mor(set_object, free),
-            lambda element: free.module_generator(element),
+        return Sets().Mor(set_object, free)(
+            lambda element: free.module_generator(element)
         )
+
+    def hom_set_isomorphism_forward(self, morphism, source=None):
+        r"""Transpose ``f:F_R(S)->M`` using ``F_R(S)``'s selected framing.
+
+        The generic provenance store correctly reports ambiguity when several
+        source objects have been recorded with one image.  A free module is
+        stronger data: its constructor retains the actual generating set ``S``.
+        That selected framing therefore determines the adjunction source even
+        when unrelated provenance records happen to share the same free-module
+        parent.
+        """
+        if source is None:
+            source = morphism.domain().module_generating_set()
+        return super().hom_set_isomorphism_forward(morphism, source=source)
 
     def counit(self, module):
         free = self.left_adjoint()(self.right_adjoint()(module))

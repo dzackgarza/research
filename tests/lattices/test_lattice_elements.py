@@ -19,7 +19,7 @@ def test_the_correlation_of_a_hyperbolic_plane_swaps_the_dual_framing() -> None:
     plane = Lattices(ZZ)("U")
     first, second = plane.module_generators()
     dual = plane.dual_module()
-    first_label, second_label = tuple(dual.module_generating_set())
+    first_label, second_label = dual.module_generating_set()
 
     assert first.to_covector().parent() is dual
     assert first.to_covector() == dual.module_generator(second_label)
@@ -29,7 +29,7 @@ def test_the_correlation_of_a_hyperbolic_plane_swaps_the_dual_framing() -> None:
 def test_the_gram_matrix_holds_the_pairings_and_its_determinant_is_the_discriminant() -> None:
     lattice = Lattices(ZZ)([[2, 1], [1, -4]])
     gram_matrix = lattice.gram_matrix()
-    labels = tuple(lattice.module_generating_set())
+    labels = lattice.module_generating_set()
 
     assert all(
         gram_matrix[row, column]

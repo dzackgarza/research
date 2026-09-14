@@ -3,34 +3,29 @@ r"""Internal Hom modules for the exact finitely presented module backend."""
 from sage.misc.cachefunc import cached_function
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.modules.pure.modules import (
-    InternalHomModules,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
-    _SelectedFinitePresentationModules,
     _presentation_from_relation_rows,
     _presentation_matrix,
+    _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
     module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    ModulesWithChosenFinitePresentation,
+    InternalHomModules,
     _represented_finite_presentation,
     _tensor_pair,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -77,7 +72,7 @@ def _internal_hom_model_data(homset):
         )
 
     source_labels = source.module_generating_set()
-    target_labels = target.module_generating_set()
+    target.module_generating_set()
     source_relations = _presentation_matrix(source)
     relation_labels = Sets.Δ[source_relations.nrows() - 1]
     generator_free_module = BasedFreeModule(ring, source_labels)

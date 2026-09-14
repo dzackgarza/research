@@ -21,14 +21,22 @@ Sections go the other way.  Taking the coordinate algebra of an affine
 lands in the ``R[G]``-modules; the invariants of that module are the sections
 of the quotient, which is the statement the two functors make together.
 
-The regime is the one the invariant algebra is constructed in.  Compatibility
-of the quotient with base change, and the corresponding statement for a
-family over a base, are not constructed here: they need the invariant algebra
-of a base-changed action, and forming invariants does not commute with
-arbitrary base change without a flatness or reductivity hypothesis that
-nothing in the preamble currently states.
+The regime is the one the invariant algebra is constructed in.  For a scalar
+field extension, both invariant algebras can be constructed independently and
+the canonical base-change comparison is represented below.  It is promoted to
+an isomorphism only under the Reynolds hypothesis that the finite group order
+is invertible in the target field.  No such assertion is made for arbitrary
+base change, and in residue characteristic dividing the group order this
+constant-group comparison is deliberately not used as a substitute for
+group-scheme geometry.
 """
 
+from sage.misc.cachefunc import cached_method
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ContravariantFunctor,
 )
@@ -39,8 +47,190 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
     group_module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.schemes.schemes import AffineSchemes, Schemes
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.schemes.base_change import (
+    scheme_base_change_functor,
+)
+from dzack_research.preamble.categories.schemes.schemes import (
+    AffineGSchemes,
+    AffineSchemes,
+    Schemes,
+    _affine_morphism_from_pullback,
+    _evaluate_polynomial_in_algebra,
+)
+
+
+def reynolds_invariant_base_change_hypothesis(group, ring_map) -> bool:
+    r"""Return the finite linearly-reductive hypothesis used by the comparison.
+
+    For a finite constant group over a field, averaging by ``1/|G|`` splits
+    invariants exactly when ``|G|`` is invertible.  A field extension preserves
+    the coefficient characteristic, so this is the represented regime in which
+    invariants commute with scalar extension.  Failure of this predicate is
+    *not* a negative theorem about a particular modular example; it says only
+    that the Reynolds comparison theorem is unavailable.
+    """
+    source = _own_ring(ring_map.domain())
+    target = _own_ring(ring_map.codomain())
+    if source not in OwnedFields() or target not in OwnedFields():
+        return False
+    if group.is_finite() is not True:
+        return False
+    order = target(int(group.order()))
+    return order != target.zero() and bool(order.is_unit())
+
+
+class AffineInvariantQuotientBaseChangeComparison(SageObject):
+    r"""Compare ``(X/G)_{k'}`` with ``X_{k'}/G`` for a scalar field extension.
+
+    The comparison map
+
+    ``X_{k'}/G -> (X/G)_{k'}``
+
+    is forced by the universal property of the target invariant quotient: the
+    base-changed quotient map ``X_{k'} -> (X/G)_{k'}`` remains invariant.  The
+    map exists whenever both represented invariant algebras do.
+
+    When ``|G|`` is invertible in ``k'``, Reynolds averaging makes invariants an
+    exact direct summand and they commute with the field extension.  In that
+    regime :meth:`reynolds_isomorphism` constructs the inverse explicitly by
+    expressing every new invariant generator in the base-changed old invariant
+    generators through the same maintained subalgebra-membership certificates
+    used by the affine quotient universal property.
+    """
+
+    def __init__(self, acted_scheme, ring_map) -> None:
+        source = acted_scheme.scheme_base_ring()
+        target = _own_ring(ring_map.codomain())
+        if ring_map.domain() is not source:
+            raise ValueError("quotient base change starts at the acted scheme's scalar field")
+        if source not in OwnedFields() or target not in OwnedFields():
+            raise NotImplementedError(
+                "the represented invariant-quotient base-change comparison currently requires a field extension"
+            )
+        if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
+            raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
+
+        group = acted_scheme.acting_group()
+        change = scheme_base_change_functor(ring_map)
+        changed_carrier = change(acted_scheme)
+        changed_actions = {
+            group_element: change(acted_scheme.action_of(group_element))
+            for group_element in group
+        }
+        changed_acted = AffineGSchemes(group, target)(
+            changed_carrier,
+            lambda group_element: changed_actions[group(group_element)],
+        )
+        changed_old_quotient = change(acted_scheme.affine_quotient())
+        changed_old_quotient_map = change(acted_scheme.quotient_morphism())
+        transported_quotient_map = _affine_morphism_from_pullback(
+            changed_acted,
+            changed_old_quotient,
+            changed_old_quotient_map.coordinate_algebra_morphism(),
+        )
+        comparison = changed_acted.factor_through_affine_quotient(
+            transported_quotient_map
+        )
+
+        self._acted_scheme = acted_scheme
+        self._ring_map = ring_map
+        self._changed_acted_scheme = changed_acted
+        self._base_changed_old_quotient = changed_old_quotient
+        self._comparison_morphism = comparison
+
+    def source_acted_scheme(self):
+        return self._acted_scheme
+
+    def ring_map(self):
+        return self._ring_map
+
+    def base_changed_acted_scheme(self):
+        return self._changed_acted_scheme
+
+    def quotient_after_base_change(self):
+        return self.base_changed_acted_scheme().affine_quotient()
+
+    def base_change_after_quotient(self):
+        return self._base_changed_old_quotient
+
+    def comparison_morphism(self):
+        return self._comparison_morphism
+
+    def reynolds_hypothesis_holds(self) -> bool:
+        return reynolds_invariant_base_change_hypothesis(
+            self.source_acted_scheme().acting_group(),
+            self.ring_map(),
+        )
+
+    @cached_method
+    def reynolds_isomorphism(self):
+        if not self.reynolds_hypothesis_holds():
+            raise NotImplementedError(
+                "invariant base change is promoted to an isomorphism here only when the finite group order is invertible in the target field"
+            )
+
+        forward = self.comparison_morphism()
+        source_quotient = self.quotient_after_base_change()
+        target_quotient = self.base_change_after_quotient()
+        changed_acted = self.base_changed_acted_scheme()
+        changed_source_algebra = changed_acted.coordinate_algebra()
+        changed_invariants = source_quotient.coordinate_algebra()
+        changed_old_invariants = target_quotient.coordinate_algebra()
+        comparison_pullback = forward.coordinate_algebra_morphism()
+        invariant_inclusion = changed_acted.invariant_algebra_inclusion()
+
+        engine_source = _engine_ring(changed_source_algebra)
+        old_generator_images = tuple(
+            engine_source(
+                _engine_element(
+                    changed_source_algebra,
+                    invariant_inclusion(
+                        comparison_pullback(
+                            changed_old_invariants.algebra_generator(label)
+                        )
+                    ),
+                )
+            )
+            for label in changed_old_invariants.algebra_generating_set()
+        )
+
+        inverse_images = {}
+        for label in changed_invariants.algebra_generating_set():
+            invariant = invariant_inclusion(
+                changed_invariants.algebra_generator(label)
+            )
+            engine_invariant = engine_source(
+                _engine_element(changed_source_algebra, invariant)
+            )
+            certificate = engine_invariant.in_subalgebra(
+                old_generator_images,
+                algorithm="groebner",
+                certificate="invariant",
+            )
+            if certificate is None:
+                raise ArithmeticError(
+                    "Reynolds base-change theorem applies but the invariant backend failed to express a new invariant in the base-changed old generators"
+                )
+            inverse_images[label] = _evaluate_polynomial_in_algebra(
+                certificate,
+                changed_old_invariants,
+            )
+
+        inverse_pullback = changed_invariants.Mor(changed_old_invariants)(
+            inverse_images
+        )
+        inverse = _affine_morphism_from_pullback(
+            target_quotient,
+            source_quotient,
+            inverse_pullback,
+        )
+        return Isomorphism(forward, inverse)
 
 
 class AffineQuotientFunctor(Functor):
@@ -72,8 +262,8 @@ class AffineQuotientFunctor(Functor):
         return f"Affine quotient by {self.acting_group()}"
 
 
-class AffineSectionModuleFunctor(ContravariantFunctor):
-    r"""``Gamma: GObjects(G, Sch_R)^op -> Modules(R[G])`` on affine actions.
+class _AffineSectionModuleFunctor(ContravariantFunctor):
+    r"""``Gamma: AffGSch_G^op -> Modules(R[G])`` on represented affine actions.
 
     The sections of an affine ``G``-scheme ``X = Spec(B)`` carry one
     ``G``-action, and contravariance fixes which one.  Pullback composes the
@@ -101,7 +291,7 @@ class AffineSectionModuleFunctor(ContravariantFunctor):
         self._base_ring = base
         ContravariantFunctor.__init__(
             self,
-            GObjects(group, Schemes(base)),
+            AffineGSchemes(group, base),
             Modules(GroupAlgebra(base, group)),
         )
 
@@ -139,4 +329,8 @@ class AffineSectionModuleFunctor(ContravariantFunctor):
         return f"Sections with their {self.acting_group()}-action"
 
 
-__all__ = ["AffineQuotientFunctor", "AffineSectionModuleFunctor"]
+__all__ = [
+    "AffineInvariantQuotientBaseChangeComparison",
+    "AffineQuotientFunctor",
+    "reynolds_invariant_base_change_hypothesis",
+]

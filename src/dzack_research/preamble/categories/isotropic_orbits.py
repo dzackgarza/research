@@ -8,10 +8,11 @@ capability and what would provision it, which is the owned behaviour until a
 provider arrives.
 """
 
-from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from sage.structure.sage_object import SageObject
+
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
 def _held(lattice, element):
@@ -39,8 +40,41 @@ def primitive_isotropic_subobject(lattice, basis):
     return subobject
 
 
+class PrimitiveIsotropicVectorLocus(SageObject):
+    r"""The exact locus of nonzero primitive isotropic vectors in one lattice."""
+
+    def __init__(self, lattice) -> None:
+        self._lattice = lattice
+        zero = lattice.zero()
+        value_zero = lattice.base_ring().zero()
+
+        def is_primitive_isotropic(vector) -> bool:
+            if vector == zero:
+                return False
+            if lattice.q(vector) != value_zero:
+                return False
+            return bool(lattice.subobject_on((vector,)).is_primitive())
+
+        self._condition_set = ConditionSet(lattice, is_primitive_isotropic)
+
+    def lattice(self):
+        return self._lattice
+
+    def universe(self):
+        return self.lattice()
+
+    def condition_set(self):
+        return self._condition_set
+
+    def __contains__(self, vector) -> bool:
+        return vector in self.condition_set()
+
+    def __repr__(self) -> str:
+        return f"Primitive isotropic vectors of {self.lattice()}"
+
+
 def primitive_isotropic_vectors(lattice):
-    r"""Return the set of primitive isotropic vectors of ``lattice``.
+    r"""Return the exact primitive-isotropic-vector locus of ``lattice``.
 
     Membership is ``q(v) = 0`` together with the saturation of ``Z v``, which
     is the statement ``div(v) = 1`` in ``Z v``: the vector is not a proper
@@ -52,19 +86,308 @@ def primitive_isotropic_vectors(lattice):
     orbits are the cusps, and they are finite in number; representatives come
     from ``L.O().isotropic_orbit_representatives(1)``.
     """
-    from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+    return PrimitiveIsotropicVectorLocus(lattice)
 
-    zero = lattice.zero()
-    value_zero = lattice.base_ring().zero()
 
-    def is_primitive_isotropic(vector) -> bool:
-        if vector == zero:
+class PrimitiveIsotropicVectorOrbit(SageObject):
+    r"""One ``O(L)``-orbit inside the primitive isotropic vector locus."""
+
+    def __init__(self, group, representative) -> None:
+        self._group = group
+        self._representative = representative
+
+    def group(self):
+        return self._group
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer(self):
+        return self.group().stabilizer(self.representative())
+
+    def transporter_from(self, vector):
+        return self.group().vector_equivalence_witness(
+            vector,
+            self.representative(),
+        )
+
+    def __contains__(self, vector) -> bool:
+        return self.transporter_from(vector) is not None
+
+
+class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
+    r"""The finite ``O(L)``-orbit decomposition of primitive isotropic vectors.
+
+    Rank-one primitive isotropic sublattice orbits and primitive isotropic
+    vector orbits coincide for the full orthogonal group: a line generator can
+    only be sent to either generator of the target primitive line, and ``-id``
+    belongs to ``O(L)``.  Thus the existing exact rank-one isotropic backend
+    supplies the representatives, while vector stabilizers and transporters
+    remain the already-owned group operations.
+    """
+
+    def __init__(self, group, locus) -> None:
+        if not isinstance(locus, PrimitiveIsotropicVectorLocus):
+            raise TypeError("this decomposition requires the primitive isotropic vector locus")
+        if group.lattice() is not locus.lattice():
+            raise ValueError("the orbit group and primitive-isotropic locus require one lattice")
+        self._group = group
+        self._locus = locus
+        representatives = []
+        for line in group.isotropic_orbit_representatives(1):
+            generator = line.module_generator(0)
+            representatives.append(line.inclusion()(generator))
+        self._orbits = finite_ordered_set(
+            tuple(
+                PrimitiveIsotropicVectorOrbit(group, representative)
+                for representative in representatives
+            )
+        )
+
+    def group(self):
+        return self._group
+
+    def locus(self):
+        return self._locus
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(
+            tuple(orbit.representative() for orbit in self.orbits())
+        )
+
+    def orbit_of(self, vector):
+        if vector not in self.locus():
+            raise ValueError("orbit_of expects a primitive isotropic vector of this lattice")
+        for orbit in self.orbits():
+            if vector in orbit:
+                return orbit
+        raise ArithmeticError("the exact isotropic orbit list did not cover the primitive isotropic locus")
+
+    def stabilizer(self, representative):
+        return self.orbit_of(representative).stabilizer()
+
+    def transporter(self, source, target):
+        if source not in self.locus() or target not in self.locus():
+            raise ValueError("a primitive-isotropic transporter requires two vectors in the locus")
+        return self.group().vector_equivalence_witness(source, target)
+
+
+class PrimitiveIsotropicSublatticeLocus(SageObject):
+    r"""Primitive totally isotropic rank-``k`` lattice subobjects of ``L``."""
+
+    def __init__(self, lattice, rank) -> None:
+        rank = int(rank)
+        if rank <= 0:
+            raise ValueError("a primitive isotropic sublattice rank must be positive")
+        self._lattice = lattice
+        self._rank = rank
+
+    def lattice(self):
+        return self._lattice
+
+    def rank(self):
+        return self._rank
+
+    def __contains__(self, sublattice) -> bool:
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModuleSubobjects,
+        )
+
+        if not callable(getattr(sublattice, "inclusion", None)):
             return False
-        if lattice.q(vector) != value_zero:
+        if sublattice not in ModuleSubobjects(self.lattice().base_ring()):
             return False
-        return bool(lattice.subobject_on((vector,)).is_primitive())
+        try:
+            if sublattice.ambient_lattice() is not self.lattice():
+                return False
+        except (AttributeError, TypeError):
+            return False
+        return (
+            int(sublattice.module_rank()) == self.rank()
+            and sublattice.is_primitive()
+            and sublattice.is_totally_isotropic()
+        )
 
-    return ConditionSet(lattice, is_primitive_isotropic)
+    def __repr__(self) -> str:
+        return (
+            f"Primitive totally isotropic rank-{self.rank()} sublattices "
+            f"of {self.lattice()}"
+        )
+
+
+def primitive_isotropic_sublattices(lattice, rank=1):
+    r"""Return the exact rank-``rank`` primitive isotropic sublattice locus."""
+    return PrimitiveIsotropicSublatticeLocus(lattice, rank)
+
+
+class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
+    r"""The finite cusp decomposition of one primitive isotropic sublattice locus."""
+
+    def __init__(self, group, locus) -> None:
+        if not isinstance(locus, PrimitiveIsotropicSublatticeLocus):
+            raise TypeError("this decomposition requires a primitive isotropic sublattice locus")
+        if group.lattice() is not locus.lattice():
+            raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
+        self._group = group
+        self._locus = locus
+        self._orbits = cusps(locus.lattice(), rank=locus.rank())
+
+    def group(self):
+        return self._group
+
+    def locus(self):
+        return self._locus
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(
+            tuple(cusp.representative() for cusp in self.orbits())
+        )
+
+    def orbit_of(self, sublattice):
+        if sublattice not in self.locus():
+            raise ValueError("orbit_of expects a primitive isotropic sublattice in this locus")
+        for cusp in self.orbits():
+            if sublattice in cusp:
+                return cusp
+        raise ArithmeticError("the exact cusp list did not cover the isotropic-sublattice locus")
+
+    def stabilizer(self, sublattice):
+        return self.group().stabilizer(sublattice, action="setwise")
+
+    def transporter(self, source, target):
+        if source not in self.locus() or target not in self.locus():
+            raise ValueError("an isotropic-sublattice transporter requires two locus members")
+        return self.group().isotropic_equivalence_witness(source, target)
+
+
+class VectorLocus(SageObject):
+    r"""Vectors of one lattice cut out by square and optional primitivity."""
+
+    def __init__(self, lattice, norm, *, primitive=False) -> None:
+        self._lattice = lattice
+        self._norm = lattice.base_ring()(norm)
+        self._primitive = bool(primitive)
+
+    def lattice(self):
+        return self._lattice
+
+    def norm(self):
+        return self._norm
+
+    def requires_primitive(self) -> bool:
+        return self._primitive
+
+    def __contains__(self, vector) -> bool:
+        if getattr(vector, "parent", lambda: None)() is not self.lattice():
+            return False
+        if vector.q() != self.norm():
+            return False
+        return not self.requires_primitive() or vector.is_primitive()
+
+    def __repr__(self) -> str:
+        primitive = ""
+        if self.requires_primitive():
+            primitive = "primitive "
+        return f"{primitive}vectors of norm {self.norm()} in {self.lattice()}"
+
+
+def vector_locus(lattice, norm, *, primitive=False):
+    r"""Return the exact vector locus ``{v in L : q(v)=norm}``, optionally primitive."""
+    return VectorLocus(lattice, norm, primitive=primitive)
+
+
+class IsotropicSublatticeLocus(SageObject):
+    r"""Represented totally isotropic rank-``k`` sublattices of one lattice."""
+
+    def __init__(self, lattice, rank) -> None:
+        rank = int(rank)
+        if rank <= 0:
+            raise ValueError("an isotropic sublattice rank must be positive")
+        self._lattice = lattice
+        self._rank = rank
+
+    def lattice(self):
+        return self._lattice
+
+    def rank(self):
+        return self._rank
+
+    def __contains__(self, sublattice) -> bool:
+        if not callable(getattr(sublattice, "inclusion", None)):
+            return False
+        try:
+            return (
+                sublattice.ambient_lattice() is self.lattice()
+                and int(sublattice.module_rank()) == self.rank()
+                and sublattice.is_totally_isotropic()
+            )
+        except (AttributeError, TypeError):
+            return False
+
+    def __repr__(self) -> str:
+        return f"Totally isotropic rank-{self.rank()} sublattices of {self.lattice()}"
+
+
+def isotropic_sublattice_locus(lattice, rank):
+    r"""Return the locus of represented totally isotropic rank-``rank`` sublattices."""
+    return IsotropicSublatticeLocus(lattice, rank)
+
+
+class IsotropicFlagLocus(SageObject):
+    r"""Nested represented isotropic sublattices with prescribed ranks."""
+
+    def __init__(self, lattice, ranks) -> None:
+        ranks = tuple(int(rank) for rank in ranks)
+        if not ranks or any(rank <= 0 for rank in ranks):
+            raise ValueError("an isotropic flag requires positive term ranks")
+        if any(left >= right for left, right in zip(ranks, ranks[1:])):
+            raise ValueError("isotropic flag ranks must be strictly increasing")
+        self._lattice = lattice
+        self._ranks = ranks
+
+    def lattice(self):
+        return self._lattice
+
+    def ranks(self):
+        return self._ranks
+
+    def _terms_of(self, flag):
+        if isinstance(flag, IsotropicFlag):
+            return tuple(flag.terms())
+        if isinstance(flag, (tuple, list)):
+            return tuple(flag)
+        terms = getattr(flag, "terms", None)
+        return tuple(terms()) if callable(terms) else ()
+
+    def __contains__(self, flag) -> bool:
+        terms = self._terms_of(flag)
+        if len(terms) != len(self.ranks()):
+            return False
+        if any(
+            term not in IsotropicSublatticeLocus(self.lattice(), rank)
+            for term, rank in zip(terms, self.ranks(), strict=True)
+        ):
+            return False
+        for smaller, larger in zip(terms, terms[1:]):
+            try:
+                smaller.inclusion().factor_through(larger.inclusion())
+            except (AttributeError, TypeError, ValueError):
+                return False
+        return True
+
+    def __repr__(self) -> str:
+        return f"Totally isotropic flags of ranks {self.ranks()} in {self.lattice()}"
+
+
+def isotropic_flag_locus(lattice, ranks):
+    r"""Return the locus of nested represented isotropic sublattices of the stated ranks."""
+    return IsotropicFlagLocus(lattice, ranks)
 
 
 class IsotropicFlag:
@@ -87,7 +410,7 @@ class IsotropicFlag:
         return self._basis
 
     def terms(self):
-        return self._terms
+        return finite_ordered_set(self._terms)
 
     def flag_length(self):
         r"""Return how many terms this flag has.
@@ -178,6 +501,229 @@ class Cusp:
         return f"Cusp of rank {self.module_rank()} in {self.lattice()}"
 
 
+class ArithmeticCusp(SageObject):
+    r"""One orbit of primitive isotropic subobjects under an arithmetic subgroup.
+
+    The subgroup is part of the object.  Its stabilizer is therefore the
+    actual intersection ``Gamma cap P_I``, not the full parabolic in
+    ``O(L)``.  Membership retains an explicit transporter lying in ``Gamma``.
+    """
+
+    def __init__(self, subgroup, representative) -> None:
+        if subgroup.supergroup().domain() is not representative.ambient_lattice():
+            raise ValueError(
+                "an arithmetic cusp subgroup and representative must belong to the same lattice"
+            )
+        self._subgroup = subgroup
+        self._representative = representative
+
+    def subgroup(self):
+        return self._subgroup
+
+    def lattice(self):
+        return self.subgroup().supergroup().domain()
+
+    def module_rank(self):
+        return self.representative().module_rank()
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer(self):
+        r"""Return ``Gamma cap P_I`` for the chosen representative ``I``."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        parabolic = self.representative().parabolic_subgroup()
+        return stabilizer_subgroup(
+            self.subgroup(),
+            self.representative(),
+            "setwise on the represented isotropic sublattice",
+            lambda element: element in parabolic,
+        )
+
+    parabolic_subgroup = stabilizer
+
+    def reduction_lattice(self):
+        return self.representative().isotropic_reduction()
+
+    def transporter_witness(self, subobject):
+        r"""Return one ``g in Gamma`` carrying ``subobject`` to the representative."""
+        return self.subgroup().isotropic_equivalence_witness(
+            subobject,
+            self.representative(),
+        )
+
+    def __contains__(self, subobject) -> bool:
+        if subobject.ambient_lattice() is not self.lattice():
+            return False
+        if subobject.module_rank() != self.module_rank():
+            return False
+        return self.transporter_witness(subobject) is not None
+
+    def __repr__(self) -> str:
+        return (
+            f"Rank-{self.module_rank()} cusp of {self.subgroup()} "
+            f"in {self.lattice()}"
+        )
+
+
+class CuspIncidence(SageObject):
+    r"""One rank-``(1,2)`` isotropic flag orbit in the quotient Tits building.
+
+    The edge is not reduced to two vertex labels: it retains an actual flag
+    ``I_1 < I_2`` in the lattice, the line and plane cusp orbits containing
+    its two terms, transporters from those terms to the chosen cusp
+    representatives, and generators of the stabilizer of the whole flag.
+    Distinct flag orbits with the same pair of cusp vertices therefore remain
+    distinct incidence records.
+    """
+
+    def __init__(
+        self,
+        flag,
+        line_cusp,
+        plane_cusp,
+        line_transporter,
+        plane_transporter,
+        stabilizer_generators,
+    ) -> None:
+        terms = tuple(flag.terms())
+        if len(terms) != 2:
+            raise ValueError("a cusp incidence is represented by a two-step isotropic flag")
+        if int(terms[0].module_rank()) != 1 or int(terms[1].module_rank()) != 2:
+            raise ValueError("a cusp incidence has ranks one and two")
+        terms[0].inclusion().factor_through(terms[1].inclusion())
+        self._flag = flag
+        self._line_cusp = line_cusp
+        self._plane_cusp = plane_cusp
+        self._line_transporter = line_transporter
+        self._plane_transporter = plane_transporter
+        self._stabilizer_generators = stabilizer_generators
+
+    def lattice(self):
+        return self._flag.lattice()
+
+    def flag(self):
+        return self._flag
+
+    def line(self):
+        return self.flag().terms()[0]
+
+    def plane(self):
+        return self.flag().terms()[1]
+
+    def line_cusp(self):
+        return self._line_cusp
+
+    def plane_cusp(self):
+        return self._plane_cusp
+
+    def line_transporter(self):
+        return self._line_transporter
+
+    def plane_transporter(self):
+        return self._plane_transporter
+
+    def stabilizer_generators(self):
+        return self._stabilizer_generators
+
+    def __repr__(self) -> str:
+        return f"Tits-building incidence {self.line_cusp()} < {self.plane_cusp()}"
+
+
+class ArithmeticCuspIncidence(SageObject):
+    r"""One rank-``(1,2)`` flag orbit in an arithmetic-subgroup quotient building."""
+
+    def __init__(
+        self,
+        subgroup,
+        flag,
+        line_cusp,
+        plane_cusp,
+        line_transporter,
+        plane_transporter,
+    ) -> None:
+        terms = tuple(flag.terms())
+        if len(terms) != 2:
+            raise ValueError(
+                "an arithmetic cusp incidence is represented by a two-step isotropic flag"
+            )
+        line, plane = terms
+        if int(line.module_rank()) != 1 or int(plane.module_rank()) != 2:
+            raise ValueError("an arithmetic cusp incidence has ranks one and two")
+        line.inclusion().factor_through(plane.inclusion())
+        if line_cusp.subgroup() is not subgroup or plane_cusp.subgroup() is not subgroup:
+            raise ValueError("both cusp vertices must belong to the selected subgroup quotient")
+        if line_transporter not in subgroup or plane_transporter not in subgroup:
+            raise ValueError("cusp transporters must lie in the selected arithmetic subgroup")
+        if not _same_subobject(
+            _image_subobject(line_transporter, line),
+            line_cusp.representative(),
+        ):
+            raise ValueError("the retained line transporter has the wrong target cusp")
+        if not _same_subobject(
+            _image_subobject(plane_transporter, plane),
+            plane_cusp.representative(),
+        ):
+            raise ValueError("the retained plane transporter has the wrong target cusp")
+        self._subgroup = subgroup
+        self._flag = flag
+        self._line_cusp = line_cusp
+        self._plane_cusp = plane_cusp
+        self._line_transporter = line_transporter
+        self._plane_transporter = plane_transporter
+
+    def subgroup(self):
+        return self._subgroup
+
+    def lattice(self):
+        return self.subgroup().supergroup().domain()
+
+    def flag(self):
+        return self._flag
+
+    def line(self):
+        return self.flag().terms()[0]
+
+    def plane(self):
+        return self.flag().terms()[1]
+
+    def line_cusp(self):
+        return self._line_cusp
+
+    def plane_cusp(self):
+        return self._plane_cusp
+
+    def line_transporter(self):
+        return self._line_transporter
+
+    def plane_transporter(self):
+        return self._plane_transporter
+
+    def stabilizer(self):
+        r"""Return the subgroup of ``Gamma`` preserving both terms of the flag."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        line_stabilizer = self.line().parabolic_subgroup()
+        plane_stabilizer = self.plane().parabolic_subgroup()
+        return stabilizer_subgroup(
+            self.subgroup(),
+            self.flag(),
+            "setwise on both terms of the isotropic flag",
+            lambda element: element in line_stabilizer and element in plane_stabilizer,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Arithmetic Tits-building incidence "
+            f"{self.line_cusp()} < {self.plane_cusp()}"
+        )
+
+
 def cusps(lattice, rank=1):
     r"""Return the cusps of ``lattice``: its ``O(L)``-orbits of rank-``k`` subobjects.
 
@@ -193,6 +739,104 @@ def cusps(lattice, rank=1):
             for representative in lattice.Aut().isotropic_orbit_representatives(rank)
         )
     )
+
+
+def arithmetic_cusps(subgroup, rank=1):
+    r"""Return the primitive-isotropic cusp orbits of ``subgroup`` of rank ``rank``.
+
+    The subgroup's own isotropic orbit splitter performs the finite-character
+    double-coset calculation.  Each returned cusp then retains exact subgroup
+    membership and a transporter in that subgroup.
+    """
+    return finite_ordered_set(
+        tuple(
+            ArithmeticCusp(subgroup, representative)
+            for representative in subgroup.isotropic_orbit_representatives(rank)
+        )
+    )
+
+
+def tits_building_incidence(lattice):
+    r"""Return the finite line/plane incidence in the ``O(L)`` quotient building.
+
+    Rank-two flag representatives come from the exact indefinite backend with
+    ``choice='flag'``.  Their first and second terms determine unique line and
+    plane cusp orbits.  The returned records retain the actual nested
+    embeddings and the transporters to the selected representatives of those
+    cusp vertices.
+    """
+    line_cusps = cusps(lattice, 1)
+    plane_cusps = cusps(lattice, 2)
+    orthogonal_group = lattice.Aut()
+    incidences = []
+    for flag in orthogonal_group.isotropic_orbit_representatives(2, flag=True):
+        line, plane = flag.terms()
+        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+        if len(line_vertices) != 1 or len(plane_vertices) != 1:
+            raise ArithmeticError(
+                "an isotropic flag term does not determine a unique cusp orbit"
+            )
+        line_cusp = line_vertices[0]
+        plane_cusp = plane_vertices[0]
+        line_transporter = line_cusp.transporter_witness(line)
+        plane_transporter = plane_cusp.transporter_witness(plane)
+        if line_transporter is None or plane_transporter is None:
+            raise ArithmeticError("a flag term lies in a cusp with no transporter witness")
+        incidences.append(
+            CuspIncidence(
+                flag,
+                line_cusp,
+                plane_cusp,
+                line_transporter,
+                plane_transporter,
+                orthogonal_group.isotropic_stabilizer_generators(flag, flag=True),
+            )
+        )
+    return finite_ordered_set(tuple(incidences))
+
+
+def arithmetic_tits_building_incidence(subgroup):
+    r"""Return the line/plane incidence in the arithmetic quotient by ``subgroup``.
+
+    Rank-two flag representatives are split under the same finite-character
+    quotient as the line and plane orbits.  The resulting edge therefore
+    retains actual ``Gamma``-transporters to its two cusp vertices instead of
+    inheriting transporters from the full orthogonal group.
+    """
+    lattice = subgroup.supergroup().domain()
+    line_cusps = arithmetic_cusps(subgroup, 1)
+    plane_cusps = arithmetic_cusps(subgroup, 2)
+    incidences = []
+    for flag in subgroup.isotropic_orbit_representatives(2, flag=True):
+        line, plane = flag.terms()
+        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+        if len(line_vertices) != 1 or len(plane_vertices) != 1:
+            raise ArithmeticError(
+                "an arithmetic flag term does not determine a unique subgroup cusp orbit"
+            )
+        line_cusp = line_vertices[0]
+        plane_cusp = plane_vertices[0]
+        line_transporter = line_cusp.transporter_witness(line)
+        plane_transporter = plane_cusp.transporter_witness(plane)
+        if line_transporter is None or plane_transporter is None:
+            raise ArithmeticError(
+                "an arithmetic flag term lies in a cusp with no subgroup transporter"
+            )
+        incidences.append(
+            ArithmeticCuspIncidence(
+                subgroup,
+                flag,
+                line_cusp,
+                plane_cusp,
+                line_transporter,
+                plane_transporter,
+            )
+        )
+    if any(incidence.lattice() is not lattice for incidence in incidences):
+        raise ArithmeticError("an arithmetic cusp incidence changed its ambient lattice")
+    return finite_ordered_set(tuple(incidences))
 
 
 def _embedded_basis(subobject):
@@ -273,12 +917,24 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
             if flag
             else primitive_isotropic_subobject(lattice, basis)
         )
-    return tuple(result)
+    return finite_ordered_set(tuple(result))
 
 
 def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     r"""Return an isometry carrying one primitive isotropic subobject/flag to another."""
     lattice = orthogonal_group.domain()
+    if flag:
+        left_terms = _terms(left)
+        right_terms = _terms(right)
+        if len(left_terms) != len(right_terms):
+            return None
+        if all(
+            _same_subobject(source, target)
+            for source, target in zip(left_terms, right_terms, strict=True)
+        ):
+            return orthogonal_group.one()
+    elif _same_subobject(left, right):
+        return orthogonal_group.one()
     left_rows = _basis_rows(left)
     right_rows = _basis_rows(right)
     if len(left_rows) != len(right_rows):
@@ -333,13 +989,31 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 
 __all__ = [
+    "ArithmeticCusp",
+    "ArithmeticCuspIncidence",
     "Cusp",
+    "CuspIncidence",
+    "IsotropicFlagLocus",
+    "IsotropicSublatticeLocus",
     "IsotropicFlag",
+    "PrimitiveIsotropicSublatticeLocus",
+    "PrimitiveIsotropicSublatticeOrbitDecomposition",
+    "PrimitiveIsotropicVectorLocus",
+    "PrimitiveIsotropicVectorOrbit",
+    "PrimitiveIsotropicVectorOrbitDecomposition",
+    "VectorLocus",
+    "arithmetic_cusps",
+    "arithmetic_tits_building_incidence",
     "cusps",
+    "isotropic_flag_locus",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
+    "isotropic_sublattice_locus",
     "isotropic_stabilizer_generators",
     "primitive_isotropic_subobject",
+    "primitive_isotropic_sublattices",
     "primitive_isotropic_vectors",
+    "tits_building_incidence",
     "transport_isotropic_object",
+    "vector_locus",
 ]

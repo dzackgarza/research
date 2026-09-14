@@ -6,6 +6,8 @@ specimen.  Each adjunction states the endpoints of its unit and counit and
 the value of one of them.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
     ZZ,
     Cardinalities,
@@ -16,6 +18,12 @@ from dzack_research.preamble.all import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/cardinality.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functors/cardinality.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _shift(source, target):
@@ -107,7 +115,9 @@ def test_the_free_group_adjunction_has_a_unit_of_letters_and_a_multiplying_couni
 
 
 def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
+    r"""Archive contract: ``# : core(Sets) -> Cardinalities`` is cached and functorial."""
     functor = Sets().cardinality_functor()
+    assert functor is Sets().cardinality_functor()
     assert functor.domain().base_category() == Sets()
     assert functor.codomain() == Cardinalities()
 
@@ -120,6 +130,11 @@ def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
     carried = functor(relabelling)
     assert carried.domain() == cardinal(3)
     assert carried.codomain() == cardinal(3)
+    assert carried == Cardinalities().Mor(cardinal(3), cardinal(3)).unique_morphism()
+
+    collapse = Sets().Mor(ordinal, ordinal)(lambda _index: ordinal(0))
+    with pytest.raises(ValueError, match="biject"):
+        functor(collapse)
 
 
 def test_the_power_set_functor_has_all_of_sets_for_its_domain() -> None:

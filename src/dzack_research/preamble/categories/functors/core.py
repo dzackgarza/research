@@ -5,6 +5,8 @@ categories remain the domain and codomain; this module adds no parallel
 category graph and no registry of relationships.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import overload
@@ -29,7 +31,33 @@ class _FunctorImageRecord:
 
 
 class Functor(SageObject):
-    r"""A functor with explicit actions on objects and morphisms."""
+    r"""A functor with explicit actions on objects and morphisms.
+
+    Unverified specimen: a proposed identity on underlying sets is not a
+    functor to the category of injections when applied to a noninjective map::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: class ProposedInclusion(Functor):
+        ....:     def __init__(self):
+        ....:         super().__init__(Sets(), injections)
+        ....:     def _apply_object(self, obj):
+        ....:         return obj
+        ....:     def _apply_morphism(self, arrow):
+        ....:         return arrow
+        sage: points = finite_ordered_set(("a", "b"))
+        sage: maps = Sets().Mor(points, points)
+        sage: swap = maps(lambda point: {"a": "b", "b": "a"}[point])
+        sage: proposed = ProposedInclusion()
+        sage: proposed(swap) is swap
+        True
+        sage: proposed(maps(lambda point: "a"))
+        Traceback (most recent call last):
+        ...
+        TypeError: the image is not a morphism of the functor's codomain
+    """
 
     _faithful = False
 
@@ -120,13 +148,19 @@ class Functor(SageObject):
             )
         return self._record_object_image(obj, image)
 
-    def chosen_preimage(self, image: Parent) -> Parent:
-        r"""Return the unique source object recorded for this exact functor image."""
-        matches = [
-            record.source_object
-            for record in self._provenance.values()
-            if record.target_object is image and record.source_object is not None
-        ]
+    def chosen_preimage(self, image: Parent | Map) -> Parent | Map:
+        r"""Return the unique source recorded for this exact functor image.
+
+        Object and morphism images share the same provenance store, so reverse
+        lookup must inspect the corresponding half of each record rather than
+        silently treating every target as an object.
+        """
+        matches: list[Parent | Map] = []
+        for record in self._provenance.values():
+            if record.target_object is image and record.source_object is not None:
+                matches.append(record.source_object)
+            if record.target_morphism is image and record.source_morphism is not None:
+                matches.append(record.source_morphism)
         if not matches:
             raise ValueError(f"{image} has no chosen preimage recorded by {self}")
         if len(matches) != 1:
@@ -148,10 +182,10 @@ class Functor(SageObject):
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_homset,
+            _category_hom,
         )
 
-        if morphism not in _category_homset(self.domain(), morphism.domain(), morphism.codomain()):
+        if morphism not in _category_hom(self.domain(), morphism.domain(), morphism.codomain()):
             raise TypeError("the supplied map is not a morphism of the functor's domain")
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
@@ -166,7 +200,7 @@ class Functor(SageObject):
                 "a functor's morphism image must run between the cached images "
                 "of the original domain and codomain"
             )
-        if image not in _category_homset(self.codomain(), domain, codomain):
+        if image not in _category_hom(self.codomain(), domain, codomain):
             raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
 
@@ -182,11 +216,11 @@ class Functor(SageObject):
     def __call__(self, value: Parent | Map) -> Parent | Map:
         return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
 
-    def then(self, other: "Functor") -> "CompositeFunctor":
+    def then(self, other: Functor) -> CompositeFunctor:
         r"""Return ``other ∘ self``."""
         return CompositeFunctor(self, other)
 
-    def factors(self) -> tuple["Functor", ...]:
+    def factors(self) -> tuple[Functor, ...]:
         return (self,)
 
     def is_faithful(self) -> bool:
@@ -362,7 +396,7 @@ class NaturalTransformation(SageObject):
     @cached_method(key=lambda self, obj: id(obj))
     def component(self, obj: Parent) -> Morphism:
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_homset,
+            _category_hom,
         )
 
         domain, codomain = self.source()(obj), self.target()(obj)
@@ -371,7 +405,7 @@ class NaturalTransformation(SageObject):
             raise TypeError("a natural-transformation component must be a morphism")
         if arrow.domain() is not domain or arrow.codomain() is not codomain:
             raise ValueError("a natural-transformation component has the wrong source or target")
-        if arrow not in _category_homset(self.source().codomain(), domain, codomain):
+        if arrow not in _category_hom(self.source().codomain(), domain, codomain):
             raise TypeError("the component is not a morphism of the common codomain category")
         return arrow
 

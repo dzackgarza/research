@@ -1,37 +1,37 @@
 r"""A represented category ``Cat`` of categories, functors, and natural transformations."""
 
+from __future__ import annotations
+
 from collections.abc import Iterable
 from typing import Any, overload
 
+from sage.categories.category import Category
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
+from sage.categories.objects import Objects as SageObjects
+from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.element import Element
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoryPacketMethods,
     CategoricalHomset,
+    CategoryPacketMethods,
     FixedHomCategory,
     HomCategoryConstruction,
     _category_homset,
 )
-from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
-from sage.categories.map import Map
-from sage.categories.morphism import Morphism
-from sage.misc.abstract_method import abstract_method
-from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.element import Element
-from sage.structure.parent import Parent
-from sage.structure.dynamic_class import DynamicMetaclass
-
-from sage.categories.objects import Objects as SageObjects
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategoryMixin
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
     IdentityFunctor,
     NaturalTransformation,
 )
-
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 class CategoryObject(Parent):
@@ -39,14 +39,14 @@ class CategoryObject(Parent):
 
     def __init__(
         self,
-        category_of_categories: "Cat",
+        category_of_categories: Cat,
         represented_category: Category,
     ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
         Parent.__init__(self, category=category_of_categories)
 
-    def category_of_categories(self) -> "Cat":
+    def category_of_categories(self) -> Cat:
         return self._category_of_categories
 
     def represented_category(self) -> Category:
@@ -59,7 +59,7 @@ class CategoryObject(Parent):
 class CategoryFunctorMorphism(Morphism):
     r"""A live functor regarded as a morphism in ``Cat``."""
 
-    def __init__(self, parent: "CategoryFunctorHomset", functor: Functor) -> None:
+    def __init__(self, parent: CategoryFunctorHomset, functor: Functor) -> None:
         Morphism.__init__(self, parent)
         if functor.domain() != self.domain().represented_category():
             raise ValueError("the functor has the wrong Cat-domain")
@@ -119,7 +119,7 @@ class CategoryFunctorHomset(CategoricalHomset):
 
     def __init__(
         self,
-        category_of_categories: "Cat",
+        category_of_categories: Cat,
         domain: CategoryObject,
         codomain: CategoryObject,
     ) -> None:
@@ -128,8 +128,29 @@ class CategoryFunctorHomset(CategoricalHomset):
             self, HomCategoryConstruction(category_of_categories), domain, codomain
         )
 
-    def category_of_categories(self) -> "Cat":
+    def category_of_categories(self) -> Cat:
         return self._category_of_categories
+
+    def functor_category(self) -> FunctorCategory:
+        return self.category_of_categories().Mor(self.domain(), self.codomain())
+
+    @property
+    def _HomCategory(self) -> type[NaturalTransformationHomCategoryConstruction]:
+        return NaturalTransformationHomCategoryConstruction
+
+    def super_categories(self):
+        # This runtime Hom-set represents exactly the functors and natural
+        # transformations of [C,D], not a discretization of those functors.
+        return [self.functor_category()]
+
+    def object(self, functor: Functor | CategoryFunctorMorphism) -> Parent:
+        return self.functor_category().object(functor)
+
+    def _hom_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> Parent:
+        return self.functor_category()._hom_endpoint(obj)
+
+    def __contains__(self, candidate: Any) -> bool:
+        return candidate in self.functor_category()
 
     def _element_constructor_(self, functor):
         if isinstance(functor, CategoryFunctorMorphism):
@@ -149,14 +170,14 @@ class CategoryFunctorHomset(CategoricalHomset):
 class FunctorHomCategoryConstruction(HomCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
-    def fixed_category_class(self) -> type["FunctorCategory"]:
+    def fixed_category_class(self) -> type[FunctorCategory]:
         return FunctorCategory
 
     def Of(
         self,
         domain: Category | CategoryObject,
         codomain: Category | CategoryObject,
-    ) -> "FunctorCategory":
+    ) -> FunctorCategory:
         category = self.base_category()
         source, target = category.object(domain), category.object(codomain)
         cached = self._cached_between(source, target)
@@ -236,7 +257,7 @@ class Cat(CategoryPacketMethods, Category):
         self._arrows[key] = result
         return result
 
-    def Mor(self, domain: Category, codomain: Category) -> "FunctorCategory":
+    def Mor(self, domain: Category, codomain: Category) -> FunctorCategory:
         return self.HomCategory().Of(domain, codomain)
 
     def identity(self, category: Category) -> CategoryFunctorMorphism:
@@ -251,15 +272,35 @@ class Cat(CategoryPacketMethods, Category):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
-    class ParentMethods(CategoryPacketMethods):
+    class ParentMethods:
         r"""What a category can do, as an object of ``Cat``.
 
-        One home for the operations on categories.  Every owned category
-        receives them through ``subcategory_class``, which
-        ``CatConstructionsMixin`` on the owned root builds with this class
-        among its bases -- not through parenthood, which states separately
-        that a category is an object of ``Cat``.
+        Sage requires a nested ``ParentMethods`` provider to be a plain class:
+        inheriting another implementation class makes category construction
+        emit ``ParentMethods should not have a super class`` in a fresh session.
+        The Hom-packet operations below are therefore aliases of their single
+        implementation in :class:`CategoryPacketMethods`, not a second
+        implementation and not a superclass of this provider.
+
+        Every owned category receives this provider through
+        ``subcategory_class``; ``CatConstructionsMixin`` on the owned root
+        carries it through joins and functorial constructions.
         """
+
+        _hom_endpoint = CategoryPacketMethods._hom_endpoint
+        _category_packet = CategoryPacketMethods._category_packet
+        HomCategory = CategoryPacketMethods.HomCategory
+        EndCategory = CategoryPacketMethods.EndCategory
+        MonoCategory = CategoryPacketMethods.MonoCategory
+        EpiCategory = CategoryPacketMethods.EpiCategory
+        IsoCategory = CategoryPacketMethods.IsoCategory
+        AutCategory = CategoryPacketMethods.AutCategory
+        Mor = CategoryPacketMethods.Mor
+        End = CategoryPacketMethods.End
+        Mono = CategoryPacketMethods.Mono
+        Epi = CategoryPacketMethods.Epi
+        Iso = CategoryPacketMethods.Iso
+        Aut = CategoryPacketMethods.Aut
 
         @property
         def ObjectType(self) -> type[Parent]:
@@ -284,8 +325,16 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's represented product of two objects."""
 
         @abstract_method(optional=True)
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected product with its discrete diagram and universal cone."""
+
+        @abstract_method(optional=True)
         def _categorical_coproduct(self, left: Parent, right: Parent) -> Parent:
             r"""Return this category's represented coproduct of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_coproduct_construction(self, factors):
+            r"""Return the selected coproduct with its discrete diagram and universal cocone."""
 
         @abstract_method(optional=True)
         def _categorical_pushout(
@@ -312,12 +361,28 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's represented equalizer of parallel arrows."""
 
         @abstract_method(optional=True)
+        def _categorical_equalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return the selected equalizer with its diagram, cone and factorization."""
+
+        @abstract_method(optional=True)
         def _categorical_coequalizer(
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
         ) -> Parent:
             r"""Return this category's represented coequalizer of parallel arrows."""
+
+        @abstract_method(optional=True)
+        def _categorical_coequalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return the selected coequalizer with its diagram, cocone and factorization."""
 
         @abstract_method(optional=True)
         def _categorical_equalizer_family(self, morphisms: IndexedFamily) -> Parent:
@@ -389,9 +454,10 @@ class Cat(CategoryPacketMethods, Category):
                 "a span has one common domain"
             )
             total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
+            labels = total.index_set()
             return self.coequalizer(
-                total.left_injection() * left_leg,
-                total.right_injection() * right_leg,
+                total.injection(labels(0)) * left_leg,
+                total.injection(labels(1)) * right_leg,
             )
 
         def opposite(self) -> Category:
@@ -437,12 +503,34 @@ class Cat(CategoryPacketMethods, Category):
 
             return SubobjectCategory(self, base_object)
         def SuperobjectCategory(self, base_object: Parent) -> Category:
-            r"""Return the category of superobjects of ``base_object`` here."""
+            r"""Return the category of monic superobjects of ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
                 SuperobjectCategory,
             )
 
             return SuperobjectCategory(self, base_object)
+        def CoveringObjectCategory(self, base_object: Parent) -> Category:
+            r"""Return the category of epic objects covering ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CoveringObjectCategory,
+            )
+
+            return CoveringObjectCategory(self, base_object)
+        def CoveredObjectCategory(self, base_object: Parent) -> Category:
+            r"""Return the category of epic quotients covered by ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CoveredObjectCategory,
+            )
+
+            return CoveredObjectCategory(self, base_object)
+        def Subobjects(self, base_object: Parent) -> Category:
+            return self.SubobjectCategory(base_object)
+        def Superobjects(self, base_object: Parent) -> Category:
+            return self.SuperobjectCategory(base_object)
+        def CoveringObjects(self, base_object: Parent) -> Category:
+            return self.CoveringObjectCategory(base_object)
+        def CoveredObjects(self, base_object: Parent) -> Category:
+            return self.CoveredObjectCategory(base_object)
 
     def ArrowCategory(self) -> Category:
         r"""Return the arrow category of ``Cat``.
@@ -478,7 +566,26 @@ class Cat(CategoryPacketMethods, Category):
         """
         members = tuple(categories)
         assert members, "the meet of no categories is not represented"
-        return Category.join(members)
+
+        # ``Category.join`` builds one dynamic class from every supplied
+        # branch.  A strict supercategory contributes no new mathematics to
+        # an intersection once one of its subcategories is already present,
+        # and retaining both can make Sage linearize the same inherited
+        # method provider twice.  Remove only strict supercategories; leave
+        # incomparable or merely equivalent categories intact.
+        reduced = []
+        for member in members:
+            if any(
+                other is not member
+                and other.is_subcategory(member)
+                and not member.is_subcategory(other)
+                for other in members
+            ):
+                continue
+            if all(member is not known for known in reduced):
+                reduced.append(member)
+
+        return reduced[0] if len(reduced) == 1 else Category.join(tuple(reduced))
 
     def join(self, categories: Iterable[Category]) -> Category:
         r"""Return the smallest category containing all of ``categories``.
@@ -531,7 +638,7 @@ class NaturalTransformationMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "NaturalTransformationHomset",
+        parent: NaturalTransformationHomset,
         transformation: NaturalTransformation,
     ) -> None:
         Morphism.__init__(self, parent)
@@ -599,7 +706,7 @@ class NaturalTransformationHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def functor_category(self) -> "FunctorCategory":
+    def functor_category(self) -> FunctorCategory:
         return self.base_category()
 
     def source(self) -> Functor:
@@ -641,13 +748,14 @@ class NaturalTransformationHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = NaturalTransformationHomset
 
 
-class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
+class FunctorCategory(FixedHomCategory):
     r"""The category ``[C,D]`` of represented functors and natural transformations.
 
     Unverified construction specimens: all Cat Hom entrances select one
     category, whose morphisms are actual natural transformations::
 
         sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, NaturalTransformations
+        sage: from dzack_research.preamble.categories.abstract_categories.hom_categories import category_packet
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: points = finite_ordered_set(("a", "b"))
         sage: category = DiscreteCategory(points)
@@ -665,12 +773,18 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
         sage: transformations = NaturalTransformations(identity, identity)
         sage: transformations is hom.Mor(hom(identity), hom(identity))
         True
+        sage: transformations is hom.arrow_set().two_hom(identity, identity)
+        True
+        sage: transformations is category_packet(hom.arrow_set()).Homs().Of(identity, identity)
+        True
         sage: eta = transformations(lambda obj: category.Mor(obj, obj).identity())
         sage: (eta * eta).component(category("a")) == eta.component(category("a"))
         True
         sage: transformations.identity() * eta is eta
         True
         sage: eta * transformations.identity() is eta
+        True
+        sage: IdentityFunctor(hom)(eta) is eta
         True
         sage: hom.identity_2(cat.arrow(identity)).parent() is transformations
         True
@@ -785,32 +899,12 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
         return f"Functor category [{self.domain_category()}, {self.codomain_category()}]"
 
 
-class NaturalIsomorphism:
-    r"""A selected pair of mutually inverse natural transformations."""
-
-    def __init__(self, forward: Morphism, inverse: Morphism) -> None:
-        if forward.domain() is not inverse.codomain() or forward.codomain() is not inverse.domain():
-            raise ValueError("inverse natural transformations have reversed endpoints")
-        self._forward = forward
-        self._inverse = inverse
-
-    def forward(self) -> Morphism:
-        return self._forward
-
-    def inverse(self) -> Morphism:
-        return self._inverse
-
-    def component(self, obj: Parent) -> Morphism:
-        return self.forward().component(obj)
-
-
 __all__ = [
     "Cat",
     "CategoryFunctorHomset",
     "CategoryFunctorMorphism",
     "CategoryObject",
     "FunctorCategory",
-    "NaturalIsomorphism",
     "NaturalTransformationHomset",
     "NaturalTransformationMorphism",
 ]

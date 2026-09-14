@@ -10,6 +10,7 @@ whole curve of them, which is why an empty ``X^G`` never implies freeness.
 
 from dzack_research.preamble.all import (
     GF,
+    AffineGSchemes,
     GObjects,
     Groups,
     PolynomialRing,
@@ -28,7 +29,7 @@ def _translation_of_the_affine_line():
     scheme = Spec(algebra)
     translation = SpecFunctor(field)(algebra.Mor(algebra)({"x": x + algebra.one()}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(field))(
+    acted = AffineGSchemes(group, field)(
         scheme,
         lambda element: identity if element == group.one() else translation,
     )
@@ -74,7 +75,7 @@ def _klein_four_on_the_affine_plane():
         generators[1]: shear,
         generators[0] * generators[1]: translation * shear,
     }
-    acted = GObjects(group, Schemes(field))(scheme, lambda element: images[element])
+    acted = AffineGSchemes(group, field)(scheme, lambda element: images[element])
     return field, group, algebra, x, y, generators, acted
 
 
@@ -134,3 +135,31 @@ def test_restriction_along_a_subgroup_inclusion_keeps_the_scheme_and_the_action(
     image = restriction(equivariant_identity)
     assert image.domain() is restricted
     assert image.underlying_arrow().coordinate_algebra_morphism()(x) == x
+
+
+def test_scheme_theoretic_fixed_locus_retains_nonreduced_structure() -> None:
+    r"""In characteristic two, ``x -> x+e^2`` fixes the double ``e=0`` thickening."""
+    field = GF(2)
+    group = Groups.C(2)
+    polynomial = PolynomialRing(field, ("x", "e"))
+    x = polynomial.algebra_generator("x")
+    e = polynomial.algebra_generator("e")
+    algebra = polynomial.quotient_ring(polynomial.ideal(e**3))
+    x = algebra(x)
+    e = algebra(e)
+    scheme = Spec(algebra)
+    involution = SpecFunctor(field)(
+        algebra.Mor(algebra)({"x": x + e**2, "e": e})
+    )
+    identity = scheme.categorical_identity_morphism()
+    acted = AffineGSchemes(group, field)(
+        scheme,
+        lambda element: identity if element == group.one() else involution,
+    )
+    fixed = acted.fixed_subscheme()
+    fixed_algebra = fixed.coordinate_algebra()
+    fixed_e = fixed_algebra.algebra_generator("e")
+
+    assert acted.fixed_ideal() == algebra.ideal(e**2)
+    assert fixed_e != fixed_algebra.zero()
+    assert fixed_e**2 == fixed_algebra.zero()

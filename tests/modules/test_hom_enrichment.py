@@ -1,4 +1,6 @@
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
@@ -6,17 +8,15 @@ from dzack_research.preamble.all import (
     InternalHom,
     InternalHomModules,
     Modules,
-    ZZ,
-    module_homset,
-    QQ,
+    ProjectiveModules,
     SymmetricAlgebraOn,
+    module_homset,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.modules import FreeModuleOn
-from dzack_research.preamble.categories.sets import NN
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
 def test_module_hom_is_the_internal_hom_module() -> None:
@@ -32,6 +32,8 @@ def test_module_hom_is_the_internal_hom_module() -> None:
     assert internal_hom in Modules(ZZ)
     assert internal_hom in InternalHomModules(ZZ)
     assert internal_hom in FinitelyPresentedModules(ZZ)
+    assert internal_hom in ProjectiveModules(ZZ)
+    assert internal_hom.is_projective() is True
 
     f = internal_hom({"e": target.module_generator("f")})
     e = source.module_generator("e")

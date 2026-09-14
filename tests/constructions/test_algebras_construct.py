@@ -10,24 +10,30 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-
 # ---------------------------------------------------------------------------
 # Free, symmetric, exterior and tensor algebras.
 # ---------------------------------------------------------------------------
 
 
 def test_free_algebra_over_every_commutative_ring(commutative_ring) -> None:
+    r"""``FreeAlgebraOn(R,S)`` is the free *commutative* algebra ``R[S]``.
+
+    The user-settled constructor contract is ``R[S] = Sym(F_R(S))``; the
+    noncommutative free associative construction is ``TensorAlgebraOn``.
+    """
     ring = commutative_ring
     free = FreeAlgebraOn(ring, ("a", "b"))
+    symmetric = SymmetricAlgebraOn(ring, ("a", "b"))
     a = free.algebra_generator("a")
     b = free.algebra_generator("b")
 
+    assert free is symmetric
     assert free in Algebras(ring)
     assert free in FreeAlgebras(ring)
-    assert free not in CommutativeAlgebras(ring)
-    assert free not in CommutativeRings()
-    assert a * b != b * a
-    assert (a + b) * (a + b) == a * a + a * b + b * a + b * b
+    assert free in CommutativeAlgebras(ring)
+    assert free in CommutativeRings()
+    assert a * b == b * a
+    assert (a + b) * (a + b) == a * a + ring(2) * a * b + b * b
     assert free.algebra_generators().cardinality() == 2
 
 
@@ -111,14 +117,20 @@ def test_matrix_algebra_is_a_lie_algebra_under_the_commutator(commutative_ring) 
     matrices = MatrixSpace(ring, 2)
     e01 = matrices.matrix_unit(0, 1)
     e10 = matrices.matrix_unit(1, 0)
+    commutator = AssociativeAlgebras(ring).commutator_lie_algebra()(matrices)
+    module = commutator.underlying_module()
+    left = module(e01)
+    right = module(e10)
 
-    assert matrices in CommutatorLieAlgebras(ring)
-    assert matrices in LieAlgebras(ring)
-    assert matrices.bracket(e01, e10) == e01 * e10 - e10 * e01
-    assert matrices.bracket(e01, e01) == matrices.zero()
-    h = matrices.bracket(e01, e10)
-    assert matrices.bracket(h, e01) == 2 * e01
-    assert matrices.bracket(h, e10) == -2 * e10
+    assert commutator is not matrices
+    assert commutator in CommutatorLieAlgebras(ring)
+    assert commutator in LieAlgebras(ring)
+    assert commutator in Algebras(ring).Lie()
+    assert commutator.bracket(left, right) == module(e01 * e10 - e10 * e01)
+    assert commutator.bracket(left, left) == module.zero()
+    h = commutator.bracket(left, right)
+    assert commutator.bracket(h, left) == module.scalar_multiple(ring(2), left)
+    assert commutator.bracket(h, right) == module.scalar_multiple(ring(-2), right)
 
 
 # ---------------------------------------------------------------------------

@@ -35,6 +35,7 @@ def test_the_augmentation_over_the_integers_lands_in_the_session_integers() -> N
     augmentation = algebra.augmentation()
 
     assert augmentation.codomain() is ZZ
+    assert algebra(ZZ(2)) == ZZ(2) * algebra.one()
     assert augmentation(sum(algebra(g) for g in symmetric)) == 6
     assert augmentation(algebra(symmetric((1, 2))) - algebra.one()) == 0
 

@@ -1,0 +1,14 @@
+r"""Generic constructions choose their common mathematical owner through ``Cat``."""
+
+from dzack_research.preamble.all import ZZ, Biproduct, FreeModule, Lattices, Modules
+
+
+def test_biproduct_of_formed_and_plain_modules_dispatches_to_the_common_module_owner() -> None:
+    formed = Lattices(ZZ)("A2")
+    plain = FreeModule(ZZ, 1)
+
+    direct_sum = Biproduct(formed, plain)
+
+    assert direct_sum in Modules(ZZ)
+    assert direct_sum.module_rank() == 3
+    assert direct_sum not in Lattices(ZZ)

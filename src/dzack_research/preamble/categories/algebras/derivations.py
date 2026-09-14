@@ -7,26 +7,18 @@ algebra generators and evaluated by the formal chain rule on a selected
 presentation representative.
 """
 
+import operator
+
+from sage.categories.action import Action
+from sage.categories.morphism import Morphism, SetMorphism
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.structure.element import ModuleElement
+
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
-)
-from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.classcall_metaclass import typecall
-from sage.categories.category import Category
-from sage.categories.action import Action
-from sage.categories.morphism import Morphism, SetMorphism
-from sage.structure.element import ModuleElement
-import operator
-
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    LocalizationRings,
-    _engine_element,
-    _engine_ring,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
 )
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
@@ -36,10 +28,19 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    ModuleSubobjects,
     Modules,
+    ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     restrict_scalars,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
+    _engine_element,
+    _engine_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
 )
 
 
@@ -84,7 +85,7 @@ def _differentiate_representative(algebra, representative, variables):
             target(source.derivative(engine_variable))
         )
 
-    return finite_ordered_image(variables, derivative)
+    return tuple(derivative(variable) for variable in variables)
 
 
 class Derivation(ModuleElement):
@@ -348,7 +349,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         )
         self._generator_labels = labels
 
-        base = algebra.base_ring()
+        algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
         self._restricted_target = restricted_target
         from dzack_research.preamble.categories.algebras.kahler_differentials import (
@@ -449,6 +450,10 @@ class DerivationSpace(RestrictedHomCategoryParent):
         classifiers = self._kahler_classifier_module()
         return module_coefficients(self._to_kahler_classifier(derivation), classifiers)
 
+    def __call__(self, generator_images):
+        r"""Construct a derivation from its generator images, not an arrow object."""
+        return self._element_constructor_(generator_images)
+
     def _element_constructor_(self, generator_images):
         if isinstance(generator_images, Derivation) and generator_images.parent() is self:
             return generator_images
@@ -466,7 +471,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 label: generator_images(self.algebra().algebra_generator(label)).underlying_element()
                 for label in self.generator_labels()
             }
-        return self.element_class(self, generator_images)
+        return Derivation(self, generator_images)
 
     def zero(self):
         return self({label: self.target_module().zero() for label in self.generator_labels()})
@@ -598,34 +603,42 @@ class GradedDerivation(ModuleElement):
 
     def check_on_generators(self) -> bool:
         r"""Check degree and graded Leibniz on a selected finite algebra framing."""
-        labels = self.algebra().algebra_generating_set()
+        algebra = self.algebra()
+        target = self.target()
+        labels = algebra.algebra_generating_set()
         for label in labels:
-            generator = self.algebra().algebra_generator(label)
-            image = self(generator)
-            if (
-                generator.is_homogeneous()
-                and image != self.target().zero()
-                and (
-                    not image.is_homogeneous()
-                    or image.degree()
-                    != (
-                    generator.degree() + self.degree_shift()
-                    )
-                )
-            ):
+            generator = algebra.algebra_generator(label)
+            if generator == algebra.zero():
+                continue
+            try:
+                generator_degree = algebra.homogeneous_degree(generator)
+            except (ValueError, NotImplementedError):
                 return False
+            image = self(generator)
+            if image != target.zero():
+                try:
+                    image_degree = target.homogeneous_degree(image)
+                except (ValueError, NotImplementedError):
+                    return False
+                if image_degree != generator_degree + self.degree_shift():
+                    return False
         for left_label in labels:
-            left = self.algebra().algebra_generator(left_label)
-            if not left.is_homogeneous():
+            left = algebra.algebra_generator(left_label)
+            if left == algebra.zero():
+                continue
+            try:
+                left_degree = algebra.homogeneous_degree(left)
+            except (ValueError, NotImplementedError):
                 return False
             for right_label in labels:
-                right = self.algebra().algebra_generator(right_label)
+                right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
-                if (self.degree_shift() * left.degree()) % 2:
+                if (self.degree_shift() * left_degree) % 2:
                     signed_second = -signed_second
                 if self(left * right) != self(left) * right + signed_second:
                     return False
         return True
+
 
 
 class GradedDerivationSpace(RestrictedHomCategoryParent):
@@ -662,7 +675,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
             family,
             algebra,
             target,
-            category=Category.join((Modules(ring), ModuleSubobjects(ring))),
+            category=Cat().meet((Modules(ring), ModuleSubobjects(ring))),
         )
 
     @cached_method
@@ -687,6 +700,10 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     def degree_shift(self):
         return self._shift
 
+    def __call__(self, function):
+        r"""Construct a graded derivation, not an arrow object."""
+        return self._element_constructor_(function)
+
     def _element_constructor_(self, function):
         if isinstance(function, GradedDerivation) and function.parent() is self:
             return function
@@ -701,11 +718,8 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
                 )
-            return self.element_class(self, lambda element: derivation(element))
-        return self.element_class(self, function)
-
-    def inclusion(self):
-        return self._preamble_inclusion
+            return GradedDerivation(self, lambda element: derivation(element))
+        return GradedDerivation(self, function)
 
     def zero(self):
         return self.elementwise(lambda _element: self.target().zero())
@@ -713,7 +727,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     def elementwise(self, function):
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
-        return self.element_class(self, function)
+        return GradedDerivation(self, function)
 
     def scalar_multiple(self, scalar, derivation):
         if derivation.parent() is not self:

@@ -1,25 +1,23 @@
 r"""Finite-support direct sums of a represented family of graded modules."""
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any
 
-from sage.categories.category import Category
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
-)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import NN, CoproductOfFamily
 from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
-from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 class GradedDirectSumElement(ModuleElement):
@@ -82,6 +80,20 @@ class GradedDirectSumElement(ModuleElement):
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
+    def _rmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def __rmul__(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _acted_upon_(self, actor, self_on_left):
+        _ = self_on_left
+        try:
+            scalar = self.parent().base_ring()(actor)
+        except (TypeError, ValueError):
+            return None
+        return self.parent().scalar_multiple(scalar, self)
+
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
@@ -108,7 +120,13 @@ class GradedDirectSumElement(ModuleElement):
 
 
 class GradedDirectSumModule(Parent):
-    r"""The module \(\bigoplus_{d\geq0} M_d\) with finite-support elements."""
+    r"""A represented graded direct sum with finite-support elements.
+
+    The degree set is part of the defining data.  It defaults to ``NN`` for
+    the ordinary nonnegative graded constructions, but callers such as
+    cochain complexes may supply another owned indexing set, for example the
+    owned integers.
+    """
 
     Element = GradedDirectSumElement
 
@@ -122,6 +140,7 @@ class GradedDirectSumModule(Parent):
         from_realization=None,
         degree_index_set=None,
         extra_categories=(),
+        extra_construction_data=None,
     ) -> None:
         self._base_ring = _owned_ring(base_ring)
         self._preamble_base_ring = self._base_ring
@@ -131,6 +150,8 @@ class GradedDirectSumModule(Parent):
         self._realized_object = realized_object
         self._from_realization = from_realization
         self._degree_index_set = NN if degree_index_set is None else degree_index_set
+        for key, value in dict(extra_construction_data or {}).items():
+            setattr(self, f"_preamble_{key}", value)
         self._pieces: dict[int, Any] = {}
         self._indices = None
         categories = [
@@ -141,7 +162,7 @@ class GradedDirectSumModule(Parent):
         Parent.__init__(
             self,
             base=_engine_ring(self._base_ring),
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(categories),
         )
         realize_owned_category(self)
 
@@ -149,9 +170,13 @@ class GradedDirectSumModule(Parent):
         return self._base_ring
 
     def graded_piece(self, degree):
-        degree = int(degree)
-        if degree < 0:
-            raise ValueError("a graded degree is nonnegative")
+        try:
+            normalized_degree = self.degree_index_set()(degree)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                f"{degree} is not a degree of {self}"
+            ) from error
+        degree = int(normalized_degree)
         cached = self._pieces.get(degree)
         if cached is not None:
             return cached
@@ -197,6 +222,11 @@ class GradedDirectSumModule(Parent):
 
     def from_component(self, degree, component):
         return self.element_class(self, {int(degree): component})
+
+    def from_graded_piece(self, degree, component):
+        r"""Include one homogeneous piece into the represented direct sum."""
+        piece = self.graded_piece(degree)
+        return self.from_component(degree, piece(component))
 
     def from_components(self, components):
         return self.element_class(self, components)

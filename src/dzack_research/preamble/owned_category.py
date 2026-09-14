@@ -60,8 +60,11 @@ Two measurements fixed this shape:
 from __future__ import annotations
 
 import copyreg
+import hashlib
 from abc import ABCMeta
 from collections.abc import Hashable
+from dataclasses import dataclass
+from inspect import Parameter, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
@@ -180,6 +183,148 @@ def _element_class_of(category: Category) -> type:
 
 def _morphism_class_of(category: Category) -> type:
     return category.morphism_class
+
+
+def _declared_category_class(category: Category) -> type:
+    r"""Return the source class declaring ``category``, not Sage's dynamic wrapper."""
+    category_type = type(category)
+    if category_type.__name__.endswith("_with_category"):
+        return category_type.__base__
+    return category_type
+
+
+def _category_graph_signature(category: Category, memo=None):
+    r"""Return a session-independent signature of one category graph node.
+
+    Comparison ordering is an implementation concern of the category graph, so
+    the signature records exactly that graph: the declaring category class and
+    the immediate supercategories.  It deliberately does *not* use ``repr`` or
+    Sage's ``_cmp_key``.  Parameter values that induce the same category graph
+    therefore share a signature, matching ``CategoryWithParameters``' named-
+    class optimization; parameter regimes with different supercategory graphs
+    do not.
+    """
+    if memo is None:
+        memo = {}
+    identity = id(category)
+    cached = memo.get(identity)
+    if cached is not None:
+        return cached
+    declaring = _declared_category_class(category)
+    # Install a temporary acyclic marker only to make an accidental category
+    # graph cycle fail here rather than recurse indefinitely.  Sage category
+    # graphs are DAGs, so encountering it is a structural defect.
+    marker = ("<category-cycle>", declaring.__module__, declaring.__qualname__)
+    memo[identity] = marker
+    supers = tuple(
+        sorted(
+            (
+                _category_graph_signature(super_category, memo)
+                for super_category in category._super_categories
+            ),
+            key=repr,
+        )
+    )
+    signature = (declaring.__module__, declaring.__qualname__, supers)
+    memo[identity] = signature
+    return signature
+
+
+def _category_graph_depth(category: Category, memo=None) -> int:
+    r"""Return the depth of ``category`` in the immediate-supercategory DAG."""
+    if memo is None:
+        memo = {}
+    identity = id(category)
+    cached = memo.get(identity)
+    if cached is not None:
+        return cached
+    supers = tuple(category._super_categories)
+    if not supers:
+        memo[identity] = 0
+        return 0
+    depth = 1 + max(_category_graph_depth(super_category, memo) for super_category in supers)
+    memo[identity] = depth
+    return depth
+
+
+
+
+def _category_parameter_signature(category: Category):
+    r"""Return structural parameter data needed to order category instances.
+
+    Named implementation classes may legitimately be shared by categories with
+    the same method graph, but C3 category merging still needs a strict order
+    on distinct semantic parameters.  Hom families are parameterized by their
+    base category, while categories over scalars expose ``base``.  Record those
+    parameters structurally without using object identity or ``repr``.
+    """
+    for accessor in ("base_category", "base"):
+        method = getattr(category, accessor, None)
+        if not callable(method):
+            continue
+        try:
+            parameter = method()
+        except (AttributeError, TypeError, ValueError):
+            continue
+        if parameter is category:
+            continue
+        if isinstance(parameter, Category):
+            return (accessor, _category_graph_signature(parameter))
+        parameter_type = type(parameter)
+        signature = (accessor, parameter_type.__module__, parameter_type.__qualname__)
+        engine = getattr(parameter, "_engine", None)
+        if engine is not None:
+            engine_type = type(engine)
+            signature += ("engine", engine_type.__module__, engine_type.__qualname__)
+        return signature
+    return ()
+
+def _stable_signature_integer(signature) -> int:
+    r"""Encode a structural category signature as a deterministic positive integer."""
+    digest = hashlib.blake2b(repr(signature).encode("utf-8"), digest_size=16).digest()
+    return int.from_bytes(digest, "big")
+
+
+class _OwnedCategoryComparisonKey:
+    r"""Deterministic ``_cmp_key`` for owned categories.
+
+    Sage's native comparison key is ``(flags, creation_counter)``.  The flags
+    carry semantic ordering conventions, but the counter makes sibling order a
+    function of which category a session happened to touch first.  Owned
+    categories retain Sage's flags and replace only that counter by a structural
+    integer.  Graph depth occupies the high bits, so a strict owned subcategory
+    always compares below its owned supercategory; a digest of the category
+    graph resolves siblings reproducibly.
+
+    This is a non-data descriptor.  Its first use writes the resulting tuple to
+    the category instance, exactly as Sage's Cython descriptor does, after which
+    normal instance lookup is the fast path.
+    """
+
+    _DEPTH_SHIFT = 160
+    _OWNED_FLOOR = 1 << 240
+
+    def __get__(self, category: Category | None, owner=None):
+        if category is None:
+            return self
+        # Ask Sage's original descriptor for the flags.  It temporarily stores
+        # its session counter on the instance; the assignment below immediately
+        # replaces that value with the owned structural key.
+        native_descriptor = Category.__dict__["_cmp_key"]
+        flags, _session_counter = native_descriptor.__get__(category, type(category))
+        depth = _category_graph_depth(category)
+        signature = (
+            _category_graph_signature(category),
+            _category_parameter_signature(category),
+        )
+        structural = (
+            self._OWNED_FLOOR
+            + (depth << self._DEPTH_SHIFT)
+            + _stable_signature_integer(signature)
+        )
+        result = (flags, structural)
+        category._cmp_key = result
+        return result
 
 
 class CatConstructionsMixin:
@@ -372,6 +517,14 @@ class OwnedCategoryMixin(CatConstructionsMixin):
 
     _TIED_NAMED_CLASSES = frozenset(("parent_class", "element_class", "morphism_class"))
 
+    # Sage's default key ends in a global creation counter.  Owned categories
+    # instead derive that ordering component from their declared graph, so class
+    # construction is independent of which branch a session happened to touch
+    # first.  The descriptor is inherited by every owned category shape in
+    # ``owned_category_bases.py`` and intentionally does not affect Sage-native
+    # categories.
+    _cmp_key = _OwnedCategoryComparisonKey()
+
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
         "ElementMethods": ("ElementMethods",),
@@ -518,6 +671,201 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         return result
 
 
+@dataclass(frozen=True)
+class ConstructionParameter:
+    r"""One named datum consumed by one level of an owned constructor chain."""
+
+    name: str
+    provider: type
+    kind: str
+    required: bool
+    default: object | None
+    annotation: object | None
+
+
+@dataclass(frozen=True)
+class ConstructionContract:
+    r"""The discoverable constructor contract of one owned category.
+
+    Cooperative constructors intentionally pass unknown data onward through
+    ``**rest``.  The contract therefore records both the named parameters each
+    preamble provider consumes and the providers that still leave an open
+    variadic boundary.  Duplicate parameter names are retained when two
+    mathematical levels independently consume the same spelling.
+    """
+
+    owner: object
+    parameters: tuple[ConstructionParameter, ...]
+    variadic_providers: tuple[type, ...]
+    opaque_providers: tuple[type, ...]
+    hook_providers: tuple[type, ...]
+
+    def named(self, name: str) -> tuple[ConstructionParameter, ...]:
+        return tuple(parameter for parameter in self.parameters if parameter.name == name)
+
+    def derived_names(self) -> frozenset[str]:
+        r"""Return lower-level constructor data supplied by a stronger provider.
+
+        A specialization may take one mathematical datum and compute the data
+        consumed by its immediate general construction before calling
+        ``super().__init__``.  Those lower-level names remain visible in the
+        full contract, but they are not additional obligations on the public
+        caller.
+        """
+        names = set()
+        for provider in {parameter.provider for parameter in self.parameters}:
+            names.update(getattr(provider, "_derived_construction_parameters", ()))
+        return frozenset(names)
+
+    def required_names(self) -> frozenset[str]:
+        required = frozenset(
+            parameter.name for parameter in self.parameters if parameter.required
+        )
+        return required - self.derived_names()
+
+    def optional_names(self) -> frozenset[str]:
+        return frozenset(parameter.name for parameter in self.parameters if not parameter.required)
+
+    def is_open(self) -> bool:
+        return bool(self.variadic_providers or self.opaque_providers)
+
+    def has_refinement_hooks(self) -> bool:
+        return bool(self.hook_providers)
+
+    def validate(self, data) -> None:
+        r"""Validate one supplied construction datum against this contract.
+
+        Every named required parameter discovered from an owned constructor
+        level must be supplied before the host runtime is entered.  Unknown
+        names are rejected only when the contract is closed: a provider with
+        ``**rest`` or an opaque signature deliberately keeps an open boundary
+        for data consumed by a higher runtime level.
+        """
+        supplied = frozenset(data)
+        missing = self.required_names() - supplied
+        if missing:
+            missing_names = ", ".join(sorted(missing))
+            raise TypeError(
+                f"{self.owner} construction is missing required data: {missing_names}"
+            )
+        if self.is_open():
+            return
+        declared = self.required_names() | self.optional_names()
+        unexpected = supplied - declared
+        if unexpected:
+            unexpected_names = ", ".join(sorted(unexpected))
+            raise TypeError(
+                f"{self.owner} construction received undeclared data: {unexpected_names}"
+            )
+
+
+def _construction_contract_from_type(
+    owner,
+    implementation_type: type,
+    *,
+    owned_object_chain: bool = False,
+) -> ConstructionContract:
+    r"""Discover named constructor data contributed by one implementation MRO.
+
+    Object construction is delimited structurally: every implementation level
+    before :class:`OwnedParent` belongs to the owned category chain, regardless
+    of the Python module where a concrete owned category is declared.  This is
+    what makes the contract a property of the mathematical owner rather than a
+    package-layout convention.  Other callers retain the narrower preamble
+    module boundary used for fixed Hom parents.
+    """
+    parameters: list[ConstructionParameter] = []
+    variadic: list[type] = []
+    opaque: list[type] = []
+    hooks: list[type] = []
+    for provider in implementation_type.__mro__:
+        if owned_object_chain:
+            if provider is OwnedParent:
+                break
+        elif not provider.__module__.startswith("dzack_research.preamble"):
+            continue
+        if "__init_extra__" in provider.__dict__:
+            hooks.append(provider)
+        initializer = provider.__dict__.get("__init__")
+        if initializer is None:
+            continue
+        try:
+            provider_signature = signature(initializer)
+        except (TypeError, ValueError):
+            opaque.append(provider)
+            continue
+        for parameter in provider_signature.parameters.values():
+            if parameter.name == "self":
+                continue
+            if parameter.kind is Parameter.VAR_KEYWORD:
+                if provider is OwnedParent:
+                    # ``OwnedParent`` is the terminal host-runtime sink of the
+                    # cooperative chain, not a mathematical constructor level.
+                    # Counting its ``**rest`` would make every owned contract
+                    # permanently open and would prevent object_of from ever
+                    # detecting undeclared public construction data.
+                    continue
+                variadic.append(provider)
+                continue
+            if parameter.kind is Parameter.VAR_POSITIONAL:
+                opaque.append(provider)
+                continue
+            if parameter.name == "category":
+                continue
+            has_default = parameter.default is not Parameter.empty
+            annotation = None if parameter.annotation is Parameter.empty else parameter.annotation
+            default = parameter.default if has_default else None
+            parameters.append(
+                ConstructionParameter(
+                    name=parameter.name,
+                    provider=provider,
+                    kind=parameter.kind.name,
+                    required=not has_default,
+                    default=default,
+                    annotation=annotation,
+                )
+            )
+    return ConstructionContract(
+        owner=owner,
+        parameters=tuple(parameters),
+        variadic_providers=tuple(dict.fromkeys(variadic)),
+        opaque_providers=tuple(dict.fromkeys(opaque)),
+        hook_providers=tuple(dict.fromkeys(hooks)),
+    )
+
+
+def construction_contract(category: Category) -> ConstructionContract:
+    r"""Discover the defining data contributed by ``category.ObjectType``'s MRO.
+
+    Only constructors declared in the preamble are part of this mathematical
+    contract.  Sage runtime bases remain implementation substrate.  A provider
+    whose signature cannot be inspected is retained explicitly as opaque; a
+    provider with ``**rest`` is retained as variadic.  Discovery never changes
+    construction behavior and never interprets an omitted name as optional.
+    """
+    return _construction_contract_from_type(
+        category,
+        category.ObjectType,
+        owned_object_chain=True,
+    )
+
+
+def hom_construction_contract(
+    category: Category,
+    domain: Parent,
+    codomain: Parent,
+) -> ConstructionContract:
+    r"""Discover how the fixed Hom parent ``Hom_category(domain,codomain)`` is built.
+
+    This is the contract of the selected Hom object itself: its Hom family and
+    endpoints.  It is deliberately distinct from :func:`construction_contract`
+    on the fixed Hom category, which describes construction of an arrow *in*
+    that Hom.
+    """
+    hom = category.Mor(domain, codomain)
+    return _construction_contract_from_type(hom, type(hom))
+
+
 def object_of(category: Category, **data: ConstructionData) -> Parent:
     r"""The object of ``category`` built from the data its levels declare.
 
@@ -537,6 +885,7 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
     homset does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
+    construction_contract(category).validate(data)
     return category.ObjectType(category=category, **data)
 
 

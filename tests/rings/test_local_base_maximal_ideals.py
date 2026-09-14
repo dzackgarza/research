@@ -61,3 +61,10 @@ def test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone() -> None:
     ring = DualNumbers(GF(7))
 
     assert ring.maximal_ideal().ideal_generators() == (ring.algebra_generator("epsilon"),)
+
+
+def test_padic_principal_quotient_cardinality_is_residue_size_to_valuation() -> None:
+    ring = Zp(2)
+    quotient = ring.quotient_ring(ring.ideal(ring(6)))
+
+    assert quotient.cardinality() == 2

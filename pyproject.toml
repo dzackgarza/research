@@ -7,6 +7,7 @@ dependencies = [
     "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
     "python-dotenv>=1.2.2",
     "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge",
+    "sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203",
     "streamlit>=1.59.2",
     "tree-sitter-sage",
     "vinal @ git+https://github.com/dzackgarza/vinal",
@@ -34,6 +35,10 @@ tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 
 
 [tool.pytest.ini_options]
+# The archived preamble is source evidence, not an executable test tree.
+# Bare pytest invocations collect the live suite only; an archive path may still
+# be named explicitly when inspecting historical material.
+testpaths = ["tests"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
 # --timeout is the important one: a suite that blocks -- on a subprocess, a

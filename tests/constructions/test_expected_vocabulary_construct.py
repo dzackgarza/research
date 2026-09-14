@@ -71,10 +71,15 @@ def test_ext_and_tor_over_the_integers() -> None:
 
 def test_ext_and_tor_as_methods(pid) -> None:
     ring = pid
-    torsion = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(6),))
+    # ``R/(a)`` is torsion only for nonzero ``a``.  In positive
+    # characteristic an integer such as 6 may vanish, so over a field use a
+    # unit relation; the resulting zero module is the field case of the same
+    # cyclic presentation.
+    scalar = ring.one() if ring in Fields() else ring(6)
+    torsion = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((scalar,))
     assert torsion.ext(ring.regular_module(), 1).cardinality() == torsion.cardinality()
     assert torsion.tor(torsion, 1).cardinality() == torsion.cardinality()
-    assert torsion.projective_dimension() == (0 if ring(6).is_unit() else 1)
+    assert torsion.projective_dimension() == (0 if scalar.is_unit() else 1)
     assert ring.regular_module().projective_dimension() == 0
 
 

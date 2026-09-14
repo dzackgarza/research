@@ -1,35 +1,43 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from typing import Any
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
-)
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.parent import Parent
+from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
-from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+    OppositeCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
     DiscreteDiagram,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+    _category_hom,
+    _category_homset,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
 class DiagramCategory(FunctorCategory):
@@ -60,7 +68,641 @@ class DirectedSystem(DiagramCategory):
 
 
 class InverseSystem(DiagramCategory):
-    r"""A diagram category read contravariantly as an inverse system."""
+    r"""The diagram category ``[J^op,C]`` for inverse systems indexed by ``J``."""
+
+    def __init__(self, index_category: Category, target_category: Category) -> None:
+        self._base_index_category = index_category
+        super().__init__(OppositeCategory(index_category), target_category)
+
+    def base_index_category(self) -> Category:
+        r"""Return ``J`` when this inverse system category is ``[J^op,C]``."""
+        return self._base_index_category
+
+
+class PosetMorphism(Morphism):
+    r"""The unique arrow ``p -> q`` of a thin poset category when ``p <= q``."""
+
+    def __init__(self, parent) -> None:
+        Morphism.__init__(self, parent)
+
+    def __mul__(self, other):
+        if not isinstance(other, PosetMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().poset_category().Mor(other.domain(), self.codomain()).unique()
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, PosetMorphism) and other.parent() is self.parent()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
+
+class PosetHomset(CategoricalHomset):
+    Element = PosetMorphism
+
+    def poset_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        category = self.poset_category()
+        return cardinal(
+            1
+            if category.le(self.domain().value(), self.codomain().value())
+            else 0
+        )
+
+    @cached_method
+    def unique(self):
+        if self.cardinality() != cardinal(1):
+            raise ValueError("there is no arrow between these incomparable poset objects")
+        return PosetMorphism(self)
+
+    def _element_constructor_(self, value=None):
+        if value is not None and value is not self.unique():
+            raise ValueError("a poset Hom-set has at most one arrow")
+        return self.unique()
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self.unique()
+
+
+class PosetHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = PosetHomset
+
+
+class PosetCategory(OwnedCategory):
+    r"""The thin category attached to an owned partially ordered set ``P``.
+
+    Objects are the points of ``P`` and there is one arrow ``p -> q`` exactly
+    when ``p <= q``.  The object family is lazy, so an infinite poset remains
+    an infinite represented indexing category rather than an eagerly traversed
+    sequence.  ``le`` may be supplied when the owned set carries its order only
+    by construction rather than by element comparison.
+    """
+
+    _HomCategory = PosetHomCategoryConstruction
+
+    class ParentMethods:
+        def __init__(self, value, **rest) -> None:
+            self._value = value
+            super().__init__(**rest)
+
+        def value(self):
+            return self._value
+
+        def _repr_(self) -> str:
+            return repr(self.value())
+
+    def __init__(self, ordered_set, le=None) -> None:
+        if ordered_set not in Sets():
+            raise TypeError("a poset category requires an owned set of indices")
+        self._ordered_set = ordered_set
+        self._le = le
+        self._objects = indexed_family(
+            ordered_set,
+            lambda value: object_of(self, value=value),
+            name=f"Objects of the poset category on {ordered_set}",
+        )
+        super().__init__()
+
+    def _make_named_class_key(self, name):
+        return self._ordered_set, self._le
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._ordered_set
+
+    def objects(self):
+        return self._objects
+
+    def __call__(self, value):
+        return self._objects(self._ordered_set(value))
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def le(self, left, right) -> bool:
+        left = self._ordered_set(left)
+        right = self._ordered_set(right)
+        if self._le is not None:
+            return bool(self._le(left, right))
+        return bool(left <= right)
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a poset Hom requires objects of this category")
+        return self.HomCategory().Of(domain, codomain)
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+    @cached_method
+    def arrows(self):
+        if self.object_set() not in FiniteSets():
+            raise NotImplementedError(
+                "the arrow set of an infinite poset category is represented by its order, not enumerated"
+            )
+        return finite_ordered_set(
+            tuple(
+                self.Mor(self(left), self(right)).unique()
+                for left in self.object_set()
+                for right in self.object_set()
+                if self.le(left, right)
+            )
+        )
+
+
+class FiniteOrdinalMorphism(Morphism):
+    r"""The unique arrow ``i -> j`` in a finite ordinal category when ``i <= j``."""
+
+    def __init__(self, parent) -> None:
+        Morphism.__init__(self, parent)
+
+    def __mul__(self, other):
+        if not isinstance(other, FiniteOrdinalMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().ordinal_category().Mor(other.domain(), self.codomain()).unique()
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, FiniteOrdinalMorphism) and other.parent() is self.parent()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
+
+class FiniteOrdinalHomset(CategoricalHomset):
+    Element = FiniteOrdinalMorphism
+
+    def ordinal_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        return cardinal(1 if self.domain().position() <= self.codomain().position() else 0)
+
+    @cached_method
+    def unique(self):
+        if self.cardinality() != cardinal(1):
+            raise ValueError("there is no arrow in the decreasing direction of a finite ordinal")
+        return FiniteOrdinalMorphism(self)
+
+    def _element_constructor_(self, value=None):
+        if value is not None and value is not self.unique():
+            raise ValueError("a finite-ordinal Hom-set has at most one arrow")
+        return self.unique()
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self.unique()
+
+
+class FiniteOrdinalHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = FiniteOrdinalHomset
+
+
+class FiniteOrdinalCategory(OwnedCategory):
+    r"""The category attached to the finite total order ``0 < ... < n-1``."""
+
+    _HomCategory = FiniteOrdinalHomCategoryConstruction
+
+    @staticmethod
+    @cached_function(key=lambda cls, size: (cls, int(size)))
+    def __classcall__(cls, size):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(size)
+        return typecall(cls, size)
+
+    class ParentMethods:
+        def __init__(self, position, **rest) -> None:
+            self._position = int(position)
+            super().__init__(**rest)
+
+        def position(self) -> int:
+            return self._position
+
+        def _repr_(self) -> str:
+            return str(self.position())
+
+    def __init__(self, size) -> None:
+        size = int(size)
+        if size < 0:
+            raise ValueError("a finite ordinal category has nonnegative size")
+        self._object_set = Sets.Δ[size - 1]
+        self._objects = indexed_family(
+            self._object_set,
+            lambda position: object_of(self, position=int(position)),
+            name="Objects of a finite ordinal category",
+        )
+        super().__init__()
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._object_set
+
+    def objects(self):
+        return self._objects
+
+    def __call__(self, position):
+        return self._objects(self._object_set(position))
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a finite-ordinal Hom requires objects of this category")
+        return self.HomCategory().Of(domain, codomain)
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+    @cached_method
+    def arrows(self):
+        return finite_ordered_set(
+            tuple(
+                self.Mor(self(i), self(j)).unique()
+                for i in self.object_set()
+                for j in self.object_set()
+                if int(i) <= int(j)
+            )
+        )
+
+
+class FiniteSequenceDiagram(Functor):
+    r"""A finite composable sequence, with all composites derived from its transitions."""
+
+    def __init__(self, objects, transitions, target_category: Category) -> None:
+        self._objects = tuple(objects)
+        self._transitions = tuple(transitions)
+        if len(self._transitions) != max(0, len(self._objects) - 1):
+            raise ValueError("a finite sequence has one transition between consecutive objects")
+        if any(obj not in target_category for obj in self._objects):
+            raise TypeError("every finite-sequence object must lie in the target category")
+        for position, transition in enumerate(self._transitions):
+            if (
+                transition.domain() is not self._objects[position]
+                or transition.codomain() is not self._objects[position + 1]
+            ):
+                raise ValueError("a finite-sequence transition has the wrong consecutive endpoints")
+        self._shape = FiniteOrdinalCategory(len(self._objects))
+        super().__init__(self._shape, target_category)
+
+    def objects(self):
+        return indexed_family(
+            self.domain().object_set(),
+            lambda position: self._objects[int(position)],
+            name="Objects of a finite sequence diagram",
+        )
+
+    def transitions(self):
+        labels = Sets.Δ[len(self._transitions) - 1]
+        return indexed_family(
+            labels,
+            lambda position: self._transitions[int(position)],
+            name="Transitions of a finite sequence diagram",
+        )
+
+    def _apply_object(self, obj):
+        return self._objects[obj.position()]
+
+    def _apply_morphism(self, morphism):
+        source = morphism.domain().position()
+        target = morphism.codomain().position()
+        if source == target:
+            image = self._objects[source]
+            return _category_homset(self.codomain(), image, image).identity()
+        composite = self._transitions[source]
+        for position in range(source + 1, target):
+            composite = self._transitions[position] * composite
+        return composite
+
+
+class ParallelPairMorphism(Morphism):
+    r"""One arrow of the walking parallel-pair category ``0 ⇉ 1``."""
+
+    def __init__(self, parent, name: str) -> None:
+        Morphism.__init__(self, parent)
+        self._name = name
+
+    def name(self) -> str:
+        return self._name
+
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain()
+
+    def __mul__(self, other):
+        if not isinstance(other, ParallelPairMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
+        raise ValueError("the walking parallel pair has no composite of two nonidentity arrows")
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ParallelPairMorphism)
+            and other.parent() is self.parent()
+            and other.name() == self.name()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self.name()))
+
+
+class ParallelPairHomset(CategoricalHomset):
+    Element = ParallelPairMorphism
+
+    def __init__(self, family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, family, domain, codomain)
+
+    def parallel_pair_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        category = self.parallel_pair_category()
+        if self.domain() is self.codomain():
+            return cardinal(1)
+        if self.domain() is category.source() and self.codomain() is category.target():
+            return cardinal(2)
+        return cardinal(0)
+
+    def _element_constructor_(self, name=None):
+        category = self.parallel_pair_category()
+        if self.domain() is self.codomain():
+            if name not in (None, "identity"):
+                raise ValueError("an endomorphism of the walking parallel pair is its identity")
+            return ParallelPairMorphism(self, "identity")
+        if self.domain() is category.source() and self.codomain() is category.target():
+            if name not in ("left", "right"):
+                raise ValueError("the two parallel arrows are named 'left' and 'right'")
+            return ParallelPairMorphism(self, name)
+        raise ValueError("the walking parallel pair has no arrow from 1 to 0")
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self()
+
+
+class ParallelPairHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = ParallelPairHomset
+
+
+class ParallelPairCategory(OwnedCategory):
+    r"""The walking parallel pair ``0 ⇉ 1``."""
+
+    _HomCategory = ParallelPairHomCategoryConstruction
+
+    class ParentMethods:
+        def __init__(self, position, **rest) -> None:
+            self._position = int(position)
+            super().__init__(**rest)
+
+        def position(self) -> int:
+            return self._position
+
+        def _repr_(self) -> str:
+            return str(self.position())
+
+    def __init__(self) -> None:
+        self._positions = finite_ordered_set((0, 1))
+        self._objects = indexed_family(
+            self._positions,
+            lambda position: object_of(self, position=position),
+            name="Objects of the walking parallel pair",
+        )
+        super().__init__()
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._positions
+
+    def objects(self):
+        return self._objects
+
+    def source(self):
+        return self._objects[0]
+
+    def target(self):
+        return self._objects[1]
+
+    def __call__(self, position):
+        return self._objects[int(position)]
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a walking-parallel-pair Hom requires its owned objects")
+        return self.HomCategory().Of(domain, codomain)
+
+    @cached_method
+    def left(self):
+        return self.Mor(self.source(), self.target())("left")
+
+    @cached_method
+    def right(self):
+        return self.Mor(self.source(), self.target())("right")
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+
+class ParallelPairDiagram(Functor):
+    r"""A diagram ``A ⇉ B`` retaining its two parallel arrows."""
+
+    def __init__(self, left: Morphism, right: Morphism, target_category: Category) -> None:
+        if left.domain() is not right.domain() or left.codomain() is not right.codomain():
+            raise ValueError("a parallel-pair diagram requires parallel arrows")
+        self._left = left
+        self._right = right
+        self._shape = ParallelPairCategory()
+        super().__init__(self._shape, target_category)
+
+    def left(self):
+        return self._left
+
+    def right(self):
+        return self._right
+
+    def source_object(self):
+        return self.left().domain()
+
+    def target_object(self):
+        return self.left().codomain()
+
+    def _apply_object(self, obj):
+        if obj is self.domain().source():
+            return self.source_object()
+        if obj is self.domain().target():
+            return self.target_object()
+        raise ValueError("the object is not in the walking parallel pair")
+
+    def _apply_morphism(self, morphism):
+        if morphism.is_identity():
+            image = self(morphism.domain())
+            return _category_homset(self.codomain(), image, image).identity()
+        if morphism.name() == "left":
+            return self.left()
+        if morphism.name() == "right":
+            return self.right()
+        raise ValueError("unknown arrow of the walking parallel pair")
+
+
+@cached_function
+def _parallel_pair_diagram(left: Morphism, right: Morphism, target_category: Category) -> ParallelPairDiagram:
+    r"""Return the selected diagram object for one represented parallel pair.
+
+    Equalizers and coequalizers of the same two arrows have the same source
+    diagram ``A ⇉ B``.  Retaining one diagram object lets a natural
+    transformation of that diagram induce both universal maps without
+    manufacturing a second, merely isomorphic indexing presentation.
+    """
+    return ParallelPairDiagram(left, right, target_category)
+
+
+class RestrictedDiagram(Functor):
+    r"""The precomposition ``D ∘ u`` retaining ``D`` and the indexing functor ``u``."""
+
+    def __init__(self, diagram: Functor, indexing_functor: Functor) -> None:
+        if indexing_functor.codomain() is not diagram.domain():
+            raise ValueError("a diagram restriction precomposes by a functor into the index category")
+        self._diagram = diagram
+        self._indexing_functor = indexing_functor
+        super().__init__(indexing_functor.domain(), diagram.codomain())
+
+    def original_diagram(self):
+        return self._diagram
+
+    def indexing_functor(self):
+        return self._indexing_functor
+
+    def _apply_object(self, obj):
+        return self.original_diagram()(self.indexing_functor()(obj))
+
+    def _apply_morphism(self, morphism):
+        return self.original_diagram()(self.indexing_functor()(morphism))
+
+    def restrict(self, indexing_functor):
+        return RestrictedDiagram(self, indexing_functor)
+
+
+def restrict_diagram(diagram: Functor, indexing_functor: Functor) -> RestrictedDiagram:
+    r"""Return the represented restriction of ``diagram`` along ``indexing_functor``."""
+    return RestrictedDiagram(diagram, indexing_functor)
+
+
+class SelectedLimitConstruction(SageObject):
+    r"""A selected universal cone over one represented diagram."""
+
+    def __init__(self, diagram, universal_cone, factorizer) -> None:
+        if universal_cone.diagram() is not diagram:
+            raise ValueError("a selected limit retains a cone over its own diagram")
+        self._diagram = diagram
+        self._universal_cone = universal_cone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cone(self):
+        return self._universal_cone
+
+    def object(self):
+        return self.cone().apex()
+
+    apex = object
+
+    def structure_morphism(self, index):
+        return self.cone().structure_morphism(index)
+
+    def factor(self, cone):
+        if cone.diagram() is not self.diagram():
+            raise ValueError("the cone to factor must lie over this construction's diagram")
+        apex_map = self._factorizer(cone)
+        return ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected limits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this limit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target limit's diagram")
+        target_diagram = target_construction.diagram()
+        induced_cone = ConeCategory(target_diagram).cone(
+            self.object(),
+            lambda index: (
+                transformation.component(index) * self.structure_morphism(index)
+            ),
+        )
+        return target_construction.factor(induced_cone).apex_map()
+
+
+class SelectedColimitConstruction(SageObject):
+    r"""A selected universal cocone under one represented diagram."""
+
+    def __init__(self, diagram, universal_cocone, factorizer) -> None:
+        if universal_cocone.diagram() is not diagram:
+            raise ValueError("a selected colimit retains a cocone under its own diagram")
+        self._diagram = diagram
+        self._universal_cocone = universal_cocone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cocone(self):
+        return self._universal_cocone
+
+    def object(self):
+        return self.cocone().apex()
+
+    apex = object
+
+    def costructure_morphism(self, index):
+        return self.cocone().costructure_morphism(index)
+
+    def factor(self, cocone):
+        if cocone.diagram() is not self.diagram():
+            raise ValueError("the cocone to factor must lie under this construction's diagram")
+        apex_map = self._factorizer(cocone)
+        return CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected colimits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this colimit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target colimit's diagram")
+        source_diagram = self.diagram()
+        induced_cocone = CoconeCategory(source_diagram).cocone(
+            target_construction.object(),
+            lambda index: (
+                target_construction.costructure_morphism(index)
+                * transformation.component(index)
+            ),
+        )
+        return self.factor(induced_cocone).apex_map()
 
 
 
@@ -81,13 +723,13 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent: "ConeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: ConeHomset, apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cone map has the wrong codomain apex")
-        if apex_map not in _category_homset(
+        if apex_map not in _category_hom(
             parent.cone_category().target_category(), self.domain().apex(), self.codomain().apex()
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
@@ -125,13 +767,13 @@ class ConeMorphism(Morphism):
 class CoconeMorphism(Morphism):
     r"""A morphism of cocones, determined by its apex map."""
 
-    def __init__(self, parent: "CoconeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: CoconeHomset, apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cocone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cocone map has the wrong codomain apex")
-        if apex_map not in _category_homset(
+        if apex_map not in _category_hom(
             parent.cocone_category().target_category(), self.domain().apex(), self.codomain().apex()
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
@@ -181,7 +823,7 @@ class ConeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cone_category(self) -> "ConeCategory":
+    def cone_category(self) -> ConeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -217,7 +859,7 @@ class CoconeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cocone_category(self) -> "CoconeCategory":
+    def cocone_category(self) -> CoconeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -280,6 +922,23 @@ class ConeCategory(OwnedCategory):
         True
         sage: collapse * collapse == collapse
         True
+
+    Unverified specimen: even an empty cone diagram does not make a
+    non-morphism into a permitted apex map::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
+        sage: diagram = ConstantDiagram(empty_shape, injections, points)
+        sage: category = ConeCategory(diagram)
+        sage: cone = category.cone(points, lambda obj: injections.identity(points))
+        sage: hom = category.Mor(cone, cone)
+        sage: hom(swap).apex_map() is swap
+        True
+        sage: hom(Sets().Mor(points, points)(lambda point: "a"))
+        Traceback (most recent call last):
+        ...
+        ValueError: the apex map is not a morphism of the diagram's target category
     """
 
     _HomCategory = ConeHomCategoryConstruction
@@ -295,7 +954,7 @@ class ConeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cone_category(self) -> "ConeCategory":
+        def cone_category(self) -> ConeCategory:
             return self.category()
 
         def diagram(self) -> Functor:
@@ -377,7 +1036,7 @@ class CoconeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cocone_category(self) -> "CoconeCategory":
+        def cocone_category(self) -> CoconeCategory:
             return self.category()
 
         def diagram(self) -> Functor:
@@ -487,7 +1146,16 @@ def Span(left_leg: Morphism, right_leg: Morphism) -> Parent:
     """
     assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
     legs = (left_leg, right_leg)
-    diagram = _discrete_diagram((left_leg.codomain(), right_leg.codomain()))
+    target = Category.meet(
+        [
+            left_leg.parent().homset_category(),
+            right_leg.parent().homset_category(),
+        ]
+    )
+    diagram = _discrete_diagram(
+        (left_leg.codomain(), right_leg.codomain()),
+        target_category=target,
+    )
     return SpanCategory(diagram).cone(
         left_leg.domain(),
         lambda index: legs[int(index.value())],
@@ -508,7 +1176,7 @@ class CoproductCoconeCategory(CoconeCategory):
         return [CoconeCategory(self.diagram())]
 
 
-class LimitsOfCategory(Category):
+class LimitsOfCategory(OwnedCategoryBase):
     def __init__(self, index_category: Category, target_category: Category) -> None:
         self._index_category = index_category
         self._target_category = target_category
@@ -517,12 +1185,295 @@ class LimitsOfCategory(Category):
     def _make_named_class_key(self, name):
         return self._index_category, self._target_category
 
+    def index_category(self):
+        return self._index_category
+
+    def target_category(self):
+        return self._target_category
+
     def super_categories(self):
         return [OwnedObjects()]
 
+    def _finite_shape_data(self, diagram):
+        if diagram.domain() is not self.index_category():
+            raise ValueError("a selected limit diagram has the wrong indexing category")
+        if diagram.codomain() is not self.target_category():
+            raise ValueError("a selected limit diagram has the wrong target category")
+        shape = self.index_category()
+        try:
+            object_set = shape.object_set()
+            objects = shape.objects()
+        except AttributeError as error:
+            raise NotImplementedError(
+                "the theorem-backed realization currently requires an indexing category "
+                "with represented finite object and arrow sets"
+            ) from error
+        if not cardinal(object_set.cardinality()).is_finite():
+            raise NotImplementedError(
+                "the current product/equalizer realization enumerates only a finite represented shape"
+            )
+        try:
+            arrows = shape.arrows()
+        except AttributeError as error:
+            raise NotImplementedError(
+                "the theorem-backed realization currently requires a finite represented arrow set"
+            ) from error
+        if not cardinal(arrows.cardinality()).is_finite():
+            raise NotImplementedError(
+                "the current product/equalizer realization enumerates only a finite represented arrow set"
+            )
+        return object_set, objects, arrows
+
+    @staticmethod
+    def _extremal_shape_object(objects, arrows, *, terminal: bool):
+        r"""Return an initial/terminal object with its unique arrows, if represented.
+
+        A diagram indexed by a category with a terminal object has colimit the
+        value at that object; dually an initial object computes the limit.
+        Detecting this before a product/equalizer or coproduct/coequalizer
+        reduction matters when the target subcategory has the required
+        extremal colimit but does not have arbitrary coequalizers.
+        """
+        shape_objects = tuple(objects)
+        shape_arrows = tuple(arrows)
+        for candidate in shape_objects:
+            selected = {}
+            for obj in shape_objects:
+                source, target = (obj, candidate) if terminal else (candidate, obj)
+                matches = tuple(
+                    arrow
+                    for arrow in shape_arrows
+                    if arrow.domain() is source and arrow.codomain() is target
+                )
+                if len(matches) != 1:
+                    break
+                selected[obj] = matches[0]
+            else:
+                return candidate, selected
+        return None
+
+    @cached_method(key=lambda self, diagram: id(diagram))
+    def construction(self, diagram):
+        r"""Return the selected limit, using products and an equalizer on finite represented shapes."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            EqualizerConstruction,
+            ProductConstruction,
+        )
+
+        object_set, objects, arrows = self._finite_shape_data(diagram)
+        extremal = self._extremal_shape_object(objects, arrows, terminal=False)
+        if extremal is not None:
+            initial, arrows_from_initial = extremal
+            apex = diagram(initial)
+            universal_cone = ConeCategory(diagram).cone(
+                apex,
+                lambda index: diagram(arrows_from_initial[index]),
+            )
+
+            def factorizer(cone):
+                return cone.structure_morphism(initial)
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        target = self.target_category()
+        object_factors = indexed_family(
+            object_set,
+            lambda label: diagram(objects.value(label)),
+            name="Object factors of a finite limit",
+        )
+        product_objects = ProductConstruction(
+            object_factors,
+            target_category=target,
+        )
+        arrow_factors = indexed_family(
+            arrows,
+            lambda arrow: diagram(arrow.codomain()),
+            name="Arrow-target factors of a finite limit",
+        )
+        product_arrows = ProductConstruction(
+            arrow_factors,
+            target_category=target,
+        )
+
+        def object_label(obj):
+            for label in object_set:
+                if objects.value(label) is obj:
+                    return label
+            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+
+        p_shape = product_objects.diagram().domain()
+        product_arrows.diagram().domain()
+
+        def compatibility_map(use_diagram_arrow):
+            cone = ConeCategory(product_arrows.diagram()).cone(
+                product_objects.object(),
+                lambda q_index: (
+                    diagram(q_index.value())
+                    * product_objects.structure_morphism(
+                        p_shape(object_label(q_index.value().domain()))
+                    )
+                    if use_diagram_arrow
+                    else product_objects.structure_morphism(
+                        p_shape(object_label(q_index.value().codomain()))
+                    )
+                ),
+            )
+            return product_arrows.factor(cone).apex_map()
+
+        target_projection = compatibility_map(False)
+        arrow_projection = compatibility_map(True)
+        equalizer = EqualizerConstruction(target_projection, arrow_projection)
+        equalizer_shape = equalizer.diagram().domain()
+        into_product = equalizer.structure_morphism(equalizer_shape.source())
+        universal_cone = ConeCategory(diagram).cone(
+            equalizer.object(),
+            lambda index: (
+                product_objects.structure_morphism(p_shape(object_label(index)))
+                * into_product
+            ),
+        )
+
+        def factorizer(cone):
+            product_cone = ConeCategory(product_objects.diagram()).cone(
+                cone.apex(),
+                lambda index: cone.structure_morphism(objects.value(index.value())),
+            )
+            into_product_from_apex = product_objects.factor(product_cone).apex_map()
+            equalizer_cone = ConeCategory(equalizer.diagram()).cone(
+                cone.apex(),
+                lambda index: (
+                    into_product_from_apex
+                    if index is equalizer_shape.source()
+                    else target_projection * into_product_from_apex
+                ),
+            )
+            return equalizer.factor(equalizer_cone).apex_map()
+
+        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+    def object(self, diagram):
+        return self.construction(diagram).object()
+
+    @cached_method
+    def defining_functor(self):
+        r"""Return the functor ``[J,C] -> C`` selected by these limits."""
+        from dzack_research.preamble.categories.abstract_categories.functors import (
+            LimitFunctor,
+        )
+
+        return LimitFunctor(self.target_category(), self.index_category())
+
 
 class ColimitsOfCategory(LimitsOfCategory):
-    pass
+    @cached_method(key=lambda self, diagram: id(diagram))
+    def construction(self, diagram):
+        r"""Return the selected colimit, using coproducts and a coequalizer on finite shapes."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            CoequalizerConstruction,
+            CoproductConstruction,
+        )
+
+        object_set, objects, arrows = self._finite_shape_data(diagram)
+        extremal = self._extremal_shape_object(objects, arrows, terminal=True)
+        if extremal is not None:
+            terminal, arrows_to_terminal = extremal
+            apex = diagram(terminal)
+            universal_cocone = CoconeCategory(diagram).cocone(
+                apex,
+                lambda index: diagram(arrows_to_terminal[index]),
+            )
+
+            def factorizer(cocone):
+                return cocone.costructure_morphism(terminal)
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+        target = self.target_category()
+        object_cofactors = indexed_family(
+            object_set,
+            lambda label: diagram(objects.value(label)),
+            name="Object cofactors of a finite colimit",
+        )
+        coproduct_objects = CoproductConstruction(
+            object_cofactors,
+            target_category=target,
+        )
+        arrow_cofactors = indexed_family(
+            arrows,
+            lambda arrow: diagram(arrow.domain()),
+            name="Arrow-source cofactors of a finite colimit",
+        )
+        coproduct_arrows = CoproductConstruction(
+            arrow_cofactors,
+            target_category=target,
+        )
+
+        def object_label(obj):
+            for label in object_set:
+                if objects.value(label) is obj:
+                    return label
+            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+
+        coproduct_arrows.diagram().domain()
+        b_shape = coproduct_objects.diagram().domain()
+
+        def compatibility_map(use_diagram_arrow):
+            cocone = CoconeCategory(coproduct_arrows.diagram()).cocone(
+                coproduct_objects.object(),
+                lambda a_index: (
+                    coproduct_objects.costructure_morphism(
+                        b_shape(object_label(a_index.value().codomain()))
+                    )
+                    * diagram(a_index.value())
+                    if use_diagram_arrow
+                    else coproduct_objects.costructure_morphism(
+                        b_shape(object_label(a_index.value().domain()))
+                    )
+                ),
+            )
+            return coproduct_arrows.factor(cocone).apex_map()
+
+        source_injection = compatibility_map(False)
+        arrow_injection = compatibility_map(True)
+        coequalizer = CoequalizerConstruction(source_injection, arrow_injection)
+        coequalizer_shape = coequalizer.diagram().domain()
+        from_coproduct = coequalizer.costructure_morphism(coequalizer_shape.target())
+        universal_cocone = CoconeCategory(diagram).cocone(
+            coequalizer.object(),
+            lambda index: (
+                from_coproduct
+                * coproduct_objects.costructure_morphism(
+                    b_shape(object_label(index))
+                )
+            ),
+        )
+
+        def factorizer(cocone):
+            object_cocone = CoconeCategory(coproduct_objects.diagram()).cocone(
+                cocone.apex(),
+                lambda index: cocone.costructure_morphism(objects.value(index.value())),
+            )
+            from_objects = coproduct_objects.factor(object_cocone).apex_map()
+            coequalizer_cocone = CoconeCategory(coequalizer.diagram()).cocone(
+                cocone.apex(),
+                lambda index: (
+                    from_objects * source_injection
+                    if index is coequalizer_shape.source()
+                    else from_objects
+                ),
+            )
+            return coequalizer.factor(coequalizer_cocone).apex_map()
+
+        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+    @cached_method
+    def defining_functor(self):
+        r"""Return the functor ``[J,C] -> C`` selected by these colimits."""
+        from dzack_research.preamble.categories.abstract_categories.functors import (
+            ColimitFunctor,
+        )
+
+        return ColimitFunctor(self.target_category(), self.index_category())
 
 
 class ProductsOfCategory(LimitsOfCategory):
@@ -579,7 +1530,7 @@ def _two_factors_of(factors, *, name="Selected factors"):
     return family[labels[0]], family[labels[1]]
 
 
-class BiproductCategory(Category):
+class BiproductCategory(OwnedCategoryBase):
     r"""Objects equipped with the selected finite biproduct structure."""
 
     def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
@@ -605,7 +1556,7 @@ class BiproductCategory(Category):
 DirectSumCategory = BiproductCategory
 
 
-class TensorProductCategory(Category):
+class TensorProductCategory(OwnedCategoryBase):
     r"""Objects equipped with a chosen tensor-product universal bilinear map."""
 
     def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
@@ -654,8 +1605,13 @@ def Cocone(
 def _discrete_diagram(factors, target_category=None):
     family = _finite_factor_family(factors)
     if family.cardinality() == cardinal(0):
-        raise ValueError("the current selected finite product requires at least one factor")
-    target = common_category_of(family) if target_category is None else target_category
+        if target_category is None:
+            raise ValueError(
+                "an empty diagram has no object from which to infer its target category"
+            )
+        target = target_category
+    else:
+        target = common_category_of(family) if target_category is None else target_category
 
     index = DiscreteCategory(family.index_set())
     return DiscreteDiagram(index, target, family)
@@ -689,14 +1645,23 @@ __all__ = [
     "DiagramCategory",
     "DirectSumCategory",
     "DirectedSystem",
+    "FiniteOrdinalCategory",
+    "FiniteSequenceDiagram",
     "InverseSystem",
     "LimitsOfCategory",
+    "ParallelPairCategory",
+    "ParallelPairDiagram",
+    "PosetCategory",
     "ProductConeCategory",
     "ProductsOfCategory",
+    "RestrictedDiagram",
+    "SelectedColimitConstruction",
+    "SelectedLimitConstruction",
     "Span",
     "SpanCategory",
     "TensorProductCategory",
     "common_category_of",
     "coproduct_cocone_category",
     "product_cone_category",
+    "restrict_diagram",
 ]

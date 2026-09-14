@@ -2,24 +2,22 @@ r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
     Cokernel,
     Kernel,
 )
-from dzack_research.preamble.categories.modules.pure.modules import biproduct_morphism
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
+from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules, FinitelyPresentedModules, biproduct_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
-from dzack_research.preamble.categories.lattices import Lattices
 
 
 class DualizationFunctor(ContravariantFunctor):

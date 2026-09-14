@@ -24,6 +24,19 @@ def test_session_integer_and_rational_rings_are_owned_views() -> None:
     assert QQ(3).parent() is QQ
 
 
+def test_owned_ordered_ring_elements_compare_with_python_integers() -> None:
+    session = _session()
+    ZZ = session["ZZ"]
+    QQ = session["QQ"]
+
+    assert ZZ(2) > 1
+    assert 1 < ZZ(2)
+    assert ZZ(2) <= 2
+    assert 2 >= ZZ(2)
+    assert max(1, ZZ(2)) == ZZ(2)
+    assert min(3, QQ(3) / 2) == QQ(3) / 2
+
+
 def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None:
     session = _session()
     ZZ = session["ZZ"]
@@ -187,3 +200,13 @@ def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite
     assert session["CC"].cardinality() == session["continuum"]
     assert session["Zp"](5).cardinality() == session["continuum"]
     assert session["Qp"](5).cardinality() == session["continuum"]
+
+
+def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
+    session = _session()
+    AA = session["AA"]
+    QQbar = session["QQbar"]
+    aleph0 = session["aleph0"]
+
+    assert AA.cardinality() == aleph0
+    assert QQbar.cardinality() == aleph0

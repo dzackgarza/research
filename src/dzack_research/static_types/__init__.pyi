@@ -1,5 +1,6 @@
-from shape_extensions import Int, IntVar
 from typing import Any, overload
+
+from shape_extensions import Int, IntVar
 
 # A point $(n_1, \ldots, n_k)$ of the product monoid $\mathbb N^k$.  Aliases
 # `Any` under `LEX-15` until the product's parent has a static name; see the

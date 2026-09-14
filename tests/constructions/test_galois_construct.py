@@ -104,12 +104,12 @@ def test_embeddings_between_number_fields() -> None:
     embeddings = exact_embeddings(quadratic, quartic)
     first = first_exact_embedding(quadratic, quartic)
 
-    assert len(embeddings) == 2
+    assert embeddings.cardinality() == 2
     assert first.domain() is quadratic
     assert first.codomain() is quartic
     assert first(quadratic.primitive_element()) ** 2 == quartic(2)
     assert first.is_injective()
-    assert len(exact_embeddings(quartic, quadratic)) == 0
+    assert exact_embeddings(quartic, quadratic).cardinality() == 0
     eighth_roots = NumberField(x**4 + 1, "z")
-    assert len(exact_embeddings(QuadraticField(-1, "i"), eighth_roots)) == 2
-    assert len(exact_embeddings(QuadraticField(3, "s"), eighth_roots)) == 0
+    assert exact_embeddings(QuadraticField(-1, "i"), eighth_roots).cardinality() == 2
+    assert exact_embeddings(QuadraticField(3, "s"), eighth_roots).cardinality() == 0

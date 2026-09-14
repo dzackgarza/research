@@ -1,25 +1,19 @@
 """Finite coordinate presentations built from owned indexed families."""
 
 from collections.abc import Callable, Iterable
-from typing import TypeVar
 
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfFamily,
     Sets,
 )
-
-
-LeftLabelT = TypeVar("LeftLabelT")
-RightLabelT = TypeVar("RightLabelT")
-CoordinateValueInputT = TypeVar("CoordinateValueInputT")
 
 
 def finite_framing(module: Parent) -> Parent:
@@ -40,7 +34,7 @@ def coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
     )
 
 
-def coerce_family_value(
+def coerce_family_value[CoordinateValueInputT](
     value_module: Parent,
     value: CoordinateValueInputT,
 ) -> Element:
@@ -51,7 +45,7 @@ def coerce_family_value(
     )
 
 
-def coordinate_family(
+def coordinate_family[CoordinateValueInputT](
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
@@ -118,7 +112,7 @@ def coordinate_family(
     )
 
 
-def coordinate_pair(
+def coordinate_pair[LeftLabelT, RightLabelT](
     values: IndexedFamily,
     left_label: LeftLabelT,
     right_label: RightLabelT,
@@ -129,7 +123,7 @@ def coordinate_pair(
     ]
 
 
-def coordinate_family_from_function(
+def coordinate_family_from_function[LeftLabelT, RightLabelT, CoordinateValueInputT](
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,

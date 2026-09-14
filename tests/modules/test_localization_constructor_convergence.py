@@ -1,0 +1,46 @@
+from dzack_research.preamble.all import ZZ, BasedFreeModule, Localization
+from dzack_research.preamble.categories.functors.module_localization import (
+    module_localization_functor,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
+from dzack_research.preamble.categories.sets import finite_ordered_set
+
+
+def test_localization_ring_owns_the_module_localization_functor_and_object() -> None:
+    localization = Localization(ZZ, ZZ(2))
+    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+
+    functor = localization.localization_functor()
+    assert module_localization_functor(localization) is functor
+
+    through_ring = localization.localize_module(module)
+    through_module = module.localize(localization)
+    through_functor = functor(module)
+
+    assert through_ring is through_functor
+    assert through_module is through_functor
+    assert through_functor.localization_ring() is localization
+    assert through_functor.localization_source_module() is module
+    assert through_functor.localization_functor() is functor
+
+
+def test_nonidentity_map_uses_the_same_localization_functor_and_endpoints() -> None:
+    localization = Localization(ZZ, ZZ(2))
+    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    e = module.module_generator("e")
+    f = module.module_generator("f")
+    morphism = module_homset(module, module)(
+        {"e": e + f, "f": 3 * f}
+    )
+
+    localized = localization.localize_module(module)
+    localized_morphism = localization.localization_functor()(morphism)
+
+    assert localized_morphism.domain() is localized
+    assert localized_morphism.codomain() is localized
+    assert localized_morphism(localized.module_generator("e")) == (
+        localized.module_generator("e") + localized.module_generator("f")
+    )
+    assert localized_morphism(localized.module_generator("f")) == 3 * localized.module_generator("f")

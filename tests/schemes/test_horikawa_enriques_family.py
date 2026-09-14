@@ -1,0 +1,70 @@
+r"""The Enriques surface is the actual fixed-free quotient of the Horikawa K3 member."""
+
+from dzack_research.preamble.all import QQ, QuadraticField
+from dzack_research.preamble.catalogue import NamedLattices
+from dzack_research.preamble.categories.schemes.enriques_families import (
+    HorikawaEnriquesSurface,
+)
+
+
+def test_fixed_free_horikawa_lift_constructs_the_enriques_quotient() -> None:
+    surface = HorikawaEnriquesSurface()
+    quotient = surface.quotient_morphism()
+
+    assert quotient.domain() is surface.k3_member().scheme()
+    assert quotient.codomain() is surface.scheme()
+    assert surface.k3_member().enriques_lift_is_fixed_point_free()
+    assert surface.quotient_data().action_is_free()
+    assert surface.is_enriques()
+
+
+def test_enriques_integral_h2_retains_torsion_pullback_and_primitive_gluing() -> None:
+    surface = HorikawaEnriquesSurface()
+    cohomology = surface.integral_cohomology()
+    free = cohomology.enriques_free_h2_lattice()
+    torsion = cohomology.canonical_torsion_submodule()
+    pullback = cohomology.free_h2_pullback()
+
+    assert free is NamedLattices.E10
+    assert free.module_rank() == 10
+    assert torsion.cardinality() == 2
+    assert pullback.domain() is free
+    assert pullback.codomain() is NamedLattices.LK3
+    assert all(
+        cohomology.enriques_involution_on_h2()(pullback(generator))
+        == pullback(generator)
+        for generator in free.module_generators()
+    )
+    assert all(
+        cohomology.torsion_h2_pullback()(generator) == NamedLattices.LK3.zero()
+        for generator in torsion.module_generators()
+    )
+
+    invariant = cohomology.invariant_lattice()
+    anti = cohomology.anti_invariant_lattice()
+    glue = cohomology.discriminant_gluing_map()
+    assert invariant.module_rank() == 10
+    assert anti.module_rank() == 12
+    assert cohomology.discriminant_gluing_subgroup().cardinality() == 1024
+    assert cohomology.primitive_gluing_index() == 1024
+    assert glue.domain() is cohomology.discriminant_gluing_subgroup()
+
+
+def test_lattice_representation_and_fixed_locus_satisfy_lefschetz() -> None:
+    surface = HorikawaEnriquesSurface()
+    cohomology = surface.integral_cohomology()
+
+    assert cohomology.h2_trace() == -2
+    assert cohomology.topological_lefschetz_number() == 0
+    assert cohomology.lefschetz_matches_geometric_fixed_locus()
+
+
+def test_enriques_quotient_commutes_with_nontrivial_scalar_extension() -> None:
+    surface = HorikawaEnriquesSurface()
+    field = QuadraticField(2, "s")
+    extension = QQ.Mor(field)(lambda element: field(element))
+    comparison = surface.base_change(extension)
+
+    assert comparison.quotient_projection().codomain() is surface.scheme()
+    assert comparison.quotient_square_commutes()
+    assert comparison.changed_action_is_free()

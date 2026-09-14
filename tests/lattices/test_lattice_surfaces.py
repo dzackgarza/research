@@ -251,7 +251,7 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
 def test_quadratic_integer_ideals_compute_as_order_modules_inside_the_field() -> None:
     field = QuadraticField(5, "a")
     order = field.ring_of_integers()
-    order_basis = tuple(order.integral_basis())
+    order_basis = order.integral_basis()
 
     integral_ideal = order.ideal(2)
     assert integral_ideal.module_generating_set().cardinality() == 1
@@ -356,7 +356,7 @@ def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_
 def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group() -> None:
     field = QuadraticField(5, "a")
 
-    images = tuple(field.embedding_images(AA))
+    images = field.embedding_images(AA)
     assert field.embedding_images(AA).cardinality() == 2
     assert all(image**2 == 5 for image in images)
     assert sum(images) == 0
@@ -369,12 +369,14 @@ def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group()
 def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_coinvariants() -> None:
     group = Groups.C(2)
     plane = Lattices(ZZ)("U")
+    labels = plane.module_generating_set()
+    first, second = plane.module_generators()
+    swap_isometry = plane.Aut()({labels[0]: second, labels[1]: first})
 
     def swap(group_element, vector):
         if group_element == group.one():
             return vector
-        left, right = vector.to_tuple()
-        return plane((right, left))
+        return swap_isometry(vector)
 
     group_lattice = Lattices(ZZ[group])(plane, swap)
     involution = group_lattice.group().group_generators()[0]

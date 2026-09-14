@@ -1,13 +1,28 @@
 from dzack_research.preamble.all import (
-    FractionFieldQuotient,
-    FiniteGroups,
-    Lattices,
-    MatrixSpace,
     QQ,
     ZZ,
+    FiniteGroups,
+    FractionFieldQuotient,
+    Lattices,
+    MatrixSpace,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py",
+    "owner_overrides": {
+        "DiscriminantForms": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.super_categories": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.correlation": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.source_lattice": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.overlattice_from_isotropic_subobject": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.discriminant_form_of_overlattice": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 def _matrix(ring, rows):
     rows = tuple(tuple(row) for row in rows)
@@ -147,7 +162,7 @@ def test_mixed_prime_jordan_framing_is_distinct_and_has_an_explicit_isometry() -
     normalization = form.p_adic_jordan_form()
     jordan = normalization.codomain()
 
-    assert tuple(decomposition) == (2, 3)
+    assert tuple(decomposition.index_set()) == (ZZ(2), ZZ(3))
     assert tuple(generator.additive_order() for generator in decomposition[ZZ(2)]) == (2,)
     assert tuple(generator.additive_order() for generator in decomposition[ZZ(3)]) == (3,)
     assert form.invariant_factor_form().codomain().module_generators().cardinality() == 1
@@ -181,7 +196,80 @@ def test_bilinear_jordan_form_preserves_the_pairing() -> None:
     normalization = form.p_adic_jordan_form()
     jordan = normalization.codomain()
 
-    assert tuple(form.p_adic_jordan_decomposition()) == (2, 3)
+    assert tuple(form.p_adic_jordan_decomposition().index_set()) == (ZZ(2), ZZ(3))
     for left in form.module_generators():
         for right in form.module_generators():
             assert jordan.b(normalization(left), normalization(right)) == form.b(left, right)
+
+
+def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizers() -> None:
+    values = FractionFieldQuotient(ZZ, 1)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
+        _matrix(ZZ, [[2, 0], [0, 2]]),
+        _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
+        values,
+    )
+    first, second = tuple(form.module_generators())
+
+    assert form.is_anisotropic() is False
+    assert form.subobject_generated_by((first,)).cardinality() == 2
+    assert form.orthogonal_subobject(
+        form.subobject_generated_by((first,))
+    ).cardinality() == 2
+
+    lagrangians = form.lagrangian_subobjects()
+    assert lagrangians.cardinality() == 3
+    assert form.is_metabolic()
+    metabolizer = form.metabolizer()
+    assert metabolizer.cardinality() == 2
+    assert form.orthogonal_quotient(metabolizer).cardinality() == 1
+
+    isotropic_orbits = form.orbits_on_isotropic_subobjects()
+    assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 3]
+    assert form.orbit(first).cardinality() == 3
+    assert second in form.orbit(first)
+
+
+def test_generic_torsion_form_reframing_and_primary_components_are_live_objects() -> None:
+    values = FractionFieldQuotient(ZZ, 1)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
+        _matrix(ZZ, [[2, 0], [0, 3]]),
+        _matrix(QQ, [[QQ(1) / 2, 0], [0, QQ(1) / 3]]),
+        values,
+    )
+    generators = tuple(form.module_generators())
+    reframing = form.reframing_isometry(generators)
+    components = form.primary_components()
+    gram = form.gram_matrix()
+
+    assert reframing.domain() is form
+    assert tuple(reframing.codomain().invariant_factors()) == tuple(form.invariant_factors())
+    assert form.regenerate(generators) is reframing.codomain()
+    assert tuple(components.index_set()) == (ZZ(2), ZZ(3))
+    assert components[ZZ(2)].cardinality() == 2
+    assert components[ZZ(3)].cardinality() == 3
+    assert gram[0, 0] == QQ(1) / 2
+    assert gram[1, 1] == QQ(1) / 3
+
+
+def test_literal_cokernel_forms_retain_the_cover_projection_and_coset_lifts() -> None:
+    correlation = Lattices(ZZ)("A1").correlation_morphism()
+    bilinear = TorsionBilinearFormModules(ZZ).cokernel(correlation)
+    quadratic = TorsionQuadraticFormModules(ZZ).cokernel(correlation)
+
+    for form in (bilinear, quadratic):
+        projection = form.projection()
+        generator = next(iter(form.module_generators()))
+        representative = generator.coset_representative()
+
+        assert form.presentation() is correlation
+        assert form.cover() is correlation.codomain()
+        assert projection.domain() is correlation.codomain()
+        assert projection.codomain() is form
+        assert projection(representative) == generator
+        assert form.cardinality() == 2
+
+    generator = next(iter(bilinear.module_generators()))
+    assert bilinear.b(generator, generator) == bilinear.value_module()(QQ(-1) / 2)
+    q_generator = next(iter(quadratic.module_generators()))
+    assert quadratic.q(q_generator) == quadratic.value_module()(QQ(-1) / 2)

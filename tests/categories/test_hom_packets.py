@@ -1,21 +1,23 @@
 
 from dzack_research.preamble.all import (
-    AutCategoryOf,
+    QQ,
+    ZZ,
+    AffineSpace,
     Algebras,
+    AutCategoryOf,
     EndCategoryOf,
     EpiCategoryOf,
-    HomCategoryOf,
-    IsoCategoryOf,
-    MonoCategoryOf,
-    Modules,
-    QQ,
-    Sets,
-    SymmetricAlgebraOn,
     FinitelyPresentedAlgebra,
     Groups,
+    HomCategoryOf,
+    IsoCategoryOf,
     Isomorphism,
     Lattices,
-    ZZ,
+    Modules,
+    MonoCategoryOf,
+    OpenImmersions,
+    Sets,
+    SymmetricAlgebraOn,
     algebra_homset,
     algebra_underlying_module_functor,
     category_packet,
@@ -28,6 +30,12 @@ from dzack_research.preamble.categories.functors.hom_packets import (
     induced_hom_functor,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/hom_categories.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/hom_categories.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_hom_and_end_families_recover_actual_external_homsets() -> None:
@@ -75,9 +83,12 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
 
     assert packet.C() is algebras
     module_packet = category_packet(modules)
-    assert module_packet.Homs() in packet.Homs().super_categories()
-    assert module_packet.Ends() in packet.Ends().super_categories()
-    assert module_packet.Auts() in packet.Auts().super_categories()
+    forget = algebra_underlying_module_functor(QQ)
+    assert forget.domain() is algebras
+    assert forget.codomain() is modules
+    assert module_packet.Homs() not in packet.Homs().super_categories()
+    assert module_packet.Ends() not in packet.Ends().super_categories()
+    assert module_packet.Auts() not in packet.Auts().super_categories()
     assert packet.Homs() in packet.Monos().super_categories()
     assert packet.Homs() in packet.Epis().super_categories()
     assert packet.Homs() in packet.Isos().super_categories()
@@ -101,6 +112,34 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     assert packet.Ends().Of(algebra) in algebra_aut_category.super_categories()
 
 
+def test_join_hom_keeps_the_most_specific_inherited_arrow_theory() -> None:
+    line = AffineSpace(1, QQ, names=("x",))
+    x = line.coordinate_algebra().algebra_generator("x")
+    open_x = line.distinguished_open(x)
+
+    subobject_hom = OpenImmersions(line).Mor(open_x, open_x)
+    joined_hom = open_x.category().Mor(open_x, open_x)
+
+    assert joined_hom is subobject_hom
+    scheme_identity = open_x.categorical_identity_morphism()
+    represented_identity = joined_hom(scheme_identity)
+    assert represented_identity.factor_morphism() is scheme_identity
+
+
+def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -> None:
+    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    structured_identity = algebra.Mor(algebra).identity()
+    ordinary_hom = Algebras(QQ).Mor(algebra, algebra)
+
+    assert structured_identity.parent() is not ordinary_hom
+    assert structured_identity in ordinary_hom
+
+    group = Groups.C(3)
+    automorphism = group.Aut().one()
+    assert automorphism.parent() is group.Aut()
+    assert automorphism in OwnedGroups().Mor(group, group)
+
+
 def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     polynomial = SymmetricAlgebraOn(QQ, ("x",))
     x = polynomial.algebra_generator("x")
@@ -121,9 +160,11 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
 
     aut_source = AutCategoryOf(Algebras(QQ)).Of(algebra)(isomorphism)
     aut_image = induced_aut_functor(forget, algebra)(aut_source)
-    underlying_iso = aut_image.arrow()
-    assert underlying_iso.forward().domain() is forget(algebra)
-    assert underlying_iso.forward().codomain() is forget(algebra)
+    assert aut_image.parent() is Modules(QQ).Aut(forget(algebra))
+    assert aut_image.forward().domain() is forget(algebra)
+    assert aut_image.forward().codomain() is forget(algebra)
+    assert aut_image.inverse().domain() is forget(algebra)
+    assert aut_image.inverse().codomain() is forget(algebra)
 
 
 def test_lattice_embedding_isometry_and_automorphism_are_packet_objects() -> None:
@@ -170,3 +211,23 @@ def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> Non
     assert identity.parent() is hom
     assert (identity * identity).parent() is hom
     assert (identity * identity)(ZZ(3)) == ZZ(3)
+
+
+def test_restricted_hom_families_compose_nonidentity_set_injections_in_the_base_homs() -> None:
+    source = Sets.Δ[1]
+    middle = Sets.Δ[2]
+    target = Sets.Δ[3]
+    first = set_injection(source, middle, lambda value: middle(int(value)))
+    second = set_injection(middle, target, lambda value: target(int(value) + 1))
+
+    mono_source = MonoCategoryOf(Sets()).Of(source, middle)
+    mono_target = MonoCategoryOf(Sets()).Of(middle, target)
+    mono_composite = MonoCategoryOf(Sets()).Of(source, target)
+
+    assert first in mono_source
+    assert second in mono_target
+    composite = second * first
+    assert composite in mono_composite
+    assert composite(source(0)) == target(1)
+    assert composite(source(1)) == target(2)
+    assert mono_composite.underlying_homset() is Sets().Mor(source, target)

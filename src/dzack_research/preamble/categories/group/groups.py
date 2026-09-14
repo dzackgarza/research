@@ -53,6 +53,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
@@ -94,7 +95,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import realize_owned_category, refine
 
 # --------------------------------------------------------------------------
 # Engine crossings.  These are the only sites that read the Sage group behind
@@ -137,7 +138,7 @@ def _gap_model(group):
             return group._libgap_()
     engine = _engine_group(group)
     match engine:
-        case PermutationGroup_generic():
+        case PermutationGroup_generic() | FreeGroup_class() | FinitelyPresentedGroup():
             return libgap(engine)
         case ParentLibGAP():
             return engine.gap()
@@ -174,7 +175,10 @@ def _elements_have_gap_models(group) -> bool:
         engine = _engine_group(group)
     except NotImplementedError:
         return False
-    return isinstance(engine, (PermutationGroup_generic, ParentLibGAP))
+    return isinstance(
+        engine,
+        (PermutationGroup_generic, ParentLibGAP, FreeGroup_class, FinitelyPresentedGroup),
+    )
 
 
 def _transported_subgroup(group, engine_subgroup):
@@ -184,6 +188,8 @@ def _transported_subgroup(group, engine_subgroup):
 
 def _subgroup_from_gap(group, gap_subgroup):
     """Return the owned subgroup of ``group`` modelled by the GAP subgroup."""
+    if isinstance(group, GroupAutomorphismGroup):
+        return group._subgroup_from_engine(gap_subgroup)
     engine = _engine_group(group)
     match engine:
         case PermutationGroup_generic() | ParentLibGAP():
@@ -223,12 +229,29 @@ def _engine_supergroup(group):
 
 
 def _engine_subgroup(group, generators):
-    engine = _engine_group(group)
+    generators = tuple(group(generator) for generator in generators)
     try:
-        construct = engine.subgroup
+        direct = group._engine_subgroup_from_generators
     except AttributeError:
-        raise NotImplementedError(f"{group} does not construct subgroups from generators in this engine") from None
-    return _transported_subgroup(group, construct([group._to_engine(group(generator)) for generator in generators]))
+        direct = None
+
+    if direct is not None:
+        engine_subgroup = direct(generators)
+    else:
+        engine = _engine_group(group)
+        try:
+            construct = engine.subgroup
+        except AttributeError:
+            raise NotImplementedError(
+                f"{group} does not construct subgroups from generators in this engine"
+            ) from None
+        engine_subgroup = construct(
+            [group._to_engine(generator) for generator in generators]
+        )
+
+    subgroup = _transported_subgroup(group, engine_subgroup)
+    subgroup._preamble_selected_subgroup_generators = finite_ordered_set(generators)
+    return refine(subgroup, GeneratedSubgroups(group))
 
 
 def _engine_cosets(group, subgroup, side):
@@ -262,21 +285,20 @@ def _engine_cosets(group, subgroup, side):
 
 
 def _unique_nonidentity_generators(group):
+    match group:
+        case OwnedGroup() if group._preamble_selected_group_generators is not None:
+            return group._preamble_selected_group_generators
     engine = _engine_group(group)
-    identity = engine.one()
-    backend_generators = engine.gens()
-    engine_generators = finite_ordered_image(
+    backend_generators = tuple(engine.gens())
+    owned_generators = finite_ordered_image(
         Sets.Δ[len(backend_generators) - 1],
-        lambda position: backend_generators[int(position)],
-        name="Backend chosen group generators",
+        lambda position: group._from_engine(backend_generators[int(position)]),
+        name="Backend chosen group generators raised to the owned group",
     )
-    nonidentity = finite_ordered_filter(
-        engine_generators,
+    identity = group.one()
+    return finite_ordered_filter(
+        owned_generators,
         lambda generator: generator != identity,
-    )
-    return finite_ordered_image(
-        nonidentity,
-        group._from_engine,
         name="Chosen group generators",
     )
 
@@ -298,14 +320,14 @@ def _free_generator(group, index):
     if index not in basis:
         try:
             normalized = basis(index)
-        except TypeError, ValueError, AttributeError:
+        except (TypeError, ValueError, AttributeError):
             normalized = None
         if normalized is not None and normalized in basis:
             index = normalized
         else:
             try:
                 size = cardinal(basis.cardinality())
-            except AttributeError, TypeError, ValueError:
+            except (AttributeError, TypeError, ValueError):
                 size = None
             if size is None or not size.is_finite():
                 raise ValueError(f"{index!r} is not in the chosen free basis")
@@ -315,7 +337,7 @@ def _free_generator(group, index):
                     continue
                 try:
                     coerced = parent(index)
-                except TypeError, ValueError:
+                except (TypeError, ValueError):
                     continue
                 if coerced == candidate:
                     index = candidate
@@ -411,6 +433,9 @@ def _presentation_of(group):
         case CoxeterMatrixGroup():
             free, relations = coxeter_presentation(engine.coxeter_matrix())
             return _own_group(free), relations
+        case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
+            presented = engine.as_permutation_group().as_finitely_presented_group()
+            return _own_group(presented.free_group()), tuple(presented.relations())
         case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
             presented = engine.as_permutation_group().as_finitely_presented_group()
             return _own_group(presented.free_group()), tuple(presented.relations())
@@ -441,9 +466,16 @@ def _is_abelian_witness(engine):
         return True
     if isinstance(engine, (AbelianGroup_class, AbelianGroup_subgroup)):
         return True
+    if isinstance(engine, FreeGroup_class):
+        return len(tuple(engine.gens())) <= 1
+    if isinstance(engine, FinitelyPresentedGroup):
+        # A bare finite presentation is not a cheap abelianity certificate.
+        # Sage/GAP may launch a coset-table computation here, while this routine
+        # only decides whether construction already supplied a positive witness.
+        return False
     try:
         return bool(engine.is_abelian())
-    except AttributeError, NotImplementedError, TypeError, ValueError:
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
         return False
 
 
@@ -467,7 +499,13 @@ def _has_chosen_presentation(engine):
         return True
     return _engine_finiteness(engine) is True and isinstance(
         engine,
-        (PermutationGroup_generic, AbelianGroup_class, NamedMatrixGroup_generic, NamedMatrixGroup_gap),
+        (
+            PermutationGroup_generic,
+            AbelianGroup_class,
+            FinitelyGeneratedMatrixGroup_gap,
+            NamedMatrixGroup_generic,
+            NamedMatrixGroup_gap,
+        ),
     )
 
 
@@ -505,7 +543,7 @@ def _owned_group_category(engine) -> Category:
         categories.append(GroupsWithChosenFreeBasis())
     if isinstance(engine, PermutationGroup_generic):
         categories.append(PermutationGroups())
-    return Category.join(tuple(categories))
+    return Cat().meet(tuple(categories))
 
 
 class _OwnedGroupElement(MultiplicativeGroupElement):
@@ -611,6 +649,7 @@ class OwnedGroup(Parent):
 
     def __init__(self, engine) -> None:
         self._engine = engine
+        self._preamble_selected_group_generators = None
         Parent.__init__(self, category=_owned_group_category(engine))
         realize_owned_category(self)
 
@@ -643,7 +682,7 @@ class OwnedGroup(Parent):
             if callable(to_engine):
                 try:
                     return self._from_engine(self._engine(to_engine(value)))
-                except TypeError, ValueError:
+                except (TypeError, ValueError):
                     pass
         if isinstance(value, SageObject):
             raise TypeError("raw backend group elements are not accepted by the public preamble API")
@@ -675,7 +714,7 @@ class _TransportedGroupSubobject(Parent):
         Parent.__init__(
             self,
             facade=supergroup,
-            category=Category.join((_owned_group_category(engine_subgroup), Subgroups(supergroup))),
+            category=Cat().meet((_owned_group_category(engine_subgroup), Subgroups(supergroup))),
         )
         realize_owned_category(self)
 
@@ -685,10 +724,18 @@ class _TransportedGroupSubobject(Parent):
     def _to_engine(self, element):
         if element not in self._supergroup:
             raise TypeError("the subgroup crossing requires an ambient preamble element")
-        return self._engine(self._supergroup._to_engine(element))
+        try:
+            crossing = self._supergroup._to_subgroup_engine
+        except AttributeError:
+            return self._engine(self._supergroup._to_engine(element))
+        return crossing(element, self._engine)
 
     def _from_engine(self, element):
-        return self._supergroup._from_engine(element)
+        try:
+            crossing = self._supergroup._from_subgroup_engine
+        except AttributeError:
+            return self._supergroup._from_engine(element)
+        return crossing(element)
 
     def __call__(self, value):
         r"""Construct a subgroup element without Sage coercion discovery."""
@@ -697,18 +744,20 @@ class _TransportedGroupSubobject(Parent):
     def _element_constructor_(self, value):
         if value not in self._supergroup:
             raise TypeError("a subgroup element must be an ambient preamble element")
-        backend = self._supergroup._to_engine(value)
-        if backend not in self._engine:
-            raise ValueError(f"{value} is not in this subgroup")
+        try:
+            self._to_engine(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"{value} is not in this subgroup") from None
         return value
 
     def __contains__(self, value) -> bool:
         if value not in self._supergroup:
             return False
         try:
-            return self._supergroup._to_engine(value) in self._engine
-        except TypeError, ValueError:
+            self._to_engine(value)
+        except (TypeError, ValueError):
             return False
+        return True
 
     def __iter__(self):
         return (self._supergroup._from_engine(element) for element in self._engine)
@@ -759,7 +808,7 @@ def _group_constructor_argument(value):
     try:
         if value in OwnedRings():
             return _engine_ring(value)
-    except AttributeError, TypeError, ValueError:
+    except (AttributeError, TypeError, ValueError):
         pass
 
     parent = getattr(value, "parent", lambda: None)()
@@ -767,18 +816,18 @@ def _group_constructor_argument(value):
         try:
             if parent in OwnedGroups():
                 return _element_to_engine(parent, value)
-        except AttributeError, NameError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NameError, NotImplementedError, TypeError, ValueError):
             pass
         try:
             if parent in OwnedRings():
                 return _engine_element(parent, value)
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             pass
         try:
             base_ring = parent.base_ring()
             if parent in MatrixSpaces(base_ring):
                 return _engine_matrix(value)
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             pass
 
     if isinstance(value, tuple):
@@ -803,6 +852,17 @@ def _owned_group_constructor(constructor):
     return staticmethod(construct)
 
 
+def _nilpotent_group_constructor(*args, **kwargs):
+    from sage.groups.lie_gps.catalog import Nilpotent as SageNilpotent
+
+    return _own_group(
+        SageNilpotent(
+            *tuple(_group_constructor_argument(argument) for argument in args),
+            **{name: _group_constructor_argument(argument) for name, argument in kwargs.items()},
+        )
+    )
+
+
 def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **kwds):
     from sage.groups.misc_gps.misc_groups_catalog import Free as SageFree
 
@@ -815,16 +875,25 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
         try:
             size = cardinal(index_set.cardinality())
             finite_index_set = size.is_finite()
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             finite_index_set = getattr(index_set, "is_finite", lambda: False)() is True
         if finite_index_set:
-            backend_index_set = tuple(engine_label(label) for label in index_set)
+            owned_labels = tuple(index_set)
+            backend_index_set = tuple(range(len(owned_labels)))
+
+            def engine_label(label):
+                for position, candidate in enumerate(owned_labels):
+                    if candidate == label:
+                        return position
+                raise ValueError(f"{label!r} is not in the chosen free basis")
 
             def owned_label(backend_label):
-                for label in index_set:
-                    if engine_label(label) == backend_label:
-                        return label
-                raise ValueError(f"{backend_label!r} is not in the backend free basis")
+                try:
+                    return owned_labels[int(backend_label)]
+                except (IndexError, TypeError, ValueError) as error:
+                    raise ValueError(
+                        f"{backend_label!r} is not in the backend free basis"
+                    ) from error
         else:
             backend_index_set = _group_constructor_argument(index_set)
             if backend_index_set is index_set:
@@ -971,9 +1040,67 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
 # --------------------------------------------------------------------------
 
 
+def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
+    r"""Raise ``G/N`` and its quotient map from GAP for a represented finite group."""
+    from sage.groups.perm_gps.permgroup import PermutationGroup
+
+    assert group in OwnedFiniteGroups(), (
+        "the selected quotient adapter currently requires a finite ambient group"
+    )
+    group_model = _gap_model(group)
+    assert bool(normal_subgroup.IsNormal(group_model)), (
+        "a group quotient requires a normal subgroup"
+    )
+    gap_projection = libgap.NaturalHomomorphismByNormalSubgroup(
+        group_model,
+        normal_subgroup,
+    )
+    gap_quotient = gap_projection.Image()
+    permutation_isomorphism = gap_quotient.IsomorphismPermGroup()
+    permutation_model = permutation_isomorphism.Image()
+    quotient = _own_group(PermutationGroup(gap_group=permutation_model))
+    projection = group_homset(group, quotient)(
+        gap_projection * permutation_isomorphism
+    )
+    return quotient, projection
+
+
 class SubgroupInclusion(SetMorphism):
     def is_injective(self):
         return True
+
+    @cached_method
+    def _cokernel_data(self):
+        r"""Return the quotient by the normal closure of this subgroup image."""
+        subgroup = self.domain()
+        ambient = self.codomain()
+        assert ambient in OwnedFiniteGroups(), (
+            "group-inclusion cokernels are currently computed for finite ambient groups"
+        )
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            KernelSubgroups,
+            PredicateSubgroups,
+        )
+
+        if subgroup in KernelSubgroups(ambient):
+            subgroup_model = subgroup.kernel_morphism().gap().Kernel()
+        else:
+            assert subgroup not in PredicateSubgroups(ambient), (
+                "the current exact cokernel computation for a predicate subgroup "
+                "requires a represented kernel"
+            )
+            subgroup_model = _gap_model(subgroup)
+        normal_closure = libgap.NormalClosure(_gap_model(ambient), subgroup_model)
+        return _finite_group_quotient_by_gap_normal_subgroup(
+            ambient,
+            normal_closure,
+        )
+
+    def cokernel(self):
+        return self._cokernel_data()[0]
+
+    def cokernel_projection(self):
+        return self._cokernel_data()[1]
 
 
 def _group_inclusion_image(subgroup, containing_group, element):
@@ -1147,12 +1274,37 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return _element_from_engine(self.domain(), preimage)
 
     def kernel(self):
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            kernel_subgroup,
+        )
 
-        return _subgroup_from_gap(self.domain(), self.gap().Kernel())
+        return kernel_subgroup(self)
 
     def image(self):
 
         return _subgroup_from_gap(self.codomain(), self.gap().Image())
+
+    @cached_method
+    def _cokernel_data(self):
+        r"""Return the quotient of the codomain by the normal closure of the image."""
+        codomain = self.codomain()
+        assert codomain in OwnedFiniteGroups(), (
+            "group-morphism cokernels are currently computed for finite codomains"
+        )
+        normal_closure = libgap.NormalClosure(
+            _gap_model(codomain),
+            self.gap().Image(),
+        )
+        return _finite_group_quotient_by_gap_normal_subgroup(
+            codomain,
+            normal_closure,
+        )
+
+    def cokernel(self):
+        return self._cokernel_data()[0]
+
+    def cokernel_projection(self):
+        return self._cokernel_data()[1]
 
     def is_injective(self):
         return bool(self.gap().IsInjective())
@@ -1189,7 +1341,7 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         if category is not None:
             placement.append(category)
         if placement:
-            CategoryObject._refine_category_(self, Category.join(tuple(placement)))
+            CategoryObject._refine_category_(self, Cat().meet(tuple(placement)))
             realize_owned_category(self)
 
     def _element_constructor_(self, images, check=True, **_options):
@@ -1249,6 +1401,21 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
             check=check,
         )
 
+    @cached_method
+    def cardinality(self):
+        r"""Return the exact number of represented homomorphisms for finite endpoints."""
+        domain = self.domain()
+        codomain = self.codomain()
+        if domain not in OwnedFiniteGroups() or codomain not in OwnedFiniteGroups():
+            raise NotImplementedError(
+                "group-Hom cardinality is currently computed for finite groups"
+            )
+        homomorphisms = libgap.AllHomomorphisms(
+            _gap_model(domain),
+            _gap_model(codomain),
+        )
+        return cardinal(int(homomorphisms.Length()))
+
     def _repr_(self):
         return f"Hom({self.domain()}, {self.codomain()})"
 
@@ -1259,7 +1426,11 @@ def group_homset(domain, codomain):
 
 
 class GroupAutomorphism(GroupHomomorphism):
-    pass
+    def __mul__(self, other):
+        r"""Compose automorphisms inside their represented automorphism group."""
+        if isinstance(other, GroupAutomorphism) and other.parent() is self.parent():
+            return self.parent()(other.gap() * self.gap(), check=False)
+        return super().__mul__(other)
 
 
 class GroupAutomorphismGroups(OwnedCategory):
@@ -1276,6 +1447,17 @@ class GroupAutomorphismGroups(OwnedCategory):
 
         def one(self):
             return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
+
+        def __iter__(self):
+            r"""Enumerate automorphisms when the underlying group is finite."""
+            if self.domain().is_finite() is not True:
+                raise TypeError(
+                    "enumerating an automorphism group requires a finite underlying group"
+                )
+            return (
+                self(backend, check=False)
+                for backend in self._libgap_().Elements()
+            )
 
         def supergroup(self):
             return self._supergroup
@@ -1344,7 +1526,7 @@ class GroupAutomorphismGroup(GroupHomset):
             hom_family,
             group,
             group,
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(tuple(categories)),
         )
 
     def super_categories(self):
@@ -1454,7 +1636,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     """Groups whose notebook-facing group interface is owned by the preamble."""
 
     from sage.groups.abelian_gps.abelian_group import AbelianGroup as _SageAbelianGroup
-    from sage.groups.lie_gps.catalog import Nilpotent as _SageNilpotent
     from sage.groups.misc_gps.misc_groups_catalog import (
         Artin as _SageArtin,
     )
@@ -1573,7 +1754,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     SemimonomialTransformation = staticmethod(_SemimonomialTransformation)
     Affine = staticmethod(_Affine)
     Euclidean = staticmethod(_Euclidean)
-    Nilpotent = _owned_group_constructor(_SageNilpotent)
+    Nilpotent = staticmethod(_nilpotent_group_constructor)
     SmallGroup = staticmethod(_SmallGroup)
     ComplexReflection = _owned_group_constructor(_SageComplexReflection)
     Mathieu = _owned_group_constructor(_SageMathieu)
@@ -1617,6 +1798,191 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         # Functors out of ``Grp``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
+
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected finite product of represented finite groups.
+
+            GAP's ``DirectProduct`` supplies the product group and its canonical
+            projections.  The owned object is raised through the ordinary group
+            constructor, so finiteness, commutativity, permutation realization,
+            and presentation structure are recovered from that one product rather
+            than attached after construction.
+            """
+            from sage.groups.perm_gps.permgroup import PermutationGroup
+
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                ProductConeCategory,
+                SelectedLimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Group product factors")
+            assert family.cardinality() != cardinal(0), (
+                "the represented finite-group product currently requires a nonempty family"
+            )
+            if any(factor not in self for factor in family):
+                raise TypeError("a group product requires group-valued factors")
+            assert all(factor in OwnedFiniteGroups() for factor in family), (
+                "the represented group product currently uses GAP's finite-group direct product"
+            )
+            labels = tuple(family.index_set())
+            engines = tuple(_gap_model(family[label]) for label in labels)
+            product_engine = libgap.DirectProduct(*engines)
+            product = _own_group(PermutationGroup(gap_group=product_engine))
+            if product not in self:
+                raise ArithmeticError(
+                    "the finite-group direct product did not retain the factors' common structure"
+                )
+
+            diagram = _discrete_diagram(family, self)
+
+            def projection(label):
+                position = labels.index(label) + 1
+                return group_homset(product, family[label])(
+                    libgap.Projection(product_engine, position)
+                )
+
+            universal_cone = ProductConeCategory(diagram).cone(
+                product,
+                lambda index: projection(index.value()),
+            )
+
+            def factorizer(cone):
+                apex = cone.apex()
+                source_engine = _gap_model(apex)
+                source_generators = tuple(source_engine.GeneratorsOfGroup())
+                images = []
+                for source_generator in source_generators:
+                    owned_generator = _element_from_engine(apex, source_generator)
+                    image = product_engine.One()
+                    for position, label in enumerate(labels, start=1):
+                        leg = cone.structure_morphism(diagram.domain()(label))
+                        factor = family[label]
+                        factor_image = leg(owned_generator)
+                        image *= libgap.Embedding(product_engine, position).Image(
+                            _element_to_engine(factor, factor_image)
+                        )
+                    images.append(image)
+                return group_homset(apex, product)._from_engine_generator_images(
+                    source_generators,
+                    images,
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def _categorical_coproduct_construction(self, factors):
+            r"""Return the selected finite coproduct of represented finite groups.
+
+            In ``Grp`` the coproduct is the free product.  GAP supplies finite
+            presentation isomorphisms for the represented finite factors, the
+            maintained ``FreeProduct`` construction, and its canonical factor
+            embeddings.  The result is raised as one owned finitely presented
+            group; no GAP group or mapping crosses the public boundary.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                CoproductCoconeCategory,
+                SelectedColimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Group coproduct factors")
+            assert family.cardinality() != cardinal(0), (
+                "the represented group coproduct currently requires a nonempty family"
+            )
+            if any(factor not in self for factor in family):
+                raise TypeError("a group coproduct requires group-valued factors")
+            assert all(factor in OwnedFiniteGroups() for factor in family), (
+                "the represented group coproduct currently uses GAP's finite-group "
+                "presentation and free-product algorithms"
+            )
+
+            labels = tuple(family.index_set())
+            presentation_isomorphisms = tuple(
+                _gap_model(family[label]).IsomorphismFpGroup() for label in labels
+            )
+            presented_factors = tuple(
+                isomorphism.Image() for isomorphism in presentation_isomorphisms
+            )
+            coproduct_engine = libgap.FreeProduct(*presented_factors)
+            coproduct = _own_group(coproduct_engine.sage())
+            selected_generators = tuple(
+                _element_from_engine(coproduct, generator)
+                for generator in coproduct_engine.GeneratorsOfGroup()
+            )
+            generator_positions = Sets.Δ[len(selected_generators) - 1]
+            coproduct._preamble_selected_group_generators = finite_ordered_image(
+                generator_positions,
+                lambda position: selected_generators[int(position)],
+                name=f"Chosen generators of {coproduct}",
+            )
+            nontrivial_factors = sum(
+                1 for label in labels if int(family[label].order()) > 1
+            )
+            refine(
+                coproduct,
+                OwnedInfiniteGroups()
+                if nontrivial_factors >= 2
+                else OwnedFiniteGroups(),
+            )
+
+            embeddings = tuple(
+                libgap.Embedding(coproduct_engine, position)
+                for position in range(1, len(labels) + 1)
+            )
+            target_category = OwnedGroups()
+            diagram = _discrete_diagram(family, target_category)
+
+            def injection(label):
+                position = labels.index(label)
+                return group_homset(family[label], coproduct)(
+                    presentation_isomorphisms[position] * embeddings[position]
+                )
+
+            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+                coproduct,
+                lambda index: injection(index.value()),
+            )
+
+            def factorizer(cocone):
+                apex = cocone.apex()
+                assert _elements_have_gap_models(apex), (
+                    "the represented free-product factorization currently requires "
+                    "an apex with elementwise GAP coordinates"
+                )
+                generator_models = []
+                image_models = []
+                for position, label in enumerate(labels):
+                    factor = family[label]
+                    leg = cocone.costructure_morphism(diagram.domain()(label))
+                    isomorphism = presentation_isomorphisms[position]
+                    embedding = embeddings[position]
+                    for presented_generator in presented_factors[
+                        position
+                    ].GeneratorsOfGroup():
+                        generator_models.append(
+                            embedding.Image(presented_generator)
+                        )
+                        factor_generator = isomorphism.PreImagesRepresentative(
+                            presented_generator
+                        )
+                        image_models.append(
+                            _element_to_engine(
+                                apex,
+                                leg(_element_from_engine(factor, factor_generator)),
+                            )
+                        )
+                return group_homset(coproduct, apex)._from_engine_generator_images(
+                    generator_models,
+                    image_models,
+                )
+
+            return SelectedColimitConstruction(
+                diagram,
+                universal_cocone,
+                factorizer,
+            )
 
         def abelianization(self):
             r"""``(-)^ab : Grp -> Ab``, the abelianization functor.
@@ -1692,6 +2058,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def is_abelian(self):
             if self in OwnedAbelianGroups():
                 return True
+            engine = _engine_group(self)
+            if isinstance(engine, FreeGroup_class):
+                # F_0 and F_1 are abelian; F_n for n >= 2 contains the two
+                # noncommuting free generators.  This is structural data of
+                # the represented free group, not an infinite search.
+                return len(tuple(engine.gens())) <= 1
             if self in OwnedFiniteGroups():
                 try:
                     return bool(_gap_model(self).IsAbelian())
@@ -1702,6 +2074,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def is_finitely_generated(self):
             if self in OwnedFinitelyGeneratedGroups():
                 return True
+            return Unknown
+
+        def number_of_group_generators(self):
+            r"""Return the size of the chosen generating family, or ``Unknown``.
+
+            A group need not come with a selected finite generating family.
+            The question is nevertheless total at the group owner: the
+            category-specific implementation on
+            :class:`GroupsWithChosenFiniteGeneratingSet` returns the exact
+            cardinality, while every other represented group answers
+            ``Unknown`` rather than forcing callers into attribute/exception
+            probing.
+            """
             return Unknown
 
         def is_finitely_presented(self):
@@ -1734,6 +2119,50 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
+
+        @cached_method
+        def center(self):
+            r"""Return the center as an owned subgroup in the represented finite case."""
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return _subgroup_from_gap(self, _gap_model(self).Center())
+            assert False, (
+                "the group center is defined generally, but the current exact "
+                "construction requires a represented finite GAP group"
+            )
+
+        @cached_method
+        def commutator_subgroup(self):
+            r"""Return ``[G,G]`` as the represented derived subgroup when finite."""
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
+            assert False, (
+                "the commutator subgroup is defined generally, but the current exact "
+                "construction requires a represented finite GAP group"
+            )
+
+        derived_subgroup = commutator_subgroup
+
+        @cached_method
+        def subgroups(self):
+            r"""Return the represented subgroups as an owned finite ordered set.
+
+            GAP owns exact subgroup enumeration for finite groups whose elements
+            are represented by its group model.  Each enumerated subgroup is
+            raised through the existing transported-subgroup constructor, so the
+            ambient group and canonical inclusion remain the same owned data used
+            by ``subgroup(...)`` and the subgroup categories.
+            """
+            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
+                return finite_ordered_set(
+                    tuple(
+                        _subgroup_from_gap(self, subgroup)
+                        for subgroup in _gap_model(self).AllSubgroups()
+                    )
+                )
+            assert False, (
+                "the subgroup set is defined for every group, but the current exact "
+                "enumeration requires a represented finite GAP group"
+            )
 
         def supergroup(self):
             return _engine_supergroup(self)
@@ -1822,12 +2251,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             @cached_method
             def irreducible_characters(self):
-                r"""The complex irreducible characters, as class functions.
+                r"""The complex irreducible characters, as elements of ``Char(G)``.
 
                 Values lie in the cyclotomic field of the group's exponent
                 and are read on the chosen conjugacy-class representatives,
                 in the order GAP's ``Irr`` lists them.
                 """
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
+                )
                 from dzack_research.preamble.categories.group.class_functions import (
                     finite_group_class_function,
                 )
@@ -1844,13 +2276,114 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 # index of isotypic components and is compared by identity.
                 return finite_ordered_set(
                     tuple(
-                        finite_group_class_function(
-                            self,
-                            field,
-                            tuple(field._from_engine_element(engine_field(value.sage())) for value in character.List()),
-                            representatives=representatives,
+                        character_from_class_function(
+                            finite_group_class_function(
+                                self,
+                                field,
+                                tuple(
+                                    field._from_engine_element(engine_field(value.sage()))
+                                    for value in character.List()
+                                ),
+                                representatives=representatives,
+                            )
                         )
                         for character in gap_group.Irr()
+                    )
+                )
+
+            def character(self, values):
+                r"""Return the ordinary character with the stated class values.
+
+                Values are indexed by this group's selected conjugacy-class
+                representatives and live in the same cyclotomic coefficient
+                field as :meth:`irreducible_characters`.  The public result is
+                the owned character object; the finite class-function carrier
+                remains the existing private representation boundary.
+                """
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
+                )
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    CyclotomicField,
+                )
+
+                gap_group = _gap_model(self)
+                field = CyclotomicField(int(gap_group.Exponent()))
+                representatives = self.conjugacy_classes_representatives()
+                supplied = tuple(values)
+                if len(supplied) != int(representatives.cardinality()):
+                    raise ValueError(
+                        "a character requires one value for each conjugacy class"
+                    )
+                candidate = character_from_class_function(
+                    finite_group_class_function(
+                        self,
+                        field,
+                        tuple(field(value) for value in supplied),
+                        representatives=representatives,
+                    )
+                )
+                integers = _own_ring(ZZ)
+                irreducibles = self.irreducible_characters()
+                multiplicities = []
+                for irreducible in irreducibles:
+                    coefficient = candidate._inner_product(irreducible)
+                    try:
+                        multiplicity = integers(coefficient)
+                    except (TypeError, ValueError) as error:
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        ) from error
+                    if multiplicity < integers.zero():
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        )
+                    multiplicities.append(multiplicity)
+                for representative, expected in zip(
+                    representatives, supplied, strict=True
+                ):
+                    reconstructed = field.zero()
+                    for multiplicity, irreducible in zip(
+                        multiplicities, irreducibles, strict=True
+                    ):
+                        reconstructed += multiplicity * irreducible(representative)
+                    if reconstructed != field(expected):
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        )
+                return candidate
+
+            @cached_method
+            def trivial_character(self):
+                r"""Return the degree-one trivial ordinary character of ``self``.
+
+                Its values live in the same cyclotomic field selected for the
+                ordinary irreducible characters of this group, so it is an
+                element of the same owned character set and composes with the
+                existing character arithmetic without a separate value model.
+                """
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
+                )
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    CyclotomicField,
+                )
+
+                gap_group = _gap_model(self)
+                field = CyclotomicField(int(gap_group.Exponent()))
+                representatives = self.conjugacy_classes_representatives()
+                return character_from_class_function(
+                    finite_group_class_function(
+                        self,
+                        field,
+                        tuple(field.one() for _representative in representatives),
+                        representatives=representatives,
                     )
                 )
 
@@ -2180,8 +2713,34 @@ class Subgroups(OwnedParameterizedCategory):
         def supergroup(self):
             return self._preamble_supergroup
 
+        @cached_method
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
+
+
+class GeneratedSubgroups(OwnedParameterizedCategory):
+    r"""Subgroups equipped with the selected family used to generate them."""
+
+    @staticmethod
+    def __classcall__(cls, supergroup):
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(supergroup))
+
+    def parameter_category(self):
+        return OwnedGroups()
+
+    def an_object(self):
+        return self.base().subgroup(())
+
+    def super_categories(self):
+        return [Subgroups(self.base())]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "generated subgroups"
+
+    class ParentMethods:
+        def selected_subgroup_generators(self):
+            return self._preamble_selected_subgroup_generators
 
 
 def coxeter_presentation(coxeter_matrix, names=None):

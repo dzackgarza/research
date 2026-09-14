@@ -6,18 +6,18 @@ assertion below fails if one hypothesis is dropped from the criterion.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSpace,
     Curves,
     FiniteTypeSchemes,
     IntegralSchemes,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
     SeparatedSchemes,
     Spec,
     Surfaces,
     Varieties,
-    ZZ,
     scheme_product,
 )
 
@@ -86,3 +86,31 @@ def test_relative_dimension_is_read_over_the_stated_base() -> None:
     # Over Z the coordinate ring Z[x] has Krull dimension two, and the
     # relative dimension subtracts the one dimension of the base.
     assert line.coordinate_ring().krull_dimension() == 2
+
+
+def test_projective_line_has_arithmetic_and_geometric_genus_zero() -> None:
+    line = ProjectiveSpace(1, QQ)
+
+    assert line.arithmetic_genus() == 0
+    assert line.geometric_genus() == 0
+    assert line.genus() == 0
+
+
+def test_singular_plane_cubic_keeps_arithmetic_genus_separate_from_geometric_genus() -> None:
+    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    coordinate_ring = plane.coordinate_ring()
+    x = coordinate_ring.algebra_generator("x")
+    y = coordinate_ring.algebra_generator("y")
+    z = coordinate_ring.algebra_generator("z")
+    cusp = plane.closed_subscheme(y**2 * z - x**3)
+
+    assert cusp in Curves(QQ)
+    assert cusp.arithmetic_genus() == 1
+    try:
+        cusp.geometric_genus()
+    except NotImplementedError:
+        pass
+    else:
+        raise AssertionError(
+            "a singular curve must not identify geometric genus with arithmetic genus"
+        )
