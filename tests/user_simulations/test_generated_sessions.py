@@ -9,11 +9,10 @@ the end for every drawn input.
 
 from math import factorial
 
-from hypothesis import given, settings
-from sage.misc.latex import latex
-
 from construction_strategies import nondegenerate_gram_2x2, primes, radicands, small_integers
+from hypothesis import given, settings
 from natural_parameters import determinant_2x2, euler_phi, is_prime, prime_factorization, quadratic_field_discriminant, signature_2x2
+from sage.misc.latex import latex
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 

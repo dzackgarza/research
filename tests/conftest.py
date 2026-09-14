@@ -26,7 +26,6 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-
 # The session no longer publishes a global for an operation whose owner is in
 # argument position (`ARC-12`).  Each entry below is the owned spelling, and
 # reading the table is how a test written against the old global learns what

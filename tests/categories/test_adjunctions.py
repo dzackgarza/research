@@ -1,25 +1,25 @@
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
-    Modules,
     Groups,
+    Modules,
     QuadraticField,
     Sets,
-    ZZ,
     abelianization_adjunction,
+    alternating_algebra_functor,
     base_change_adjunction,
     category_inclusion,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
     module_homset,
     order_number_field_adjunction,
-    alternating_algebra_functor,
     symmetric_algebra_functor,
     tensor_algebra_functor,
 )
-from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 

@@ -24,13 +24,13 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ConeCategory,
     CoproductCoconeCategory,
-    _parallel_pair_diagram,
     ProductConeCategory,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
     _discrete_diagram,
     _factor_family,
     _finite_factor_family,
+    _parallel_pair_diagram,
 )
 from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
     AssociativeAlgebraHomCategoryConstruction,

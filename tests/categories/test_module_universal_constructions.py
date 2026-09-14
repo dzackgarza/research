@@ -1,12 +1,6 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    CoequalizerConstruction,
-    CoproductConstruction,
-    EqualizerConstruction,
-    ProductConstruction,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
@@ -24,11 +18,11 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets import NN, cartesian_product_of, finite_ordered_set
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
@@ -41,7 +35,7 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
 
     left = module_homset(plane, line)({"x": z, "y": line.zero()})
     right = module_homset(plane, line)({"x": line.zero(), "y": z})
-    selected = EqualizerConstruction(left, right)
+    selected = Modules(ZZ).equalizer_construction(left, right)
     assert Modules(ZZ).equalizer(left, right) is selected.object()
 
     diagram = selected.diagram()
@@ -75,7 +69,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
 
     left = module_homset(source, plane)({"t": x})
     right = module_homset(source, plane)({"t": y})
-    selected = CoequalizerConstruction(left, right)
+    selected = Modules(ZZ).coequalizer_construction(left, right)
     assert Modules(ZZ).coequalizer(left, right) is selected.object()
 
     diagram = selected.diagram()
@@ -121,7 +115,7 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
     left = module_homset(plane, line)({"x": z, "y": line.zero()})
     right = module_homset(plane, line)({"x": line.zero(), "y": z})
 
-    equalizer = EqualizerConstruction(left, right)
+    equalizer = Modules(ZZ).equalizer_construction(left, right)
     diagram = equalizer.diagram()
     shape = diagram.domain()
     twice_plane = module_homset(plane, plane)({"x": 2 * x, "y": 2 * y})
@@ -135,7 +129,7 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
     inclusion = equalizer.structure_morphism(shape.source())
     assert inclusion * induced_equalizer == twice_plane * inclusion
 
-    coequalizer = CoequalizerConstruction(left, right)
+    coequalizer = Modules(ZZ).coequalizer_construction(left, right)
     induced_coequalizer = coequalizer.induced_map(transformation, coequalizer)
     projection = coequalizer.costructure_morphism(shape.target())
     assert induced_coequalizer * projection == projection * twice_line
@@ -146,7 +140,7 @@ def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None
     e = line.module_generator("e")
     zero = module_homset(line, line)({"e": line.zero()})
     twice = module_homset(line, line)({"e": 2 * e})
-    diagram = EqualizerConstruction(zero, twice).diagram()
+    diagram = Modules(ZZ).equalizer_construction(zero, twice).diagram()
     shape = diagram.domain()
 
     class CollapseToTarget(Functor):
@@ -194,7 +188,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     y = right.module_generator("y")
     t = probe.module_generator("t")
 
-    product = ProductConstruction((left, right))
+    product = Modules(ZZ).product_construction((left, right))
     assert Modules(ZZ).product((left, right)) is product.object()
     product_shape = product.diagram().domain()
     to_left = module_homset(probe, left)({"t": 2 * x})
@@ -207,7 +201,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     assert product.structure_morphism(product_shape(0)) * into_product == to_left
     assert product.structure_morphism(product_shape(1)) * into_product == to_right
 
-    coproduct = CoproductConstruction((left, right))
+    coproduct = Modules(ZZ).coproduct_construction((left, right))
     assert Modules(ZZ).coproduct((left, right)) is coproduct.object()
     coproduct_shape = coproduct.diagram().domain()
     from_left = module_homset(left, probe)({"x": 5 * t})
@@ -229,8 +223,8 @@ def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> 
         name="Empty family of sets",
     )
 
-    product = ProductConstruction(empty_family, target_category=Sets())
-    coproduct = CoproductConstruction(empty_family, target_category=Sets())
+    product = Sets().product_construction(empty_family)
+    coproduct = Sets().coproduct_construction(empty_family)
 
     assert product.object().cardinality() == cardinal(1)
     assert coproduct.object().cardinality() == cardinal(0)

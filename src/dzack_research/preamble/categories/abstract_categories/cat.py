@@ -392,6 +392,58 @@ class Cat(CategoryPacketMethods, Category):
         def _categorical_coequalizer_family(self, morphisms: IndexedFamily) -> Parent:
             r"""Return this category's represented coequalizer of an indexed arrow family."""
 
+        def product_construction(self, factors):
+            r"""Return this category's selected product construction on ``factors``."""
+            construction = self._categorical_product_construction
+            assert construction is not NotImplemented, (
+                f"{self} does not represent a selected product construction"
+            )
+            return construction(factors)
+
+        def coproduct_construction(self, factors):
+            r"""Return this category's selected coproduct construction on ``factors``."""
+            construction = self._categorical_coproduct_construction
+            assert construction is not NotImplemented, (
+                f"{self} does not represent a selected coproduct construction"
+            )
+            return construction(factors)
+
+        def equalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return this category's selected equalizer construction."""
+            assert left_morphism.domain() is right_morphism.domain(), (
+                "equalizer arrows have one common domain"
+            )
+            assert left_morphism.codomain() is right_morphism.codomain(), (
+                "equalizer arrows have one common codomain"
+            )
+            construction = self._categorical_equalizer_construction
+            assert construction is not NotImplemented, (
+                f"{self} does not represent a selected equalizer construction"
+            )
+            return construction(left_morphism, right_morphism)
+
+        def coequalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return this category's selected coequalizer construction."""
+            assert left_morphism.domain() is right_morphism.domain(), (
+                "coequalizer arrows have one common domain"
+            )
+            assert left_morphism.codomain() is right_morphism.codomain(), (
+                "coequalizer arrows have one common codomain"
+            )
+            construction = self._categorical_coequalizer_construction
+            assert construction is not NotImplemented, (
+                f"{self} does not represent a selected coequalizer construction"
+            )
+            return construction(left_morphism, right_morphism)
+
         @abstract_method(optional=True)
         def _categorical_product_morphism(
             self,

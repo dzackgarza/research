@@ -1,10 +1,10 @@
 from dzack_research.preamble.all import (
+    NN,
+    ZZ,
     BasedFreeModule,
     FinitelyPresentedModule,
     FreeModuleOn,
     ModuleSubobjects,
-    NN,
-    ZZ,
     module_homset,
     subobject_image_adjunction,
 )

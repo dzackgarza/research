@@ -1,20 +1,20 @@
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
     ClosedEmbeddings,
     IntegralSchemes,
-    ProjectiveSpace,
-    ProjectiveSpaces,
     ProductProjectiveSpaces,
     ProductSchemes,
-    QQ,
+    ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
     SmoothSchemes,
     Spec,
-    ZZ,
     scheme_product,
 )
 
@@ -349,11 +349,12 @@ def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
 
 
 def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
+    from pytest import raises
+
     from dzack_research.preamble.categories.algebras.free_algebras import (
         FinitelyPresentedAlgebra,
         PolynomialRing,
     )
-    from pytest import raises
 
     parameter = PolynomialRing(QQ, "t")
     t = parameter.algebra_generator("t")

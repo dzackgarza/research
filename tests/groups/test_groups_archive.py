@@ -73,13 +73,12 @@ def test_group_coproduct_is_the_owned_free_product() -> None:
 def test_group_coproduct_factorization_extends_the_factor_maps() -> None:
     from dzack_research.preamble.categories.abstract_categories import (
         CoproductCoconeCategory,
-        CoproductConstruction,
     )
 
     two = Groups.C(2)
     three = Groups.C(3)
     target = Groups.S(3)
-    construction = CoproductConstruction((two, three), target_category=Groups())
+    construction = Groups().coproduct_construction((two, three))
     diagram = construction.diagram()
     first_index = diagram.domain()(0)
     second_index = diagram.domain()(1)

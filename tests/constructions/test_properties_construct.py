@@ -8,8 +8,7 @@ concrete counterexample the session mishandles.
 
 from math import factorial, gcd, lcm, prod
 
-from hypothesis import given, settings
-
+from conftest import COMMUTATIVE_RINGS, FIELDS, PRINCIPAL_IDEAL_DOMAINS, specimen
 from construction_strategies import (
     cartan_types,
     cyclic_module_orders,
@@ -26,7 +25,7 @@ from construction_strategies import (
     small_integers,
     symmetric_groups,
 )
-from conftest import COMMUTATIVE_RINGS, FIELDS, PRINCIPAL_IDEAL_DOMAINS, specimen
+from hypothesis import given, settings
 from natural_parameters import (
     binomial,
     determinant_2x2,
