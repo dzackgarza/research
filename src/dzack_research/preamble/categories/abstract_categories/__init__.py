@@ -78,7 +78,6 @@ _EXPORTS = {
     "ArrowCategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "ArrowCategory"),
     "CategoricalIsomorphism": ("dzack_research.preamble.categories.abstract_categories.hom_categories", "CategoricalIsomorphism"),
     "CommutativeSquare": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CommutativeSquare"),
-    "Core": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "Core"),
     "CoreCategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CoreCategory"),
     "CosliceCategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CosliceCategory"),
     "CosliceUnder": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CosliceUnder"),
@@ -97,18 +96,10 @@ _EXPORTS = {
     "SuperobjectCategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SuperobjectCategory"),
     "SuperobjectsOf": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SuperobjectsOf"),
     "WideSubcategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "WideSubcategory"),
-    "Coequalizer": ("dzack_research.preamble.categories.abstract_categories.constructions", "Coequalizer"),
     "CoequalizerConstruction": ("dzack_research.preamble.categories.abstract_categories.constructions", "CoequalizerConstruction"),
-    "CoequalizerOfFamily": ("dzack_research.preamble.categories.abstract_categories.constructions", "CoequalizerOfFamily"),
-    "Cokernel": ("dzack_research.preamble.categories.abstract_categories.constructions", "Cokernel"),
     "CoproductConstruction": ("dzack_research.preamble.categories.abstract_categories.constructions", "CoproductConstruction"),
-    "Equalizer": ("dzack_research.preamble.categories.abstract_categories.constructions", "Equalizer"),
     "EqualizerConstruction": ("dzack_research.preamble.categories.abstract_categories.constructions", "EqualizerConstruction"),
-    "EqualizerOfFamily": ("dzack_research.preamble.categories.abstract_categories.constructions", "EqualizerOfFamily"),
-    "FiberProduct": ("dzack_research.preamble.categories.abstract_categories.constructions", "FiberProduct"),
-    "Kernel": ("dzack_research.preamble.categories.abstract_categories.constructions", "Kernel"),
     "ProductConstruction": ("dzack_research.preamble.categories.abstract_categories.constructions", "ProductConstruction"),
-    "Subobjects": ("dzack_research.preamble.categories.abstract_categories.constructions", "Subobjects"),
 }
 
 __all__ = [
@@ -182,7 +173,6 @@ __all__ = [
     "ArrowCategory",
     "CategoricalIsomorphism",
     "CommutativeSquare",
-    "Core",
     "CoreCategory",
     "CosliceCategory",
     "CosliceUnder",
@@ -201,18 +191,10 @@ __all__ = [
     "SuperobjectCategory",
     "SuperobjectsOf",
     "WideSubcategory",
-    "Coequalizer",
     "CoequalizerConstruction",
-    "CoequalizerOfFamily",
-    "Cokernel",
     "CoproductConstruction",
-    "Equalizer",
     "EqualizerConstruction",
-    "EqualizerOfFamily",
-    "FiberProduct",
-    "Kernel",
     "ProductConstruction",
-    "Subobjects",
 ]
 
 

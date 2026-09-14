@@ -3,7 +3,6 @@ r"""Pure abstract category objects use the owned runtime category boundary."""
 from dzack_research.preamble.all import Cat, Sets
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
-    Core,
     EndofunctorAlgebras,
     MonomorphismArrowCategory,
     SubobjectCategory,
@@ -73,7 +72,7 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
     points = finite_ordered_set(("a", "b"))
     discrete = DiscreteCategory(points)
     categories = (
-        Core(Sets()),
+        Sets().Core(),
         SubobjectCategory(Sets(), points),
         WideSubcategory(Sets(), MonomorphismArrowCategory(Sets())),
         EndofunctorAlgebras(IdentityFunctor(Sets())),
@@ -105,7 +104,7 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     points = finite_ordered_set(("a", "b"))
 
     assert sets.ArrowCategory() is ArrowCategory(sets)
-    assert sets.Core() is Core(sets)
+    assert sets.Core().base_category() is sets
     assert sets.opposite() is OppositeCategory(sets)
     product = ProductCategory(sets, sets)
     pair = product(points, points)

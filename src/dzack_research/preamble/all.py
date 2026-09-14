@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     ConeCategory,
     CoproductCoconeCategory,
     CoproductsOfCategory,
-    Core,
     CoreCategory,
     CosliceCategory,
     CoveredObjectCategory,

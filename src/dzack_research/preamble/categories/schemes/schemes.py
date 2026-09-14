@@ -22,7 +22,6 @@ from sage.schemes.projective.projective_space import (
 from sage.structure.category_object import CategoryObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Core,
     CosliceUnder,
     SliceOver,
 )
@@ -851,7 +850,7 @@ def _scheme_isomorphism(forward, inverse):
         raise ValueError("an inverse pair must reverse the same two scheme endpoints")
     base = forward.domain().scheme_base_ring()
     schemes = Schemes(base)
-    return Core(schemes).Mor(forward.domain(), forward.codomain())(forward, inverse)
+    return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 def _has_scheme_placement(scheme, category_class) -> bool:

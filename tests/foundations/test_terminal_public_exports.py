@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     AdicCompletion,
     AdicCompletions,
     CochainComplexFromFamily,
-    Core,
     DividedPowerAlgebraOf,
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
@@ -28,7 +27,6 @@ def test_terminal_collection_vocabulary_is_public() -> None:
         AdicCompletion,
         AdicCompletions,
         CochainComplexFromFamily,
-        Core,
         DividedPowerAlgebraOf,
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
@@ -51,6 +49,15 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "Pushout",
         "TensorProduct",
         "TensorSquare",
+        "Kernel",
+        "Cokernel",
+        "Equalizer",
+        "Coequalizer",
+        "EqualizerOfFamily",
+        "CoequalizerOfFamily",
+        "FiberProduct",
+        "Subobjects",
+        "Core",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)

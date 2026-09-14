@@ -54,8 +54,8 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     identity = module_homset(module, module).identity()
     negative_identity = module_homset(module, module)({"e": -e})
 
-    equalizer = Equalizer(identity, negative_identity)
-    coequalizer = Coequalizer(identity, negative_identity)
+    equalizer = Modules(ZZ).equalizer(identity, negative_identity)
+    coequalizer = Modules(ZZ).coequalizer(identity, negative_identity)
 
     assert equalizer.module_rank() == 0
     assert coequalizer in Modules(ZZ)

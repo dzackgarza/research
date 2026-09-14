@@ -14,9 +14,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Subobjects,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     EndCategoryConstruction,
     HomCategoryConstruction,
@@ -1731,7 +1728,7 @@ class FreeResolution:
             return False
 
         def agree(image, kernel, term):
-            subobjects = Subobjects(term, Modules(term.base_ring()))
+            subobjects = Modules(term.base_ring()).Subobjects(term)
             return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
 
         if not agree(

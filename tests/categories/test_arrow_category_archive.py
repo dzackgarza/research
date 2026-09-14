@@ -3,7 +3,6 @@ r"""Archive reconciliation for arrow categories, restricted arrows, and cores.""
 from dzack_research.preamble.all import (
     ArrowCategory,
     AutomorphismArrowCategory,
-    Core,
     EndArrowCategory,
     EpimorphismArrowCategory,
     IsoArrowCategory,
@@ -73,7 +72,7 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     assert injections.compose(swap, swap) == injections.identity(points)
 
     isomorphism = Isomorphism(swap, swap)
-    core = Core(Sets())
+    core = Sets().Core()
     core_hom = core.Mor(points, points)
     assert isomorphism in core_hom
     converted = core_hom(isomorphism)

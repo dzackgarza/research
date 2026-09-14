@@ -48,7 +48,6 @@ from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, ric
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
@@ -1976,7 +1975,7 @@ class RingCenterFunctor(Functor):
     """
 
     def __init__(self) -> None:
-        core = Core(OwnedRings())
+        core = OwnedRings().Core()
         super().__init__(core, CommutativeRings())
 
     def _apply_object(self, ring):

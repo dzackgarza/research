@@ -33,8 +33,6 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 # to say instead.  Nothing here adds capability: every value is one call on the
 # object the old global took as its first argument.
 _OWNED_SPELLINGS = {
-    "Kernel": lambda morphism: morphism.kernel(),
-    "Cokernel": lambda morphism: morphism.cokernel(),
     "Ideal": lambda ring, module_generating_set: ring.ideal(*module_generating_set),
     "FractionField": lambda ring: ring.fraction_field(),
     "Localization": lambda ring, *datum: ring.localization(*datum),
@@ -43,31 +41,12 @@ _OWNED_SPELLINGS = {
     "AdicCompletion": lambda ring, ideal, **options: ring.adic_completion(ideal, **options),
     # A construction on a category is reached from that category; one whose
     # inputs are several categories is a construction in Cat.
-    "Core": lambda category: category.Core(),
     "OppositeCategory": lambda category: category.opposite(),
     "SliceOver": lambda category, base_object: category.SliceOver(base_object),
     "CosliceUnder": lambda category, base_object: category.CosliceUnder(base_object),
     "SubobjectsOf": lambda category, base_object: category.SubobjectCategory(base_object),
     "SuperobjectsOf": lambda category, base_object: category.SuperobjectCategory(base_object),
-    "Subobjects": lambda base_object, category=None: (
-        base_object.category() if category is None else category
-    ).SubobjectCategory(base_object),
     "ProductCategory": lambda left, right: Cat().product([left, right]),
-    "FiberProduct": lambda left, right: _common_owned_category(
-        left.domain(), right.domain(), left.codomain()
-    ).fiber_product(left, right),
-    "Equalizer": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain()
-    ).equalizer(left, right),
-    "Coequalizer": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain()
-    ).coequalizer(left, right),
-    "EqualizerOfFamily": lambda arrows: _common_owned_category(
-        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
-    ).equalizer_of_family(arrows),
-    "CoequalizerOfFamily": lambda arrows: _common_owned_category(
-        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
-    ).coequalizer_of_family(arrows),
 }
 
 

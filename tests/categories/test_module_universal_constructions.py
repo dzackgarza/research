@@ -2,10 +2,8 @@ import pytest
 
 from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
 from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coequalizer,
     CoequalizerConstruction,
     CoproductConstruction,
-    Equalizer,
     EqualizerConstruction,
     ProductConstruction,
 )
@@ -44,7 +42,7 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
     left = module_homset(plane, line)({"x": z, "y": line.zero()})
     right = module_homset(plane, line)({"x": line.zero(), "y": z})
     selected = EqualizerConstruction(left, right)
-    assert Equalizer(left, right) is selected.object()
+    assert Modules(ZZ).equalizer(left, right) is selected.object()
 
     diagram = selected.diagram()
     shape = diagram.domain()
@@ -78,7 +76,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
     left = module_homset(source, plane)({"t": x})
     right = module_homset(source, plane)({"t": y})
     selected = CoequalizerConstruction(left, right)
-    assert Coequalizer(left, right) is selected.object()
+    assert Modules(ZZ).coequalizer(left, right) is selected.object()
 
     diagram = selected.diagram()
     shape = diagram.domain()
@@ -106,10 +104,10 @@ def test_zero_and_times_two_separate_equalizer_from_coequalizer() -> None:
     zero = module_homset(line, line)({"e": line.zero()})
     twice = module_homset(line, line)({"e": 2 * e})
 
-    equalizer = Equalizer(zero, twice)
+    equalizer = Modules(ZZ).equalizer(zero, twice)
     assert equalizer.module_rank() == 0
 
-    coequalizer = Coequalizer(zero, twice)
+    coequalizer = Modules(ZZ).coequalizer(zero, twice)
     invariants = coequalizer.invariant_factors()
     assert invariants.cardinality() == 1
     assert invariants[0] == ZZ(2)

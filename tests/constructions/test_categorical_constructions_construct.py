@@ -7,8 +7,6 @@ categories, natural transformations, cores, and the Hom, End, Aut, Mono, Epi
 and Iso constructions.
 """
 
-import pytest
-
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
@@ -64,14 +62,14 @@ def test_pushouts_and_fiber_products_of_finite_sets() -> None:
 
     onto_one_from_two = Sets().Mor(two, one)(lambda point: one(0))
     onto_one_from_three = Sets().Mor(three, one)(lambda point: one(0))
-    pulled_back = FiberProduct(onto_one_from_two, onto_one_from_three)
+    pulled_back = Sets().fiber_product(onto_one_from_two, onto_one_from_three)
     assert pulled_back.cardinality() == 6
     assert pulled_back.left_projection().codomain() is two
 
 
 def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
     three = Sets.Δ[2]
-    subobjects = Subobjects(three)
+    subobjects = Sets().Subobjects(three)
     assert subobjects in Cat()
     assert subobjects.cardinality() == 8
     assert SubobjectsOf(Sets(), three).cardinality() == 8
@@ -105,12 +103,12 @@ def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
     projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
 
-    assert Kernel(projection).module_rank() == 1
-    assert Kernel(projection).inclusion().codomain() is plane
-    assert Cokernel(projection).cardinality() == 1
-    assert Cokernel(doubling).cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
-    assert Cokernel(doubling).projection().domain() is line
-    assert Kernel(doubling).module_rank() == (1 if ring(2) == ring.zero() else 0)
+    assert projection.kernel().module_rank() == 1
+    assert projection.kernel().inclusion().codomain() is plane
+    assert projection.cokernel().cardinality() == 1
+    assert doubling.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
+    assert doubling.cokernel().projection().domain() is line
+    assert doubling.kernel().module_rank() == (1 if ring(2) == ring.zero() else 0)
 
 
 def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
@@ -123,7 +121,7 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     assert glued in Modules(ring)
     assert glued.module_rank() == 3
     first_projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
-    pulled_back = FiberProduct(first_projection, first_projection)
+    pulled_back = Modules(ring).fiber_product(first_projection, first_projection)
     assert pulled_back in Modules(ring)
     assert pulled_back.module_rank() == 3
     assert Modules(ring).pushout(first_axis, second_axis).module_rank() == 3
@@ -132,7 +130,7 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
     ring = commutative_ring
     module = FreeModule(ring, 2)
-    subobjects = Subobjects(module)
+    subobjects = Modules(ring).Subobjects(module)
     line = module.subobject_on([module.module_generator(0)])
     assert subobjects in Cat()
     assert line in subobjects
@@ -162,20 +160,20 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     assert free_product in Groups()
     assert free_product not in FiniteGroups()
     assert free_product.cardinality() == aleph0
-    assert Kernel(sign).order() == 3
-    assert Kernel(sign).is_abelian()
-    assert Cokernel(Kernel(sign).inclusion()).order() == 2
-    assert Cokernel(sign).order() == 1
+    assert sign.kernel().order() == 3
+    assert sign.kernel().is_abelian()
+    assert sign.kernel().inclusion().cokernel().order() == 2
+    assert sign.cokernel().order() == 1
     assert groups.product((two, three)).is_isomorphic_to(Groups.C(6))
 
 
 def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
     symmetric = Groups.S(3)
-    subgroups = Subobjects(symmetric)
+    subgroups = Groups().Subobjects(symmetric)
     assert subgroups in Cat()
     assert subgroups.cardinality() == 6
-    assert Subobjects(Groups.C(6)).cardinality() == 4
-    assert Subobjects(Groups.Q()).cardinality() == 6
+    assert Groups().Subobjects(Groups.C(6)).cardinality() == 4
+    assert Groups().Subobjects(Groups.Q()).cardinality() == 6
 
 
 # ---------------------------------------------------------------------------
@@ -191,7 +189,7 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         OppositeCategory(Sets()),
         ProductCategory(Sets(), Groups()),
         FunctorCategory(Sets(), Sets()),
-        Core(Sets()),
+        Sets().Core(),
         Modules(ZZ),
         Sets(),
         Groups(),
@@ -232,10 +230,10 @@ def test_isomorphisms_and_the_core() -> None:
     swap = Sets().Mor(two, two)(lambda point: two(1 - int(point)))
     isomorphism = Isomorphism(swap, swap)
     assert isomorphism in IsoCategoryOf(Sets()).Of(two, two)
-    assert isomorphism in Core(Sets()).Mor(two, two)
+    assert isomorphism in Sets().Core().Mor(two, two)
     assert isomorphism.inverse() * isomorphism == IsoCategoryOf(Sets()).Of(two, two).identity()
     assert IsoCategoryOf(Sets()).Of(two, two).cardinality() == 2
-    assert Core(Sets()).Mor(two, Sets.Δ[2]).cardinality() == 0
+    assert Sets().Core().Mor(two, Sets.Δ[2]).cardinality() == 0
 
 
 def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:

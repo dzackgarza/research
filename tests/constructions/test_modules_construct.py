@@ -166,10 +166,10 @@ def test_a_projection_and_its_kernel(commutative_ring) -> None:
     assert projection.is_surjective()
     assert not projection.is_injective()
     assert projection.kernel().module_rank() == 1
-    assert Kernel(projection).module_rank() == 1
+    assert projection.kernel().module_rank() == 1
     assert projection.image().module_rank() == 1
     assert projection.cokernel().cardinality() == 1
-    assert Cokernel(projection).cardinality() == 1
+    assert projection.cokernel().cardinality() == 1
 
 
 def test_multiplication_by_two_on_the_regular_module(integral_domain) -> None:
@@ -200,7 +200,7 @@ def test_a_submodule_and_its_quotient(commutative_ring) -> None:
     assert submodule.inclusion().is_injective()
     assert submodule.inclusion().codomain() is module
     assert submodule.module_rank() == 2
-    quotient = Cokernel(submodule.inclusion())
+    quotient = submodule.inclusion().cokernel()
     assert quotient in Modules(ring)
     assert quotient in FinitelyPresentedModules(ring)
     assert quotient.cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality() * ring.cardinality()

@@ -1255,10 +1255,6 @@ class CoreCategory(OwnedCategoryBase):
         return f"Core of {self.base_category()}"
 
 
-def Core(base_category: Category) -> CoreCategory:
-    return CoreCategory(base_category)
-
-
 def SliceOver(base_category: Category, base_object: Parent) -> SliceCategory:
     return SliceCategory(base_category, base_object)
 
@@ -1309,7 +1305,7 @@ def core_mor(
     reconstructing a Hom theory from the endpoints alone.
     """
     category = common_category(domain, codomain) if base_category is None else base_category
-    return Core(category).Mor(domain, codomain)
+    return category.Core().Mor(domain, codomain)
 
 
 def _represented_morphism_category(forward: Morphism, inverse: Morphism) -> Category | None:
@@ -1367,7 +1363,6 @@ __all__ = [
     "ArrowHomset",
     "CategoricalIsomorphism",
     "CommutativeSquare",
-    "Core",
     "CoreCategory",
     "CoreHomset",
     "CosliceCategory",

@@ -16,9 +16,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     EndofunctorAlgebras,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Subobjects,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -894,10 +891,6 @@ class Algebras(OwnedCategoryOverBaseRing):
             of the pairs (left multiplication by \(b\), right multiplication
             by \(b\)) over that set, computed in \(R\)-modules.
             """
-            from dzack_research.preamble.categories.abstract_categories.constructions import (
-                Equalizer,
-            )
-
             module = self.underlying_module()
             multiplication = self.multiplication_morphism()
             tensor = multiplication.domain()
@@ -909,7 +902,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 element = module.module_generator(label)
                 left = endomorphisms({other: multiplication(tensor.pure_tensor(module.module_generator(other), element)) for other in labels})
                 right = endomorphisms({other: multiplication(tensor.pure_tensor(element, module.module_generator(other))) for other in labels})
-                return Equalizer(left, right)
+                return Modules(self.base_ring()).equalizer(left, right)
 
             equalizers = iter(labels)
             center = commutation_equalizer(next(equalizers))
@@ -985,7 +978,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             if not ambient_labels.cardinality().is_finite():
                 raise NotImplementedError("algebra-ideal closure currently requires a finite module framing")
 
-            subobjects = Subobjects(module, Modules(ring))
+            subobjects = Modules(ring).Subobjects(module)
             current = subobject
             while True:
                 products = []

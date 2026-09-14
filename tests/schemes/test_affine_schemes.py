@@ -177,7 +177,6 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
 
 def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None:
     from dzack_research.preamble.all import PolynomialRing, SpecFunctor
-    from dzack_research.preamble.categories.abstract_categories import FiberProduct
 
     base = Spec(QQ)
     assert base.scheme_base_ring() is QQ
@@ -206,7 +205,7 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
     assert left_map.domain() is left
     assert left_map.codomain() is spec(common)
 
-    pullback = FiberProduct(left_map, right_map)
+    pullback = Schemes(QQ).fiber_product(left_map, right_map)
     left_projection, right_projection = pullback.fiber_product_projections()
     assert left_projection.domain() is pullback
     assert left_projection.codomain() is left
@@ -234,7 +233,6 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
 
 def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() -> None:
     from dzack_research.preamble.all import PolynomialRing, SpecFunctor
-    from dzack_research.preamble.categories.abstract_categories import FiberProduct
 
     common = PolynomialRing(QQ, "s")
     left_algebra = PolynomialRing(QQ, "x")
@@ -251,7 +249,7 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
     left_map = spec(common_to_left)
     right_map = spec(common_to_right)
 
-    pullback = FiberProduct(left_map, right_map)
+    pullback = Schemes(QQ).fiber_product(left_map, right_map)
     left_projection, right_projection = pullback.fiber_product_projections()
     left_pullback = left_projection.coordinate_algebra_morphism()
     right_pullback = right_projection.coordinate_algebra_morphism()
@@ -281,7 +279,6 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
 
 def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None:
     from dzack_research.preamble.all import FinitelyPresentedAlgebra, PolynomialRing, SpecFunctor
-    from dzack_research.preamble.categories.abstract_categories import FiberProduct
 
     parameter = PolynomialRing(QQ, "t")
     t = parameter.algebra_generator("t")
@@ -300,7 +297,7 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
     assert family.base_scheme() is parameter_scheme
     assert zero.base_scheme() is parameter_scheme
 
-    special_fiber = FiberProduct(
+    special_fiber = Schemes(parameter).fiber_product(
         family.structure_morphism(),
         zero.structure_morphism(),
     )

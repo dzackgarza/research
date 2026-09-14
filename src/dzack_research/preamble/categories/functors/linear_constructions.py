@@ -3,10 +3,6 @@ r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Cokernel,
-    Kernel,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
@@ -94,7 +90,7 @@ class KernelArrowFunctor(_ArrowConstructionFunctor):
         super().__init__(finite_free, finite_free)
 
     def _apply_object(self, arrow_object):
-        return Kernel(arrow_object.arrow())
+        return arrow_object.arrow().kernel()
 
     def _apply_morphism(self, square):
         source_kernel = self(square.domain())
@@ -120,7 +116,7 @@ class CokernelArrowFunctor(_ArrowConstructionFunctor):
         super().__init__(category, category)
 
     def _apply_object(self, arrow_object):
-        return Cokernel(arrow_object.arrow())
+        return arrow_object.arrow().cokernel()
 
     def _apply_morphism(self, square):
         source_cokernel = self(square.domain())

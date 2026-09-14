@@ -1,6 +1,5 @@
 r"""Direct and inverse image on fixed-ambient module subobject categories."""
 
-from dzack_research.preamble.categories.abstract_categories.constructions import Subobjects
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -23,7 +22,10 @@ class DirectImageSubobjectFunctor(Functor):
 
     def __init__(self, morphism) -> None:
         self._morphism = morphism
-        super().__init__(Subobjects(morphism.domain()), Subobjects(morphism.codomain()))
+        super().__init__(
+            morphism.domain().category().Subobjects(morphism.domain()),
+            morphism.codomain().category().Subobjects(morphism.codomain()),
+        )
 
     def morphism(self):
         return self._morphism
@@ -43,7 +45,10 @@ class InverseImageSubobjectFunctor(Functor):
 
     def __init__(self, morphism) -> None:
         self._morphism = morphism
-        super().__init__(Subobjects(morphism.codomain()), Subobjects(morphism.domain()))
+        super().__init__(
+            morphism.codomain().category().Subobjects(morphism.codomain()),
+            morphism.domain().category().Subobjects(morphism.domain()),
+        )
 
     def morphism(self):
         return self._morphism

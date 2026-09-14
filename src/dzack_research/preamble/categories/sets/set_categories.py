@@ -232,9 +232,7 @@ def ranking_isomorphism[SourcePointT](
 @cached_function
 def _set_core():
     r"""The core of $\mathbf{Set}$, interned so every enumeration shares one home."""
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
-
-    return Core(Sets())
+    return Sets().Core()
 
 
 class _Delta:
@@ -395,9 +393,7 @@ class OwnedSetMorphism(SetMorphism):
 
     def as_isomorphism(self):
         r"""Return this finite bijection as the corresponding arrow of ``core(Set)``."""
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
-
-        return Core(Sets()).Mor(self.domain(), self.codomain())(self, self.inverse())
+        return Sets().Core().Mor(self.domain(), self.codomain())(self, self.inverse())
 
     def __mul__(self, other):
         if not isinstance(other, Morphism) or other.codomain() is not self.domain():

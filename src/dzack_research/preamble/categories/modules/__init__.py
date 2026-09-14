@@ -2,8 +2,7 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'Subobjects': ('dzack_research.preamble.categories.abstract_categories', 'Subobjects'),
- 'BiproductModules': ('dzack_research.preamble.categories.modules.pure.modules',
+_EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pure.modules',
                       'BiproductModules'),
  'biproduct_morphism': ('dzack_research.preamble.categories.modules.pure.modules',
                         'biproduct_morphism'),
@@ -391,7 +390,6 @@ __all__ = ['BasedFreeModule',
  'ModulesWithConnection',
  'ModulesWithChosenFinitePresentation',
  'ModuleSubobjects',
- 'Subobjects',
  'Modules',
  'ProjectiveModules',
  'TorsionModules',

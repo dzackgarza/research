@@ -52,7 +52,6 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     from dzack_research.preamble.all import (
         ArrowCategory,
         AutomorphismArrowCategory,
-        Core,
         EndArrowCategory,
         IsoArrowCategory,
         Isomorphism,
@@ -76,7 +75,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
 
     inverse = end
     isomorphism = Isomorphism(end, inverse)
-    core = Core(Sets())
+    core = Sets().Core()
     assert isomorphism in core.Mor(x, x)
     iso_object = IsoArrowCategory(Sets())(isomorphism)
     aut_object = AutomorphismArrowCategory(Sets())(isomorphism)

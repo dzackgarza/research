@@ -2,7 +2,6 @@ r"""The cardinality functor ``# : core(Set) -> Card``."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -15,7 +14,7 @@ class CardinalityFunctor(Functor):
     r"""Send a set to its cardinal and a set isomorphism to the unique order arrow."""
 
     def __init__(self) -> None:
-        super().__init__(Core(Sets()), Cardinalities())
+        super().__init__(Sets().Core(), Cardinalities())
 
     def _apply_object(self, set_object):
         return set_object.cardinality()

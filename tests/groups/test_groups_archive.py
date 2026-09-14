@@ -13,9 +13,9 @@ ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/groups.sage",
     "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
     "owner_overrides": {
-        "OwnedGroups.Subobjects": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
-        "OwnedGroups.Subobjects.ParentMethods": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
-        "OwnedGroups.Subobjects.ParentMethods.inclusion": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "OwnedGroups.Subobjects": "src/dzack_research/preamble/categories/abstract_categories/cat.py",
+        "OwnedGroups.Subobjects.ParentMethods": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+        "OwnedGroups.Subobjects.ParentMethods.inclusion": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
     },
     "disposition": "reconciled-live-owner",
 }

@@ -288,7 +288,10 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
         q = field.cardinality()
         assert space.cardinality() == q**r
         assert space.Aut().order() == prod(q**r - q**i for i in range(r))
-    kernel = Kernel(space.Mor(FreeModule(field, 1))({label: FreeModule(field, 1).module_generator(0) for label in range(r)}))
+    morphism = space.Mor(FreeModule(field, 1))(
+        {label: FreeModule(field, 1).module_generator(0) for label in range(r)}
+    )
+    kernel = morphism.kernel()
     assert kernel.module_rank() == r - 1
 
 
