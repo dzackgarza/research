@@ -259,6 +259,14 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return _GluedSchemeChartMap(parent, self, chart_map)
 
     def __eq__(self, other) -> bool:
+        if isinstance(other, _GluedSchemeChartMap):
+            return (
+                other.codomain() is self.codomain()
+                and other.gluing_datum() is self.gluing_datum()
+                and other.chart_index() == self.chart_index()
+                and other.chart_map()
+                == self.domain().categorical_identity_morphism()
+            )
         return (
             isinstance(other, _GluedSchemeChartEmbedding)
             and other.gluing_datum() is self.gluing_datum()
@@ -331,6 +339,14 @@ class _GluedSchemeChartMap(SchemeMorphism):
         return after.local_map(self.chart_index()) * self.chart_map()
 
     def __eq__(self, other) -> bool:
+        if isinstance(other, _GluedSchemeChartEmbedding):
+            return (
+                other.codomain() is self.codomain()
+                and other.gluing_datum() is self.gluing_datum()
+                and other.chart_index() == self.chart_index()
+                and self.chart_map()
+                == other.domain().categorical_identity_morphism()
+            )
         if not isinstance(other, _GluedSchemeChartMap) or other.codomain() is not self.codomain():
             return False
         if self.chart_index() == other.chart_index():

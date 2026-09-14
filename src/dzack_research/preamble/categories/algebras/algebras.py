@@ -2783,10 +2783,36 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         owned_scalar = base._from_engine_element(engine_base(scalar))
         return _engine_element(codomain, target_structure(owned_scalar))
 
-    base_map = SetMorphism(
-        engine_base.Hom(engine_codomain),
-        engine_base_image,
-    )
+    if codomain is base and engine_codomain is engine_base:
+        # An R-algebra morphism A -> R is over the literal identity of R.
+        # Keep that theorem visible to Sage's quotient-Hom verifier instead of
+        # wrapping id_R as an opaque set map whose multiplicativity Sage cannot
+        # certify when checking the defining relations.
+        base_map = engine_base.hom(engine_base)
+    else:
+        native_base_map = engine_codomain.coerce_map_from(engine_base)
+        if native_base_map is not None:
+            try:
+                determining_scalars = (
+                    engine_base.one(),
+                    *tuple(engine_base.gens()),
+                )
+                native_matches_owned = all(
+                    native_base_map(scalar) == engine_base_image(scalar)
+                    for scalar in determining_scalars
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                native_matches_owned = False
+        else:
+            native_matches_owned = False
+        base_map = (
+            native_base_map
+            if native_matches_owned
+            else SetMorphism(
+                engine_base.Hom(engine_codomain),
+                engine_base_image,
+            )
+        )
     engine_generator_images = {label: _engine_element(codomain, codomain(image)) for label, image in generator_images.items()}
 
     scalar_labels_method = getattr(domain, "restricted_scalar_generator_labels", None)
@@ -2807,6 +2833,43 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
             [engine_generator_images[("algebra", label)] for label in algebra_labels],
             extension_map,
         )
+
+    if domain in AlgebrasWithChosenFinitePresentation(base):
+        try:
+            engine_labels = tuple(engine_domain.gens())
+            selected_size = int(labels.cardinality().finite_value())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            engine_labels = ()
+            selected_size = -1
+        if engine_labels and len(engine_labels) != selected_size:
+            # A maintained private realization may introduce coefficient or
+            # inverse variables that are not algebra generators of the owned
+            # presentation.  Recover the image of each such engine generator
+            # by lifting it through the selected presentation and evaluating
+            # that lift under the actual R-algebra map.  This preserves the
+            # chosen presentation while supplying Sage the complete generator
+            # family its quotient engine requires.
+            presentation = domain.presentation_ring()
+            presentation_engine = _engine_ring(presentation)
+            presentation_map = _engine_morphism_from_generator_images(
+                presentation_engine,
+                engine_codomain,
+                [engine_generator_images[label] for label in labels],
+                base_map,
+            )
+            private_images = []
+            for engine_generator in engine_labels:
+                owned_generator = domain._from_engine_element(engine_generator)
+                selected_lift = domain.lift_to_presentation(owned_generator)
+                private_images.append(
+                    presentation_map(
+                        _engine_element(presentation, selected_lift)
+                    )
+                )
+            return engine_domain.hom(
+                private_images,
+                engine_codomain,
+            )
 
     return _engine_morphism_from_generator_images(
         engine_domain,
