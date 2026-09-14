@@ -8,6 +8,7 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.constructions import (
@@ -580,8 +581,22 @@ class ModuleMorphism(Morphism):
         equal = all(self(domain.module_generator(label)) == other(domain.module_generator(label)) for label in domain.module_generating_set())
         return equal if op == op_EQ else not equal
 
-    def __rmul__(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+    def __rmul__(self, actor):
+        # A specialized right operand such as ModuleEmbedding gets reflected
+        # multiplication before Python tries the less-specialized left
+        # ModuleMorphism.__mul__.  In that case the operation is composition,
+        # not scalar multiplication.  Delegate to the left morphism so the
+        # ordinary endpoint check and composition constructor remain the one
+        # owner of the operation.
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            LinearHomModules,
+        )
+
+        match element_parent(actor) in LinearHomModules(self.domain().base_ring()):
+            case True:
+                return actor.__mul__(self)
+            case False:
+                return self.parent().scalar_multiple(actor, self)
 
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)

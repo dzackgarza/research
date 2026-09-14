@@ -321,7 +321,12 @@ def _relations_among_generators(form, generators):
         ring, selected_relations.nrows(), selected_relations.ncols()
     ).from_rows(_matrix_coordinate_rows(selected_relations))
     combined = lifts.stack(known)
-    kernel = combined.matrix().transpose().kernel()
+    # Transpose the owned morphism, not its matrix presentation.  The codomain
+    # of ``combined`` is the biproduct separating the selected-generator rows
+    # from the pre-existing relation rows; matrix-level transposition rebuilds
+    # an equal-rank generic free module and loses that biproduct endpoint, so
+    # its kernel cannot compose with the biproduct projection below.
+    kernel = combined.transpose().kernel()
     relations = (
         combined.codomain().left_projection() * kernel.inclusion()
     ).image()
@@ -655,7 +660,12 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     known = MatrixSpace(
         ring, selected_relations.nrows(), selected_relations.ncols()
     ).from_rows(_matrix_coordinate_rows(selected_relations))
-    system = lifts.stack(known).matrix()
+    # Keep the actual biproduct codomain: the integral solver works on every
+    # finite framed free Hom, and its solution therefore lands in the same
+    # biproduct whose left projection selects the coefficients of the new
+    # generators.  Passing through ``matrix()`` would replace that endpoint by
+    # a rank-only coordinate module and discard the projection.
+    system = lifts.stack(known)
     source_labels = tuple(form.module_generating_set())
     regenerated_generators = tuple(regenerated.module_generators())
     forward_images = {}
