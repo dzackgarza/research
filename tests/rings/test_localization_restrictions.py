@@ -40,6 +40,17 @@ def test_localization_restrictions_compose_along_a_chain_of_inverted_scalars() -
     element = inverted_two(1) / 2
 
     assert rest(step(element)) == whole(element)
+    assert rest * step == whole
+
+
+def test_localization_source_map_determines_ring_morphism_equality() -> None:
+    polynomial = PolynomialRing(QQ, "x")
+    x = polynomial.algebra_generator("x")
+    away_from_x = polynomial.localization(x)
+
+    induced_identity = away_from_x.induced_morphism(away_from_x.localization_map())
+
+    assert induced_identity == away_from_x.Mor(away_from_x).identity()
 
 
 def test_a_localization_restricts_into_a_prime_localization_as_a_germ() -> None:

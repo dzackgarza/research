@@ -4682,9 +4682,10 @@ class OpenImmersions(_SchemeSubobjectsOf):
             open_algebra = self.coordinate_algebra()
             pullback = morphism.coordinate_algebra_morphism()
             defining_element = codomain.coordinate_algebra()(self.distinguished_open_element())
-            assert source_algebra(pullback(defining_element)).is_unit(), (
-                "the morphism does not land in this distinguished open: it does not send the defining element to a unit"
-            )
+            if not source_algebra(pullback(defining_element)).is_unit():
+                raise ValueError(
+                    "the morphism does not land in this distinguished open: it does not send the defining element to a unit"
+                )
 
             inclusion_pullback = self.inclusion().coordinate_algebra_morphism()
             factorizer = getattr(inclusion_pullback, "induced_morphism", None)

@@ -971,7 +971,12 @@ class _FiniteSchemeGluingDatum(SageObject):
         )
         # A transition that does not preserve the triple overlap fails to land
         # in this distinguished open, and the corestriction says so.
-        restricted = target_triple.corestriction(target_chart_map)
+        try:
+            restricted = target_triple.corestriction(target_chart_map)
+        except ValueError as error:
+            raise ValueError(
+                "finite-atlas transition does not preserve the represented triple-overlap domain"
+            ) from error
         self._triple_transition_maps.append((key, restricted))
         return restricted
 
@@ -2529,8 +2534,9 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
         for index in indices:
             algebra = self._local_algebras[index]
             ring = gluing_datum.chart(index).coordinate_algebra()
-            if algebra not in AlgebrasWithChosenFinitePresentation(ring):
-                raise TypeError("finite-atlas algebra descent requires chosen finite local presentations")
+            if algebra.base_ring() is not ring:
+                raise ValueError("each finite-atlas local algebra must be defined over its chart coordinate algebra")
+            _finite_algebra_framing(algebra)
         self._transition_data = _family_on_finite_ordered_set(
             gluing_datum.transition_index_set(), transitions,
             name="Semilinear algebra transition data of a finite atlas",
