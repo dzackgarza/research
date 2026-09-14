@@ -25,10 +25,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
-    TensorProduct,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     ring_as_module,
 )
@@ -241,9 +237,10 @@ def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
 def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -> None:
     cyclic = _cyclic_six_from_presentation()
     free = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    modules = Modules(ZZ)
     constructions = (
-        Biproduct(cyclic, free),
-        TensorProduct(cyclic, free),
+        modules.biproduct((cyclic, free)),
+        modules.tensor_product((cyclic, free)),
         InternalHom(cyclic, cyclic),
         TensorPower(cyclic, 2),
         SymmetricPower(cyclic, 2),

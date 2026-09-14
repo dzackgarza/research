@@ -41,14 +41,6 @@ _OWNED_SPELLINGS = {
     "PrimeLocalization": lambda ring, prime: ring.localize_at_prime(prime),
     "QuotientRing": lambda ring, ideal: ring.quotient_ring(ideal),
     "AdicCompletion": lambda ring, ideal, **options: ring.adic_completion(ideal, **options),
-    # A construction is taken over an index set, so the owned method reads a
-    # family of factors; the binary form the old global published reaches a
-    # session only through operator notation.
-    "Product": lambda left, right: _common_owned_category(left, right).product([left, right]),
-    "Coproduct": lambda left, right: _common_owned_category(left, right).coproduct([left, right]),
-    "Biproduct": lambda left, right: _common_owned_category(left, right).biproduct([left, right]),
-    "TensorProduct": lambda left, right: _common_owned_category(left, right).tensor_product([left, right]),
-    "TensorSquare": lambda obj: _common_owned_category(obj, obj).tensor_product([obj, obj]),
     # A construction on a category is reached from that category; one whose
     # inputs are several categories is a construction in Cat.
     "Core": lambda category: category.Core(),
@@ -61,11 +53,6 @@ _OWNED_SPELLINGS = {
         base_object.category() if category is None else category
     ).SubobjectCategory(base_object),
     "ProductCategory": lambda left, right: Cat().product([left, right]),
-    # A span owns its pushout, and the category publishes it too; the legs are
-    # the span's data, not an arity.
-    "Pushout": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain(), right.codomain()
-    ).pushout(left, right),
     "FiberProduct": lambda left, right: _common_owned_category(
         left.domain(), right.domain(), left.codomain()
     ).fiber_product(left, right),

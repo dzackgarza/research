@@ -3,8 +3,8 @@ r"""Functorial finite-module completion over represented Noetherian rings."""
 from dzack_research.preamble.all import (
     QQ,
     BasedFreeModule,
-    Biproduct,
     FinitelyPresentedModule,
+    Modules,
     PolynomialRing,
     module_homset,
 )
@@ -98,7 +98,7 @@ def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> 
     x = ring.algebra_generator("x")
     free = _free_rank_one(ring)
     torsion = _cyclic_torsion_module(ring, x**2)
-    mixed = Biproduct(free, torsion)
+    mixed = Modules(ring).biproduct((free, torsion))
     completed = mixed.adic_completion(ring.ideal(x), precision=5)
 
     assert completed.completion_source_module() is mixed

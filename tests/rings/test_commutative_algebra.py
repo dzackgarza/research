@@ -365,11 +365,9 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
 
 
 def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -> None:
-    from dzack_research.preamble.all import Coproduct
-
     left = PolynomialRing(QQ, "x")
     right = PolynomialRing(QQ, "y")
-    coproduct = Coproduct(left, right)
+    coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
 
     x = left.algebra_generator("x")
@@ -387,7 +385,7 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
 
 def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
-    from dzack_research.preamble.all import Coproduct, FinitelyPresentedAlgebra
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra
 
     left_free = PolynomialRing(QQ, "x")
     right_free = PolynomialRing(QQ, "y")
@@ -396,7 +394,7 @@ def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
     left = FinitelyPresentedAlgebra(left_free, (x**2,))
     right = FinitelyPresentedAlgebra(right_free, (y**3,))
 
-    coproduct = Coproduct(left, right)
+    coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
     xbar = left.algebra_generator("x")
     ybar = right.algebra_generator("y")
@@ -405,8 +403,6 @@ def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
 
 
 def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
-    from dzack_research.preamble.all import Pushout
-
     common = PolynomialRing(QQ, "s")
     left = PolynomialRing(QQ, "x")
     right = PolynomialRing(QQ, "y")
@@ -416,7 +412,7 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
     left_span = common.Mor(left)({"s": x**2})
     right_span = common.Mor(right)({"s": y**3})
 
-    pushout = Pushout(left_span, right_span)
+    pushout = CommutativeAlgebras(QQ).pushout(left_span, right_span)
     left_map, right_map = pushout.pushout_maps()
     assert left_map(x) ** 2 == right_map(y) ** 3
 

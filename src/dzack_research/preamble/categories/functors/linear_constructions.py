@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
 from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
     Cokernel,
     Kernel,
 )
@@ -68,7 +67,7 @@ class BiproductBifunctor(Bifunctor):
         super().__init__(category, category, category)
 
     def _apply_pair_object(self, left, right):
-        return Biproduct(left, right)
+        return self.codomain().biproduct((left, right))
 
     def _apply_pair_morphism(self, left_morphism, right_morphism):
         return biproduct_morphism(

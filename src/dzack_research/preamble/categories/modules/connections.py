@@ -5,7 +5,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import Element
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
@@ -303,8 +302,10 @@ class Connection(Element):
     as_morphism = underlying_linear_morphism
 
     def curvature_target(self):
-
-        return TensorProduct(self.module(), AlternatingPower(self.one_forms(), 2))
+        target_forms = AlternatingPower(self.one_forms(), 2)
+        return Modules(self.module().base_ring()).tensor_product(
+            (self.module(), target_forms)
+        )
 
     def _wedge_connection_value(self, value, one_form):
         omega = self.one_forms()
@@ -411,7 +412,10 @@ class ConnectionSpace(RestrictedHomCategoryParent):
         self._one_forms = KahlerDifferentials(algebra)
 
         self._target_module = restricted_target.module_over_extension()
-        if self._target_module is not TensorProduct(module, self._one_forms):
+        expected_target = Modules(module.base_ring()).tensor_product(
+            (module, self._one_forms)
+        )
+        if self._target_module is not expected_target:
             raise ValueError("the restricted connection target is not E tensor_A Omega^1")
         self._restricted_source = restricted_source
         self._restricted_target = restricted_target
@@ -491,7 +495,7 @@ def Connections(module) -> ConnectionSpace:
             "an algebraic connection here requires a module over a commutative algebra"
         )
     one_forms = KahlerDifferentials(algebra)
-    target = TensorProduct(module, one_forms)
+    target = Modules(module.base_ring()).tensor_product((module, one_forms))
     ring_map = algebra.algebra_structure_morphism()
     restricted_source = restrict_scalars(module, ring_map)
     restricted_target = restrict_scalars(target, ring_map)
@@ -686,7 +690,9 @@ class ConnectionDeRhamModule:
                 def piece(degree):
                     forms = AlternatingPower(omega, degree)
                     return restrict_scalars(
-                        TensorProduct(coefficient_module, forms),
+                        Modules(coefficient_module.base_ring()).tensor_product(
+                            (coefficient_module, forms)
+                        ),
                         ring_map,
                     )
 
@@ -710,7 +716,9 @@ class ConnectionDeRhamModule:
 
             def from_coefficient(self, element):
                 forms_zero = AlternatingPower(self._omega, 0)
-                tensor_zero = TensorProduct(self._coefficient_module, forms_zero)
+                tensor_zero = Modules(self._coefficient_module.base_ring()).tensor_product(
+                    (self._coefficient_module, forms_zero)
+                )
                 unit = forms_zero.module_generator(0)
                 return self.from_component(
                     0,
@@ -727,8 +735,13 @@ class ConnectionDeRhamModule:
             def _differentiate_component(self, degree, component):
                 source_forms = AlternatingPower(self._omega, degree)
                 target_forms = AlternatingPower(self._omega, degree + 1)
-                source_tensor = TensorProduct(self._coefficient_module, source_forms)
-                target_tensor = TensorProduct(self._coefficient_module, target_forms)
+                modules = Modules(self._coefficient_module.base_ring())
+                source_tensor = modules.tensor_product(
+                    (self._coefficient_module, source_forms)
+                )
+                target_tensor = modules.tensor_product(
+                    (self._coefficient_module, target_forms)
+                )
                 result = target_tensor.zero()
                 underlying = self._underlying_component(component)
                 for (module_label, form_label), coefficient in module_coefficients(
@@ -785,14 +798,16 @@ class ConnectionDeRhamModule:
                 result = self.zero()
                 for left_degree, left_component in module_element.homogeneous_components().items():
                     left_forms = AlternatingPower(self._omega, left_degree)
-                    left_tensor = TensorProduct(self._coefficient_module, left_forms)
+                    modules = Modules(self._coefficient_module.base_ring())
+                    left_tensor = modules.tensor_product(
+                        (self._coefficient_module, left_forms)
+                    )
                     left_underlying = self._underlying_component(left_component)
                     for right_degree, right_component in exterior_element.homogeneous_components().items():
                         target_degree = left_degree + right_degree
                         target_forms = AlternatingPower(self._omega, target_degree)
-                        target_tensor = TensorProduct(
-                            self._coefficient_module,
-                            target_forms,
+                        target_tensor = modules.tensor_product(
+                            (self._coefficient_module, target_forms)
                         )
                         target_value = target_tensor.zero()
                         for (

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generic owned group surface."""
 
-from dzack_research.preamble.all import Coproduct, GF, Groups, Product, aleph0
+from dzack_research.preamble.all import GF, Groups, aleph0
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
@@ -35,7 +35,7 @@ def test_native_group_constructors_cross_into_owned_property_categories() -> Non
 
 
 def test_finite_group_product_retains_group_structure_and_order() -> None:
-    product = Product(Groups.C(2), Groups.C(3))
+    product = Groups().product((Groups.C(2), Groups.C(3)))
 
     assert product in Groups()
     assert product.order() == 6
@@ -63,7 +63,7 @@ def test_finite_group_commutator_subgroups_are_owned() -> None:
 
 
 def test_group_coproduct_is_the_owned_free_product() -> None:
-    coproduct = Coproduct(Groups.C(2), Groups.C(3))
+    coproduct = Groups().coproduct((Groups.C(2), Groups.C(3)))
 
     assert coproduct in Groups()
     assert coproduct.cardinality() == aleph0

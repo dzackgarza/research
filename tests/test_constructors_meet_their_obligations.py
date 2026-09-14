@@ -28,7 +28,6 @@ from sage.misc.abstract_method import abstract_methods_of_class
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
@@ -59,6 +58,10 @@ def _identity_on(source: Parent):
 def _one_object_diagram(source: Parent):
     index = DiscreteCategory(Sets.Δ[0])
     return DiscreteDiagram(index, Sets(), lambda _index: source)
+
+
+def _tensor_square(module: Parent):
+    return Modules(module.base_ring()).tensor_product((module, module))
 
 
 def _ensure_preamble() -> None:
@@ -124,8 +127,8 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "Lattices(root system)": lambda: Lattices(ZZ)("A2"),
         "Lattices(gram)": lambda: Lattices(ZZ)([[2, 1], [1, 2]]),
         "direct sum": lambda: Lattices(ZZ)("A1") + Lattices(ZZ)("A2"),
-        "tensor product": lambda: TensorProduct(
-            BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2])
+        "tensor product": lambda: Modules(ZZ).tensor_product(
+            (BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2]))
         ),
         "twist": lambda: Lattices(ZZ)("E8").twist(2),
         "rooted Coxeter diagram from a Cartan type": lambda: CoxeterDiagrams().from_cartan_type(
@@ -228,10 +231,10 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # lattice-specific block-diagonal sum and reaches none of these.
         "cone": lambda: _cone_on(Sets.Δ[11]),
         "cocone": lambda: _cocone_on(Sets.Δ[12]),
-        "product": lambda: Product(Sets.Δ[13], Sets.Δ[14]),
-        "coproduct": lambda: Coproduct(Sets.Δ[15], Sets.Δ[16]),
-        "biproduct": lambda: Biproduct(
-            BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2])
+        "product": lambda: Sets().product((Sets.Δ[13], Sets.Δ[14])),
+        "coproduct": lambda: Sets().coproduct((Sets.Δ[15], Sets.Δ[16])),
+        "biproduct": lambda: Modules(ZZ).biproduct(
+            (BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2]))
         ),
         # ---- divisors ----
         # One free module each: every one of these refines the module it is
@@ -271,7 +274,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # The two square constructions on an arbitrary module rather than on a
         # free algebra's graded piece: they are where a form's domain comes
         # from, so a lattice is the specimen that matters.
-        "tensor square": lambda: TensorSquare(Lattices(ZZ)("A2")),
+        "tensor square": lambda: _tensor_square(Lattices(ZZ)("A2")),
         "divided square": lambda: DividedSquare(Lattices(ZZ)("A2")),
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
@@ -461,7 +464,7 @@ def test_a_form_is_a_morphism_into_the_value_module() -> None:
             continue
         domain = form.domain()
         if isinstance(form, BilinearFormMorphism):
-            expected_constructor = TensorSquare
+            expected_constructor = _tensor_square
         elif isinstance(form, QuadraticFormMorphism):
             expected_constructor = DividedSquare
         else:

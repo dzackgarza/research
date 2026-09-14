@@ -9,7 +9,6 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
@@ -39,6 +38,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
+    Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring as _engine_ring,
@@ -424,8 +424,9 @@ class SparseFreeAlgebra(Parent):
         else:
             component = factors[0]
             if len(factors) > 1:
+                modules = Modules(self.base_ring())
                 for factor in factors[1:]:
-                    component = TensorProduct(component, factor)
+                    component = modules.tensor_product((component, factor))
         self._component_cache[key] = component
         return component
 

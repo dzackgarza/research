@@ -20,8 +20,9 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_products_and_coproducts_of_finite_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    product = Product(two, three)
-    coproduct = Coproduct(two, three)
+    sets = Sets()
+    product = sets.product((two, three))
+    coproduct = sets.coproduct((two, three))
 
     assert product.cardinality() == 6
     assert product in Sets()
@@ -30,19 +31,22 @@ def test_products_and_coproducts_of_finite_sets() -> None:
     assert coproduct.cardinality() == 5
     assert coproduct.injection(0).domain() is two
     assert coproduct.injection(1).domain() is three
-    assert Product(Product(three, three), three).cardinality() == 27
+    assert sets.product((sets.product((three, three)), three)).cardinality() == 27
     one = Sets.Δ[0]
-    assert Product(one, three).cardinality() == 3
-    assert Coproduct(one, three).cardinality() == 4
+    assert sets.product((one, three)).cardinality() == 3
+    assert sets.coproduct((one, three)).cardinality() == 4
 
 
 def test_the_universal_property_of_the_product_of_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    product = Product(two, three)
+    product = Sets().product((two, three))
     first = Sets().Mor(three, two)(lambda point: two(int(point) % 2))
     second = Sets().Mor(three, three).identity()
-    induced = product.from_maps(three, {0: first, 1: second})
+    induced = product.from_maps(
+        three,
+        lambda index: first if int(index) == 0 else second,
+    )
     assert induced.domain() is three
     assert induced.codomain() is product
     assert product.projection(0) * induced == first
@@ -55,7 +59,7 @@ def test_pushouts_and_fiber_products_of_finite_sets() -> None:
     three = Sets.Δ[2]
     into_two = Sets().Mor(one, two)(lambda point: two(0))
     into_three = Sets().Mor(one, three)(lambda point: three(0))
-    glued = Pushout(into_two, into_three)
+    glued = Sets().pushout(into_two, into_three)
     assert glued.cardinality() == 4
 
     onto_one_from_two = Sets().Mor(two, one)(lambda point: one(0))
@@ -82,12 +86,16 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
     ring = commutative_ring
     left = FreeModule(ring, 2)
     right = FreeModule(ring, 3)
-    for construction in (Product, Coproduct, Biproduct):
-        both = construction(left, right)
+    modules = Modules(ring)
+    for both in (
+        modules.product((left, right)),
+        modules.coproduct((left, right)),
+        modules.biproduct((left, right)),
+    ):
         assert both in Modules(ring)
         assert both.module_rank() == 5
     assert left.tensor_product(right).module_rank() == 6
-    assert Product(left, right) == Coproduct(left, right)
+    assert modules.product((left, right)) == modules.coproduct((left, right))
 
 
 def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
@@ -111,14 +119,14 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     plane = FreeModule(ring, 2)
     first_axis = line.Mor(plane)({0: plane.module_generator(0)})
     second_axis = line.Mor(plane)({0: plane.module_generator(1)})
-    glued = Pushout(first_axis, first_axis)
+    glued = Modules(ring).pushout(first_axis, first_axis)
     assert glued in Modules(ring)
     assert glued.module_rank() == 3
     first_projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     pulled_back = FiberProduct(first_projection, first_projection)
     assert pulled_back in Modules(ring)
     assert pulled_back.module_rank() == 3
-    assert Pushout(first_axis, second_axis).module_rank() == 3
+    assert Modules(ring).pushout(first_axis, second_axis).module_rank() == 3
 
 
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
@@ -141,8 +149,9 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     symmetric = Groups.S(3)
     two = Groups.C(2)
     three = Groups.C(3)
-    product = Product(symmetric, two)
-    free_product = Coproduct(two, three)
+    groups = Groups()
+    product = groups.product((symmetric, two))
+    free_product = groups.coproduct((two, three))
     sign = symmetric.Mor(two)(
         {g: (two.group_generators()[0] if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
     )
@@ -157,7 +166,7 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     assert Kernel(sign).is_abelian()
     assert Cokernel(Kernel(sign).inclusion()).order() == 2
     assert Cokernel(sign).order() == 1
-    assert Product(two, three).is_isomorphic_to(Groups.C(6))
+    assert groups.product((two, three)).is_isomorphic_to(Groups.C(6))
 
 
 def test_subgroups_of_the_symmetric_group_form_a_category() -> None:

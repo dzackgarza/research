@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Subobjects,
-    TensorSquare,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -89,9 +88,6 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            TensorSquare,
-        )
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
         )
@@ -104,7 +100,8 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
-        multiplication = module_homset(TensorSquare(line), line)({(label, label): line.module_generator(label)})
+        tensor_square = Modules(self.base_ring()).tensor_product((line, line))
+        multiplication = module_homset(tensor_square, line)({(label, label): line.module_generator(label)})
         return Algebras(self.base_ring()).Associative()(line, multiplication)
 
     @classmethod
@@ -1345,9 +1342,6 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            TensorSquare,
-        )
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
         )
@@ -1360,7 +1354,8 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
-        multiplication = module_homset(TensorSquare(line), line)({(label, label): line.module_generator(label)})
+        tensor_square = Modules(self.base_ring()).tensor_product((line, line))
+        multiplication = module_homset(tensor_square, line)({(label, label): line.module_generator(label)})
         return Algebras(self.base_ring())(line, multiplication)
 
     @classmethod
@@ -1844,15 +1839,14 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x] \otimes_R R[y]``, the coproduct of two polynomial algebras."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            Coproduct,
-        )
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebraOn,
         )
 
         ring = self.base_ring()
-        return Coproduct(SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",)))
+        return CommutativeAlgebras(ring).coproduct(
+            (SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",)))
+        )
 
     def super_categories(self):
         return [CommutativeAlgebras(self.base_ring())]
@@ -1908,9 +1902,6 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         The pushout of the span whose legs are the two isomorphisms
         \(R[t]\to R[x]\) and \(R[t]\to R[y]\).
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            Pushout,
-        )
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebraOn,
         )
@@ -1919,7 +1910,7 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         common = SymmetricAlgebraOn(ring, ("t",))
         left = SymmetricAlgebraOn(ring, ("x",))
         right = SymmetricAlgebraOn(ring, ("y",))
-        return Pushout(
+        return CommutativeAlgebras(ring).pushout(
             common.Mor(left)({"t": left.algebra_generator("x")}),
             common.Mor(right)({"t": right.algebra_generator("y")}),
         )

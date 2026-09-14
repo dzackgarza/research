@@ -19,7 +19,6 @@ asked to go; over a polynomial ring it continues by syzygies.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
@@ -32,7 +31,7 @@ from dzack_research.preamble.categories.modules.internal_hom import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import free_resolution
+from dzack_research.preamble.categories.modules.pure.modules import Modules, free_resolution
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -139,8 +138,9 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
             resolution = free_resolution(other, steps)
             term = resolution.term(degree)
             identity = module_homset(term, term).identity()
-            source_tensor = TensorProduct(term, morphism.domain())
-            target_tensor = TensorProduct(term, morphism.codomain())
+            modules = Modules(term.base_ring())
+            source_tensor = modules.tensor_product((term, morphism.domain()))
+            target_tensor = modules.tensor_product((term, morphism.codomain()))
             component = tensor_product_morphism(
                 identity,
                 morphism,

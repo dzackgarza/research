@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     BilinearMap,
     MatrixSpace,
     Modules,
-    TensorProduct,
     finite_ordered_set,
     ring_morphism,
 )
@@ -19,7 +18,7 @@ def _rank_two_module():
 def _multiplication(module, square_of_x):
     one = module.module_generator("one")
     x = module.module_generator("x")
-    return TensorProduct(module, module).from_bilinear(
+    return Modules(QQ).tensor_product((module, module)).from_bilinear(
         BilinearMap(
             module,
             module,

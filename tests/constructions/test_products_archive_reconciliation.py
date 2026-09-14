@@ -6,15 +6,14 @@ on the product/coproduct object itself: factors, projections/injections and the
 unique mediator assembled by ``from_maps``.
 """
 
-from dzack_research.preamble.all import Coproduct, Product, Sets
+from dzack_research.preamble.all import Sets
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/products.sage",
     "live_owner": "src/dzack_research/preamble/categories/abstract_categories/products.py",
     "owner_overrides": {
-        "Product": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
-        "Coproduct": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
-        "Biproduct": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "Sets.product": "src/dzack_research/preamble/categories/sets/set_categories.py",
+        "Sets.coproduct": "src/dzack_research/preamble/categories/sets/set_categories.py",
     },
     "disposition": "reconciled-live-owner",
 }
@@ -23,12 +22,15 @@ ARCHIVE_RECONCILIATION = {
 def test_archived_product_cone_is_the_live_product_with_its_universal_map() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    product = Product(two, three)
+    product = Sets().product((two, three))
     source = Sets.Δ[2]
     first = Sets().Mor(source, two)(lambda point: two(int(point) % 2))
     second = Sets().Mor(source, three).identity()
 
-    mediator = product.from_maps(source, {0: first, 1: second})
+    mediator = product.from_maps(
+        source,
+        lambda index: first if int(index) == 0 else second,
+    )
 
     assert product.factor(0) is two
     assert product.factor(1) is three
@@ -43,12 +45,15 @@ def test_archived_product_cone_is_the_live_product_with_its_universal_map() -> N
 def test_archived_coproduct_cocone_is_the_live_coproduct_with_its_universal_map() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    coproduct = Coproduct(two, three)
+    coproduct = Sets().coproduct((two, three))
     target = Sets.Δ[2]
     first = Sets().Mor(two, target)(lambda point: target(int(point)))
     second = Sets().Mor(three, target).identity()
 
-    mediator = coproduct.from_maps(target, {0: first, 1: second})
+    mediator = coproduct.from_maps(
+        target,
+        lambda index: first if int(index) == 0 else second,
+    )
 
     assert coproduct.cofactor(0) is two
     assert coproduct.cofactor(1) is three

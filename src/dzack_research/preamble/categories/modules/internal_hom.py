@@ -3,7 +3,6 @@ r"""Internal Hom modules for the exact finitely presented module backend."""
 from sage.misc.cachefunc import cached_function
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
     _presentation_from_relation_rows,
@@ -20,6 +19,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     InternalHomModules,
+    Modules,
     _represented_finite_presentation,
     _tensor_pair,
 )
@@ -78,8 +78,9 @@ def _internal_hom_model_data(homset):
     generator_free_module = BasedFreeModule(ring, source_labels)
     relation_free_module = BasedFreeModule(ring, relation_labels)
 
-    generator_assignments = TensorProduct(generator_free_module, target)
-    relation_assignments = TensorProduct(relation_free_module, target)
+    modules = Modules(ring)
+    generator_assignments = modules.tensor_product((generator_free_module, target))
+    relation_assignments = modules.tensor_product((relation_free_module, target))
     relation_assignment_labels = relation_assignments.module_generating_set()
 
     def relation_image(pair):

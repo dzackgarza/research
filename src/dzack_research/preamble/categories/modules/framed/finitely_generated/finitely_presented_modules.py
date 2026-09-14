@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.base_change import base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     framing_morphism,
@@ -258,8 +257,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return module_homset(morphism.codomain(), self)({label: self.module_generator(label) for label in morphism.codomain().module_generating_set()})
 
         def tensor_product(self, other):
-
-            return TensorProduct(self, other)
+            return Modules(self.base_ring()).tensor_product((self, other))
 
         def free_resolution(self, steps=None):
             r"""Return a free resolution of the selected presentation.

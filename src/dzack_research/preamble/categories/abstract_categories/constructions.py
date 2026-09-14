@@ -28,37 +28,6 @@ def _common_category(*objects: Parent) -> Category:
     return Cat().join(tuple(obj.category() for obj in objects))
 
 
-def TensorProduct(left: Parent, right: Parent) -> Parent:
-    category = _common_category(left, right)
-    construction = category._categorical_tensor_product
-    assert construction is not NotImplemented, (
-        f"no represented tensor product is owned by a common category of {left}, {right}"
-    )
-    return construction(left, right)
-
-
-def TensorSquare(obj: Parent) -> Parent:
-    return TensorProduct(obj, obj)
-
-
-def Biproduct(left: Parent, right: Parent) -> Parent:
-    category = _common_category(left, right)
-    construction = category._categorical_biproduct
-    assert construction is not NotImplemented, (
-        f"no represented biproduct is owned by a common category of {left}, {right}"
-    )
-    return construction(left, right)
-
-
-def Product(left: Parent, right: Parent) -> Parent:
-    category = _common_category(left, right)
-    construction = category._categorical_product
-    assert construction is not NotImplemented, (
-        f"no represented product is owned by a common category of {left}, {right}"
-    )
-    return construction(left, right)
-
-
 def ProductConstruction(factors, *, target_category=None):
     r"""Return the selected finite product construction on ``factors``."""
     from dzack_research.preamble.categories.abstract_categories.products import (
@@ -78,15 +47,6 @@ def ProductConstruction(factors, *, target_category=None):
         "no selected product construction is owned by the factors' common category"
     )
     return construction(family)
-
-
-def Coproduct(left: Parent, right: Parent) -> Parent:
-    category = _common_category(left, right)
-    construction = category._categorical_coproduct
-    assert construction is not NotImplemented, (
-        f"no represented coproduct is owned by a common category of {left}, {right}"
-    )
-    return construction(left, right)
 
 
 def CoproductConstruction(factors, *, target_category=None):
@@ -144,19 +104,6 @@ def _CoproductMorphism(
         "no represented coproduct-morphism construction is owned by the common category"
     )
     return construction(left_morphism, right_morphism, source, target)
-
-
-def Pushout(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
-    if left_morphism.domain() is not right_morphism.domain():
-        raise ValueError("pushout arrows require one common domain")
-    category = _common_category(
-        left_morphism.domain(), left_morphism.codomain(), right_morphism.codomain(),
-    )
-    construction = category._categorical_pushout
-    assert construction is not NotImplemented, (
-        "no represented pushout is owned by a common category of the span"
-    )
-    return construction(left_morphism, right_morphism)
 
 
 def FiberProduct(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
@@ -302,7 +249,7 @@ def Subobjects(
 
 
 __all__ = [
-    "Biproduct", "Coequalizer", "CoequalizerConstruction", "CoequalizerOfFamily", "Cokernel", "Coproduct", "CoproductConstruction",
-    "Equalizer", "EqualizerConstruction", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product", "ProductConstruction",
-    "Pushout", "Subobjects", "TensorProduct", "TensorSquare",
+    "Coequalizer", "CoequalizerConstruction", "CoequalizerOfFamily", "Cokernel", "CoproductConstruction",
+    "Equalizer", "EqualizerConstruction", "EqualizerOfFamily", "FiberProduct", "Kernel", "ProductConstruction",
+    "Subobjects",
 ]

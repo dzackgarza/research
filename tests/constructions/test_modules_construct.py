@@ -135,7 +135,7 @@ def test_tensor_product_of_free_modules(commutative_ring) -> None:
 
 def test_tensor_and_divided_squares(commutative_ring) -> None:
     module = _free(commutative_ring, 3)
-    assert TensorSquare(module).module_rank() == 9
+    assert Modules(commutative_ring).tensor_product((module, module)).module_rank() == 9
     assert DividedSquare(module).module_rank() == 6
 
 
@@ -143,7 +143,7 @@ def test_biproduct_of_free_modules(commutative_ring) -> None:
     ring = commutative_ring
     left = _free(ring, 2)
     right = _free(ring, 3)
-    both = Biproduct(left, right)
+    both = Modules(ring).biproduct((left, right))
     assert both.module_rank() == 5
     assert both in FinitelyGeneratedFreeModules(ring)
     retraction = both.left_projection() * both.left_inclusion()

@@ -5,7 +5,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -22,7 +21,7 @@ from dzack_research.preamble.categories.modules.graded_modules import (
     grading_identity,
     require_grading_monoid,
 )
-from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -186,7 +185,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         labels = module.module_generating_set()
         label = labels[0]
         generator = module.module_generator(label)
-        multiplication = TensorProduct(module, module).from_bilinear(
+        multiplication = Modules(ring).tensor_product((module, module)).from_bilinear(
             BilinearMap(
                 module,
                 module,

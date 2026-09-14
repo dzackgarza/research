@@ -71,12 +71,14 @@ def test_the_integers_modulo_n(n) -> None:
 @given(n=cyclic_orders, m=cyclic_orders)
 def test_cyclic_groups_and_their_homomorphisms(n, m) -> None:
     cyclic = Groups.C(n)
+    groups = Groups()
     assert cyclic.order() == n
     assert cyclic in AbelianGroups()
     assert cyclic.Aut().order() == euler_phi(n)
     assert cyclic.Mor(Groups.C(m)).cardinality() == gcd(n, m)
-    assert Product(cyclic, Groups.C(m)).order() == n * m
-    assert Product(cyclic, Groups.C(m)).is_isomorphic_to(Groups.C(n * m)) == (gcd(n, m) == 1)
+    product = groups.product((cyclic, Groups.C(m)))
+    assert product.order() == n * m
+    assert product.is_isomorphic_to(Groups.C(n * m)) == (gcd(n, m) == 1)
     assert cyclic.subgroups().cardinality() == number_of_divisors(n)
     assert cyclic.group_generators()[0].order() == n
 
@@ -249,14 +251,15 @@ def test_ranks_of_free_module_constructions(name, r, s) -> None:
     ring = specimen(name)
     left = FreeModule(ring, r)
     right = FreeModule(ring, s)
+    modules = Modules(ring)
     assert left.module_rank() == r
     assert left.tensor_product(right).module_rank() == r * s
     assert left.Hom(right).module_rank() == r * s
-    assert Biproduct(left, right).module_rank() == r + s
+    assert modules.biproduct((left, right)).module_rank() == r + s
     assert left.dual_module().module_rank() == r
     assert ExteriorForms(left, 2).module_rank() == binomial(r, 2)
     assert DividedSquare(left).module_rank() == binomial(r + 1, 2)
-    assert TensorSquare(left).module_rank() == r * r
+    assert modules.tensor_product((left, left)).module_rank() == r * r
     assert left in FinitelyGeneratedFreeModules(ring)
     assert (left.cardinality() == 1) == (r == 0)
 
@@ -299,9 +302,10 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
 def test_finite_set_constructions(n, m) -> None:
     left = Sets.Δ[n - 1]
     right = Sets.Δ[m - 1]
+    sets = Sets()
     assert left.cardinality() == n
-    assert Product(left, right).cardinality() == n * m
-    assert Coproduct(left, right).cardinality() == n + m
+    assert sets.product((left, right)).cardinality() == n * m
+    assert sets.coproduct((left, right)).cardinality() == n + m
     assert ExponentialOfSets(left, right).cardinality() == n**m
     assert Sets().Mor(right, left).cardinality() == n**m
     assert left.power_set().cardinality() == 2**n

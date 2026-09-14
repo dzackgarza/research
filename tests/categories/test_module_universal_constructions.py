@@ -4,11 +4,9 @@ from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coequalizer,
     CoequalizerConstruction,
-    Coproduct,
     CoproductConstruction,
     Equalizer,
     EqualizerConstruction,
-    Product,
     ProductConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -32,6 +30,7 @@ from dzack_research.preamble.categories.sets import NN, cartesian_product_of, fi
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
@@ -198,7 +197,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     t = probe.module_generator("t")
 
     product = ProductConstruction((left, right))
-    assert Product(left, right) is product.object()
+    assert Modules(ZZ).product((left, right)) is product.object()
     product_shape = product.diagram().domain()
     to_left = module_homset(probe, left)({"t": 2 * x})
     to_right = module_homset(probe, right)({"t": 3 * y})
@@ -211,7 +210,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     assert product.structure_morphism(product_shape(1)) * into_product == to_right
 
     coproduct = CoproductConstruction((left, right))
-    assert Coproduct(left, right) is coproduct.object()
+    assert Modules(ZZ).coproduct((left, right)) is coproduct.object()
     coproduct_shape = coproduct.diagram().domain()
     from_left = module_homset(left, probe)({"x": 5 * t})
     from_right = module_homset(right, probe)({"y": 7 * t})

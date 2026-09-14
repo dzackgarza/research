@@ -2,7 +2,6 @@ r"""Free bilinear/quadratic formed objects and their forgetful adjunctions."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticMap,
@@ -105,7 +104,7 @@ class FreeBilinearFormFunctor(Functor):
 
     def _apply_object(self, module):
 
-        classifier = TensorSquare(module)
+        classifier = Modules(self.base_ring()).tensor_product((module, module))
         formed = FormModule(
             BilinearForms(module, classifier)(
                 lambda left, right: classifier.pure_tensor(left, right)

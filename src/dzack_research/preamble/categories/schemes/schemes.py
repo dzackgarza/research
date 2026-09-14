@@ -26,10 +26,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     CosliceUnder,
     SliceOver,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coproduct,
-    Pushout,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -3839,10 +3835,11 @@ def scheme_product(*schemes):
                     )
         else:
             algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
-            algebra = Coproduct(algebras[0], algebras[1])
+            commutative_algebras = CommutativeAlgebras(base)
+            algebra = commutative_algebras.coproduct((algebras[0], algebras[1]))
             factor_maps = list(algebra.coproduct_injections())
             for next_algebra in algebras[2:]:
-                new_algebra = Coproduct(algebra, next_algebra)
+                new_algebra = commutative_algebras.coproduct((algebra, next_algebra))
                 left_map, right_map = new_algebra.coproduct_injections()
                 factor_maps = [left_map * factor_map for factor_map in factor_maps] + [right_map]
                 algebra = new_algebra
@@ -4167,15 +4164,17 @@ def scheme_fiber_product(left_map, right_map):
         # A colimit under the initial object is the colimit of the discrete
         # diagram, so X x_{Spec R} Y = Spec(A tensor_R B) and the induced map
         # out of it is the coproduct's own factorization.
-        algebra_pushout = Coproduct(
-            left.coordinate_algebra(),
-            right.coordinate_algebra(),
+        algebra_pushout = CommutativeAlgebras(base_ring).coproduct(
+            (left.coordinate_algebra(), right.coordinate_algebra())
         )
         left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
         cocone_factorization = algebra_pushout.from_cocone
     else:
         try:
-            algebra_pushout = Pushout(left_pullback, right_pullback)
+            algebra_pushout = CommutativeAlgebras(base_ring).pushout(
+                left_pullback,
+                right_pullback,
+            )
             left_pushout_map = algebra_pushout.left_pushout_map()
             right_pushout_map = algebra_pushout.right_pushout_map()
         except NotImplementedError:

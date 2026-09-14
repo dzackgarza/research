@@ -149,11 +149,11 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     from dzack_research.preamble.all import (
+        CommutativeAlgebras,
         FinitelyPresentedAlgebra,
         PolynomialRing,
         Spec,
     )
-    from dzack_research.preamble.categories.abstract_categories import Coproduct
 
     left_free = PolynomialRing(QQ, "x")
     right_free = PolynomialRing(QQ, "y")
@@ -165,7 +165,7 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     right = Spec(right_algebra)
 
     product = scheme_product(left, right)
-    tensor = Coproduct(left_algebra, right_algebra)
+    tensor = CommutativeAlgebras(QQ).coproduct((left_algebra, right_algebra))
     first, second = product.projections()
 
     assert product.coordinate_algebra() is tensor

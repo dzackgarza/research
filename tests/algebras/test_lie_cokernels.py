@@ -1,15 +1,19 @@
 r"""Lie cokernels are quotients by generated Lie ideals, not module quotients."""
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.algebras import Algebras, LieAlgebras
-from dzack_research.preamble.categories.modules import BasedFreeModule, BilinearMap, module_homset
+from dzack_research.preamble.categories.modules import (
+    BasedFreeModule,
+    BilinearMap,
+    Modules,
+    module_homset,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _lie_algebra(labels, brackets):
     module = BasedFreeModule(QQ, finite_ordered_set(labels))
-    multiplication = TensorProduct(module, module).from_bilinear(
+    multiplication = Modules(QQ).tensor_product((module, module)).from_bilinear(
         BilinearMap(
             module,
             module,

@@ -1,8 +1,7 @@
 r"""Categorical tensor products and bilinear maps of represented modules."""
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
+from dzack_research.preamble.categories.modules.pure.modules import Modules, _tensor_pair
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -16,9 +15,10 @@ def _nested_tensor_label(module, word):
         return 0
     current_module = module
     current_label = first
+    modules = Modules(module.base_ring())
     for next_label in iterator:
 
-        current_module = TensorProduct(current_module, module)
+        current_module = modules.tensor_product((current_module, module))
         current_label = _tensor_pair(
             current_module.module_generating_set(),
             current_label,
@@ -57,11 +57,13 @@ def tensor_product_morphism(left_morphism, right_morphism, source=None, target=N
     if left_morphism.domain().base_ring() != right_morphism.domain().base_ring():
         raise ValueError("tensoring morphisms requires one common base ring")
     if source is None:
-
-        source = TensorProduct(left_morphism.domain(), right_morphism.domain())
+        source = Modules(left_morphism.domain().base_ring()).tensor_product(
+            (left_morphism.domain(), right_morphism.domain())
+        )
     if target is None:
-
-        target = TensorProduct(left_morphism.codomain(), right_morphism.codomain())
+        target = Modules(left_morphism.codomain().base_ring()).tensor_product(
+            (left_morphism.codomain(), right_morphism.codomain())
+        )
     if (
         source.tensor_factor(0) is not left_morphism.domain()
         or source.tensor_factor(1) is not right_morphism.domain()

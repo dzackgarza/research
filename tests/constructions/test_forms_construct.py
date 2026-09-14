@@ -43,7 +43,7 @@ def test_the_form_is_a_morphism_out_of_the_tensor_square(commutative_ring) -> No
     module = FreeModule(ring, 2)
     form = BilinearForm(module, ring, A2_GRAM)
     morphism = form.form()
-    square = TensorSquare(module)
+    square = Modules(ring).tensor_product((module, module))
 
     assert morphism.domain() is square
     assert morphism.codomain() == form.value_module()

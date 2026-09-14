@@ -11,7 +11,6 @@ from sage.arith.misc import binomial
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
 )
@@ -287,7 +286,8 @@ class QuadraticModuleMorphism(ModuleMorphism):
     def polar_form(self):
 
         module = self.module()
-        return module_homset(TensorProduct(module, module), self.codomain())(
+        tensor_square = Modules(module.base_ring()).tensor_product((module, module))
+        return module_homset(tensor_square, self.codomain())(
             lambda left, right: self(left + right) - self(left) - self(right)
         )
 

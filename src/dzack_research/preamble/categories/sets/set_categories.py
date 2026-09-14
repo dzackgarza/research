@@ -585,8 +585,8 @@ class Sets(OwnedCategory):
             A product is taken over an index set, so the family carries both the
             index set and the factor at each index.  Asking the category is the
             public route (`STY-02`), and naming the index set rather than an arity
-            is what `CON-14` requires; the binary `Product(A, B)` is sugar that
-            chooses `Sets.Δ[1]` for the caller.
+            is what `CON-14` requires. A two-factor call may pass a two-element
+            family, whose canonical labels are then `Sets.Δ[1]`.
 
             Two constructions of the same product are the same object.  Without
             that, an element of one never equals an element of the other and the

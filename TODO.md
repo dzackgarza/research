@@ -1,5 +1,9 @@
 # Preamble TODO
 
+## Owner pause — 2026-09-15
+
+**Paused by repository owner.** Do not select or execute any further substantive DAG, terminal-session, refactor, type-paydown, audit, notebook, test, or implementation work until the owner explicitly resumes this repository. The only authorized remaining action at this pause boundary is to bank the complete current mixed tree and publish `main` to `origin`; once local `main` and `origin/main` agree, leave this repository idle. Preserve the open TODO nodes as the future-resume frontier rather than marking their mathematical acceptance complete.
+
 ## Execution priorities
 
 Build the remaining general scheme-theory toolkit from the current `src/dzack_research/preamble/` tree.

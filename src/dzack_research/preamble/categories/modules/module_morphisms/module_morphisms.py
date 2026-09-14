@@ -11,10 +11,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
-    TensorProduct,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
@@ -700,7 +696,11 @@ class ModuleMorphism(Morphism):
         if not isinstance(other, ModuleMorphism) or other.domain() is not self.domain():
             raise ValueError("stacking module maps requires one common domain")
 
-        target = Biproduct(self.codomain(), other.codomain())
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        target = Modules(self.codomain().base_ring()).biproduct(
+            (self.codomain(), other.codomain())
+        )
         return target.to_product(self, other)
 
     @cached_method
@@ -1859,7 +1859,11 @@ class TensorProductModuleMorphism(ModuleMorphism):
         if morphism.codomain() is not self.left_module():
             raise ValueError("the pullback map must land in the form's module")
 
-        source = TensorProduct(morphism.domain(), morphism.domain())
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        source = Modules(morphism.domain().base_ring()).tensor_product(
+            (morphism.domain(), morphism.domain())
+        )
         induced = module_homset(source, self.domain())(
             lambda pair: self.domain().pure_tensor(
                 morphism(morphism.domain().module_generator(pair.component(0))),

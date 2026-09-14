@@ -15,7 +15,6 @@ from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
     Subobjects,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -1241,7 +1240,7 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             if self.inclusion().codomain() is not other.inclusion().codomain():
                 raise ValueError("a subobject intersection requires one common codomain")
 
-            direct_sum = Biproduct(self, other)
+            direct_sum = Modules(self.base_ring()).biproduct((self, other))
             difference = direct_sum.from_summands(self.inclusion(), -other.inclusion())
             kernel = difference.kernel()
             into_left = direct_sum.left_projection() * kernel.inclusion()
@@ -2801,11 +2800,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The tensor square of the free module of rank one."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
         free = Modules(self.base_ring()).an_object()
-        return TensorProduct(free, free)
+        return Modules(self.base_ring()).tensor_product((free, free))
 
     @classmethod
     def _repr_object_names(cls):
@@ -3020,11 +3016,8 @@ def _biproduct_label(label_set, index, label):
 class BiproductModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The biproduct of the free module of rank one with itself."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
         free = Modules(self.base_ring()).an_object()
-        return Biproduct(free, free)
+        return Modules(self.base_ring()).biproduct((free, free))
 
     @classmethod
     def _repr_object_names(cls):
@@ -3211,9 +3204,13 @@ def _module_biproduct_with_data(
 
 def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if source is None:
-        source = Biproduct(left_morphism.domain(), right_morphism.domain())
+        source = Modules(left_morphism.domain().base_ring()).biproduct(
+            (left_morphism.domain(), right_morphism.domain())
+        )
     if target is None:
-        target = Biproduct(left_morphism.codomain(), right_morphism.codomain())
+        target = Modules(left_morphism.codomain().base_ring()).biproduct(
+            (left_morphism.codomain(), right_morphism.codomain())
+        )
 
     if source.biproduct_factor(0) is not left_morphism.domain() or source.biproduct_factor(1) is not right_morphism.domain():
         raise ValueError("the source biproduct has different factors")
