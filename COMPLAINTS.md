@@ -34,6 +34,14 @@ belong at their mathematical declarations or in CONTRIBUTING, not solely here.
 - **Why this matters:** later reconstruction can silently substitute an isomorphic source for the selected one, encourages descendants to manufacture their own generator-family wrappers, and makes category membership stand in for actual chosen structure.
 - **Owner:** `FramedModules` construction.  Make the selected free source/arrow first-class constructor data, while allowing subclasses whose framing is canonically derived to supply that actual construction through the same contract.
 
+### Internal Hom parents defer defining module structure to a lazy model
+
+- **Mathematics:** when an internal Hom is represented as a module, its underlying module object, selected generating set/presentation (when one is selected), and comparison with the internal-Hom construction are part of that represented object.  They are not optional information discovered only when a later method asks for coordinates.
+- **Expected architecture:** constructing the represented internal Hom selects and retains the actual module model/presentation or a first-class construction object whose identity and structural maps are fixed immediately.  Later accessors may lazily realize expensive computations inside that fixed model, but they do not decide which model/presentation the object has.
+- **Observed:** `ModuleHomset` defines `_preamble_module_generating_set`, `_preamble_relation_matrix`, and `_preamble_presentation` as `@lazy_attribute`s routed through `internal_hom_model()` / `_internal_hom_model_data()`.  `_initialize_module_hom_parent()` installs some generator hooks for presented endpoints but leaves the model/presentation itself to first use.  Matrix-space cases construct more of the free-module data eagerly; the general internal-Hom case does not.
+- **Why this matters:** the public Hom parent is already advertised as a module/presented module before the module object that witnesses those claims has been selected.  Generic framing, display, kernels and presentations can therefore become the operations that retroactively complete construction, exactly the failure prohibited by `OWN-15`–`OWN-20`.
+- **Owner:** internal-Hom/module-Hom construction.  Construct/retain the represented internal-Hom module (or an explicit fixed construction object) when the Hom parent is created; let lazy attributes cover only expensive realization inside that already selected mathematics.
+
 ### Functor and adjunction displays do not have one endpoint-aware semantic owner
 
 - **Mathematics:** a functor is not determined for interactive purposes by a noun such as “abelianization” or “free-group”; its domain and codomain are part of the datum.  An adjunction is a specified pair \(F:C\rightleftarrows D:U\) together with unit/counit.
