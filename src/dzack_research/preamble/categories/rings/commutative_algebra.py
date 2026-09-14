@@ -2497,6 +2497,118 @@ def _localization_size_placements(source, submonoid):
     return ()
 
 
+def _flattened_symmetric_localization_engine(source, inverted):
+    r"""Realize a localization of ``Sym_C(M)`` when ``C`` is itself localized.
+
+    For a finitely generated localization ``C = S^{-1}A`` and a finite
+    polynomial algebra ``C[x_1,...,x_n]``, localizing at finitely many
+    polynomials is canonically the corresponding localization of
+    ``A[x_1,...,x_n]`` after adjoining the already inverted elements of ``S``.
+    Sage's nested polynomial localization currently misidentifies such
+    polynomials as units; its flattened multivariate polynomial ring has the
+    maintained localization implementation and represents the same ring.
+
+    The returned decoder is private representation correspondence from a
+    numerator/denominator in that flattened engine back to the owned source
+    polynomial algebra.  Public localization data remain ``source`` and its
+    selected submonoid.
+    """
+
+    coefficient_ring = source.base_ring()
+    if (
+        source not in SymmetricAlgebras(coefficient_ring)
+        or coefficient_ring not in LocalizationRings()
+        or coefficient_ring in PrimeLocalizations()
+    ):
+        return None, None
+    try:
+        coefficient_inverted = tuple(coefficient_ring.inverted_elements())
+    except NotImplementedError:
+        return None, None
+    coefficient_bottom, coefficient_family = _one_step_inverted_family(
+        coefficient_ring,
+        coefficient_inverted,
+    )
+    source_engine = _engine_ring(source)
+    coefficient_engine = _engine_ring(coefficient_ring)
+    coefficient_bottom_engine = _engine_ring(coefficient_bottom)
+    try:
+        names = tuple(source_engine.variable_names())
+        polynomial_bottom = _SagePolynomialRing(
+            coefficient_bottom_engine,
+            names=names,
+        )
+    except (AttributeError, TypeError, ValueError):
+        return None, None
+
+    flattening = getattr(polynomial_bottom, "flattening_morphism", None)
+    if callable(flattening):
+        flattening = flattening()
+        engine_bottom = flattening.codomain()
+        unflatten = flattening.section()
+        to_engine_bottom = flattening
+    else:
+        engine_bottom = polynomial_bottom
+
+        def unflatten(element):
+            return polynomial_bottom(element)
+
+        def to_engine_bottom(element):
+            return engine_bottom(element)
+
+    variables = tuple(polynomial_bottom.gens())
+
+    def powers_of(exponent):
+        if len(variables) == 1 and not isinstance(exponent, tuple):
+            try:
+                return (int(exponent),)
+            except TypeError:
+                pass
+        return tuple(int(power) for power in exponent)
+
+    def cleared_polynomial(element):
+        represented = source_engine(_engine_element(source, element))
+        coefficients = represented.dict()
+        common_denominator = coefficient_bottom_engine.one()
+        for coefficient in coefficients.values():
+            common_denominator *= coefficient_bottom_engine(
+                coefficient.denominator()
+            )
+        cleared = source_engine(coefficient_engine(common_denominator)) * represented
+        result = polynomial_bottom.zero()
+        for exponent, coefficient in cleared.dict().items():
+            if coefficient.denominator() != coefficient_bottom_engine.one():
+                raise ArithmeticError(
+                    "clearing localized polynomial coefficients left a denominator"
+                )
+            term = polynomial_bottom(
+                coefficient_bottom_engine(coefficient.numerator())
+            )
+            for variable, power in zip(variables, powers_of(exponent), strict=True):
+                if power:
+                    term *= variable**power
+            result += term
+        return to_engine_bottom(result)
+
+    engine_inverted = [
+        to_engine_bottom(
+            polynomial_bottom(_engine_element(coefficient_bottom, element))
+        )
+        for element in coefficient_family
+    ]
+    engine_inverted.extend(cleared_polynomial(element) for element in inverted)
+    try:
+        localization_engine = engine_bottom.localization(tuple(engine_inverted))
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        return None, None
+
+    def decode(element):
+        nested = unflatten(engine_bottom(element))
+        return source._from_engine_element(source_engine(nested))
+
+    return localization_engine, decode
+
+
 def _finite_generated_localization(source, submonoid):
     try:
         generators = tuple(submonoid.monoid_generators())
@@ -2509,9 +2621,14 @@ def _finite_generated_localization(source, submonoid):
     bottom, inverted = _one_step_inverted_family(source, generators)
     values = tuple(_engine_element(bottom, value) for value in inverted)
     engine_bottom = _engine_ring(bottom)
+    engine_source_decoder = None
     try:
         localization_engine = engine_bottom.localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
+        localization_engine, engine_source_decoder = _flattened_symmetric_localization_engine(
+            bottom,
+            inverted,
+        )
         # Sage does not localize a generic quotient ring directly, even when
         # the quotient is a domain.  Present the same ring by adjoining an
         # inverse variable for each selected denominator:
@@ -2522,38 +2639,38 @@ def _finite_generated_localization(source, submonoid):
         # Unlike a quotient of Sage's localization parent, this ordinary
         # polynomial quotient supports exact quotient maps and unit inversion,
         # which are the private operations affine ``Spec`` needs.
-        localization_engine = None
-        try:
-            cover = engine_bottom.cover_ring()
-            defining = engine_bottom.defining_ideal()
-            cover_names = tuple(cover.variable_names())
-            occupied = set(cover_names)
-            inverse_names = []
-            for position in range(len(values)):
-                candidate = f"localization_inverse_{position}"
-                while candidate in occupied:
-                    candidate = "localization_" + candidate
-                occupied.add(candidate)
-                inverse_names.append(candidate)
-            extended_cover = _SagePolynomialRing(
-                cover.base_ring(),
-                names=(*cover_names, *inverse_names),
-            )
-            inverse_variables = tuple(
-                extended_cover.gen(len(cover_names) + position)
-                for position in range(len(values))
-            )
-            relations = tuple(
-                extended_cover(generator) for generator in defining.gens()
-            ) + tuple(
-                inverse * extended_cover(value.lift()) - extended_cover.one()
-                for inverse, value in zip(inverse_variables, values, strict=True)
-            )
-            localization_engine = extended_cover.quotient(
-                extended_cover.ideal(relations)
-            )
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        if localization_engine is None:
+            try:
+                cover = engine_bottom.cover_ring()
+                defining = engine_bottom.defining_ideal()
+                cover_names = tuple(cover.variable_names())
+                occupied = set(cover_names)
+                inverse_names = []
+                for position in range(len(values)):
+                    candidate = f"localization_inverse_{position}"
+                    while candidate in occupied:
+                        candidate = "localization_" + candidate
+                    occupied.add(candidate)
+                    inverse_names.append(candidate)
+                extended_cover = _SagePolynomialRing(
+                    cover.base_ring(),
+                    names=(*cover_names, *inverse_names),
+                )
+                inverse_variables = tuple(
+                    extended_cover.gen(len(cover_names) + position)
+                    for position in range(len(values))
+                )
+                relations = tuple(
+                    extended_cover(generator) for generator in defining.gens()
+                ) + tuple(
+                    inverse * extended_cover(value.lift()) - extended_cover.one()
+                    for inverse, value in zip(inverse_variables, values, strict=True)
+                )
+                localization_engine = extended_cover.quotient(
+                    extended_cover.ideal(relations)
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
         if localization_engine is None:
             # Localizing at units changes no ring.  Some Sage polynomial-ring
             # engines refuse the syntactic localization at ``1``; in that case
@@ -2589,6 +2706,8 @@ def _finite_generated_localization(source, submonoid):
         source=source,
         submonoid=submonoid,
         _engine_ring=localization_engine,
+        _engine_source_decoder=engine_source_decoder,
+        _engine_units_exact=localization_engine is not None,
         algebra_source=algebra_source,
     )
 

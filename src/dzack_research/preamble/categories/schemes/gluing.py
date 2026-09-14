@@ -29,6 +29,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
+    FramedAlgebras,
+    algebra_structure_view,
 )
 from dzack_research.preamble.categories.algebras.restricted_scalars import (
     restrict_algebra_scalars,
@@ -44,14 +46,21 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     restrict_scalars,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
+    _engine_ring,
+    ring_homset,
+    ring_morphism,
+)
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     DistinguishedAffineCovers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     OpenImmersions,
+    Schemes,
     SchemeMorCategory,
+    _affine_structure_morphism_to_base,
     SchemeMorphism,
     Spec,
     _fresh_affine_spectrum,
@@ -107,6 +116,23 @@ def _family_on_finite_ordered_set(index_set, values, *, name, noun):
         lambda index: entries[int(index_set.ranking_map()(index))],
         name=name,
     )
+
+
+def _algebra_homset(source, target):
+    r"""Return the algebra Hom selected by the scalar algebra structure.
+
+    An engine-backed algebra is also an owned ring and often a module, so its
+    bare parent-level ``Mor`` is not enough to identify which of those several
+    mathematical Hom theories is intended.  Algebra descent always means
+    morphisms of associative unital algebras over the declared scalar ring.
+    """
+    base = source.algebra_base_ring()
+    if target.algebra_base_ring() is not base:
+        raise ValueError("an algebra Hom requires one common scalar base ring")
+    category = Algebras(base).Associative().Unital()
+    if source not in category or target not in category:
+        raise TypeError("algebra descent maps require associative unital algebra endpoints")
+    return category.Mor(source, target)
 
 
 def _finite_chart_family(charts):
@@ -222,6 +248,17 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
             "not by one affine native morphism"
         )
 
+    def __mul__(self, other):
+        if not isinstance(other, SchemeMorphism):
+            return NotImplemented
+        schemes = Schemes(self.codomain().scheme_base_ring())
+        try:
+            chart_map = schemes.Mor(other.domain(), self.domain())(other)
+        except (NotImplementedError, TypeError, ValueError):
+            return NotImplemented
+        parent = schemes.Mor(chart_map.domain(), self.codomain())
+        return _GluedSchemeChartMap(parent, self, chart_map)
+
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, _GluedSchemeChartEmbedding)
@@ -243,6 +280,83 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         )
 
 
+class _GluedSchemeChartMap(SchemeMorphism):
+    r"""A map into a glued scheme factoring through one selected affine chart."""
+
+    def __init__(self, parent, chart_embedding, chart_map) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        if not isinstance(chart_embedding, _GluedSchemeChartEmbedding):
+            raise TypeError("a glued chart-factor map requires a selected chart embedding")
+        if chart_map.codomain() is not chart_embedding.domain():
+            raise ValueError("the affine factor must land in the selected glued chart")
+        if chart_map.domain() is not self.domain() or chart_embedding.codomain() is not self.codomain():
+            raise ValueError("the glued chart-factor map has the wrong Hom endpoints")
+        self._chart_embedding = chart_embedding
+        self._chart_map = chart_map
+
+    def chart_embedding(self):
+        return self._chart_embedding
+
+    def chart_index(self):
+        return self.chart_embedding().chart_index()
+
+    def chart_map(self):
+        return self._chart_map
+
+    def gluing_datum(self):
+        return self.chart_embedding().gluing_datum()
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "a map through one glued chart is represented by that chart factorization"
+        )
+
+    def __mul__(self, other):
+        if not isinstance(other, SchemeMorphism):
+            return NotImplemented
+        composite = self.chart_map() * other
+        if composite is NotImplemented:
+            return NotImplemented
+        schemes = Schemes(self.codomain().scheme_base_ring())
+        return _GluedSchemeChartMap(
+            schemes.Mor(composite.domain(), self.codomain()),
+            self.chart_embedding(),
+            schemes.Mor(composite.domain(), self.chart_embedding().domain())(composite),
+        )
+
+    def _postcompose_with(self, after):
+        if not isinstance(after, _GluedSchemeMorphism) or after.domain() is not self.codomain():
+            return NotImplemented
+        return after.local_map(self.chart_index()) * self.chart_map()
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, _GluedSchemeChartMap) or other.codomain() is not self.codomain():
+            return False
+        if self.chart_index() == other.chart_index():
+            return self.chart_map() == other.chart_map()
+        datum = self.gluing_datum()
+        if other.gluing_datum() is not datum:
+            return False
+        left_overlap = datum.overlap(self.chart_index(), other.chart_index())
+        right_overlap = datum.overlap(other.chart_index(), self.chart_index())
+        try:
+            left = left_overlap.corestriction(self.chart_map())
+            right = right_overlap.corestriction(other.chart_map())
+        except (AssertionError, NotImplementedError, TypeError, ValueError):
+            return False
+        transition = datum.transition_between(
+            self.chart_index(), other.chart_index()
+        ).forward()
+        return transition * left == right
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+
 class _GluedSchemeMorphism(SchemeMorphism):
     r"""A morphism out of a glued scheme, represented by compatible chart maps."""
 
@@ -257,9 +371,10 @@ class _GluedSchemeMorphism(SchemeMorphism):
             name="Raw local maps of a glued-scheme morphism",
             noun="a glued-scheme morphism",
         )
+        schemes = Schemes(datum.base_ring())
         self._local_maps = finite_indexed_family(
             datum.chart_index_set(),
-            lambda index: datum.chart(index).Mor(self.codomain())(
+            lambda index: schemes.Mor(datum.chart(index), self.codomain())(
                 raw_local_maps[index]
             ),
             name="Local maps of a glued-scheme morphism",
@@ -308,11 +423,24 @@ class _GluedSchemeMorphism(SchemeMorphism):
         if self._is_the_identity():
             return other
         if (
+            isinstance(other, _GluedSchemeChartMap)
+            and other.codomain() is self.domain()
+            and other.gluing_datum() is self.domain().gluing_datum()
+        ):
+            return self.local_map(other.chart_index()) * other.chart_map()
+        if (
             isinstance(other, _GluedSchemeChartEmbedding)
             and other.codomain() is self.domain()
             and other.gluing_datum() is self.domain().gluing_datum()
         ):
             return self.local_map(other.chart_index())
+        if isinstance(other, _GluedSchemeMorphism) and other.codomain() is self.domain():
+            return other.domain().Mor(self.codomain())(
+                tuple(
+                    self * other.local_map(index)
+                    for index in other.domain().gluing_datum().chart_indices()
+                )
+            )
         if other.codomain() is not self.domain():
             return NotImplemented
         if other._is_the_identity():
@@ -378,6 +506,7 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
     chart_images = []
     chart_isomorphisms = []
     chart_embeddings = []
+    schemes = Schemes(datum.base_ring())
     for index in datum.chart_indices():
         chart = datum.chart(index)
         algebra = chart.coordinate_algebra()
@@ -387,18 +516,18 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
             extra_categories=(OpenImmersions(scheme),),
         )
         open_inclusion = _GluedSchemeOpenInclusion(
-            chart_image.Mor(scheme),
+            schemes.Mor(chart_image, scheme),
             datum,
             index,
         )
         chart_image._preamble_inclusion = open_inclusion
         identity_pullback = algebra.Mor(algebra).identity()
         chart_isomorphism = Isomorphism(
-            chart.Mor(chart_image)(identity_pullback),
-            chart_image.Mor(chart)(identity_pullback),
+            schemes.Mor(chart, chart_image)(identity_pullback),
+            schemes.Mor(chart_image, chart)(identity_pullback),
         )
         chart_embedding = _GluedSchemeChartEmbedding(
-            chart.Mor(scheme),
+            schemes.Mor(chart, scheme),
             datum,
             index,
             chart_image,
@@ -429,7 +558,10 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
     scheme._preamble_identity_morphism = scheme.Mor(scheme).identity()
     base_scheme = Spec(datum.base_ring(), base_ring=datum.base_ring())
     scheme._preamble_structure_morphism = scheme.Mor(base_scheme)(
-        tuple(chart.structure_morphism() for chart in datum.charts())
+        tuple(
+            _affine_structure_morphism_to_base(chart, datum.base_ring())
+            for chart in datum.charts()
+        )
     )
 
 
@@ -1527,7 +1659,7 @@ class SemilinearAlgebraMorphism(SageObject):
             if callable(images)
             else dict(images)
         )
-        self._morphism = source.Mor(self._restricted_target)(
+        self._morphism = _algebra_homset(source, self._restricted_target)(
             {
                 label: self._restricted_target(target(supplied[label]))
                 for label in labels
@@ -1555,6 +1687,63 @@ class SemilinearAlgebraMorphism(SageObject):
 
     def __call__(self, element):
         return self.target()(self.algebra_morphism()(self.source()(element)))
+
+    def induced_morphism(self, morphism):
+        r"""Factor ``morphism`` through this scalar-extension target.
+
+        For ``sigma:R->S`` and ``B = S tensor_R A``, a ring map ``g:A->T``
+        factors through ``B`` once its scalar restriction ``R->T`` factors
+        through ``S``.  The scalar factor supplies the ``S``-algebra structure
+        on ``T`` and the images of the selected algebra generators determine
+        the unique algebra map ``B->T``.
+        """
+
+        if morphism.domain() is not self.source():
+            raise ValueError("a scalar-extension factor extends a map from the original algebra")
+        source_structure = self.source().algebra_structure_morphism()
+        scalar_restriction = ring_morphism(
+            self.source().base_ring(),
+            morphism.codomain(),
+            lambda scalar: morphism(source_structure(scalar)),
+        )
+        target_scalars = self.target().base_ring()
+        if target_scalars not in LocalizationRings():
+            raise NotImplementedError(
+                "semilinear algebra factorization is represented here when the target scalars are a localization"
+            )
+        localization_source = target_scalars.localization_source()
+        source_scalars = self.source().base_ring()
+        localization_steps = []
+        current = source_scalars
+        while current is not localization_source:
+            if current not in LocalizationRings():
+                raise ValueError(
+                    "the scalar-extension source is not represented as a localization tower over the target localization source"
+                )
+            localization_steps.append(current.localization_map())
+            current = current.localization_source()
+        source_map = ring_homset(localization_source, localization_source).identity()
+        for step in reversed(localization_steps):
+            source_map = step * source_map
+        scalar_factor = target_scalars.induced_morphism(
+            scalar_restriction * source_map
+        )
+        target_view = algebra_structure_view(morphism.codomain(), scalar_factor)
+        source_labels = self.source().algebra_generating_set()
+        target_labels = self.target().algebra_generating_set()
+        if source_labels != target_labels:
+            raise ValueError("scalar extension must retain the selected algebra generating set")
+        algebra_factor = _algebra_homset(self.target(), target_view)(
+            {
+                label: target_view(morphism(self.source().algebra_generator(label)))
+                for label in target_labels
+            }
+        )
+        return ring_morphism(
+            self.target(),
+            morphism.codomain(),
+            lambda element: morphism.codomain()(algebra_factor(self.target()(element))),
+        )
 
     def __mul__(self, other):
         if not isinstance(other, SemilinearAlgebraMorphism):
@@ -2525,7 +2714,7 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
 
         extended_map = AlgebraScalarExtensionFunctor(ring_map)(local_map)
         extended_source = extended_map.domain()
-        return source_pair.Mor(target_pair)(
+        return _algebra_homset(source_pair, target_pair)(
             {
                 label: target_pair(
                     extended_map(extended_source.algebra_generator(label))
@@ -3091,8 +3280,17 @@ def _algebra_maps_agree_on_generators(left, right) -> bool:
     )
 
 
+def _finite_algebra_framing(algebra):
+    if algebra not in FramedAlgebras(algebra.base_ring()):
+        raise TypeError("affine algebra descent currently requires finitely framed local algebras")
+    labels = algebra.algebra_generating_set()
+    if not labels.cardinality().is_finite():
+        raise TypeError("affine algebra descent currently requires finitely framed local algebras")
+    return labels
+
+
 def _exact_algebra_map(source, target, morphism):
-    homset = source.Mor(target)
+    homset = _algebra_homset(source, target)
     if (
         isinstance(morphism, Morphism)
         and morphism.domain() is source
@@ -3151,11 +3349,7 @@ class AlgebraGluingDatum(Parent):
             ring = cover.open(label).coordinate_algebra()
             if algebra.base_ring() is not ring:
                 raise ValueError("each local algebra must be defined over its chart section ring")
-            if algebra not in AlgebrasWithChosenFinitePresentation(ring):
-                raise TypeError(
-                    "affine algebra descent currently requires local algebras with chosen finite presentations"
-                )
-            _finite_framing(algebra)
+            _finite_algebra_framing(algebra)
 
         expected = set(combinations(tuple(cover.atlas()), 2))
         self._transitions = {
@@ -3173,7 +3367,7 @@ class AlgebraGluingDatum(Parent):
         self._sheaf = None
         self._verify_pairwise_transitions()
         self._verify_cocycles()
-        self._module_gluing_datum = self._build_underlying_module_datum()
+        self._module_gluing_datum = None
         Parent.__init__(self, category=AlgebraGluingData(cover))
 
     def cover(self):
@@ -3203,9 +3397,7 @@ class AlgebraGluingDatum(Parent):
         ).coordinate_algebra()
         if restricted not in Algebras(target).Associative().Unital():
             raise TypeError("algebra scalar extension did not preserve the algebra structure")
-        if restricted not in AlgebrasWithChosenFinitePresentation(target):
-            raise TypeError("algebra scalar extension did not preserve the chosen finite presentation")
-        _finite_framing(restricted)
+        _finite_algebra_framing(restricted)
         return restricted
 
     def transition(self, source_index, target_index):
@@ -3240,13 +3432,19 @@ class AlgebraGluingDatum(Parent):
                 raise ValueError("an algebra transition has the wrong overlap endpoints")
             if inverse.domain() is not target or inverse.codomain() is not source:
                 raise ValueError("an algebra transition inverse has the wrong overlap endpoints")
-            if forward.parent() is not source.Mor(target):
+            if forward.parent() is not _algebra_homset(source, target):
                 raise TypeError("an algebra transition forward map must lie in the overlap algebra Hom")
-            if inverse.parent() is not target.Mor(source):
+            if inverse.parent() is not _algebra_homset(target, source):
                 raise TypeError("an algebra transition inverse map must lie in the overlap algebra Hom")
-            if not _algebra_maps_agree_on_generators(inverse * forward, source.Mor(source).identity()):
+            if not _algebra_maps_agree_on_generators(
+                inverse * forward,
+                _algebra_homset(source, source).identity(),
+            ):
                 raise ValueError("the stated algebra transition is not left-invertible on the overlap")
-            if not _algebra_maps_agree_on_generators(forward * inverse, target.Mor(target).identity()):
+            if not _algebra_maps_agree_on_generators(
+                forward * inverse,
+                _algebra_homset(target, target).identity(),
+            ):
                 raise ValueError("the stated algebra transition is not right-invertible on the overlap")
 
     def restriction_between_intersections(
@@ -3275,14 +3473,14 @@ class AlgebraGluingDatum(Parent):
         source = self.restricted_algebra(chart_index, *source_indices)
         target = self.restricted_algebra(chart_index, *target_indices)
         if target is source:
-            cached = source.Mor(source).identity()
+            cached = _algebra_homset(source, source).identity()
             self._restriction_maps[key] = cached
             return cached
         source_open = self.cover().intersection(*source_indices)
         target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
         restricted_target = restrict_algebra_scalars(target, ring_map)
-        cached = source.Mor(restricted_target)(
+        cached = _algebra_homset(source, restricted_target)(
             lambda label: restricted_target(target.algebra_generator(label))
         )
         self._restriction_maps[key] = cached
@@ -3354,9 +3552,52 @@ class AlgebraGluingDatum(Parent):
             pair_image = transition(pair_source.algebra_generator(label))
             return target(target_restriction(pair_image))
 
-        cached = source.Mor(target)(image)
+        cached = _algebra_homset(source, target)(image)
         self._transition_restrictions[key] = cached
         return cached
+
+    def restricted_local_map(
+        self,
+        target_datum,
+        chart_index,
+        other_index,
+        local_map,
+    ):
+        r"""Base-change one local algebra map to a represented pair overlap."""
+
+        if target_datum.cover() is not self.cover():
+            raise ValueError("algebra descent maps require one underlying affine cover")
+        chart_index = int(chart_index)
+        other_index = int(other_index)
+        if (
+            local_map.domain() is not self.local_algebra(chart_index)
+            or local_map.codomain() is not target_datum.local_algebra(chart_index)
+        ):
+            raise ValueError("a local algebra-descent map has the wrong chart endpoints")
+        source = self.restricted_algebra(chart_index, chart_index, other_index)
+        target = target_datum.restricted_algebra(
+            chart_index,
+            chart_index,
+            other_index,
+        )
+        ring_map = self.cover().structure_sheaf_restriction(
+            chart_index,
+            other_index,
+        )
+        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
+            AlgebraScalarExtensionFunctor,
+        )
+
+        extended_map = AlgebraScalarExtensionFunctor(ring_map)(local_map)
+        extended_source = extended_map.domain()
+        return _algebra_homset(source, target)(
+            {
+                label: target(
+                    extended_map(extended_source.algebra_generator(label))
+                )
+                for label in source.algebra_generating_set()
+            }
+        )
 
     def _verify_cocycles(self) -> None:
         for left_index, middle_index, right_index in combinations(
@@ -3405,6 +3646,8 @@ class AlgebraGluingDatum(Parent):
         )
 
     def underlying_module_datum(self):
+        if self._module_gluing_datum is None:
+            self._module_gluing_datum = self._build_underlying_module_datum()
         return self._module_gluing_datum
 
     def compatible_sections(self):
@@ -3448,16 +3691,9 @@ class AlgebraGluingMorphism(Morphism):
             )
             for index, local_map in enumerate(local_maps)
         )
-        module_maps = tuple(
-            algebra_underlying_module_functor(
-                self.cover().open(index).coordinate_algebra()
-            )(local_map)
-            for index, local_map in enumerate(self._local_maps)
-        )
-        self._underlying_module_morphism = self.domain().underlying_module_datum().Mor(
-            self.codomain().underlying_module_datum()
-        )(module_maps)
+        self._underlying_module_morphism = None
         self._global_sections_map = None
+        self._verify_overlap_compatibility()
 
     def cover(self):
         return self.domain().cover()
@@ -3468,7 +3704,50 @@ class AlgebraGluingMorphism(Morphism):
     def local_map(self, index):
         return self.local_maps()[int(index)]
 
+    def _verify_overlap_compatibility(self) -> None:
+        for left_index, right_index in combinations(
+            range(len(self.domain().local_algebras())),
+            2,
+        ):
+            source_transition = self.domain().transition(
+                left_index,
+                right_index,
+            ).forward()
+            target_transition = self.codomain().transition(
+                left_index,
+                right_index,
+            ).forward()
+            left_restriction = self.domain().restricted_local_map(
+                self.codomain(),
+                left_index,
+                right_index,
+                self.local_map(left_index),
+            )
+            right_restriction = self.domain().restricted_local_map(
+                self.codomain(),
+                right_index,
+                left_index,
+                self.local_map(right_index),
+            )
+            if not _algebra_maps_agree_on_generators(
+                target_transition * left_restriction,
+                right_restriction * source_transition,
+            ):
+                raise ValueError(
+                    "algebra descent morphism is incompatible with transition maps on an overlap"
+                )
+
     def underlying_module_morphism(self):
+        if self._underlying_module_morphism is None:
+            module_maps = tuple(
+                algebra_underlying_module_functor(
+                    self.cover().open(index).coordinate_algebra()
+                )(local_map)
+                for index, local_map in enumerate(self._local_maps)
+            )
+            self._underlying_module_morphism = self.domain().underlying_module_datum().Mor(
+                self.codomain().underlying_module_datum()
+            )(module_maps)
         return self._underlying_module_morphism
 
     def global_sections_map(self):
@@ -3486,7 +3765,7 @@ class AlgebraGluingMorphism(Morphism):
                 )
 
             set_map = SetMorphism(Sets().Mor(source, target), image)
-            self._global_sections_map = source.Mor(target)(set_map)
+            self._global_sections_map = _algebra_homset(source, target)(set_map)
         return self._global_sections_map
 
     def relative_spectrum_morphism(self):
@@ -3540,7 +3819,7 @@ class AlgebraGluingHomset(CategoricalHomset):
             raise ValueError("identity belongs to an algebra descent endomorphism Hom")
         return self(
             tuple(
-                algebra.Mor(algebra).identity()
+                _algebra_homset(algebra, algebra).identity()
                 for algebra in self.domain().local_algebras()
             )
         )

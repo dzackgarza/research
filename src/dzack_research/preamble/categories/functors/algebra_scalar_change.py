@@ -71,6 +71,42 @@ def _base_change_presented_element(algebra, element, target, ring_map):
     )
 
 
+def _base_change_symmetric_element(algebra, element, target, ring_map):
+    r"""Carry one element of a finitely framed symmetric algebra through scalar extension."""
+
+    labels = algebra.algebra_generating_set()
+    if not labels.cardinality().is_finite():
+        raise NotImplementedError(
+            "scalar extension of a symmetric-algebra morphism currently requires a finite algebra framing"
+        )
+    labels = tuple(labels)
+    backend = _engine_element(algebra, algebra(element))
+    result = target.zero()
+    source_base = algebra.base_ring()
+    source_base_engine = _engine_ring(source_base)
+    for exponent, coefficient in backend.monomial_coefficients().items():
+        try:
+            powers = tuple(int(value) for value in exponent)
+        except TypeError:
+            if hasattr(exponent, "exponents"):
+                powers = tuple(int(value) for value in exponent.exponents()[0])
+            else:
+                powers = (int(exponent),)
+        if len(powers) != len(labels):
+            raise ArithmeticError(
+                "the symmetric-algebra engine returned a monomial with the wrong arity"
+            )
+        scalar = ring_map(
+            source_base._from_engine_element(source_base_engine(coefficient))
+        )
+        term = target.scalar_multiple(scalar, target.one())
+        for label, power in zip(labels, powers, strict=True):
+            if power:
+                term *= target.algebra_generator(label) ** power
+        result += term
+    return target(result)
+
+
 class AlgebraScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : Alg_R -> Alg_S`` along ``f : R -> S``.
 
@@ -93,6 +129,22 @@ class AlgebraScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, algebra):
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebras,
+        )
+
+        if algebra in SymmetricAlgebras(self._source_ring):
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                SymmetricAlgebraFunctor,
+            )
+            from dzack_research.preamble.categories.functors.scalar_change import (
+                ScalarExtensionFunctor,
+            )
+
+            source_module = algebra.free_source_module()
+            extended_module = ScalarExtensionFunctor(self.ring_map())(source_module)
+            return SymmetricAlgebraFunctor(self._target_ring)(extended_module)
+
         match algebra in AlgebrasWithChosenFinitePresentation(self._source_ring):
             case True:
                 return algebra.base_change(self.ring_map())
@@ -114,6 +166,9 @@ class AlgebraScalarExtensionFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebras,
+        )
         from dzack_research.preamble.categories.rings.embeddings import OrderEmbedding
 
         match isinstance(morphism, OrderEmbedding):
@@ -147,6 +202,17 @@ class AlgebraScalarExtensionFunctor(Functor):
                 )
             case False:
                 pass
+
+        if morphism.codomain() in SymmetricAlgebras(self._source_ring):
+            return algebra_homset(source, target)(
+                lambda label: _base_change_symmetric_element(
+                    morphism.codomain(),
+                    morphism(morphism.domain().algebra_generator(label)),
+                    target,
+                    self.ring_map(),
+                )
+            )
+
         return algebra_homset(source, target)(
             lambda label: _base_change_presented_element(
                 morphism.codomain(),

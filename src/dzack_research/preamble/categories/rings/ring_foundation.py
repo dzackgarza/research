@@ -471,6 +471,14 @@ class LocalizationRings(OwnedCategory):
 
             parent = self.parent()
             source = parent.localization_source()
+            try:
+                if self.numerator() in parent.localization_submonoid():
+                    return True
+            except NotImplementedError:
+                pass
+            if parent._preamble_engine_units_exact:
+                engine = parent._selected_engine_ring()
+                return bool(engine(parent._engine_element(self)).is_unit())
             bottom, inverted_family = _one_step_inverted_family(
                 source, parent.inverted_elements()
             )
@@ -528,6 +536,8 @@ class LocalizationRings(OwnedCategory):
             source,
             submonoid,
             _engine_ring=None,
+            _engine_source_decoder=None,
+            _engine_units_exact=False,
             *,
             algebra_source=None,
             fraction_field_realization=None,
@@ -536,6 +546,8 @@ class LocalizationRings(OwnedCategory):
             self._preamble_localization_source = source
             self._preamble_localization_submonoid = submonoid
             self._preamble_engine_ring = _engine_ring
+            self._preamble_engine_source_decoder = _engine_source_decoder
+            self._preamble_engine_units_exact = bool(_engine_units_exact)
             self._preamble_fraction_field_realization = fraction_field_realization
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
@@ -638,6 +650,13 @@ class LocalizationRings(OwnedCategory):
             represented = engine(value)
             source = self.localization_source()
             source_engine = _engine_ring(source)
+            decoder = self._preamble_engine_source_decoder
+            if decoder is not None:
+                return self.fraction(
+                    decoder(represented.numerator()),
+                    decoder(represented.denominator()),
+                    _trusted_denominator=True,
+                )
 
             # A localization of a quotient is realized privately by the
             # standard finite presentation
