@@ -20,8 +20,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
     _cross_engine_ring_value,
     _engine_element,
+    _engine_numeral,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -29,6 +31,18 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
+
+
+def _engine_cartan_type_data(value):
+    r"""Lower owned session numerals before Sage parses Cartan presentation data."""
+    if isinstance(value, list):
+        return [_engine_cartan_type_data(entry) for entry in value]
+    if isinstance(value, tuple):
+        return tuple(_engine_cartan_type_data(entry) for entry in value)
+    parent = getattr(value, "parent", lambda: None)()
+    if parent is not None and parent in OwnedRings():
+        return _engine_numeral(_own_ring(SageZZ), value)
+    return value
 
 
 def _coxeter_entry(q1, q2, pairing):
@@ -1010,9 +1024,9 @@ class CoxeterDiagrams(OwnedCategory):
         return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
     def from_cartan_type(self, cartan_type, names=None, *, rooted=False, scale=None, positions=None):
-        cartan_type = CartanType(cartan_type)
+        cartan_type = CartanType(_engine_cartan_type_data(cartan_type))
         if scale is not None:
-            scale = SageZZ(scale)
+            scale = _own_ring(SageZZ)(scale)
             if scale < 1:
                 raise ValueError("a Coxeter root-lattice scale is a positive integer")
             rooted = True
