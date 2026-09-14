@@ -1084,6 +1084,294 @@ from the breadth of this specification.
   series engine realizes its supported ring operations privately. Diagram
   restriction and universal maps still come from that same general construction.
 
+### `OWN-15`: The underlying object is defining construction data, never a post-hoc view
+
+- **Rule:** When a mathematical object is obtained by adding structure to an
+  existing owned object, construct the weaker object first and retain that exact
+  object as part of the stronger object's defining data.  The stronger object
+  is then the weaker object together with additional selected datum and the
+  canonical structural maps.  An accessor such as `underlying_set()`,
+  `unformed_module()`, `base_scheme()`, `source_object()`, or `forget_*()` exposes
+  that already-constructed object/map; it does not synthesize a fresh isomorphic
+  object from dimensions, labels, coordinates, category membership, or other
+  metadata.
+
+  This applies whenever the mathematics has a canonical construction chain:
+  `S -> Free_R(S)`, a module plus a form, a module plus a group action, an algebra
+  over its underlying module, a graded object over its underlying object, a
+  subobject with its inclusion, a quotient with its projection, a scalar change
+  with its unit/counit/comparison map, a scheme over its coordinate algebra, or
+  a functor image with its source provenance.  The chain is construction data,
+  not documentation about a separately implemented object.
+
+  Lazy realization is permitted only for computation *inside* an already fixed
+  underlying object.  It is not permission to postpone deciding what the
+  underlying mathematical object is until a method is first called.
+- **Rationale:** Reconstructing the weaker object later creates a second source
+  of identity and lets generic operations drift from the object whose structure
+  they are supposed to inherit.
+- **Observed defect:** lattice construction already created a concrete
+  `FreeModuleOn(R,S)` and stored it as `_module`, but lattice-level accessors then
+  maintained parallel generator/index state and `unformed_module()` returned the
+  lattice itself rather than that stored module.  The correct underlying module
+  existed but was bypassed by the public surface.
+- **Correct Example:** construct `M = FreeModuleOn(R,S)` once; construct the
+  lattice from `(M,b)`; `unformed_module()` returns `M`; every generic module
+  operation is delegated or transported through that same `M` and the canonical
+  comparison maps.
+
+### `OWN-16`: Forgetting or adding structure is represented by actual structural maps
+
+- **Rule:** If a stronger object is represented by a distinct parent from its
+  weaker object, forgetting and re-equipping structure are real owned morphisms
+  between those parents.  Their endpoints are the actual stored objects from
+  `OWN-15`, and when the construction is carrier-preserving the maps are the
+  canonical mutually inverse identifications of those represented carriers.
+  Do not replace them by an identity endomorphism of the stronger parent merely
+  because the elements use the same coordinates internally.
+
+  Returning `self` from an underlying-object accessor is correct only when the
+  mathematical construction intentionally uses the same owned parent as both
+  objects and no distinct choice of added structure must remain observable.
+  A category refinement alone does not prove this.  If two different forms,
+  actions, gradings, framings, or presentations on the same weaker object must
+  be distinguishable, then the stronger objects cannot both forget to themselves.
+
+  Generic algorithms on the weaker theory compose with these structural maps;
+  they do not duplicate the algorithm on the stronger parent.  Specialized
+  algorithms may improve computation but must agree with the transported generic
+  operation.
+- **Rationale:** Treating forgetful structure as an identity of the wrong parent
+  erases the construction history and makes it impossible to state correctly
+  which object a generic map or theorem acts on.
+- **Observed defect:** lattice `forget_form_morphism()` and
+  `equip_form_morphism()` were both implemented as the identity on the lattice,
+  even though the constructor retained a separate free module and the generic
+  `FormedModules` implementation already models the two canonical maps correctly.
+- **Correct Example:** a formed copy `L` of `M` stores `M`; `forget : L -> M`
+  and `equip : M -> L` transport the selected generators/elements and are inverse
+  module isomorphisms.  The form lives on `L`; generic module operations may be
+  computed on `M` and transported through these maps.
+
+### `OWN-17`: Accessors expose established structure; they never complete construction retroactively
+
+- **Rule:** A public accessor is observational.  It may return stored defining
+  data, a canonical map from those data, or a lazy mathematical view whose
+  identity was fixed at construction.  It may not create the missing underlying
+  object, selected generating set, framing, presentation, category placement,
+  or structural map merely because the user asked for it.
+
+  In particular, a method inherited from a category is evidence that the
+  constructor already supplied the datum that method names.  If calling
+  `module_generators()` causes the object to manufacture a new generator-family
+  wrapper because no canonical generator object was retained, or if calling
+  `presentation()` first allocates the presentation that should define the
+  object, construction is backwards.  Repair the constructor/owner; do not make
+  the accessor a hidden second constructor.
+
+  Caching an accessor result does not cure this violation.  “Construct once on
+  first query” is still post-hoc construction unless the result is merely a
+  realization of defining data whose mathematical identity was already fixed.
+- **Rationale:** Retroactive construction makes object validity depend on which
+  methods happened to be called and rewards synthetic compatibility layers over
+  honest reuse of general constructors.
+- **Observed defect:** lattice `module_generators()` constructed a new
+  `IndexedFamily` every time its cache was empty, despite the lattice constructor
+  already having built the free module and its canonical generating data.
+  Similar labels such as `Free-module generator family` and `Presented-module
+  generator family` show the same tendency to manufacture an interface object
+  instead of exposing the construction that already owns the generators.
+- **Correct Example:** `Free_R(S)` owns the canonical basis map at construction;
+  `module_generating_set()` exposes `S`, `module_generator(s)` evaluates the
+  stored unit/basis map, and `module_generators()` exposes its represented image
+  when that image is mathematically a set.
+
+### `OWN-18`: Generic operations are owned by the weakest sufficient structure
+
+- **Rule:** The public meaning and codomain of an operation are determined by the
+  weakest mathematical structure that defines it.  A refinement may provide a
+  faster implementation or additional specialized operations, but it does not
+  silently specialize the generic operation's result type, display vocabulary,
+  or ontology.
+
+  If `module_generators()` is defined for framed/free modules, a lattice that is
+  a formed free module uses that same module-theoretic operation.  The result is
+  not a “lattice generator family” merely because the receiver is internally
+  refined as a lattice.  A lattice-specific generating object is justified only
+  when extra lattice mathematics is genuinely selected — for example a simple
+  root basis carrying root-system structure — and then it belongs to a distinct
+  lattice/root operation whose stronger codomain is part of its contract.
+
+  Apply this rule through all forgetful towers: groups versus sets, algebras
+  versus modules, formed versus unformed modules, graded versus ungraded objects,
+  schemes versus underlying spaces/rings where appropriate, and specialized
+  morphism categories versus their underlying Homs.
+- **Rationale:** Otherwise every refinement forks generic concepts into a swarm
+  of cosmetically specialized wrappers, leaking implementation taxonomy and
+  destroying compositional reuse.
+- **Observed defect:** `L.module_generators()` returned an `IndexedFamily` named
+  `Lattice-generator family`; free modules independently used `Free-module
+  generator family`.  Neither name described additional mathematics of the
+  returned generators.  The refinement leaked into a generic module operation.
+- **Correct Example:** both the free module and a lattice built from it expose
+  the same canonical generator set/image at the module level.  A separate
+  `simple_roots()` or similarly standard refined operation may return a richer
+  root object when that structure actually exists.
+
+### `OWN-19`: One defining datum has one authority throughout a construction chain
+
+- **Rule:** Do not maintain parallel copies or parallel owners of the same
+  mathematical datum.  An indexing set `S`, selected generating map, relation
+  family, grading, action, form, presentation, or universal arrow is established
+  once at its owner and referenced by stronger constructions.  A descendant may
+  retain a direct reference or canonical map to it; it may not copy it into a
+  second `_indices`, `_generators`, `_presentation`, or equivalent field and then
+  implement generic operations against the copy.
+
+  A second datum is legitimate only when it is mathematically distinct: another
+  presentation, another basis, another form, another grading, etc.  Then the
+  distinction is explicit and the comparison map is first-class.  Equality of
+  values or current synchronization is not enough to identify two authorities.
+
+  Review constructors by following defining data forward: each datum should have
+  one creation point and thereafter flow by reference, functorial image, or
+  canonical morphism.  If two fields can disagree without violating Python type
+  invariants, the architecture already permits an impossible mathematical state.
+- **Rationale:** Parallel state is the source of drift, duplicated validation,
+  accidental recomputation, and contradictory displays.
+- **Observed defect:** the lattice stored an actual free module whose
+  `module_generating_set()` was authoritative, while `IndexedGenerators` also
+  installed a lattice-level `_indices`; lattice module methods then read the
+  latter rather than delegating to the former.
+- **Correct Example:** `S` belongs to `M = Free_R(S)`; the lattice stores `M` and
+  the form.  Any indexing needed for printing or coordinate realization is
+  derived from `M.module_generating_set()` rather than stored as an independent
+  mathematical authority.
+
+### `OWN-20`: Essential-image claims require using the functorial construction, not imitating it
+
+- **Rule:** When an object is claimed to lie in the image or essential image of
+  a standard owned functor/construction, build it through that construction (or
+  retain an actual object and specified isomorphism from that construction).
+  Do not independently implement an object with equivalent-looking methods and
+  then infer after the fact that it “is” a free module, quotient, localization,
+  scalar extension, product, completion, or other standard construction.
+
+  For a free object this means the source object and unit are defining data.  If
+  the theory says `M = Free_R(S)`, then `S -> U(M)` is not metadata reconstructed
+  from a basis after allocation; it is the unit/generating map used to construct
+  `M`.  For an object only *isomorphic* to a free object, retain the chosen
+  isomorphism rather than silently replacing its presentation by `Free_R(S)`.
+
+  The same distinction applies to equivalence versus equality throughout the
+  project.  Being abstractly isomorphic to the output of a construction does not
+  license bypassing the construction when its selected source and structural
+  maps matter to subsequent mathematics.
+- **Rationale:** Method-level imitation loses the universal maps and chosen data
+  that make a standard construction reusable and makes later code rediscover
+  them from coordinates.
+- **Observed defect:** the lattice implementation did create `Free_R(S)` but then
+  behaved publicly as though lattice-level generator/index machinery were the
+  source of its module structure.  That pattern is the same failure one would
+  get from never constructing `Free_R(S)` at all: the functorial construction is
+  no longer the authority for its own consequences.
+- **Correct Example:** construct `Free_R(S)` with its unit, use that exact module
+  as the unformed object of the lattice, and let every generic free-module
+  consequence flow from it.  The lattice contributes only the additional form
+  and form-specific mathematics.
+
+### `OWN-21`: Interactive display is a semantic projection, not implementation introspection
+
+- **Rule:** `repr`, LaTeX/`show`, rich display, and displays of returned
+  collections must present the mathematical object/result at the abstraction
+  level of the public operation that produced it.  They may use cheap canonical
+  defining data, category placement, invariants, finite members, or a bounded
+  lazy window, but they must not expose private class names, storage notation,
+  backend coordinates, refinement/classifier names, or implementation-family
+  labels unless those are themselves part of the mathematics requested.
+
+  Every default display must provide positive information about the particular
+  object.  Repeating the noun phrase of its type is not information.  Removing
+  the implementation/type name from the user's memory should still leave the
+  display useful.  Conversely, adding more internal words does not make a display
+  informative if those words describe routing rather than mathematics.
+
+  Display must not perform expensive classification, enumerate an unknown or
+  infinite object, mutate caches in a mathematically significant way, or create
+  missing structure.  It observes the defining data fixed under `OWN-15` through
+  `OWN-20`.
+- **Rationale:** Interactive display is part of the mathematical API.  A user
+  inspects an object to learn what was constructed, not to discover which
+  internal refinement or sparse representation happened to implement it.
+- **Observed defects:** `Lattice-generator family` and `Natural numbers` merely
+  renamed types; `1*B['alpha']` exposed sparse free-module storage; `placed map`
+  hid even the map's domain/codomain.  Each output discarded mathematical data
+  already available at negligible cost.
+- **Correct Examples:** `{e_0, e_1}` for the canonical finite generator image;
+  `NN = {0,1,2,...}` for the natural numbers; a pointwise-defined map displays
+  its source and target when no closed formula is represented; a free object may
+  display `Free_R(S)` together with a useful view of `S`.
+
+### Construction-chain review protocol
+
+For any constructor that adds structure, review the construction chain before
+reviewing leaf methods.  This is a source-review discipline, not a request for a
+new static checker, certificate, registry, or generated compliance report.
+
+1. **Write the mathematics first.** State the weaker object `Y`, the added datum
+   `d`, the stronger object `X=(Y,d)`, and every canonical map relating them.
+   If the construction is functorial, name the functor/unit/counit or structural
+   arrow that supplies the relationship.
+2. **Find the unique construction of `Y`.** There must be one owned source of
+   truth.  If no actual `Y` is constructed, determine whether honest inheritance
+   supplies it; otherwise the stronger constructor is imitating a weaker theory.
+3. **Follow identity, not equality.** Confirm that `X` retains that exact owned
+   `Y` or an explicit chosen isomorphism when only equivalence is intended.
+   Reconstructing an equal/isomorphic object later is not reuse.
+4. **Follow every defining datum forward.** Index set, framing, presentation,
+   grading, form, action, inclusion/projection, and source/codomain data should
+   be created once and thereafter referenced or transported.  Search for parallel
+   fields and parallel constructor calls that can drift.
+5. **Inspect the forgetful direction.** `underlying_*`, `unformed_*`, `forget_*`,
+   restrictions, and generic inherited operations must land in/use the actual
+   weaker object.  Returning `self` requires a mathematical reason, not shared
+   coordinates or class ancestry.
+6. **Inspect the structure-adding direction.** The unit/equip/inclusion/comparison
+   map must have the actual weaker and stronger objects as endpoints.  Test a
+   nontrivial element/map, not only identities or dimensions.
+7. **Inspect generic methods at the weakest owner.** A descendant should normally
+   inherit/delegate module/set/group/etc. operations.  An override needs genuinely
+   stronger mathematics, not access to more internal state.
+8. **Inspect accessors for hidden construction.** A getter may realize a lazy
+   computation but may not create the first canonical underlying object, family,
+   presentation, or structural map.  `@cached_method` does not make such creation
+   legitimate.
+9. **Inspect the displayed result.** The display should reveal the mathematical
+   result of the public operation and cheap defining data, not the internal leaf
+   category, implementation class, backend notation, or a noun phrase naming its
+   type.
+10. **Inspect downstream consumers.** They should compose the retained objects
+    and maps rather than reopening coordinates or reconstructing the same
+    construction independently.
+
+Immediate red flags discovered in prior repository work include:
+
+| Red flag | Architectural diagnosis | Required direction |
+| --- | --- | --- |
+| A structured object stores `_module`, `_underlying`, `_source`, etc., but its `underlying_*()` accessor returns `self` | the real weaker object exists but the public construction bypasses it | return/reuse the stored object and build the actual structural maps |
+| A constructor builds `Free_R(S)` while the descendant also stores `_indices` or another copy of `S` | two authorities for one defining datum | make `Free_R(S).module_generating_set()` authoritative |
+| `module_generators()` / `relations()` / `presentation()` first allocates a wrapper describing data that should already define the object | accessor is acting as a hidden constructor | construct/retain the mathematical datum at the owning constructor |
+| Generic operation results are named `Lattice-*`, `Group-*`, `Scheme-*`, etc. only because the receiver is refined | internal category refinement leaked into a weaker public operation | return the result type/display owned by the weakest sufficient structure |
+| A free-module generator prints as `1*B['alpha']` | storage coordinates escaped as mathematical syntax | render the selected formal generator/linear combination |
+| A display says only `Lattice-generator family`, `Natural numbers`, `placed map`, or another type paraphrase | zero mathematical information gain | show defining data, endpoints, members/window, invariants, or canonical notation |
+| An isomorphic replacement is reconstructed from rank/dimension/labels while the original object is available | equality/isomorphism substituted for construction provenance | retain the original object or explicit chosen comparison map |
+| Category membership is used as evidence that framing/action/form/presentation data must exist | property/type label substituted for selected structure | require the constructor to supply the actual datum |
+
+These are examples of the general policies `OWN-15` through `OWN-21`, not an
+exhaustive blacklist.  When a new instance has the same generator, repair the
+construction owner; do not mint a narrower exception or a detector for the one
+spelling that happened to expose it.
+
 ## Corrective implementation style guide (`STY-*`)
 
 This is a **living catalogue of concrete code shapes**.  Add a new entry whenever review identifies a recurring implementation pattern whose replacement is known.  Do not wait for the same mistake to recur in several files.  The point is to teach the repository's preferred constructions—not merely to ban today's instances.
@@ -4023,6 +4311,46 @@ Names such as `Commutative`, `Distributive`, `Graded`, `Finite`, etc. have meani
 **Bad:** say a category/refinement is “constructible” because a named node exists or because BFS finds some path through an implementation graph; traverse projection arrows backwards to manufacture structure.
 
 **Preferred:** use the owned category expression/finite-limit grammar: canonical structural maps compose in their declared direction; classifiers/refinements are introduced only when the required map to their host exists; pullback/classifier constructions create their own projections.  Constructibility is derivability in this typed structural calculus, not arbitrary graph connectivity.
+
+#### `STY-188`: Default display repeats the type/role -> expose mathematical data of this object
+
+The default display of every preamble-owned object must reduce mathematical uncertainty about the **particular object being displayed**.  A class name, noun phrase, constructor family, or paraphrase of the object's type is not a display.  The researcher already knows that a value returned by `module_generators()` is a generator family and that an object constructed by `Lattices(R)(...)` is a lattice.  Printing only `"Lattice-generator family"`, `"Lattice"`, `"placed map"`, or an equivalent type-renaming is therefore a failed display.
+
+**Preferred:** show independently useful mathematical information that distinguishes this object from another object of the same type.  Use whichever data are already cheap and canonical for the object, for example:
+
+- defining data or a mathematical expression/presentation;
+- source and target of a map/functor, index set of a family, or selected generators/relations;
+- cheap characterizing invariants such as rank, signature, degree, cardinality, or category placement;
+- the actual members/values of a finite family or finite set;
+- for an infinite/lazy object, a defining formula, indexing datum, or bounded cheap window when one is canonically and safely available.
+
+An optional human-readable name may prefix this information, but it may never be the entire payload.  Category membership alone is acceptable only when it adds genuine information not already tautological from construction and no more informative cheap defining datum exists.  A canonical symbolic spelling is also meaningful data: `NN = {0, 1, 2, ...}` communicates a mathematical object; `Natural numbers` merely renames its type.
+
+Displays must remain semantic rather than computationally invasive.  Do not enumerate an unknown/infinite set, trigger an expensive classification merely to print an object, expose backend coordinates/storage, or make display depend on nondeterministic engine state.  Prefer a concise view into already-owned defining data.  `repr`, LaTeX/`show`, rich display, and container/family displays are all governed by this rule.
+
+Review display methods adversarially: ask what a mathematician learns from the output after deleting the Python class/type name from their memory.  If the answer is “nothing”, the display is not acceptable.
+
+#### `STY-189`: Display leaks an internal refinement/type owner -> render through the public mathematical operation
+
+The object that implements a result may live in a highly refined category without that refinement being part of the result the user asked to see.  Displays follow the **semantic operation and its mathematical codomain**, not the most specific internal parent/classifier that happened to compute it.
+
+**Bad:** `L.module_generators()` for a lattice prints `"Lattice-generator family"` merely because the module is currently refined as a lattice.  The operation is module-theoretic: every represented free module `Free_R(S)` has its canonical generating set/image.  The lattice refinement adds no new datum to that result, so mentioning it leaks implementation/type-theoretic routing into the public view.
+
+**Preferred:** display the generic mathematical result, e.g. the generator image `{e_0, e_1}` (or the indexing set/presentation when that is the operation requested).  If a genuinely stronger construction exists — for example a selected root basis with root-specific operations or invariants — then a root-specific method may return and display that refined object because the refinement is mathematically part of that result.
+
+Use the same rule for forgetful images, underlying objects, Hom-elements, functor images, subobjects, and classifier refinements: internal refinement is allowed to improve implementation and available methods, but it does not automatically earn a word in the default display.  A public display should be invariant under replacing the implementation by an equivalent stronger internal refinement whenever the mathematical result requested by the user is unchanged.
+
+#### `STY-190`: Derived accessor reconstructs a canonical underlying object -> construct once and reuse it
+
+When a mathematical object is defined by applying an existing construction and then adding structure, that underlying construction is part of the object's construction data, not something to be synthesized later when an accessor is called.
+
+**Bad:** construct a lattice from ad hoc coordinate/index fields, then have `module_generating_set()`, `module_generators()`, or `unformed_module()` manufacture module-like views post hoc.  This duplicates `Free_R(S)`, permits the synthetic view to drift from the object that should define it, and hides whether the stronger object really lies over the claimed weaker one.
+
+**Preferred:** construct `M = Free_R(S)` first, then construct the lattice/form/module refinement from the actual object `M` and the additional form datum.  Store `M` (or the canonical forgetful image/morphism supplied by the categorical construction) as part of the structured object's defining data.  Every generic module operation delegates to or transports along that same object/map.  `module_generating_set()` returns `M.module_generating_set()`; forgetting structure returns `M`; the structure/forgetful morphisms identify the two represented carriers.  Do not keep a second indexing set, generator family, presentation, or coordinate parent merely to make inherited methods appear to work.
+
+The same rule applies to free objects, quotients, localizations, scalar restriction/extension, formed objects, group actions, graded objects, subobjects, and functor images: if `X` is mathematically constructed as `G(Y, datum)`, then `Y` and the canonical structural map(s) are first-class construction data.  An accessor exposes those data; it does not recreate an isomorphic substitute from metadata.
+
+A stronger object may of course use a distinct parent so that two choices of added structure remain distinct.  That does not make its underlying object fictitious: the distinct structured parent must still retain and reuse the actual weaker object and the canonical comparison maps.
 
 ### Review rule for new imperative code
 
