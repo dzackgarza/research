@@ -73,3 +73,15 @@ Foundational mathematical gaps belong above even when first noticed as an inconv
 - **Owner:** contribution/tooling environment provisioning.
 
 - **Example:** observed while selecting `analytic-families` on 2026-09-12.
+
+### Tracked research Sage path resolves to a non-runnable stub source tree
+
+- **User action:** run the repository's mandatory commit gate or regenerate the live preamble megadoc using the `SAGE_BIN` exported by the tracked `.envrc`.
+
+- **Expected:** `/home/dzack/gitclones/sage-dev-allopts/sage` is the executable research-Sage runtime named by the repository environment.
+
+- **Observed:** `/home/dzack/gitclones/sage-dev-allopts` currently resolves to `/home/dzack/sage-mypy-plugin/sage-stubs/sage-src`; invoking its `sage`/`sage-preparse` fails with `ModuleNotFoundError: No module named 'sage'`. The host also has no `docker`, `podman`, `apptainer`, or `singularity` executable with which to provision the fork's documented `ghcr.io/dzackgarza/sage:develop` non-relocatable runtime. A separate Miniforge Sage 10.7 exists, but it is not the configured research-Sage owner and is not interchangeable semantic acceptance.
+
+- **Owner:** research-Sage runtime/environment provisioning and the tracked `.envrc` contract.
+
+- **Example:** observed when banking the resumed architecture-remediation DAG on 2026-09-15; the commit gate reached `_sage-syntax` and then failed inside the stub-tree `sage-preparse`.
