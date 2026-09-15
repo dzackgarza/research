@@ -78,7 +78,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         module = FinitelyPresentedModule(presentation)
         if module.base_ring() is not self.base_ring():
             raise ValueError("a torsion presentation belongs to its coefficient ring")
-        return refine_finitely_presented_torsion_module(module)
+        return _refine_finitely_presented_torsion_module(module)
 
     class ParentMethods:
         def is_torsion(self) -> bool:
@@ -276,7 +276,7 @@ def _torsion_module_presented_by_matrix(
     )
 
 
-def refine_finitely_presented_torsion_module(module):
+def _refine_finitely_presented_torsion_module(module):
     r"""Attach the torsion intersection after verifying the represented property."""
 
     ring = module.base_ring()
@@ -292,5 +292,4 @@ def refine_finitely_presented_torsion_module(module):
 __all__ = [
     "FinitelyPresentedTorsionModules",
     "TorsionModules",
-    "refine_finitely_presented_torsion_module",
 ]

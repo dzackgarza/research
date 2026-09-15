@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def finite_framing(module: Parent) -> Parent:
+def _finite_framing(module: Parent) -> Parent:
     r"""Return a selected module framing after asserting that it is finite."""
 
     labels = module.module_generating_set()
@@ -142,5 +142,4 @@ __all__ = [
     "coordinate_family_from_function",
     "coordinate_index_set",
     "coordinate_pair",
-    "finite_framing",
 ]

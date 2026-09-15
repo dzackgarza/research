@@ -52,7 +52,7 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     coordinate_pair as _coordinate_pair,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
-    finite_framing as _finite_framing,
+    _finite_framing,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,

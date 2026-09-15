@@ -81,7 +81,7 @@ class _ModuleScalarAction(Action):
         return self._module.scalar_multiple(scalar, element)
 
 
-def register_module_scalar_action(module) -> None:
+def _register_module_scalar_action(module) -> None:
     r"""Register ordinary ``r*m``/``m*r`` syntax for an owned module parent."""
     scalar_parent = module.base_ring()
     module.register_action(_ModuleScalarAction(scalar_parent, module, True))
@@ -772,7 +772,7 @@ class Modules(OwnedCategoryOverBaseRing):
             ring the preamble adopts alike, and neither has anything to state
             about its scalars afterwards.
             """
-            register_module_scalar_action(self)
+            _register_module_scalar_action(self)
 
         def Mor(self, codomain, category=None):
             modules = Modules(self.base_ring())

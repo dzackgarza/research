@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.modules.pure.modules import FramedModule
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     TorsionModules,
     _torsion_module_presented_by_matrix,
-    refine_finitely_presented_torsion_module,
+    _refine_finitely_presented_torsion_module,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -334,7 +334,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 _subobject_generator_images=lambda _label: image,
                 _subobject_lift=lift_from_ambient,
             )
-            return refine_finitely_presented_torsion_module(subobject)
+            return _refine_finitely_presented_torsion_module(subobject)
 
 
 
