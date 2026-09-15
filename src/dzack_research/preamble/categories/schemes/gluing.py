@@ -1336,6 +1336,11 @@ class FiniteAtlasRefinement(SageObject):
                     "finite-atlas refinement chart maps do not commute with an overlap transition"
                 )
 
+    @cached_method
+    def module_pullback_functor(self):
+        r"""Return module pullback along this refinement's comparison morphism."""
+        return _FiniteAtlasModulePullbackFunctor(self)
+
     def pullback_module_datum(self, descent):
         r"""Pull a finite-atlas module descent datum to the fine atlas.
 
@@ -4442,7 +4447,7 @@ class FiniteAtlasInverseImageModuleMorphism(SageObject):
         )
 
 
-class FiniteAtlasModulePullbackFunctor(SageObject):
+class _FiniteAtlasModulePullbackFunctor(SageObject):
     r"""Module pullback along one represented finite-atlas refinement ``f:X->Y``."""
 
     def __init__(self, refinement) -> None:
@@ -4512,11 +4517,6 @@ class FiniteAtlasModulePullbackFunctor(SageObject):
         return FiniteAtlasInverseImageModuleMorphism(source, target, morphism)
 
 
-def finite_atlas_module_pullback_functor(refinement):
-    r"""Return module pullback along the comparison morphism of ``refinement``."""
-    return FiniteAtlasModulePullbackFunctor(refinement)
-
-
 def _line_bundle_transition_images(line_bundle, source_index, target_index):
     unit = line_bundle.transition_unit(source_index, target_index)
 
@@ -4566,7 +4566,7 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
     def __init__(self, refinement, line_bundle) -> None:
         self._refinement = refinement
         self._line_bundle = line_bundle
-        self._pullback_functor = finite_atlas_module_pullback_functor(refinement)
+        self._pullback_functor = refinement.module_pullback_functor()
         coarse_module_sheaf = line_bundle.module_sheaf()
         self._generic_pullback = self._pullback_functor.on_object(
             coarse_module_sheaf
@@ -4861,7 +4861,6 @@ __all__ = [
     "FiniteAffineAtlasPresentation",
     "FiniteAtlasInvertibleSheafRefinement",
     "FiniteAtlasLineBundlePullbackComparison",
-    "FiniteAtlasModulePullbackFunctor",
     "FiniteAtlasInverseImageModuleSheaf",
     "FiniteAtlasInverseImageModuleMorphism",
     "FiniteAtlasRefinement",
@@ -4877,5 +4876,4 @@ __all__ = [
     "ModuleGluingMorphism",
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
-    "finite_atlas_module_pullback_functor",
 ]

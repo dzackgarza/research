@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasRefinement,
-    finite_atlas_module_pullback_functor,
 )
 
 
@@ -88,7 +87,7 @@ def _scalar_morphism(source, target, scalar):
 def test_inverse_image_and_module_pullback_keep_the_structural_map_distinct() -> None:
     coarse, fine, refinement = _projective_line_refinement()
     source = _rank_one_sheaf(coarse)
-    pullback = finite_atlas_module_pullback_functor(refinement)
+    pullback = refinement.module_pullback_functor()
     inverse_image = pullback.inverse_image(source)
     pulled = inverse_image.module_pullback()
 
@@ -118,7 +117,7 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     times_two = _scalar_morphism(source, middle, 2)
     times_three = _scalar_morphism(middle, target, 3)
     composite = times_three * times_two
-    pullback = finite_atlas_module_pullback_functor(refinement)
+    pullback = refinement.module_pullback_functor()
 
     pulled_two = pullback.on_morphism(times_two)
     pulled_three = pullback.on_morphism(times_three)
@@ -147,7 +146,7 @@ def test_inverse_image_functor_preserves_composition_before_scalar_extension() -
     target = _rank_one_sheaf(coarse)
     times_two = _scalar_morphism(source, middle, 2)
     times_three = _scalar_morphism(middle, target, 3)
-    pullback = finite_atlas_module_pullback_functor(refinement)
+    pullback = refinement.module_pullback_functor()
 
     inverse_two = pullback.inverse_image_morphism(times_two)
     inverse_three = pullback.inverse_image_morphism(times_three)
