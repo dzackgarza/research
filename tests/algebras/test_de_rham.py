@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras import (
     KahlerDifferentials,
     StrictlyCommutativeDifferentialGradedAlgebras,
     StrictlyGradedCommutativeAlgebras,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules import (
@@ -31,7 +30,7 @@ def test_exterior_algebra_lands_in_strict_graded_commutative_algebras() -> None:
 
 
 def test_kahler_differentials_use_the_jacobian_relation_and_universal_property() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
@@ -136,7 +135,7 @@ def test_relative_conormal_and_tangent_comparison_for_xy_equals_t() -> None:
 
 
 def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_constants() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     de_rham = algebra.de_rham_algebra()
@@ -159,7 +158,7 @@ def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_cons
 
 
 def test_de_rham_differential_descends_through_a_singular_quotient() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
@@ -173,7 +172,7 @@ def test_de_rham_differential_descends_through_a_singular_quotient() -> None:
 
 
 def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x",))
+    polynomial = QQ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
@@ -197,7 +196,7 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
         LocalizedModules,
     )
 
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     axes = FinitelyPresentedAlgebra(polynomial, [x * y])
@@ -233,8 +232,8 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
 
 
 def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
-    source = SymmetricAlgebraOn(QQ, ("x",))
-    target = SymmetricAlgebraOn(QQ, ("t",))
+    source = QQ.free_module(("x",)).symmetric_algebra()
+    target = QQ.free_module(("t",)).symmetric_algebra()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
     morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, target)({"x": t**2})
@@ -251,8 +250,8 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
 
 
 def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
-    source = SymmetricAlgebraOn(QQ, ("x",))
-    degree_zero = SymmetricAlgebraOn(QQ, ("t",))
+    source = QQ.free_module(("x",)).symmetric_algebra()
+    degree_zero = QQ.free_module(("t",)).symmetric_algebra()
     x = source.algebra_generator("x")
     t = degree_zero.algebra_generator("t")
     adjunction = CommutativeAlgebras(QQ).de_rham_adjunction()

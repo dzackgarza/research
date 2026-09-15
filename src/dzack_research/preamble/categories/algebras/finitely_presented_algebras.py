@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     GradedFreeAlgebras,
-    SymmetricAlgebraOn,
     TensorAlgebras,
     _PresentedAlgebraParent,
 )
@@ -221,7 +220,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
 def FinitelyPresentedAlgebraOn(base_ring, algebra_generating_set, relations):
     r"""Construct ``R[S] / (relations)`` with the displayed finite presentation."""
     return FinitelyPresentedAlgebra(
-        SymmetricAlgebraOn(base_ring, algebra_generating_set),
+        base_ring.free_module(algebra_generating_set).symmetric_algebra(),
         relations,
     )
 

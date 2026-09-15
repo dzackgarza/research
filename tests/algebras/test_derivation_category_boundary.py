@@ -4,13 +4,12 @@ from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     FinitelyPresentedAlgebra,
     KahlerDifferentials,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
 
 
 def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])

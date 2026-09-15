@@ -319,16 +319,6 @@ def _divided_power_algebra_of(module):
     return _power_algebra_of(module, "divided")
 
 
-def AlternatingAlgebraOn(base_ring, algebra_generating_set):
-
-    return _alternating_algebra_of(base_ring.free_module(algebra_generating_set))
-
-
-def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
-
-    return _divided_power_algebra_of(base_ring.free_module(algebra_generating_set))
-
-
 def alternating_extension(module_morphism):
     r"""Extend an alternating linear map uniquely to ``Lambda(M) -> A``.
 
@@ -394,9 +384,7 @@ def alternating_extension(module_morphism):
 
 
 __all__ = [
-    "AlternatingAlgebraOn",
     "alternating_extension",
-    "DividedPowerAlgebraOn",
     "PowerAlgebra",
     "PowerAlgebraElement",
     "PowerAlgebraHomset",

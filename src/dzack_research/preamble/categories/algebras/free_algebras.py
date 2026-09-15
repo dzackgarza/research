@@ -85,11 +85,6 @@ def _variable_names(labels) -> tuple[str, ...]:
     return tuple(names)
 
 
-def FreeAlgebraOn(base_ring, algebra_generating_set):
-    r"""Return the free commutative algebra ``R[S] = Sym(F_R(S))``."""
-    return SymmetricAlgebraOn(base_ring, algebra_generating_set)
-
-
 def PolynomialRing(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
     result = _own_ring(_SagePolynomialRing(_engine_ring(base), *args, **kwargs))
@@ -121,7 +116,7 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
     return algebra
 
 
-def SymmetricAlgebraOn(base_ring, algebra_generating_set):
+def _symmetric_algebra_on(base_ring, algebra_generating_set):
     base = _owned_ring(base_ring)
     if (
         algebra_generating_set in Sets()
@@ -147,7 +142,7 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
     )
 
 
-def TensorAlgebraOn(base_ring, algebra_generating_set):
+def _tensor_algebra_on(base_ring, algebra_generating_set):
     base = _owned_ring(base_ring)
     if (
         algebra_generating_set in Sets()
@@ -238,9 +233,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
             f"the scalar map starts at {ring_map.domain()}, not {algebra.base_ring()}"
         )
     target_base = _owned_ring(ring_map.codomain())
-    target_presentation_ring = SymmetricAlgebraOn(
-        target_base, algebra.algebra_generating_set()
-    )
+    target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_base = algebra.base_ring()
     source_engine = _engine_ring(source_base)
     target_base_engine = _engine_ring(target_base)
@@ -1317,7 +1310,7 @@ def _commutative_algebra_coproduct_backend(left, right):
     combined_labels = tuple(
         ("left", label) for label in left.algebra_generating_set()
     ) + tuple(("right", label) for label in right.algebra_generating_set())
-    presentation = SymmetricAlgebraOn(base, combined_labels)
+    presentation = base.free_module(combined_labels).symmetric_algebra()
     relations = _transport_relations(
         left_presentation, left_relations, presentation, "left"
     ) + _transport_relations(

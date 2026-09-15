@@ -42,7 +42,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
     PolynomialRing,
-    SymmetricAlgebraOn,
     SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -3387,7 +3386,7 @@ def _affine_linear_invariant_algebra_data(
         raise ArithmeticError("the backend invariant generators do not match the represented coordinate action")
 
     invariant_labels = tuple(f"invariant_{index}" for index in range(len(engine_invariants)))
-    presentation = SymmetricAlgebraOn(base, invariant_labels)
+    presentation = base.free_module(invariant_labels).symmetric_algebra()
     presentation_engine = _engine_ring(presentation)
 
     ambient_count = len(variables)

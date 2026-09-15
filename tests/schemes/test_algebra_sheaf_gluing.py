@@ -2,9 +2,9 @@ from __future__ import annotations
 
 
 def _quadratic_algebra(ring):
-    from dzack_research.preamble.all import FinitelyPresentedAlgebra, SymmetricAlgebraOn
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra
 
-    presentation = SymmetricAlgebraOn(ring, ("z",))
+    presentation = ring.free_module(("z",)).symmetric_algebra()
     z = presentation.algebra_generator("z")
     return FinitelyPresentedAlgebra(
         presentation,

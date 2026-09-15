@@ -177,12 +177,18 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "character-kernel subgroup intersection": lambda: Lattices(ZZ)("A2")
         .SO()
         .intersection(Lattices(ZZ)("A2").spinor_kernel_subgroup()),
-        "free algebra": lambda: FreeAlgebraOn(QQ, Sets.Δ[1]),
-        "tensor algebra": lambda: TensorAlgebraOn(QQ, Sets.Δ[1]),
-        "alternating algebra": lambda: AlternatingAlgebraOn(QQ, Sets.Δ[1]),
-        "tensor algebra degree two": lambda: TensorAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "symmetric algebra degree two": lambda: FreeAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "alternating algebra degree two": lambda: AlternatingAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
+        "free algebra": lambda: QQ.free_module(Sets.Δ[1]).symmetric_algebra(),
+        "tensor algebra": lambda: QQ.free_module(Sets.Δ[1]).tensor_algebra(),
+        "alternating algebra": lambda: QQ.free_module(Sets.Δ[1]).exterior_algebra(),
+        "tensor algebra degree two": lambda: QQ.free_module(Sets.Δ[1])
+        .tensor_algebra()
+        .graded_piece(2),
+        "symmetric algebra degree two": lambda: QQ.free_module(Sets.Δ[1])
+        .symmetric_algebra()
+        .graded_piece(2),
+        "alternating algebra degree two": lambda: QQ.free_module(Sets.Δ[1])
+        .exterior_algebra()
+        .graded_piece(2),
         "smooth function module": lambda: C(Infinity, RR),
         "square-integrable function module": lambda: Lp(2),
         # ---- indexed symbolic function families ----
@@ -316,7 +322,7 @@ def _module_from_scalar_action():
 
 
 def _derivation_algebra():
-    return SymmetricAlgebraOn(QQ, ("x",))
+    return QQ.free_module(("x",)).symmetric_algebra()
 
 
 def _derivation_space():

@@ -1883,12 +1883,9 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x] \otimes_R R[y]``, the coproduct of two polynomial algebras."""
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            SymmetricAlgebraOn,
-        )
 
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).coproduct((SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",))))
+        return CommutativeAlgebras(ring).coproduct((ring.free_module(("x",)).symmetric_algebra(), ring.free_module(("y",)).symmetric_algebra()))
 
     def super_categories(self):
         return [CommutativeAlgebras(self.base_ring())]
@@ -1944,14 +1941,11 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         The pushout of the span whose legs are the two isomorphisms
         \(R[t]\to R[x]\) and \(R[t]\to R[y]\).
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            SymmetricAlgebraOn,
-        )
 
         ring = self.base_ring()
-        common = SymmetricAlgebraOn(ring, ("t",))
-        left = SymmetricAlgebraOn(ring, ("x",))
-        right = SymmetricAlgebraOn(ring, ("y",))
+        common = ring.free_module(("t",)).symmetric_algebra()
+        left = ring.free_module(("x",)).symmetric_algebra()
+        right = ring.free_module(("y",)).symmetric_algebra()
         return CommutativeAlgebras(ring).pushout(
             common.Mor(left)({"t": left.algebra_generator("x")}),
             common.Mor(right)({"t": right.algebra_generator("y")}),

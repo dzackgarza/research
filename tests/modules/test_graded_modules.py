@@ -55,8 +55,7 @@ def test_a_graded_free_algebra_is_a_graded_module() -> None:
     session = _session()
     QQ = session["QQ"]
     GradedModules = session["GradedModules"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
 
-    algebra = SymmetricAlgebraOn(QQ, ["x"])
+    algebra = QQ.free_module(["x"]).symmetric_algebra()
     assert algebra in GradedModules(QQ)
     assert algebra.graded_piece(algebra.grading_monoid().monoidal_unit()) is QQ

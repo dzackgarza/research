@@ -41,9 +41,8 @@ def test_a_graded_free_algebra_is_an_algebra_over_its_unit_graded_piece() -> Non
     GradedAlgebras = session["GradedAlgebras"]
     GradedAugmentedAlgebras = session["GradedAugmentedAlgebras"]
     GradedFreeAlgebras = session["GradedFreeAlgebras"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
 
-    algebra = SymmetricAlgebraOn(QQ, ["x"])
+    algebra = QQ.free_module(["x"]).symmetric_algebra()
     monoid = algebra.grading_monoid()
     unit_piece = algebra.graded_piece(monoid.monoidal_unit())
     label = next(iter(algebra.algebra_generating_set()))
@@ -76,9 +75,8 @@ def test_a_graded_free_algebra_is_an_algebra_over_its_unit_graded_piece() -> Non
 def test_graded_scalar_restriction_is_owned_by_the_graded_algebra() -> None:
     session = _session()
     QQ = session["QQ"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
 
-    algebra = SymmetricAlgebraOn(QQ, ["x"])
+    algebra = QQ.free_module(["x"]).symmetric_algebra()
     identity = QQ.Mor(QQ).identity()
     restricted = algebra.restrict_scalars(identity)
 
@@ -108,11 +106,10 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     Algebras = session["Algebras"]
     GradedAlgebras = session["GradedAlgebras"]
     GradedModules = session["GradedModules"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
     assert "graded_algebra_homset" not in session
 
-    source = SymmetricAlgebraOn(QQ, ["x"])
-    target = SymmetricAlgebraOn(QQ, ["t"])
+    source = QQ.free_module(["x"]).symmetric_algebra()
+    target = QQ.free_module(["t"]).symmetric_algebra()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
 

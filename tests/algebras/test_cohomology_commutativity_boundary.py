@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     Differential,
     DifferentialGradedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    SymmetricAlgebraOn,
-)
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     GradedCommutativeAlgebras,
@@ -77,7 +74,7 @@ def test_degree_zero_cohomology_of_nonnegative_unital_dga_retains_the_unit() -> 
 
 def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_zero() -> None:
     field = GF(2)
-    dga = SymmetricAlgebraOn(field, ("x",))
+    dga = field.free_module(("x",)).symmetric_algebra()
     dga._preamble_differential = Differential(dga, lambda _element: dga.zero())
     refine(dga, CommutativeDifferentialGradedAlgebras(field))
     x = dga.algebra_generator("x")

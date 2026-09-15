@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     Algebras,
     GradedAlgebras,
     GradedModules,
-    TensorAlgebraOn,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -17,7 +16,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _tensor_algebra(labels=("x", "y")):
-    return TensorAlgebraOn(QQ, finite_ordered_set(labels))
+    return QQ.free_module(finite_ordered_set(labels)).tensor_algebra()
 
 
 def test_archive_graded_algebras_are_both_algebras_and_graded_modules() -> None:

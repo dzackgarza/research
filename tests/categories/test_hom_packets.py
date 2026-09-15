@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     Modules,
     OpenImmersions,
     Sets,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
@@ -90,7 +89,7 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     assert packet.Ends() in packet.Auts().super_categories()
     assert packet.Isos() in packet.Auts().super_categories()
 
-    algebra = SymmetricAlgebraOn(QQ, ("x",))
+    algebra = QQ.free_module(("x",)).symmetric_algebra()
     algebra_hom_category = packet.Homs().Of(algebra, algebra)
     module_hom_category = module_packet.Homs().Of(algebra, algebra)
     assert module_hom_category in algebra_hom_category.super_categories()
@@ -120,7 +119,7 @@ def test_join_hom_keeps_the_most_specific_inherited_arrow_theory() -> None:
 
 
 def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     structured_identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
     ordinary_hom = Algebras(QQ).Mor(algebra, algebra)
 
@@ -134,7 +133,7 @@ def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -
 
 
 def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x",))
+    polynomial = QQ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()

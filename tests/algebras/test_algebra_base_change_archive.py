@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     ZZ,
     FinitelyPresentedAlgebra,
     PolynomialRing,
-    SymmetricAlgebraOn,
 )
 
 
@@ -24,7 +23,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _quadratic_integer_algebra():
-    polynomial = SymmetricAlgebraOn(ZZ, ("x",))
+    polynomial = ZZ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     return FinitelyPresentedAlgebra(polynomial, (x**2 - 2,))
 

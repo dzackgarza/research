@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import QQ, CommutativeRings, FreeAlgebraOn, MatrixSpace, OwnedRings
+from dzack_research.preamble.all import QQ, CommutativeRings, MatrixSpace, OwnedRings
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -49,7 +49,7 @@ def test_ring_center_functor_has_the_same_objects_only_after_taking_centers() ->
 
 
 def test_ring_center_functor_refuses_a_noninvertible_ring_map() -> None:
-    algebra = FreeAlgebraOn(QQ, finite_ordered_set(("t",)))
+    algebra = QQ.free_module(finite_ordered_set(("t",))).symmetric_algebra()
     collapse = algebra.Mor(algebra)({"t": algebra.zero()})
     center_functor = OwnedRings().center_functor()
 

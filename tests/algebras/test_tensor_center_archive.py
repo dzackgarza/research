@@ -1,13 +1,13 @@
 r"""Archive reconciliation for centers of free tensor algebras."""
 
-from dzack_research.preamble.all import QQ, TensorAlgebraOn
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 
 
 def test_tensor_algebra_on_two_generators_has_only_scalar_center() -> None:
-    tensor = TensorAlgebraOn(QQ, finite_ordered_set(("x", "y")))
+    tensor = QQ.free_module(finite_ordered_set(("x", "y"))).tensor_algebra()
     x = tensor.algebra_generator("x")
     y = tensor.algebra_generator("y")
 
@@ -22,7 +22,7 @@ def test_tensor_algebra_on_two_generators_has_only_scalar_center() -> None:
 
 
 def test_tensor_algebra_on_one_generator_is_its_own_center() -> None:
-    tensor = TensorAlgebraOn(QQ, finite_ordered_set(("x",)))
+    tensor = QQ.free_module(finite_ordered_set(("x",))).tensor_algebra()
 
     assert tensor.ring_center() is tensor
     inclusion = tensor.center_inclusion()

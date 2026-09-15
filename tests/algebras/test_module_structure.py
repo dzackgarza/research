@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     Modules,
     OwnedRings,
     QuadraticField,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
@@ -56,7 +55,7 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert matrix_eta.codomain() is matrices.ring_center()
     assert matrix_eta(QQ(3)) == 3 * matrices.one()
 
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     polynomial_eta = polynomials.algebra_structure_morphism()
     assert polynomial_eta.domain() is QQ
     assert polynomial_eta.codomain() is polynomials.ring_center()
@@ -89,7 +88,7 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
         generator = order.module_generator(label)
         assert module_identity(generator) == generator
 
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     polynomial_underlying = Algebras(QQ).underlying_module()
     assert polynomial_underlying(polynomials) is polynomials
     assert polynomials in Modules(QQ)
@@ -150,7 +149,7 @@ def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -
 
 
 def test_unframed_algebra_has_no_constructed_tensor_multiplication() -> None:
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     with pytest.raises(TypeError, match="finitely presented"):
         polynomials.multiplication_morphism()
 

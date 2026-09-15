@@ -3,7 +3,6 @@ from sage.categories.homset import Homset
 import pytest
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras import SymmetricAlgebraOn
 from dzack_research.preamble.categories.modules import (
     DifferentialGradedModules,
     Modules,
@@ -19,7 +18,7 @@ from dzack_research.static_types import (
 
 
 def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     x = algebra.algebra_generator("x")
     module = algebra.free_module(finite_ordered_set(("e",)))
     space = module.connections()
@@ -54,7 +53,7 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
 
 
 def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x",))
+    algebra = QQ.free_module(("x",)).symmetric_algebra()
     module = algebra.free_module(finite_ordered_set(("e",)))
     zero_space = module.connections()
     zero_connection = zero_space({"e": zero_space.target_module().zero()})
@@ -94,7 +93,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
 
 
 def test_flat_connection_builds_the_de_rham_dg_module() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x",))
+    algebra = QQ.free_module(("x",)).symmetric_algebra()
     x = algebra.algebra_generator("x")
     module = algebra.free_module(finite_ordered_set(("e",)))
     space = module.connections()
@@ -129,7 +128,7 @@ def test_flat_connection_builds_the_de_rham_dg_module() -> None:
 def test_connection_on_countable_free_module_keeps_callable_generator_family_lazy() -> None:
     from dzack_research.preamble.categories.sets import NN
 
-    algebra = SymmetricAlgebraOn(QQ, ("t",))
+    algebra = QQ.free_module(("t",)).symmetric_algebra()
     module = algebra.free_module(NN)
     connection_space = module.connections()
     connection = connection_space(

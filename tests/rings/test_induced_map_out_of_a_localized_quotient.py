@@ -17,14 +17,13 @@ the identity; and \(\mathbf Q\), where evaluating \(\bar x\) at one and
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     FinitelyPresentedAlgebra,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
 def _axes_and_punctured_axis():
     r"""Return ``A = QQ[x,y]/(xy)``, its two generators, and ``A[1/x]``."""
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     axes = FinitelyPresentedAlgebra(polynomial, [x * y])

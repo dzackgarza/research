@@ -9,9 +9,8 @@ def test_evaluation_at_a_point_augments_the_polynomial_algebra() -> None:
     QQ = session["QQ"]
     Algebras = session["Algebras"]
     AugmentedAlgebras = session["AugmentedAlgebras"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
 
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     label = next(iter(polynomials.algebra_generating_set()))
     at_zero = polynomials.Mor(QQ)({label: QQ(0)})
     at_one = polynomials.Mor(QQ)({label: QQ(1)})
@@ -40,10 +39,9 @@ def test_an_algebra_morphism_to_another_algebra_is_not_an_augmentation() -> None
     session = _session()
     QQ = session["QQ"]
     AugmentedAlgebras = session["AugmentedAlgebras"]
-    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
 
-    source = SymmetricAlgebraOn(QQ, ["x"])
-    target = SymmetricAlgebraOn(QQ, ["y"])
+    source = QQ.free_module(["x"]).symmetric_algebra()
+    target = QQ.free_module(["y"]).symmetric_algebra()
     source_label = next(iter(source.algebra_generating_set()))
     target_label = next(iter(target.algebra_generating_set()))
     morphism = source.Mor(target)({source_label: target.algebra_generator(target_label)})

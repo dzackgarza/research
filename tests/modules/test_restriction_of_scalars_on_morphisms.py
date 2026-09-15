@@ -62,11 +62,10 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
         GF,
         FinitelyPresentedAlgebra,
         ModulesWithChosenFinitePresentation,
-        SymmetricAlgebraOn,
     )
 
     prime = GF(2)
-    presentation = SymmetricAlgebraOn(prime, ("x",))
+    presentation = prime.free_module(("x",)).symmetric_algebra()
     x = presentation.algebra_generator("x")
     extension = FinitelyPresentedAlgebra(presentation, (x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
@@ -84,13 +83,13 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
     assert image.inclusion().codomain() is restricted
 
 def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_under_addition() -> None:
-    from dzack_research.preamble.all import GF, FinitelyPresentedAlgebra, SymmetricAlgebraOn
+    from dzack_research.preamble.all import GF, FinitelyPresentedAlgebra
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_coefficients,
     )
 
     prime = GF(2)
-    presentation = SymmetricAlgebraOn(prime, ("x",))
+    presentation = prime.free_module(("x",)).symmetric_algebra()
     x = presentation.algebra_generator("x")
     extension = FinitelyPresentedAlgebra(presentation, (x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))

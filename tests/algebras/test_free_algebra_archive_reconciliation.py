@@ -3,16 +3,11 @@ r"""Archive reconciliation for the graded basis of the four free constructions."
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AlternatingAlgebraOn,
     AlternatingAlgebras,
-    DividedPowerAlgebraOn,
     DividedPowerAlgebras,
-    FreeAlgebraOn,
     FreeAlgebras,
     GradedFreeAlgebras,
-    SymmetricAlgebraOn,
     SymmetricAlgebras,
-    TensorAlgebraOn,
     TensorAlgebras,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -49,38 +44,13 @@ def _two_labels():
     return finite_ordered_set(("x", "y"))
 
 
-def test_algebra_package_exports_the_live_free_construction_entrypoints() -> None:
-    from dzack_research.preamble.categories.algebras import (
-        FreeAlgebraOn as package_free,
-    )
-    from dzack_research.preamble.categories.algebras import (
-        SymmetricAlgebraOn as package_symmetric,
-    )
-    from dzack_research.preamble.categories.algebras import (
-        TensorAlgebraOn as package_tensor,
-    )
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        FreeAlgebraOn as live_free,
-    )
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        SymmetricAlgebraOn as live_symmetric,
-    )
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        TensorAlgebraOn as live_tensor,
-    )
-
-    assert package_free is live_free
-    assert package_symmetric is live_symmetric
-    assert package_tensor is live_tensor
-
-
 def test_archive_graded_piece_monomials_are_the_live_piece_basis() -> None:
     labels = _two_labels()
     algebras = (
-        TensorAlgebraOn(QQ, labels),
-        SymmetricAlgebraOn(QQ, labels),
-        AlternatingAlgebraOn(QQ, labels),
-        DividedPowerAlgebraOn(QQ, labels),
+        QQ.free_module(labels).tensor_algebra(),
+        QQ.free_module(labels).symmetric_algebra(),
+        QQ.free_module(labels).exterior_algebra(),
+        QQ.free_module(labels).divided_power_algebra(),
     )
     expected_degree_two = (4, 3, 1, 3)
 
@@ -92,14 +62,14 @@ def test_archive_graded_piece_monomials_are_the_live_piece_basis() -> None:
 
 
 def test_archive_exterior_degree_above_rank_has_empty_basis() -> None:
-    exterior = AlternatingAlgebraOn(QQ, _two_labels())
+    exterior = QQ.free_module(_two_labels()).exterior_algebra()
     assert exterior.graded_piece_monomials(3).cardinality() == 0
 
 
 def test_archive_divided_and_symmetric_bases_agree_but_products_do_not() -> None:
     labels = _two_labels()
-    divided = DividedPowerAlgebraOn(ZZ, labels)
-    symmetric = SymmetricAlgebraOn(ZZ, labels)
+    divided = ZZ.free_module(labels).divided_power_algebra()
+    symmetric = ZZ.free_module(labels).symmetric_algebra()
 
     for degree in range(4):
         assert divided.graded_piece_monomials(degree).cardinality() == symmetric.graded_piece_monomials(degree).cardinality()
@@ -115,7 +85,7 @@ def test_archive_divided_and_symmetric_bases_agree_but_products_do_not() -> None
 
 
 def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
-    divided = DividedPowerAlgebraOn(ZZ, finite_ordered_set(("x",)))
+    divided = ZZ.free_module(finite_ordered_set(("x",))).divided_power_algebra()
     x = divided.algebra_generator("x")
     degree_three = divided.ideal_generators_in_degree((2 * x,), 3)
 
@@ -124,10 +94,9 @@ def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
 
 
 def test_archive_free_algebra_retains_its_selected_generating_set() -> None:
-    from dzack_research.preamble.all import FreeAlgebraOn
 
     labels = finite_ordered_set(("a", "b", "c"))
-    algebra = FreeAlgebraOn(QQ, labels)
+    algebra = QQ.free_module(labels).symmetric_algebra()
 
     assert algebra.algebra_generating_set() is labels
     assert tuple(algebra.algebra_generators()) == tuple(
@@ -137,12 +106,11 @@ def test_archive_free_algebra_retains_its_selected_generating_set() -> None:
 
 
 def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multiplicatively() -> None:
-    from dzack_research.preamble.all import FreeAlgebraOn
 
     source_labels = finite_ordered_set(("x", "y"))
     target_labels = finite_ordered_set(("u", "v", "w"))
-    source = FreeAlgebraOn(QQ, source_labels)
-    target = FreeAlgebraOn(QQ, target_labels)
+    source = QQ.free_module(source_labels).symmetric_algebra()
+    target = QQ.free_module(target_labels).symmetric_algebra()
     morphism = source.Mor(target)(
         {
             "x": target.algebra_generator("v"),
@@ -160,11 +128,10 @@ def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multip
 
 
 def test_archive_free_algebra_morphisms_compose_and_have_the_expected_identity() -> None:
-    from dzack_research.preamble.all import FreeAlgebraOn
 
-    source = FreeAlgebraOn(QQ, finite_ordered_set(("x", "y")))
-    middle = FreeAlgebraOn(QQ, finite_ordered_set(("u", "v")))
-    target = FreeAlgebraOn(QQ, finite_ordered_set(("s", "t")))
+    source = QQ.free_module(finite_ordered_set(("x", "y"))).symmetric_algebra()
+    middle = QQ.free_module(finite_ordered_set(("u", "v"))).symmetric_algebra()
+    target = QQ.free_module(finite_ordered_set(("s", "t"))).symmetric_algebra()
 
     first = source.Mor(middle)(
         {
@@ -190,7 +157,7 @@ def test_archive_free_algebra_morphisms_compose_and_have_the_expected_identity()
 
 def test_archive_exterior_shuffle_parity_is_retained() -> None:
     labels = finite_ordered_set(("x", "y", "z"))
-    exterior = AlternatingAlgebraOn(QQ, labels)
+    exterior = QQ.free_module(labels).exterior_algebra()
     x = exterior.algebra_generator("x")
     y = exterior.algebra_generator("y")
     z = exterior.algebra_generator("z")
@@ -204,10 +171,10 @@ def test_archive_exterior_shuffle_parity_is_retained() -> None:
 def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None:
     labels = _two_labels()
     for algebra in (
-        TensorAlgebraOn(QQ, labels),
-        SymmetricAlgebraOn(QQ, labels),
-        AlternatingAlgebraOn(QQ, labels),
-        DividedPowerAlgebraOn(QQ, labels),
+        QQ.free_module(labels).tensor_algebra(),
+        QQ.free_module(labels).symmetric_algebra(),
+        QQ.free_module(labels).exterior_algebra(),
+        QQ.free_module(labels).divided_power_algebra(),
     ):
         structure = algebra._ring_morphism_defining_algebra_structure()
         x = algebra.algebra_generator("x")
@@ -219,7 +186,7 @@ def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None
 
 
 def test_archive_graded_piece_is_a_submodule_with_its_actual_inclusion() -> None:
-    algebra = TensorAlgebraOn(QQ, _two_labels())
+    algebra = QQ.free_module(_two_labels()).tensor_algebra()
     piece = algebra.graded_piece(2)
     inclusion = piece.inclusion()
     x = algebra.algebra_generator("x")
@@ -236,10 +203,10 @@ def test_archive_degree_two_pieces_remain_countable_on_countably_many_generators
 
     labels = Sets.Δ[aleph0]
     for algebra in (
-        TensorAlgebraOn(QQ, labels),
-        SymmetricAlgebraOn(QQ, labels),
-        AlternatingAlgebraOn(QQ, labels),
-        DividedPowerAlgebraOn(QQ, labels),
+        QQ.free_module(labels).tensor_algebra(),
+        QQ.free_module(labels).symmetric_algebra(),
+        QQ.free_module(labels).exterior_algebra(),
+        QQ.free_module(labels).divided_power_algebra(),
     ):
         piece = algebra.graded_piece(2)
         assert piece.module_generating_set() in Sets().Countable().Infinite()
@@ -251,15 +218,15 @@ def test_archive_degree_two_pieces_remain_countable_on_countably_many_generators
 
 def test_archive_free_algebra_categories_are_the_live_four_flavor_placements() -> None:
     labels = _two_labels()
-    symmetric = SymmetricAlgebraOn(QQ, labels)
+    symmetric = QQ.free_module(labels).symmetric_algebra()
     specimens = (
-        (TensorAlgebraOn(QQ, labels), TensorAlgebras(QQ)),
+        (QQ.free_module(labels).tensor_algebra(), TensorAlgebras(QQ)),
         (symmetric, SymmetricAlgebras(QQ)),
-        (AlternatingAlgebraOn(QQ, labels), AlternatingAlgebras(QQ)),
-        (DividedPowerAlgebraOn(QQ, labels), DividedPowerAlgebras(QQ)),
+        (QQ.free_module(labels).exterior_algebra(), AlternatingAlgebras(QQ)),
+        (QQ.free_module(labels).divided_power_algebra(), DividedPowerAlgebras(QQ)),
     )
 
-    assert FreeAlgebraOn(QQ, labels) is symmetric
+    assert QQ.free_module(labels).symmetric_algebra() is symmetric
     for algebra, flavor in specimens:
         assert algebra in FreeAlgebras(QQ)
         assert algebra in GradedFreeAlgebras(QQ)

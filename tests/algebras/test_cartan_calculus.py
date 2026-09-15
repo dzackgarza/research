@@ -3,7 +3,6 @@ from sage.categories.homset import Homset
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import Modules
 from dzack_research.static_types import (
@@ -22,7 +21,7 @@ def _scalar_module_element(module, scalar):
 
 
 def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()
@@ -56,7 +55,7 @@ def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> No
 
 
 def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()
@@ -100,7 +99,7 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
 
 
 def test_cartan_commutator_identities_hold_on_the_de_rham_algebra() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
+    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()

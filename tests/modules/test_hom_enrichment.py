@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     InternalHomModules,
     Modules,
     ProjectiveModules,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -50,7 +49,7 @@ def test_module_hom_is_the_internal_hom_module() -> None:
 
 
 def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
-    algebra = SymmetricAlgebraOn(QQ, ("x",))
+    algebra = QQ.free_module(("x",)).symmetric_algebra()
     modules = Modules(QQ)
 
     categorical = modules.Mor(algebra, algebra)
@@ -93,7 +92,7 @@ def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> No
 
 
 def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() -> None:
-    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])

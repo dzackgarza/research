@@ -135,7 +135,7 @@ NON_DOMAINS = {
 NONCOMMUTATIVE_RINGS = {
     "M_2(QQ)": lambda: MatrixSpace(QQ, 2),
     "M_2(ZZ)": lambda: MatrixSpace(ZZ, 2),
-    "QQ<a,b>": lambda: FreeAlgebraOn(QQ, ("a", "b")),
+    "QQ<a,b>": lambda: QQ.free_module(("a", "b")).symmetric_algebra(),
 }
 
 PRINCIPAL_IDEAL_DOMAINS = {**FIELDS, **PRINCIPAL_IDEAL_DOMAINS_NOT_FIELDS}

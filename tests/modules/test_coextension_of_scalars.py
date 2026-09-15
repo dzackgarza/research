@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedAlgebra,
     Groups,
     Modules,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 
 def _gaussian_rationals():
     r"""``S = QQ[x]/(x^2 + 1)`` with its class ``i`` of ``x`` and its structure map ``QQ -> S``."""
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
     scalars = FinitelyPresentedAlgebra(polynomials, [x**2 + 1])
     return scalars, scalars(x), scalars._ring_morphism_defining_algebra_structure()

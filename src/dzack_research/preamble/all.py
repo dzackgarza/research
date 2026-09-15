@@ -88,13 +88,12 @@ from dzack_research.preamble.categories.abstract_categories.functors import (  #
     DomainFunctor,
     ObjectSetFunctor,
 )
-from dzack_research.preamble.categories.algebras import (  # noqa: F401
+from dzack_research.preamble.categories.algebras import (
     AlgebraHomset,
     AlgebraMorphism,
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     AlgebrasWithChosenMultiplication,
-    AlternatingAlgebraOn,
     AlternatingAlgebras,
     AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
@@ -118,13 +117,11 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     Differential,
     DifferentialComponentMorphism,
     DifferentialGradedAlgebras,
-    DividedPowerAlgebraOn,
     DividedPowerAlgebras,
     FinitelyPresentedAlgebra,
     FinitelyPresentedAlgebraOn,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    FreeAlgebraOn,
     FreeAlgebras,
     GradedAlgebraHomset,
     GradedAlgebraMorphism,
@@ -147,9 +144,7 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     RestrictedScalarsAlgebras,
     StrictlyCommutativeDifferentialGradedAlgebras,
     StrictlyGradedCommutativeAlgebras,
-    SymmetricAlgebraOn,
     SymmetricAlgebras,
-    TensorAlgebraOn,
     TensorAlgebras,
 )
 from dzack_research.preamble.categories.algebras.algebras import (

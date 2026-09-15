@@ -2,7 +2,6 @@ r"""Archive reconciliation for polynomial rings and the four free-algebra compar
 
 from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras import (
-    SymmetricAlgebraOn,
     polynomial_ring,
 )
 
@@ -13,8 +12,8 @@ ARCHIVE_RECONCILIATION = {
         "polynomial_ring": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
         "TensorAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "SymmetricAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "AlternatingAlgebraOn": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
-        "DividedPowerAlgebraOn": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
+        "AlternatingAlgebraOn": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "DividedPowerAlgebraOn": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "AlternatingAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "DividedPowerAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "tensor_to_symmetric": "src/dzack_research/preamble/categories/modules/pure/modules.py",
@@ -31,7 +30,7 @@ ARCHIVE_RECONCILIATION = {
 def test_polynomial_ring_is_the_owned_free_commutative_algebra_on_its_variables() -> None:
     labels = finite_ordered_set(("x", "y"))
     polynomial = polynomial_ring(ZZ, labels)
-    symmetric = SymmetricAlgebraOn(ZZ, labels)
+    symmetric = ZZ.free_module(labels).symmetric_algebra()
 
     assert polynomial is symmetric
     assert polynomial.algebra_generating_set() is symmetric.algebra_generating_set()

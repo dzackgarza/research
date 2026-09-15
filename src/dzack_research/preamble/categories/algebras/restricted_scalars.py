@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    SymmetricAlgebraOn,
     _base_change_commutative_presentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -47,11 +46,10 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         specimen that still carries the chosen structure map the category is
         about.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
 
 
         ring = self.base_ring()
-        algebra = SymmetricAlgebraOn(ring, ("x",))
+        algebra = ring.free_module(("x",)).symmetric_algebra()
         return algebra.restrict_scalars(
             ring.Mor(ring)(lambda element: element)
         )
@@ -211,7 +209,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
             lambda index: extension_labels if int(index) == 0 else algebra_labels,
         )
     )
-    presentation_ring = SymmetricAlgebraOn(base_ring, tagged_labels)
+    presentation_ring = base_ring.free_module(tagged_labels).symmetric_algebra()
     combined_labels = presentation_ring.algebra_generating_set()
     presentation_engine = _engine_ring(presentation_ring)
 

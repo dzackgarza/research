@@ -372,7 +372,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def as_algebra(self):
             r"""Return this field with its selected finite ``QQ``-algebra presentation."""
             from dzack_research.preamble.categories.algebras.free_algebras import (
-                SymmetricAlgebraOn,
                 _presented_algebra_on_engine,
             )
 
@@ -405,7 +404,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 labels = self.algebra_generating_set()
                 degree = int(engine.degree())
 
-            presentation = SymmetricAlgebraOn(rationals, labels)
+            presentation = rationals.free_module(labels).symmetric_algebra()
             relation = presentation._from_engine_element(
                 _engine_ring(presentation)(polynomial)
             )

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generic decomposition surface of graded modules."""
 
-from dzack_research.preamble.all import QQ, GradedModules, TensorAlgebraOn
+from dzack_research.preamble.all import QQ, GradedModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -14,7 +14,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _tensor_algebra():
-    return TensorAlgebraOn(QQ, finite_ordered_set(("x", "y")))
+    return QQ.free_module(finite_ordered_set(("x", "y"))).tensor_algebra()
 
 
 def _finite_graded_module():

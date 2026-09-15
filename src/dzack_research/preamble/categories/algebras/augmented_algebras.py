@@ -44,12 +44,9 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         generator to \(0\); the augmented algebra is its domain, interned on
         that choice.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            SymmetricAlgebraOn,
-        )
 
         ring = self.base_ring()
-        polynomials = SymmetricAlgebraOn(ring, ("x",))
+        polynomials = ring.free_module(("x",)).symmetric_algebra()
         label = next(iter(polynomials.algebra_generating_set()))
         return self(polynomials.Mor(ring)({label: ring.zero()}))
 
@@ -95,12 +92,9 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
         generator to \(0\); the augmented algebra is its domain, interned on
         that choice.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            SymmetricAlgebraOn,
-        )
 
         ring = self.base_ring()
-        polynomials = SymmetricAlgebraOn(ring, ("x",))
+        polynomials = ring.free_module(("x",)).symmetric_algebra()
         label = next(iter(polynomials.algebra_generating_set()))
         return AugmentedAlgebras(ring)(polynomials.Mor(ring)({label: ring.zero()}))
 

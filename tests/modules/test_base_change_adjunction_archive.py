@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     QQ,
     FinitelyPresentedAlgebra,
     Modules,
-    SymmetricAlgebraOn,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -32,7 +31,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _gaussian_extension():
-    polynomials = SymmetricAlgebraOn(QQ, ["x"])
+    polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
     scalars = FinitelyPresentedAlgebra(polynomials, [x**2 + 1])
     i = scalars(x)

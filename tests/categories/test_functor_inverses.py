@@ -9,22 +9,21 @@ from dzack_research.preamble.all import (
     Groups,
     OrderNumberFieldAdjunction,
     QuadraticField,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
 
 def test_algebra_transpose_uses_the_left_functors_recorded_preimage() -> None:
-    scalar_presentation = SymmetricAlgebraOn(QQ, ["s"])
+    scalar_presentation = QQ.free_module(["s"]).symmetric_algebra()
     s = scalar_presentation.algebra_generator("s")
     extension_ring = FinitelyPresentedAlgebra(scalar_presentation, (s**2 - 2,))
     ring_map = extension_ring.algebra_structure_morphism()
 
-    source_presentation = SymmetricAlgebraOn(QQ, ["x"])
+    source_presentation = QQ.free_module(["x"]).symmetric_algebra()
     x = source_presentation.algebra_generator("x")
     source = FinitelyPresentedAlgebra(source_presentation, (x**4 - 2,))
 
-    target_presentation = SymmetricAlgebraOn(extension_ring, ["y"])
+    target_presentation = extension_ring.free_module(["y"]).symmetric_algebra()
     y = target_presentation.algebra_generator("y")
     target = FinitelyPresentedAlgebra(
         target_presentation,

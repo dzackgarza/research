@@ -4,14 +4,13 @@ from dzack_research.preamble.all import (
     FinitelyPresentedAlgebra,
     FramedAlgebras,
     QQ,
-    SymmetricAlgebraOn,
     ZZ,
 )
 
 
 
 def _quadratic_algebra_tower():
-    scalar_presentation = SymmetricAlgebraOn(QQ, ["s"])
+    scalar_presentation = QQ.free_module(["s"]).symmetric_algebra()
     s = scalar_presentation.algebra_generator("s")
     extension_ring = FinitelyPresentedAlgebra(
         scalar_presentation,
@@ -19,14 +18,14 @@ def _quadratic_algebra_tower():
     )
     ring_map = extension_ring.algebra_structure_morphism()
 
-    source_presentation = SymmetricAlgebraOn(QQ, ["x"])
+    source_presentation = QQ.free_module(["x"]).symmetric_algebra()
     x = source_presentation.algebra_generator("x")
     source = FinitelyPresentedAlgebra(
         source_presentation,
         (x**4 - 2,),
     )
 
-    target_presentation = SymmetricAlgebraOn(extension_ring, ["y"])
+    target_presentation = extension_ring.free_module(["y"]).symmetric_algebra()
     y = target_presentation.algebra_generator("y")
     target = FinitelyPresentedAlgebra(
         target_presentation,
@@ -142,9 +141,9 @@ def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() ->
     ring_map = ZZ.Mor(QQ)(lambda element: QQ(element))
     restriction = AlgebraRestrictionOfScalarsFunctor(ring_map)
 
-    source = SymmetricAlgebraOn(QQ, ["x"])
-    middle = SymmetricAlgebraOn(QQ, ["y"])
-    target = SymmetricAlgebraOn(QQ, ["z"])
+    source = QQ.free_module(["x"]).symmetric_algebra()
+    middle = QQ.free_module(["y"]).symmetric_algebra()
+    target = QQ.free_module(["z"]).symmetric_algebra()
     first = source.Mor(middle)(
         {"x": middle.algebra_generator("y") + 1}
     )

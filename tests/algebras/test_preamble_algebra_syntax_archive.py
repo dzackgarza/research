@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedAlgebra,
-    FreeAlgebraOn,
     PolynomialRing,
     QuadraticField,
 )
@@ -25,8 +24,8 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_countable_free_algebra_keeps_generator_labels_and_generator_determined_maps() -> None:
-    source = FreeAlgebraOn(QQ, NN)
-    target = FreeAlgebraOn(QQ, NN)
+    source = QQ.free_module(NN).symmetric_algebra()
+    target = QQ.free_module(NN).symmetric_algebra()
     shift = source.Mor(target)(lambda label: target.algebra_generator(label + 1))
 
     assert source.algebra_generating_set() is NN

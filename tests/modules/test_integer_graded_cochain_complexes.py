@@ -2,7 +2,6 @@ from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
-    SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
@@ -62,7 +61,7 @@ def test_negative_degree_cohomology_is_functorial_on_shifted_complexes() -> None
 
 def test_nonnegative_dga_has_the_same_zero_incoming_complex_boundary() -> None:
     field = GF(2)
-    polynomial = SymmetricAlgebraOn(field, ("x",))
+    polynomial = field.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     dga = algebra.de_rham_algebra()

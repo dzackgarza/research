@@ -11,9 +11,9 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
     PolynomialRing,
-    SymmetricAlgebraOn,
     SymmetricAlgebras,
-    TensorAlgebraOn,
+    _symmetric_algebra_on,
+    _tensor_algebra_on,
     _finite_labels,
     _variable_names,
 )
@@ -40,7 +40,7 @@ def polynomial_ring(base_ring, names):
         labels = tuple(f"x{i}" for i in range(names))
     else:
         labels = tuple(names)
-    return SymmetricAlgebraOn(base_ring, labels)
+    return _symmetric_algebra_on(base_ring, labels)
 
 
 
@@ -57,7 +57,7 @@ def _tensor_algebra_of(module):
         return _sparse_tensor_algebra_of(module)
 
     base = module.base_ring()
-    presentation_ring = TensorAlgebraOn(base, module.module_generating_set())
+    presentation_ring = _tensor_algebra_on(base, module.module_generating_set())
     algebra = _tensor_algebra_from_module_presentation(presentation_ring, module)
     if algebra is presentation_ring:
         algebra._preamble_free_algebra_source_module = module
@@ -78,7 +78,7 @@ def _symmetric_algebra_of(module):
         for row in range(relation_matrix.nrows())
         for column in range(relation_matrix.ncols())
     ):
-        algebra = SymmetricAlgebraOn(base, labels)
+        algebra = _symmetric_algebra_on(base, labels)
         algebra._preamble_free_algebra_source_module = module
         return algebra
 
@@ -102,7 +102,7 @@ def _symmetric_algebra_of(module):
             SymmetricAlgebras(base),
         )
     else:
-        presentation_ring = SymmetricAlgebraOn(base, labels)
+        presentation_ring = _symmetric_algebra_on(base, labels)
 
 
     engine = _engine_ring(presentation_ring)

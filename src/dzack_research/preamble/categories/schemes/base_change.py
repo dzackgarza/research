@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
     AlgebrasWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    SymmetricAlgebraOn,
     SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.functors.algebra_scalar_change import (
@@ -76,7 +75,7 @@ def _base_changed_algebra(algebra, ring_map):
         case _ if algebra in AlgebrasWithChosenFinitePresentation(source):
             return algebra.base_change(ring_map)
         case _ if algebra in SymmetricAlgebras(source) and algebra in FramedAlgebras(source):
-            return SymmetricAlgebraOn(target, algebra.algebra_generating_set())
+            return target.free_module(algebra.algebra_generating_set()).symmetric_algebra()
         case _:
             assert False, (
                 f"base change of {algebra} along {ring_map} is not represented: it needs a "
