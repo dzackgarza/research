@@ -310,14 +310,8 @@ class LocalizationKernelComparison(SageObject):
         )
 
 
-def module_localization_functor(localization_ring):
-    r"""Compatibility spelling for the localization ring's canonical functor."""
-    return localization_ring.localization_functor()
-
-
 __all__ = [
     "LocalizationCokernelComparison",
     "LocalizationKernelComparison",
     "LocalizedModules",
-    "module_localization_functor",
 ]

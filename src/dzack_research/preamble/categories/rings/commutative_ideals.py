@@ -44,10 +44,6 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
     determine it, so an ideal of a localization is one object however often
     it is asked for.
     """
-    from dzack_research.preamble.categories.functors.module_localization import (
-        module_localization_functor,
-    )
-
     localization_map = localization_ring.localization_map()
     source_regular_module = ring_as_module(source_ideal.ring())
     target_regular_module = ring_as_module(localization_ring)
@@ -74,7 +70,7 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
     ideal = LocalizedModule(
         source_ideal,
         localization_ring,
-        module_localization_functor(localization_ring),
+        localization_ring.localization_functor(),
         subobject_ambient=target_regular_module,
         subobject_generator_images=embedded,
         extra_categories=(CommutativeIdeals(localization_ring),),

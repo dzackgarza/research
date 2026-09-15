@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing, SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
 from dzack_research.preamble.categories.group.submonoids import (
     Submonoids,
     generated_submonoid,
@@ -1510,7 +1509,7 @@ class PrimeLocalizations(OwnedCategory):
 
             if module.base_ring() is not self.localization_source():
                 raise ValueError("the module has the wrong source ring for this localization")
-            return module_localization_functor(self)(module)
+            return self.localization_functor()(module)
 
         def localization_source(self):
             return self._preamble_localization_source

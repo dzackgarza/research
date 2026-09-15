@@ -2489,16 +2489,12 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
 
     def stalk_map(self, chart_index, point):
         r"""Return the induced map on the stalk at ``point`` of one affine chart."""
-        from dzack_research.preamble.categories.functors.module_localization import (
-            module_localization_functor,
-        )
-
         chart_index = self.source().gluing_datum().normalize_chart_index(chart_index)
         chart = self.source().gluing_datum().chart(chart_index)
         spectrum = chart.underlying_space()
         if point.parent() is not spectrum:
             raise ValueError("a finite-atlas stalk point belongs to the selected affine chart")
-        localization = module_localization_functor(point.local_ring())
+        localization = point.local_ring().localization_functor()
         return localization(self.local_map(chart_index))
 
     def kernel_sheaf(self):

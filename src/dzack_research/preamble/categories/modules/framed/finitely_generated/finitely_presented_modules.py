@@ -1250,12 +1250,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             else:
                 if point_parent is not spectrum:
                     point = spectrum(point)
-            from dzack_research.preamble.categories.functors.module_localization import (
-                module_localization_functor,
-            )
-
             trivialization = self.finite_free_trivialization()
-            localization = module_localization_functor(point.local_ring())
+            localization = point.local_ring().localization_functor()
             return Isomorphism(
                 localization(trivialization.forward()),
                 localization(trivialization.inverse()),
@@ -2503,9 +2499,6 @@ def FinitelyPresentedModule(
     # though it were the local ring itself (which would make nonunits in the
     # maximal ideal invertible and corrupt cokernels/equality).
     if base_ring in LocalizationRings():
-        from dzack_research.preamble.categories.functors.module_localization import (
-            module_localization_functor,
-        )
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FreshFreeModuleOn,
         )
@@ -2542,7 +2535,7 @@ def FinitelyPresentedModule(
             }
         )
         source_quotient = FinitelyPresentedModule(source_presentation)
-        localization = module_localization_functor(base_ring)
+        localization = base_ring.localization_functor()
         local_extra_categories = list(_extra_categories)
         local_extra_data = dict(_extra_construction_data or {})
         local_extra_data["cokernel_morphism"] = _cokernel_morphism

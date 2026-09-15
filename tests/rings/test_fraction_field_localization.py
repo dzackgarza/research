@@ -9,9 +9,6 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     aleph0,
 )
-from dzack_research.preamble.categories.functors.module_localization import (
-    module_localization_functor,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -70,7 +67,7 @@ def test_field_fraction_field_keeps_the_canonical_field_identity() -> None:
 def test_module_localization_and_fraction_scalar_change_have_the_same_generic_fibre() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
     localization = ZZ.fraction_field_localization()
-    localized = module_localization_functor(localization)(module)
+    localized = localization.localization_functor()(module)
     to_field = Modules(localization).scalar_extension(
         localization.fraction_field_comparison()
     )

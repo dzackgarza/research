@@ -1,7 +1,4 @@
 from dzack_research.preamble.all import ZZ, BasedFreeModule
-from dzack_research.preamble.categories.functors.module_localization import (
-    module_localization_functor,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
@@ -13,7 +10,7 @@ def test_localization_ring_owns_the_module_localization_functor_and_object() -> 
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
 
     functor = localization.localization_functor()
-    assert module_localization_functor(localization) is functor
+    assert functor.localization_ring() is localization
 
     through_ring = localization.localize_module(module)
     through_module = module.localize(localization)

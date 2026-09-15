@@ -523,9 +523,6 @@ from dzack_research.preamble.categories.functors.linear_constructions import (
 from dzack_research.preamble.categories.functors.linear_constructions import (
     OrthogonalDirectSumBifunctor as OrthogonalDirectSumBifunctor,
 )
-from dzack_research.preamble.categories.functors.module_localization import (
-    module_localization_functor as module_localization_functor,
-)
 from dzack_research.preamble.categories.functors.orders_number_fields import (
     FractionFieldFunctor as FractionFieldFunctor,
 )

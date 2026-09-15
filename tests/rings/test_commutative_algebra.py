@@ -547,9 +547,6 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
 
 def test_presented_module_localization_detects_inverted_annihilators() -> None:
     from dzack_research.preamble.all import FreeModule
-    from dzack_research.preamble.categories.functors.module_localization import (
-        module_localization_functor,
-    )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
@@ -562,7 +559,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     free = FreeModule(polynomial, 1)
     generator = free.module_generator(0)
     localization = polynomial.localization(x)
-    localize = module_localization_functor(localization)
+    localize = localization.localization_functor()
 
     killed = FinitelyPresentedModule(
         module_homset(free, free)({0: (x**2) * generator})
@@ -587,7 +584,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     plane_free = FreeModule(plane, 1)
     plane_generator = plane_free.module_generator(0)
     point = plane.spectrum()(plane.ideal(x_plane))
-    localize_at_x = module_localization_functor(point.local_ring())
+    localize_at_x = point.local_ring().localization_functor()
 
     supported_at_x = FinitelyPresentedModule(
         module_homset(plane_free, plane_free)({0: x_plane * plane_generator})
@@ -608,8 +605,8 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     torsion = FinitelyPresentedModule(
         module_homset(integer_free, integer_free)({0: 6 * integer_generator})
     )
-    at_two = module_localization_functor(ZZ.spectrum()(2).local_ring())(torsion)
-    at_five = module_localization_functor(ZZ.spectrum()(5).local_ring())(torsion)
+    at_two = ZZ.spectrum()(2).local_ring().localization_functor()(torsion)
+    at_five = ZZ.spectrum()(5).local_ring().localization_functor()(torsion)
 
     assert at_two.module_generator(0).equality_status(at_two.zero()) is False
     assert at_two.is_zero() is False

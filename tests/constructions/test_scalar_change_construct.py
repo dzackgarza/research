@@ -148,7 +148,7 @@ def test_base_change_of_a_lattice_and_of_a_form(ring_map) -> None:
 
 def test_localization_of_modules_at_a_prime_of_the_integers() -> None:
     local = ZZ.localize_at_prime(5)
-    localize = module_localization_functor(local)
+    localize = local.localization_functor()
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((6, 25))
     free = FreeModule(ZZ, 2)
 

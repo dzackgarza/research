@@ -280,9 +280,6 @@ def _construct_kahler_differentials(algebra):
                 "localization of differentials requires the localization to preserve the algebra base"
             )
         source_omega = source.kahler_differentials()
-        from dzack_research.preamble.categories.functors.module_localization import (
-            module_localization_functor,
-        )
         from dzack_research.preamble.categories.modules.localizations import (
             LocalizedModule,
         )
@@ -299,7 +296,7 @@ def _construct_kahler_differentials(algebra):
         return LocalizedModule(
             source_omega,
             algebra,
-            module_localization_functor(algebra),
+            algebra.localization_functor(),
             extra_categories=(KahlerDifferentialModules(algebra),),
             extra_construction_data={"source_algebra": algebra},
         )
