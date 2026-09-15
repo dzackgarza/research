@@ -181,11 +181,6 @@ class PrimitiveIsotropicSublatticeLocus(SageObject):
         )
 
 
-def primitive_isotropic_sublattices(lattice, rank=1):
-    r"""Return the exact rank-``rank`` primitive isotropic sublattice locus."""
-    return PrimitiveIsotropicSublatticeLocus(lattice, rank)
-
-
 class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
     r"""The finite cusp decomposition of one primitive isotropic sublattice locus."""
 
@@ -260,11 +255,6 @@ class VectorLocus(SageObject):
         return f"{primitive}vectors of norm {self.norm()} in {self.lattice()}"
 
 
-def vector_locus(lattice, norm, *, primitive=False):
-    r"""Return the exact vector locus ``{v in L : q(v)=norm}``, optionally primitive."""
-    return VectorLocus(lattice, norm, primitive=primitive)
-
-
 class IsotropicSublatticeLocus(SageObject):
     r"""Represented totally isotropic rank-``k`` sublattices of one lattice."""
 
@@ -295,11 +285,6 @@ class IsotropicSublatticeLocus(SageObject):
 
     def __repr__(self) -> str:
         return f"Totally isotropic rank-{self.rank()} sublattices of {self.lattice()}"
-
-
-def isotropic_sublattice_locus(lattice, rank):
-    r"""Return the locus of represented totally isotropic rank-``rank`` sublattices."""
-    return IsotropicSublatticeLocus(lattice, rank)
 
 
 class IsotropicFlagLocus(SageObject):
@@ -346,11 +331,6 @@ class IsotropicFlagLocus(SageObject):
 
     def __repr__(self) -> str:
         return f"Totally isotropic flags of ranks {self.ranks()} in {self.lattice()}"
-
-
-def isotropic_flag_locus(lattice, ranks):
-    r"""Return the locus of nested represented isotropic sublattices of the stated ranks."""
-    return IsotropicFlagLocus(lattice, ranks)
 
 
 class IsotropicFlag:
@@ -968,13 +948,9 @@ __all__ = [
     "arithmetic_cusps",
     "arithmetic_tits_building_incidence",
     "cusps",
-    "isotropic_flag_locus",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
-    "isotropic_sublattice_locus",
     "isotropic_stabilizer_generators",
-    "primitive_isotropic_sublattices",
     "tits_building_incidence",
     "transport_isotropic_object",
-    "vector_locus",
 ]
