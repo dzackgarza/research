@@ -169,10 +169,14 @@ class RationalPolyhedralCones(OwnedCategory):
             if self._wall_roots is None:
                 raise ValueError("a Weyl chamber complex requires a root-defined cone")
             from dzack_research.preamble.categories.chamber_complexes import (
-                weyl_chamber_complex,
+                WeylChamberComplexes,
             )
+            from dzack_research.preamble.owned_category import object_of
 
-            return weyl_chamber_complex(self)
+            return object_of(
+                WeylChamberComplexes(),
+                fundamental_chamber=self,
+            )
 
         def is_complete_wall_set(self):
             return self._complete

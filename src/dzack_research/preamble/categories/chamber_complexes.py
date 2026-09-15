@@ -5,7 +5,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
 
 
 class ChamberAdjacency(SageObject):
@@ -128,15 +127,7 @@ class WeylChamberComplexes(OwnedCategory):
             return f"Weyl chamber complex of {self.lattice()}"
 
 
-def weyl_chamber_complex(fundamental_chamber):
-    return object_of(
-        WeylChamberComplexes(),
-        fundamental_chamber=fundamental_chamber,
-    )
-
-
 __all__ = [
     "ChamberAdjacency",
     "WeylChamberComplexes",
-    "weyl_chamber_complex",
 ]
