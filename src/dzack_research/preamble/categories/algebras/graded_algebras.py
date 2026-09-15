@@ -16,9 +16,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
     GradedModules,
-    concentrated_graded_module,
-    grading_identity,
-    require_grading_monoid,
+    _concentrated_graded_module,
+    _grading_identity,
+    _require_grading_monoid,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -101,7 +101,7 @@ class GradedAlgebraMorphism(Morphism):
         source = other.domain()
         homset = GradedAlgebras(
             source.base_ring(),
-            require_grading_monoid(source.grading_monoid()),
+            _require_grading_monoid(source.grading_monoid()),
         ).Mor(source, self.codomain())
         return homset._from_degree_preserving_generator_map(
             lambda label: self(
@@ -117,9 +117,9 @@ class GradedAlgebraHomset(CategoricalHomset):
         self._grading_monoid = hom_family.base_category().grading_monoid()
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("graded algebra morphisms require one common base ring")
-        if require_grading_monoid(domain.grading_monoid()) != self._grading_monoid:
+        if _require_grading_monoid(domain.grading_monoid()) != self._grading_monoid:
             raise ValueError("the source has the wrong grading monoid")
-        if require_grading_monoid(codomain.grading_monoid()) != self._grading_monoid:
+        if _require_grading_monoid(codomain.grading_monoid()) != self._grading_monoid:
             raise ValueError("the target has the wrong grading monoid")
         CategoricalHomset.__init__(
             self,
@@ -169,7 +169,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         r"""A rank-one unital algebra concentrated in the identity degree."""
         ring = self.base_ring()
         monoid = self.grading_monoid()
-        module = concentrated_graded_module(ring, monoid)
+        module = _concentrated_graded_module(ring, monoid)
         labels = module.module_generating_set()
         label = labels[0]
         generator = module.module_generator(label)
@@ -187,13 +187,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             multiplication,
             unit,
         )
-        algebra._preamble_concentrated_degree = grading_identity(monoid)
+        algebra._preamble_concentrated_degree = _grading_identity(monoid)
         refine(algebra, self)
         return algebra
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
-        monoid = require_grading_monoid(grading_monoid)
+        monoid = _require_grading_monoid(grading_monoid)
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, monoid)
 
     def __init__(self, base_ring, grading_monoid: Parent) -> None:
@@ -380,9 +380,9 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             raise TypeError("a graded-algebra Hom requires two objects of this category")
         if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
             raise ValueError("graded algebra morphisms require one common base ring")
-        if require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
+        if _require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
             raise ValueError("the source has the wrong grading monoid")
-        if require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
+        if _require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
             raise ValueError("the target has the wrong grading monoid")
         return self.HomCategory().Of(domain, codomain)
 

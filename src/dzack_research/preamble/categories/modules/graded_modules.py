@@ -34,35 +34,35 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def normalize_grading_monoid(monoid: Parent | None) -> Parent:
+def _normalize_grading_monoid(monoid: Parent | None) -> Parent:
     r"""Return the owned grading monoid, defaulting to \(\mathbb{Z},+\)."""
     return _own_ring(SageZZ) if monoid is None else monoid
 
 
-def require_grading_monoid(monoid: Parent | None) -> Parent:
-    monoid = normalize_grading_monoid(monoid)
+def _require_grading_monoid(monoid: Parent | None) -> Parent:
+    monoid = _normalize_grading_monoid(monoid)
     if monoid not in Monoids() and monoid not in AdditiveMonoids():
         raise TypeError(f"{monoid} is not a monoid in the owned category graph")
     return monoid
 
 
-def grading_identity(monoid: Parent | None):
+def _grading_identity(monoid: Parent | None):
     r"""Return the identity degree of the selected grading monoid."""
-    monoid = require_grading_monoid(monoid)
+    monoid = _require_grading_monoid(monoid)
     if monoid in AdditiveMonoids():
         return monoid.zero()
     return monoid.one()
 
 
-def concentrated_graded_module(base_ring, grading_monoid=None):
+def _concentrated_graded_module(base_ring, grading_monoid=None):
     r"""Return a rank-one graded module concentrated in the identity degree."""
-    monoid = require_grading_monoid(grading_monoid)
+    monoid = _require_grading_monoid(grading_monoid)
     return FreshFreeModuleOn(
         base_ring,
         Sets.Δ[0],
         _extra_categories=(GradedModules(base_ring, monoid),),
         _extra_construction_data={
-            "concentrated_degree": grading_identity(monoid),
+            "concentrated_degree": _grading_identity(monoid),
         },
     )
 
@@ -121,7 +121,7 @@ class GradedModuleMorphism(ModuleMorphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         domain = other.domain()
-        monoid = require_grading_monoid(domain.grading_monoid())
+        monoid = _require_grading_monoid(domain.grading_monoid())
         return GradedModules(domain.base_ring(), monoid).Mor(
             domain, self.codomain()
         ).elementwise(lambda element: self(other(element)))
@@ -131,8 +131,8 @@ class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = GradedModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        source_monoid = require_grading_monoid(domain.grading_monoid())
-        target_monoid = require_grading_monoid(codomain.grading_monoid())
+        source_monoid = _require_grading_monoid(domain.grading_monoid())
+        target_monoid = _require_grading_monoid(codomain.grading_monoid())
         packet_monoid = hom_family.base_category().grading_monoid()
         if source_monoid != target_monoid:
             raise ValueError("graded-module morphisms require one grading monoid")
@@ -162,11 +162,11 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The rank-one module concentrated in the identity degree."""
-        return concentrated_graded_module(self.base_ring(), self.grading_monoid())
+        return _concentrated_graded_module(self.base_ring(), self.grading_monoid())
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
-        monoid = require_grading_monoid(grading_monoid)
+        monoid = _require_grading_monoid(grading_monoid)
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, monoid)
 
     def __init__(self, base_ring, grading_monoid: Parent) -> None:

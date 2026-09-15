@@ -9,8 +9,8 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.graded_modules import (
     GradedModules,
-    grading_identity,
-    require_grading_monoid,
+    _grading_identity,
+    _require_grading_monoid,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -52,7 +52,7 @@ class GradedDirectSumElement(ModuleElement):
 
     def degree(self):
         if not self._components:
-            return grading_identity(self.parent().grading_monoid())
+            return _grading_identity(self.parent().grading_monoid())
         if len(self._components) != 1:
             raise ValueError("a nonhomogeneous element has no single degree")
         return next(iter(self._components))
@@ -158,7 +158,7 @@ class GradedDirectSumModule(Parent):
         self._realized_object = realized_object
         self._from_realization = from_realization
         self._degree_index_set = NN if degree_index_set is None else degree_index_set
-        self._grading_monoid = require_grading_monoid(grading_monoid)
+        self._grading_monoid = _require_grading_monoid(grading_monoid)
         for key, value in dict(extra_construction_data or {}).items():
             setattr(self, f"_preamble_{key}", value)
         self._pieces: dict[Any, Any] = {}

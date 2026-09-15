@@ -18,7 +18,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.graded_modules import (
-    require_grading_monoid,
+    _require_grading_monoid,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -109,7 +109,7 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
-        monoid = require_grading_monoid(grading_monoid)
+        monoid = _require_grading_monoid(grading_monoid)
         selected_parity = _koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls, base_ring, monoid, _parity_key(selected_parity)
@@ -157,7 +157,7 @@ class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
-        monoid = require_grading_monoid(grading_monoid)
+        monoid = _require_grading_monoid(grading_monoid)
         selected_parity = _koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls, base_ring, monoid, _parity_key(selected_parity)
