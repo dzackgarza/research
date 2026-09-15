@@ -490,7 +490,6 @@ from dzack_research.preamble.categories.group import (
     QuadraticCharacter,
     RestrictedProfiniteCharacter,
     Subgroups,
-    Submonoids,
     Torsors,
     groups,
 )

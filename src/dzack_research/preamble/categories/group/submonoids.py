@@ -59,7 +59,7 @@ class _SubmonoidParent(Parent):
         self._preamble_monoid_generators = (
             None if generators is None else finite_ordered_set(tuple(generators))
         )
-        Parent.__init__(self, facade=ambient, category=Submonoids(ambient))
+        Parent.__init__(self, facade=ambient, category=Monoids().Subobjects(ambient))
         self._preamble_inclusion = SubmonoidInclusion(
             Monoids().Mor(self, ambient),
             lambda element: element,
@@ -130,11 +130,6 @@ class _SubmonoidParent(Parent):
         return f"Submonoid of {self.ambient_monoid()}"
 
 
-def Submonoids(ambient_monoid):
-    """Return the generic subobject category of submonoids of ``ambient_monoid``."""
-    return Monoids().Subobjects(ambient_monoid)
-
-
 def _generated_submonoid(ambient, generators, *, description=None, structure_data=None):
     normalized = tuple(ambient(generator) for generator in generators)
     return _SubmonoidParent(
@@ -162,5 +157,4 @@ def _predicate_submonoid(
 
 __all__ = [
     "SubmonoidInclusion",
-    "Submonoids",
 ]

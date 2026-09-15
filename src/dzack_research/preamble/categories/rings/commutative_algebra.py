@@ -40,9 +40,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing, SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.group.submonoids import (
-    Submonoids,
-)
+from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
@@ -2736,7 +2734,7 @@ def _localization(source, *datum):
     The mathematical localization datum stored on the result is always the
     represented subobject ``S -> (R,*)``.
     """
-    if len(datum) == 1 and datum[0] in Submonoids(source):
+    if len(datum) == 1 and datum[0] in Monoids().Subobjects(source):
         return _localization_at_submonoid(source, datum[0])
     return _localization_at_elements(
         source,
