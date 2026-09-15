@@ -12,9 +12,6 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    EndofunctorAlgebras,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -1192,7 +1189,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             raise ValueError("the multiplication must have the exact canonical tensor square of the supplied module as domain")
         if multiplication.codomain() is not module:
             raise ValueError("the multiplication must have the exact supplied module as codomain")
-        structured = EndofunctorAlgebras(tensor_square).algebra(module, multiplication)
+        structured = tensor_square.algebras().algebra(module, multiplication)
         structured._preamble_algebra_base_ring = ring
         refine(structured, AlgebrasWithChosenMultiplication(ring))
         return structured

@@ -430,11 +430,6 @@ class _EndofunctorAlgebraCategory(OwnedCategoryBase):
         return f"Algebras of {self.endofunctor()}"
 
 
-@cached_function(key=lambda endofunctor: id(endofunctor))
-def EndofunctorAlgebras(endofunctor: Functor) -> _EndofunctorAlgebraCategory:
-    r"""Return ``Inserter(T, Id)``, represented by exact arrow objects."""
-    return _EndofunctorAlgebraCategory(endofunctor)
-
 
 class SliceHomset(ArrowHomset):
     r"""Morphisms in a slice; the edge at the fixed codomain is the identity."""
@@ -503,7 +498,7 @@ class SliceCategory(ArrowCategory):
         True
         sage: hom.identity() * collapse == collapse
         True
-        sage: algebras = EndofunctorAlgebras(IdentityFunctor(Sets()))
+        sage: algebras = IdentityFunctor(Sets()).algebras()
         sage: algebra = algebras.algebra(points, swap)
         sage: hom = algebras.Mor(algebra, algebra)
         sage: hom is algebras.HomCategory().Of(algebra, algebra)
@@ -1306,7 +1301,6 @@ __all__ = [
     "Isomorphism",
     "IsoArrowCategory",
     "EndArrowCategory",
-    "EndofunctorAlgebras",
     "AutomorphismArrowCategory",
     "ArrowCategory",
     "ArrowHomset",

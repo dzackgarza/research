@@ -244,6 +244,15 @@ class Functor(SageObject):
 
         return CoconeCategory(self)
 
+    @cached_method
+    def algebras(self):
+        r"""Return the category of algebras ``T(X) -> X`` of this endofunctor."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _EndofunctorAlgebraCategory,
+        )
+
+        return _EndofunctorAlgebraCategory(self)
+
     def ProductCones(self):
         r"""Return the category of product cones over this discrete diagram."""
         from dzack_research.preamble.categories.abstract_categories.products import (

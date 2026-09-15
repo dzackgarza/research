@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     AssociativeAlgebras,
     BilinearMap,
     CommutativeAlgebras,
-    EndofunctorAlgebras,
     Functor,
     Modules,
     QQ,
@@ -80,7 +79,7 @@ def _two_products_on_one_module():
 def test_two_products_retain_one_exact_supplied_module() -> None:
     module, dual_numbers, split_idempotent = _two_products_on_one_module()
     tensor_square = _TensorSquareFunctor()
-    structures = EndofunctorAlgebras(tensor_square)
+    structures = tensor_square.algebras()
     x = module.module_generator("x")
     x_tensor_x = Modules(QQ).tensor_product((module, module)).pure_tensor(x, x)
 
@@ -102,7 +101,7 @@ def test_two_products_retain_one_exact_supplied_module() -> None:
 def test_nonidentity_map_uses_its_forced_tensor_square() -> None:
     module, dual_numbers, split_idempotent = _two_products_on_one_module()
     tensor_square = _TensorSquareFunctor()
-    structures = EndofunctorAlgebras(tensor_square)
+    structures = tensor_square.algebras()
     dual = structures.algebra(module, dual_numbers)
     split = structures.algebra(module, split_idempotent)
     one = module.module_generator("1")
