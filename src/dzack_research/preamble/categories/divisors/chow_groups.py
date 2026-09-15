@@ -353,12 +353,12 @@ class SerreIntersectionData(SageObject):
 
 
 
-def SerreIntersection(left, right, point):
+def _serre_intersection(left, right, point):
     r"""Return the supported local Serre intersection of two closed subschemes."""
     return SerreIntersectionData(left, right, point)
 
 
-def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
+def _closed_immersion_cycle_pushforward(closed_subscheme, cycle):
     r"""Push a cycle forward along its represented closed immersion.
 
     A closed immersion is proper.  On a prime component it preserves dimension
@@ -384,7 +384,7 @@ def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
     return target.linear_combination(coefficients)
 
 
-def DistinguishedOpenCyclePullback(open_subscheme, cycle):
+def _distinguished_open_cycle_pullback(open_subscheme, cycle):
     r"""Pull a cycle back along a represented distinguished open immersion.
 
     Open immersions are flat of relative dimension zero.  A prime component
@@ -417,7 +417,7 @@ def DistinguishedOpenCyclePullback(open_subscheme, cycle):
     return target.linear_combination(coefficients)
 
 
-def FundamentalCycle(closed_subscheme):
+def _fundamental_cycle(closed_subscheme):
     r"""Return the fundamental cycle of an affine closed subscheme.
 
     If ``Z = V(I)`` has dimension ``d``, its coefficient at a generic point
@@ -468,11 +468,7 @@ __all__ = [
     "AffineCodimensionOneChowComparison",
     "AlgebraicCycleGroups",
     "ChowGroup",
-    "ClosedImmersionCyclePushforward",
-    "DistinguishedOpenCyclePullback",
     "ChowGroups",
-    "FundamentalCycle",
-    "SerreIntersection",
     "SerreIntersectionData",
     "TorusInvariantCycleGroups",
 ]

@@ -4480,26 +4480,26 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         def fundamental_cycle(self):
             r"""Return this closed subscheme's cycle with generic local multiplicities."""
             from dzack_research.preamble.categories.divisors.chow_groups import (
-                FundamentalCycle,
+                _fundamental_cycle,
             )
 
-            return FundamentalCycle(self)
+            return _fundamental_cycle(self)
 
         def proper_pushforward_cycle(self, cycle):
             r"""Push ``cycle`` to the ambient scheme along this closed immersion."""
             from dzack_research.preamble.categories.divisors.chow_groups import (
-                ClosedImmersionCyclePushforward,
+                _closed_immersion_cycle_pushforward,
             )
 
-            return ClosedImmersionCyclePushforward(self, cycle)
+            return _closed_immersion_cycle_pushforward(self, cycle)
 
         def serre_intersection(self, other, point):
             r"""Return the supported local Tor intersection with ``other`` at ``point``."""
             from dzack_research.preamble.categories.divisors.chow_groups import (
-                SerreIntersection,
+                _serre_intersection,
             )
 
-            return SerreIntersection(self, other, point)
+            return _serre_intersection(self, other, point)
 
         def serre_intersection_multiplicity(self, other, point):
             r"""Return Serre's alternating Tor-length intersection multiplicity."""
@@ -4716,10 +4716,10 @@ class OpenImmersions(_SchemeSubobjectsOf):
         def flat_pullback_cycle(self, cycle):
             r"""Pull ``cycle`` back along this flat open immersion."""
             from dzack_research.preamble.categories.divisors.chow_groups import (
-                DistinguishedOpenCyclePullback,
+                _distinguished_open_cycle_pullback,
             )
 
-            return DistinguishedOpenCyclePullback(self, cycle)
+            return _distinguished_open_cycle_pullback(self, cycle)
 
         def inclusion_into(self, larger_open):
             r"""The open immersion ``D(g) -> D(f)`` when ``D(g) <= D(f)`` in one affine scheme.
