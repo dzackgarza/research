@@ -17,6 +17,7 @@ Remove a lead when the preamble owns the capability and specimens prove it, with
 | *Example: toric divisor cohomology* | `computations/...` | *What mathematics it computes* | `categories/schemes/...` | Proposed |
 | CAP monodromy — rigorous PF transport | https://github.com/taklab-org/CAP_finding_monodromy | Rigorous monodromy of regular-singular Pfaffian system via series enclosure + validated ODE transport | `categories/schemes/monodromy.py` / flat connections / D-modules; `categories/functors/local_system.py` | Proposed — see intake report below |
 | Families via f.as_family + periods / PF | User note 2026-09-15 | Scheme morphism as family; period `w(z)=∫_{γ_z}Ω_z` and its Picard-Fuchs equation `PF(w)` | `categories/schemes/families.py` via `Hom(Sch/C)` + `categories/schemes/periods.py` / Gauss-Manin | Proposed — see note below |
+| Generatingfunctionology (Wilf Ch.1-2) | User note 2026-09-15 | Symbolic recurrences, exact solutions, OGF/EGF, L-functions / zeta | `categories/generating_functions/` + `categories/rings/formal_power_series.py` / `D-Mod` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -104,3 +105,24 @@ Families must support period functions for continuous families of cycles and for
 Required operation: `w.Picard_Fuchs()` / `PF(w)` — the regular-singular linear differential equation (Picard-Fuchs equation) satisfied by `w(z)`, as an object of `D_S-Mod` (or as `∇_{GM}` flat connection / Pfaffian system on the Hodge bundle `H^k_{dR}(X/S)`). Construction is via the Gauss-Manin connection `∇_{GM}: H^k_{dR}(X/S) → H^k_{dR}(X/S) ⊗ Ω^1_S`. The family must expose `H^k_{dR}(X/S)`, `∇_{GM}`, its regular singularities, and its monodromy local system, so that `PF(w)` is the annihilator of `w` in `D_S`. This connects families to the monodromy intake above: `ρ` of `∇_{GM}` is the monodromy of periods.
 
 Intended owners: `categories/schemes/families.py` (`f.as_family` constructor, `Hom(Sch/C)`), `categories/schemes/periods.py` (period pairing, Gauss-Manin), `categories/functors/gauss_manifold.py` / `D_S-Mod`. Not a free function `PicardFuchs(...)`.
+
+## Desired capability: generatingfunctionology (Wilf Ch.1-2) — note 2026-09-15
+
+Provide basic generatingfunctionology semantic interfaces, at least Wilf *generatingfunctionology* Chapters 1-2.
+
+Required: formulate recurrence relations symbolically and solve them exactly in known cases, and produce ordinary generating functions (OGFs), exponential generating functions (EGFs), and associated L-functions or zeta functions.
+
+Recurrence relation is not a Python `def` with a loop — it is an object `Rec(R, a(n), relation)` in a category of sequences: `a : NN → R` with defining relation ` Σ_{i=0}^d c_i(n) a(n+i) = b(n)` (linear with polynomial coefficients; constant coefficients as special case) plus initial data `a(0)..a(d-1)`. Interface lives on sequences/recurrences, not as a free solver function. Exact solving means when the recurrence lies in a known solvable class (e.g. C-finite / constant coefficients, P-recursive / D-finite with closed hypergeometric form, rational generating function), return closed form for `a(n)` and certified equality, not a numeric guess. No invented `solve_recurrence` that handles only numerics.
+
+Production of OGF / EGF is a functor:
+
+* `OGF: Seq(R) → R[[x]]`, `a(n) ↦ A(x)= Σ_{n≥0} a(n) x^n` — formal power series as object of `R[[x]]`
+* `EGF: Seq(R) → R[[x]]`, `a(n) ↦ Â(x)= Σ_{n≥0} a(n) x^n / n!`
+* Both are objects of `FormalPowerSeries(R)` with correct parent (radius, valuation, coefficient ring). Converting between them is not string manipulation.
+
+Associated L-functions / zeta functions: for `a(n)` (or arithmetic function) produce Dirichlet series `L(s,a)= Σ_{n≥1} a(n) n^{-s}` as formal Dirichlet series object, and when the sequence comes from counting (e.g. `a(n)=#{points}`) its zeta/Hasse-Weil incarnation. These are objects of a category of Dirichlet series / Euler products, with Euler factor, functional equation, and convergence data retained, not a bare complex function. Construction is `L = Dirichlet(OGF/EGF)(s)` with preservation of base ring and abscissa.
+
+Intended owners: `categories/generating_functions/recurrences.py` (recurrence objects, `RecurrenceCategory`), `categories/rings/formal_power_series.py` (`FormalPowerSeries`, `OGF`, `EGF` functors), `categories/rings/dirichlet_series.py` (`DirichletSeries`, `LFunction`, `Zeta`), and their `D-Mod` / `C-finite` solvers behind private adapters (e.g. `ore_algebra`, `sage.combinat`). No free `ogf(...)` at top level — `a.ogf()`, `a.egf()`, `a.dirichlet_series()`, `rec.solution().closed_form()` on the owning objects.
+
+Reference: H. Wilf, *generatingfunctionology*, Ch.1 (ordinary/enumerative) and Ch.2 (exponential) — symbolic recurrence → generating function dictionary, rational / algebraic / D-finite closure.
+
