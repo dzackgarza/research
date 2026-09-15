@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
     abelianization_adjunction,
-    base_change_adjunction,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
     order_number_field_adjunction,
@@ -154,7 +153,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
     structure_map = order._ring_morphism_defining_algebra_structure()
-    adjunction = base_change_adjunction(structure_map)
+    adjunction = Modules(structure_map.domain()).base_change_adjunction(structure_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 
@@ -539,8 +538,9 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
 
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
-    extension = base_change_adjunction(
-        order._ring_morphism_defining_algebra_structure()
+    structure_map = order._ring_morphism_defining_algebra_structure()
+    extension = Modules(structure_map.domain()).base_change_adjunction(
+        structure_map
     ).left_adjoint()
     source = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
     middle = BasedFreeModule(ZZ, finite_ordered_set(("c", "d")))

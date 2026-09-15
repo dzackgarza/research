@@ -515,12 +515,6 @@ from dzack_research.preamble.categories.functors.scalar_change import (
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor as ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.functors.scalar_change import (
-    base_change_adjunction as base_change_adjunction,
-)
-from dzack_research.preamble.categories.functors.scalar_change import (
-    restriction_coextension_adjunction as restriction_coextension_adjunction,
-)
 from dzack_research.preamble.categories.functors.set_constructions import (
     ExponentialFunctor as ExponentialFunctor,
 )

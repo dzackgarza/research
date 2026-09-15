@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.functors.scalar_change import (
     RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
-    base_change_adjunction,
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
@@ -160,7 +159,7 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
 
     def _underlying_adjunction(self):
 
-        return base_change_adjunction(self._ring_map)
+        return Modules(self._ring_map.domain()).base_change_adjunction(self._ring_map)
 
     def unit(self, group_module):
         extended = self.left_adjoint()(group_module)

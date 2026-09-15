@@ -730,9 +730,9 @@ def module_action(structure, scalar, element):
 
 def module_base_change(ring_map):
     """Return the live module scalar-extension/restriction adjunction."""
-    from dzack_research.preamble.categories.functors.scalar_change import base_change_adjunction
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-    return base_change_adjunction(ring_map)
+    return Modules(ring_map.domain()).base_change_adjunction(ring_map)
 
 
 def extend_module(ring_map, module):

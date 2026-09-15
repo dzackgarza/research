@@ -15,9 +15,7 @@ in ``categories.schemes.gluing`` before scalar extension to module pullback.
 
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.functors.scalar_change import (
-    base_change_adjunction,
-)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     AffineModuleSheaf,
     QuasiCoherentSheaves,
@@ -92,7 +90,7 @@ class AffineQuasiCoherentAdjunction(SageObject):
             raise ValueError("the scheme pullback has the wrong affine codomain algebra")
         if ring_map.codomain() is not scheme_morphism.domain().coordinate_algebra():
             raise ValueError("the scheme pullback has the wrong affine domain algebra")
-        self._module_adjunction = base_change_adjunction(ring_map)
+        self._module_adjunction = Modules(ring_map.domain()).base_change_adjunction(ring_map)
         self._pullback = AffineQuasiCoherentPullbackFunctor(
             scheme_morphism,
             self._module_adjunction.left_adjoint(),

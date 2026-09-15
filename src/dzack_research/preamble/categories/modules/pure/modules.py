@@ -277,11 +277,11 @@ class Modules(OwnedCategoryOverBaseRing):
     def base_change_adjunction(self, ring_map):
         r"""``S tensor_R - -| Res_f`` along ``ring_map: R -> S``."""
         from dzack_research.preamble.categories.functors.scalar_change import (
-            base_change_adjunction,
+            _base_change_adjunction,
         )
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
-        return base_change_adjunction(ring_map)
+        return _base_change_adjunction(ring_map)
 
     def restriction_coextension_adjunction(self, ring_map):
         r"""``Res_f -| Hom_R(S, -)`` along ``ring_map: R -> S``.
@@ -293,7 +293,7 @@ class Modules(OwnedCategoryOverBaseRing):
             is_augmentation_of_group_algebra,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
-            restriction_coextension_adjunction,
+            _restriction_coextension_adjunction,
         )
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
@@ -301,7 +301,7 @@ class Modules(OwnedCategoryOverBaseRing):
             case _ if is_augmentation_of_group_algebra(ring_map):
                 return TrivialInvariantsAdjunction(ring_map)
             case _:
-                return restriction_coextension_adjunction(ring_map)
+                return _restriction_coextension_adjunction(ring_map)
 
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""

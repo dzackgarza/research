@@ -327,10 +327,10 @@ class RestrictionCoextensionAdjunction(Adjunction):
 
 
 @cached_function
-def base_change_adjunction(ring_map) -> BaseChangeAdjunction:
+def _base_change_adjunction(ring_map) -> BaseChangeAdjunction:
     return BaseChangeAdjunction(ring_map)
 
 
 @cached_function
-def restriction_coextension_adjunction(ring_map) -> RestrictionCoextensionAdjunction:
+def _restriction_coextension_adjunction(ring_map) -> RestrictionCoextensionAdjunction:
     return RestrictionCoextensionAdjunction(ring_map)
