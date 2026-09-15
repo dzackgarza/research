@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedTorsionModules,
     ZZ,
     module_homset,
-    tensor_hom_adjunction,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -56,7 +55,7 @@ def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property
 
 def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_and_triangles() -> None:
     fixed = _cyclic(4)
-    adjunction = tensor_hom_adjunction(fixed)
+    adjunction = fixed.tensor_hom_adjunction()
     tensor_by = adjunction.left_adjoint()
     internal_hom_from = adjunction.right_adjoint()
 

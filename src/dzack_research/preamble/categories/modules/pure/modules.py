@@ -1517,6 +1517,15 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             self._preamble_completion_ring = completion_ring
 
         @cached_method
+        def tensor_hom_adjunction(self):
+            r"""Return ``- tensor self ⊣ Hom_R(self,-)`` on chosen finite presentations."""
+            from dzack_research.preamble.categories.functors.tensor_hom import (
+                TensorHomAdjunction,
+            )
+
+            return TensorHomAdjunction(self)
+
+        @cached_method
         def presentation_object(self):
             r"""Return this module's selected presentation as an arrow object."""
             category = ModulesWithChosenFinitePresentation(

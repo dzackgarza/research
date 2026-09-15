@@ -591,9 +591,6 @@ from dzack_research.preamble.categories.functors.tensor_hom import (
 from dzack_research.preamble.categories.functors.tensor_hom import (
     TensorHomAdjunction as TensorHomAdjunction,
 )
-from dzack_research.preamble.categories.functors.tensor_hom import (
-    tensor_hom_adjunction as tensor_hom_adjunction,
-)
 from dzack_research.preamble.categories.group import (  # noqa: F401
     AbelianGroups,
     AbsoluteDecompositionGroup,

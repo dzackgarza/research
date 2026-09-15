@@ -1,7 +1,5 @@
 r"""The tensor--internal-Hom adjunction on modules with chosen finite presentations."""
 
-from sage.misc.cachefunc import cached_function
-
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -120,14 +118,8 @@ class TensorHomAdjunction(Adjunction):
         return f"Tensor/internal-Hom adjunction with {self.fixed_module()}"
 
 
-@cached_function
-def tensor_hom_adjunction(fixed_module) -> TensorHomAdjunction:
-    return TensorHomAdjunction(fixed_module)
-
-
 __all__ = [
     "InternalHomFromFunctor",
     "TensorByFunctor",
     "TensorHomAdjunction",
-    "tensor_hom_adjunction",
 ]
