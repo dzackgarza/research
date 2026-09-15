@@ -1,11 +1,10 @@
 r"""Archive reconciliation for ordinary characters of finite groups."""
 
-from dzack_research.preamble.categories.group.characters import character_set
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/group_modules/characters.py",
-    "live_owner": "src/dzack_research/preamble/categories/group/characters.py",
+    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
     "owner_overrides": {
         "RingElement": "src/dzack_research/preamble/lexicon/__init__.py",
     },
@@ -16,7 +15,7 @@ ARCHIVE_RECONCILIATION = {
 def test_irreducible_characters_live_in_one_owned_character_set() -> None:
     symmetric = OwnedGroups().S(3)
     characters = symmetric.irreducible_characters()
-    parent = character_set(symmetric)
+    parent = symmetric.character_set()
 
     assert characters.cardinality() == 3
     assert all(character.parent() is parent for character in characters)
@@ -33,7 +32,7 @@ def test_direct_sum_character_has_both_irreducible_constituents() -> None:
     combined = linear + standard
     constituents = combined.irreducible_constituents()
 
-    assert combined.parent() is character_set(symmetric)
+    assert combined.parent() is symmetric.character_set()
     assert combined.degree() == linear.degree() + standard.degree()
     assert linear in constituents
     assert standard in constituents

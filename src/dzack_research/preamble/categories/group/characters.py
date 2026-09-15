@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.class_functions import (
     FiniteGroupClassFunction,
-    finite_group_class_function,
+    _finite_group_class_function,
 )
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
@@ -113,8 +113,7 @@ class CharacterSets(OwnedParameterizedCategory):
             if getattr(other, "parent", lambda: None)() is not self.parent():
                 return NotImplemented
             representatives = self.conjugacy_class_representatives()
-            summed = finite_group_class_function(
-                self.group(),
+            summed = self.group().class_function(
                 self.codomain(),
                 tuple(self(rep) + other(rep) for rep in representatives),
                 representatives=representatives,
@@ -164,7 +163,7 @@ class CharacterSets(OwnedParameterizedCategory):
 
 
 @cached_function
-def character_set(group):
+def _character_set(group):
     r"""Return the owned character set ``Char(G)`` of a finite group."""
     group = _owned_group(group)
     if group not in FiniteGroups():
@@ -172,15 +171,6 @@ def character_set(group):
     return object_of(CharacterSets(group), group=group)
 
 
-def character_from_class_function(class_function):
-    r"""Read an owned finite-group class function as an ordinary character."""
-    if not isinstance(class_function, FiniteGroupClassFunction):
-        raise TypeError("an ordinary character is represented by a finite-group class function")
-    return character_set(class_function.domain())(class_function)
-
-
 __all__ = [
     "CharacterSets",
-    "character_from_class_function",
-    "character_set",
 ]

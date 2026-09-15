@@ -17,8 +17,6 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
  'Torsors': ('dzack_research.preamble.categories.group.g_sets', 'Torsors'),
  'FiniteGroupClassFunction': ('dzack_research.preamble.categories.group.class_functions',
                               'FiniteGroupClassFunction'),
- 'finite_group_class_function': ('dzack_research.preamble.categories.group.class_functions',
-                                 'finite_group_class_function'),
  'CyclicGroups': ('dzack_research.preamble.categories.group.cyclic_subgroups', 'CyclicGroups'),
  'AbelianGroups': ('dzack_research.preamble.categories.group.groups', 'AbelianGroups'),
  'AdditiveGroups': ('dzack_research.preamble.categories.group.magmas', 'AdditiveGroups'),

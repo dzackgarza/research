@@ -2370,6 +2370,28 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     name="Conjugacy-class representatives",
                 )
 
+            def class_function(self, codomain, values, *, representatives=None):
+                r"""Return the class function on this finite group with the stated values."""
+                from dzack_research.preamble.categories.group.class_functions import (
+                    _finite_group_class_function,
+                )
+
+                return _finite_group_class_function(
+                    self,
+                    codomain,
+                    values,
+                    representatives=representatives,
+                )
+
+            @cached_method
+            def character_set(self):
+                r"""Return the owned set ``Char(self)`` of ordinary characters."""
+                from dzack_research.preamble.categories.group.characters import (
+                    _character_set,
+                )
+
+                return _character_set(self)
+
             @cached_method
             def irreducible_characters(self):
                 r"""The complex irreducible characters, as elements of ``Char(G)``.
@@ -2378,12 +2400,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 and are read on the chosen conjugacy-class representatives,
                 in the order GAP's ``Irr`` lists them.
                 """
-                from dzack_research.preamble.categories.group.characters import (
-                    character_from_class_function,
-                )
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
                 )
@@ -2397,9 +2413,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 # index of isotypic components and is compared by identity.
                 return finite_ordered_set(
                     tuple(
-                        character_from_class_function(
-                            finite_group_class_function(
-                                self,
+                        self.character_set()(
+                            self.class_function(
                                 field,
                                 tuple(
                                     field._from_engine_element(engine_field(value.sage()))
@@ -2421,12 +2436,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 the owned character object; the finite class-function carrier
                 remains the existing private representation boundary.
                 """
-                from dzack_research.preamble.categories.group.characters import (
-                    character_from_class_function,
-                )
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
                 )
@@ -2439,9 +2448,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     raise ValueError(
                         "a character requires one value for each conjugacy class"
                     )
-                candidate = character_from_class_function(
-                    finite_group_class_function(
-                        self,
+                candidate = self.character_set()(
+                    self.class_function(
                         field,
                         tuple(field(value) for value in supplied),
                         representatives=representatives,
@@ -2486,12 +2494,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 element of the same owned character set and composes with the
                 existing character arithmetic without a separate value model.
                 """
-                from dzack_research.preamble.categories.group.characters import (
-                    character_from_class_function,
-                )
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
                 )
@@ -2499,9 +2501,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 gap_group = _gap_model(self)
                 field = CyclotomicField(int(gap_group.Exponent()))
                 representatives = self.conjugacy_classes_representatives()
-                return character_from_class_function(
-                    finite_group_class_function(
-                        self,
+                return self.character_set()(
+                    self.class_function(
                         field,
                         tuple(field.one() for _representative in representatives),
                         representatives=representatives,

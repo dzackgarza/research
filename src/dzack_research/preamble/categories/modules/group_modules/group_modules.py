@@ -31,9 +31,6 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.group.class_functions import (
-    finite_group_class_function,
-)
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
@@ -834,8 +831,7 @@ class ModulesOverGroupAlgebra(Modules):
             representatives = group.conjugacy_classes_representatives()
             traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
 
-            return finite_group_class_function(
-                group,
+            return group.class_function(
                 coefficient_ring,
                 traces,
                 representatives=representatives,
@@ -899,8 +895,7 @@ class ModulesOverGroupAlgebra(Modules):
             representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
             if len(representatives) != len(values):
                 raise ArithmeticError("the private Brauer-character engine returned the wrong number of p-regular class values")
-            return finite_group_class_function(
-                group,
+            return group.class_function(
                 value_ring,
                 values,
                 representatives=representatives,

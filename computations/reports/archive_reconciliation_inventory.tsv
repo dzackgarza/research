@@ -1993,7 +1993,7 @@ preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMet
 preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.element_argument	method	104	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.degree	method	121	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.irreducible_constituents	method	126	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
-preamble/categories/modules/group_modules/characters.py	character_set	function	172	1	src/dzack_research/preamble/categories/group/characters.py	src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	character_set	function	172	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	Character	class	177	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner

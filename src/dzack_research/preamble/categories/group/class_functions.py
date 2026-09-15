@@ -94,10 +94,10 @@ class FiniteGroupClassFunction(SetMorphism):
         return f"Class function {self.domain()} -> {self.codomain()}"
 
 
-def finite_group_class_function(group, codomain, values, *, representatives=None):
+def _finite_group_class_function(group, codomain, values, *, representatives=None):
     if representatives is None:
         representatives = group.conjugacy_classes_representatives()
     return FiniteGroupClassFunction(group, codomain, representatives, values)
 
 
-__all__ = ["FiniteGroupClassFunction", "finite_group_class_function"]
+__all__ = ["FiniteGroupClassFunction"]

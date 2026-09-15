@@ -1,14 +1,13 @@
 r"""Archive reconciliation for the ordinary trivial character."""
 
 from dzack_research.preamble.all import Groups
-from dzack_research.preamble.categories.group.characters import character_set
 
 
 def test_finite_group_trivial_character_is_one_on_every_conjugacy_class() -> None:
     group = Groups.S(3)
     character = group.trivial_character()
 
-    assert character.parent() is character_set(group)
+    assert character.parent() is group.character_set()
     assert character.group() is group
     assert character.degree() == character.codomain().one()
     for representative in group.conjugacy_classes_representatives():
