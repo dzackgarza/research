@@ -37,12 +37,11 @@ from dzack_research.preamble.categories._lattice import (
     _IdentityGram,
     _PairingGram,
     _ScaledGram,
-    colimit_lattice,
+    _colimit_lattice,
     discriminant_of_gram,
     lattice,
     lattice_latex,
     orthogonal_sum,
-    scale_gram_tensor,
     signature_pair,
     signature_pair_of_gram,
     tensor_product_lattice,
@@ -767,7 +766,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             Integral lattice of rank +Infinity and signature (+Infinity, 0)
         """
 
-        return colimit_lattice(stage, category=self)
+        return _colimit_lattice(stage, category=self)
 
     def an_object(self):
         r"""The hyperbolic plane U."""
@@ -2989,7 +2988,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 2 I_∞ ∈ (ZZ^NN ⊗ ZZ^NN)*
             """
 
-            scaled = scale_gram_tensor(self.gram_tensor(), self.base_ring()(scalar))
+            gram = self.gram_tensor()
+            scalar = self.base_ring()(scalar)
+            match gram:
+                case _PairingGram():
+                    scaled = gram.scaled_by(scalar)
+                case Tensor() if gram.tensor_valence() == (NN**2)((0, 2)):
+                    scaled = scalar * gram
+                case _:
+                    raise TypeError("a lattice Gram must be a type-(0,2) tensor")
             match scaled:
                 case _PairingGram():
                     return Lattices(self.base_ring())(scaled)

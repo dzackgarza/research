@@ -1173,7 +1173,7 @@ def tensor_product_lattice(factors):
     return category._refine_lattice_object(result)
 
 
-def colimit_lattice(stage, *, category):
+def _colimit_lattice(stage, *, category):
     r"""\(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
     ``stage(n)`` is a rank-\(n\) lattice in ``category``.  The colimit
@@ -1194,18 +1194,6 @@ def colimit_lattice(stage, *, category):
         None,
         names=None,
     )
-
-
-def scale_gram_tensor(gram, scalar):
-    r"""Return the type-$(0,2)$ tensor \(\mathrm{scalar}\cdot G\)."""
-    scalar = gram.base_ring()(scalar)
-    match gram:
-        case _PairingGram():
-            return gram.scaled_by(scalar)
-        case Tensor() if gram.tensor_valence() == (NN**2)((0, 2)):
-            return scalar * gram
-        case _:
-            raise TypeError("scale_gram_tensor takes a type-(0,2) Gram tensor")
 
 
 def _rational_fraction_field(ring):
