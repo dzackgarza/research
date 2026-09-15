@@ -835,8 +835,8 @@ class _BiproductGram(_PairingGram):
         ).items():
             block = self._blocks[which]
             block_keys = _basis_keys(block._module)
-            for label, value in generator_pairings(
-                block, _lattice_vector_from_coefficients(block, part)
+            for label, value in block.generator_pairings(
+                _lattice_vector_from_coefficients(block, part)
             ).items():
                 position = self._offsets[which] + _basis_position(block_keys, label)
                 result[keys[position]] = value
@@ -914,8 +914,7 @@ class _TensorProductGram(_PairingGram):
         ).items():
             pairing_data = tuple(
                 tuple(
-                    generator_pairings(
-                        factors[index],
+                    factors[index].generator_pairings(
                         factors[index].module_generator(source_label.component(index)),
                     ).items()
                 )
@@ -1019,7 +1018,10 @@ class _ColimitGram(_PairingGram):
             {int(ranking(key)): value for key, value in coefficients.items()},
         )
         stage_ranking = _basis_keys(stage._module).ranking_map()
-        return {generating_set[int(stage_ranking(label))]: value for label, value in generator_pairings(stage, stage_vector).items()}
+        return {
+            generating_set[int(stage_ranking(label))]: value
+            for label, value in stage.generator_pairings(stage_vector).items()
+        }
 
     def __call__(self, left, right):
         generating_set = _basis_keys(self._module)
@@ -1204,17 +1206,6 @@ def scale_gram_tensor(gram, scalar):
             return scalar * gram
         case _:
             raise TypeError("scale_gram_tensor takes a type-(0,2) Gram tensor")
-
-
-def generator_pairings(lattice, element):
-    r"""The finite family \(i\mapsto b(e_i,v)\) of nonzero pairings against generators."""
-    gram = lattice.gram_tensor()
-    match gram:
-        case _PairingGram():
-            return gram.pairings_against(element._vector)
-        case _:
-            assert lattice.module_rank().is_finite()
-            return {label: element.b(lattice.module_generator(label)) for label in lattice.module_generating_set()}
 
 
 def _rational_fraction_field(ring):

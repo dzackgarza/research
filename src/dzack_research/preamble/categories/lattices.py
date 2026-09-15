@@ -39,7 +39,6 @@ from dzack_research.preamble.categories._lattice import (
     _ScaledGram,
     colimit_lattice,
     discriminant_of_gram,
-    generator_pairings,
     lattice,
     lattice_latex,
     orthogonal_sum,
@@ -1766,10 +1765,25 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             assert element.parent() is self, "the divisibility ideal is defined for an element of this lattice"
             ring = self.base_ring()
-            pairings = tuple(generator_pairings(self, element).values())
+            pairings = tuple(self.generator_pairings(element).values())
             if not pairings:
                 return ring.ideal(ring.zero())
             return ring.ideal(*pairings)
+
+        def generator_pairings(self, element):
+            r"""Return the nonzero pairings of ``element`` against the selected generators."""
+            if element.parent() is not self:
+                raise TypeError("generator pairings require an element of this lattice")
+            gram = self.gram_tensor()
+            match gram:
+                case _PairingGram():
+                    return gram.pairings_against(element._vector)
+                case _:
+                    assert self.module_rank().is_finite()
+                    return {
+                        label: element.b(self.module_generator(label))
+                        for label in self.module_generating_set()
+                    }
 
         def is_totally_isotropic(self) -> bool:
             r"""Return whether the form vanishes identically: \(\operatorname{rad}(L)=L\).
@@ -1785,7 +1799,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             assert self.module_rank().is_finite(), "total isotropy is decided here on a finite generating set"
             zero = self.base_ring().zero()
-            return all(value == zero for generator in self.module_generators() for value in generator_pairings(self, generator).values())
+            return all(
+                value == zero
+                for generator in self.module_generators()
+                for value in self.generator_pairings(generator).values()
+            )
 
         def div(self, element):
             r"""Return the divisibility ``gcd{b(element,x): x in L}`` over ``ZZ``."""
@@ -1795,7 +1813,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             if _engine_ring(ring) is not SageZZ:
                 raise NotImplementedError("integer divisibility is the ZZ specialization")
-            pairings = tuple(abs(ring(value)) for value in generator_pairings(self, element).values())
+            pairings = tuple(
+                abs(ring(value)) for value in self.generator_pairings(element).values()
+            )
             if not pairings:
                 return ring.zero()
             divisor = pairings[0]
@@ -1868,7 +1888,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             assert self.is_nondegenerate()
             dual_lattice = self.dual_lattice()
-            return self.module_category().Mor(self, dual_lattice)(lambda label: dual_lattice.linear_combination(generator_pairings(self, self.module_generator(label))))
+            return self.module_category().Mor(self, dual_lattice)(
+                lambda label: dual_lattice.linear_combination(
+                    self.generator_pairings(self.module_generator(label))
+                )
+            )
 
         def correlation(self):
             return self.correlation_morphism()
@@ -3236,7 +3260,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return False
             fraction_field = ring if ring.is_field() else ring.fraction_field()
             norm_in_fraction_field = fraction_field(norm)
-            for coefficient in generator_pairings(parent, self).values():
+            for coefficient in parent.generator_pairings(self).values():
                 quotient = fraction_field(ring(2) * coefficient) / norm_in_fraction_field
                 try:
                     ring(quotient)
