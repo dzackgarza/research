@@ -2,10 +2,7 @@ r"""The represented ``2U`` determinant model carries the two exact SL2 actions."
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.eichler_criterion import (
-    covering_discriminant_classes,
-    two_u_eichler_model,
-)
+from dzack_research.preamble.categories.eichler_criterion import two_u_eichler_model
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
@@ -123,7 +120,7 @@ def test_covering_discriminant_classes_have_explicit_primitive_vectors() -> None
         assert vector.q() == square
         assert vector.is_primitive()
         assert vector.div() == discriminant_class.additive_order()
-        assert discriminant_class in covering_discriminant_classes(complement, square)
+        assert discriminant_class in complement.covering_discriminant_classes(square)
 
 
 def test_unimodular_complement_covering_representative_is_the_hyperbolic_one() -> None:

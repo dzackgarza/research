@@ -2670,6 +2670,88 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             return subobject
 
+        def covering_discriminant_classes(self, square):
+            r"""Return discriminant classes covering primitive vectors of ``square``.
+
+            For a primitive ``v`` write ``d = div(v)``.  Then ``v/d`` lies in
+            ``L^#`` and ``x = [v/d]`` lies in ``A_L`` with additive order
+            exactly ``d``: a smaller order ``e`` would put ``(e/d)v`` in
+            ``L`` and contradict primitivity.  The discriminant quadratic form
+            satisfies ``q_{A_L}(x) = q(v)/d^2``.  Thus the classes satisfying
+
+            ``q_{A_L}(x) = square / ord(x)^2``
+
+            form a finite covering list for primitive vectors of that square,
+            computed by one pass over the finite discriminant group.  Under
+            Eichler's criterion each class carries at most one stable orbit;
+            whether a covering class is attained is a separate question.
+            """
+            discriminant = self.discriminant_group()
+            values = discriminant.quadratic_value_module()
+            field = self.base_ring().fraction_field()
+            target = field(square)
+            return finite_ordered_set(
+                tuple(
+                    element
+                    for element in discriminant.elements()
+                    if discriminant.q(element)
+                    == values(target / field(element.additive_order()) ** 2)
+                )
+            )
+
+        def hyperbolic_plane_summand_count(self):
+            r"""Return the number of represented indecomposable hyperbolic-plane summands."""
+            plane = Lattices(self.base_ring())("U")
+            return sum(
+                1
+                for summand in self.indecomposable_summands()
+                if summand.is_isometric(plane)
+            )
+
+        def splits_two_hyperbolic_planes(self) -> bool:
+            r"""Return whether the represented decomposition splits at least two copies of ``U``.
+
+            This reads the selected decomposition.  A Gram-matrix presentation
+            with no represented decomposition therefore answers ``False`` even
+            when the abstract lattice is isometric to one splitting ``U + U``.
+            """
+            if not self.is_decomposable():
+                return False
+            return self.hyperbolic_plane_summand_count() >= 2
+
+        def eichler_criterion_applies(self) -> bool:
+            r"""Return whether Eichler's criterion classifies primitive-vector orbits here."""
+            return bool(self.is_even()) and self.splits_two_hyperbolic_planes()
+
+        def are_in_one_stable_orbit(self, left, right) -> bool:
+            r"""Decide whether two primitive vectors share one ``ker(rho_L)`` orbit.
+
+            Eichler's criterion says that, for an even lattice splitting two
+            hyperbolic planes, square, divisibility, and divided discriminant
+            class are a complete invariant of a primitive-vector orbit.  Both
+            vectors are therefore required to be primitive and to belong to
+            this represented lattice.
+            """
+            assert left.parent() is self and right.parent() is self, (
+                "an orbit comparison is between two vectors of this lattice"
+            )
+            assert self.eichler_criterion_applies(), (
+                "Eichler's criterion classifies primitive-vector orbits for an even "
+                "lattice splitting two hyperbolic planes; this lattice does not "
+                "present such a decomposition, and the orbit question is then a "
+                "computation for the exact indefinite backend rather than a "
+                "comparison of invariants"
+            )
+            for vector in (left, right):
+                assert self.subobject_on((vector,)).is_primitive(), (
+                    "Eichler's criterion compares primitive vectors"
+                )
+            return (
+                left.q() == right.q()
+                and left.div() == right.div()
+                and left.divided_discriminant_class() == right.divided_discriminant_class()
+            )
+
         @cached_method
         def primitive_isotropic_vectors(self):
             r"""Return the exact locus of nonzero primitive isotropic vectors.

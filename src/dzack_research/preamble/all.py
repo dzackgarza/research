@@ -249,13 +249,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     projective_space_picard_group,
     trivial_picard_group,
 )
-from dzack_research.preamble.categories.eichler_criterion import (  # noqa: F401
-    are_in_one_stable_orbit,
-    covering_discriminant_classes,
-    eichler_criterion_applies,
-    hyperbolic_plane_summand_count,
-    splits_two_hyperbolic_planes,
-)
 from dzack_research.preamble.categories.forms import (  # noqa: F401
     BilinearForm,
     BilinearFormMorphism,
