@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _initialize_module_hom_parent,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
@@ -191,7 +190,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
-            coefficients = module_coefficients(cohomology_class, self)
+            coefficients = self.framing_coefficients(cohomology_class)
             projection = self.cokernel_projection()
             cycles = projection.domain()
             representative = cycles.linear_combination(

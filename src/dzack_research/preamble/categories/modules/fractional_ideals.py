@@ -11,7 +11,6 @@ from sage.structure.richcmp import richcmp
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
@@ -474,10 +473,7 @@ class FractionalIdealInclusion(ModuleEmbedding):
             if len(labels) != 1:
                 raise ArithmeticError("the fraction field is not represented as a rank-one module over itself")
 
-            coefficients = module_coefficients(
-                element.underlying_element(),
-                extension_module,
-            )
+            coefficients = extension_module.framing_coefficients(element.underlying_element())
             value = coefficients.get(labels[0], extension_module.base_ring().zero())
         else:
             if element.parent() is not target:
@@ -707,7 +703,7 @@ def _principal_generator_from_integer_module(ideal):
             }
         )
         coordinates = basis_map.solve_right(target)
-        for coefficient in module_coefficients(coordinates, basis_map.domain()).values():
+        for coefficient in basis_map.domain().framing_coefficients(coordinates).values():
             denominator = denominator.lcm(
                 _engine_element(rationals, coefficient).denominator()
             )

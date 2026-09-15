@@ -25,9 +25,6 @@ from dzack_research.preamble.categories.modules.dg_modules import DifferentialGr
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -134,10 +131,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
             def transported_image(label):
                 image = transported_target.zero()
-                for (source_label, form_label), coefficient in module_coefficients(
-                    source_connection.generator_image(label),
-                    source_connection.target_module(),
-                ).items():
+                for (source_label, form_label), coefficient in source_connection.target_module().framing_coefficients(source_connection.generator_image(label)).items():
                     image += transported_target.scalar_multiple(
                         coefficient,
                         transported_target.pure_tensor(
@@ -314,7 +308,7 @@ class Connection(Element):
     def __call__(self, element):
         if element.parent() is not self.module():
             element = self.module()(element)
-        return self._from_coefficients(module_coefficients(element, self.module()))
+        return self._from_coefficients(self.module().framing_coefficients(element))
 
     def _call_(self, element):
         return self.__call__(element)
@@ -346,10 +340,7 @@ class Connection(Element):
         omega_two = omega.exterior_power(2)
         target_two = self.curvature_target()
         result = target_two.zero()
-        for (module_label, form_label), coefficient in module_coefficients(
-            value,
-            self.target_module(),
-        ).items():
+        for (module_label, form_label), coefficient in self.target_module().framing_coefficients(value).items():
             wedge = omega.exterior_power_product(
                 1,
                 omega.module_generator(form_label),
@@ -372,10 +363,7 @@ class Connection(Element):
         target_two = self.curvature_target()
         universal = omega.universal_derivation()
         result = target_two.zero()
-        for (module_label, form_label), coefficient in module_coefficients(
-            self.generator_image(label),
-            self.target_module(),
-        ).items():
+        for (module_label, form_label), coefficient in self.target_module().framing_coefficients(self.generator_image(label)).items():
             one_form = omega.module_generator(form_label)
             result += target_two.scalar_multiple(
                 coefficient,
@@ -746,10 +734,7 @@ class ConnectionDeRhamModule:
                 )
                 result = target_tensor.zero()
                 underlying = self._underlying_component(component)
-                for (module_label, form_label), coefficient in module_coefficients(
-                    underlying,
-                    source_tensor,
-                ).items():
+                for (module_label, form_label), coefficient in source_tensor.framing_coefficients(underlying).items():
                     coefficient_vector = self._coefficient_module.scalar_multiple(
                         coefficient,
                         self._coefficient_module.module_generator(module_label),
@@ -759,10 +744,7 @@ class ConnectionDeRhamModule:
                     for (
                         output_module_label,
                         one_form_label,
-                    ), connection_coefficient in module_coefficients(
-                        connection_value,
-                        self._connection.target_module(),
-                    ).items():
+                    ), connection_coefficient in self._connection.target_module().framing_coefficients(connection_value).items():
                         wedge = self._omega.exterior_power_product(
                             1,
                             self._omega.module_generator(one_form_label),
@@ -814,15 +796,9 @@ class ConnectionDeRhamModule:
                         for (
                             module_label,
                             left_form_label,
-                        ), left_coefficient in module_coefficients(
-                            left_underlying,
-                            left_tensor,
-                        ).items():
+                        ), left_coefficient in left_tensor.framing_coefficients(left_underlying).items():
                             left_form = left_forms.module_generator(left_form_label)
-                            for right_form_label, right_coefficient in module_coefficients(
-                                right_component,
-                                exterior_algebra.graded_piece(right_degree),
-                            ).items():
+                            for right_form_label, right_coefficient in exterior_algebra.graded_piece(right_degree).framing_coefficients(right_component).items():
                                 right_form = exterior_algebra.graded_piece(
                                     right_degree
                                 ).module_generator(right_form_label)

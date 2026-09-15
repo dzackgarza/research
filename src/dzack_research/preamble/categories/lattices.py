@@ -125,7 +125,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -1930,7 +1929,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ArithmeticError("a nonzero integral vector has positive divisibility")
             dual_lattice = self.dual_lattice()
             divided_coefficients = {}
-            for label, coefficient in module_coefficients(correlation_image, dual_lattice).items():
+            for label, coefficient in dual_lattice.framing_coefficients(correlation_image).items():
                 if not coefficient:
                     continue
                 quotient = coefficient // divisibility
@@ -2028,7 +2027,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             for discriminant_class in discriminant_classes:
                 element = discriminant_class if discriminant_class.parent() is discriminant_module else discriminant_module(discriminant_class)
                 lift = discriminant_module.dual_lattice_lift(element)
-                coefficients = module_coefficients(lift, discriminant_module.dual_lattice())
+                coefficients = discriminant_module.dual_lattice().framing_coefficients(lift)
                 dual_coordinates = tensor(
                     rationals,
                     (),
@@ -3765,7 +3764,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             field = rational.base_ring()
 
             def rationalize(vector):
-                coefficients = module_coefficients(vector, ambient)
+                coefficients = ambient.framing_coefficients(vector)
                 return rational.linear_combination({label: fraction_map(coefficient) for label, coefficient in coefficients.items() if coefficient})
 
             rational_isotropic = rationalize(isotropic)
@@ -3816,7 +3815,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 return self.linear_combination(
                     {
                         labels[int(normalized_labels.ranking_map()(normalized_label))]: coefficient
-                        for normalized_label, coefficient in module_coefficients(normalized_element, normalized).items()
+                        for normalized_label, coefficient in normalized.framing_coefficients(normalized_element).items()
                         if coefficient
                     }
                 )
@@ -3896,7 +3895,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
             def line_scalar(isometry):
                 preimage = embedding.lift(isometry(embedded))
-                coefficients = module_coefficients(preimage, line)
+                coefficients = line.framing_coefficients(preimage)
                 scalar = coefficients.get(line_label, ring.zero())
                 if scalar not in (ring.one(), -ring.one()):
                     raise ArithmeticError("a rank-one parabolic generator does not act on I by a unit")

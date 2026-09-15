@@ -12,9 +12,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
@@ -47,7 +44,7 @@ class TwistFunctor(Functor):
                 morphism.domain().module_generator(label)
             )
             return target.linear_combination(
-                module_coefficients(original_image, original_target)
+                original_target.framing_coefficients(original_image)
             )
 
         return source.Mor(target)(image)
