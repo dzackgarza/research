@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.refine import refine
 
 
 class VectorConfigurations(OwnedCategoryOverBaseRing):
@@ -60,7 +59,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         root_lattice = Lattices(self.base_ring())("A2")
-        return vector_configuration(root_lattice, root_lattice.module_generators())
+        return root_lattice.vector_configuration(root_lattice.module_generators())
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
@@ -273,10 +272,4 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             )
 
 
-def vector_configuration(lattice, module_generating_set):
-    r"""Return the sublattice framed by the stated ordered family of vectors."""
-    subobject = lattice.subobject_on(module_generating_set)
-    return refine(subobject, VectorConfigurations(lattice.base_ring()))
-
-
-__all__ = ["VectorConfigurations", "vector_configuration"]
+__all__ = ["VectorConfigurations"]

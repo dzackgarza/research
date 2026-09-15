@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     Lattices,
     NamedLattices,
     ZZ,
-    vector_configuration,
 )
 
 # Cartan type: (order of the diagram automorphism group, |O(L)|, |W(L)|)
@@ -34,7 +33,7 @@ ROOT_BASES = {
 def test_a_root_basis_pairing_graph_has_the_diagram_automorphisms(name) -> None:
     diagram_order, isometry_order, weyl_order = ROOT_BASES[name]
     root_lattice = Lattices(ZZ)(name)
-    configuration = vector_configuration(root_lattice, root_lattice.module_generators())
+    configuration = root_lattice.vector_configuration(root_lattice.module_generators())
 
     assert configuration.module_rank() == root_lattice.module_rank()
     assert configuration.frames_its_lattice()
@@ -48,9 +47,9 @@ def test_orthogonal_roots_admit_every_permutation_but_a_chain_does_not() -> None
     orthogonal = NamedLattices.A1 ** 3
     assert chain.module_rank() == orthogonal.module_rank() == 3
 
-    chain_configuration = vector_configuration(chain, chain.module_generators())
-    orthogonal_configuration = vector_configuration(
-        orthogonal, orthogonal.module_generators()
+    chain_configuration = chain.vector_configuration(chain.module_generators())
+    orthogonal_configuration = orthogonal.vector_configuration(
+        orthogonal.module_generators()
     )
     assert chain_configuration.configuration_automorphism_group().order() == 2
     assert orthogonal_configuration.configuration_automorphism_group().order() == 6
@@ -60,7 +59,7 @@ def test_the_swap_of_the_A2_simple_roots_lifts_to_an_involution_of_O_A2() -> Non
     root_lattice = Lattices(ZZ)("A2")
     positions = root_lattice.module_generating_set()
     first, second = positions[0], positions[1]
-    configuration = vector_configuration(root_lattice, root_lattice.module_generators())
+    configuration = root_lattice.vector_configuration(root_lattice.module_generators())
 
     swap = {first: second, second: first}.__getitem__
     assert configuration.preserves_every_pairing(swap)
@@ -83,7 +82,7 @@ def test_a_permutation_moving_a_pairing_is_refused() -> None:
     root_lattice = Lattices(ZZ)("A3")
     positions = root_lattice.module_generating_set()
     first, second, third = (positions[index] for index in range(3))
-    configuration = vector_configuration(root_lattice, root_lattice.module_generators())
+    configuration = root_lattice.vector_configuration(root_lattice.module_generators())
 
     # The A3 chain is 1-2-3, so exchanging an end with the middle breaks the
     # pairing b(first, third) = 0.

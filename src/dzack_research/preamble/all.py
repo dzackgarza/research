@@ -1056,7 +1056,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
 )
 from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
     VectorConfigurations,
-    vector_configuration,
 )
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,

@@ -162,6 +162,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
+from dzack_research.preamble.categories.vector_configurations import VectorConfigurations
 from dzack_research.preamble.categories.vector_orbits import (
     VectorPrimitiveExtension,
     definite_complement_extensions,
@@ -2626,6 +2627,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         def root_sublattice(self):
 
             return root_sublattice(self)
+
+        def vector_configuration(self, module_generating_set):
+            r"""Return the sublattice framed by the stated ordered vector family."""
+            subobject = self.subobject_on(module_generating_set)
+            return refine(subobject, VectorConfigurations(self.base_ring()))
 
         def vector_primitive_extension(self, element):
             r"""Return the primitive-extension/gluing datum cut out by ``element``."""
