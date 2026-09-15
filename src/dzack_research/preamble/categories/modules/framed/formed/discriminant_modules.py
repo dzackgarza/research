@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _p_adic_jordan_decomposition,
     _p_adic_jordan_form,
     _torsion_form_automorphism_group,
-    p_adic_jordan_module_generators,
+    _p_adic_jordan_module_generators,
     torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
@@ -380,7 +380,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         def p_adic_jordan_module_generators(self):
 
-            return p_adic_jordan_module_generators(self, quadratic=False)
+            return _p_adic_jordan_module_generators(self, quadratic=False)
 
         def p_adic_jordan_form(self):
 
@@ -645,7 +645,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         def p_adic_jordan_module_generators(self):
 
-            return p_adic_jordan_module_generators(self, quadratic=True)
+            return _p_adic_jordan_module_generators(self, quadratic=True)
 
         def p_adic_jordan_form(self):
 

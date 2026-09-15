@@ -849,7 +849,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
     return _prime_indexed_generators(result)
 
 
-def p_adic_jordan_module_generators(form, *, quadratic: bool):
+def _p_adic_jordan_module_generators(form, *, quadratic: bool):
     r"""Return the selected Jordan generators, prime by prime, inside ``form``."""
     decomposition = _p_adic_jordan_decomposition(form, quadratic=quadratic)
     return tuple(
@@ -860,7 +860,7 @@ def p_adic_jordan_module_generators(form, *, quadratic: bool):
 
 
 def _p_adic_jordan_form(form, *, quadratic: bool):
-    generators = p_adic_jordan_module_generators(form, quadratic=quadratic)
+    generators = _p_adic_jordan_module_generators(form, quadratic=quadratic)
     return _regenerate_form_on_generators(form, generators, quadratic=quadratic)
 
 
@@ -1794,7 +1794,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
         def p_adic_jordan_module_generators(self):
             r"""Return the chosen prime-by-prime Jordan generating family."""
-            return p_adic_jordan_module_generators(self, quadratic=False)
+            return _p_adic_jordan_module_generators(self, quadratic=False)
 
         def p_adic_jordan_form(self):
             r"""Return the explicit isometry to this form in Jordan framing."""
@@ -2121,7 +2121,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
         def p_adic_jordan_module_generators(self):
             r"""Return the chosen prime-by-prime quadratic Jordan generators."""
-            return p_adic_jordan_module_generators(self, quadratic=True)
+            return _p_adic_jordan_module_generators(self, quadratic=True)
 
         def p_adic_jordan_form(self):
             r"""Return the explicit isometry to this quadratic form in Jordan framing."""
@@ -2199,6 +2199,5 @@ __all__ = [
     "TorsionFormIsometry",
     "TorsionFormOrthogonalGroup",
     "TorsionQuadraticFormModules",
-    "p_adic_jordan_module_generators",
     "torsion_form_isometry",
 ]
