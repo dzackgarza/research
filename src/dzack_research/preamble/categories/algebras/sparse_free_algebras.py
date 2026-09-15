@@ -635,14 +635,14 @@ def _uses_free_construction_homset(domain):
     return domain in TensorAlgebras(ring) or domain in SymmetricAlgebras(ring)
 
 
-def compose_with_free_construction(left, right):
+def _compose_with_free_construction(left, right):
     r"""Compose through a sparse/free map without assuming a free source."""
     if right.codomain() is not left.domain():
         return NotImplemented
     source = right.domain()
     target = left.codomain()
     if _uses_free_construction_homset(source):
-        return free_construction_homset(source, target)(lambda label: left(right(source.algebra_generator(label))))
+        return source.Mor(target)(lambda label: left(right(source.algebra_generator(label))))
 
     engine_source = _engine_ring(source)
     engine_target = _engine_ring(target)
@@ -736,11 +736,11 @@ class SparseFreeAlgebraMorphism(Morphism):
         return self._call_(element)
 
     def __mul__(self, other):
-        return compose_with_free_construction(self, other)
+        return _compose_with_free_construction(self, other)
 
     def _postcompose_algebra_morphism(self, morphism):
         r"""Return ``morphism ∘ self`` through the free-construction Hom."""
-        return compose_with_free_construction(morphism, self)
+        return _compose_with_free_construction(morphism, self)
 
 
 class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
@@ -763,16 +763,6 @@ class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
         return self(lambda label: self.domain().algebra_generator(label))
-
-
-def sparse_free_algebra_homset(domain, codomain):
-
-    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
-
-
-def free_construction_homset(domain, codomain):
-
-    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 def _sparse_tensor_algebra_of(module):
@@ -808,7 +798,4 @@ __all__ = [
     "SparseFreeAlgebraElement",
     "SparseFreeAlgebraHomset",
     "SparseFreeAlgebraMorphism",
-    "compose_with_free_construction",
-    "free_construction_homset",
-    "sparse_free_algebra_homset",
 ]
