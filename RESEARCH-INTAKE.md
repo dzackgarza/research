@@ -17,6 +17,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Domain | Reference implementation | What it provides |
 | --- | --- | --- |
 | Symbolic summation, recurrences, D-finite / holonomic, creative telescoping, OGF/EGF closure | https://caa.risc.jku.at/software — RISC Computer Algebra (ore_algebra, HolonomicFunctions, etc.) | Ore algebras, closure for D-finite, creative telescoping, recurrence solving, OGF/EGF translation, L-functions as D-finite objects; adapter candidates for generatingfunctionology and `Periods` |
+| Constructive algebraic topology — effective homology, loop spaces, fibrations, Whitehead/Postnikov towers, homotopy groups | https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/ — Kenzo program (EAT/Kenzo); file-list 36 modules: effective-homology, chain-complexes, simplicial-sets/groups, fibrations, loop-spaces, classifying-spaces, k-pi-n, serre, whitehead, etc. — demo shows H5(Ω^3 Moore(Z/2,4)), H5(ΩΩ(S^3∪_2 D^3)), π7(P∞R/P2R) | Effective homology (reductions/strong equivalences, basic/easy perturbation lemmas, twisted Eilenberg-Zilber), bar/cobar, Kan loop group / classifying space, fibrations as twisted cartesian products, Eilenberg-MacLane K(π,n), Serre spectral sequence, discrete vector fields for EZ/EML, Whitehead/Postnikov tower for π_n of simply connected simplicial sets; adapter candidate for homology of iterated loop spaces and higher homotopy |
 
 ## Leads
 
@@ -35,6 +36,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 | Derived Hom / tensor — Ext, Tor, D(R-Mod) | User note 2026-09-15 | `RHom`, `Ext^n = R^n Hom`, `⊗^L`, `Tor_n = L_n(⊗)` in `D(R-Mod)`; derived tensor products `A⊗^L_R B` | `categories/derived/derived_category.py` + `categories/homological/ext_tor.py` / `categories/derived/tensor_product.py` | Proposed — see note below |
+| Constructive topology — Kenzo effective homology | https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/kenzo-demo.html | Constructive homology of iterated loop spaces and higher homotopy: effective homology for C_*(Ω^n X), fibrations, Whitehead/Postnikov towers, H_*(K(π,n)), π_n(X) with k-invariants | `categories/topology/simplicial_sets.py` + `categories/topology/effective_homology.py` + `categories/homotopy/whitehead_tower.py` + `categories/algebras/bar_cobar.py` | Proposed — see intake below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -486,3 +488,77 @@ Need basic right-derived functor machinery for `R-Mod` for Hom and tensor — `E
 * In concrete computable cases (finite projective resolutions over `ZZ`, `k[x]`, `k[x]/(x^n)`, PID) `Ext` and `Tor` must be explicitly computable via the resolution and return owned modules with presentation and class maps, and verify `Ext^1(Z/n, Z/m)=Z/gcd(n,m)` etc. For general `R-Mod`, `Ext`/`Tor` retained as formal derived objects with known type.
 
 Intended owners: `categories/derived/derived_category.py` (`D(R-Mod)` with `qis` localization, `H^n`), `categories/homological/ext_tor.py` (`RHom`, `Ext^n = R^n Hom`, `⊗^L`, `Tor_n = L_n(⊗)` via `K`-injective/`K`-flat resolutions), `categories/derived/tensor_product.py` (`derived_tensor_product` as monoidal on `D`). Not a free `Ext(M,N)` or `Tor(M,N)` — `M.rhom(N)`, `M.ext(n,N)`, `M.derived_tensor(N)` / `M.tensor_L(N)` on the module/complex objects in `D(R-Mod)`, with `D(Ab)` / `D(R-Mod)` as the ambient.
+
+## Intake: https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/kenzo-demo.html — functionality — 2026-09-15 — verbatim
+
+Kenzo (Sergeraert et al., EAT→Kenzo, incl. Dousson, Romero, Siret) implements Constructive Algebraic Topology via effective homology. Demo page http://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/kenzo-demo.html shows three computations from actual Lisp listing on PC Isabelle (GDR Medicis), with file-list 36 modules: classes, macros, chain-complexes, effective-homology, homology-groups, cones, tensor-products, coalgebras, cobar, algebras, bar, simplicial-sets/mrphs, suspensions, disk-pasting, cartesian-products, eilenberg-zilber, kan, simplicial-groups, fibrations, loop-spaces, classifying-spaces, k-pi-n, serre, whitehead, etc.
+
+* `H5(Ω^3(Moore(Z/2,4))) = Z/2^5` — Moore space `Moore(Z/2,4)` as simplicial set `m` via `(moore 2 4)`, then `o3m = loop-space(m,3)` as simplicial group `[K30 Simplicial-Group]`, then `(homology o3m 5)` computes boundary matrices in dimensions 5 (rank 23) and 6 (rank 53) via effective homology → 5 copies `Z/2` in 2 minutes.
+
+* `H5(ΩΩ(S^3 ∪_2 D^3)) = Z + Z/2^6` — `s3 = sphere 3` → `os3 = loop-space(s3)` → attach 3-disk `D^3 = Δ^3` with faces 0,2 identified to fundamental simplex of loop space, faces 1,3 collapsed → space `S^3 ∪_2 D^3` (attach by degree 2), then double loop `ΩΩ(...)` and `(homology ... 5)` gives `Z + Z/2^6` in 40 seconds.
+
+* `π7(P∞R/P2R) = Z/2 + Z/4` — `P∞R` has cellular model with one cell `E_n` each dimension, `P3 = r-proj-space 3` as `P∞R` collapsed 2-skeleton; verify `H_*(P3)` to dim 9 then iterative Postnikov/Whitehead fibrations: `ch5 = chml-clss(x4,5)` cohomology class degree 5 → `f5 = z2-whitehead(x4,ch5)` fibration `[K249 Fibration]` → `x6 = fibration-total(f5)` → `(homology x6 6)` gives `π6(P3)=Z/2` in 1s, repeat to `x?` with `ch6` etc. to `π7 = Z/2+Z/4` in 20 hours total; also examples `π4(Σ K(A4,1)) = Z/12` vs literature `Z/4` (Mikhailov-Wu correction) and generalizations listed in Kenzo overview.
+
+What generalizes: hard code is choice of spaces (`Moore(Z/2,4)`, `S^3∪_2 D^3`, `P∞R/P2R`); method is general effective homology for any locally effective simplicial set.
+
+## How Kenzo generalizes — what is new vs intake — verbatim — 2026-09-15
+
+Hard codes are data (particular spaces), not method. Existing intake already has: CW complexes `K = (K^0⊂K^1⊂…)` with attaching maps `φ_α: S^{n-1}→K^{n-1}` and cellular `C_*(K)` finite effective chain complex; static DB `π_{n+k}(S^n)` (Hopf η,ν,σ, Whitehead); `ZZ^n`-GrMod complexes/double/SerreSS for finite sparse `E2`; computable `π1(X,x)=π1(K)` via van Kampen on 2-skeleton and `H_*` via `C_*` for concrete varieties via analytification. None of that computes homology of *infinite* complexes such as `Ω^3 Moore`, `Ω^n X`, `K(π,n)`, `X^I`, or arbitrary fibrations — `C_*(Ω^3 Moore)` has infinitely many non-degenerate simplices in degree 5 (rank 23 after reduction vs. infinite before).
+
+What Kenzo does that is new and belongs in preamble:
+
+**1. Effective homology as object** — not method. Object with effective homology is triple `(X, EC, ε)` where `X : sSet` (locally effective simplicial set: each `X_n : Sets` and face/degeneracy are computable), `C_*(X) : Ch_{ZZ}` its normalized chain complex (possibly infinite type), `EC : Ch_{ZZ}` effective (`EC_n` finitely generated free finite rank in each degree with computable differential/boundary matrices), and `ε : C_*(X) ⇔ EC` strong chain equivalence — span of two reductions `C_*(X) ⇐ Ĉ ⇒ EC`. Reduction `ρ = (f,g,h)` with `f: C→D`, `g: D→C`, `h: C→C_{+1}` satisfying `fg=id_D`, `gf + dh + hd = id_C`, `fh=0`, `hg=0`, `hh=0`. Perturbation lemmas (Basic BPL, Easy EPL) transfer reductions along twisting cochains `t: C→A` or differentials `δ`. This is the category `EffHom_sSet` with forgetful `U: EffHom→sSet` and `EC: EffHom→Ch^{eff}`. Intake has no such object; it has only finite CW `C_*`.
+
+**2. Simplicial Kan model** — `sSet` with `Kan` axiom (horn fillers) via simplicial groups `G(X)=Kan loop group` and `W̄(G)` classifying space. Functors `G: sSet_* → sGrp` and `W̄: sGrp → sSet_*` with `G ⊣ W̄` and `Ω|X| ≃ |G X|` geometric. Operations `suspension Σ`, `cone`, `disk-pasting`, `cartesian-product` `X×Y` with Eilenberg-Zilber reduction `C_*(X×Y) ⇔ C_*(X)⊗C_*(Y)` and twisted Eilenberg-Zilber for twisted cartesian product `E = F ×_τ B` (fibration with twisting operator `τ: B_{n+1}→G_n` satisfying Kan condition). File modules 16-34 own this. Intake has `Top` CW colimits but not `sSet` Kan or `τ`.
+
+**3. Fibrations with effective homology** — Serre fibration `F ↪ E → B` as `E = F ×_τ B` with structure group `G` acting on `F`; chain level `C_*(E) ≅ C_*(F) ⊗_t C_*(B)` twisted tensor product with differential `d = d_F⊗1+1⊗d_B + perturbation δ_τ`. Effective homology of base `B` and fiber `F` → effective homology of total `E` via twisted Eilenberg-Zilber + BPL (Kenzo `fibration-total` object with its `efhm`). Intake mentions Serre SS only as `E2=H_*(B)⊗H_*(F) ⇒ H_*(E)` finite/sparse determinable; Kenzo's is constructive cycle-level reduction, not spectral sequence table.
+
+**4. Loop/classifying effective homology** — `Ω X = G X` loop space as simplicial group (Kan) with cobar construction at chain level: `C_*(Ω X)` effective via `Ω C_*(X)` cobar on coalgebra `C_*(X)` (modules 12-15 bar/cobar, coalgebras). Iterated loops `Ω^n X` require iterated cobar with effective homology at each step — demo's `Ω^3 Moore(Z/2,4)` is this iteration. Classifying `B G = W̄ G` similarly via bar construction. No finite CW model exists for `Ω^n X` in general; effective homology is the only computable model.
+
+**5. Eilenberg-MacLane effective homology** — `K(π,n)` via `k-pi-n` module: Dold-Kan + bar construction inductively, with `EC` effective and Smith normal form `smith` for homology invariants `H_q(K(π,n))`. Prerequisite for Postnikov k-invariants and for H_{*} of EM spaces in towers.
+
+**6. Whitehead/Postnikov tower for π_n** — For simply connected finite `X : sSet` with effective homology, Kenzo builds Whitehead tower `⋯→X_{n+1}→X_n→⋯→X_1=X` where `X_{n+1} = homotopy fiber of k-invariant κ_n ∈ H^{n+1}(X_n; π_n(X))` classified by `k-pi-n` twisting. Each `X_n` gets effective homology via fibration 3; then `π_n(X) = H_n(X_n)` as `Ext`? Actually `π_n = H_n(F_n)` where `F_n` fiber, computed via homology of effective complex `EC(X_n)` in that degree using `homology-groups` Smith. Demo's `π7(P∞R/P2R)` and `π4(ΣK(A4,1))` are this method (Xavier Dousson thesis). Intake has only `π1` via 2-skeleton + `π_{*}(S^n)` DB lookup; it cannot compute `π7` of arbitrary finite complex — this functor `π_n: sSet^{1-conn,eff} → Ab` is new. Requires `H^{n+1}(-;π)` model via Eilenberg-MacLane effective.
+
+**7. Discrete vector fields** — Kenzo 1.1.8 upgrade (Forman) improves reductions for Eilenberg-Zilber and `K(π,n)` effective homology by Morse reductions `C → C^c` via admissible vector field `V` on cellular basis, with `f,g,h` from `V`. This is new discrete Morse category `DVF(Ch)` not in intake.
+
+**8. Integration with derived functors** — Effective homology core is exactly derived tensor products: `C_*(X×_τ B) ≃ C_*(F) ⊗^L_{C_*(G)}`? More precisely `C_*(F×_τ B) ≅ C_*(F)⊗_t C_*(B)` with twisted differential = `C_*(F)⊗^L C_*(B)` perturbed, and cohomology operations `Ext, Tor` over `ZZ` via effective chain models feed homological algebra `Tor, Ext` already noted but now with concrete topological `⊗^L`. Intake's `Derived Hom/tensor — Ext,Tor,D(R-Mod)` with `R=ZZ` and `⊗^L` as monoidal on `D(ZZ-Mod)` is the algebraic owner; Kenzo's `EffHom, Bar, Cobar, EZ` are topological adapters that `⊗^L` must consume — `EC ⊗^L EC'` effective computes `Tor` over chain algebras.
+
+**What does not generalize without new math**: General `X` must be simply connected and with effective homology presented; non-nilpotent/unbounded homotopy requires additional spectral sequence convergence not implemented; real coefficients `R` vs `ZZ` Smith needs PID; `π_n(X)` for non-finite `X` (e.g. infinite CW) needs local effectiveness hypothesis to stay in `EffHom`.
+
+## Fundamental semantic language for Kenzo generalization — verbatim — 2026-09-15
+
+For `EffHom / loop / Postnikov` to be statable, these must exist as categories/functors — not data `Moore(Z/2,4)`:
+
+**Base**
+* `Sets`, `NN` — degrees `n : NN`, ranks `rank EC_n : NN`
+* `sSet : Cat` — simplicial set `X = (X_n, d_i 위원, s_i)` object; `sSet_*` pointed version `*∈X_0`; `Kan(sSet)⊂sSet` subcategory where every horn `Λ^k[n]→X` has filler
+* `sGrp : Cat` — simplicial group `G`, underlying `G_n : Groups` with simplicial structure; forgetful `U: sGrp→sSet` via underlying Kan complex
+* `Ch(R) : AddCat` — chain complexes `C = (C_n, d_n: C_n→C_{n-1})` over `R=ZZ` (more generally `R : CommRings`), with shift `[1]`, cone `Cone(f)`, tensor `C⊗D`, internal hom
+
+**Reductions / effective homology**
+* `Red(C,D) : Sets` — reduction `ρ=(f,g,h)` as above, with axioms `fg=id`, `gf+dh+hd=id`, `fh=hg=hh=0` (chain homotopy `h`); composition and transport
+* `StrongEquiv(C,EC)` — strong equivalence `C ⇐ Ĉ ⇒ EC` span of two reductions; object `EC : Ch^{eff}` effective meaning `EC_n = R^{rank_n}` free finite rank and `d_n` given by finite matrix `Mat_{rank_{n-1}×rank_n}(R)` computable
+* `EffHom(sSet)` — objects `(X, ε_X)` where `ε_X: C_*(X)⇔EC_X` strong equivalence; morphisms `f: X→Y` in `sSet` lift to `C_*(f): C_*(X)→C_*(Y)` compatible with `ε`; forgetful `U(X,ε)=X`, `EC(X,ε)=EC_X : Ch^{eff}`. Interface is `X.effective_homology() → (EC,ε)` not free `effective_homology(X)`
+* Perturbation `δ: C→C_{*-1}` with `(d+δ)^2=0` small (`id+δh` invertible); Basic Perturbation Lemma `BPL(ρ,δ) → ρ' : (C,d+δ) ⇔ (D,d'+δ')` and Easy `EPL` — functors `PertRed : Red×Pert → Red`
+
+**Simplicial / Eilenberg-Zilber**
+* `Susp(X), Cone(f), DiskPasting, CartProd(X,Y)` — constructions in `sSet`; `C_*: sSet→Ch` normalized chain functor (Dold-Kan normalized)
+* Eilenberg-Zilber `EZ: C_*(X×Y) ⇔ C_*(X)⊗C_*(Y)` reduction (Alexander-Whitney `f`, shuffle `g`, Shih `h`); twisted EZ `tEZ(τ): C_*(F×_τ B) ⇔ C_*(F)⊗_t C_*(B)` where `⊗_t` has twisted differential `δ_τ` from twisting cochain `τ: C_*(B)_{*+1}→C_*(F)_*` / twisting operator `τ: B_{*+1}→F_*`
+* Bar `B A` and cobar `Ω C` for dg algebra `A` and dg coalgebra `C`: `B A = T^c(s\bar A)` coalgebra, `Ω C = T(s^{-1}\bar C)` algebra — objects in `dgAlg/dgCoalg`; `C_*(G X) ≃ Ω C_*(X)` as `dgAlg` equivalence (Adams) underlying loop-space effective homology
+
+**Fibrations**
+* `Fibration = (F, B, G, τ, E=F×_τ B)` where `G : sGrp` acts on `F`, `τ: B→G` twisting operator satisfies `d0 τ(b)=τ(d0 b)·∂ b` etc.; projection `p: E→B` Kan fibration with fiber `F`; `E.total()` object of `sSet` with `efhm` from base+ fiber `efhm` via `tEZ+BPL`
+* `LoopSpace(X) = G X : sGrp` and `ClassifyingSpace(G)=W̄G : sSet_*` with `G ⊣ W̄` adjunction `Hom_{sGrp}(G X, H) ≅ Hom_{sSet_*}(X, W̄H)`; iterates `Ω^n X = G^n X` as `sGrp`/`sSet` with `EC(Ω^n X)` via iterated `Ω` cobar + `BPL`
+
+**Eilenberg-MacLane / classifying**
+* `K(π,n): AbGroups×NN → sSet^{eff}` with `π_n(K(π,n))=π`, `π_{≠n}=0` and `EC(K(π,n))` effective via bar inductively `K(π,n)=B K(π,n-1)` (n>1) or standard resolution (`K(Z,1)=S^1` etc.); homology `H_*(K(π,n))` via Smith on `EC`
+* `Smith : Mat_{m×n}(ZZ) → diag(d1|d2|…)` invariant factors for `H_n(EC)` — `H_n(EC)= ZZ^{rank}` ⊕ ⊕_i `ZZ/d_i` from `d_n` boundary matrices `Mat(R)` in `Ch^{eff}`
+
+**Postnikov / Whitehead tower**
+* `Postnikov(X): sSet^{1-conn}→Tower` where `X^{(n)}` with `π_{>n}(X^{(n)})=0`, `π_{≤n}=π_{≤n}(X)` and fibration `K(π_{n+1}, n+1)↪X^{(n+1)}→X^{(n)}` classified by k-invariant `κ_n∈H^{n+2}(X^{(n)};π_{n+1})` as cohomology class `[c]∈H^{n+2}(EC(X^{(n)}))` represented by twisting cochain; dually Whitehead `X⟨n⟩`  (n-1)-connected cover with same `π_{≥n}`
+* Functor `π_n: sSet^{1-conn,eff}→Ab` via `π_n(X)=H_n(X⟨n⟩)` or `H_{n+1}(X^{(n+1)}, X)`; computable as `homology( EC(X⟨n⟩), n )` via Smith — Kenzo's `z2-whitehead`, `fibration-total`, `homology`
+
+**Not fundamental**
+* `Moore(Z/2,4)`, `S^3∪_2 D^3`, `P∞R/P2R`, `rank EC5=23`, `shift`, `n=4`, `2 minutes/20 hours`, matrices in `C_*(X)` — elements/morphisms in above
+* `φ_α: S^{n-1}→K^{n-1}` CW attaching (already intaken) is special case of `sSet` cell attachment `Δ^n/∂Δ^n→X`; effective homology reduces to that when `C_*(X)` already effective
+
