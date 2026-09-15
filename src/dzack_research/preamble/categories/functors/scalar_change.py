@@ -14,9 +14,6 @@ from dzack_research.preamble.categories.algebras.group_algebras import GroupAlge
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FramedModules,
@@ -66,7 +63,7 @@ class ScalarExtensionFunctor(Functor):
 
         def image(label):
             original = morphism.domain().module_generator(label)
-            coefficients = module_coefficients(morphism(original), morphism.codomain())
+            coefficients = morphism.codomain().framing_coefficients(morphism(original))
             return target.linear_combination(
                 {
                     target_label: self._target_ring(

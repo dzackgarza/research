@@ -24,9 +24,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumModule,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -55,10 +52,7 @@ class _ModuleAlgebraFunctor(Functor):
         target = self(target_module)
 
         def image(label):
-            coefficients = module_coefficients(
-                morphism(morphism.domain().module_generator(label)),
-                target_module,
-            )
+            coefficients = target_module.framing_coefficients(morphism(morphism.domain().module_generator(label)))
             return sum(
                 (
                     coefficient * target.algebra_generator(target_label)

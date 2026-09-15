@@ -11,9 +11,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     StrictlyCommutativeDifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -40,7 +37,7 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
         result = target_dga.zero()
         for degree, component in represented.homogeneous_components().items():
             source_piece = source_exterior.graded_piece(degree)
-            for label, coefficient in module_coefficients(component, source_piece).items():
+            for label, coefficient in source_piece.framing_coefficients(component).items():
                 coefficient_image = target_dga.from_degree_zero(
                     algebra_morphism(source_algebra(coefficient))
                 )

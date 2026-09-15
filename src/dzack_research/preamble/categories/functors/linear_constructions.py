@@ -5,9 +5,6 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
@@ -32,10 +29,7 @@ class DualizationFunctor(ContravariantFunctor):
         for codomain_label in morphism.codomain().module_generating_set():
             coefficients = {}
             for domain_label in morphism.domain().module_generating_set():
-                image_coefficients = module_coefficients(
-                    morphism(morphism.domain().module_generator(domain_label)),
-                    morphism.codomain(),
-                )
+                image_coefficients = morphism.codomain().framing_coefficients(morphism(morphism.domain().module_generator(domain_label)))
                 coefficient = image_coefficients.get(
                     codomain_label, morphism.domain().base_ring().zero()
                 )
@@ -148,7 +142,7 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
 
     @staticmethod
     def _embed_summand(element, summand, target, offset):
-        coefficients = module_coefficients(element, summand)
+        coefficients = summand.framing_coefficients(element)
         summand_labels = summand.module_generating_set()
         target_labels = target.module_generating_set()
         return target.linear_combination(
