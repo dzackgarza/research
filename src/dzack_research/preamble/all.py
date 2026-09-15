@@ -24,8 +24,6 @@ from dzack_research.preamble.catalogue import (  # noqa: F401
     TwoElementary,
     signature_orthogonal_sums,
     two_elementary_orthogonal_sums,
-    validate_negative_def_two_elementary_table,
-    validate_two_elementary_table,
 )
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     AutCategoryConstruction,
