@@ -62,6 +62,8 @@ This repository has one worker, so selection has no claim or reservation layer.
 
 - [Framework transfer and organization](#framework-transfer-and-organization)
 
+- [Complaint-driven architecture remediation](#complaint-driven-architecture-remediation)
+
 - [Final verification](#final-verification)
 
 - [Optional research consumers](#optional-research-consumers)
@@ -136,7 +138,8 @@ Reassess a bounded implementation once its input contracts are settled.
 | Geometric research applications | Specific cover, divisor, cohomology, and lattice inputs | ADE log pairs and the K3/Enriques workflows below | 65: source-defined applications of shared constructions |
 | Arithmetic and reflection geometry | Existing lattice, group-action, discriminant, and exact engine owners | Remaining transporters, higher-order centralizers, parabolics and reduction complexes | 85: completeness and witness construction in infinite groups |
 | Framework transfer and organization | Each subsystem's complete upstream dependency | One surviving mathematical owner with usable inherited operations | 90: shared ownership and cross-framework transfer |
-| T | All required implementation, integration, and source consolidation below | Executed mathematical evidence and repairs of the failures it exposes | 15 for execution; score each resulting repair at its actual owner |
+| Complaint-driven architecture remediation | Current owned preamble plus the unresolved source-level findings in `COMPLAINTS.md` | Converged construction data, owner API, categorical representations, computation boundaries, public types, notebook/session vocabulary, and proof-sensitive tests | 95: cross-cutting source repair whose ordering matters because later API/test/notebook work must consume the corrected owners rather than compatibility residue |
+| T | All required implementation, integration, source consolidation, and complaint-driven architecture remediation below | Executed mathematical evidence and repairs of the failures it exposes | 15 for execution; score each resulting repair at its actual owner |
 
 ### Remaining workstreams as a dependency graph
 
@@ -166,7 +169,7 @@ Do not remove an edge because its prerequisite is inconvenient, deferred, or mer
 The generic universal-construction node delivers real module constructions first; completion then owns integrating that contract with its ideal-power system and maintained series realization.
 The general construction does not wait for completion's implementation.
 
-Before committing a queue change, check that every checkbox has exactly one ID and one Needs list, IDs are unique, all references resolve, no self-edge or cycle exists, and every required implementation node reaches `terminal-reference` before T. During T, newly exposed repairs must reach the still-open terminal node whose acceptance requires them.
+Before committing a queue change, check that every checkbox has exactly one ID and one Needs list, IDs are unique, all references resolve, and there is no self-edge or cycle. Required pre-T implementation nodes must feed the terminal chain that verifies them. Complaint-driven remediation opened after the first terminal pass must feed `architecture-remediation`, then `terminal-session`, so the repaired source is re-exercised before post-remediation audits. During terminal execution, newly exposed repairs must reach the still-open terminal node whose acceptance requires them.
 The terminal nodes form their own final chain.
 No required or terminal node may depend on an optional node.
 Optional work must name its concrete consumer and dependencies before implementation; a required engine repair belongs in the required consumer's dependency path, never in the optional branch.
@@ -495,7 +498,7 @@ Bridge repairs and codec additions belong at the existing bridge owner, not in a
   **Decision:** use the retained pairing and exact rational inequalities, not a floating-point picture or only a canonized incidence graph.
   **Acceptance:** adjacent cells share the actual face, their transporter sends one cell to the other, and the group-generation/completeness argument distinguishes a full domain from a finite exploration prefix.
 
-- [x] **`witt-recursion`**. **Needs:** `lattice-embeddings`, `parabolic-gluing`. Implement higher-Witt-index recursion and the `2U` Eichler construction through the existing isometry, discriminant and transporter owners.
+- [x] **`witt-recursion`**. **Needs:** `parabolic-gluing`. Implement higher-Witt-index recursion and the `2U` Eichler construction through the existing isometry, discriminant and transporter owners.
   **Deliver:** complete the source-defined subgroup beyond the represented two `SL_2(ZZ)` actions, Eichler transformations, canonical `O(K)` lifts and finite covering representatives: supply the remaining discriminant lifts, recursive stabilizers, transporter completion to the full orthogonal group, and recursive lattice equivalence.
   **Decision:** state evenness/integrality conditions for every transformation.
   A subgroup generated so far is not the full orthogonal group until the generation theorem applies.
@@ -545,29 +548,15 @@ A feature's numerical implementation can already exist while its construction or
 Deliver and review those source changes before T; T executes the mathematical evidence and repairs what it exposes.
 It is not a reason to postpone source-level ownership review until every downstream consumer has copied the same bypass.
 
-### Terminal T has begun; execution is authorized from here
+### Terminal T was entered; complaint remediation has reopened required source work
 
-The phase rule suspends preamble tests, QC gates, Sage executions and notebooks *while the architecture, implementation, integration and transfer work remains open*. That work is closed.
-The four `terminal-*` nodes below are terminal T itself, not work standing before it, so the suspension does not apply to them: from `terminal-reference` onward, running Sage, the project recipes, the suites and the notebook checks is authorized and is the point of the phase.
+The repository already entered terminal T and the checked `terminal-reference`, `terminal-execution`, and `terminal-repairs` nodes retain the evidence they established at their recorded revisions.  The later source audit in `COMPLAINTS.md`, however, found mandatory architectural violations that were not represented in the old DAG.  Those findings are now promoted into the required [complaint-driven architecture remediation](#complaint-driven-architecture-remediation) workstream below.
 
-This matters because `terminal-reference` cannot be done any other way.
-Its deliverable comes from `just preamble-megadoc`, which surveys a live session, and from `just graph`. Reading the phase rule as forbidding that leaves the node unbuildable and the whole verification phase unreachable, which is how a repository ends up banking sixty unexecuted commits while its worker looks for something it is permitted to do.
+The phase rule therefore applies again while `architecture-remediation` is open: do not use Sage/tests/QC/notebooks to drive source authoring in that workstream.  Bank the corrected constructions and the specimens that will falsify them, then return to terminal execution.  The prior terminal evidence is not discarded, but it cannot certify source that changed afterward.
 
-### The implementation nodes are closed; repairs now wait on execution
+`terminal-session` is the re-entry boundary.  It depends on both the already-completed `terminal-repairs` work and the new `architecture-remediation` convergence node.  Once both hold, regenerate the live reference/graph as needed, execute the final public session/notebook surface, and run the prescribed final QC against the repaired architecture.
 
-The implementation nodes are checked off above and the terminal ones are what remains; count the boxes in this file rather than trusting a number written into this paragraph, which was true when it was written and not after.
-`terminal-reference` has no prerequisites, which means the verification phase is ready to start and has been for some time.
-
-This matters more than it reads.
-Every commit in this repository since the phase rule took effect is explicitly unverified — the construction and the specimens that would falsify it are banked, and nothing has executed them.
-That bank is the largest single risk here, and `terminal-execution` is the only thing that retires it.
-It does not shrink on its own, and it grows with every further commit.
-
-So a `fix(...)` landed before execution is a guess about what a suite that has never run would have said.
-It may be correct; nothing can tell, and if the construction it repairs was fine, the repair is a change to working mathematics made on no evidence.
-Once the implementation nodes are closed, an off-DAG repair is not the next unit of work: `terminal-reference` is, then `terminal-execution`, and what execution actually exposes becomes `terminal-repairs` — a node that exists precisely so repairs are made against observed failures rather than suspected ones.
-
-Take `terminal-reference` now.
+This keeps the two roles distinct: source-level architecture remediation is driven by the observed construction contract, while terminal execution decides whether the repaired public mathematics actually works.  Do not use a previously green terminal run to waive a newly observed source defect, and do not use an architectural audit finding as if it were already a runtime failure.
 
 - [x] **`terminal-reference`**. **Needs:** none.
   *Required implementation and transfer are finished.* They mean the twenty-eight implementation nodes checked off in this file — `toric-cohomology`, `tor-ext`, `witt-recursion`, `arithmetic-applications` and the rest — and every one is closed.
@@ -631,7 +620,7 @@ Treat the pin as blocked, record it that way against the affected items in the o
   A mathematically incorrect expectation may change only under the exception in `AGENTS.md`, with the correction justified in its commit.
   **Acceptance:** the actual failed proposition is established and the affected downstream construction remains coherent.
 
-- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`. Verify the required session/rendered examples and final contribution contracts after mathematical integration.
+- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
   **Fresh-session invariant:** before this node can close, a fresh live Sage process on the repository's active environment must execute `from dzack_research.preamble.all import *` successfully and expose at least the core `Cat` and `Lattices` entry points.
   Regenerate the preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with the live session; graph node counts are an inventory, not acceptance by themselves.
   Treat a preamble-owned import warning or an import-order-dependent result as a terminal repair, not as harmless startup noise.
@@ -639,113 +628,190 @@ Treat the pin as blocked, record it that way against the affected items in the o
   **Deliver:** actual inspected notebook/rendering results where relevant, source-backed terminology review at the required push boundary, and the repository's prescribed final QC. **Acceptance:** the public star import and live graph/session invariant above hold; the displayed mathematical objects and maps are correct; no output is certified solely by a generated file, a graph count, or a server starting.
   Respect the user's push approval and active-task scope.
 
+## Complaint-driven architecture remediation
+
+The 2026-09-15 source audit in [COMPLAINTS.md](COMPLAINTS.md#foundational-mathematics) found twenty systematic violations of the normative architecture.  Those observations are evidence, not an execution plan; this section is the one scheduling surface for repairing them.  Every node below is required source work.  When a node is delivered, remove the corresponding resolved complaint evidence in the same commit rather than appending a status line to the complaint.
+
+The audit counts are discovery measurements, not acceptance thresholds.  A node closes when the mathematical owner and affected consumers are correct, not when a grep count reaches zero.  Conversely, a broad node must inspect the complete occurrence family named by its complaint before closure; fixing only the representative example is not enough.
+
+### Owner API and construction data
+
+- [ ] **`owner-api-convergence`**. **Needs:** `owner-api-functor-operations`.
+  Remove the public/global operation language forbidden by `ARC-12`, `API-07`, `STY-01`--`04`, and `OWN-02`.
+  **Observed gap:** `preamble.all` still exports construction verbs such as products, coproducts, tensor products, kernels/cokernels, pushouts, localizations, completions, and quotients as free functions; the audit also found 261 exported owner-in-argument functions across 107 files.
+  **Owners:** the actual category/object/morphism/Hom/functor that determines each operation; `preamble.all` is only the session aggregator and must not become a second operation registry.
+  **Deliver:** migrate every ordinary source/notebook/test consumer of each removed global to the mathematical owner spelling; retain notation only when it delegates to that owner.  Delete compatibility exports rather than preserving aliases whose only purpose is the old route.
+  **Non-goal:** do not mechanically turn every module-level function into a method.  A genuine constructor whose inputs do not already contain its mathematical owner may remain a constructor; decide by the operation's mathematics, not syntax.
+  **Acceptance:** a source/export audit finds no free-standing public operation whose owner is already supplied as an argument; `from dzack_research.preamble.all import *` exposes mathematical objects/categories and deliberate session vocabulary but not a duplicate operation catalogue; the negative test surface needed by `ownership-test-contract` can distinguish the removed route.
+
+
+- [ ] **`owner-api-functor-operations`**. **Needs:** none.
+  Converge the remaining free-standing operations whose owner is a functor or functor category.
+  **Observed current residue:** `compose_functors(second, first)`, `NaturalTransformations(source, target)`, `NaturalIsomorphism(source, target, ...)`, `category_inclusion(subcategory, supercategory)`, and `induced_hom_functor`/`induced_end_functor`/`induced_aut_functor` remain public globals after the earlier broad owner migration.
+  **Owners:** `Functor.then`, the represented functor category `[C,D]` and its `Mor`, the source category's inclusion into a declared supercategory, and the base functor that induces Hom/End/Aut transport.
+  **Deliver:** expose any missing owner methods exactly once, migrate source/tests/static projections to them, delete the public wrapper functions and session exports, and keep the existing `CategoryInclusionFunctor`/`Induced*Functor` objects only as the represented result types where useful.
+  **Acceptance:** no public global in this cluster accepts its owner functor/category in argument position; composition, natural-transformation Hom selection, a nontrivial natural isomorphism, category inclusion, and nonidentity Hom/End/Aut transport remain expressible through their owners.  Bank the behavioral specimens unexecuted for `terminal-session`.
+- [ ] **`framing-primary-epi`**. **Needs:** none.
+  Rebuild framed-module construction around the selected epimorphism `Free_R(S) -> M` as the defining datum required by `CON-11`, `OWN-03`, `ARC-20`, and `STY-152`.
+  **Observed gap:** generic framing currently stores a generating set/function and reconstructs `Free_R(S)` and the generator map later when `framing_morphism()` is queried.
+  **Owners:** generic framed modules, the free-module functor/unit, and the represented module morphism/Hom owner.
+  **Deliver:** construction receives or canonically constructs the actual owned source `Free_R(S)` and selected epi before the framed module is exposed; the indexing set is the free source's defining set, and `module_generator(s)` is the image of its free generator.  `framing_source()`, `module_generating_set()`, `module_generator()`, and `framing_morphism()` are projections of that one datum.
+  **Separating cases:** a framed quotient whose selected generators satisfy relations, a framed free module where the epi is an isomorphism, and a framing with labels that are not positional integers.  Do not silently strengthen every framing to a basis or ordered enumeration.
+  **Acceptance:** generic framed modules plus the first framed-free and presented-module consumers retain one actual framing object; no public framing accessor allocates a new free module or reconstructs a morphism from stored label metadata.
+
+- [ ] **`framing-specialization-convergence`**. **Needs:** `framing-primary-epi`.
+  Remove duplicated framing/generator implementations from lattice, fractional-ideal, presented-module, framed-free, group-module, restricted-scalar, matrix-module, and number-field specializations (`OWN-14`, `STY-154`).
+  **Observed gap:** the audit found nine independent `module_generators()` implementations and several descendant-specific framing reconstructions.
+  **Deliver:** each specialization inherits or composes the general framing datum and introduces only genuinely stronger mathematics.  A lattice may provide lattice-specific structure on its generators only when that returned object actually has extra lattice semantics; otherwise its module generators are the same module-theoretic image inherited from the underlying free module.
+  **Acceptance:** one framing authority supplies source, selected epi, generator set and generator evaluation across the audited descendants; specialization methods that remain have a documented stronger codomain/operation and are not renamings of the generic result.
+
+- [ ] **`owned-provenance-data`**. **Needs:** none.
+  Replace hidden `_preamble_*source*`, functor-preimage, coordinate-morphism, and provenance side channels with first-class construction data (`CON-05`, `STY-07`, `OWN-03`--`05`).
+  **Observed gap:** the audit found 108 attachment/provenance sites across 32 files, including functor-image preimages, de Rham/Kahler/cohomology source attributes, coordinate-algebra morphisms, completion sources and base-change sources.
+  **Owners:** the functor image, chosen presentation, comparison morphism, base-change datum, completion datum, or other mathematical construction whose later operations require the source.
+  **Deliver:** identify which source/preimage is genuine selected mathematics and store it in the construction object or represented morphism that defines the result.  Derivable debug provenance is not public construction data and should disappear instead of moving to another dictionary.
+  **Acceptance:** affected downstream operations recover required source objects/maps from their defining construction, not ad-hoc attributes on an otherwise ordinary result; deleting a private source attribute cannot change the mathematics because no such authority remains.
+
+- [ ] **`refinement-convergence`**. **Needs:** `owned-provenance-data`.
+  Eliminate runtime refinement as a second ordinary construction mechanism under `ARC-13`, `STY-08`, and `OWN-02`--`03`.
+  **Observed gap:** 49 `refine(...)` call sites remain; ring and scheme constructors still install standard structure or `_preamble_scheme_*` state after object allocation.
+  **Deliver:** standard structure that follows from defining data is present when the object is constructed; selected structure is passed explicitly through its constructor/functor; later `refine` remains only for a genuinely new mathematical fact proved after construction.  Remove call-history/import-order dependence from inherited operations.
+  **Acceptance:** representative ring, scheme, module and functor-image constructions have identical mathematical category/operations regardless of which accessor is called first or import order; every surviving runtime refinement names the later theorem/chosen datum that justifies it rather than repairing incomplete initialization.
+
+### Public vocabulary, representations, and codomains
+
+- [ ] **`generator-lexicon`**. **Needs:** `framing-specialization-convergence`.
+  Remove implementation-role display language such as `"Module-generator family"`, `"Free-module generator family"`, `"Presented-module generator family"`, and `"Lattice-generator family"` (`LEX-01`, `LEX-04`).
+  **Observed gap:** public displays currently describe an `IndexedFamily`/refinement role instead of the mathematical set or its image.
+  **Deliver:** display the actual selected generator set/image, a bounded mathematically meaningful view for infinite sets, and any truly distinguishing chosen structure.  The object returned by `module_generators()` must look like module generators, not like the Python/category mechanism used to store them.
+  **Acceptance:** finite free/lattice examples show their generator image (for example `{e_0, e_1}` or an equally informative owned-set rendering); infinite examples preserve laziness and expose the indexing mathematics without implementation taxonomy; no audited generator display is merely a renamed type.
+
+- [ ] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
+  Remove public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified referent.
+  **Observed gap:** current examples include fractional-ideal/lattice `gens`, lattice/isotropic `basis`, and six divisor/sheaf `dual()` methods.
+  **Deliver:** choose names such as `module_generators`, `group_generators`, `ideal_generators`, `lattice_basis`, `dual_module`, `dual_lattice`, `dual_sheaf`, etc. according to the actual codomain; remove aliases that preserve the ambiguous spelling and migrate every ordinary consumer in the same unit.
+  **Acceptance:** each audited public name identifies what is generated/dualized/based without knowing the receiver's implementation class, and no banned bare alias remains on the public surface.
+
+- [ ] **`categorical-representation-convergence`**. **Needs:** none.
+  Collapse parallel representations of equivalent categorical/universal data into one authoritative representation (`ARC-14`, `STY-51`, `STY-54`).
+  **Observed gap:** contravariant functors are independently modelled instead of ordinary functors from an opposite category; bifunctors duplicate product-domain functor machinery; adjunctions independently require unit, counit, and both Hom transposes.
+  **Owners:** `Functor(C^op,D)`, functors out of product categories, natural transformations, adjunction/unit-counit data, and the common Hom/universal-construction calculus.
+  **Deliver:** choose the standard categorical datum at each site and mechanically derive equivalent views.  Compatibility accessors may expose a mathematically distinct view only when computed from the authoritative datum; subclasses must not prove mutually determining data twice.
+  **Acceptance:** constructing one representation determines the others, round-trips agree by construction, and no audited categorical object can be made internally inconsistent by supplying incompatible equivalent data.
+
+- [ ] **`owned-product-codomains`**. **Needs:** `categorical-representation-convergence`.
+  Replace public bare tuple/list products with elements of the appropriate owned product (`CON-15`, `SET-01`, `CAT-08`).
+  **Observed gap:** commutative-square components, naturality-square morphisms, and tensor index-module/index pairs currently return Python tuples.
+  **Deliver:** identify the index set and factor family for each operation, construct or reuse the corresponding owned product, and return its element.  Preserve named projections/components so callers do not unpack storage positions to recover mathematics.
+  **Acceptance:** the audited public signatures contain no bare Python tuple/list return for mathematical product data; component access factors through the owned product/projections and works for the stated index object rather than only a hard-coded pair.
+
+- [ ] **`mathematical-return-types`**. **Needs:** `owner-api-convergence`, `framing-specialization-convergence`, `refinement-convergence`, `categorical-representation-convergence`, `owned-product-codomains`.
+  Replace framework-universal public return annotations (`Parent`, `Element`, `CategoryObject`, and ad hoc `Any`) with mathematical codomains under `LEX-12`--`15`.
+  **Observed gap:** the audit counted 261 framework-universal return annotations, including functor images, cardinalities and scheme operations.
+  **Deliver:** after the affected public APIs have stabilized, annotate each operation by the mathematical set/category/refinement its values inhabit.  When Python cannot yet express that codomain directly, introduce or reuse one central mathematically named alias/refinement rather than a local implementation wrapper.
+  **Non-goal:** this is not checker paydown; do not distort source to satisfy mypy or replace an honest mathematical union by a narrower convenient implementation type.
+  **Acceptance:** representative operations in every audited family state falsifiable mathematical codomains; a source audit finds no remaining universal annotation unless its declaration has an explicit documented mathematical alias/union whose precision is genuinely not expressible more directly.
+
+### Computational boundaries and duplicate algorithms
+
+- [ ] **`assertion-frontiers`**. **Needs:** none.
+  Replace public mathematical `NotImplementedError` control flow with the exact computational frontier required by `CAT-01`, `DEF-06`, `STY-48`, and `DEV-11`.
+  **Observed gap:** 449 direct raises remain, in 212 public callables, with major concentrations in schemes, algebras, commutative algebra, modules, lattices and groups.
+  **Deliver:** for each public mathematical operation, keep it at the domain where the notion is defined, route every supported exact case through its maintained owner, and assertion-gate only the precise unsupported computational remainder with the missing hypothesis/representation stated.  Remove methods with no successful mathematical case or make genuine abstract contracts abstract.
+  **Acceptance:** no public mathematical API uses `NotImplementedError` as its ordinary unsupported-case semantics; representative unsupported inputs fail at an informative assertion frontier without returning a false mathematical value or narrowing the method's codomain.
+
+- [ ] **`placeholder-stubs`**. **Needs:** `assertion-frontiers`.
+  Remove unconditional visible mathematical placeholders (`STY-48`, `STY-160`).
+  **Observed gap:** tensor `_index_ranks()`/`tensor_valence()` use unconditional `assert False`; an optional abstract profinite-group method uses `pass` rather than the required Sage abstract contract.
+  **Deliver:** implement the operation at its proper owner when mathematics is available; otherwise make the genuine abstract contract explicit or delete/move a method that is not defined at that layer.  Use `...` in Sage abstract bodies as required by policy.
+  **Acceptance:** each audited method has a successful mathematical implementation path or is an honest abstract declaration; no unconditional failure/pass body remains behind a public mathematical promise.
+
+- [ ] **`group-module-scalar-change-convergence`**. **Needs:** `categorical-representation-convergence`.
+  Make group-module scalar extension/restriction one construction whose object and morphism actions are owned once (`STY-54`, `OWN-09`, `OWN-14`).
+  **Observed gap:** object-level `base_change` transports the action while `GroupModuleScalarExtensionFunctor` separately owns morphism transport and construction knowledge.
+  **Deliver:** select the mathematical owner (normally the scalar-change functor/construction); make the convenience object method delegate to it or vice versa, with one retained source/target ring map, group action and induced morphism law.
+  **Acceptance:** object and morphism transport are two actions of the same retained functor/construction, not parallel algorithms, and a nonidentity group-module map commutes with scalar change through that one owner.
+
+- [ ] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
+  Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism (`STY-55`, `DEV-12`, `OWN-10`).
+  **Observed gap:** five independent dictionaries encode construction identity and lifetime.
+  **Deliver:** after chosen provenance is first-class, use the appropriate shared unique-representation/cached-function/cached-method owner keyed by the defining mathematical data.  Do not cache by display strings or backend handles and do not use a cache to invent identity between different chosen presentations.
+  **Acceptance:** repeated construction with identical defining data retains the documented identity; genuinely different choices remain distinct; no audited theory keeps a parallel identity dictionary.
+
+- [ ] **`singular-kernel-delegation`**. **Needs:** `framing-primary-epi`, `assertion-frontiers`.
+  Replace `_singular_presentation_kernel`'s long Python orchestration with a maintained Singular/Sage operation behind one owned adapter crossing (`ENG-01`--`03`, `STY-57`--`59`, `OWN-08`).
+  **Observed gap:** current code manually builds matrices, lifts coefficients, invokes Singular `modulo`, reconstructs relations and recovers lifts across roughly 170 lines.
+  **Deliver:** identify the exact maintained kernel/syzygy/presentation operation that returns enough data to reconstruct the owned kernel inclusion and selected presentation.  Keep representation conversion at the adapter boundary; do not reproduce the standard algorithm in Python around lower-level Singular calls.
+  **Acceptance:** a nontrivial finitely presented module morphism obtains its kernel object, inclusion and presentation through one maintained-engine computation and raises every constituent to owned mathematics; unsupported coefficient regimes stop at the declared frontier rather than falling back to the old orchestration.
+
+- [ ] **`torsion-action-delegation`**. **Needs:** none.
+  Route torsion-form orbit/stabilizer computation through the general owned action/G-set infrastructure, with GAP private beneath that owner (`ENG-01`, `STY-40`--`42`, `BND-01`--`02`).
+  **Observed gap:** torsion-form modules contain both a hand-written orbit traversal and direct `libgap.Orbit`/`Stabilizer` calls.
+  **Deliver:** represent the relevant finite action once, expose orbit/stabilizer through the action/G-set owner, and let that owner select GAP where appropriate.  The torsion-form layer supplies the mathematical set/action and consumes owned orbit/stabilizer objects; it does not own traversal or GAP calls.
+  **Acceptance:** representative torsion-form subobject orbits/stabilizers agree with the retained action, return through the general owned action API, and the torsion-form subtree contains no independent orbit engine.
+
+- [ ] **`imperative-algorithm-cleanup`**. **Needs:** `group-module-scalar-change-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`.
+  Remove the remaining guide-catalogued imperative algorithms only after their larger duplicated owners have converged.
+  **Observed gap:** examples include bilinear nested accumulation, duplicate free-algebra target multiplication loops, divided-power coefficient loops, absolute-Galois append/filter construction, `setdefault(...).append(...)` grouping, and bespoke `frontier`/`seen` traversals in lattice/action code.
+  **Deliver:** for each audited site, identify the standard mathematical operation or mature dependency owner and replace the local algorithm with that operation.  When an explicit loop is genuinely the theory-specific algorithm, retain it and document the mathematical reason rather than rewriting it cosmetically.
+  **Acceptance:** every occurrence family named by the complaint has been adjudicated; removed sites delegate to a real owner, and retained loops are demonstrably special mathematics rather than generic grouping/traversal/multiplication infrastructure.
+
+### Public interaction and proof surfaces
+
+- [ ] **`coordinate-firewall`**. **Needs:** `framing-specialization-convergence`.
+  Close ordinary public coordinate/storage escape hatches that bypass semantic owners (`ARC-18`, `API-02`, `DEV-40`).
+  **Observed gap:** lattice elements expose `to_list`/`to_tuple`/`to_vector`, tensor elements expose raw `components()`/`list()`, and module morphisms expose matrix storage as ordinary public interaction; the canonical notebook teaches these routes.
+  **Deliver:** keep explicit coordinate views only on the selected finite framing/presentation object where coordinates are mathematically part of that chosen datum.  Ordinary element/morphism APIs route through owned operations, Homs and universal constructions; downstream research code migrates before the old hatches are removed.
+  **Acceptance:** a user cannot bypass the semantic object merely by calling an equally public raw-storage method; the retained finite-coordinate boundary names the framing/presentation that makes the coordinates meaningful and distinguishes it from unframed/infinite cases.
+
+- [ ] **`ownership-test-contract`**. **Needs:** `owner-api-convergence`.
+  Replace the compatibility behavior in `tests/conftest.py` and old-global test consumers with behavioral proof of the owner API (`DEV-06`, `DEV-37`, `DEV-43`, `STY-118`, `STY-125`).
+  **Observed gap:** the harness claims global operations are absent but uses `setdefault` injections that leave existing forbidden exports untouched; 135 old-global call sites and 51 star-importing test files mean a green suite can coexist with the violation.
+  **Deliver:** remove the compatibility injection, migrate tests to the owner spelling, add a negative public-surface assertion that fails when a forbidden owner-in-argument global is exported, and keep mathematical expectations independent of implementation helper names.
+  **Acceptance:** the old global route makes the relevant test fail, while the owner route exercises the same mathematical construction; no test harness mutation silently supplies or preserves the API being removed.
+
+- [ ] **`canonical-notebook-contract`**. **Needs:** `owner-api-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `categorical-representation-convergence`, `coordinate-firewall`.
+  Repair the canonical notebook to satisfy `NB-01`--`05`, `ARC-07`, `LEX-10`, and `DEV-40` after the public APIs it teaches have converged.
+  **Observed gap:** 30/51 code cells are unexecuted, committed failure output remains, several mathematical claims occur only in prose, section headings are implementation tours, and examples use old globals/ambiguous generator APIs/raw constructors and coordinate paths.
+  **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
+  **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
+
+- [ ] **`architecture-remediation`**. **Needs:** `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+  This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
+  **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.
+
+### Post-remediation convergence
+
+- [ ] **`refactor-audit`**. **Needs:** `terminal-session`.
+  Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the final public session.
+  The public mathematical API need not change and should not change incidentally; this pass is about internal sources of truth, ownership and maintainability that survive the mandatory architecture repairs.
+
+  **This node explodes.** Every independent refactor the audit identifies becomes its own row here with its own `Needs`, each terminating back into this node; recurse when one contains several.  A refactoring that is not a node is one nobody will do.
+
+  **Acceptance:** the audit is complete and every defensible finding exists as a node with source-backed acceptance.  This is a scheduling node, not a requirement to manufacture a code change when a pass is clean.
+
+- [ ] **`type-paydown`**. **Needs:** `refactor-audit`.
+  Pay down type errors where doing so is reasonable, and not one step further.
+  Every typing decision must improve the legibility of the code, the ability to understand what it does, and the ability to reason statically about whether it is correct.  That is the standard the change is judged against, not the error count.
+
+  Golfing the code into oblivion -- distortions that exist only to silence a checker -- is the failure mode.  Where a contortion is genuinely warranted, it must be judged as significantly serving the goal above, and the argument for it recorded explicitly in the commit message.  A type annotation nobody can read has made the code worse even when the checker is quieter.
+
+- [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`.
+  The terminal convergence node, and it loops rather than closing.
+  Before each pass reread `AGENTS.md`, `CONTRIBUTING.md`, this DAG, and the relevant audit skills under `~/ai/opencode/skills/`: `addressing-shallow-work`, `policy-index`, `anti-slop`, `fixing-slop`, `bespoke-software-policy`, `code-patterns`, `thermo-nuclear-code-quality-review`, `brooks-audit`, `brooks-debt`, `test-guidelines`, `test-writing`, `known-solution-first`, `epistemic-integrity`, `reality-grounded-debugging`, `reviewing-llm-code`, `quality-control`, and `general-cleanup`.  These are interpretive lenses, not a checklist and not permission to rewrite mathematical expectations.
+
+  Rotate whole-repository passes across categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
+  Search the dependency or upstream owner before improving a local mechanism that may not need to exist.
+
+  Repair a small, well-supported finding in the same pass and commit the behavioral regression or mathematical consumer that proves it.  If a finding spans several owners or is too large to repair coherently in one pass, hydrate this DAG with explicit child nodes and dependency edges before implementation continues.  Never create a node merely to say that an audit ran.  A full pass that finds no defensible change makes **no commit and no complaint entry**; that is positive evidence of convergence under that lens and the terminal node remains open for later passes.
+
 ## Optional research consumers
 
-These are not prerequisites for the required mathematics or terminal T.
+These are not prerequisites for the required mathematics, complaint remediation, terminal verification, or convergence audits.
 
 - [x] **`optional-display`**. **Needs:** none.
   Add further notebook/rich-display examples only for a named research question using live objects.
   Use existing polygon, Three.js, and diagram rendering owners; do not install implicit global display hooks.
-
-- [ ] **`owner-api-convergence`**. **Needs:** none.
-  Remove the public/global operation language forbidden by `ARC-12`, `API-07`, `STY-01`--`04`, and `OWN-02`. Begin with the session exports and every current consumer of those names; route each operation through the existing mathematical owner rather than retaining compatibility globals.
-  Include the test harness in this migration so tests fail if a forbidden global survives instead of silently exercising it.
-  **Acceptance:** the public session no longer exports an owner-in-argument operation merely as a free function, ordinary consumers use the owner spelling, and tests actively reject the old route.
-
-- [ ] **`framing-primary-epi`**. **Needs:** none.
-  Rebuild framed-module construction around the selected epimorphism `Free_R(S) -> M` as the defining datum required by `CON-11`, `OWN-03`, `ARC-20`, and `STY-152`. Construction establishes the source free module, indexing set, and epimorphism before exposing the framed module; accessors recover that datum rather than reconstructing it from generator metadata.
-  **Acceptance:** generic framed modules and the first concrete framed-free and presented-module consumers share the same actual framing object and no framing morphism is manufactured post hoc from a stored family/function pair.
-
-- [ ] **`framing-specialization-convergence`**. **Needs:** `framing-primary-epi`. Remove duplicated `module_generators()`/framing implementations from lattice, fractional-ideal, presented-module, framed-free, group-module, restricted-scalar, matrix-module, and number-field specializations.
-  Each specialization must inherit or contain the general framing datum under `OWN-14`/`STY-154`, introducing only its additional structure.
-  **Acceptance:** one framing authority supplies the shared generators/source/epi operations across these descendants.
-
-- [ ] **`generator-lexicon`**. **Needs:** `framing-primary-epi`. Remove implementation-role display language such as "Module-generator family", "Lattice-generator family", and analogous `IndexedFamily` leakage.
-  Public representation describes the mathematical generators/indexing set rather than the storage/type-theoretic mechanism (`LEX-01`, `LEX-04`).
-
-- [ ] **`ambiguous-generator-names`**. **Needs:** none.
-  Remove or rename public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified mathematical referent.
-  Migrate all ordinary consumers in the same unit.
-
-- [ ] **`owned-provenance-data`**. **Needs:** none.
-  Replace hidden `_preamble_*source*`, functor-preimage, coordinate-morphism, and provenance side channels with defining data owned by the construction that mathematically requires them (`CON-05`, `STY-07`, `OWN-03`--`05`). Do not move incidental attributes into another cache or wrapper; thread the actual chosen objects/maps through construction.
-
-- [ ] **`refinement-convergence`**. **Needs:** none.
-  Eliminate runtime refinement as a second ordinary construction mechanism under `ARC-13`, `STY-08`, and `OWN-02`--`03`. Preserve genuine refinement only where a later mathematical fact is actually established.
-  Ring/scheme construction and other standard inherited structure must be complete and import-order independent before public exposure.
-
-- [ ] **`assertion-frontiers`**. **Needs:** none.
-  Replace public mathematical `NotImplementedError` control flow with the declared exact computational frontier (`CAT-01`, `DEF-06`, `STY-48`, `DEV-11`). Reuse maintained computations where available; where a represented case is genuinely unsupported, assertion-gate the exact missing hypothesis without weakening the mathematical codomain.
-
-- [ ] **`placeholder-stubs`**. **Needs:** none.
-  Remove unconditional mathematical placeholder bodies such as tensor metadata `assert False` implementations and normalize genuine Sage abstract methods to the required abstract contract (`STY-48`, `STY-160`).
-
-- [ ] **`categorical-representation-convergence`**. **Needs:** none.
-  Collapse parallel representations of contravariant functors, bifunctors, adjunction unit/counit/Hom data, and other equivalent universal structure into one authoritative categorical representation (`ARC-14`, `STY-51`, `STY-54`). Derived interfaces must be derived, not independently supplied obligations.
-
-- [ ] **`group-module-scalar-change-convergence`**. **Needs:** none.
-  Make group-module scalar extension/restriction one construction whose object and morphism actions are owned once.
-  Remove parallel method/functor understanding of the same transport (`STY-54`, `OWN-09`, `OWN-14`).
-
-- [ ] **`memoization-convergence`**. **Needs:** none.
-  Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism required by `STY-55`, `DEV-12`, and `OWN-10`.
-
-- [ ] **`singular-kernel-delegation`**. **Needs:** none.
-  Replace `_singular_presentation_kernel`'s local Python orchestration with one maintained Singular/Sage operation behind the owned adapter boundary, preserving the complete returned kernel presentation and maps (`ENG-01`--`03`, `STY-57`--`59`, `OWN-08`).
-
-- [ ] **`torsion-action-delegation`**. **Needs:** none.
-  Route torsion-form orbit/stabilizer computation through the general owned action/ G-set infrastructure, with GAP private beneath that owner (`ENG-01`, `STY-40`--`42`, `BND-01`--`02`). Remove local orbit traversal and direct libGAP ownership from the torsion-form consumer.
-
-- [ ] **`imperative-algorithm-cleanup`**. **Needs:** none.
-  Replace the remaining guide-catalogued imperative folds, append/filter builders, bespoke frontier/seen traversals, and similar local algorithms with the existing mathematical owner or maintained operation where one exists.
-  Do not rewrite a loop cosmetically; each change must remove duplicated mathematical authority.
-
-- [ ] **`owned-product-codomains`**. **Needs:** none.
-  Replace public mathematical tuple/list products such as commutative-square components, naturality-square morphisms, and tensor index-module/index pairs with elements of the appropriate owned product object (`CON-15`, `SET-01`, `CAT-08`).
-
-- [ ] **`mathematical-return-types`**. **Needs:** none.
-  Replace framework-universal public return annotations (`Parent`, `Element`, `CategoryObject`, and ad hoc `Any`) with mathematical codomains under `LEX-12`--`15`. When a mathematical type is not directly expressible, introduce or reuse the single central mathematically named alias rather than framework implementation types.
-
-- [ ] **`coordinate-firewall`**. **Needs:** `framing-primary-epi`. Close ordinary public coordinate/storage escape hatches that bypass semantic owners (`ARC-18`, `API-02`, `DEV-40`). Keep coordinate views only at the narrow finite-framing boundary where they are mathematically part of the selected presentation; migrate notebook/session consumers away from storage operations.
-
-- [ ] **`canonical-notebook-contract`**. **Needs:** `owner-api-convergence`, `ambiguous-generator-names`, `coordinate-firewall`. Repair the canonical notebook to satisfy `NB-01`--`05`, `ARC-07`, `LEX-10`, and `DEV-40`: executable claims rather than prose assertions, mathematical section questions rather than implementation tours, owner-method session syntax, no committed failure output, and explicit falsifying checks for claimed behavior.
-
-- [ ] **`ownership-test-contract`**. **Needs:** `owner-api-convergence`. Replace `tests/conftest.py` compatibility injection and all old-global test calls with behavioral tests of the owner API (`DEV-06`, `DEV-37`, `DEV-43`, `STY-118`, `STY-125`). Tests must detect a forbidden global export rather than masking it with `setdefault` or continuing to exercise it through star imports.
-
-- [ ] **`refactor-audit`**. **Needs:** `terminal-session`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
-
-  Audit the whole repository for messy, disorganized or duplicated code and carry out the refactorings that consolidate sources of truth and restore proper encapsulation.
-  The public mathematical API need not change and should not change incidentally; this is about the inside.
-
-  **This node explodes.** Every refactor the audit identifies becomes its own node in this DAG, with its own `Needs` edges, and every one of them terminates back into this node.
-  Do not carry a list of intended refactorings in prose or in your head — a refactoring that is not a node is one nobody will do.
-  Recurse: a refactor that turns out to contain several independent ones explodes in turn.
-
-  **Acceptance:** the audit is complete and every finding it produced exists as a node.
-  At that point this node is done — it is a scheduling node, not a work node, and it may be marked skippable once the plan is fully exploded.
-
-- [ ] **`type-paydown`**. **Needs:** `refactor-audit`.
-
-  Pay down type errors where doing so is reasonable, and not one step further.
-  Every typing decision must improve the legibility of the code, the ability to understand what it does, and the ability to reason statically about whether it is correct.
-  That is the standard the change is judged against, not the error count.
-
-  Golfing the code into oblivion — distortions that exist only to silence a checker — is the failure mode.
-  Where a contortion is genuinely warranted, it must be judged as significantly serving the goal above, and the argument for it recorded explicitly in the commit message, not in a comment and not left implicit.
-  A type annotation nobody can read has made the code worse even when the checker is quieter.
-
-- [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`.
-
-  The terminal convergence node, and it loops rather than closing.
-  Before each pass reread `AGENTS.md`, `CONTRIBUTING.md`, this DAG, and the relevant audit skills under `~/ai/opencode/skills/`: `addressing-shallow-work`, `policy-index`, `anti-slop`, `fixing-slop`, `bespoke-software-policy`, `code-patterns`, `thermo-nuclear-code-quality-review`, `brooks-audit`, `brooks-debt`, `test-guidelines`, `test-writing`, `known-solution-first`, `epistemic-integrity`, `reality-grounded-debugging`, `reviewing-llm-code`, `quality-control`, and `general-cleanup`. These are interpretive lenses, not a checklist and not permission to rewrite mathematical expectations.
-
-  Rotate whole-repository passes across: categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
-  Search the dependency or upstream owner before improving a local mechanism that may not need to exist.
-
-  Repair a small, well-supported finding in the same pass and commit the behavioral regression or mathematical consumer that proves it.
-  If a finding spans several owners or is too large to repair coherently in one pass, hydrate this DAG with explicit child nodes and dependency edges before implementation continues.
-  Never create a node merely to say that an audit ran.
-  A full pass that finds no defensible change makes **no commit and no complaint entry**; that is positive evidence of convergence under that lens and the terminal node remains open for later passes.
 
 - [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
   Select a concrete mathematical query before provisioning an adapter.
