@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     Sets,
     abelianization_adjunction,
     free_forgetful_adjunction,
-    group_module_base_change_adjunction,
     order_number_field_adjunction,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -464,7 +463,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
     ring_map = order._ring_morphism_defining_algebra_structure()
-    adjunction = group_module_base_change_adjunction(ring_map, group)
+    adjunction = Modules(ring_map.domain()[group]).coefficient_base_change_adjunction(ring_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 

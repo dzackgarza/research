@@ -452,9 +452,6 @@ from dzack_research.preamble.categories.functors.group_scalar_change import (
 from dzack_research.preamble.categories.functors.group_scalar_change import (
     GroupModuleScalarExtensionFunctor as GroupModuleScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.functors.group_scalar_change import (
-    group_module_base_change_adjunction as group_module_base_change_adjunction,
-)
 from dzack_research.preamble.categories.functors.linear_constructions import (
     BiproductBifunctor as BiproductBifunctor,
 )

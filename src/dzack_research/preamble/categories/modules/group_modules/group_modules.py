@@ -193,6 +193,16 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``(-)_G -| Triv_G``, base change along the augmentation."""
         return self.base_change_adjunction(self._augmentation())
 
+    def coefficient_base_change_adjunction(self, ring_map):
+        r"""Return coefficient scalar change ``R[G]-Mod <-> S[G]-Mod`` along ``R -> S``."""
+        if _owned_ring(ring_map.domain()) is not self.coefficient_ring():
+            raise ValueError("the coefficient scalar map has the wrong source ring")
+        from dzack_research.preamble.categories.functors.group_scalar_change import (
+            _group_module_base_change_adjunction,
+        )
+
+        return _group_module_base_change_adjunction(ring_map, self.acting_group())
+
     # Scalar change along a ring morphism out of, or into, R[G].  Along
     # R[H] -> R[G] for a subgroup H <= G the functors are induction,
     # restriction and coinduction, realized on a transversal of G/H; along

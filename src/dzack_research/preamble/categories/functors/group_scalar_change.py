@@ -199,7 +199,7 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
 
 
 @cached_function
-def group_module_base_change_adjunction(ring_map, group) -> GroupModuleBaseChangeAdjunction:
+def _group_module_base_change_adjunction(ring_map, group) -> GroupModuleBaseChangeAdjunction:
     return GroupModuleBaseChangeAdjunction(ring_map, group)
 
 
@@ -207,5 +207,4 @@ __all__ = [
     "GroupModuleBaseChangeAdjunction",
     "GroupModuleRestrictionOfScalarsFunctor",
     "GroupModuleScalarExtensionFunctor",
-    "group_module_base_change_adjunction",
 ]

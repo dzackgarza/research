@@ -164,6 +164,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "base_change_adjunction",
         "restriction_coextension_adjunction",
         "algebra_base_change_adjunction",
+        "group_module_base_change_adjunction",
         "scheme_product",
         "scheme_fiber_product",
         "cartesian_product_of",
