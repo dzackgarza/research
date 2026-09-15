@@ -7,9 +7,6 @@ from dzack_research.preamble.all import (
     Modules,
     ProjectiveModules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
@@ -115,7 +112,7 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     source_labels = source.module_generating_set()
     kernel_images = {
         tuple(
-            module_coefficients(inclusion(generator), source).get(label, algebra.zero())
+            source.framing_coefficients(inclusion(generator)).get(label, algebra.zero())
             for label in source_labels
         )
         for generator in kernel.module_generators()

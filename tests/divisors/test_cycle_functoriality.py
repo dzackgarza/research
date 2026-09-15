@@ -1,9 +1,6 @@
 r"""Proper closed pushforward and flat open pullback of affine cycles."""
 
 from dzack_research.preamble.all import QQ, ZZ, AffineSpace
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 
 
 def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplicity() -> None:
@@ -21,7 +18,7 @@ def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplic
 
     assert pushed.parent().cycle_scheme() is plane
     assert pushed.parent().cycle_dimension() == 1
-    assert module_coefficients(pushed, pushed.parent()) == {ambient_generic: ZZ(3)}
+    assert pushed.parent().framing_coefficients(pushed) == {ambient_generic: ZZ(3)}
 
 
 def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves_the_other() -> None:
@@ -36,7 +33,7 @@ def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves
     away_from_y_axis = plane.distinguished_open(x)
 
     pulled = away_from_y_axis.flat_pullback_cycle(cycle)
-    coefficients = module_coefficients(pulled, pulled.parent())
+    coefficients = pulled.parent().framing_coefficients(pulled)
 
     assert pulled.parent().cycle_scheme() is away_from_y_axis
     assert pulled.parent().cycle_dimension() == 1

@@ -10,9 +10,6 @@ from dzack_research.preamble.categories.modules import (
     CochainComplexes,
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -44,7 +41,7 @@ def test_cap_kernel_retains_the_syzygy_inclusion_and_lift() -> None:
     assert kernel.inclusion()(lifted) == candidate
     assert int(kernel.number_of_module_generators()) == 1
 
-    coefficients = module_coefficients(lifted, kernel)
+    coefficients = kernel.framing_coefficients(lifted)
     nonzero = tuple(coefficient for coefficient in coefficients.values() if coefficient)
     assert len(nonzero) == 1
     assert nonzero[0].is_unit()
@@ -108,7 +105,7 @@ def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_mo
     inclusion = kernel.inclusion()
     generator = next(iter(kernel.module_generators()))
     image = inclusion(generator)
-    coefficient = module_coefficients(image, source).get("a", ring.zero())
+    coefficient = source.framing_coefficients(image).get("a", ring.zero())
 
     assert coefficient in (ring(2), -ring(2))
     assert kernel.scalar_multiple(x, generator) == kernel.zero()

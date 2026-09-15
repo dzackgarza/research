@@ -33,11 +33,6 @@ from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
     QuadraticFormMorphism,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
-
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_constructors_meet_their_obligations.sage",
     "live_owner": "tests/test_constructors_meet_their_obligations.py",
@@ -306,7 +301,7 @@ def _module_from_scalar_action():
     swap = endomorphisms({0: plane.module_generator(1), 1: plane.module_generator(0)})
 
     def action(scalar):
-        coefficients = module_coefficients(scalar, group_algebra)
+        coefficients = group_algebra.framing_coefficients(scalar)
         return endomorphisms.elementwise(
             lambda vector: sum(
                 (

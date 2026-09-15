@@ -14,11 +14,6 @@ from dzack_research.preamble.all import (
     Modules,
     Sets,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
-
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/group_modules/group_modules.sage",
     "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
@@ -132,7 +127,7 @@ def test_exact_additive_scalar_action_is_retained_as_the_defining_morphism() -> 
     )
 
     def scalar_image(scalar):
-        coefficients = module_coefficients(scalar, group_algebra)
+        coefficients = group_algebra.framing_coefficients(scalar)
 
         def apply(vector):
             return sum(

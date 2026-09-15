@@ -83,9 +83,6 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
 
 def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_under_addition() -> None:
     from dzack_research.preamble.all import GF
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
 
     prime = GF(2)
     presentation = prime.free_module(("x",)).symmetric_algebra()
@@ -101,9 +98,8 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     assert restricted.framing_morphism().codomain() is restricted
     assert len(labels) == 2
     total = restricted.module_generator(labels[0]) + restricted.module_generator(labels[1])
-    coefficients = module_coefficients(total, restricted)
+    coefficients = restricted.framing_coefficients(total)
 
     assert len(coefficients) == 2
     assert coefficients[labels[0]] == prime.one()
     assert coefficients[labels[1]] == prime.one()
-

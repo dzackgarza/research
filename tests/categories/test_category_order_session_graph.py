@@ -14,9 +14,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.owned_category import (
     _category_graph_signature,
@@ -59,11 +56,11 @@ def matrix_hom():
         "source_category": category_key(source),
         "target_category": category_key(target),
         "e0_image": [
-            int(module_coefficients(morphism(e0), target).get(label, ZZ.zero()))
+            int(target.framing_coefficients(morphism(e0)).get(label, ZZ.zero()))
             for label in target.module_generating_set()
         ],
         "e1_image": [
-            int(module_coefficients(morphism(e1), target).get(label, ZZ.zero()))
+            int(target.framing_coefficients(morphism(e1)).get(label, ZZ.zero()))
             for label in target.module_generating_set()
         ],
     }

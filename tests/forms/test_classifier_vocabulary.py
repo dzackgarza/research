@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.functors.free_forms import (
     TautologicalBilinearFormFunctor,
     TautologicalQuadraticFormFunctor,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -79,7 +76,7 @@ def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations()
     x = module.module_generator("x")
     y = module.module_generator("y")
     def quadratic_value(value):
-        coefficients = module_coefficients(value, module)
+        coefficients = module.framing_coefficients(value)
         x_coefficient = coefficients.get("x", ZZ.zero())
         y_coefficient = coefficients.get("y", ZZ.zero())
         return (
@@ -110,7 +107,7 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
     module = ZZ.free_module(NN)
 
     def coefficients(element):
-        return module_coefficients(element, module)
+        return module.framing_coefficients(element)
 
     bilinear = module.bilinear_forms(ZZ)(
         lambda left, right: sum(

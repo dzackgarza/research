@@ -10,11 +10,6 @@ from dzack_research.preamble.all import (
     Groups,
     Modules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
-
-
 
 def _gaussian_rationals():
     r"""``S = QQ[x]/(x^2 + 1)`` with its class ``i`` of ``x`` and its structure map ``QQ -> S``."""
@@ -36,7 +31,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
     one_label, i_label = labels[0], labels[1]
 
     def action(scalar):
-        coefficients = module_coefficients(scalar, scalars)
+        coefficients = scalars.framing_coefficients(scalar)
         constant = coefficients.get(one_label, QQ.zero())
         imaginary = coefficients.get(i_label, QQ.zero())
         return endomorphisms.elementwise(
@@ -121,7 +116,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     def swap(group_element, vector):
         if group_element == group.one():
             return vector
-        coefficients = module_coefficients(vector, plane)
+        coefficients = plane.framing_coefficients(vector)
         return coefficients.get(second, ZZ.zero()) * e0 + coefficients.get(first, ZZ.zero()) * e1
 
     swapped = Modules(group_algebra)(plane, swap)

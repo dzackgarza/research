@@ -6,9 +6,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -26,7 +23,7 @@ def _swap_group_module():
     def swap(group_element, vector):
         if group_element == group.one():
             return vector
-        coefficients = module_coefficients(vector, module)
+        coefficients = module.framing_coefficients(vector)
         return module.linear_combination(
             {
                 "e": coefficients.get("f", ZZ.zero()),
@@ -61,7 +58,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
     module = ZZ.free_module(finite_ordered_set(("e", "f")))
 
     def action(group_element, vector):
-        coefficients = module_coefficients(vector, module)
+        coefficients = module.framing_coefficients(vector)
         first_sign = -1 if group_element in (first, product) else 1
         second_sign = -1 if group_element in (second, product) else 1
         return module.linear_combination(
