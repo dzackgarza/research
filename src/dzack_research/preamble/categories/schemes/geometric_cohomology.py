@@ -132,7 +132,7 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             return source.module_category().Mor(source, target).identity()
 
 
-def AffineGeometricCohomologyComplex(sheaf, cover=None):
+def _affine_geometric_cohomology_complex(sheaf, cover=None):
     r"""Return the one-chart affine complex computing ``H^*(X,sheaf)``.
 
     The represented sheaf must be an affine module sheaf ``M~``.  The cover
@@ -167,20 +167,15 @@ def AffineGeometricCohomologyComplex(sheaf, cover=None):
     )
 
 
-def AffineGeometricCohomology(sheaf, degree):
-    r"""Return ``H^degree(X,sheaf)`` from the represented affine complex."""
-    return AffineGeometricCohomologyComplex(sheaf).cohomology(int(degree))
-
-
-def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar, *, cover=None):
+def _affine_geometric_scalar_cohomology_map(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
-    complex_ = AffineGeometricCohomologyComplex(sheaf, cover=cover)
+    complex_ = _affine_geometric_cohomology_complex(sheaf, cover=cover)
     scalar = complex_.base_ring()(scalar)
     cochain_map = scalar * CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
     return CochainComplexes(complex_.base_ring()).cohomology(int(degree))(cochain_map)
 
 
-class AffineCoverRefinementCohomologyComparison(SageObject):
+class _AffineCoverRefinementCohomologyComparison(SageObject):
     r"""The cochain/cohomology comparison induced by a represented unit-cover refinement."""
 
     def __init__(self, refinement, sheaf, degree) -> None:
@@ -189,11 +184,11 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
         self._refinement = refinement
         self._sheaf = sheaf
         self._degree = int(degree)
-        source = AffineGeometricCohomologyComplex(
+        source = _affine_geometric_cohomology_complex(
             sheaf,
             cover=refinement.coarse_cover(0),
         )
-        target = AffineGeometricCohomologyComplex(
+        target = _affine_geometric_cohomology_complex(
             sheaf,
             cover=refinement.fine_cover(),
         )
@@ -230,17 +225,6 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
 
     def cohomology_map(self):
         return self._cohomology_map
-
-
-def AffineCoverRefinementCohomologyMap(refinement, sheaf, degree):
-    r"""Return the represented refinement comparison in degree ``degree``."""
-    return AffineCoverRefinementCohomologyComparison(
-        refinement,
-        sheaf,
-        degree,
-    )
-
-
 class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral cohomology groups of a specified topological realization/theory."""
 
@@ -1264,12 +1248,7 @@ __all__ = [
     "PGL2IntegralTopology",
     "PGL2IntegralCohomology",
     "IntegralSingularCohomologyGroups",
-    "AffineGeometricCohomology",
-    "AffineGeometricCohomologyComplex",
     "AffineGeometricCohomologyComplexes",
-    "AffineGeometricScalarCohomologyMap",
-    "AffineCoverRefinementCohomologyComparison",
-    "AffineCoverRefinementCohomologyMap",
     "ToricGeometricLineBundleCohomologySpaces",
     "ToricIntegralSingularCohomologyGroups",
     "ToricFundamentalGroups",

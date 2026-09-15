@@ -408,6 +408,14 @@ class CoverRefinement(SageObject):
     def fine_cover(self):
         return self._fine_cover
 
+    def geometric_cohomology_comparison(self, sheaf, degree):
+        r"""Return this refinement's comparison on affine sheaf cohomology."""
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _AffineCoverRefinementCohomologyComparison,
+        )
+
+        return _AffineCoverRefinementCohomologyComparison(self, sheaf, degree)
+
     def index_map(self, which, fine_index):
         r"""``k |-> i(k)``: the coarse chart of cover ``which`` containing fine chart ``k``."""
         return self._index_pairs[int(fine_index)][int(which)]
@@ -442,6 +450,31 @@ class AffineModuleSheaf(SageObject):
 
     def global_sections(self):
         return self.module()
+
+    def geometric_cohomology_complex(self, cover=None):
+        r"""Return the affine Čech complex computing this sheaf's cohomology."""
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _affine_geometric_cohomology_complex,
+        )
+
+        return _affine_geometric_cohomology_complex(self, cover=cover)
+
+    def geometric_cohomology(self, degree):
+        r"""Return the represented affine cohomology in ``degree``."""
+        return self.geometric_cohomology_complex().cohomology(int(degree))
+
+    def geometric_scalar_cohomology_map(self, degree, scalar, *, cover=None):
+        r"""Return the cohomology map induced by scalar multiplication."""
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _affine_geometric_scalar_cohomology_map,
+        )
+
+        return _affine_geometric_scalar_cohomology_map(
+            self,
+            degree,
+            scalar,
+            cover=cover,
+        )
 
     def stalk(self, point):
         r"""``M~_p = M_p``, the module localized at the prime of the point."""

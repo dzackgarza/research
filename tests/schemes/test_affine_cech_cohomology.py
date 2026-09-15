@@ -3,11 +3,7 @@ r"""Non-toric coherent cohomology from affine acyclicity."""
 from dzack_research.preamble.all import QQ, Spec
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-    AffineCoverRefinementCohomologyMap,
-    AffineGeometricCohomology,
-    AffineGeometricCohomologyComplex,
     AffineGeometricCohomologyComplexes,
-    AffineGeometricScalarCohomologyMap,
 )
 
 
@@ -22,9 +18,9 @@ def _dual_number_sheaf():
 
 def test_nonreduced_affine_scheme_has_actual_geometric_cohomology_complex() -> None:
     sheaf = _dual_number_sheaf()
-    complex_ = AffineGeometricCohomologyComplex(sheaf)
-    h0 = AffineGeometricCohomology(sheaf, 0)
-    h1 = AffineGeometricCohomology(sheaf, 1)
+    complex_ = sheaf.geometric_cohomology_complex()
+    h0 = sheaf.geometric_cohomology(0)
+    h1 = sheaf.geometric_cohomology(1)
 
     assert complex_ in AffineGeometricCohomologyComplexes(sheaf.module().base_ring())
     assert complex_.geometric_sheaf() is sheaf
@@ -38,8 +34,8 @@ def test_nonreduced_affine_scheme_has_actual_geometric_cohomology_complex() -> N
 
 def test_nonidentity_scalar_map_is_induced_through_the_affine_complex() -> None:
     sheaf = _dual_number_sheaf()
-    h0 = AffineGeometricCohomology(sheaf, 0)
-    induced = AffineGeometricScalarCohomologyMap(sheaf, 0, QQ(2))
+    h0 = sheaf.geometric_cohomology(0)
+    induced = sheaf.geometric_scalar_cohomology_map(0, QQ(2))
     source = induced.domain()
     generator = source.module_generator(next(iter(source.module_generating_set())))
 
@@ -54,7 +50,7 @@ def test_unit_cover_refinement_has_an_actual_cochain_and_cohomology_comparison()
     coarse = scheme.distinguished_open_cover(one)
     repeated = scheme.distinguished_open_cover(one, one)
     refinement = coarse.common_refinement(repeated)
-    comparison = AffineCoverRefinementCohomologyMap(refinement, sheaf, 0)
+    comparison = refinement.geometric_cohomology_comparison(sheaf, 0)
 
     assert comparison.source_complex().geometric_cover() is coarse
     assert comparison.target_complex().geometric_cover() is refinement.fine_cover()
