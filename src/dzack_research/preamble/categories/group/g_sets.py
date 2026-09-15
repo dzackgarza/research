@@ -130,19 +130,19 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     def orbits_trivial_adjunction(self):
         r"""``(-)/G -| Triv_G``."""
         from dzack_research.preamble.categories.functors.g_sets import (
-            g_set_orbits_trivial_adjunction,
+            _g_set_orbits_trivial_adjunction,
         )
 
-        return g_set_orbits_trivial_adjunction(self.group())
+        return _g_set_orbits_trivial_adjunction(self.group())
 
     @cached_method
     def underlying_cofree_adjunction(self):
         r"""``U -| Map(G, -)``: the underlying set is left adjoint to the cofree ``G``-set."""
         from dzack_research.preamble.categories.functors.g_sets import (
-            underlying_cofree_g_set_adjunction,
+            _underlying_cofree_g_set_adjunction,
         )
 
-        return underlying_cofree_g_set_adjunction(self.group())
+        return _underlying_cofree_g_set_adjunction(self.group())
 
     _HomCategory = GSetHomCategoryConstruction
 
@@ -384,13 +384,10 @@ class OrbitSets(OwnedCategory):
 
     def an_object(self):
         r"""The orbits of a trivial action on three points."""
-        from dzack_research.preamble.categories.functors.g_sets import (
-            g_set_orbits_trivial_adjunction,
-        )
         from dzack_research.preamble.categories.group.groups import Groups
 
         group = Groups.S(3)
-        return g_set_orbits_trivial_adjunction(group).left_adjoint()(
+        return FiniteGSets(group).orbits_trivial_adjunction().left_adjoint()(
             FiniteGSets(group).trivial(Sets.Δ[2])
         )
 

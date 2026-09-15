@@ -1146,18 +1146,18 @@ class Sets(OwnedCategory):
         def free_underlying_adjunction(self, group: Parent) -> Adjunction:
             r"""``G x - -| U``."""
             from dzack_research.preamble.categories.functors.g_sets import (
-                free_g_set_underlying_adjunction,
+                _free_g_set_underlying_adjunction,
             )
 
-            return free_g_set_underlying_adjunction(group)
+            return _free_g_set_underlying_adjunction(group)
 
         def trivial_fixed_adjunction(self, group: Parent) -> Adjunction:
             r"""``Triv_G -| (-)^G``."""
             from dzack_research.preamble.categories.functors.g_sets import (
-                g_set_trivial_fixed_adjunction,
+                _g_set_trivial_fixed_adjunction,
             )
 
-            return g_set_trivial_fixed_adjunction(group)
+            return _g_set_trivial_fixed_adjunction(group)
 
         def __contains__(self, candidate) -> bool:
             if candidate not in Sets():

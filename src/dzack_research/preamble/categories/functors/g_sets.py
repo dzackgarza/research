@@ -342,22 +342,22 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
 
 
 @cached_function
-def g_set_orbits_trivial_adjunction(group) -> GSetOrbitsTrivialAdjunction:
+def _g_set_orbits_trivial_adjunction(group) -> GSetOrbitsTrivialAdjunction:
     return GSetOrbitsTrivialAdjunction(group)
 
 
 @cached_function
-def g_set_trivial_fixed_adjunction(group) -> GSetTrivialFixedAdjunction:
+def _g_set_trivial_fixed_adjunction(group) -> GSetTrivialFixedAdjunction:
     return GSetTrivialFixedAdjunction(group)
 
 
 @cached_function
-def free_g_set_underlying_adjunction(group) -> FreeGSetUnderlyingAdjunction:
+def _free_g_set_underlying_adjunction(group) -> FreeGSetUnderlyingAdjunction:
     return FreeGSetUnderlyingAdjunction(group)
 
 
 @cached_function
-def underlying_cofree_g_set_adjunction(group) -> UnderlyingCofreeGSetAdjunction:
+def _underlying_cofree_g_set_adjunction(group) -> UnderlyingCofreeGSetAdjunction:
     return UnderlyingCofreeGSetAdjunction(group)
 
 
@@ -372,8 +372,4 @@ __all__ = [
     "TrivialGSetFunctor",
     "UnderlyingCofreeGSetAdjunction",
     "UnderlyingFiniteGSetFunctor",
-    "free_g_set_underlying_adjunction",
-    "g_set_orbits_trivial_adjunction",
-    "g_set_trivial_fixed_adjunction",
-    "underlying_cofree_g_set_adjunction",
 ]
