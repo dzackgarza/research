@@ -122,7 +122,7 @@ NOETHERIAN_DOMAINS_NOT_DEDEKIND = {
 NON_DOMAINS = {
     "ZZ/12": lambda: Zmod(12),
     "ZZ/8": lambda: Zmod(8),
-    "QQ[e]/(e^2)": lambda: DualNumbers(QQ),
+    "QQ[e]/(e^2)": lambda: QQ.dual_numbers(),
     "QQ[x]/(x^3)": lambda: _quotient(
         _polynomial_ring(QQ, "x"), _polynomial_ring(QQ, "x").algebra_generator("x") ** 3
     ),

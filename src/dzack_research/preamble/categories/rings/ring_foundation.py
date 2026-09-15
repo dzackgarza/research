@@ -1324,6 +1324,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return _residue_field_at(self, ideal)
 
+            def dual_numbers(self, name="epsilon"):
+                r"""Return ``self[epsilon]/(epsilon^2)``."""
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _dual_numbers,
+                )
+
+                return _dual_numbers(self, name=name)
+
             def adic_completion(self, ideal, precision=20):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     AdicCompletions,

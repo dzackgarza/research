@@ -276,7 +276,7 @@ def test_power_series_over_every_commutative_ring(commutative_ring) -> None:
 
 def test_dual_numbers_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    dual = DualNumbers(ring)
+    dual = ring.dual_numbers()
     epsilon = dual.algebra_generator("epsilon")
 
     assert dual in CommutativeAlgebras(ring)

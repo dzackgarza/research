@@ -766,7 +766,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     CompleteLocalRings,
     DistinguishedOpenSubobject,
     DivisionRings,
-    DualNumbers,
     ExactRealField,
     ExactRealNumber,
     Fields,

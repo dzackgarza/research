@@ -310,7 +310,7 @@ def test_nilradical_jacobson_radical_and_reducedness(commutative_ring) -> None:
 
 
 def test_dual_numbers_are_not_reduced_and_their_radical_is_epsilon() -> None:
-    dual = DualNumbers(QQ)
+    dual = QQ.dual_numbers()
     epsilon = dual.algebra_generator("epsilon")
     assert not dual.is_reduced()
     assert dual.nilradical() == dual.ideal(epsilon)

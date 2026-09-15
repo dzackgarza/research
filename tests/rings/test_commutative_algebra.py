@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     ArtinianRings,
     CommutativeAlgebras,
     CompleteLocalRings,
-    DualNumbers,
     IntegralDomains,
     LocalRings,
     NoetherianRings,
@@ -95,7 +94,7 @@ def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
     assert residue in LocalRings()
     assert int(residue.cardinality()) == 5
 
-    dual = DualNumbers(field)
+    dual = field.dual_numbers()
     epsilon = dual.algebra_generator("epsilon")
     assert dual in LocalRings()
     assert dual in ArtinianRings()

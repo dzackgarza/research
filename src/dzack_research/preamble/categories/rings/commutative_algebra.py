@@ -3439,7 +3439,7 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
             self._preamble_residue_field = base.residue_field()
 
 
-def DualNumbers(base_ring, name="epsilon"):
+def _dual_numbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
     polynomial = refine_algebra(
@@ -3462,7 +3462,6 @@ def DualNumbers(base_ring, name="epsilon"):
 
 __all__ = [
     "AdicCompletions",
-    "DualNumbers",
     "GeneratedIdealView",
     "LocalizationRings",
     "PrimeLocalizations",

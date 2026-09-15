@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletions,
     DistinguishedOpenSubobject,
-    DualNumbers,
     FormalPowerSeriesRings,
     GeneratedIdealView,
     PowerSeriesRing,
@@ -208,7 +207,6 @@ def session_ring_objects() -> dict[str, object]:
 def ring_constructor_surface() -> dict[str, object]:
     r"""Return the constructors exported into a preamble session."""
     return {
-        "DualNumbers": DualNumbers,
         "GF": GF,
         "FiniteField": FiniteField,
         "PrimeField": PrimeField,
@@ -251,7 +249,6 @@ __all__ = [
     "CyclotomicField",
     "DistinguishedOpenSubobject",
     "DivisionRings",
-    "DualNumbers",
     "ExactRealField",
     "ExactRealNumber",
     "Fields",

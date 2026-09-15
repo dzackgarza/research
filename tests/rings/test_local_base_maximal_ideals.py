@@ -8,7 +8,6 @@ non-unit of the power-series ring, and in two variables both variables are.
 
 from dzack_research.preamble.all import (
     CommutativeIdeals,
-    DualNumbers,
     GF,
     PowerSeriesRing,
     QQ,
@@ -49,7 +48,7 @@ def test_power_series_over_a_local_base_retain_the_base_maximal_ideal() -> None:
 def test_dual_numbers_over_a_local_base_retain_the_base_maximal_ideal() -> None:
     base = Zp(3)
     (base_uniformizer,) = base.maximal_ideal().ideal_generators()
-    ring = DualNumbers(base)
+    ring = base.dual_numbers()
 
     generators = ring.maximal_ideal().ideal_generators()
 
@@ -58,7 +57,7 @@ def test_dual_numbers_over_a_local_base_retain_the_base_maximal_ideal() -> None:
 
 
 def test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone() -> None:
-    ring = DualNumbers(GF(7))
+    ring = GF(7).dual_numbers()
 
     assert ring.maximal_ideal().ideal_generators() == (ring.algebra_generator("epsilon"),)
 
