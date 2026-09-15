@@ -395,3 +395,43 @@ Need to work with zeta functions of varieties over `F_q`, and at least for (some
 * Requires: site cohomology `RΓ_c(X_{ét}, Q_ℓ)` from six-functor `R f_!` already noted, trace formula `N_r = Σ (-1)^i Tr(Frob^r | H^i_c)`, and the comparison `Z = ∏ det(1-T·Frob|H^i_c)^{(-1)^{i+1}}`. The same `R f_!` and `Q_ℓ` owners above must supply `H^i_c` and `Frob` action.
 
 Intended owners: `categories/zeta/zeta.py` (`Variety.zeta(): Q(T)` via `N_r`), `categories/varieties/point_counts.py` (`X.point_count(r): NN` exact for `A^n`, `P^n`, `Gr(k,n)`, some curves), `categories/etale/weil.py` (`WeilVerification` with `rationality`, `functional_equation`, `rh_roots`, `betti` checks). Not a free `zeta_via_brute_force(X,q)` — `X.zeta()` on the variety object in `Sch/F_q` with `Q_ℓ`-cohomology behind the same site, and `Z.verify_weil()` returning certificates for the concrete families.
+
+## Fundamental objects to even state Weil conjectures — verbatim — 2026-09-15
+
+To state `W(X/F_q)` you need these as categories/functors — not `q=5`, `X=P^2`:
+
+**Base**
+* `FinFields` — object `F_q : Fields` with `q=p^a : NN`, `Fr_q: Spec \bar F_q → Spec \bar F_q` Frobenius morphism `x↦x^q`; `Gal(\bar F_q/F_q)= \hat Z·Fr_q : Groups`
+* `Sch/F_q : Cat` — variety `X : Sch/F_q` finite type, `dim X = n : NN` (element), base-change `X_{\bar F_q}=X×_{F_q}\bar F_q : Sch/\bar F_q`; `|X(F_{q^r})| = Hom_{Sch/F_q}(Spec F_{q^r}, X) : Sets` has `cardinality : NN`
+
+**Counting / zeta (no cohomology yet)**
+* Formal series `Q[[T]] = (T)-adic completion of `Q[T]`; subobject `1+T·Q[[T]]` and `Q(T)=Frac Q[T] : Fields`
+* Euler product as identity in `Q[[T]]`: for `|X|` closed points, `deg x = [κ(x):F_q]`
+  ```
+  Z(X,T)=exp( Σ_{r≥1} N_r T^r/r ) = ∏_{x∈|X|} (1-T^{deg x})^{-1} : Q[[T]]
+  ```
+  where `N_r = |X(F_{q^r})|`. This is definition of `Z`, element `Z : Q[[T]]`. Rationality `Z ∈ Q(T)` is first Weil statement.
+
+**Cohomology (to state factorisation)**
+* Site `X_ét : Sites` and `ℓ≠p`, `Q_ℓ : Fields` as before; `Sh(X_ét,Q_ℓ) : AbCat` and derived `RΓ_c = R(p_!) : D(Sh) → D(Vect_{Q_ℓ})` for `p: X→Spec F_q` (proper-support pushforward from six functors). Object `H^i_{c,ét}(X_{\bar F_q}, Q_ℓ) = H^i(RΓ_c(Q_ℓ)) : Vect_{Q_ℓ}` finite-dimensional, with continuous `Gal(\bar F_q/F_q)`-action; `Fr_q` acts as `Frob : H^i_c → H^i_c`
+* Grothendieck-Lefschetz trace formula (must exist to link counting to cohomology):
+  ```
+  N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^i_{c} )
+  ```
+  Without `R f_!` and `Tr` this is not statable.
+
+**Factorisation and statements**
+* From trace, `Z` factors as
+  ```
+  Z(X,T)= ∏_{i=0}^{2n} P_i(T)^{(-1)^{i+1}},  P_i(T)=det(1-T·Fr_q | H^i_c) ∈ Z[T] : Poly(Z)
+  ```
+  Need `Poly(Z) → Q(T)` and `deg P_i = b_i = dim H^i_c : NN` (fourth Weil/Betti). This is rationality refinement.
+* Functional equation needs Poincaré duality for `H^i_c` (`f^! Q_ℓ ≅ Q_ℓ(n)[2n]`) and `f_! ⊣ f^!` :
+  ```
+  Z(X, 1/(q^n T)) = ± q^{nχ/2} T^{χ} Z(X,T),  χ=Σ(-1)^i b_i : ZZ
+  ```
+  as identity in `Q(T)` (needs `⊗` and dualizing complex).
+* Riemann hypothesis needs algebraic numbers and weights: `P_i(T)=∏_j (1-α_{ij} T)`, `α_{ij} : \bar Q ⊂ C` via chosen `\bar Q↪C`, condition `|α_{ij}| = q^{i/2}` for all embeddings `|·|: \bar Q→C` (Weil numbers of weight `i`). Needs `Fields`, `AlgClosure`, `Abs: C→R_{≥0}`, and `Weight` as `NN` element. No numerics — `|α|=q^{i/2}` is equality in `R`.
+
+**Not fundamental**
+* `q=7`, `X=A^n,P^n,Gr(k,n)`, `N_r = q^{nr}` or `q`-binomial, explicit `P_i = 1-q^j T` — elements `:NN` and morphisms `Spec F_{q^r}→X` whose counts give closed `Z = 1/(1-q^n T)` etc.; the functor `X ↦ Z(X)` and its factorisation are.
