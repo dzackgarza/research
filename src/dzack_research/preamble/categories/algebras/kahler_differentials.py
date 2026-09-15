@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 )
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
-    Derivations,
     _commutative_presentation_data,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -182,7 +181,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 if algebra in LocalizationRings()
                 else algebra
             )
-            return Derivations(algebra, self)(
+            return algebra.derivations(self)(
                 {
                     label: self.differential_generator(label)
                     for label in generator_algebra.algebra_generating_set()
@@ -241,7 +240,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"
                 )
-            derivations = Derivations(algebra, target_module)
+            derivations = algebra.derivations(target_module)
             if derivations not in ModulesWithChosenFinitePresentation(algebra):
                 raise TypeError(
                     "the represented Kähler classifier must construct Der_R(A,M) "

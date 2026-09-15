@@ -326,12 +326,12 @@ def _derivation_algebra():
 
 def _derivation_space():
     algebra = _derivation_algebra()
-    return VectorFields(algebra)
+    return algebra.vector_fields()
 
 
 def _graded_derivation_space():
     de_rham = _derivation_algebra().de_rham_algebra()
-    return GradedDerivations(de_rham, shift=-1)
+    return de_rham.graded_derivations(shift=-1)
 
 
 def _connection_space():

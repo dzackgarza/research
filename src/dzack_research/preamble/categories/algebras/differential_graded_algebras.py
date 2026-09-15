@@ -7,10 +7,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.algebras.derivations import (
-    GradedDerivation,
-    GradedDerivations,
-)
+from dzack_research.preamble.categories.algebras.derivations import GradedDerivation
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     GradedCommutativeAlgebras,
@@ -210,7 +207,7 @@ class Differential(GradedDerivation):
     def __init__(self, algebra, function) -> None:
         GradedDerivation.__init__(
             self,
-            GradedDerivations(algebra, algebra, shift=1),
+            algebra.graded_derivations(algebra, shift=1),
             function,
         )
         for label in algebra.algebra_generating_set():

@@ -9,19 +9,11 @@ de Rham DGA.
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
-    Derivations,
     GradedDerivation,
-    GradedDerivations,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-
-
-def VectorFields(algebra):
-    r"""Return ``Der_R(A,A)`` as the existing derivation module."""
-
-    return Derivations(algebra, algebra.regular_module())
 
 
 def _vector_field_scalar(vector_field, element):
@@ -42,7 +34,7 @@ def LieBracket(left, right):
     if left.parent() is not right.parent():
         raise ValueError("the Lie bracket requires vector fields on one algebra")
     algebra = left.domain()
-    vector_fields = VectorFields(algebra)
+    vector_fields = algebra.vector_fields()
     if left.parent() is not vector_fields:
         raise TypeError("the derivations must take values in A itself")
     return vector_fields(
@@ -74,10 +66,9 @@ def GradedCommutator(left, right):
         second = right(left(element))
         return result + second if parity else result - second
 
-    return GradedDerivations(
+    return algebra.graded_derivations(
         algebra,
-        algebra,
-        left.degree_shift() + right.degree_shift(),
+        shift=left.degree_shift() + right.degree_shift(),
     )(commutator)
 
 
@@ -102,7 +93,7 @@ def InteriorProduct(vector_field):
     if not isinstance(vector_field, Derivation):
         raise TypeError("contraction requires a represented vector field")
     algebra = vector_field.domain()
-    if vector_field.parent() is not VectorFields(algebra):
+    if vector_field.parent() is not algebra.vector_fields():
         raise TypeError("contraction requires a derivation with values in A")
 
 
@@ -149,7 +140,7 @@ def InteriorProduct(vector_field):
     def contraction(element):
         return de_rham.from_realization(contract_extension(de_rham.realize(element)))
 
-    return GradedDerivations(de_rham, de_rham, -1)(contraction)
+    return de_rham.graded_derivations(de_rham, shift=-1)(contraction)
 
 
 def LieDerivative(vector_field):
@@ -163,5 +154,4 @@ __all__ = [
     "InteriorProduct",
     "LieBracket",
     "LieDerivative",
-    "VectorFields",
 ]

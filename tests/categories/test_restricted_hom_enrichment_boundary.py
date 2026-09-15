@@ -1,6 +1,6 @@
 r"""A restricted Hom parent keeps both its arrow predicate and extra enrichment."""
 
-from dzack_research.preamble.all import QQ, BasedFreeModule, Derivations, PolynomialRing
+from dzack_research.preamble.all import QQ, BasedFreeModule, PolynomialRing
 from dzack_research.preamble.categories.modules import Modules
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 def test_derivation_space_is_an_enriched_restricted_hom_parent() -> None:
     algebra = PolynomialRing(QQ, "x")
     target = BasedFreeModule(algebra, finite_ordered_set(("e",)))
-    derivations = Derivations(algebra, target)
+    derivations = algebra.derivations(target)
     x = algebra.algebra_generator("x")
     e = target.module_generator("e")
     derivation = derivations({"x": e})

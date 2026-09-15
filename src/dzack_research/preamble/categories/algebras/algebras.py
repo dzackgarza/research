@@ -673,6 +673,20 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             return _restrict_algebra_scalars(self, ring_map)
 
+        def derivations(self, target_module=None):
+            r"""Return ``Der_R(self, M)`` for the selected ``self``-module ``M``."""
+            from dzack_research.preamble.categories.algebras.derivations import (
+                _derivations,
+            )
+
+            if target_module is None:
+                target_module = self.regular_module()
+            return _derivations(self, target_module)
+
+        def vector_fields(self):
+            r"""Return ``Der_R(self,self)`` with values in the regular module."""
+            return self.derivations(self.regular_module())
+
         def is_algebra(self) -> bool:
             return True
 

@@ -58,7 +58,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
 
     # Vector fields, brackets, interior products, Lie derivatives, Cartan's formula.
     values = algebra.regular_module()
-    vector_fields = VectorFields(algebra)
+    vector_fields = algebra.vector_fields()
     rendered(vector_fields)
 
     def field_of(**components):
@@ -74,7 +74,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     assert LieBracket(d_dx, d_dy)(x * y) == algebra.zero()
     assert LieBracket(d_dx, euler)(x) == algebra.one()
     assert LieBracket(rotation, euler)(x) == algebra.zero()
-    assert Derivations(algebra, values).module_rank() == dimension
+    assert algebra.derivations(values).module_rank() == dimension
     assert InteriorProduct(d_dx)(dx) == de_rham.one()
     assert InteriorProduct(rotation)(dx) == de_rham(-y)
     assert InteriorProduct(euler)(dx * dy) == de_rham(x) * dy - de_rham(y) * dx

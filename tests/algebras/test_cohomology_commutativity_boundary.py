@@ -138,7 +138,6 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
 def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> None:
     from dzack_research.preamble.categories.algebras.derivations import (
         GradedDerivation,
-        GradedDerivations,
     )
 
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
@@ -150,7 +149,7 @@ def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> N
             return algebra.zero()
         return algebra(ZZ(algebra.homogeneous_degree(element))) * element
 
-    derivation = GradedDerivation(GradedDerivations(algebra, algebra, shift=0), euler)
+    derivation = GradedDerivation(algebra.graded_derivations(algebra, shift=0), euler)
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
 

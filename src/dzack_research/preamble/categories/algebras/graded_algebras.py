@@ -228,6 +228,14 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             return _restrict_graded_algebra_scalars(self, ring_map)
 
+        def graded_derivations(self, target=None, shift=0):
+            r"""Return degree-``shift`` graded derivations into ``target``."""
+            from dzack_research.preamble.categories.algebras.derivations import (
+                _graded_derivations,
+            )
+
+            return _graded_derivations(self, target=target, shift=shift)
+
         def homogeneous_degree(self, element):
             r"""Return the selected degree of one nonzero homogeneous element."""
             element = self(element)

@@ -128,7 +128,7 @@ def test_curvature_of_a_connection_on_the_plane(field) -> None:
 def _plane_calculus(field):
     plane = PolynomialRing(field, ("x", "y"))
     values = plane.regular_module()
-    fields_ = VectorFields(plane)
+    fields_ = plane.vector_fields()
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
 
@@ -154,8 +154,8 @@ def test_vector_fields_and_lie_brackets(field) -> None:
     euler = LieBracket(y_d_dx, x_d_dy)
     assert euler(x) == -x
     assert euler(y) == y
-    assert Derivations(plane, plane.regular_module()).module_rank() == 2
-    assert d_dx in Derivations(plane, plane.regular_module())
+    assert plane.derivations(plane.regular_module()).module_rank() == 2
+    assert d_dx in plane.derivations(plane.regular_module())
 
 
 def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None:

@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras import (
     LieBracket,
     LieDerivative,
     SymmetricAlgebraOn,
-    VectorFields,
 )
 from dzack_research.preamble.categories.modules import Modules
 from dzack_research.static_types import (
@@ -31,7 +30,7 @@ def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> No
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()
-    vector_fields = VectorFields(algebra)
+    vector_fields = algebra.vector_fields()
 
     d_dx = vector_fields(
         {
@@ -65,7 +64,7 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()
-    vector = VectorFields(algebra)(
+    vector = algebra.vector_fields()(
         {
             "x": _scalar_module_element(values, algebra.one()),
             "y": values.zero(),
@@ -109,7 +108,7 @@ def test_cartan_commutator_identities_hold_on_the_de_rham_algebra() -> None:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     values = algebra.regular_module()
-    vector_fields = VectorFields(algebra)
+    vector_fields = algebra.vector_fields()
     Xfield = vector_fields(
         {
             "x": _scalar_module_element(values, algebra.one()),

@@ -1,6 +1,6 @@
 r"""Derivations of represented commutative algebras.
 
-For an ``R``-algebra ``A`` and an ``A``-module ``M``, ``Derivations(A, M)``
+For an ``R``-algebra ``A`` and an ``A``-module ``M``, ``A.derivations(M)``
 is the ``A``-module of ``R``-derivations ``A -> M``.  On the live finite
 polynomial-presentation backend a derivation is specified on the chosen
 algebra generators and evaluated by the formal chain rule on a selected
@@ -330,7 +330,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 domain_or_target,
                 codomain,
             )
-        return Derivations(family_or_algebra, domain_or_target)
+        return family_or_algebra.derivations(domain_or_target)
 
     def __init__(self, family, algebra, restricted_target) -> None:
         target_module = restricted_target.module_over_extension()
@@ -514,7 +514,7 @@ class DerivationCategoryConstruction(RestrictedHomCategoryOf):
 
 
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
-def Derivations(algebra, target_module) -> DerivationSpace:
+def _derivations(algebra, target_module) -> DerivationSpace:
     if target_module.base_ring() is not algebra:
         raise TypeError("an R-derivation A -> M requires M to be an A-module")
     base = algebra.base_ring()
@@ -650,10 +650,9 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
                 domain_or_target,
                 codomain_or_shift,
             )
-        return GradedDerivations(
-            family_or_algebra,
+        return family_or_algebra.graded_derivations(
             domain_or_target,
-            codomain_or_shift,
+            shift=codomain_or_shift,
         )
 
     def __init__(self, family, algebra, target) -> None:
@@ -763,7 +762,7 @@ class GradedDerivationCategoryConstruction(RestrictedHomCategoryOf):
 
 
 @cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))
-def GradedDerivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
+def _graded_derivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
     if algebra.base_ring() is not target.base_ring():
@@ -778,8 +777,6 @@ def GradedDerivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
 __all__ = [
     "Derivation",
     "DerivationSpace",
-    "Derivations",
     "GradedDerivation",
     "GradedDerivationSpace",
-    "GradedDerivations",
 ]

@@ -2,7 +2,6 @@ from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
     AlternatingAlgebraOf,
     DeRhamAlgebra,
-    Derivations,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
     KahlerDifferentials,
@@ -52,7 +51,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     assert universal(xbar * ybar) == omega.zero()
 
     values = algebra.regular_module()
-    derivation = Derivations(algebra, values)(
+    derivation = algebra.derivations(values)(
         {
             "x": values.scalar_multiple(xbar, values.module_generator(0)),
             "y": values.scalar_multiple(-ybar, values.module_generator(0)),
