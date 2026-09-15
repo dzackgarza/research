@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 CYCLIC_COVER_VARIABLE = "z"
 
 
-def cyclic_cover_presentation(
+def _cyclic_cover_presentation(
     algebra: Parent,
     branch_coefficient: Element,
     degree: Integer,
@@ -198,8 +198,8 @@ class CyclicCoverAlgebra(SageObject):
         return self._local_branch_coefficients[self.chart_index_set()(index)]
 
     def _build_local_algebra(self, index: Integer) -> Parent:
-        return cyclic_cover_presentation(
-            self._chart_scheme(index).coordinate_algebra(),
+        algebra = self._chart_scheme(index).coordinate_algebra()
+        return algebra.cyclic_cover_presentation(
             self.local_branch_coefficient(index),
             self.degree(),
         )
@@ -413,5 +413,4 @@ class CyclicCoverAlgebra(SageObject):
 __all__ = [
     "CYCLIC_COVER_VARIABLE",
     "CyclicCoverAlgebra",
-    "cyclic_cover_presentation",
 ]

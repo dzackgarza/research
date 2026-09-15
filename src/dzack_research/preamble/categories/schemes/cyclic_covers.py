@@ -10,7 +10,8 @@ Ven, *Compact Complex Surfaces*, I.17).
 
 That algebra is owned by ``CyclicCoverAlgebra``, which builds it for any
 invertible sheaf represented by rank-one descent on an affine cover: on each
-chart it is the trivialized algebra ``cyclic_cover_presentation`` returns, and
+chart it is the trivialized algebra returned by
+``R.cyclic_cover_presentation(f, n)``, and
 the charts are glued by the transition units of ``L``.  One construction
 therefore supplies the multiplication, the underlying finite module on
 ``1, z, ..., z^{n-1}``, the local equation ``z^n - f`` and every scalar change
@@ -57,7 +58,6 @@ from dzack_research.preamble.categories.algebras.algebras import CommutativeAlge
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
     CyclicCoverAlgebra,
-    cyclic_cover_presentation,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -674,7 +674,7 @@ class CyclicCovers(OwnedCategory):
         section = algebra(branch_section)
         degree = self.cover_degree()
 
-        cover_algebra = cyclic_cover_presentation(algebra, section, degree)
+        cover_algebra = algebra.cyclic_cover_presentation(section, degree)
         cover = Spec(cover_algebra)
         image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
         group_scheme = self.deck_group_scheme()

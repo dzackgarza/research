@@ -1499,6 +1499,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return FormalSpectrum(self, ideal_of_definition)
 
+        def cyclic_cover_presentation(self, branch_coefficient, degree):
+            r"""Return ``self[z]/(z^degree - branch_coefficient)``."""
+            from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
+                _cyclic_cover_presentation,
+            )
+
+            return _cyclic_cover_presentation(self, branch_coefficient, degree)
+
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 
