@@ -60,7 +60,7 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
 
 
 def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
-    from dzack_research.preamble.all import ZZ, Sets, cardinality_functor
+    from dzack_research.preamble.all import ZZ, Sets
 
     source = Sets.Δ[2]
     target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
@@ -74,7 +74,7 @@ def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
     )
     core = Sets().Core()
     isomorphism = core.Mor(source, target)(forward, backward)
-    cardinality = cardinality_functor()
+    cardinality = Sets().cardinality_functor()
 
     assert cardinality(source) == cardinal(3)
     assert cardinality(target) == cardinal(3)

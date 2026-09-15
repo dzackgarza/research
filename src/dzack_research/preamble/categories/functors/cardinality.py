@@ -91,8 +91,8 @@ class CardinalityFunctor(Functor):
 
 
 @cached_function
-def cardinality_functor() -> CardinalityFunctor:
+def _cardinality_functor() -> CardinalityFunctor:
     return CardinalityFunctor()
 
 
-__all__ = ["CardinalityFunctor", "cardinality_functor"]
+__all__ = ["CardinalityFunctor"]

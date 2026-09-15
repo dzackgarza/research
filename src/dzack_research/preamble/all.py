@@ -287,9 +287,6 @@ from dzack_research.preamble.categories.functors.algebra_scalar_change import (
 from dzack_research.preamble.categories.functors.cardinality import (
     CardinalityFunctor as CardinalityFunctor,
 )
-from dzack_research.preamble.categories.functors.cardinality import (
-    cardinality_functor as cardinality_functor,
-)
 from dzack_research.preamble.categories.functors.cochain_complexes import (
     CochainUnderlyingGradedModuleFunctor as CochainUnderlyingGradedModuleFunctor,
 )
@@ -505,18 +502,6 @@ from dzack_research.preamble.categories.functors.set_constructions import (
 )
 from dzack_research.preamble.categories.functors.set_constructions import (
     InverseImagePowerSetFunctor as InverseImagePowerSetFunctor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    exponential_functor as exponential_functor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    finite_power_set_functor as finite_power_set_functor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    fixed_cardinality_subset_functor as fixed_cardinality_subset_functor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    inverse_image_power_set_functor as inverse_image_power_set_functor,
 )
 from dzack_research.preamble.categories.functors.subobject_images import (
     DirectImageSubobjectFunctor as DirectImageSubobjectFunctor,

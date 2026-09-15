@@ -131,22 +131,17 @@ def test_set_collection_notation_routes_through_owning_categories() -> None:
 
 
 def test_power_set_functors_transport_a_nonidentity_injection_both_ways() -> None:
-    from dzack_research.preamble.categories.functors.set_constructions import (
-        finite_power_set_functor,
-        inverse_image_power_set_functor,
-    )
-
     source = Sets.Δ[1]
     target = Sets.Δ[2]
     injection = Sets().Mor(source, target)(
         lambda point: target(0) if point == source(0) else target(2)
     )
 
-    direct = finite_power_set_functor()(injection)
+    direct = Sets().power_set_functor()(injection)
     selected = source.finite_subsets()({source(0), source(1)})
     assert direct(selected) == target.finite_subsets()({target(0), target(2)})
 
-    inverse_functor = inverse_image_power_set_functor()
+    inverse_functor = Sets().inverse_image_power_set_functor()
     opposite = inverse_functor.opposite_morphism(injection)
     inverse = inverse_functor(opposite)
     assert inverse(target.power_set()({target(2)})) == source.power_set()({source(1)})

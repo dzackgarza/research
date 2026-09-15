@@ -122,22 +122,22 @@ class FixedCardinalitySubsetFunctor(Functor):
 
 
 @cached_function
-def exponential_functor() -> ExponentialFunctor:
+def _exponential_functor() -> ExponentialFunctor:
     return ExponentialFunctor()
 
 
 @cached_function
-def inverse_image_power_set_functor() -> InverseImagePowerSetFunctor:
+def _inverse_image_power_set_functor() -> InverseImagePowerSetFunctor:
     return InverseImagePowerSetFunctor()
 
 
 @cached_function
-def finite_power_set_functor() -> FinitePowerSetFunctor:
+def _finite_power_set_functor() -> FinitePowerSetFunctor:
     return FinitePowerSetFunctor()
 
 
 @cached_function
-def fixed_cardinality_subset_functor(subset_cardinality) -> FixedCardinalitySubsetFunctor:
+def _fixed_cardinality_subset_functor(subset_cardinality) -> FixedCardinalitySubsetFunctor:
     return FixedCardinalitySubsetFunctor(subset_cardinality)
 
 
@@ -146,8 +146,4 @@ __all__ = [
     "FinitePowerSetFunctor",
     "FixedCardinalitySubsetFunctor",
     "InverseImagePowerSetFunctor",
-    "exponential_functor",
-    "finite_power_set_functor",
-    "fixed_cardinality_subset_functor",
-    "inverse_image_power_set_functor",
 ]

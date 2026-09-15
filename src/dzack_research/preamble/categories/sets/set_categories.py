@@ -981,10 +981,10 @@ class Sets(OwnedCategory):
             whose core that is, and ``domain()`` reports ``core(Set)``.
             """
             from dzack_research.preamble.categories.functors.cardinality import (
-                cardinality_functor,
+                _cardinality_functor,
             )
 
-            return cardinality_functor()
+            return _cardinality_functor()
 
         def power_set_functor(self) -> Functor:
             r"""``P_fin : Set -> Set``, the finite subsets under direct image.
@@ -998,10 +998,34 @@ class Sets(OwnedCategory):
             on the opposite category.
             """
             from dzack_research.preamble.categories.functors.set_constructions import (
-                finite_power_set_functor,
+                _finite_power_set_functor,
             )
 
-            return finite_power_set_functor()
+            return _finite_power_set_functor()
+
+        def inverse_image_power_set_functor(self) -> Functor:
+            r"""Return the contravariant power-set functor under inverse image."""
+            from dzack_research.preamble.categories.functors.set_constructions import (
+                _inverse_image_power_set_functor,
+            )
+
+            return _inverse_image_power_set_functor()
+
+        def exponential_functor(self) -> Functor:
+            r"""Return the Set exponential bifunctor ``(X,Y) |-> Y^X``."""
+            from dzack_research.preamble.categories.functors.set_constructions import (
+                _exponential_functor,
+            )
+
+            return _exponential_functor()
+
+        def fixed_cardinality_subset_functor(self, subset_cardinality) -> Functor:
+            r"""Return the functor of subsets of cardinality ``subset_cardinality``."""
+            from dzack_research.preamble.categories.functors.set_constructions import (
+                _fixed_cardinality_subset_functor,
+            )
+
+            return _fixed_cardinality_subset_functor(subset_cardinality)
 
     def identity(self, set_object: Parent) -> OwnedSetMorphism:
         return self.Mor(set_object, set_object).identity()
