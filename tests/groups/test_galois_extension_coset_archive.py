@@ -2,9 +2,6 @@ from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, Quadrat
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-    exact_embeddings,
-)
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     extensions_along,
 )
@@ -20,12 +17,12 @@ def test_extensions_of_gaussian_conjugation_form_the_expected_finite_coset() -> 
 
     embedding = next(
         candidate
-        for candidate in exact_embeddings(gaussian, cyclotomic)
+        for candidate in gaussian.exact_embeddings(cyclotomic)
         if candidate(gaussian_generator) == zeta**3
     )
     conjugation = next(
         automorphism
-        for automorphism in exact_embeddings(gaussian, gaussian)
+        for automorphism in gaussian.exact_embeddings(gaussian)
         if automorphism(gaussian_generator) == -gaussian_generator
     )
 

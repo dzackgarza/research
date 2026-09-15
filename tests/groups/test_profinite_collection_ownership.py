@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     NumberField,
     PolynomialRing,
     QuadraticField,
-    exact_embeddings,
 )
 
 
@@ -12,7 +11,7 @@ def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:
     x = PolynomialRing(QQ, "x").algebra_generator("x")
     quadratic = QuadraticField(2, "s")
     quartic = NumberField(x**4 - 2, "t")
-    embeddings = exact_embeddings(quadratic, quartic)
+    embeddings = quadratic.exact_embeddings(quartic)
 
     assert embeddings.cardinality() == 2
     assert embeddings[0].domain() is quadratic

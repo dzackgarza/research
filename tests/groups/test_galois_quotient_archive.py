@@ -4,9 +4,6 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-    exact_embeddings,
-)
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     extensions_along,
     restrict_along,
@@ -54,7 +51,7 @@ def test_restrict_along_and_extensions_along_solve_the_same_commuting_square() -
     smaller_generator = degree_two.field().field_generators()[0]
     compatible = tuple(
         embedding
-        for embedding in exact_embeddings(degree_two.field(), degree_four.field())
+        for embedding in degree_two.field().exact_embeddings(degree_four.field())
         if degree_four.embedding()(embedding(smaller_generator))
         == degree_two.embedding()(smaller_generator)
     )
@@ -89,7 +86,6 @@ def test_lift_fiber_is_a_coset_of_the_restriction_kernel() -> None:
 
 def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmetic() -> None:
     from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
-    from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
 
     polynomial_ring = PolynomialRing(QQ, "x")
     x = polynomial_ring.algebra_generator("x")
@@ -100,12 +96,12 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
 
     gaussian_embedding = next(
         embedding
-        for embedding in exact_embeddings(gaussian, cyclotomic)
+        for embedding in gaussian.exact_embeddings(cyclotomic)
         if embedding(gaussian.primitive_element()) == zeta**3
     )
     real_embedding = next(
         embedding
-        for embedding in exact_embeddings(real_quadratic, cyclotomic)
+        for embedding in real_quadratic.exact_embeddings(cyclotomic)
         if embedding(real_quadratic.primitive_element()) == zeta + zeta**-1
     )
 
@@ -141,7 +137,6 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
 
 def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift() -> None:
     from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
-    from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
 
     polynomial_ring = PolynomialRing(QQ, "x")
     x = polynomial_ring.algebra_generator("x")
@@ -150,7 +145,7 @@ def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift(
     gaussian = QuadraticField(-1, "i")
     embedding = next(
         candidate
-        for candidate in exact_embeddings(gaussian, cyclotomic)
+        for candidate in gaussian.exact_embeddings(cyclotomic)
         if candidate(gaussian.primitive_element()) == zeta**3
     )
     group = AbsoluteGaloisGroup(QQ)

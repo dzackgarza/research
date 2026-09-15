@@ -14,7 +14,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
-    exact_embeddings,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -92,7 +91,7 @@ class FiniteGaloisExtension(SageObject):
         self._closure_embedding = closure_embedding
         compatible_embeddings = [
             candidate
-            for candidate in exact_embeddings(self._field, self._closure)
+            for candidate in self._field.exact_embeddings(self._closure)
             if all(
                 candidate(self._base_embedding(generator))
                 == self._closure_embedding(self._base_embedding(generator))
@@ -127,7 +126,7 @@ class FiniteGaloisExtension(SageObject):
         if self._automorphisms is None:
             automorphisms = []
             base_generators = self.base_field().field_generators()
-            for candidate in exact_embeddings(self.field(), self.field()):
+            for candidate in self.field().exact_embeddings(self.field()):
                 if all(
                     candidate(self.base_embedding()(generator))
                     == self.base_embedding()(generator)
@@ -368,7 +367,7 @@ class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
         self._automorphisms = finite_ordered_set(
             tuple(
                 candidate
-                for candidate in exact_embeddings(extension.field(), extension.field())
+                for candidate in extension.field().exact_embeddings(extension.field())
                 if all(
                     candidate(extension.base_embedding()(generator))
                     == extension.base_embedding()(generator)
@@ -501,7 +500,7 @@ def restrict_along(
     automorphism: ExactFieldMorphism, embedding: ExactFieldMorphism
 ) -> ExactFieldMorphism:
     r"""Solve (j\tau=\sigma j) for the exact restriction ``tau``."""
-    candidates = exact_embeddings(embedding.domain(), embedding.domain())
+    candidates = embedding.domain().exact_embeddings(embedding.domain())
     generators = embedding.domain().field_generators()
     restrictions = [
         candidate

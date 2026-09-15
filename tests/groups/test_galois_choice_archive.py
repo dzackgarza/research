@@ -11,9 +11,6 @@ from dzack_research.preamble.all import QQ, QuadraticField
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-    exact_embeddings,
-)
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
 )
@@ -31,7 +28,7 @@ ARCHIVE_RECONCILIATION = {
 def test_selected_extension_embedding_is_literal_construction_data() -> None:
     group = AbsoluteGaloisGroup(QQ)
     field = QuadraticField(5, "a")
-    candidates = tuple(exact_embeddings(field, group.algebraic_closure()))
+    candidates = tuple(field.exact_embeddings(group.algebraic_closure()))
 
     assert len(candidates) >= 2
     selected = candidates[-1]

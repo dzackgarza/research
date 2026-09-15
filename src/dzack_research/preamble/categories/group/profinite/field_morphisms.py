@@ -194,7 +194,7 @@ def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMo
     return exact_field_homset(domain, codomain)(backend)
 
 
-def exact_embeddings(domain, codomain):
+def _exact_embeddings(domain, codomain):
     r"""Return all exact embeddings of ``domain`` into ``codomain``."""
     domain = _own_ring(domain)
     codomain = _own_ring(codomain)
@@ -214,18 +214,8 @@ def exact_embeddings(domain, codomain):
     )
 
 
-def first_exact_embedding(domain, codomain) -> ExactFieldMorphism:
-    r"""Choose the first exact Sage embedding in its deterministic ordering."""
-    embeddings = exact_embeddings(domain, codomain)
-    if embeddings.cardinality() == 0:
-        raise ValueError(f"no exact embedding of {domain} into {codomain} is available")
-    return embeddings[0]
-
-
 __all__ = [
     "ExactFieldHomset",
     "ExactFieldMorphism",
-    "exact_embeddings",
     "exact_field_homset",
-    "first_exact_embedding",
 ]

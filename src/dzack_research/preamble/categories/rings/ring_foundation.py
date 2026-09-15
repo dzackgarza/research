@@ -1850,6 +1850,21 @@ class OwnedFields(OwnedCategory):
 
             return _field_generators(self)
 
+        def exact_embeddings(self, codomain):
+            r"""Return the exact embeddings of this field into ``codomain``."""
+            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                _exact_embeddings,
+            )
+
+            return _exact_embeddings(self, codomain)
+
+        def first_exact_embedding(self, codomain):
+            r"""Choose the first exact embedding into ``codomain`` in deterministic order."""
+            embeddings = self.exact_embeddings(codomain)
+            if embeddings.cardinality() == 0:
+                raise ValueError(f"no exact embedding of {self} into {codomain} is available")
+            return embeddings[0]
+
         def maximal_ideal(self):
             r"""Return the zero ideal, the unique maximal ideal of a field."""
             return self.ideal(self.zero())

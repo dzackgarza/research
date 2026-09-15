@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
-    exact_embeddings,
     exact_field_homset,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
@@ -175,7 +174,7 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
     smaller_generator = degree_two.field().field_generators()[0]
     compatible_embeddings = [
         embedding
-        for embedding in exact_embeddings(degree_two.field(), degree_four.field())
+        for embedding in degree_two.field().exact_embeddings(degree_four.field())
         if degree_four.embedding()(embedding(smaller_generator))
         == degree_two.embedding()(smaller_generator)
     ]
@@ -229,7 +228,7 @@ def test_number_field_restriction_fiber_is_a_coset_without_a_false_chosen_lift()
 def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
     base_field = _cubic_number_field(2, "a")
     closure = AbsoluteGaloisGroup(QQ).algebraic_closure()
-    chosen_base_embedding = exact_embeddings(base_field, closure)[1]
+    chosen_base_embedding = base_field.exact_embeddings(closure)[1]
     group = AbsoluteGaloisGroup(
         base_field,
         closure=closure,
@@ -251,7 +250,7 @@ def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
     foreign_group = AbsoluteGaloisGroup(
         base_field,
         closure=closure,
-        embedding=exact_embeddings(base_field, closure)[0],
+        embedding=base_field.exact_embeddings(closure)[0],
     )
     quotient = group.finite_quotient(stage)
     finite_automorphism = quotient.one()

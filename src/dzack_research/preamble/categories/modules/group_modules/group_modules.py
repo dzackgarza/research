@@ -168,11 +168,7 @@ class ModulesOverGroupAlgebra(Modules):
         if order <= 2:
             return fraction_field
         cyclotomic = CyclotomicField(order)
-        from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-            exact_embeddings,
-        )
-
-        if exact_embeddings(fraction_field, cyclotomic).cardinality() == 0:
+        if fraction_field.exact_embeddings(cyclotomic).cardinality() == 0:
             raise NotImplementedError(
                 "the composite of the coefficient fraction field with the cyclotomic splitting field is not represented"
             )

@@ -27,9 +27,7 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     _exact_field_morphism_from_engine,
-    exact_embeddings,
     exact_field_homset,
-    first_exact_embedding,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
@@ -451,7 +449,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             closure = computation_field.algebraic_closure()
         self._closure = _own_ring(closure)
         if embedding is None:
-            embedding = first_exact_embedding(self._field, self._closure)
+            embedding = self._field.first_exact_embedding(self._closure)
         self._embedding = _as_exact_embedding(self._field, self._closure, embedding)
         self._extension_cache: dict[object, FiniteGaloisExtension] = {}
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
@@ -691,7 +689,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         if extension_field is self._field:
             return exact_field_homset(self._field, self._field).identity()
         compatible = []
-        for candidate in exact_embeddings(self._field, extension_field):
+        for candidate in self._field.exact_embeddings(extension_field):
             if all(
                 closure_embedding(candidate(generator)) == self._embedding(generator)
                 for generator in self._field.field_generators()
@@ -724,12 +722,12 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             base_candidates = (exact_field_homset(self._field, self._field).identity(),)
         else:
             closure_candidates = (
-                exact_embeddings(extension_field, self._closure)
+                extension_field.exact_embeddings(self._closure)
                 if embedding is None
                 else (_as_exact_embedding(extension_field, self._closure, embedding),)
             )
             base_candidates = (
-                exact_embeddings(self._field, extension_field)
+                self._field.exact_embeddings(extension_field)
                 if base_embedding is None
                 else (
                     _as_exact_embedding(self._field, extension_field, base_embedding),
@@ -987,15 +985,15 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             self._supergroup.base_field(), normal_field, base_backend
         )
         compatible_closure_embeddings = []
-        for fixed_to_normal in exact_embeddings(self.fixed_field(), normal_field):
+        for fixed_to_normal in self.fixed_field().exact_embeddings(normal_field):
             if not all(
                 fixed_to_normal(self._fixed_extension.base_embedding()(generator))
                 == base_embedding(generator)
                 for generator in self._supergroup.base_field().field_generators()
             ):
                 continue
-            for normal_to_closure in exact_embeddings(
-                normal_field, self._supergroup.algebraic_closure()
+            for normal_to_closure in normal_field.exact_embeddings(
+                self._supergroup.algebraic_closure()
             ):
                 if all(
                     normal_to_closure(fixed_to_normal(generator))
@@ -1030,7 +1028,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             or other.supergroup() is not self.supergroup()
         ):
             return False
-        for embedding in exact_embeddings(other.fixed_field(), self.fixed_field()):
+        for embedding in other.fixed_field().exact_embeddings(self.fixed_field()):
             if all(
                 self.embedding()(embedding(generator)) == other.embedding()(generator)
                 for generator in other.fixed_field().field_generators()
@@ -1069,8 +1067,8 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
             self._base_embedding = extension_field.base_embedding()
         else:
             self._extension_field = _own_ring(extension_field)
-            base_embeddings = exact_embeddings(
-                supergroup.base_field(), self._extension_field
+            base_embeddings = supergroup.base_field().exact_embeddings(
+                self._extension_field
             )
             if len(base_embeddings) != 1:
                 raise ValueError(
@@ -1103,9 +1101,8 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
         if embedding is None:
             candidates = [
                 candidate
-                for candidate in exact_embeddings(
-                    self._extension_field,
-                    self._supergroup.algebraic_closure(),
+                for candidate in self._extension_field.exact_embeddings(
+                    self._supergroup.algebraic_closure()
                 )
                 if all(
                     candidate(self._base_embedding(generator))
@@ -1136,8 +1133,8 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
                 == other._base_embedding(generator)
                 for generator in self._supergroup.base_field().field_generators()
             )
-            for isomorphism in exact_embeddings(
-                self._extension_field, other._extension_field
+            for isomorphism in self._extension_field.exact_embeddings(
+                other._extension_field
             )
         )
 
