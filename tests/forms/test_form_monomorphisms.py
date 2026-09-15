@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormEmbedding,
     FormModule,
     FormModules,
-    form_embedding,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -19,13 +18,10 @@ def _zero_formed_line():
 
 def test_form_embedding_is_certified_by_the_mono_subcategory() -> None:
     formed = _zero_formed_line()
-    embedding = form_embedding(
-        formed,
-        formed,
-        {"e": formed.module_generator("e")},
-    )
+    embedding = formed.Mono(formed)({"e": formed.module_generator("e")})
     monos = category_packet(FormModules(ZZ)).Monos().Of(formed, formed)
 
+    assert embedding.parent() is monos
     assert monos.arrow_set() is FormModules(ZZ).Mor(formed, formed)
     assert embedding in monos
     assert "is_injective" not in FormEmbedding.__dict__
@@ -34,4 +30,4 @@ def test_form_embedding_is_certified_by_the_mono_subcategory() -> None:
 def test_form_embedding_rejects_a_form_preserving_non_monomorphism() -> None:
     formed = _zero_formed_line()
     with pytest.raises(ValueError, match="injective underlying module map"):
-        form_embedding(formed, formed, {"e": formed.zero()})
+        formed.Mono(formed)({"e": formed.zero()})

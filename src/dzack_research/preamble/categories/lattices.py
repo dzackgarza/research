@@ -115,7 +115,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     BilinearForm,
     FormedModules,
     SymmetricBilinearFormModules,
-    form_embedding,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     _form_gram_on,
@@ -2299,12 +2298,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             source_images = {label: source_class for label, source_class in zip(labels, source_classes, strict=True)}
 
             def source_inclusion(source):
-                return form_embedding(
-                    source,
-                    first_discriminant,
-                    source_images,
-                    quadratic=quadratic,
-                )
+                return source.Mono(first_discriminant)(source_images, quadratic=quadratic)
 
             source_form = glue_forms.from_module(
                 abstract_glue,
@@ -2324,12 +2318,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             target_images = {label: second_twist.equip_form_morphism()(second_forget(target_class)) for label, target_class in zip(labels, target_classes, strict=True)}
 
             def target_inclusion(target):
-                return form_embedding(
-                    target,
-                    second_twist,
-                    target_images,
-                    quadratic=quadratic,
-                )
+                return target.Mono(second_twist)(target_images, quadratic=quadratic)
 
             target_form = glue_forms.from_module(
                 abstract_glue,

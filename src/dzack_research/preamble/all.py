@@ -809,7 +809,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     VolumeTrivialization,
     biproduct_morphism,
     divided_square_morphism,
-    form_embedding,
     internal_hom_morphism,
     module_from_action,
     regular_dg_module,

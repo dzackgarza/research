@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedQuadraticFormModules,
     FormModule,
-    form_embedding,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
@@ -377,7 +376,7 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
     category = _torsion_form_modules(form.base_ring(), quadratic=quadratic)
 
     def inclusion_factory(source):
-        return form_embedding(source, form, ambient_image, quadratic=quadratic)
+        return source.Mono(form)(ambient_image, quadratic=quadratic)
 
     def lift_from_ambient(source, element):
         element = element if element.parent() is form else form(element)

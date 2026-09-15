@@ -192,7 +192,7 @@ def test_a_torsion_bilinear_form() -> None:
 def test_form_embeddings_between_lattices() -> None:
     a1 = Lattices(ZZ)("A1")
     a2 = Lattices(ZZ)("A2")
-    embedding = form_embedding(a1, a2, [a2.module_generator(0)])
+    embedding = a1.Mono(a2)([a2.module_generator(0)])
     assert embedding.domain() is a1
     assert embedding.codomain() is a2
     assert embedding.is_injective()

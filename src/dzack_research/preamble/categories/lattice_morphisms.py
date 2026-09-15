@@ -35,9 +35,6 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
 )
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    form_embedding,
-)
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     torsion_form_isometry,
 )
@@ -526,12 +523,7 @@ class LatticeEmbedding(LatticeMorphism):
             )
             images[label] = target_discriminant.projection()(dual_element)
 
-        return form_embedding(
-            source_form,
-            target_form,
-            images,
-            quadratic=target.is_even(),
-        )
+        return source_form.Mono(target_form)(images, quadratic=target.is_even())
 
 
 class LatticeIsometry(LatticeEmbedding):

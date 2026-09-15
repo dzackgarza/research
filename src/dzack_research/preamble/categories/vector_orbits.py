@@ -2,7 +2,6 @@ r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     MatrixSpace,
@@ -421,9 +420,7 @@ def gluing_route_discriminant_classes(lattice, left, right):
                     strict=True,
                 )
             }
-            assembled = form_embedding(
-                source.sum_form,
-                target.sum_form,
+            assembled = source.sum_form.Mono(target.sum_form)(
                 images,
                 quadratic=True,
             )

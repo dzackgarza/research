@@ -8,6 +8,7 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    MonoCategoryConstruction,
     _category_homset,
     category_packet,
 )
@@ -395,33 +396,62 @@ class FormEmbedding(FormedModuleMorphism):
         )
 
 
-def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -> FormEmbedding:
-    r"""Construct a form-preserving monomorphism on a chosen framing.
+class FormEmbeddingHomset(CategoricalHomset):
+    r"""The form-preserving monomorphisms between two formed modules."""
 
-    The underlying module homset checks linearity and the selected relations.
-    The form square is checked by :class:`FormedModuleMorphism`, whose value
-    map is the identity here.  This works for both represented
-    :class:`FormModule` objects and discriminant-form objects, which
-    intentionally have their own structured-category realization rather than
-    being wrappers around one.
-    """
+    Element = FormEmbedding
 
-    if quadratic is None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         ring = domain.base_ring()
-        quadratic = domain in QuadraticFormModules(ring)
-    values = _represented_value_module(domain)
-    if _represented_value_module(codomain) is not values:
-        raise TypeError("a form embedding keeps the value module")
-    embedding = FormEmbedding(
-        FormModules(domain.base_ring()).Mor(domain, codomain),
-        domain.module_category().Mor(domain, codomain)(images),
-        values.module_category().Mor(values, values).identity(),
-        quadratic=quadratic,
-    )
-    monos = category_packet(FormModules(domain.base_ring())).Monos().Of(domain, codomain)
-    if embedding not in monos:
-        raise ValueError("a form embedding requires an injective underlying module map")
-    return embedding
+        formed = FormModules(ring)
+        if codomain.base_ring() is not ring or domain not in formed or codomain not in formed:
+            raise TypeError("a form embedding requires two formed modules over one scalar ring")
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+
+    def _element_constructor_(self, images, *, quadratic: bool | None = None):
+        if isinstance(images, FormEmbedding):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the form embedding has the wrong endpoints")
+            if images.parent() is self:
+                return images
+            images = images.module_morphism()
+
+        domain = self.domain()
+        codomain = self.codomain()
+        if quadratic is None:
+            ring = domain.base_ring()
+            quadratic = domain in QuadraticFormModules(ring)
+        values = _represented_value_module(domain)
+        if _represented_value_module(codomain) is not values:
+            raise TypeError("a form embedding keeps the value module")
+        module_morphism = domain.module_category().Mor(domain, codomain)(images)
+        embedding = self.element_class(
+            self,
+            module_morphism,
+            values.module_category().Mor(values, values).identity(),
+            quadratic=quadratic,
+        )
+        try:
+            injective = embedding.is_injective()
+        except NotImplementedError:
+            injective = False
+        if injective is not True:
+            raise ValueError("a form embedding requires an injective underlying module map")
+        return embedding
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain()
+        target = self.codomain()
+        inherited = [
+            superpacket.Monos().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        return [packet.Homs().Of(source, target), *inherited]
+
+    def _repr_(self):
+        return f"Emb_Form({self.domain()}, {self.codomain()})"
 
 
 class FormedModuleHomset(CategoricalHomset):
@@ -488,6 +518,13 @@ class FormedModuleHomset(CategoricalHomset):
 class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return FormedModuleHomset
+
+
+class FormedModuleMonoCategoryConstruction(MonoCategoryConstruction):
+    r"""The form-preserving monomorphisms of formed modules."""
+
+    def fixed_category_class(self):
+        return FormEmbeddingHomset
 
 
 def _base_change_element(module, changed_module, ring_map, element):
@@ -835,6 +872,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     _HomCategory = FormedModuleHomCategoryConstruction
+    _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
         def __init__(self, source_form, unformed_module, **rest) -> None:
@@ -896,6 +934,10 @@ class FormModules(OwnedCategoryOverBaseRing):
             if category is None and codomain in FormModules(self.base_ring()):
                 return FormModules(self.base_ring()).Mor(self, codomain)
             return _category_homset(category, self, codomain)
+
+        def Mono(self, codomain):
+            r"""Return the form-preserving monomorphisms into ``codomain``."""
+            return FormModules(self.base_ring()).Mono(self, codomain)
 
         def formed_hom(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
@@ -1596,7 +1638,7 @@ def _form_subobject_spanning(module, basis):
     preliminary = free_source.Mono(module)(embedded)
 
     def inclusion_factory(source):
-        return form_embedding(source, module, embedded)
+        return source.Mono(module)(embedded)
 
     return FormModule(
         module._formed_form().pullback(preliminary),
