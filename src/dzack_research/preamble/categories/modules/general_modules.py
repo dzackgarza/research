@@ -90,13 +90,34 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The zero module, the one-point set with its only additive structure."""
-        return GeneralModule(
-            self.base_ring(),
+        return self.from_operations(
             Set([0]),
             addition=lambda left, right: 0,
             zero=0,
             negation=lambda value: 0,
             scalar_action=lambda scalar, value: 0,
+        )
+
+    def from_operations(
+        self,
+        underlying_set,
+        *,
+        addition,
+        zero,
+        negation,
+        scalar_action,
+        verify=True,
+    ):
+        r"""Return the module on ``underlying_set`` with the stated operations."""
+        return object_of(
+            self,
+            base_ring=self.base_ring(),
+            underlying_set=underlying_set,
+            addition=addition,
+            zero=zero,
+            negation=negation,
+            scalar_action=scalar_action,
+            verify=verify,
         )
 
     def super_categories(self):
@@ -360,34 +381,6 @@ def _enumerated_scalars(ring):
         return None
 
 
-def GeneralModule(
-    ring,
-    underlying_set,
-    *,
-    addition,
-    zero,
-    negation,
-    scalar_action,
-    verify=True,
-):
-    r"""Return the ``R``-module on ``underlying_set`` with the given structure.
-
-    The supplied operations present the additive group and its scalar action.
-    A module given by ``rho : R -> End_Ab(X)`` is constructed by ``Modules(R)(rho)``.
-    """
-    return object_of(
-        GeneralModules(_owned_ring(ring)),
-        base_ring=ring,
-        underlying_set=underlying_set,
-        addition=addition,
-        zero=zero,
-        negation=negation,
-        scalar_action=scalar_action,
-        verify=verify,
-    )
-
-
 __all__ = [
-    "GeneralModule",
     "GeneralModules",
 ]
