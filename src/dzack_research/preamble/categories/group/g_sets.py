@@ -37,7 +37,6 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -592,7 +591,7 @@ def _fixed_point_set(g_set):
     assert group.is_finitely_generated() is True, (
         "constructing fixed points requires a chosen finite group generating set"
     )
-    return finite_ordered_filter(finite_ordered_set(g_set), g_set.is_invariant)
+    return finite_ordered_set(g_set).filtered(g_set.is_invariant)
 
 
 class Torsors(OwnedParameterizedCategory):

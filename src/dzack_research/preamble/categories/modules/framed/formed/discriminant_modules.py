@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -200,8 +199,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
             generators = subgroup.embedded_module_generators()
             zero = self.bilinear_value_module().zero()
-            elements = finite_ordered_filter(
-                self.elements(),
+            elements = self.elements().filtered(
                 lambda element: all(
                     self.b(element, generator) == zero
                     for generator in generators
@@ -221,8 +219,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which the bilinear form vanishes."""
-            return finite_ordered_filter(
-                self.subgroups(),
+            return self.subgroups().filtered(
                 lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
             )
 
@@ -242,14 +239,13 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return finite_ordered_filter(isotropic, is_maximal)
+            return isotropic.filtered(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
             order = int(self.cardinality())
-            return finite_ordered_filter(
-                self.isotropic_subgroups(),
+            return self.isotropic_subgroups().filtered(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 
@@ -456,8 +452,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             r"""Return the classes on which the quadratic form vanishes."""
 
             zero = self.quadratic_value_module().zero()
-            return finite_ordered_filter(
-                finite_ordered_set(self.elements()),
+            return finite_ordered_set(self.elements()).filtered(
                 lambda element: self.q(element) == zero,
             )
 
@@ -469,8 +464,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             r"""Return all subgroups on which ``q`` vanishes identically."""
 
             zero = self.quadratic_value_module().zero()
-            return finite_ordered_filter(
-                self.subgroups(),
+            return self.subgroups().filtered(
                 lambda subgroup: all(
                     self.q(element) == zero
                     for element in subgroup.embedded_elements()
@@ -493,15 +487,14 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                     for larger in isotropic
                 )
 
-            return finite_ordered_filter(isotropic, is_maximal)
+            return isotropic.filtered(is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return isotropic ``H`` with ``|H|^2=|A|``."""
 
             order = int(self.cardinality())
-            return finite_ordered_filter(
-                self.isotropic_subgroups(),
+            return self.isotropic_subgroups().filtered(
                 lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
             )
 
@@ -756,8 +749,7 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
 
             ambient = self.ambient_discriminant_module()
             engine_subgroup = self._preamble_discriminant_engine_subgroup
-            return finite_ordered_filter(
-                ambient.elements(),
+            return ambient.elements().filtered(
                 lambda element: ambient._to_smith_engine_element(element)
                 in engine_subgroup,
             )

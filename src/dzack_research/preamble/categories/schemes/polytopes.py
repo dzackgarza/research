@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -405,8 +404,7 @@ class ConvexPolytopes(OwnedCategory):
 
         def interior_integral_points(self):
 
-            return finite_ordered_filter(
-                self.integral_points(),
+            return self.integral_points().filtered(
                 lambda point: self._engine_polyhedron().relative_interior_contains(
                     self._engine_coordinates(point)
                 ),
@@ -416,8 +414,7 @@ class ConvexPolytopes(OwnedCategory):
         def boundary_integral_points(self):
 
             interior = self.interior_integral_points()
-            return finite_ordered_filter(
-                self.integral_points(),
+            return self.integral_points().filtered(
                 lambda point: point not in interior,
                 name="Boundary integral points",
             )

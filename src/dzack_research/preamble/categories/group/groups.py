@@ -87,7 +87,6 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -293,8 +292,7 @@ def _unique_nonidentity_generators(group):
         lambda position: group._from_engine(backend_generators[int(position)]),
     )
     identity = group.one()
-    return finite_ordered_filter(
-        owned_generators,
+    return owned_generators.filtered(
         lambda generator: generator != identity,
         name="Chosen group generators",
     )

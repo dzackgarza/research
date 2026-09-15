@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -684,8 +683,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             relation_matrix = _engine_matrix(self.presentation_matrix())
             pivot_columns = frozenset(relation_matrix.echelon_form().pivots())
             labels = self.module_generating_set()
-            positions = finite_ordered_filter(
-                Sets.Δ[int(self.number_of_module_generators()) - 1],
+            positions = Sets.Δ[int(self.number_of_module_generators()) - 1].filtered(
                 lambda position: int(position) not in pivot_columns,
                 name="Vector-space basis generator positions",
             )
@@ -1123,8 +1121,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             invariants = self._invariants_with_units()
             positions = Sets.Δ[len(invariants) - 1]
-            retained = finite_ordered_filter(
-                positions,
+            retained = positions.filtered(
                 lambda position: not invariants[int(position)].is_unit(),
             )
             reduced_positions = Sets.Δ[int(retained.cardinality()) - 1]
@@ -1265,12 +1262,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             invariants = self._invariants_with_units()
 
             positions = Sets.Δ[len(invariants) - 1]
-            retained_positions = finite_ordered_filter(
-                positions,
+            retained_positions = positions.filtered(
                 lambda position: not invariants[int(position)].is_unit(),
             )
-            free_positions = finite_ordered_filter(
-                positions,
+            free_positions = positions.filtered(
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
             )
             target = self.presentation().codomain()._fresh_free_module_on(free_positions)
@@ -1373,8 +1368,7 @@ def _module_invariant_factor_form(module):
     invariants = module._invariants_with_units()
 
     invariant_positions = Sets.Δ[len(invariants) - 1]
-    retained_positions = finite_ordered_filter(
-        invariant_positions,
+    retained_positions = invariant_positions.filtered(
         lambda position: not invariants[int(position)].is_unit(),
     )
 
@@ -1382,8 +1376,7 @@ def _module_invariant_factor_form(module):
     free_owner = _free_cover_owner(module)
     reduced_labels = Sets.Δ[int(retained_positions.cardinality()) - 1]
     reduced_target = free_owner._fresh_free_module_on(reduced_labels)
-    relation_labels = finite_ordered_filter(
-        reduced_labels,
+    relation_labels = reduced_labels.filtered(
         lambda reduced_position: invariants[int(retained_positions[int(reduced_position)])] != ring.zero(),
     )
     reduced_source = free_owner._fresh_free_module_on(relation_labels)
@@ -1881,8 +1874,7 @@ def _resolution_over_degrees(module, terms, differentials, augmentation, zero):
     """
 
     degrees = Sets.Δ[max(terms)]
-    carrying = finite_ordered_filter(
-        degrees,
+    carrying = degrees.filtered(
         lambda degree: int(degree) in differentials,
     )
     return FreeResolution(

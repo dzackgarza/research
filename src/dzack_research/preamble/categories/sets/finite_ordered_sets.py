@@ -175,16 +175,6 @@ def finite_ordered_image[IndexT, PointT](
     )
 
 
-def finite_ordered_filter[PointT](
-    source: Parent,
-    predicate: Callable[[PointT], bool],
-    *,
-    name: str | None = None,
-) -> Parent:
-    r"""Return the finite ordered subset cut out by ``predicate`` lazily."""
-    return FiniteFilteredOrderedSets()(source, predicate, name=name)
-
-
 class OrderedEnumeratedSets(OwnedCategory):
     r"""Ordered sets presented by an index set and a bijection out of it."""
 
@@ -426,6 +416,10 @@ class FiniteOrderedSets(OwnedCategory):
             {"index_set", "element_at", "index_of"}
         )
 
+        def filtered(self, predicate, *, name=None):
+            r"""Return the ordered subset of this set cut out lazily by ``predicate``."""
+            return FiniteFilteredOrderedSets()(self, predicate, name=name)
+
         def __init__(
             self,
             elements: Parent | tuple[PointT, ...] | list[PointT] | range,
@@ -481,7 +475,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""The even points of a three-point ordinal."""
-        return finite_ordered_filter(finite_ordered_set((0, 1, 2)), lambda x: True)
+        return finite_ordered_set((0, 1, 2)).filtered(lambda x: True)
 
     def super_categories(self):
         from dzack_research.preamble.categories.sets.set_categories import FiniteSets

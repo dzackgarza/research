@@ -55,7 +55,6 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _finite_framing,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -1164,8 +1163,7 @@ def _divided_power_invariant_inclusion(module, degree):
         support = selection.support()
         positions = Sets.Δ[degree - 1]
         word_space = Sets().product(indexed_family(positions, lambda _position: support))
-        words = finite_ordered_filter(
-            finite_ordered_set(word_space),
+        words = finite_ordered_set(word_space).filtered(
             lambda word: all(
                 sum(
                     1

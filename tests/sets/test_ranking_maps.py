@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteFilteredOrderedSets,
     FiniteOrderedSets,
     OrderedEnumeratedSets,
-    finite_ordered_filter,
     finite_ordered_image,
     finite_ordered_set,
 )
@@ -150,7 +149,7 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
         declared,
         lambda value: value != "b",
     )
-    filtered_notation = finite_ordered_filter(declared, lambda value: value != "b")
+    filtered_notation = declared.filtered(lambda value: value != "b")
 
     assert declared == notation == finite_ordered_set(("a", "b", "c"))
     assert image == image_notation == finite_ordered_set(("x", "y", "z"))
@@ -164,8 +163,8 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
 
 def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -> None:
     source = finite_ordered_set((0, 1, 2, 3))
-    even = finite_ordered_filter(source, lambda value: value % 2 == 0, name="even")
-    zero = finite_ordered_filter(even, lambda value: value == 0, name="zero")
+    even = source.filtered(lambda value: value % 2 == 0, name="even")
+    zero = even.filtered(lambda value: value == 0, name="zero")
     direct = FiniteFilteredOrderedSets()(
         even,
         lambda value: value == 2,

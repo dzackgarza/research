@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.schemes.polytopes import (
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -470,8 +469,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             polygon = self.polygon()
             engine_polyhedron = polygon._engine_polyhedron()
             engine_point = polygon._engine_coordinates(self.distinguished_point())
-            return finite_ordered_filter(
-                self.fan().cones(1),
+            return self.fan().cones(1).filtered(
                 lambda ray: _supports_point(
                     engine_polyhedron,
                     ray._engine_cone().rays()[0],
@@ -506,8 +504,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                     for ray in blue_rays
                 )
 
-            return finite_ordered_filter(
-                polygon.boundary_integral_points(),
+            return polygon.boundary_integral_points().filtered(
                 lies_on_blue_facet,
                 name="Distinguished ADE boundary points",
             )

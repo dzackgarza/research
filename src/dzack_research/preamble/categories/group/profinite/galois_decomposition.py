@@ -6,7 +6,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set
@@ -143,8 +142,7 @@ class FiniteGaloisSubgroup(Parent):
 
     def group_generators(self):
 
-        return finite_ordered_filter(
-            finite_ordered_set(self),
+        return finite_ordered_set(self).filtered(
             lambda element: element != self.one(),
         )
 
