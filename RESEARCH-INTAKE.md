@@ -28,6 +28,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Generatingfunctionology (Wilf Ch.1-2) | User note 2026-09-15 | Symbolic recurrences, exact solutions, OGF/EGF, L-functions / zeta | `categories/generating_functions/` + `categories/rings/formal_power_series.py` / `D-Mod` | Proposed — see note below |
 | Monodromy groups/reps + π1/H1 + CW + graded | User note 2026-09-15 | Semantic `π1(X,x)`, `H1^sing`, monodromy groups/reps; CW complexes with sphere homotopy DB; `ZZ^n`-graded complexes / spectral sequences | `categories/topology/` / `categories/homotopy/` + `categories/graded/` | Proposed — see note below |
 | Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
+| p-curvature | User note 2026-09-15 | `p`-curvature of a connection in characteristic `p` (`ψ_p: T_{X/S} → End(E)`) | `categories/connections/p_curvature.py` + `categories/characteristic_p/` | Proposed — see note below |
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 
@@ -351,3 +352,17 @@ Need the Gauss-Manin connection, some basic six-functor formalism for sheaves, a
 * Requires: category `Derived(C)` for Grothendieck abelian `C = Sh(X_ét), QCoh, Mod_{D_S}`, functors `L f^*, R f_*, R f_!, f^!` as triangulated functors with adjunctions, and the full six-functor package (not just `R f_*`). Specializations: `RΓ(X, -) = R p_*` for `p: X → Spec k`; `H^i_ét = R^iΓ`; `H^i(Gal, -)` is `R^iΓ` for `Spec K`.
 
 Intended owners: `categories/functors/gauss_manifold.py` (`GaussManin` as `∇_{GM}` on `H_{dR}`), `categories/sheaves/six_functors.py` (`f^*, R f_*, R f_!, f^!, ⊗, Hom` with adjunctions), `categories/derived/derived_category.py` (`D(-)`, `R f_*` via injectives, `L f^*`), `categories/derived/pushforward.py` (`R^i f_*` as cohomology sheaves). Not free `pushforward(f, sheaf)` with no derived structure — `f.derived_pushforward(sheaf)` in `D(Sh)` on the site objects, with `R^i` as `H^i`.
+
+## Desired capability: p-curvature — note 2026-09-15
+
+Need `p`-curvature.
+
+For a flat connection `∇: E → E ⊗ Ω^1_{X/S}` on a smooth `S`-scheme `X` in characteristic `p>0` (or reduction mod `p` of a characteristic-zero connection), the `p`-curvature is the `O_X`-linear map
+```
+ψ_p(∇): T_{X/S} → End_{O_X}(E),  ψ_p(D) = ∇(D)^p - ∇(D^{[p]})
+```
+where `D^{[p]}` is the `p`-th iterate (restricted Lie algebra structure on derivations) and `∇(D)^p` is `p`-th iterate as differential operator. For `X = Spec R[t]` and `∇ = d + A dt`, this is `ψ_p(∂_t) = (∂_t + A)^p - (∂_t^p + A^{(p)})` as `p`-linear operator. Vanishing `ψ_p = 0` is Cartier descent: `∇` has full set of horizontal sections `E^{∇}` with `E ≅ F^* E^{∇}` via Frobenius `F: X → X^{(1)`. The `p`-curvature measures obstruction to descending `∇` along Frobenius and controls Grothendieck-Katz `p`-curvature conjecture: `∇` has algebraic solutions iff `ψ_p ≡ 0 mod p` for almost all `p`.
+
+Requires: category `Conn(X/S)` in characteristic `p`, restricted Lie algebra `T_{X/S}` with `D ↦ D^{[p]}`, Frobenius twist `X^{(1)}`, Cartier operator, and functor `ψ_p: Conn → Higgs_{X^{(1)}}` to Higgs fields (`End(E)`-valued 1-forms). Need `ψ_p` as morphism `T_{X/S} → End(E)` on the connection object, not a bare matrix `A_p`. Instances: Gauss-Manin `∇_{GM}` reduced mod `p`, its `p`-curvature is the obstruction whose vanishing detects algebraicity of periods; for `PF(w)` operator `L ∈ D_S`, `ψ_p(L)` is its `p`-curvature as `p`-linear operator on `D_S`-module.
+
+Intended owners: `categories/connections/p_curvature.py` (`p_curvature(∇): Higgs`), `categories/characteristic_p/cartier.py` (`Frobenius`, `Cartier descent`), `categories/connections/characteristic_p.py` (`Conn_p`, `ψ_p` with `D^{[p]}`). Not a free `p_curvature(matrix)` — `∇.p_curvature(D)` on the connection object in `FlatConn(X/S)` over `F_p`.
