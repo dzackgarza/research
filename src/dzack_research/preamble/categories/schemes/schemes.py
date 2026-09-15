@@ -2247,12 +2247,11 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                     "the represented affine-space class group currently requires a field base"
                 )
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             integers = _own_ring(SageZZ)
             return ClassGroups()(
-                BasedFreeModule(integers, finite_ordered_set(())), scheme=self
+                integers.free_module(finite_ordered_set(())), scheme=self
             )
 
         def basic_open(self, element):
@@ -2314,11 +2313,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         @cached_method
         def fan(self):
             r"""Return the owned standard fan of ``P^n``."""
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 
             integers = _own_ring(SageZZ)
-            lattice = BasedFreeModule(integers, int(self.relative_dimension()))
+            lattice = integers.free_module(int(self.relative_dimension()))
             return RationalPolyhedralFans(lattice).projective_space_fan()
 
         def point_blowup(self, point):
@@ -2340,11 +2338,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
             from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             integers = _own_ring(SageZZ)
-            zero_module = BasedFreeModule(integers, finite_ordered_set(()))
+            zero_module = integers.free_module(finite_ordered_set(()))
             base_scheme = self.base_scheme()
             base_picard = PicardGroups().trivial(base_scheme)
             base_class = ClassGroups()(zero_module, scheme=base_scheme)

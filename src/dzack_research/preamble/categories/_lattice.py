@@ -38,8 +38,6 @@ from sage.symbolic.ring import SR
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    FreeModule,
-    FreeModuleOn,
     FreshFreeModuleOn,
     MatrixSpace,
 )
@@ -1129,7 +1127,7 @@ def orthogonal_sum(summands):
     offsets = tuple(accumulate((int(rank) for rank in ranks[:-1]), initial=0))
     total = Infinity if ranks[-1] == Infinity else offsets[-1] + int(ranks[-1])
 
-    module = FreeModuleOn(ring, _as_generating_set(None, total))
+    module = ring.free_module(_as_generating_set(None, total))
     gram = _BiproductGram(module, summands, offsets)
     return _lattice_parent(module, gram, category, None, names=None)
 
@@ -1433,7 +1431,7 @@ def _lattice_from_gram_tensor(
     generating_set = _generating_set_for(rows, module_generators, names)
 
     module = (
-        FreeModuleOn(ring, generating_set)
+        ring.free_module(generating_set)
         if module_generators is None
         else FreshFreeModuleOn(ring, generating_set)
     )
@@ -1578,7 +1576,7 @@ def lattice(
         case Integer() | int() if int(data) >= 0:
 
             return _identity_lattice(
-                FreeModule(ring, int(data)),
+                ring.free_module(int(data)),
                 ring,
                 names,
                 module_generators,

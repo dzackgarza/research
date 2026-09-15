@@ -7,7 +7,6 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.localizations import (
@@ -889,8 +888,8 @@ def _commutative_ideal(source, generators):
 
     labels = finite_ordered_set(range(len(selected)))
     relation_labels = finite_ordered_set(range(len(syzygy_rows)))
-    free_generators = BasedFreeModule(source, labels)
-    free_relations = BasedFreeModule(source, relation_labels)
+    free_generators = source.free_module(labels)
+    free_relations = source.free_module(relation_labels)
     presentation = free_relations.module_category().Mor(free_relations, free_generators)(
         {
             label: _relation_element(

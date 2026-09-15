@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.algebras import (
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras, CommutativeAlgebras
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     CochainComplexes,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -14,8 +13,8 @@ from dzack_research.static_types import cup, de_rham_class_view
 
 
 def test_cohomology_is_functorial_on_cochain_maps() -> None:
-    degree_zero = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    degree_one = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
+    degree_zero = ZZ.free_module(finite_ordered_set(("e",)))
+    degree_one = ZZ.free_module(finite_ordered_set(("f",)))
     differential = degree_zero.module_category().Mor(degree_zero, degree_one)(
         {"e": 2 * degree_one.module_generator("f")}
     )

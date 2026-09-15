@@ -42,7 +42,7 @@ def test_distinguished_affine_cover_has_function_restrictions_and_overlap_compos
 
 
 def test_affine_module_sheaf_restriction_is_linear_over_function_restriction() -> None:
-    from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
 
     algebra = PolynomialRing(QQ, "x")
     x = algebra.algebra_generator("x")
@@ -52,7 +52,7 @@ def test_affine_module_sheaf_restriction_is_linear_over_function_restriction() -
     right = cover.open(1)
     overlap = cover.overlap(0, 1)
 
-    module = FreeModule(algebra, 1)
+    module = algebra.free_module(1)
     generator = module.module_generator(0)
     sheaf = scheme.associated_module_sheaf(module)
     left_sections = sheaf.sections_on_distinguished_open(left)

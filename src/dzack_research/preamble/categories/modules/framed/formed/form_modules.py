@@ -26,10 +26,8 @@ from dzack_research.preamble.categories.modules.base_change import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FramedFreeModules,
     MatrixSpace,
-    FreeModuleOn,
     FreshFreeModuleOn,
     _module_subobject_constructor_data,
     _span_basis_elements,
@@ -1079,7 +1077,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             target_ring = base_change_codomain(self, ring_map)
             source = self
             source_labels = source.module_generating_set()
-            changed = FreeModuleOn(target_ring, source_labels)
+            changed = target_ring.free_module(source_labels)
             form = self._formed_form()
 
             if _is_bilinear_form(form):
@@ -1499,7 +1497,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         @cached_method
         def dual_module(self):
 
-            return BasedFreeModule(self.base_ring(), self.module_generating_set())
+            return self.base_ring().free_module(self.module_generating_set())
 
         @cached_method
         def correlation_morphism(self):
@@ -1661,7 +1659,7 @@ def _form_subobject_spanning(module, basis):
     r"""Return the canonical formed subobject on a finite span basis."""
 
     labels, embedded, lift = _module_subobject_constructor_data(module, basis)
-    free_source = FreeModuleOn(module.base_ring(), labels)
+    free_source = module.base_ring().free_module(labels)
     preliminary = free_source.Mono(module)(embedded)
 
     def inclusion_factory(source):

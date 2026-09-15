@@ -17,8 +17,6 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-    FreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
@@ -473,8 +471,8 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
     simplicial = _toric_weight_simplicial_complex(scheme, divisor, weight)
 
     if int(simplicial.dimension()) == -1:
-        degree_zero = BasedFreeModule(base, 1)
-        degree_one = BasedFreeModule(base, 0)
+        degree_zero = base.free_module(1)
+        degree_one = base.free_module(0)
         complex_ = CochainComplexes(base)(
             {0: degree_zero, 1: degree_one},
             {0: degree_zero.module_category().Mor(degree_zero, degree_one)({0: degree_one.zero()})},
@@ -494,8 +492,8 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
         )
         top = int(simplicial.dimension())
         matrices = {q: engine.differential(q) for q in range(-1, top + 1)}
-        pieces = {q + 1: BasedFreeModule(base, matrix.ncols()) for q, matrix in matrices.items()}
-        pieces[top + 2] = BasedFreeModule(base, 0)
+        pieces = {q + 1: base.free_module(matrix.ncols()) for q, matrix in matrices.items()}
+        pieces[top + 2] = base.free_module(0)
         differentials = {q + 1: _matrix_morphism(base, pieces[q + 1], pieces[q + 2], matrix) for q, matrix in matrices.items()}
         complex_ = CochainComplexes(base)(
             pieces,
@@ -849,8 +847,8 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
     )
 
     integers = _own_ring(SageZZ)
-    source = FreeModule(integers, 1)
-    target = FreeModule(integers, 1)
+    source = integers.free_module(1)
+    target = integers.free_module(1)
     presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
     return FinitelyPresentedModule(
         presentation,

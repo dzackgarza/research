@@ -9,8 +9,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     DualizationFunctor,
-    FreeModule,
-    FreeModuleOn,
     MatrixSpace,
     QuadraticField,
     Sets,
@@ -73,8 +71,8 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
     The free-module functor takes a *set*, not an integer: there is no
     canonical set of cardinality n, so "R^n" names no particular object.  What
     MatrixSpace(R, m, n) does is choose one -- the standard finite ordinal
-    Delta[n-1] = {0, ..., n-1} -- and route it through the same constructor
-    FreeModuleOn uses.  The integer is sugar for that choice, and the choice is
+    Delta[n-1] = {0, ..., n-1} -- and route it through the same ``R.free_module``
+    owner.  The integer is sugar for that choice, and the choice is
     what the matrix entries are indexed by.
 
     So a free module on a different set of the same cardinality is isomorphic
@@ -91,20 +89,19 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
     # The integer arity resolves to the free module on a named set.
     assert Sets.Δ[1].cardinality() == 2
     assert Sets.Δ[1].cardinality() in Cardinalities()
-    assert FreeModule(ZZ, 2) is FreeModuleOn(ZZ, Sets.Δ[1])
-
+    assert ZZ.free_module(2) is ZZ.free_module(Sets.Δ[1])
     assert f.parent() is maps
     assert f.matrix_rank() == ZZ(2)
-    assert f.domain() is FreeModuleOn(ZZ, Sets.Δ[1])
-    assert f.codomain() is FreeModuleOn(ZZ, Sets.Δ[1])
+    assert f.domain() is ZZ.free_module(Sets.Δ[1])
+    assert f.codomain() is ZZ.free_module(Sets.Δ[1])
     assert maps.identity() * f == f
     assert f * maps.identity() == f
     assert tensor.from_matrix(f) == components
 
     # Another 2-element set gives an isomorphic module that is not this one.
-    other = FreeModuleOn(ZZ, finite_ordered_set(("a", "b")))
+    other = ZZ.free_module(finite_ordered_set(("a", "b")))
     assert other.module_generating_set().cardinality() == Sets.Δ[1].cardinality()
-    assert other is not FreeModuleOn(ZZ, Sets.Δ[1])
+    assert other is not ZZ.free_module(Sets.Δ[1])
     assert other.Mor(other) is not maps
 
 

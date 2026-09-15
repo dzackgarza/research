@@ -15,7 +15,6 @@ is ``x``.
 from dzack_research.preamble.all import (
     AA,
     GF,
-    BasedFreeModule,
     GeneralModule,
     PolynomialRing,
     Set,
@@ -66,7 +65,7 @@ def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
 
 
 def test_zero_module_over_a_non_enumerated_ring_has_one_verification_element() -> None:
-    zero_module = BasedFreeModule(AA, finite_ordered_set(()))
+    zero_module = AA.free_module(finite_ordered_set(()))
     identity = zero_module.module_category().Mor(zero_module, zero_module).elementwise(lambda element: element)
 
     assert zero_module.cardinality() == 1

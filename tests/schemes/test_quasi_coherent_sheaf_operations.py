@@ -10,7 +10,6 @@ zero on the open where that coordinate is a unit.
 from dzack_research.preamble.all import (
     AffineSpace,
     FinitelyPresentedModule,
-    FreeModule,
     QQ,
     QuasiCoherentSheaves,
 )
@@ -21,7 +20,7 @@ def _line_and_multiplication():
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
     sheaves = QuasiCoherentSheaves(line)
-    structure = sheaves.associated_sheaf(FreeModule(algebra, 1))
+    structure = sheaves.associated_sheaf(algebra.free_module(1))
     module = sheaves.global_sections(structure)
     multiply_by_x = sheaves.sheaf_morphisms(structure, structure)(
         {0: module.scalar_multiple(x, module.module_generator(0))}
@@ -33,7 +32,7 @@ def test_the_sheaves_on_an_affine_scheme_are_the_category_equivalent_to_its_modu
     line = AffineSpace(1, QQ, names=("x",))
     algebra = line.coordinate_ring()
     sheaves = QuasiCoherentSheaves(line)
-    module = FreeModule(algebra, 2)
+    module = algebra.free_module(2)
     sheaf = sheaves.associated_sheaf(module)
 
     assert sheaves.scheme() is line
@@ -74,8 +73,8 @@ def test_the_tensor_product_of_two_free_sheaves_has_the_product_rank() -> None:
     line = AffineSpace(1, QQ, names=("x",))
     algebra = line.coordinate_ring()
     sheaves = QuasiCoherentSheaves(line)
-    rank_two = sheaves.associated_sheaf(FreeModule(algebra, 2))
-    rank_three = sheaves.associated_sheaf(FreeModule(algebra, 3))
+    rank_two = sheaves.associated_sheaf(algebra.free_module(2))
+    rank_three = sheaves.associated_sheaf(algebra.free_module(3))
 
     product = sheaves.tensor_product((rank_two, rank_three))
     assert product in sheaves

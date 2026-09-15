@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FreeModule,
     Lattices,
     Modules,
     IntegralStructureAction,
@@ -19,8 +18,8 @@ def _rational_hyperbolic_space():
 def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> None:
     plane, space = _rational_hyperbolic_space()
     e0, e1 = plane.module_generators()
-    source_module = FreeModule(ZZ, 2)
-    target_module = FreeModule(ZZ, 2)
+    source_module = ZZ.free_module(2)
+    target_module = ZZ.free_module(2)
     source = source_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )
@@ -46,8 +45,8 @@ def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> No
 def test_nonisometric_commensurable_lattices_have_no_full_orthogonal_transporter() -> None:
     plane, space = _rational_hyperbolic_space()
     e0, e1 = plane.module_generators()
-    source_module = FreeModule(ZZ, 2)
-    target_module = FreeModule(ZZ, 2)
+    source_module = ZZ.free_module(2)
+    target_module = ZZ.free_module(2)
     source = source_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )

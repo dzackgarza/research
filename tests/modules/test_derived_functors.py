@@ -9,15 +9,14 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    FreeModule,
     PolynomialRing,
 )
 
 
 def _cyclic(ring, generator):
     r"""The cyclic module ``R / (generator)`` presented by one relation on one generator."""
-    line = FreeModule(ring, 1)
-    relations = FreeModule(ring, 1)
+    line = ring.free_module(1)
+    relations = ring.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(line)({0: ring(generator) * line.module_generator(0)})
     )

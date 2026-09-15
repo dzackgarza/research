@@ -127,7 +127,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "Lattices(gram)": lambda: Lattices(ZZ)([[2, 1], [1, 2]]),
         "direct sum": lambda: Lattices(ZZ)("A1") + Lattices(ZZ)("A2"),
         "tensor product": lambda: Modules(ZZ).tensor_product(
-            (BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2]))
+            (ZZ.free_module(Sets.Δ[1]), ZZ.free_module(Sets.Δ[2]))
         ),
         "twist": lambda: Lattices(ZZ)("E8").twist(2),
         "rooted Coxeter diagram from a Cartan type": lambda: CoxeterDiagrams().from_cartan_type(
@@ -139,14 +139,14 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "subobject": lambda: Lattices(ZZ)("E8").subobject_on([2 * e[0]]),
         "discriminant group": lambda: Lattices(ZZ)("A2").discriminant_group(),
         "discriminant bilinear form": lambda: Lattices(ZZ)("A2").discriminant_bilinear_form(),
-        "free module on a set": lambda: FreeModuleOn(ZZ, Sets.Δ[2]),
-        "based free module": lambda: BasedFreeModule(ZZ, Sets.Δ[2]),
+        "free module on a set": lambda: ZZ.free_module(Sets.Δ[2]),
+        "based free module": lambda: ZZ.free_module(Sets.Δ[2]),
         "R^n": lambda: ZZ**3,
         # Not the row above: ``ZZ**3`` builds the framed free module on a
         # chosen generating set, while these two are built through the
         # category chain, where the underlying set is the product
         # $R\times\cdots\times R$ and the form is added on top of it.
-        "free module of rank n": lambda: FreeModule(ZZ, 3),
+        "free module of rank n": lambda: ZZ.free_module(3),
         "isometry group": lambda: Lattices(ZZ)("A2").Aut(),
         # A finite abstract group's automorphism group, and the stated-gap
         # specimen: Aut of a free group constructs -- the object exists --
@@ -233,16 +233,16 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "product": lambda: Sets().product((Sets.Δ[13], Sets.Δ[14])),
         "coproduct": lambda: Sets().coproduct((Sets.Δ[15], Sets.Δ[16])),
         "biproduct": lambda: Modules(ZZ).biproduct(
-            (BasedFreeModule(ZZ, Sets.Δ[1]), BasedFreeModule(ZZ, Sets.Δ[2]))
+            (ZZ.free_module(Sets.Δ[1]), ZZ.free_module(Sets.Δ[2]))
         ),
         # ---- divisors ----
         # One free module each: every one of these refines the module it is
         # handed into its own divisor category.
-        "divisor group": lambda: DivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[3])),
-        "weil divisor group": lambda: WeilDivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[4])),
-        "cartier divisor group": lambda: CartierDivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[5])),
-        "picard group": lambda: PicardGroups()(FreeModuleOn(ZZ, Sets.Δ[6])),
-        "class group": lambda: ClassGroups()(FreeModuleOn(ZZ, Sets.Δ[7])),
+        "divisor group": lambda: DivisorGroups()(ZZ.free_module(Sets.Δ[3])),
+        "weil divisor group": lambda: WeilDivisorGroups()(ZZ.free_module(Sets.Δ[4])),
+        "cartier divisor group": lambda: CartierDivisorGroups()(ZZ.free_module(Sets.Δ[5])),
+        "picard group": lambda: PicardGroups()(ZZ.free_module(Sets.Δ[6])),
+        "class group": lambda: ClassGroups()(ZZ.free_module(Sets.Δ[7])),
         # ---- schemes ----
         "affine space": lambda: AffineSpace(2, QQ),
         "projective space": lambda: ProjectiveSpace(2, QQ),
@@ -255,15 +255,9 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # A different construction from the ``...On`` rows above: those build
         # the free algebra on a chosen generating set, these build it on a
         # module that already exists and keep that module's presentation.
-        "tensor algebra of a module": lambda: BasedFreeModule(
-            QQ, Sets.Δ[1]
-        ).tensor_algebra(),
-        "symmetric algebra of a module": lambda: BasedFreeModule(
-            QQ, Sets.Δ[1]
-        ).symmetric_algebra(),
-        "alternating algebra of a module": lambda: BasedFreeModule(
-            QQ, Sets.Δ[1]
-        ).exterior_algebra(),
+        "tensor algebra of a module": lambda: QQ.free_module(Sets.Δ[1]).tensor_algebra(),
+        "symmetric algebra of a module": lambda: QQ.free_module(Sets.Δ[1]).symmetric_algebra(),
+        "alternating algebra of a module": lambda: QQ.free_module(Sets.Δ[1]).exterior_algebra(),
         # ---- modules ----
         "fractional ideal": lambda: ZZ.fractional_ideal(2),
         # An S-module from its scalar action, and the coextension of scalars
@@ -271,7 +265,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "module from a scalar action": lambda: _module_from_scalar_action(),
         "coextension of scalars": lambda: Modules(ZZ).coextension_of_scalars(
             _group_algebra_structure_map(Groups.C(2))
-        )(FreeModuleOn(ZZ, Sets.Δ[0])),
+        )(ZZ.free_module(Sets.Δ[0])),
         # The two square constructions on an arbitrary module rather than on a
         # free algebra's graded piece: they are where a form's domain comes
         # from, so a lattice is the specimen that matters.
@@ -280,9 +274,9 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
         "finitely presented module": lambda: FinitelyPresentedModule(
-            FreeModuleOn(ZZ, Sets.Δ[0]).hom(
-                {0: FreeModuleOn(ZZ, Sets.Δ[0]).module_generator(0) * 2},
-                FreeModuleOn(ZZ, Sets.Δ[0]),
+            ZZ.free_module(Sets.Δ[0]).hom(
+                {0: ZZ.free_module(Sets.Δ[0]).module_generator(0) * 2},
+                ZZ.free_module(Sets.Δ[0]),
             )
         ),
         # ---- forms ----
@@ -301,7 +295,7 @@ def _group_algebra_structure_map(group):
 def _module_from_scalar_action():
     r"""``ZZ^2`` as a ``ZZ[C2]``-module, the generator swapping the coordinates."""
     group_algebra = ZZ[Groups.C(2)]
-    plane = FreeModuleOn(ZZ, Sets.Δ[1])
+    plane = ZZ.free_module(Sets.Δ[1])
     endomorphisms = Modules(ZZ).End(plane)
     swap = endomorphisms({0: plane.module_generator(1), 1: plane.module_generator(0)})
 
@@ -337,7 +331,7 @@ def _graded_derivation_space():
 
 def _connection_space():
     algebra = _derivation_algebra()
-    module = BasedFreeModule(algebra, Sets.Δ[0])
+    module = algebra.free_module(Sets.Δ[0])
     return module.connections()
 
 

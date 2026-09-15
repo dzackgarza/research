@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineCodimensionOneChowComparison,
-    FreeModule,
     PolynomialRing,
     Spec,
 )
@@ -27,9 +26,9 @@ def _affine_plane_divisor_presentation():
     prime = ring.spectrum()(ring.ideal(x))
     prime_divisor = full_weil.prime_divisor(prime)
 
-    principal = FreeModule(ZZ, 1)
-    cartier = CartierDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
-    finite_weil = WeilDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
+    principal = ZZ.free_module(1)
+    cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    finite_weil = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = finite_weil.module_generator(0)

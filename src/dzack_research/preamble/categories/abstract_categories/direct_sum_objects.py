@@ -21,15 +21,12 @@ class DirectSumObjects(OwnedCategory):
         r"""``R (+) R`` over the integers, decomposed into its two summands."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
-        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         ring = _own_ring(SageZZ)
-        summand = BasedFreeModule(ring, finite_ordinal_set(1))
+        summand = ring.free_module(finite_ordinal_set(1))
         return Modules(ring).biproduct([summand, summand])
 
     def super_categories(self):

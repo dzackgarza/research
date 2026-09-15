@@ -9,7 +9,6 @@ says the module is zero away from its support.
 
 from dzack_research.preamble.all import (
     AdditiveGroups,
-    BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
     QQ,
@@ -20,8 +19,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _cyclic_module(ring, scalar):
     r"""Return ``R/(scalar)`` presented on one generator."""
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
@@ -60,7 +59,7 @@ def test_a_torsion_module_vanishes_at_a_prime_outside_its_support() -> None:
 def test_localizing_a_free_module_preserves_its_fraction_action_and_map() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
     generator = free.module_generator("g")
     localized = free.localize(x)
 

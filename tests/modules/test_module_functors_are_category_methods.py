@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     AlternatingAlgebras,
     CommutativeAlgebras,
     FinitelyGeneratedFreeModules,
-    FreeModule,
     Modules,
     Sets,
 )
@@ -20,7 +19,7 @@ from dzack_research.preamble.all import (
 
 def _plane_with_swap():
     r"""``ZZ^2`` and the involution exchanging its two basis vectors."""
-    plane = FreeModule(ZZ, 2)
+    plane = ZZ.free_module(2)
     swap = Modules(ZZ).End(plane)(
         {0: plane.module_generator(1), 1: plane.module_generator(0)}
     )

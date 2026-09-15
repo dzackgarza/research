@@ -121,7 +121,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FramedFreeModules,
     MatrixSpace,
     _module_subobject_constructor_data,
@@ -1572,7 +1571,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             EXAMPLES::
 
                 sage: from dzack_research.preamble.all import *
-                sage: Lattices(ZZ)(FreeModule(ZZ, 2)).module_rank()
+                sage: Lattices(ZZ)(ZZ.free_module(2)).module_rank()
                 2
                 sage: Lattices(ZZ)(FreeModuleFunctor(ZZ)(NN)).module_rank()
                 ℵ_0
@@ -1808,7 +1807,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def dual_module(self):
             r"""Return the algebraic dual module ``Hom_R(L,R)`` in the dual framing."""
 
-            return BasedFreeModule(self.base_ring(), self.module_generating_set())
+            return self.base_ring().free_module(self.module_generating_set())
 
         def linear_dual(self):
             r"""Return the exact algebraic dual ``Hom_R(L,R)``."""

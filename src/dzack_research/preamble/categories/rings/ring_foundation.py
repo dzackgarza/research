@@ -1436,13 +1436,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 **options,
             )
 
-        def __pow__(self, exponent):
-            r"""Return the free module ``R^n`` through the owned module constructor."""
+        def free_module(self, rank_or_index_set):
+            r"""Return the canonical free module over this ring on the stated labels."""
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreeModule,
+                _module_generating_set,
+                _owned_free_module_on,
             )
 
-            return FreeModule(self, exponent)
+            return _owned_free_module_on(
+                self,
+                _module_generating_set(rank_or_index_set),
+            )
+
+        def __pow__(self, exponent):
+            r"""Return the free module ``R^n`` through the owned module constructor."""
+
+            return self.free_module(exponent)
 
         @cached_method
         def unit_group(self):
@@ -1459,16 +1468,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             structure, the regular module is the ring itself; otherwise it is
             the canonical rank-one based free module over this ring.
             """
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                BasedFreeModule,
-            )
             from dzack_research.preamble.categories.modules.pure.modules import (
                 FinitelyGeneratedFreeModules,
             )
 
             if self in FinitelyGeneratedFreeModules(self):
                 return self
-            return BasedFreeModule(self, 1)
+            return self.free_module(1)
 
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""

@@ -68,10 +68,9 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         The zero connection is flat, so this object is a specimen of both this
         category and its flat refinement.
         """
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
-        module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
+        module = self.algebra().free_module(finite_ordinal_set(1))
         connections = module.connections()
         return self(
             connections(lambda _label: connections.target_module().zero())
@@ -173,10 +172,9 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
         The zero connection is flat, so this object is a specimen of both this
         category and its flat refinement.
         """
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
-        module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
+        module = self.algebra().free_module(finite_ordinal_set(1))
         connections = module.connections()
         return ModulesWithConnection(self.algebra())(
             connections(lambda _label: connections.target_module().zero())

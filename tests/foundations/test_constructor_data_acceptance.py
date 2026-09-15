@@ -2,7 +2,6 @@ from dzack_research.preamble.all import (
     QQ,
     AdditiveGroups,
     Algebras,
-    BasedFreeModule,
     BilinearMap,
     MatrixSpace,
     Modules,
@@ -11,7 +10,7 @@ from dzack_research.preamble.all import (
 
 
 def _rank_two_module():
-    return BasedFreeModule(QQ, finite_ordered_set(("one", "x")))
+    return QQ.free_module(finite_ordered_set(("one", "x")))
 
 
 def _multiplication(module, square_of_x):

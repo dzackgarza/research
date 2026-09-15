@@ -10,9 +10,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-)
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -314,7 +311,7 @@ class CochainComplexObject(GradedDirectSumModule):
             self._selected_differentials = None
             self._degree_family = pieces
             self._differential_family = differentials
-        zero_module = BasedFreeModule(base_ring, finite_ordered_set(()))
+        zero_module = base_ring.free_module(finite_ordered_set(()))
 
         def piece(degree):
             if self._finite_support:

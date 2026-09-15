@@ -428,14 +428,11 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        BasedFreeModule,
-    )
 
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    free_target = BasedFreeModule(ring, 1)
-    free_relations = BasedFreeModule(ring, 1)
+    free_target = ring.free_module(1)
+    free_relations = ring.free_module(1)
     module = FinitelyPresentedModule(
         free_relations.module_category().Mor(free_relations, free_target)(
             {0: x * free_target.module_generator(0)}
@@ -472,7 +469,7 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     assert generic not in module.fiber_dimension_at_least(1)
     assert origin in module.fiber_dimension_at_least(1)
 
-    free_rank_two = BasedFreeModule(ring, 2)
+    free_rank_two = ring.free_module(2)
     assert free_rank_two.rank_at(generic) == 2
     assert free_rank_two.rank_at(origin) == 2
     assert free_rank_two.generic_rank() == 2
@@ -480,12 +477,12 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
 
 
 def test_module_localization_is_first_class_and_fibers_factor_through_it() -> None:
-    from dzack_research.preamble.all import FreeModule, LocalizedModules
+    from dzack_research.preamble.all import LocalizedModules
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
 
-    free = FreeModule(ZZ, 1)
+    free = ZZ.free_module(1)
     generator = free.module_generator(0)
     p2 = ZZ.spectrum()(2)
     localized_free = free.localize_at_prime(p2)
@@ -517,7 +514,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     assert torsion.annihilator() == torsion.scalar_action().kernel()
     assert free.annihilator() == ZZ.ideal(ZZ.zero())
     assert free.annihilator() == free.scalar_action().kernel()
-    zero_free = FreeModule(ZZ, 0)
+    zero_free = ZZ.free_module(0)
     assert zero_free.annihilator() == ZZ.ideal(ZZ.one())
     assert torsion_at_two.localization_source_module() is torsion
     assert torsion_at_five.localization_source_module() is torsion
@@ -526,7 +523,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
 
     polynomial = PolynomialRing(QQ, "x")
     x = polynomial.algebra_generator("x")
-    polynomial_free = FreeModule(polynomial, 1)
+    polynomial_free = polynomial.free_module(1)
     quotient = FinitelyPresentedModule(
         polynomial_free.module_category().Mor(polynomial_free, polynomial_free)(
             {0: x * polynomial_free.module_generator(0)}
@@ -540,14 +537,13 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
 
 
 def test_presented_module_localization_detects_inverted_annihilators() -> None:
-    from dzack_research.preamble.all import FreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
 
     polynomial = PolynomialRing(QQ, "x")
     x = polynomial.algebra_generator("x")
-    free = FreeModule(polynomial, 1)
+    free = polynomial.free_module(1)
     generator = free.module_generator(0)
     localization = polynomial.localization(x)
     localize = localization.localization_functor()
@@ -572,7 +568,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     plane = PolynomialRing(QQ, ("x", "y"))
     x_plane = plane.algebra_generator("x")
     y_plane = plane.algebra_generator("y")
-    plane_free = FreeModule(plane, 1)
+    plane_free = plane.free_module(1)
     plane_generator = plane_free.module_generator(0)
     point = plane.spectrum()(plane.ideal(x_plane))
     localize_at_x = point.local_ring().localization_functor()
@@ -591,7 +587,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     assert killed_local.module_generator(0).equality_status(killed_local.zero()) is True
     assert killed_local.is_zero() is True
 
-    integer_free = FreeModule(ZZ, 1)
+    integer_free = ZZ.free_module(1)
     integer_generator = integer_free.module_generator(0)
     torsion = FinitelyPresentedModule(
         integer_free.module_category().Mor(integer_free, integer_free)({0: 6 * integer_generator})
@@ -608,7 +604,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
 def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
     import logging
 
-    from dzack_research.preamble.all import GF, FreeModule
+    from dzack_research.preamble.all import GF
 
     field = GF(3)
     finite = field.regular_module()
@@ -631,7 +627,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
         module_coefficients,
     )
 
-    infinite = FreeModule(ZZ, 1)
+    infinite = ZZ.free_module(1)
     with caplog.at_level(
         logging.DEBUG,
         logger="dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
@@ -799,10 +795,9 @@ def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
 
 
 def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
-    from dzack_research.preamble.categories.modules import FreeModule
 
-    source = FreeModule(ZZ, 2)
-    target = FreeModule(ZZ, 1)
+    source = ZZ.free_module(2)
+    target = ZZ.free_module(1)
     morphism = source.module_category().Mor(source, target)(
         {
             0: target.module_generator(0),
@@ -823,7 +818,7 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
         is functor(source)
     )
 
-    rank_one = FreeModule(ZZ, 1)
+    rank_one = ZZ.free_module(1)
     generator = rank_one.module_generator(0)
     multiplication_by_six = rank_one.module_category().Mor(rank_one, rank_one)(
         {0: 6 * generator}
@@ -842,7 +837,6 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
 
 def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operations() -> None:
-    from dzack_research.preamble.categories.modules import FreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
@@ -851,7 +845,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     x = ring.algebra_generator("x")
     origin = ring.spectrum()(ring.ideal(ring.algebra_generator("x")))
     local = origin.local_ring()
-    free = FreeModule(local, 1)
+    free = local.free_module(1)
     generator = free.module_generator(0)
     quotient = FinitelyPresentedModule(
         free.module_category().Mor(free, free)(

@@ -5,7 +5,6 @@ import pytest
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import SymmetricAlgebraOn
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     DifferentialGradedModules,
     Modules,
     ModulesWithFlatConnection,
@@ -22,7 +21,7 @@ from dzack_research.static_types import (
 def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = algebra.algebra_generator("x")
-    module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
+    module = algebra.free_module(finite_ordered_set(("e",)))
     space = module.connections()
     assert space is module.connections()
     omega = space.one_forms()
@@ -56,7 +55,7 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
 
 def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
-    module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
+    module = algebra.free_module(finite_ordered_set(("e",)))
     zero_space = module.connections()
     zero_connection = zero_space({"e": zero_space.target_module().zero()})
     structured = ModulesWithConnection(algebra)(zero_connection)
@@ -76,7 +75,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert identity.as_morphism() in horizontal_maps
     assert identity(structured.module_generator("e")) == structured.module_generator("e")
 
-    nonzero_source = BasedFreeModule(algebra, finite_ordered_set(("e",)))
+    nonzero_source = algebra.free_module(finite_ordered_set(("e",)))
     nonzero_space = nonzero_source.connections()
     dx = nonzero_space.one_forms().differential_generator("x")
     nonzero = nonzero_space(
@@ -97,7 +96,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
 def test_flat_connection_builds_the_de_rham_dg_module() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
     x = algebra.algebra_generator("x")
-    module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
+    module = algebra.free_module(finite_ordered_set(("e",)))
     space = module.connections()
     dx = space.one_forms().differential_generator("x")
     connection = space(
@@ -128,11 +127,10 @@ def test_flat_connection_builds_the_de_rham_dg_module() -> None:
 
 
 def test_connection_on_countable_free_module_keeps_callable_generator_family_lazy() -> None:
-    from dzack_research.preamble.categories.modules import FreeModuleOn
     from dzack_research.preamble.categories.sets import NN
 
     algebra = SymmetricAlgebraOn(QQ, ("t",))
-    module = FreeModuleOn(algebra, NN)
+    module = algebra.free_module(NN)
     connection_space = module.connections()
     connection = connection_space(
         lambda _label: connection_space.target_module().zero()

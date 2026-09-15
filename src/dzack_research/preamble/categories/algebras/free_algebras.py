@@ -37,9 +37,6 @@ from dzack_research.preamble.categories.algebras.graded_algebras import GradedAl
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     StrictlyGradedCommutativeAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -135,7 +132,7 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
         )
 
         return _sparse_symmetric_algebra_of(
-            FreeModuleOn(base, algebra_generating_set)
+            base.free_module(algebra_generating_set)
         )
     labels = _finite_labels(algebra_generating_set)
     algebra = PolynomialRing(base, _variable_names(labels))
@@ -161,7 +158,7 @@ def TensorAlgebraOn(base_ring, algebra_generating_set):
         )
 
         return _sparse_tensor_algebra_of(
-            FreeModuleOn(base, algebra_generating_set)
+            base.free_module(algebra_generating_set)
         )
     labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
@@ -1085,10 +1082,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             selected = self._preamble_free_algebra_source_module
             if selected is not None:
                 return selected
-            return FreeModuleOn(
-                self.algebra_base_ring(),
-                self.algebra_generating_set(),
-            )
+            return self.algebra_base_ring().free_module(self.algebra_generating_set())
 
         @cached_method
         def ring_center(self):
@@ -1162,10 +1156,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             selected = self._preamble_free_algebra_source_module
             if selected is not None:
                 return selected
-            return FreeModuleOn(
-                self.algebra_base_ring(),
-                self.algebra_generating_set(),
-            )
+            return self.algebra_base_ring().free_module(self.algebra_generating_set())
 
         def from_component(self, degree, component):
             r"""Embed ``Sym^degree(M)`` through the shared graded-piece inclusion."""

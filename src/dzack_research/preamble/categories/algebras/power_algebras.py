@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -322,12 +321,12 @@ def _divided_power_algebra_of(module):
 
 def AlternatingAlgebraOn(base_ring, algebra_generating_set):
 
-    return _alternating_algebra_of(FreeModuleOn(base_ring, algebra_generating_set))
+    return _alternating_algebra_of(base_ring.free_module(algebra_generating_set))
 
 
 def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
 
-    return _divided_power_algebra_of(FreeModuleOn(base_ring, algebra_generating_set))
+    return _divided_power_algebra_of(base_ring.free_module(algebra_generating_set))
 
 
 def alternating_extension(module_morphism):

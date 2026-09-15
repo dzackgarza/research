@@ -1,11 +1,11 @@
 r"""Archive reconciliation for the mixed tensor algebra."""
 
-from dzack_research.preamble.all import QQ, Algebras, FreeModule
+from dzack_research.preamble.all import QQ, Algebras
 from dzack_research.preamble.tensors import MixedTensorAlgebra, tensor
 
 
 def test_mixed_tensor_algebra_retains_distinct_vector_and_covector_bidegrees() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     algebra = MixedTensorAlgebra(module)
     vector = tensor.vector(QQ, [1, 2])
     covector = tensor.covector(QQ, [3, 4])
@@ -22,7 +22,7 @@ def test_mixed_tensor_algebra_retains_distinct_vector_and_covector_bidegrees() -
 
 
 def test_mixed_tensor_product_adds_bidegrees_and_uses_live_outer_tensor_product() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     algebra = MixedTensorAlgebra(module)
     vector = tensor.vector(QQ, [1, 2])
     covector = tensor.covector(QQ, [3, 4])
@@ -37,7 +37,7 @@ def test_mixed_tensor_product_adds_bidegrees_and_uses_live_outer_tensor_product(
 
 
 def test_nonhomogeneous_products_collect_equal_bidegrees() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     algebra = MixedTensorAlgebra(module)
     first = algebra.include(tensor.vector(QQ, [1, 0]))
     second = algebra.include(tensor.vector(QQ, [0, 1]))
@@ -53,7 +53,7 @@ def test_nonhomogeneous_products_collect_equal_bidegrees() -> None:
 
 
 def test_mixed_tensor_algebra_exposes_the_two_tensor_algebra_factors() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     algebra = MixedTensorAlgebra(module)
     dual = algebra.dual_module()
 

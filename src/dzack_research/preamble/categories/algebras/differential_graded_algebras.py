@@ -14,9 +14,6 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
     StrictlyGradedCommutativeAlgebras,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-)
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -163,7 +160,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         @cached_method
         def _negative_cochain_zero_module(self):
             r"""The represented zero module used by the inherited cochain complex."""
-            return BasedFreeModule(self.base_ring(), finite_ordered_set(()))
+            return self.base_ring().free_module(finite_ordered_set(()))
 
         def differential_component(self, degree):
             degree = int(degree)

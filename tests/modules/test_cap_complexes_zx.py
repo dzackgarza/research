@@ -7,7 +7,6 @@ part of the assertions.
 
 from dzack_research.preamble.all import ZZ, PolynomialRing
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     CochainComplexes,
     FinitelyPresentedModule,
 )
@@ -20,8 +19,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 def _specimen():
     ring = PolynomialRing(ZZ, "x")
     x = ring.algebra_generator("x")
-    source = BasedFreeModule(ring, finite_ordered_set(("a", "b")))
-    target = BasedFreeModule(ring, finite_ordered_set(("c",)))
+    source = ring.free_module(finite_ordered_set(("a", "b")))
+    target = ring.free_module(finite_ordered_set(("c",)))
     a = source.module_generator("a")
     b = source.module_generator("b")
     c = target.module_generator("c")
@@ -87,15 +86,15 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
 def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_modules() -> None:
     ring = PolynomialRing(ZZ, "x")
     x = ring.algebra_generator("x")
-    source_free = BasedFreeModule(ring, finite_ordered_set(("a",)))
-    source_relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    source_free = ring.free_module(finite_ordered_set(("a",)))
+    source_relations = ring.free_module(finite_ordered_set(("r",)))
     source = FinitelyPresentedModule(
         source_relations.module_category().Mor(source_relations, source_free)(
             {"r": ring(2) * x * source_free.module_generator("a")}
         )
     )
-    target_free = BasedFreeModule(ring, finite_ordered_set(("c",)))
-    target_relations = BasedFreeModule(ring, finite_ordered_set(("s",)))
+    target_free = ring.free_module(finite_ordered_set(("c",)))
+    target_relations = ring.free_module(finite_ordered_set(("s",)))
     target = FinitelyPresentedModule(
         target_relations.module_category().Mor(target_relations, target_free)(
             {"s": ring(2) * target_free.module_generator("c")}

@@ -2,9 +2,7 @@
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     FinitelyGeneratedFreeModules,
-    FreeModuleOn,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -12,7 +10,7 @@ ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage",
     "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
     "owner_overrides": {
-        "BasedFreeModule": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
+        "BasedFreeModule": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
         "Free_ZZ": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
     },
     "disposition": "reconciled-live-owner",
@@ -21,9 +19,9 @@ ARCHIVE_RECONCILIATION = {
 
 def test_archived_based_free_module_is_the_live_free_module_on_ordered_labels() -> None:
     labels = finite_ordered_set(("e", "f"))
-    module = BasedFreeModule(ZZ, labels)
+    module = ZZ.free_module(labels)
 
-    assert module is FreeModuleOn(ZZ, labels)
+    assert module is ZZ.free_module(labels)
     assert module in FinitelyGeneratedFreeModules(ZZ)
     assert module.module_generating_set() is labels
     assert int(module.module_rank()) == 2
@@ -39,8 +37,8 @@ def test_archived_based_free_module_is_the_live_free_module_on_ordered_labels() 
 
 
 def test_archived_generator_assignment_builds_the_actual_module_morphism() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    source = ZZ.free_module(finite_ordered_set(("e", "f")))
+    target = ZZ.free_module(finite_ordered_set(("u", "v")))
     u = target.module_generator("u")
     v = target.module_generator("v")
 
@@ -55,9 +53,9 @@ def test_archived_generator_assignment_builds_the_actual_module_morphism() -> No
 
 
 def test_zero_rank_free_module_keeps_empty_basis_and_zero_relation_presentation() -> None:
-    zero = BasedFreeModule(ZZ, finite_ordered_set(()))
+    zero = ZZ.free_module(finite_ordered_set(()))
 
-    assert zero is FreeModuleOn(ZZ, finite_ordered_set(()))
+    assert zero is ZZ.free_module(finite_ordered_set(()))
     assert int(zero.module_rank()) == 0
     assert zero.module_generating_set().cardinality() == 0
     assert zero.relations().cardinality() == 0

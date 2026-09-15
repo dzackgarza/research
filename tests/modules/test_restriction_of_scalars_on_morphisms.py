@@ -12,14 +12,13 @@ Unverified: written without running the suite.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FreeModule,
     Modules,
 )
 
 
 def _swap_of_the_rational_plane():
     r"""``QQ^2`` and the endomorphism exchanging its two basis vectors."""
-    plane = FreeModule(QQ, 2)
+    plane = QQ.free_module(2)
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
     return plane, plane.module_category().Mor(plane, plane)({0: e1, 1: e0})
 
@@ -71,7 +70,7 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
     x = presentation.algebra_generator("x")
     extension = FinitelyPresentedAlgebra(presentation, (x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
-    line = FreeModule(extension, 1)
+    line = extension.free_module(1)
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
 
     assert restricted in ModulesWithChosenFinitePresentation(prime)
@@ -95,7 +94,7 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     x = presentation.algebra_generator("x")
     extension = FinitelyPresentedAlgebra(presentation, (x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
-    line = FreeModule(extension, 1)
+    line = extension.free_module(1)
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
     labels = tuple(restricted.module_generating_set())
 

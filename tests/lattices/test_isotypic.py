@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     Set,
     ZZ,
-    BasedFreeModule,
     FormedModules,
     Groups,
     Lattices,
@@ -13,7 +12,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> None:
     group = Groups.C(2)
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     x, y = module.module_generators()
     swap = module.Mor(module)({"x": y, "y": x})
 
@@ -33,7 +32,7 @@ def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> 
 
 def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
     group = Groups.C(3)
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y", "z")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y", "z")))
     generator = next(iter(group.group_generators()))
     x, y, z = module.module_generators()
     cycle = module.Mor(module)({"x": y, "y": z, "z": x})

@@ -81,14 +81,11 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
-        )
         from dzack_research.preamble.categories.sets.set_categories import (
             finite_ordinal_set,
         )
 
-        line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
+        line = self.base_ring().free_module(finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         tensor_square = Modules(self.base_ring()).tensor_product((line, line))
         multiplication = tensor_square.module_category().Mor(tensor_square, line)({(label, label): line.module_generator(label)})
@@ -1397,14 +1394,11 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
-        )
         from dzack_research.preamble.categories.sets.set_categories import (
             finite_ordinal_set,
         )
 
-        line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
+        line = self.base_ring().free_module(finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         tensor_square = Modules(self.base_ring()).tensor_product((line, line))
         multiplication = tensor_square.module_category().Mor(tensor_square, line)({(label, label): line.module_generator(label)})

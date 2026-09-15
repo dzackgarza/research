@@ -2,7 +2,6 @@ r"""Noetherian quotient/completion comparison through the canonical maps."""
 
 from dzack_research.preamble.all import (
     QQ,
-    BasedFreeModule,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -74,7 +73,7 @@ def test_finite_stages_match_through_the_explicit_comparison() -> None:
 def test_module_cokernel_completion_is_an_explicit_isomorphism() -> None:
     ring = PolynomialRing(QQ, ("x",))
     x = ring.algebra_generator("x")
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
     multiplication = free.module_category().Mor(free, free)(
         {"g": free.scalar_multiple(x, free.module_generator("g"))}
     )

@@ -10,7 +10,6 @@ import sys
 
 from dzack_research.preamble.all import (
     AffineSpace,
-    BasedFreeModule,
     Lattices,
     QQ,
     ZZ,
@@ -48,8 +47,8 @@ def affine_open():
 
 
 def matrix_hom():
-    source = BasedFreeModule(ZZ, finite_ordered_set(("e0", "e1")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("f0", "f1")))
+    source = ZZ.free_module(finite_ordered_set(("e0", "e1")))
+    target = ZZ.free_module(finite_ordered_set(("f0", "f1")))
     f0, f1 = target.module_generators()
     morphism = source.module_category().Mor(source, target)(
         {"e0": f0 + 2 * f1, "e1": 3 * f0 - f1}

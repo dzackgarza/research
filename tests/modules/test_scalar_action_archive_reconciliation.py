@@ -8,7 +8,7 @@ additive object from the endomorphism ring and retains ``rho`` as the module's
 actual scalar action.
 """
 
-from dzack_research.preamble.all import ZZ, FreeModule, Modules
+from dzack_research.preamble.all import ZZ, Modules
 
 
 ARCHIVE_RECONCILIATION = {
@@ -19,7 +19,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_module_constructor_recovers_the_underlying_object_from_the_action() -> None:
-    line = FreeModule(ZZ, 1)
+    line = ZZ.free_module(1)
     endomorphisms = Modules(ZZ).End(line)
     generator = line.module_generator(0)
 
@@ -39,7 +39,7 @@ def test_module_constructor_recovers_the_underlying_object_from_the_action() -> 
 
 
 def test_scalar_multiplication_is_evaluation_of_the_chosen_action() -> None:
-    line = FreeModule(ZZ, 1)
+    line = ZZ.free_module(1)
     endomorphisms = Modules(ZZ).End(line)
     generator = line.module_generator(0)
 

@@ -15,7 +15,6 @@ resolution truncated at the relations would report the wrong module there.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
     QQ,
@@ -29,8 +28,8 @@ def _residue_field_module():
     ring = PolynomialRing(QQ, "x,y")
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("rx", "ry")))
+    free = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("rx", "ry")))
     presentation = relations.module_category().Mor(relations, free)(
         {
             "rx": x * free.module_generator("g"),
@@ -115,8 +114,8 @@ def test_tor_of_the_residue_field_reads_the_degree_two_term() -> None:
 
 
 def test_a_principal_ideal_domain_resolves_in_one_step_however_far_it_is_asked() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("g",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)({"r": ZZ(6) * free.module_generator("g")})
     )

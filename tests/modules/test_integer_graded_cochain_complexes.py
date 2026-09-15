@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     CochainComplexes,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -13,7 +12,7 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 
 
 def _rank_one(label):
-    return BasedFreeModule(ZZ, finite_ordered_set((label,)))
+    return ZZ.free_module(finite_ordered_set((label,)))
 
 
 def test_shifted_complex_retains_integer_grading_and_boundary_cohomology() -> None:

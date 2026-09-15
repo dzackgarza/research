@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_matrix,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
@@ -114,7 +113,7 @@ def _finite_coset_sum(module, representatives):
     source_relations = _presentation_matrix(module)
     relation_count = int(source_relations.nrows())
     if relation_count == 0:
-        return BasedFreeModule(module.base_ring(), labels)
+        return module.base_ring().free_module(labels)
 
     representative_count = int(representatives.cardinality())
     width = int(labels.cardinality())

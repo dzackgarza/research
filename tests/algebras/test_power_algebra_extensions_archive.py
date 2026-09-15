@@ -2,7 +2,7 @@
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, Algebras, BasedFreeModule, BilinearMap, Modules
+from dzack_research.preamble.all import ZZ, Algebras, BilinearMap, Modules
 from dzack_research.preamble.categories.algebras.power_algebras import (
     alternating_extension,
 )
@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _dual_numbers():
-    module = BasedFreeModule(ZZ, finite_ordered_set(("1", "e")))
+    module = ZZ.free_module(finite_ordered_set(("1", "e")))
     one = module.module_generator("1")
     epsilon = module.module_generator("e")
     tensor_square = Modules(ZZ).tensor_product([module, module])
@@ -31,7 +31,7 @@ def _dual_numbers():
 
 
 def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
-    source_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    source_module = ZZ.free_module(finite_ordered_set(("x",)))
     target = _dual_numbers()
     epsilon = target.module_generator("e")
     linear = source_module.module_category().Mor(source_module, target)({"x": epsilon})
@@ -48,7 +48,7 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
 
 
 def test_exterior_extension_rejects_nonalternating_generator_images() -> None:
-    source_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    source_module = ZZ.free_module(finite_ordered_set(("x",)))
     target = _dual_numbers()
     linear = source_module.module_category().Mor(source_module, target)({"x": target.one()})
 

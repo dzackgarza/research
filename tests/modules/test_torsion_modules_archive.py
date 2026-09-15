@@ -8,9 +8,6 @@ from dzack_research.preamble.all import (
     PowerSeriesRing,
     TorsionModules,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-)
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -38,7 +35,7 @@ def test_archive_torsion_category_is_inherited_by_finitely_presented_torsion_mod
 
 
 def test_archive_torsion_category_does_not_reclassify_a_free_module() -> None:
-    free = BasedFreeModule(ZZ, 1)
+    free = ZZ.free_module(1)
 
     assert not free.is_torsion()
     assert free not in TorsionModules(ZZ)

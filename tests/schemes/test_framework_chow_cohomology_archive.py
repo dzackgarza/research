@@ -1,6 +1,6 @@
 r"""Archive reconciliation for intersection and cohomology data on ``P1 x P1``."""
 
-from dzack_research.preamble.all import QQ, ZZ, BasedFreeModule, RationalPolyhedralFans
+from dzack_research.preamble.all import QQ, ZZ, RationalPolyhedralFans
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_chow_cohomology_intersections.sage",
@@ -10,7 +10,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _quadric_surface():
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     return fans.hirzebruch_surface_fan(0).toric_variety(QQ)
 
 

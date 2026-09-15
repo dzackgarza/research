@@ -1,6 +1,5 @@
 import pytest
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedTorsionModules,
     GF,
     Modules,
@@ -12,7 +11,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -> None:
     group = Groups.S(3)
-    module = BasedFreeModule(ZZ, finite_ordered_set(("sign", "trivial")))
+    module = ZZ.free_module(finite_ordered_set(("sign", "trivial")))
     sign_generator = module.module_generator("sign")
     trivial_generator = module.module_generator("trivial")
     positive = module.Mor(module)(
@@ -42,7 +41,7 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
 def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
     base_ring = GF(2)
     group = Groups.C(6)
-    module = BasedFreeModule(base_ring, finite_ordered_set(("x", "y")))
+    module = base_ring.free_module(finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
     order_three = module.Mor(module)({"x": y, "y": x + y})

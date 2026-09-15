@@ -1,6 +1,6 @@
 r"""Ring parents dispatch ``Mor`` through Ring rather than inherited module Hom."""
 
-from dzack_research.preamble.all import QQ, ZZ, BasedFreeModule
+from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -11,7 +11,7 @@ def test_ring_parent_mor_selects_ring_hom_while_module_parent_mor_stays_linear()
     assert inclusion.codomain() is QQ
     assert inclusion(ZZ(7)) == QQ(7)
 
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     doubling = line.Mor(line)({"e": 2 * line.module_generator("e")})
     assert doubling.domain() is line
     assert doubling.codomain() is line

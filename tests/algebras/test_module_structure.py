@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     Algebras,
-    BasedFreeModule,
     BilinearMap,
     GradedAlgebras,
     GradedModules,
@@ -157,7 +156,7 @@ def test_unframed_algebra_has_no_constructed_tensor_multiplication() -> None:
 
 
 def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set((0, 1)))
+    module = ZZ.free_module(finite_ordered_set((0, 1)))
     one = module.module_generator(0)
     imag = module.module_generator(1)
     multiplication = _multiplication_from_structure_constants(
@@ -207,7 +206,7 @@ def test_algebras_intern_the_multiplication_of_an_order() -> None:
 
 
 def test_graded_algebras_intern_a_graded_module_from_its_product() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set((0, 1)))
+    module = ZZ.free_module(finite_ordered_set((0, 1)))
     refine(module, GradedModules(ZZ))
     one = module.module_generator(0)
     epsilon = module.module_generator(1)

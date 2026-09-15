@@ -105,11 +105,11 @@ def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
 
 
 def test_module_zero_and_unequal_rank_hom_survive_owned_refinement() -> None:
-    from dzack_research.preamble.all import ZZ, BasedFreeModule
+    from dzack_research.preamble.all import ZZ
     from dzack_research.preamble.categories.sets import finite_ordered_set
 
-    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
+    source = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
     morphism = source.module_category().Mor(source, target)(
         {
             "x": target.module_generator("b"),

@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     Groups,
     Modules,
     OwnedOrders,
@@ -22,7 +21,7 @@ def _assert_maps_agree(left, right, elements) -> None:
 
 def _swap_group_module():
     group = Groups.C(2)
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
 
     def swap(group_element, vector):
         if group_element == group.one():
@@ -39,7 +38,7 @@ def _swap_group_module():
 
 
 def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    module = ZZ.free_module(finite_ordered_set(("e",)))
     e = module.module_generator("e")
     identity = module.module_category().Mor(module, module).identity()
     negative_identity = module.module_category().Mor(module, module)({"e": -e})
@@ -59,7 +58,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
     group = Groups.V4()
     first, second = tuple(group.group_generators())
     product = first * second
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
 
     def action(group_element, vector):
         coefficients = module_coefficients(vector, module)
@@ -88,7 +87,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
     underlying = adjunction.right_adjoint()
 
     labels = finite_ordered_set(("x", "y"))
-    module = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    module = ZZ.free_module(finite_ordered_set(("a", "b")))
     free_labels = free(labels)
     phi = free_labels.module_category().Mor(free_labels, module)(
         {
@@ -111,7 +110,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
     left, right = adjunction.unit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, source_set)
 
-    target_module = BasedFreeModule(ZZ, finite_ordered_set(("c",)))
+    target_module = ZZ.free_module(finite_ordered_set(("c",)))
     module_map = module.module_category().Mor(module, target_module)(
         {
             "a": target_module.module_generator("c"),
@@ -153,8 +152,8 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 
-    source = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
-    target = BasedFreeModule(order, finite_ordered_set(("p",)))
+    source = ZZ.free_module(finite_ordered_set(("u", "v")))
+    target = order.free_module(finite_ordered_set(("p",)))
     extended_source = extension(source)
     restricted_target = restriction(target)
 
@@ -172,7 +171,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
             extended_source.module_generator(label)
         )
 
-    second_source = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    second_source = ZZ.free_module(finite_ordered_set(("r",)))
     source_map = source.module_category().Mor(source, second_source)(
         {
             "u": second_source.module_generator("r"),
@@ -182,7 +181,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
     left, right = adjunction.unit_transformation().naturality_square(source_map)
     _assert_maps_agree(left, right, source.module_generators())
 
-    second_target = BasedFreeModule(order, finite_ordered_set(("q",)))
+    second_target = order.free_module(finite_ordered_set(("q",)))
     target_map = target.module_category().Mor(target, second_target)(
         {"p": order(3) * second_target.module_generator("q")}
     )
@@ -221,7 +220,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     assert invariants.module_rank() == 1
     assert invariants.inclusion().is_in_image(e + f)
 
-    source = BasedFreeModule(ZZ, finite_ordered_set(("n",)))
+    source = ZZ.free_module(finite_ordered_set(("n",)))
     trivial_source = adjunction.left_adjoint()(source)
     equivariant = trivial_source.Mor(acted)(
         {"n": e + f}
@@ -272,7 +271,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     unit = adjunction.unit(acted)
     assert unit(e) == unit(f)
 
-    target = BasedFreeModule(ZZ, finite_ordered_set(("n",)))
+    target = ZZ.free_module(finite_ordered_set(("n",)))
     quotient_map = coinvariants.module_category().Mor(coinvariants, target)(
         {
             "e": target.module_generator("n"),
@@ -443,7 +442,7 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
         2 * restricted.module_generator("e")
     )
 
-    lattice = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    lattice = ZZ.free_module(finite_ordered_set(("x", "y")))
     from dzack_research.preamble.all import Lattices
 
     formed = lattice.equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
@@ -538,9 +537,9 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
     extension = Modules(structure_map.domain()).base_change_adjunction(
         structure_map
     ).left_adjoint()
-    source = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
-    middle = BasedFreeModule(ZZ, finite_ordered_set(("c", "d")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    source = ZZ.free_module(finite_ordered_set(("a", "b")))
+    middle = ZZ.free_module(finite_ordered_set(("c", "d")))
+    target = ZZ.free_module(finite_ordered_set(("e",)))
     first_linear = source.module_category().Mor(source, middle)(
         {
             "a": middle.module_generator("c") + middle.module_generator("d"),
@@ -566,9 +565,9 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
 
 
 def test_tensor_symmetric_and_alternating_algebras_are_functorial_on_finite_free_modules() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    middle = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
+    source = ZZ.free_module(finite_ordered_set(("x", "y")))
+    middle = ZZ.free_module(finite_ordered_set(("u", "v")))
+    target = ZZ.free_module(finite_ordered_set(("z",)))
     first = source.module_category().Mor(source, middle)(
         {
             "x": middle.module_generator("u") + middle.module_generator("v"),

@@ -27,16 +27,13 @@ class PicardGroups(Category):
         """
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
-        )
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
             finite_ordered_set,
         )
 
         integers = _own_ring(SageZZ)
         return self(
-            BasedFreeModule(integers, finite_ordered_set(())),
+            integers.free_module(finite_ordered_set(())),
             scheme=scheme,
         )
 

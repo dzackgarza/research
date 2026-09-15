@@ -2,7 +2,6 @@ r"""Archive reconciliation for Hermite normalization of presented modules."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -19,8 +18,8 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_hermite_form_changes_only_the_relation_rows() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r1", "r2")))
+    free = ZZ.free_module(finite_ordered_set(("x",)))
+    relations = ZZ.free_module(finite_ordered_set(("r1", "r2")))
     presentation = relations.module_category().Mor(relations, free)(
         {
             "r1": 2 * free.module_generator("x"),
@@ -43,8 +42,8 @@ def test_hermite_form_changes_only_the_relation_rows() -> None:
 
 
 def test_hermite_and_smith_normalizations_are_distinct_constructions() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("x", "y")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     presentation = relations.module_category().Mor(relations, free)(
         {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
     )

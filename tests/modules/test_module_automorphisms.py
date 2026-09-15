@@ -9,7 +9,6 @@ left to choose.
 
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     FinitelyPresentedModule,
     Modules,
 )
@@ -36,7 +35,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _plane():
-    return BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    return ZZ.free_module(finite_ordered_set(("a", "b")))
 
 
 def test_a_module_reaches_its_endomorphism_ring_and_automorphism_group() -> None:
@@ -107,8 +106,8 @@ def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup
 
 
 def test_a_finite_presented_module_automorphism_uses_actual_finite_preimages() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("g",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     quotient = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)({"r": 3 * free.module_generator("g")})
     )

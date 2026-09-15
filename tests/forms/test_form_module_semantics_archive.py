@@ -1,6 +1,6 @@
 r"""Archive reconciliation for formed-module categories and exact form morphisms."""
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule, finite_ordered_set
+from dzack_research.preamble.all import ZZ, finite_ordered_set
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearFormModules,
     FormModules,
@@ -17,7 +17,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_form_module_refines_the_represented_module_by_the_selected_form_type() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     bilinear = module.bilinear_forms(ZZ)([[2, 1], [1, -2]])
     formed = FormModules(ZZ)(bilinear)
 
@@ -30,7 +30,7 @@ def test_form_module_refines_the_represented_module_by_the_selected_form_type() 
 
 
 def test_quadratic_form_module_is_not_reclassified_as_a_bilinear_form_module() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    module = ZZ.free_module(finite_ordered_set(("e",)))
     quadratic = module.quadratic_forms(ZZ)([[2]])
     formed = FormModules(ZZ)(quadratic)
 
@@ -42,7 +42,7 @@ def test_quadratic_form_module_is_not_reclassified_as_a_bilinear_form_module() -
 
 
 def test_identity_in_the_formed_homset_is_an_exact_form_morphism() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     formed = FormModules(ZZ)(module.bilinear_forms(ZZ)([[0, 1], [1, 0]]))
     identity = formed.Mor(formed).identity()
 

@@ -11,7 +11,6 @@ because ``y`` annihilates it, while the generator does not.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
     QQ,
@@ -24,8 +23,8 @@ def _coordinate_axes():
     ring = PolynomialRing(QQ, ("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x * y, free.module_generator("g"))}

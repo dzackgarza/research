@@ -2,9 +2,6 @@ from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasGluedModuleSheaf,
     FiniteAtlasModuleGluingDatum,
@@ -56,7 +53,7 @@ def _identity_transition(label, domain, codomain):
 
 def _rank_two_descent(datum):
     local_modules = {
-        index: FreeModule(datum.chart(index).coordinate_algebra(), 2)
+        index: datum.chart(index).coordinate_algebra().free_module(2)
         for index in datum.chart_indices()
     }
     transitions = {

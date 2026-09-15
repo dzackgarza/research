@@ -8,7 +8,6 @@ chosen presentation multiply to the identity in the owned order.
 from dzack_research.preamble.all import (
     QQ,
     FiniteGSets,
-    FreeModule,
     Modules,
     Groups,
     Subgroups,
@@ -16,7 +15,7 @@ from dzack_research.preamble.all import (
 
 
 def _natural_permutation_module(ring, group, degree):
-    module = FreeModule(ring, degree)
+    module = ring.free_module(degree)
 
     def act(group_element, vector):
         return module.Mor(module)(

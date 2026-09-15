@@ -803,15 +803,6 @@ def _owned_free_module_on(ring, module_generating_set):
     return _new_sparse_free_module(ring, module_generating_set)
 
 
-def FreeModule(base_ring, rank_or_index_set):
-    r"""Return the free module on a finite rank or an arbitrary index set."""
-
-    ring = base_ring
-    if ring not in OwnedRings():
-        raise TypeError("FreeModule expects a preamble ring")
-    return _owned_free_module_on(ring, _module_generating_set(rank_or_index_set))
-
-
 def MatrixSpace(base_ring, nrows, ncols=None):
     r"""Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``."""
     ring = _owned_ring(base_ring)
@@ -832,8 +823,8 @@ def MatrixSpace(base_ring, nrows, ncols=None):
 
     nrows = dimension(nrows)
     ncols = nrows if ncols is None else dimension(ncols)
-    source = FreeModule(ring, ncols)
-    target = FreeModule(ring, nrows)
+    source = ring.free_module(ncols)
+    target = ring.free_module(nrows)
     return _refine_matrix_hom(source.module_category().Mor(source, target))
 
 
@@ -846,17 +837,6 @@ def matrix_change_ring(matrix, ring):
             for column_label in matrix.parent().column_index_set()
         )
         for row_label in matrix.parent().row_index_set()
-    )
-
-
-def FreeModuleOn(base_ring, module_generating_set):
-    r"""Return \(F_R(S)\), retaining the actual labels in ``S``."""
-
-    if base_ring not in OwnedRings():
-        raise TypeError("FreeModuleOn expects a preamble ring")
-    return _owned_free_module_on(
-        base_ring,
-        _module_generating_set(module_generating_set),
     )
 
 
@@ -896,8 +876,3 @@ def FreshFreeModuleOn(
         extra_categories=_extra_categories,
         extra_construction_data=_extra_construction_data,
     )
-
-
-def BasedFreeModule(base_ring, rank_or_labels):
-    r"""Return the selected based free module on a rank or explicit labels."""
-    return FreeModule(base_ring, rank_or_labels)

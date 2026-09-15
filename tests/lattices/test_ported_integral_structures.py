@@ -13,7 +13,6 @@ from sage_indefinite_port.groups.integral_structures import (
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FreeModule,
     Lattices,
     IntegralStructureAction,
     Modules,
@@ -27,7 +26,7 @@ def _proper_rational_group_and_lattices():
     )
     space = restriction(plane)
     e, f = plane.module_generators()
-    standard_module = FreeModule(ZZ, 2)
+    standard_module = ZZ.free_module(2)
     standard = standard_module.Mono(space)(
         {0: space.wrap(e), 1: space.wrap(f)}
     )
@@ -38,7 +37,7 @@ def _proper_rational_group_and_lattices():
         }
     )
     group = RationalMatrixGroup(plane, (involution,))
-    target_module = FreeModule(ZZ, 2)
+    target_module = ZZ.free_module(2)
     target = target_module.Mono(space)(
         {
             0: space.wrap(involution(e)),

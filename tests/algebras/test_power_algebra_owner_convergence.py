@@ -1,14 +1,14 @@
 r"""Exterior and divided powers converge on module-owned constructions and functors."""
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 
 
 def test_power_algebra_module_owner_and_nonidentity_functor_share_one_construction() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    source = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target = ZZ.free_module(finite_ordered_set(("a", "b")))
     morphism = source.module_category().Mor(source, target)(
         {
             "x": 2 * target.module_generator("a"),

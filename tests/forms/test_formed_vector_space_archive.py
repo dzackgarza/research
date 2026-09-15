@@ -1,14 +1,11 @@
 """Archive reconciliation for rationalization of framed and formed modules."""
 
 from dzack_research.preamble.all import QQ, ZZ, FormModules
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 
 
 def test_framed_free_module_vector_space_is_fraction_field_base_change() -> None:
-    module = FreeModuleOn(ZZ, ("e", "f"))
+    module = ZZ.free_module(("e", "f"))
     rationalized = module.vector_space()
 
     assert rationalized.base_ring() is QQ
@@ -17,7 +14,7 @@ def test_framed_free_module_vector_space_is_fraction_field_base_change() -> None
 
 
 def test_formed_module_vector_space_transports_the_form() -> None:
-    module = FreeModuleOn(ZZ, ("e", "f"))
+    module = ZZ.free_module(("e", "f"))
     formed = FormModules(ZZ)(module.bilinear_forms(ZZ)([[2, 1], [1, -2]]))
     rationalized = formed.vector_space()
 

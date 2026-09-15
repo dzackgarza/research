@@ -7,7 +7,6 @@ responsibilities between ``FreeForgetfulAdjunction`` and the common
 """
 
 from dzack_research.preamble.all import Modules, ZZ
-from dzack_research.preamble.categories.modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -55,7 +54,7 @@ ARCHIVE_RECONCILIATIONS = (
 def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
     adjunction = Sets().free_module_adjunction(ZZ)
     labels = finite_ordered_set(("x", "y"))
-    module = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    module = ZZ.free_module(finite_ordered_set(("a", "b")))
     free = adjunction.left_adjoint()(labels)
     morphism = free.module_category().Mor(free, module)(
         {
@@ -83,7 +82,7 @@ def test_archived_triangle_identities_are_the_live_unit_and_counit() -> None:
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     labels = finite_ordered_set(("u", "v"))
-    module = BasedFreeModule(ZZ, finite_ordered_set(("p", "q")))
+    module = ZZ.free_module(finite_ordered_set(("p", "q")))
 
     first_triangle = underlying(adjunction.counit(module)) * adjunction.unit(
         underlying(module)

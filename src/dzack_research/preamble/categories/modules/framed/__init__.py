@@ -8,18 +8,12 @@ _EXPORTS = {'FramedModules': ('dzack_research.preamble.categories.modules.pure.m
  'FractionFieldQuotients': ('dzack_research.preamble.categories.modules.framed.fraction_field_quotients',
                             'FractionFieldQuotients'),
  'FramedFreeModules': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
-                       'FramedFreeModules'),
- 'FreeModule': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
-                'FreeModule'),
- 'FreeModuleOn': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
-                  'FreeModuleOn')}
+                       'FramedFreeModules')}
 
 __all__ = ['FractionFieldQuotient',
  'FractionFieldQuotients',
  'FramedFreeModules',
- 'FramedModules',
- 'FreeModule',
- 'FreeModuleOn']
+ 'FramedModules']
 
 def __getattr__(name):
     try:

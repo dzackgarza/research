@@ -31,7 +31,6 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
     from dzack_research.preamble.all import (
-        FreeModule,
         InvertibleSheaf,
         Spec,
         InvertibleSheaf,
@@ -46,7 +45,7 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
-        FreeModule(open_subscheme.coordinate_algebra(), 1)
+        open_subscheme.coordinate_algebra().free_module(1)
         for open_subscheme in cover.opens()
     )
     left_overlap = cover.restrict_module(local_modules[0], 0, 1)
@@ -82,7 +81,6 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
     from dzack_research.preamble.all import (
-        FreeModule,
         InvertibleSheaf,
         Spec,
     )
@@ -96,7 +94,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
-        FreeModule(open_subscheme.coordinate_algebra(), 1)
+        open_subscheme.coordinate_algebra().free_module(1)
         for open_subscheme in cover.opens()
     )
     left_overlap = cover.restrict_module(local_modules[0], 0, 1)
@@ -143,7 +141,6 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
     from dzack_research.preamble.all import (
-        FreeModule,
         InvertibleSheaf,
         Spec,
     )
@@ -157,7 +154,7 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
-        FreeModule(open_subscheme.coordinate_algebra(), 2)
+        open_subscheme.coordinate_algebra().free_module(2)
         for open_subscheme in cover.opens()
     )
     left_overlap = cover.restrict_module(local_modules[0], 0, 1)

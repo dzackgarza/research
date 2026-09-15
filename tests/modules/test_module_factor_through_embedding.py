@@ -2,12 +2,12 @@ r"""Any module morphism can factor through a represented module subobject."""
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_general_module_map_factors_through_embedding_by_lifting_generator_images() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
     doubled = line.Mono(line)({"e": 2 * e})
     assert doubled.parent() is line.Mono(line)
@@ -22,7 +22,7 @@ def test_general_module_map_factors_through_embedding_by_lifting_generator_image
 
 
 def test_factorization_refuses_an_image_outside_the_target_subobject() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
     doubled = line.Mono(line)({"e": 2 * e})
     identity = line.module_category().Mor(line, line).identity()

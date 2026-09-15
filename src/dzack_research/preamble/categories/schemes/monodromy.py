@@ -34,9 +34,6 @@ from dzack_research.preamble.categories.manifolds import ComplexManifolds
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
@@ -250,7 +247,7 @@ class LegendreMonodromyFamily(SageObject):
             generator,
         )
 
-        cohomology = FreeModule(integers, 2).equip_bilinear_form(integers, [[0, 1], [-1, 0]])
+        cohomology = integers.free_module(2).equip_bilinear_form(integers, [[0, 1], [-1, 0]])
         labels = tuple(cohomology.module_generating_set())
         alpha_dual = cohomology.module_generator(labels[0])
         beta_dual = cohomology.module_generator(labels[1])

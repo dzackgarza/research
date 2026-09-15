@@ -2,7 +2,6 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
 )
@@ -12,8 +11,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 def _torsion_module():
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x**2, free.module_generator("g"))}

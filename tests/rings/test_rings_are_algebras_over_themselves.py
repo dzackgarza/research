@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     CommutativeAlgebras,
     Fields,
     FinitelyGeneratedFreeModules,
-    FreeModule,
     Groups,
     Modules,
     OwnedRings,
@@ -98,7 +97,7 @@ def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_m
     assert augmentation(two_elements) == field(4)
 
     permutation = Modules(field[group])(
-        FreeModule(field, 2),
+        field.free_module(2),
         lambda group_element, vector: vector,
     )
     assert permutation.module_invariants().module_rank() == 2
@@ -112,7 +111,7 @@ def test_a_self_algebra_keeps_the_ring_morphism_homset_as_its_default_mor() -> N
 
 
 def test_the_endomorphism_ring_contains_the_base_ring_as_scalar_endomorphisms() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     endomorphisms = Modules(QQ).End(module)
     generator = module.module_generator(0)
     scalar_two = endomorphisms(2)

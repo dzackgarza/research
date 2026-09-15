@@ -3,7 +3,6 @@ r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, d
 from dzack_research.preamble.all import (
     AffineSpace,
     FinitelyPresentedAlgebra,
-    FreeModule,
     LocalRings,
     PolynomialRing,
     QQ,
@@ -46,7 +45,7 @@ def test_the_stalk_of_a_module_sheaf_is_the_localized_module() -> None:
     line = AffineSpace(1, QQ, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
-    module = FreeModule(algebra, 2)
+    module = algebra.free_module(2)
     sheaf = line.associated_module_sheaf(module)
     origin = line.underlying_space()(algebra.ideal(x))
 
@@ -70,7 +69,7 @@ def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:
 
     # f_* of the structure sheaf of the line is QQ[t] read as a QQ[x,y]-module
     # through x -> t^2, y -> t^3: the pushforward of the free rank-one sheaf.
-    structure = affine_line.associated_module_sheaf(FreeModule(line, 1))
+    structure = affine_line.associated_module_sheaf(line.free_module(1))
     pushed = parametrization.direct_image(structure)
     assert pushed.scheme() is plane
     assert pushed.global_sections().base_ring() is algebra

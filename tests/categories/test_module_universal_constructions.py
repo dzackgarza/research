@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
@@ -25,9 +25,9 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
-    probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
+    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
+    line = ZZ.free_module(finite_ordered_set(("z",)))
+    probe = ZZ.free_module(finite_ordered_set(("t",)))
     x, y = plane.module_generators()
     z = line.module_generator("z")
     t = probe.module_generator("t")
@@ -59,9 +59,9 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
 
 
 def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
+    source = ZZ.free_module(finite_ordered_set(("t",)))
+    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target = ZZ.free_module(finite_ordered_set(("z",)))
     source.module_generator("t")
     x, y = plane.module_generators()
     z = target.module_generator("z")
@@ -92,7 +92,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
 
 
 def test_zero_and_times_two_separate_equalizer_from_coequalizer() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
     zero = line.module_category().Mor(line, line)({"e": line.zero()})
     twice = line.module_category().Mor(line, line)({"e": 2 * e})
@@ -107,8 +107,8 @@ def test_zero_and_times_two_separate_equalizer_from_coequalizer() -> None:
 
 
 def test_nonidentity_natural_transformation_induces_maps_on_selected_constructions() -> None:
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
+    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
+    line = ZZ.free_module(finite_ordered_set(("z",)))
     x, y = plane.module_generators()
     z = line.module_generator("z")
     left = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
@@ -135,7 +135,7 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
 
 
 def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
     zero = line.module_category().Mor(line, line)({"e": line.zero()})
     twice = line.module_category().Mor(line, line)({"e": 2 * e})
@@ -171,7 +171,7 @@ def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None
 def test_inverse_system_reverses_its_declared_index_category() -> None:
     labels = finite_ordered_set(("m", "n"))
     index = DiscreteCategory(labels)
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     systems = InverseSystem(index, line.category())
 
     assert systems.base_index_category() is index
@@ -180,9 +180,9 @@ def test_inverse_system_reverses_its_declared_index_category() -> None:
 
 
 def test_module_product_and_coproduct_use_selected_universal_constructions() -> None:
-    left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
-    probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
+    left = ZZ.free_module(finite_ordered_set(("x",)))
+    right = ZZ.free_module(finite_ordered_set(("y",)))
+    probe = ZZ.free_module(finite_ordered_set(("t",)))
     x = left.module_generator("x")
     y = right.module_generator("y")
     t = probe.module_generator("t")
@@ -248,8 +248,8 @@ def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> 
 
 
 def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+    probe = ZZ.free_module(finite_ordered_set(("t",)))
     e = line.module_generator("e")
     t = probe.module_generator("t")
     twice = line.module_category().Mor(line, line)({"e": 2 * e})
@@ -291,7 +291,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
 
 
 def test_limit_functor_maps_nonidentity_stagewise_transformation_through_projections() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
 
     source_twice = line.module_category().Mor(line, line)({"e": 2 * e})
@@ -342,7 +342,7 @@ def test_limit_functor_maps_nonidentity_stagewise_transformation_through_project
 
 
 def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representatives() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
 
     source_twice = line.module_category().Mor(line, line)({"e": 2 * e})
@@ -404,7 +404,7 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
         grid,
         le=lambda left, right: left[0] <= right[0] and left[1] <= right[1],
     )
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
 
     class GridSystem(Functor):
@@ -458,7 +458,7 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
 
 
 def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limit() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     e = line.module_generator("e")
     base_index = PosetCategory(NN)
     inverse_systems = InverseSystem(base_index, line.category())
@@ -488,8 +488,8 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
 
 
 def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    zero = BasedFreeModule(ZZ, finite_ordered_set(()))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+    zero = ZZ.free_module(finite_ordered_set(()))
     collapse = line.module_category().Mor(line, zero).zero()
     diagram = FiniteSequenceDiagram((line, zero), (collapse,), line.category())
     colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)

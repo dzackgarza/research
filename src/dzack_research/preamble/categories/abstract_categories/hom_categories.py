@@ -1334,8 +1334,8 @@ class DiscreteTwoHomCategoryOf(HomCategoryOf):
 
     Unverified specimen for a Hom that also has a module structure::
 
-        sage: from dzack_research.preamble.all import Modules, QQ, FreeModule
-        sage: module = FreeModule(QQ, 1)
+        sage: from dzack_research.preamble.all import Modules, QQ
+        sage: module = QQ.free_module(1)
         sage: linear_hom = Modules(QQ).Mor(module, module)
         sage: identity = linear_hom.identity()
         sage: obj = linear_hom.object(identity)

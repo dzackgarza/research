@@ -1,13 +1,12 @@
 r"""H0 chain-map lifting for nonidentity morphisms of resolved modules."""
 
 from dzack_research.preamble.all import ZZ, FinitelyPresentedModule
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _cyclic(modulus):
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("g",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(ZZ(modulus), free.module_generator("g"))}

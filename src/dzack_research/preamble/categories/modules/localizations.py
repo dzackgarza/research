@@ -10,8 +10,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-    FreeModuleOn,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -35,7 +33,6 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``S^{-1}(R^2)`` for ``S^{-1}R`` this category's ring."""
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
         from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
@@ -44,9 +41,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             f"{localization_ring} is not a represented localization, so no module "
             "over it is a localization of a module over its source"
         )
-        source = BasedFreeModule(
-            localization_ring.localization_source(), finite_ordinal_set(2)
-        )
+        source = localization_ring.localization_source().free_module(finite_ordinal_set(2))
         return localization_ring.localize_module(source)
 
     def super_categories(self):
@@ -154,10 +149,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             if framed_source:
                 # The transported framing is part of the localized module's
                 # construction, not something framing_morphism() reconstructs.
-                self._preamble_framing_source = FreeModuleOn(
-                    localization_ring,
-                    self._preamble_module_generating_set,
-                )
+                self._preamble_framing_source = localization_ring.free_module(self._preamble_module_generating_set)
                 self._preamble_framing_morphism = None
 
         def _framing_coefficients(self, element):
@@ -566,8 +558,8 @@ def _transported_presentation(source_module, localization_ring):
         len(transported_rows),
         int(generator_labels.cardinality()),
     ).from_rows(transported_rows)
-    free_relations = BasedFreeModule(localization_ring, relation_labels)
-    free_generators = BasedFreeModule(localization_ring, generator_labels)
+    free_relations = localization_ring.free_module(relation_labels)
+    free_generators = localization_ring.free_module(generator_labels)
     images = {
         relation_label: free_generators.linear_combination(
             {

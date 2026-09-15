@@ -8,7 +8,6 @@ integers, and ``GF(5)[t]`` exhibits both without them.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedModule,
     GF,
     PolynomialRing,
@@ -19,8 +18,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _cyclic_module(ring, scalar):
     r"""Return ``R/(scalar)`` presented on one generator."""
-    free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    free = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
@@ -40,7 +39,7 @@ def test_a_cyclic_module_over_a_polynomial_pid_counts_its_residues() -> None:
 
 def test_a_free_module_over_a_polynomial_pid_is_infinite_with_zero_exponent() -> None:
     ring = PolynomialRing(GF(5), "t")
-    module = BasedFreeModule(ring, finite_ordered_set(("x", "y")))
+    module = ring.free_module(finite_ordered_set(("x", "y")))
 
     assert not module.cardinality().is_finite()
     assert module.exponent() == ring.zero()

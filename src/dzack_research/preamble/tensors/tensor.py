@@ -28,7 +28,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -1551,8 +1550,8 @@ class TensorModule(UniqueRepresentation, Parent):
 
         def free_of_rank(rank):
             if rank == Infinity:
-                return FreeModule(self.base_ring(), NN)
-            return FreeModule(self.base_ring(), int(rank))
+                return self.base_ring().free_module(NN)
+            return self.base_ring().free_module(int(rank))
 
         def modules_for(ranks):
             slots = Sets.Δ[len(ranks) - 1]

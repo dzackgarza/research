@@ -1,6 +1,6 @@
 r"""Archive reconciliation for framed modules and their rationalization."""
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule, FramedModules, finite_ordered_set
+from dzack_research.preamble.all import ZZ, FramedModules, finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/framed_modules.sage",
@@ -14,7 +14,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_selected_framing_retains_its_index_set_generators_and_surjection() -> None:
     labels = finite_ordered_set(("x", "y"))
-    module = BasedFreeModule(ZZ, labels)
+    module = ZZ.free_module(labels)
     framing = module.framing_morphism()
 
     assert module in FramedModules(ZZ)
@@ -28,7 +28,7 @@ def test_selected_framing_retains_its_index_set_generators_and_surjection() -> N
 
 def test_framed_module_vector_space_is_fraction_field_base_change() -> None:
     labels = finite_ordered_set(("x", "y"))
-    module = BasedFreeModule(ZZ, labels)
+    module = ZZ.free_module(labels)
     vector_space = module.vector_space()
     rationals = ZZ.fraction_field_map().codomain()
 

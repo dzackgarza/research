@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import NN, ZZ
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
 from dzack_research.preamble.tensors.tensor import tensor
 
 
@@ -15,7 +14,7 @@ def test_repeated_tensor_slots_remain_distinct_owned_index_families() -> None:
 
 
 def test_infinite_rank_pairing_keeps_the_actual_owned_basis_set_per_slot() -> None:
-    module = FreeModule(ZZ, NN)
+    module = ZZ.free_module(NN)
     gram = module.diagonal_gram({})
     upper, lower = gram.tensor_indices()
 

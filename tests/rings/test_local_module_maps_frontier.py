@@ -2,7 +2,6 @@ r"""Comparison maps at the supported local-module boundary."""
 
 from dzack_research.preamble.all import (
     QQ,
-    BasedFreeModule,
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
@@ -47,7 +46,7 @@ def test_nonreduced_local_map_kernel_agrees_before_and_after_transport() -> None
     y0 = node.algebra_generator("y")
     point = node.spectrum()(node.ideal(x0, y0))
 
-    free = BasedFreeModule(node, finite_ordered_set(("g",)))
+    free = node.free_module(finite_ordered_set(("g",)))
     generator = free.module_generator("g")
     multiply_x = free.module_category().Mor(free, free)(
         {"g": free.scalar_multiple(x0, generator)}

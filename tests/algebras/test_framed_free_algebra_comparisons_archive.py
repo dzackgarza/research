@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
     polynomial_ring,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/algebras/framed_free_algebras.sage",
@@ -41,7 +40,7 @@ def test_polynomial_ring_is_the_owned_free_commutative_algebra_on_its_variables(
 
 
 def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     tensor = module.tensor_algebra()
     symmetric = module.symmetric_algebra()
     alternating = module.exterior_algebra()
@@ -80,7 +79,7 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
 
 
 def test_divided_to_symmetric_is_the_factorial_inverse_over_QQ() -> None:
-    module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
+    module = QQ.free_module(finite_ordered_set(("x", "y")))
     symmetric = module.symmetric_algebra()
     divided = module.divided_power_algebra()
     forward = module.symmetric_to_divided()

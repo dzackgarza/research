@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     NN,
     QQ,
     ZZ,
-    BasedFreeModule,
     CartierDivisorGroups,
     ChowGroups,
     ClassGroups,
@@ -34,7 +33,7 @@ from dzack_research.preamble.all import (
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
 # unrelated categories of fans.
-_PLANE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+_PLANE_FANS = RationalPolyhedralFans(ZZ.free_module(2))
 
 
 def _projective_plane():
@@ -107,7 +106,7 @@ def test_projective_plane_canonical_and_anticanonical_bundles_retain_their_divis
 
 
 def test_squaring_on_projective_line_pulls_back_a_boundary_point_with_multiplicity_two() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+    fans = RationalPolyhedralFans(ZZ.free_module(1))
     fan = fans.projective_space_fan()
     cocharacters = fans.cocharacter_lattice()
     label = next(iter(cocharacters.module_generating_set()))

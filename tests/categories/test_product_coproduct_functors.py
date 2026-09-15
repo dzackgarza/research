@@ -1,5 +1,5 @@
 
-from dzack_research.preamble.all import BasedFreeModule, Sets, ZZ
+from dzack_research.preamble.all import Sets, ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import (
     CoproductFunctor,
     DiagonalFunctor,
@@ -42,8 +42,8 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
 
 def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
     category = FinitelyPresentedModules(ZZ)
-    left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
+    left = ZZ.free_module(finite_ordered_set(("x",)))
+    right = ZZ.free_module(finite_ordered_set(("y",)))
     product = ProductFunctor(category)
     coproduct = CoproductFunctor(category)
     pair = product.domain()(left, right)
@@ -83,8 +83,8 @@ def test_infinite_free_module_biproduct_uses_tagged_lazy_framing() -> None:
     from dzack_research.preamble.categories.modules import Modules
     from dzack_research.preamble.categories.sets import NN
 
-    left = BasedFreeModule(ZZ, NN)
-    right = BasedFreeModule(ZZ, NN)
+    left = ZZ.free_module(NN)
+    right = ZZ.free_module(NN)
     direct_sum = Modules(ZZ).biproduct((left, right))
     e5 = left.module_generator(NN(5))
     f7 = right.module_generator(NN(7))

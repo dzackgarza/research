@@ -522,7 +522,6 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pairs,
 )
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     BilinearFormModules,
     BilinearMap,
     BiproductModules,
@@ -567,8 +566,6 @@ from dzack_research.preamble.categories.modules import (
     FramedFreeModules,
     FramedModules,
     FreeFormModules,
-    FreeModule,
-    FreeModuleOn,
     FreeModules,
     FreeResolution,
     GeneralModule,

@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -13,8 +12,8 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_presented_pid_module_has_actual_short_free_resolution() -> None:
-    f0 = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    f0 = ZZ.free_module(finite_ordered_set(("x", "y")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     presentation = relations.module_category().Mor(relations, f0)(
         {"r": 6 * f0.module_generator("x")}
     )
@@ -34,8 +33,8 @@ def test_presented_pid_module_has_actual_short_free_resolution() -> None:
 
 
 def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() -> None:
-    f0 = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r1", "r2")))
+    f0 = ZZ.free_module(finite_ordered_set(("x",)))
+    relations = ZZ.free_module(finite_ordered_set(("r1", "r2")))
     presentation = relations.module_category().Mor(relations, f0)(
         {
             "r1": 2 * f0.module_generator("x"),
@@ -55,7 +54,7 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
 
 
 def test_free_module_has_trivial_free_resolution() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    module = ZZ.free_module(finite_ordered_set(("u", "v")))
     resolution = module.free_resolution()
 
     assert resolution.length() == 0
@@ -69,8 +68,8 @@ def test_free_module_has_trivial_free_resolution() -> None:
 
 
 def test_finite_framing_is_the_term_zero_data_of_the_pid_resolution() -> None:
-    f0 = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    f0 = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, f0)(
             {"r": 5 * f0.module_generator("b")}

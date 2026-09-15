@@ -2,7 +2,6 @@ r"""Classifying categories and categorical group actions ``BG -> C``."""
 
 from dzack_research.preamble.all import (
     QQ,
-    FreeModule,
     GObjects,
     Groups,
     Modules,
@@ -119,7 +118,7 @@ def test_transport_is_postcomposition_on_objects_and_nonidentity_arrows() -> Non
 def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics() -> None:
     group = Groups.C(2)
     generator = group.group_generators()[0]
-    line = FreeModule(QQ, ("e",))
+    line = QQ.free_module(("e",))
 
     def sign_action(group_element, vector):
         return vector if group_element == group.one() else -vector

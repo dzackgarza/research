@@ -1,10 +1,10 @@
-from dzack_research.preamble.all import BasedFreeModule, Groups, Modules, QQ
+from dzack_research.preamble.all import Groups, Modules, QQ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_isotypic_decomposition_derives_its_direct_sum_family_from_components() -> None:
     group = Groups.C(2)
-    module = BasedFreeModule(QQ, finite_ordered_set(("plus", "minus")))
+    module = QQ.free_module(finite_ordered_set(("plus", "minus")))
     plus = module.module_generator("plus")
     minus = module.module_generator("minus")
     involution = module.Mor(module)({"plus": plus, "minus": -minus})

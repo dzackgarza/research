@@ -1,9 +1,7 @@
 from dzack_research.preamble.all import (
     NN,
     ZZ,
-    BasedFreeModule,
     FinitelyPresentedModule,
-    FreeModuleOn,
     ModuleSubobjects,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -24,7 +22,7 @@ def _assert_order_maps_agree(left, right) -> None:
 
 
 def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> None:
-    cover = BasedFreeModule(ZZ, finite_ordered_set((0,)))
+    cover = ZZ.free_module(finite_ordered_set((0,)))
     generator = cover.module_generator(0)
     module = FinitelyPresentedModule(
         cover.module_category().Mor(cover, cover)({0: 2 * generator})
@@ -42,8 +40,8 @@ def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> Non
 
 
 def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connection() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("e1", "e2")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    source = ZZ.free_module(finite_ordered_set(("e1", "e2")))
+    target = ZZ.free_module(finite_ordered_set(("u", "v")))
     e1, e2 = source.module_generators()
     u, v = target.module_generators()
     morphism = source.module_category().Mor(source, target)(
@@ -109,7 +107,7 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
 
 
 def test_finite_subobject_of_countable_free_module_uses_only_finite_support() -> None:
-    ambient = FreeModuleOn(ZZ, NN)
+    ambient = ZZ.free_module(NN)
     e100 = ambient.module_generator(NN(100))
     e1000 = ambient.module_generator(NN(1000))
 
@@ -126,7 +124,7 @@ def test_finite_subobject_of_countable_free_module_uses_only_finite_support() ->
 
 
 def test_module_subobject_intersection_is_the_kernel_pullback() -> None:
-    ambient = BasedFreeModule(ZZ, finite_ordered_set(("e1", "e2")))
+    ambient = ZZ.free_module(finite_ordered_set(("e1", "e2")))
     e1, e2 = ambient.module_generators()
     left = ambient.subobject_on((2 * e1, e2))
     right = ambient.subobject_on((e1, 2 * e2))

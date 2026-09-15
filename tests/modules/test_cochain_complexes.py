@@ -2,7 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     CochainComplexes,
     FinitelyPresentedModule,
     GradedModules,
@@ -11,7 +10,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _rank_one(label):
-    return BasedFreeModule(ZZ, finite_ordered_set((label,)))
+    return ZZ.free_module(finite_ordered_set((label,)))
 
 
 def test_cochain_complex_is_a_structured_graded_module_and_checks_d_squared() -> None:
@@ -51,15 +50,15 @@ def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
 
 
 def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> None:
-    source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
+    source_free = ZZ.free_module(finite_ordered_set(("x",)))
+    source_relations = ZZ.free_module(finite_ordered_set(("r4",)))
     source = FinitelyPresentedModule(
         source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
         )
     )
-    target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
-    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
+    target_free = ZZ.free_module(finite_ordered_set(("y",)))
+    target_relations = ZZ.free_module(finite_ordered_set(("r2",)))
     target = FinitelyPresentedModule(
         target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}

@@ -1,14 +1,13 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     RationalPolyhedralFans,
     ToricFixedPointBlowups,
 )
 
 
 def _projective_plane():
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     return fans.projective_space_fan().toric_variety(QQ)
 
 

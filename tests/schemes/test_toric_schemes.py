@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineSchemes,
-    BasedFreeModule,
     IntegralSchemes,
     LatticePolygon,
     NormalSchemes,
@@ -27,7 +26,7 @@ from dzack_research.preamble.all import (
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
 # unrelated categories of fans.
-_PLANE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+_PLANE_FANS = RationalPolyhedralFans(ZZ.free_module(2))
 
 
 def _plane_fans():
@@ -202,7 +201,7 @@ def test_a_fan_compatible_lattice_map_induces_a_toric_morphism() -> None:
 def test_a_nonidentity_toric_morphism_retains_its_chart_pullback() -> None:
     r"""On ``P^1``, doubling ``N`` induces ``chi^m |-> chi^(2m)`` on a chart."""
 
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+    fans = RationalPolyhedralFans(ZZ.free_module(1))
     fan = fans.projective_space_fan()
     cocharacters = fans.cocharacter_lattice()
     label = next(iter(cocharacters.module_generating_set()))
@@ -233,7 +232,7 @@ def test_a_nonidentity_toric_morphism_retains_its_chart_pullback() -> None:
 def test_an_incompatible_lattice_map_is_refused_rather_than_forced() -> None:
     r"""The fan of ``P^1`` in a rank-one lattice is not carried into the fan of
     the affine line by the identity: the ray ``-e_1`` lies in no cone."""
-    line_fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+    line_fans = RationalPolyhedralFans(ZZ.free_module(1))
 
     projective_line = line_fans.projective_space_fan()
     affine_line = line_fans((((1,),),))

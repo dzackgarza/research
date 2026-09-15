@@ -11,9 +11,7 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AdditiveGroups,
-    BasedFreeModule,
     FramedModules,
-    FreeModuleOn,
     GeneralModule,
     MatrixSpace,
     Modules,
@@ -35,8 +33,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _cyclic_six_from_presentation():
-    target = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    target = ZZ.free_module(finite_ordered_set(("x",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     presentation = relations.module_category().Mor(relations, target)(
         {"r": target.scalar_multiple(ZZ(6), target.module_generator("x"))}
     )
@@ -85,8 +83,8 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
 
 
 def test_free_plus_torsion_presentation_uses_its_exposed_scalar_action() -> None:
-    target = BasedFreeModule(ZZ, finite_ordered_set(("free", "torsion")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    target = ZZ.free_module(finite_ordered_set(("free", "torsion")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     module = relations.module_category().Mor(relations, target)(
         {
             "r": target.scalar_multiple(
@@ -103,7 +101,7 @@ def test_free_plus_torsion_presentation_uses_its_exposed_scalar_action() -> None
 
 
 def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism() -> None:
-    module = FreeModuleOn(ZZ, NN)
+    module = ZZ.free_module(NN)
     element = module({NN(2): ZZ(3), NN(100): ZZ(-1)})
 
     assert module.scalar_action()(ZZ(4))(element) == module.scalar_multiple(
@@ -116,7 +114,7 @@ def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism(
 
 
 def test_restriction_of_scalars_exposes_the_composed_action() -> None:
-    extension = BasedFreeModule(QQ, finite_ordered_set(("e",)))
+    extension = QQ.free_module(finite_ordered_set(("e",)))
     inclusion = ZZ.Mor(QQ)(QQ)
     restricted = extension.restrict_scalars(inclusion)
     element = restricted.wrap(extension.module_generator("e"))
@@ -141,8 +139,8 @@ def test_selected_presentations_are_arrow_objects_and_contractible_summands_rema
     assert selected in category
     assert selected.arrow() is cyclic.presentation()
 
-    target = BasedFreeModule(ZZ, finite_ordered_set(("x", "contractible")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r", "s")))
+    target = ZZ.free_module(finite_ordered_set(("x", "contractible")))
+    relations = ZZ.free_module(finite_ordered_set(("r", "s")))
     stabilized = relations.module_category().Mor(relations, target)(
         {
             "r": target.scalar_multiple(ZZ(6), target.module_generator("x")),
@@ -162,8 +160,8 @@ def test_selected_presentations_are_arrow_objects_and_contractible_summands_rema
 
 
 def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    source = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target = ZZ.free_module(finite_ordered_set(("u", "v")))
     category = FramedModules(ZZ).framing_category()
 
     source_framing = source.framing_object()
@@ -194,14 +192,14 @@ def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -
 
 
 def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
-    source_target = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    source_target = ZZ.free_module(finite_ordered_set(("x", "y")))
+    source_relations = ZZ.free_module(finite_ordered_set(("r",)))
     source = source_relations.module_category().Mor(source_relations, source_target)(
         {"r": source_target.scalar_multiple(ZZ(6), source_target.module_generator("y"))}
     ).cokernel()
 
-    target_target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
-    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("s",)))
+    target_target = ZZ.free_module(finite_ordered_set(("u", "v")))
+    target_relations = ZZ.free_module(finite_ordered_set(("s",)))
     target = target_relations.module_category().Mor(target_relations, target_target)(
         {"s": target_target.scalar_multiple(ZZ(3), target_target.module_generator("v"))}
     ).cokernel()
@@ -226,7 +224,7 @@ def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
 
 def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -> None:
     cyclic = _cyclic_six_from_presentation()
-    free = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    free = ZZ.free_module(finite_ordered_set(("e",)))
     modules = Modules(ZZ)
     constructions = (
         modules.biproduct((cyclic, free)),
@@ -265,7 +263,7 @@ def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -
 
 
 def test_free_duality_retains_the_selected_framing_and_action() -> None:
-    module = FreeModuleOn(ZZ, NN)
+    module = ZZ.free_module(NN)
     dual = module.dual_module()
 
     assert dual.module_generating_set() is module.module_generating_set()
@@ -312,8 +310,8 @@ def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
 def test_localization_is_scalar_extension_of_the_selected_presentation_and_action() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    target = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    target = ring.free_module(finite_ordered_set(("g",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     module = relations.module_category().Mor(relations, target)(
         {"r": target.scalar_multiple(x, target.module_generator("g"))}
     ).cokernel()

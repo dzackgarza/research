@@ -3,7 +3,6 @@ r"""The free-module/underlying-set adjunction ``F_R ⊣ U``."""
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -20,7 +19,7 @@ class FreeModuleFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, set_object):
-        return FreeModuleOn(self.base_ring(), set_object)
+        return self.base_ring().free_module(set_object)
 
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())

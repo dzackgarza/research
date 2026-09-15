@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     FiniteGSets,
     FinitelyPresentedTorsionModules,
     FiniteSets,
@@ -37,7 +36,7 @@ def _s3_c2_sign_module():
     supergroup = Groups.S(3)
     subgroup_generator = next(group_generator for group_generator in supergroup.group_generators() if group_generator.order() == 2)
     subgroup = supergroup.subgroup([subgroup_generator])
-    module = BasedFreeModule(ZZ, finite_ordered_set(("m",)))
+    module = ZZ.free_module(finite_ordered_set(("m",)))
 
     def sign_action(group_element, vector):
         return vector if group_element == subgroup.one() else -vector

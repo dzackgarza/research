@@ -6,7 +6,6 @@ toric boundary is anticanonical and the toric log pair is log Calabi--Yau.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     LogPairs,
     QQ,
     RationalPolyhedralFans,
@@ -17,7 +16,7 @@ from dzack_research.preamble.all import (
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
 # unrelated categories of fans.
-_PLANE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+_PLANE_FANS = RationalPolyhedralFans(ZZ.free_module(2))
 
 
 def _projective_plane():

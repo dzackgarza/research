@@ -1,12 +1,12 @@
 r"""Coordinate ingress for framed free modules over owned scalar rings."""
 
-from dzack_research.preamble.all import BasedFreeModule, Zp, finite_ordered_set
+from dzack_research.preamble.all import Zp, finite_ordered_set
 
 
 def test_coordinate_sequences_take_precedence_over_scalar_ingress() -> None:
     ring = Zp(5)
     labels = finite_ordered_set(("x", "y"))
-    module = BasedFreeModule(ring, labels)
+    module = ring.free_module(labels)
     two = ring(2)
     three = ring(3)
     element = module((two, three))

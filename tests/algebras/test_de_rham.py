@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.algebras import (
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     Modules,
     ModuleSubobjects,
 )
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_exterior_algebra_lands_in_strict_graded_commutative_algebras() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     exterior = module.exterior_algebra()
 
     assert exterior in StrictlyGradedCommutativeAlgebras(ZZ)

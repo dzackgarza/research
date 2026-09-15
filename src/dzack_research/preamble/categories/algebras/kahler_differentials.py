@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -320,7 +319,7 @@ def _construct_kahler_differentials(algebra):
         quotient_map = algebra.algebra_presentation_morphism()
         scalar_extension = ScalarExtensionFunctor(quotient_map)
         conormal_module = scalar_extension(presentation_ideal)
-        ambient_differentials = BasedFreeModule(algebra, differential_labels)
+        ambient_differentials = algebra.free_module(differential_labels)
 
         def conormal_image(label):
             differential = presentation_derivation(ideal_generators[label])

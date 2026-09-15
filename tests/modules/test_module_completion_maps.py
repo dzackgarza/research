@@ -2,7 +2,6 @@ r"""Functorial finite-module completion over represented Noetherian rings."""
 
 from dzack_research.preamble.all import (
     QQ,
-    BasedFreeModule,
     FinitelyPresentedModule,
     Modules,
     PolynomialRing,
@@ -11,12 +10,12 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _free_rank_one(ring):
-    return BasedFreeModule(ring, finite_ordered_set(("g",)))
+    return ring.free_module(finite_ordered_set(("g",)))
 
 
 def _cyclic_torsion_module(ring, scalar):
     free = _free_rank_one(ring)
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}

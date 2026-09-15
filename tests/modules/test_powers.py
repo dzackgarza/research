@@ -4,7 +4,6 @@ from sage.arith.misc import factorial
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     FinitelyPresentedTorsionModules,
 )
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
@@ -19,7 +18,7 @@ def _assert_maps_agree(left, right) -> None:
 
 
 def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_products() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     assert module.tensor_power(2) is module.tensor_power(2)
     assert module.tensor_power(3) is module.tensor_power(3)
     assert module.tensor_power(2).module_rank() == 4
@@ -51,7 +50,7 @@ def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> No
 
 
 def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     for degree in (2, 3):
         divided = module.divided_power_module(degree)
         tensor = module.tensor_power(degree)
@@ -73,7 +72,7 @@ def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> No
 
 
 def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
     shear = module.module_category().Mor(module, module)({"x": x + y, "y": y})
@@ -99,7 +98,7 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
 
 
 def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> None:
-    module = BasedFreeModule(ZZ, NN)
+    module = ZZ.free_module(NN)
     symmetric = module.symmetric_power(2)
     alternating = module.exterior_power(2)
     divided = module.divided_power_module(2)

@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -108,8 +107,8 @@ def _internal_hom_model_data(homset):
     target.module_generating_set()
     source_relations = _presentation_matrix(source)
     relation_labels = Sets.Δ[source_relations.nrows() - 1]
-    generator_free_module = BasedFreeModule(ring, source_labels)
-    relation_free_module = BasedFreeModule(ring, relation_labels)
+    generator_free_module = ring.free_module(source_labels)
+    relation_free_module = ring.free_module(relation_labels)
 
     modules = Modules(ring)
     generator_assignments = modules.tensor_product((generator_free_module, target))

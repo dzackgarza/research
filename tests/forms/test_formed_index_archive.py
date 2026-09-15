@@ -2,11 +2,11 @@ r"""Archive reconciliation for tensor index operations owned by formed modules."
 
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, FreeModule, tensor
+from dzack_research.preamble.all import QQ, ZZ, tensor
 
 
 def test_formed_module_raises_and_lowers_the_same_tensor_indices_as_the_tensor_owner() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     formed = module.equip_bilinear_form(QQ, [[2, 0], [0, 3]])
     covariant = tensor(QQ, (), (2,), [QQ(4), QQ(9)])
 
@@ -19,7 +19,7 @@ def test_formed_module_raises_and_lowers_the_same_tensor_indices_as_the_tensor_o
 
 
 def test_fraction_field_index_raising_changes_both_form_and_tensor_coefficients() -> None:
-    module = FreeModule(ZZ, 1)
+    module = ZZ.free_module(1)
     formed = module.equip_bilinear_form(ZZ, [[2]])
     covariant = tensor(ZZ, (), (1,), [ZZ.one()])
 
@@ -32,7 +32,7 @@ def test_fraction_field_index_raising_changes_both_form_and_tensor_coefficients(
 
 
 def test_index_owner_rejects_a_slot_of_the_wrong_variance() -> None:
-    module = FreeModule(QQ, 2)
+    module = QQ.free_module(2)
     formed = module.equip_bilinear_form(QQ, [[1, 0], [0, 1]])
     covariant = tensor(QQ, (), (2,), [QQ.one(), QQ.zero()])
 

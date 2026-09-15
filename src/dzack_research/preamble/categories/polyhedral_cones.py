@@ -8,7 +8,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -54,7 +53,7 @@ class RationalPolyhedralCones(OwnedCategory):
 
     def an_object(self):
         integers = _own_ring(SageZZ)
-        lattice = BasedFreeModule(integers, 2)
+        lattice = integers.free_module(2)
         dual = lattice.dual_module()
         return rational_polyhedral_cone(lattice, tuple(dual.module_generators()))
 

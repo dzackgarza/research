@@ -1,10 +1,10 @@
-from dzack_research.preamble.all import ZZ, BasedFreeModule
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_localization_ring_owns_the_module_localization_functor_and_object() -> None:
     localization = ZZ.localization(ZZ(2))
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
 
     functor = localization.localization_functor()
     assert functor.localization_ring() is localization
@@ -25,7 +25,7 @@ def test_localization_ring_owns_the_module_localization_functor_and_object() -> 
 
 def test_nonidentity_map_uses_the_same_localization_functor_and_endpoints() -> None:
     localization = ZZ.localization(ZZ(2))
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     e = module.module_generator("e")
     f = module.module_generator("f")
     morphism = module.module_category().Mor(module, module)(

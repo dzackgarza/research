@@ -6,7 +6,6 @@ three semigroup generators of the ``A_1`` cone are Example 1.2.22.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     RationalPolyhedralFans,
     ZZ,
 )
@@ -15,7 +14,7 @@ from dzack_research.preamble.all import (
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
 # unrelated categories of fans.
-_PLANE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+_PLANE_FANS = RationalPolyhedralFans(ZZ.free_module(2))
 
 
 def _plane_fans():

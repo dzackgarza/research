@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    FreeModule,
     PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
@@ -20,12 +19,12 @@ from dzack_research.preamble.categories.divisors.picard_groups import (
 
 
 def _zero_class_group(scheme):
-    return ClassGroups()(FreeModule(ZZ, 0), scheme=scheme)
+    return ClassGroups()(ZZ.free_module(0), scheme=scheme)
 
 
 def _cyclic_module(order):
-    generators = FreeModule(ZZ, 1)
-    relations = FreeModule(ZZ, 1)
+    generators = ZZ.free_module(1)
+    relations = ZZ.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(generators)(
             {0: ZZ(order) * generators.module_generator(0)}

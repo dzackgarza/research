@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -17,7 +16,7 @@ from dzack_research.preamble.rings import session_ring_objects
 
 def test_labeled_free_module_keeps_owned_framing_and_freeness() -> None:
     integers = session_ring_objects()["ZZ"]
-    module = FreeModuleOn(integers, finite_ordered_set(("x", "y")))
+    module = integers.free_module(finite_ordered_set(("x", "y")))
 
     assert module in FramedFreeModules(integers)
     assert module in FinitelyGeneratedFreeModules(integers)
@@ -26,8 +25,8 @@ def test_labeled_free_module_keeps_owned_framing_and_freeness() -> None:
 
 def test_presented_module_keeps_owned_selected_presentation() -> None:
     integers = session_ring_objects()["ZZ"]
-    target = FreeModuleOn(integers, finite_ordered_set(("x", "y")))
-    relations = FreeModuleOn(integers, finite_ordered_set(("r",)))
+    target = integers.free_module(finite_ordered_set(("x", "y")))
+    relations = integers.free_module(finite_ordered_set(("r",)))
     presentation = relations.module_category().Mor(relations, target)(
         {"r": 2 * target.module_generator("x")}
     )

@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     BilinearMap,
     FinitelyPresentedTorsionModules,
     ZZ,
@@ -58,7 +57,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     tensor_by = adjunction.left_adjoint()
     internal_hom_from = adjunction.right_adjoint()
 
-    source = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    source = ZZ.free_module(finite_ordered_set(("a", "b")))
     target = _cyclic(4)
     tensor_source = tensor_by(source)
     target_generator = target.module_generator(0)
@@ -88,7 +87,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
         )
 
     # Naturality of the unit under a nontrivial map of free modules.
-    unit_target = BasedFreeModule(ZZ, finite_ordered_set(("c", "d", "e")))
+    unit_target = ZZ.free_module(finite_ordered_set(("c", "d", "e")))
     source_map = source.module_category().Mor(source, unit_target)(
         {
             "a": unit_target.module_generator("c") + unit_target.module_generator("d"),
@@ -107,7 +106,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     _assert_module_maps_agree(left, right)
 
     # Functoriality is checked on an actual nonidentity composite.
-    third = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    third = ZZ.free_module(finite_ordered_set(("x",)))
     second_map = unit_target.module_category().Mor(unit_target, third)(
         {
             "c": third.module_generator("x"),

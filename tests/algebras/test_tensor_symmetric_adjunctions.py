@@ -4,7 +4,6 @@ from sage.categories.morphism import SetMorphism
 from dzack_research.preamble.all import (
     ZZ,
     Algebras,
-    BasedFreeModule,
     BilinearMap,
     CommutativeAlgebras,
     FinitelyGeneratedFreeModules,
@@ -130,8 +129,8 @@ def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_ever
 def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_presentation() -> (
     None
 ):
-    free = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("x", "y")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     presentation = relations.module_category().Mor(relations, free)(
         {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
     )
@@ -352,7 +351,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     with pytest.raises(ValueError, match="relations"):
         invalid(two_torsion)
 
-    dual_module = BasedFreeModule(ZZ, finite_ordered_set(("one", "epsilon")))
+    dual_module = ZZ.free_module(finite_ordered_set(("one", "epsilon")))
     dual_one = dual_module.module_generator("one")
     dual_epsilon = dual_module.module_generator("epsilon")
     dual_multiplication = Modules(dual_module.base_ring()).tensor_product([dual_module, dual_module]).from_bilinear(
@@ -393,7 +392,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         == iterated_free.zero()
     )
 
-    exterior_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    exterior_module = ZZ.free_module(finite_ordered_set(("x",)))
     exterior = exterior_module.exterior_algebra()
     exterior_unit_label = exterior.module_generating_set()(0, 0)
     augmentation = SetMorphism(
@@ -411,8 +410,8 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         composite_augmentation(exterior.algebra_generator("x")) == iterated_free.zero()
     )
 
-    cover = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    cover = ZZ.free_module(finite_ordered_set(("x", "y")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     nondiagonal = FinitelyPresentedModule(
         relations.module_category().Mor(relations, cover)(
             {"r": 2 * cover.module_generator("x") + 4 * cover.module_generator("y")}

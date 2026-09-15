@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FiniteGSets,
-    FreeModule,
     GObjects,
     Groups,
     Modules,
@@ -34,7 +33,7 @@ def _swap_two_of_three():
 def _regular_representation(ring):
     r"""The free module on the elements of ``S_3``, acted on by left translation."""
     group = Groups.S(3)
-    module = FreeModule(ring, tuple(group))
+    module = ring.free_module(tuple(group))
 
     def act(group_element, vector):
         return module.Mor(module)(

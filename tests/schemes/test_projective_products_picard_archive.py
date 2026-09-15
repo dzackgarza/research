@@ -3,7 +3,6 @@ r"""Archive reconciliation for Picard arithmetic on a product of projective line
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     ProjectiveSpace,
     RationalPolyhedralFans,
     Schemes,
@@ -38,7 +37,7 @@ def test_picard_arithmetic_of_a_product_of_lines_is_componentwise() -> None:
 
 
 def test_picard_pairing_of_P1_times_P1_is_the_hyperbolic_plane() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
     picard = surface.picard_group()
     pairing = surface.picard_intersection_pairing()

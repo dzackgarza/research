@@ -2,9 +2,6 @@ from dzack_research.preamble.all import QQ, AffineSpace
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
@@ -113,8 +110,8 @@ def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
     right_overlap = datum.right_overlap()
     assert left_overlap.coordinate_algebra() is not right_overlap.coordinate_algebra()
 
-    source = FreeModule(left_overlap.coordinate_algebra(), 1)
-    target = FreeModule(right_overlap.coordinate_algebra(), 1)
+    source = left_overlap.coordinate_algebra().free_module(1)
+    target = right_overlap.coordinate_algebra().free_module(1)
     source_label = next(iter(source.module_generating_set()))
     target_label = next(iter(target.module_generating_set()))
     forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
@@ -164,7 +161,7 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
     glued = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions)
     datum = glued.gluing_datum()
     local_modules = {
-        label: FreeModule(datum.chart(label).coordinate_algebra(), 1)
+        label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
     }
     module_transitions = {}
@@ -214,7 +211,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
     }
     datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).gluing_datum()
     local_modules = {
-        label: FreeModule(datum.chart(label).coordinate_algebra(), 1)
+        label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
     }
     transition_data = {}

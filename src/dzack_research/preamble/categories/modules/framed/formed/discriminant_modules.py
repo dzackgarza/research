@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -849,7 +848,7 @@ def _discriminant_subgroup(ambient, generators):
     else:
         # The zero finite module is presented by the identity on one generator.
 
-        free = BasedFreeModule(ambient.base_ring(), finite_ordered_set((0,)))
+        free = ambient.base_ring().free_module(finite_ordered_set((0,)))
         source = FinitelyPresentedModule(
             free.module_category().Mor(free, free).identity(),
             _subobject_ambient=ambient,

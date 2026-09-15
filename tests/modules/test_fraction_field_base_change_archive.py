@@ -8,9 +8,6 @@ under the scalar-change vocabulary rather than by restoring a second functor.
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -20,7 +17,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 
 def _free_rank_two():
     integers = _own_ring(SageZZ)
-    module = BasedFreeModule(integers, finite_ordered_set(("e", "f")))
+    module = integers.free_module(finite_ordered_set(("e", "f")))
     labels = tuple(module.module_generating_set())
     morphism = module.module_category().Mor(module, module)(
         {

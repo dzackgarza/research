@@ -1,7 +1,6 @@
 import pytest
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedTorsionModules,
     QQ,
     QuadraticField,
@@ -32,7 +31,7 @@ def _assert_formed_maps_agree(left, right) -> None:
 
 
 def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_preservation() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    module = ZZ.free_module(finite_ordered_set(("e",)))
     formed = module.equip_bilinear_form(ZZ, [[2]])
     generator = formed.module_generator("e")
 
@@ -75,7 +74,7 @@ def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
 
 
 def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    module = ZZ.free_module(finite_ordered_set(("e",)))
     source = module.equip_bilinear_form(ZZ, [[2]])
     source_generator = source.module_generator("e")
 

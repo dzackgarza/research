@@ -2,12 +2,12 @@ r"""Archive reconciliation for module morphisms as generator-defined linear exte
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, FreeModule
+from dzack_research.preamble.all import ZZ, FinitelyPresentedModule
 
 
 def _zmod2():
-    relations = FreeModule(ZZ, 1)
-    generators = FreeModule(ZZ, 1)
+    relations = ZZ.free_module(1)
+    generators = ZZ.free_module(1)
     relation = relations.module_category().Mor(relations, generators)(
         {relations.module_generating_set()[0]: 2 * generators.module_generator(0)}
     )
@@ -33,7 +33,7 @@ def test_generator_assignment_is_retained_as_the_defining_set_morphism() -> None
 
 def test_generator_assignment_must_kill_every_presented_relation() -> None:
     source = _zmod2()
-    target = FreeModule(ZZ, 1)
+    target = ZZ.free_module(1)
     label = source.module_generating_set()[0]
 
     with pytest.raises(AssertionError, match="kill every relation"):

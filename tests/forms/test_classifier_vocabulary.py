@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.functors.free_forms import (
     TautologicalBilinearFormFunctor,
     TautologicalQuadraticFormFunctor,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -79,7 +78,7 @@ def test_archived_form_type_names_alias_the_universal_module_hom_owners() -> Non
 
 
 def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
     def quadratic_value(value):
@@ -111,7 +110,7 @@ def test_archive_tautological_names_are_the_live_classifier_adjunctions() -> Non
 
 
 def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() -> None:
-    module = FreeModuleOn(ZZ, NN)
+    module = ZZ.free_module(NN)
 
     def coefficients(element):
         return module_coefficients(element, module)

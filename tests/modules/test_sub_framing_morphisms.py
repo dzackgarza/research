@@ -8,14 +8,14 @@ same coefficients.  Nothing is solved and no matrix is formed, which is what
 makes the construction available when the smaller framing is infinite.
 """
 
-from dzack_research.preamble.all import BasedFreeModule, ZZ
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _inclusion():
     r"""Return the inclusion of the free module on ``a, c`` into the one on ``a, b, c``."""
-    small = BasedFreeModule(ZZ, finite_ordered_set(("a", "c")))
-    large = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
+    small = ZZ.free_module(finite_ordered_set(("a", "c")))
+    large = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
     return small, large, small.sub_framing_morphism(large)
 
 

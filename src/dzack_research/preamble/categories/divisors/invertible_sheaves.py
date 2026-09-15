@@ -7,9 +7,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -139,7 +136,7 @@ class InvertibleSheaf(SageObject):
     @classmethod
     def _from_transition_units(cls, cover, transition_units):
         local_modules = tuple(
-            FreeModule(open_subscheme.coordinate_algebra(), 1)
+            open_subscheme.coordinate_algebra().free_module(1)
             for open_subscheme in cover.opens()
         )
         transitions = {}
@@ -239,7 +236,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         self._section_space = section_space
         self._associated_divisor = associated_divisor
         self._local_modules = {
-            index: FreeModule(gluing_datum.chart(index).coordinate_algebra(), 1)
+            index: gluing_datum.chart(index).coordinate_algebra().free_module(1)
             for index in gluing_datum.chart_indices()
         }
         expected = set(gluing_datum.transition_index_set())

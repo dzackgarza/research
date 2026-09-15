@@ -10,7 +10,7 @@ def _generator(module: Any) -> Any:
 def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import FreeModule, InvertibleSheaf, Spec
+    from dzack_research.preamble.all import InvertibleSheaf, Spec
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )
@@ -23,7 +23,7 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
-        FreeModule(open_subscheme.coordinate_algebra(), 1)
+        open_subscheme.coordinate_algebra().free_module(1)
         for open_subscheme in cover.opens()
     )
     left_overlap = cover.restrict_module(local_modules[0], 0, 1)

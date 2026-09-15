@@ -29,9 +29,6 @@ from dzack_research.preamble.catalogue import Involutions, NamedLattices
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
@@ -51,8 +48,8 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 
 def _cyclic_two_module():
     integers = _own_ring(SageZZ)
-    generators = FreeModule(integers, 1)
-    relations = FreeModule(integers, 1)
+    generators = integers.free_module(1)
+    relations = integers.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(generators)(
             {0: integers(2) * generators.module_generator(0)}

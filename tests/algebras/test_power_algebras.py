@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
     FinitelyPresentedTorsionModules,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -41,7 +40,7 @@ def test_exterior_algebra_of_a_presented_module_imposes_linear_relations_and_wed
 def test_divided_power_algebra_has_integral_pd_laws_not_symmetric_multiplication() -> (
     None
 ):
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     algebra = module.divided_power_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
@@ -104,7 +103,7 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
 def test_canonical_comparison_maps_between_the_four_free_constructions() -> None:
     from dzack_research.preamble.all import QQ
 
-    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(finite_ordered_set(("x", "y")))
     tensor = module.tensor_algebra()
     symmetric = module.symmetric_algebra()
     alternating = module.exterior_algebra()
@@ -125,7 +124,7 @@ def test_canonical_comparison_maps_between_the_four_free_constructions() -> None
         divided.algebra_generator("x"), 3
     )
 
-    rational_module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
+    rational_module = QQ.free_module(finite_ordered_set(("x", "y")))
     sym_to_div = rational_module.symmetric_to_divided()
     div_to_sym = rational_module.divided_to_symmetric()
     symmetric_q = rational_module.symmetric_algebra()

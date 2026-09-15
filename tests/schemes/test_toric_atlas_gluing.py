@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineSchemes,
-    BasedFreeModule,
     OpenImmersions,
     RationalPolyhedralFans,
     Surfaces,
@@ -23,8 +22,8 @@ from dzack_research.preamble.all import (
 # One lattice per rank for the whole file: a free module is a fresh object on
 # every construction, so building it twice would give two unrelated categories
 # of fans.
-_PLANE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
-_LINE_FANS = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+_PLANE_FANS = RationalPolyhedralFans(ZZ.free_module(2))
+_LINE_FANS = RationalPolyhedralFans(ZZ.free_module(1))
 
 
 def _projective_plane():

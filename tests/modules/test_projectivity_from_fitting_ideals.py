@@ -9,7 +9,6 @@ a basis of the fibre, and Nakayama turns it into a local trivialization.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedModule,
     ZZ,
 )
@@ -18,8 +17,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _presented_by_multiple_of_a_generator(scalar):
     r"""Return the module on ``g, h`` with the single relation ``scalar * g``."""
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("g", "h")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)({"r": scalar * free.module_generator("g")})
     )
@@ -38,14 +37,14 @@ def test_a_torsion_relation_leaves_a_module_that_is_not_projective() -> None:
 
 
 def test_a_free_module_has_its_rank_as_the_projective_rank_at_a_point() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
+    free = ZZ.free_module(finite_ordered_set(("g", "h")))
     point = ZZ.spectrum()(ZZ.ideal(ZZ(5)))
 
     assert free.projective_rank(point) == 2
 
 
 def test_the_local_free_trivialization_is_an_isomorphism_of_that_rank() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
+    free = ZZ.free_module(finite_ordered_set(("g", "h")))
     point = ZZ.spectrum()(ZZ.ideal(ZZ(5)))
 
     trivialization = free.local_free_trivialization(point)

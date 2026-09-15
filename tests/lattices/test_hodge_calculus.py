@@ -1,14 +1,11 @@
 import pytest
 
 from dzack_research.preamble.all import QQ, ZZ, Lattices
-from dzack_research.preamble.categories.modules import (
-    BasedFreeModule,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_volume_is_literal_determinant_line_isomorphism_and_poincare_duality() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     determinant = module.determinant_line()
     volume = module.framing_volume_trivialization()
     dual = module.dual_module()

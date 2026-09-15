@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     DivisorGroups,
     FormalDivisor,
     FormalDivisorGroups,
-    FreeModuleOn,
     PicardGroups,
     Set,
     WeilDivisorGroups,
@@ -45,7 +44,7 @@ ARCHIVE_RECONCILIATIONS = (
 
 def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
     primes = Set(("D0", "D1"))
-    free = FreeModuleOn(ZZ, primes)
+    free = ZZ.free_module(primes)
 
     divisors = DivisorGroups()(free)
     weil = WeilDivisorGroups()(free)

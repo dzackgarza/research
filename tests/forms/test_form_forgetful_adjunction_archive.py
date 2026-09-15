@@ -7,7 +7,7 @@ that form.  The live ``free_forms`` owner keeps those same constructions under
 public names are exact aliases, not a parallel implementation.
 """
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFormForgetfulAdjunction,
     BilinearFreeFormAdjunction,
@@ -26,7 +26,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _line_and_negation():
-    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    line = ZZ.free_module(finite_ordered_set(("e",)))
     generator = line.module_generator("e")
     negation = line.module_category().Mor(line, line)({"e": -generator})
     return line, negation

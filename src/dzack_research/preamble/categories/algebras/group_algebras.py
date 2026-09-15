@@ -30,9 +30,6 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.group.magmas import Monoids
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -180,7 +177,7 @@ def GroupAlgebra(base_ring, group):
     r"""The group algebra \(R[G]\): the free \(R\)-module on \(G\), multiplied by the group law."""
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
-    module = FreeModuleOn(ring, group)
+    module = ring.free_module(group)
     tensor_square = Modules(ring).tensor_product((module, module))
     multiplication = tensor_square.from_bilinear(
         BilinearMap(

@@ -1,14 +1,14 @@
 r"""Different chain lifts induce the same Tor and Ext maps."""
 
-from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, FreeModule
+from dzack_research.preamble.all import ZZ, FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.pure.modules import (
     FreeResolutionMorphism,
 )
 
 
 def _cyclic_two():
-    free = FreeModule(ZZ, 1)
-    relations = FreeModule(ZZ, 1)
+    free = ZZ.free_module(1)
+    relations = ZZ.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(free)({0: 2 * free.module_generator(0)})
     )

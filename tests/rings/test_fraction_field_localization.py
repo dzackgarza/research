@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    BasedFreeModule,
     NumberField,
     PolynomialRing,
     aleph0,
@@ -65,7 +64,7 @@ def test_field_fraction_field_keeps_the_canonical_field_identity() -> None:
 
 
 def test_module_localization_and_fraction_scalar_change_have_the_same_generic_fibre() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+    module = ZZ.free_module(finite_ordered_set(("e", "f")))
     localization = ZZ.fraction_field_localization()
     localized = localization.localization_functor()(module)
     to_field = Modules(localization).scalar_extension(

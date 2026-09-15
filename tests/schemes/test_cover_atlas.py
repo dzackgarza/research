@@ -87,13 +87,12 @@ def test_descent_data_is_keyed_by_pairs_of_atlas_labels() -> None:
     the charts and no position anywhere, and it answers for the same pairs it
     was given, in both directions.
     """
-    from dzack_research.preamble.all import FreeModule
 
     _algebra, _x, _scheme, cover = _three_chart_cover()
     atlas = cover.atlas()
 
     local_modules = {
-        label: FreeModule(cover.open(label).coordinate_algebra(), 1) for label in atlas
+        label: cover.open(label).coordinate_algebra().free_module(1) for label in atlas
     }
     transitions = {}
     for left, right in combinations(atlas, 2):

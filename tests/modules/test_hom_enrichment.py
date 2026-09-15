@@ -1,17 +1,14 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
-    FreeModule,
     FinitelyPresentedModules,
     InternalHomModules,
     Modules,
     ProjectiveModules,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -19,8 +16,8 @@ from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
 def test_module_hom_is_the_internal_hom_module() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
+    source = ZZ.free_module(finite_ordered_set(("e",)))
+    target = ZZ.free_module(finite_ordered_set(("f",)))
 
     categorical_hom = source.Mor(target)
     direct_hom = source.module_category().Mor(source, target)
@@ -71,8 +68,8 @@ def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
 
 
 def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> None:
-    source = FreeModuleOn(ZZ, NN)
-    target = FreeModuleOn(ZZ, NN)
+    source = ZZ.free_module(NN)
+    target = ZZ.free_module(NN)
 
     internal = source.module_category().Mor(source, target)
 
@@ -103,9 +100,9 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
-    zero = BasedFreeModule(algebra, finite_ordered_set(()))
-    source_free = BasedFreeModule(algebra, finite_ordered_set(("u", "v")))
-    target_free = BasedFreeModule(algebra, finite_ordered_set(("w",)))
+    zero = algebra.free_module(finite_ordered_set(()))
+    source_free = algebra.free_module(finite_ordered_set(("u", "v")))
+    target_free = algebra.free_module(finite_ordered_set(("w",)))
     source = FinitelyPresentedModule(zero.module_category().Mor(zero, source_free)({}))
     target = FinitelyPresentedModule(zero.module_category().Mor(zero, target_free)({}))
     morphism = source.module_category().Mor(source, target)(
@@ -134,15 +131,15 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
 
 
 def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
-    source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
+    source_free = ZZ.free_module(finite_ordered_set(("x",)))
+    source_relations = ZZ.free_module(finite_ordered_set(("r4",)))
     source = FinitelyPresentedModule(
         source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
         )
     )
-    target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
-    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
+    target_free = ZZ.free_module(finite_ordered_set(("y",)))
+    target_relations = ZZ.free_module(finite_ordered_set(("r2",)))
     target = FinitelyPresentedModule(
         target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}
@@ -170,8 +167,8 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
 
 
 def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
-    source = FreeModule(ZZ, 2)
-    target = FreeModule(ZZ, 3)
+    source = ZZ.free_module(2)
+    target = ZZ.free_module(3)
     hom = source.module_category().Mor(source, target)
 
     framing_source = hom.framing_source()

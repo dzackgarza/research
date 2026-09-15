@@ -4,8 +4,6 @@ from importlib import import_module as _import_module
 
 _EXPORTS = {'FinitelyGeneratedFreeModules': ('dzack_research.preamble.categories.modules.pure.modules',
                                   'FinitelyGeneratedFreeModules'),
- 'BasedFreeModule': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
-                     'BasedFreeModule'),
  'FinitelyPresentedModules': ('dzack_research.preamble.categories.modules.pure.modules',
                               'FinitelyPresentedModules'),
  'ModulesWithChosenFinitePresentation': ('dzack_research.preamble.categories.modules.pure.modules',
@@ -16,8 +14,7 @@ _EXPORTS = {'FinitelyGeneratedFreeModules': ('dzack_research.preamble.categories
                                      'FinitelyPresentedTorsionModules'),
 }
 
-__all__ = ['BasedFreeModule',
- 'FinitelyGeneratedFreeModules',
+__all__ = ['FinitelyGeneratedFreeModules',
  'FinitelyPresentedModule',
  'FinitelyPresentedModules',
  'FinitelyPresentedTorsionModules',

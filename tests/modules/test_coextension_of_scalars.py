@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedAlgebra,
-    FreeModule,
     Groups,
     Modules,
     SymmetricAlgebraOn,
@@ -30,7 +29,7 @@ def _gaussian_rationals():
 def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> None:
     r"""``QQ^2`` with ``i`` acting by a quarter turn is a ``QQ[i]``-module on which ``i^2 = -1``."""
     scalars, i, _ = _gaussian_rationals()
-    plane = FreeModule(QQ, 2)
+    plane = QQ.free_module(2)
     endomorphisms = Modules(QQ).End(plane)
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
     quarter_turn = endomorphisms({0: e1, 1: -e0})
@@ -59,7 +58,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
 def test_coextension_along_a_quadratic_algebra_acts_by_the_right_regular_action() -> None:
     r"""On ``Hom_QQ(S, QQ)`` the action is ``(s . phi)(t) = phi(t s)``, so ``i`` squares to ``-1``."""
     scalars, i, structure_map = _gaussian_rationals()
-    line = FreeModule(QQ, 1)
+    line = QQ.free_module(1)
     coextension = Modules(QQ).coextension_of_scalars(structure_map)
     coextended = coextension(line)
     assert coextended in Modules(scalars)
@@ -79,7 +78,7 @@ def test_coextension_along_a_group_algebra_is_the_coinduced_module_of_the_trivia
     coextension = Modules(ZZ).coextension_of_scalars(
         ZZ.Mor(group_algebra)(lambda integer: integer * group_algebra.one())
     )
-    coextended = coextension(FreeModule(ZZ, 1))
+    coextended = coextension(ZZ.free_module(1))
 
     assert coextended in Modules(group_algebra)
     assert coextended.module_rank() == 6
@@ -90,8 +89,8 @@ def test_coextension_along_a_group_algebra_is_the_coinduced_module_of_the_trivia
 def test_restriction_is_left_adjoint_to_coextension() -> None:
     r"""The Hom bijection ``Hom_QQ(Res N, M) ~ Hom_S(N, Hom_QQ(S, M))`` round-trips a chosen map."""
     scalars, i, structure_map = _gaussian_rationals()
-    free_line = FreeModule(scalars, 1)
-    target = FreeModule(QQ, 1)
+    free_line = scalars.free_module(1)
+    target = QQ.free_module(1)
     adjunction = Modules(scalars).restriction_coextension_adjunction(structure_map)
     restricted = adjunction.left_adjoint()(free_line)
     generator = free_line.module_generator(0)
@@ -116,7 +115,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     group = Groups.C(2)
     group_algebra = ZZ[group]
     structure_map = ZZ.Mor(group_algebra)(lambda integer: integer * group_algebra.one())
-    plane = FreeModule(ZZ, 2)
+    plane = ZZ.free_module(2)
     labels = plane.module_generating_set()
     first, second = labels[0], labels[1]
     e0, e1 = plane.module_generator(first), plane.module_generator(second)
@@ -140,7 +139,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
         generator, unit(swapped.module_generator(0))
     )
 
-    target = FreeModule(ZZ, 1)
+    target = ZZ.free_module(1)
     weights = forgotten.module_category().Mor(forgotten, target)(
         {0: target.module_generator(0), 1: 3 * target.module_generator(0)}
     )

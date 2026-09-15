@@ -3,7 +3,6 @@ r"""Archive reconciliation for graded sections on a product of projective lines.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     CoxRings,
     ProjectiveSpace,
     RationalPolyhedralFans,
@@ -33,7 +32,7 @@ def test_bidegree_four_section_ring_has_the_expected_first_two_graded_pieces() -
 
 
 def test_P1_times_P1_cox_ring_has_four_homogeneous_coordinate_generators() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
     cox = surface.cox_ring()
     labels = tuple(cox.algebra_generating_set())

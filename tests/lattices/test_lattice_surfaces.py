@@ -2,7 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import (
     AA,
-    BasedFreeModule,
     FinitelyGeneratedModules,
     FinitelyPresentedAlgebras,
     FractionalIdeals,
@@ -161,7 +160,7 @@ def test_galois_group_does_not_mean_the_normal_closure_group() -> None:
 
 
 def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None:
-    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    source = ZZ.free_module(finite_ordered_set(("x", "y")))
     plane = Lattices(ZZ)("U")
     e, f = plane.module_generators()
     morphism = source.module_category().Mor(source, plane)({"x": e, "y": e})

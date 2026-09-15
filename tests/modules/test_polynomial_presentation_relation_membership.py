@@ -1,13 +1,13 @@
 r"""Exact relation membership for selected presentations over polynomial rings."""
 
-from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing
+from dzack_research.preamble.all import QQ, PolynomialRing
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
 
 
 def _cyclic_quotient(ring, relation):
-    free = FreeModule(ring, 1)
+    free = ring.free_module(1)
     generator = free.module_generator(0)
     return FinitelyPresentedModule(
         free.module_category().Mor(free, free)({0: relation * generator})

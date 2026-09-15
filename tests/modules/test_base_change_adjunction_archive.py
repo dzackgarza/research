@@ -11,7 +11,6 @@ an object-level base-change operation.
 from dzack_research.preamble.all import (
     QQ,
     FinitelyPresentedAlgebra,
-    FreeModule,
     Modules,
     SymmetricAlgebraOn,
 )
@@ -43,7 +42,7 @@ def _gaussian_extension():
 
 def test_base_change_counit_multiplies_the_restricted_scalar_basis_back_into_the_module() -> None:
     scalars, i, structure_map = _gaussian_extension()
-    module = FreeModule(scalars, 1)
+    module = scalars.free_module(1)
     generator = module.module_generator(0)
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
 
@@ -66,7 +65,7 @@ def test_base_change_counit_multiplies_the_restricted_scalar_basis_back_into_the
 
 def test_extension_restriction_triangle_is_the_identity_on_a_free_module() -> None:
     scalars, _i, structure_map = _gaussian_extension()
-    source = FreeModule(QQ, 1)
+    source = QQ.free_module(1)
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
     extension = adjunction.left_adjoint()
 
@@ -85,7 +84,7 @@ def test_extension_restriction_triangle_is_the_identity_on_a_free_module() -> No
 
 def test_restriction_extension_triangle_is_the_identity_on_a_free_extension_module() -> None:
     scalars, _i, structure_map = _gaussian_extension()
-    target = FreeModule(scalars, 1)
+    target = scalars.free_module(1)
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
     restriction = adjunction.right_adjoint()
 
@@ -104,7 +103,7 @@ def test_restriction_extension_triangle_is_the_identity_on_a_free_extension_modu
 
 def test_restricted_scalar_view_retains_the_extension_module_and_scalar_map() -> None:
     scalars, i, structure_map = _gaussian_extension()
-    module = FreeModule(scalars, 1)
+    module = scalars.free_module(1)
     generator = module.module_generator(0)
     restriction = Modules(scalars).restriction_of_scalars(structure_map)
     restricted = restriction(module)

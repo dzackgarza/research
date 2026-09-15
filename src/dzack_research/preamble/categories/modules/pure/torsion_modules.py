@@ -11,7 +11,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
@@ -258,8 +257,8 @@ def _torsion_module_presented_by_matrix(
         raise ValueError(
             "the module-generating set and relation matrix have different widths"
         )
-    target = BasedFreeModule(ring, labels)
-    source = BasedFreeModule(ring, relation_count)
+    target = ring.free_module(labels)
+    source = ring.free_module(relation_count)
 
     def relation_entry(row_position, column_position):
         row_label = relations.parent().row_index_set()[row_position]

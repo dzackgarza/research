@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, ZZ, FreeModule, Lattices, Modules
+from dzack_research.preamble.all import QQ, ZZ, Lattices, Modules
 from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
 
 
@@ -9,7 +9,7 @@ def _standard_reference():
     )
     space = restriction(line)
     e0 = line.module_generator(0)
-    reference_module = FreeModule(ZZ, 1)
+    reference_module = ZZ.free_module(1)
     reference = reference_module.Mono(space)({0: space.wrap(e0)})
     negation = line.Aut()({0: -e0})
     group = line.Aut()
@@ -41,7 +41,7 @@ def test_stable_reference_lattice_produces_the_actual_finite_quotient_action() -
 def test_intermediate_lattice_maps_to_its_actual_subobject_modulo_dM() -> None:
     line, space, reference, _negation, group = _standard_reference()
     e0 = line.module_generator(0)
-    intermediate_module = FreeModule(ZZ, 1)
+    intermediate_module = ZZ.free_module(1)
     intermediate = intermediate_module.Mono(space)(
         {0: space.wrap(line.scalar_multiple(QQ(2), e0))}
     )
@@ -69,7 +69,7 @@ def test_only_the_reference_stabilizer_acts_on_the_finite_quotient() -> None:
     )
     space = restriction(plane)
     e0, e1 = plane.module_generators()
-    reference_module = FreeModule(ZZ, 2)
+    reference_module = ZZ.free_module(2)
     reference = reference_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )

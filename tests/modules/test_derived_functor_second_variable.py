@@ -3,13 +3,12 @@ r"""Tor and Ext retain their functoriality in the second module variable."""
 from dzack_research.preamble.all import (
     ZZ,
     FinitelyPresentedModule,
-    FreeModule,
 )
 
 
 def _cyclic(integer):
-    line = FreeModule(ZZ, 1)
-    relations = FreeModule(ZZ, 1)
+    line = ZZ.free_module(1)
+    relations = ZZ.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(line)({0: ZZ(integer) * line.module_generator(0)})
     )

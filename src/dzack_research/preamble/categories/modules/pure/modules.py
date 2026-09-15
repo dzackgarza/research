@@ -2406,13 +2406,10 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
             surjection because the ranks agree.
             """
 
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreeModuleOn,
-            )
 
             localized = self.localize_at_prime(point)
             labels = localized.residue_module().basis_generator_labels()
-            free = FreeModuleOn(localized.base_ring(), labels)
+            free = localized.base_ring().free_module(labels)
             return free.module_category().Mor(free, localized)(
                 lambda label: localized.module_generator(label)
             )
@@ -2469,11 +2466,8 @@ class FramedModules(OwnedCategoryOverBaseRing):
             if module_generating_set is not None and module_generator_function is not None:
                 source = framing_source
                 if source is None:
-                    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                        FreeModuleOn,
-                    )
 
-                    source = FreeModuleOn(self.base_ring(), module_generating_set)
+                    source = self.base_ring().free_module(module_generating_set)
                 # The mathematical framing is fixed here by its actual source and
                 # selected generator map.  The Hom wrapper is realized lazily only
                 # because some specialized parents finish their own initialization
@@ -2579,12 +2573,11 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``Res_{id}(R^2)``: a free module along the identity of ``R``."""
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         ring = self.base_ring()
-        return BasedFreeModule(ring, finite_ordinal_set(2)).restrict_scalars(
+        return ring.free_module(finite_ordinal_set(2)).restrict_scalars(
             ring.Mor(ring)(lambda element: element)
         )
 

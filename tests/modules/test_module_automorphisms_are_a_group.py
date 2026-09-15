@@ -15,7 +15,6 @@ case that separates the unit group from the whole ring.
 
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     OwnedGroups,
     OwnedRings,
 )
@@ -23,7 +22,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _plane():
-    return BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
+    return ZZ.free_module(finite_ordered_set(("a", "b")))
 
 
 def _swap(plane):

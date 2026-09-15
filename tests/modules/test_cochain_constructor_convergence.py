@@ -2,7 +2,6 @@ r"""Every public cochain route delegates to the category-owned construction."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     CochainComplexes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -10,8 +9,8 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 
 
 def _two_term_data():
-    source = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
+    source = ZZ.free_module(finite_ordered_set(("e",)))
+    target = ZZ.free_module(finite_ordered_set(("f",)))
     differential = source.module_category().Mor(source, target)(
         {"e": 2 * target.module_generator("f")}
     )
@@ -34,7 +33,7 @@ def test_finite_complex_uses_the_category_constructor() -> None:
 def test_lazy_complex_uses_the_category_family_constructor() -> None:
     category = CochainComplexes(ZZ)
     degrees = category.base_ring()
-    zero = BasedFreeModule(ZZ, finite_ordered_set(()))
+    zero = ZZ.free_module(finite_ordered_set(()))
     pieces = indexed_family(degrees, lambda _degree: zero, name="Zero pieces")
     differentials = indexed_family(
         degrees,

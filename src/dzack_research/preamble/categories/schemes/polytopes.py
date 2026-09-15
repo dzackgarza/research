@@ -10,7 +10,6 @@ from sage.structure.element import parent as engine_parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -207,7 +206,7 @@ class ConvexPolytopes(OwnedCategory):
 
             ambient_dimension = int(polyhedron.ambient_dim())
             if lattice is None:
-                lattice = BasedFreeModule(integers, ambient_dimension)
+                lattice = integers.free_module(ambient_dimension)
             assert lattice.base_ring() is integers, (
                 "the ambient lattice of a rational polytope is an owned ZZ-module"
             )
@@ -265,10 +264,7 @@ class ConvexPolytopes(OwnedCategory):
             r"""Return the owned rational coordinate module ``QQ^n``."""
 
             rationals = _own_ring(SageQQ)
-            return BasedFreeModule(
-                rationals,
-                self.ambient_lattice().module_generating_set(),
-            )
+            return rationals.free_module(self.ambient_lattice().module_generating_set())
 
         def dimension(self):
             return _own_ring(SageZZ)(int(self._engine_polyhedron().dim()))

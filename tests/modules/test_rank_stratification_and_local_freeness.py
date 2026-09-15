@@ -12,7 +12,6 @@ from the origin and has a two-dimensional fibre there.
 
 from dzack_research.preamble.all import (
     QQ,
-    BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
 )
@@ -23,8 +22,8 @@ def _torsion_plus_free():
     r"""Return ``QQ[x]``, its variable, and ``R/(x) + R`` presented on two generators."""
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    free = BasedFreeModule(ring, finite_ordered_set(("g", "h")))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    free = ring.free_module(finite_ordered_set(("g", "h")))
+    relations = ring.free_module(finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x, free.module_generator("g"))}
@@ -92,8 +91,8 @@ def test_the_annihilator_of_a_sum_of_cyclic_modules_over_a_non_pid() -> None:
     ring = PolynomialRing(QQ, ("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
-    free = BasedFreeModule(ring, finite_ordered_set(("g", "h")))
-    relations = BasedFreeModule(ring, finite_ordered_set(("r", "s")))
+    free = ring.free_module(finite_ordered_set(("g", "h")))
+    relations = ring.free_module(finite_ordered_set(("r", "s")))
     module = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)(
             {

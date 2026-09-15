@@ -10,7 +10,6 @@ three-cycle.
 """
 
 from dzack_research.preamble.all import (
-    FreeModule,
     Groups,
     Modules,
     QQ,
@@ -20,7 +19,7 @@ from dzack_research.preamble.all import (
 def _permutation_module():
     group = Groups.S(3)
     points = (1, 2, 3)
-    module = FreeModule(QQ, len(points))
+    module = QQ.free_module(len(points))
 
     def act(group_element, vector):
         return module.Mor(module)(

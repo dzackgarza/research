@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     ZZ,
     AdditiveGroups,
     FinitelyPresentedTorsionModules,
-    FreeModule,
     Groups,
     Modules,
     Sets,
@@ -30,7 +29,7 @@ ARCHIVE_RECONCILIATION = {
 def _sign_module(ring):
     group = Groups.C(2)
     group_algebra = ring[group]
-    line = FreeModule(ring, 1)
+    line = ring.free_module(1)
     generator = group.group_generators()[0]
 
     def sign(group_element, vector):
@@ -127,7 +126,7 @@ def test_equivariant_hom_is_coefficient_linear_underneath() -> None:
 def test_exact_additive_scalar_action_is_retained_as_the_defining_morphism() -> None:
     group = Groups.C(2)
     group_algebra = QQ[group]
-    line = FreeModule(QQ, 1)
+    line = QQ.free_module(1)
     additive_endomorphisms = AdditiveGroups().AdditiveCommutative().End(
         line.underlying_additive_group()
     )

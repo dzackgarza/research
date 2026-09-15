@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    FreeModule,
     PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
@@ -24,8 +23,8 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import Weil
 
 
 def _cyclic_module(order):
-    generators = FreeModule(ZZ, 1)
-    relations = FreeModule(ZZ, 1)
+    generators = ZZ.free_module(1)
+    relations = ZZ.free_module(1)
     return FinitelyPresentedModule(
         relations.Mor(generators)(
             {0: ZZ(order) * generators.module_generator(0)}
@@ -116,9 +115,9 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     assert full_weil.multiplicity(divisor_of_x, prime) == 2
     assert divisor_of_x == 2 * prime_divisor
 
-    principal = FreeModule(ZZ, 1)
-    cartier = CartierDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
-    weil_presentation = WeilDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
+    principal = ZZ.free_module(1)
+    cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    weil_presentation = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = weil_presentation.module_generator(0)

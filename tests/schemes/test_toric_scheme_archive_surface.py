@@ -10,7 +10,6 @@ are decided by fan isomorphism.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     LatticePolygon,
     RationalPolyhedralFans,
     Schemes,
@@ -25,7 +24,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_fan_defined_toric_scheme_retains_its_mathematical_data() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     fan = fans.projective_space_fan()
     plane = fan.toric_variety(QQ)
 
@@ -47,7 +46,7 @@ def test_polytope_construction_retains_the_selected_polarization() -> None:
 
 
 def test_general_equation_defined_subscheme_is_not_promoted_to_toric() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     plane = fans.projective_space_fan().toric_variety(QQ)
     chart = plane.affine_chart(plane.fan().maximal_cones()[0])
     algebra = chart.coordinate_algebra()

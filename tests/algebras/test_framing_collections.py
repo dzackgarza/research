@@ -2,14 +2,11 @@ import pytest
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.sets import NN
 
 
 def test_infinite_free_algebra_morphism_keeps_generator_images_lazy() -> None:
-    module = FreeModule(ZZ, NN)
+    module = ZZ.free_module(NN)
     algebra = module.tensor_algebra()
     evaluated = []
 

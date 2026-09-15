@@ -40,14 +40,13 @@ def test_owned_ordered_ring_elements_compare_with_python_integers() -> None:
 def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None:
     session = _session()
     ZZ = session["ZZ"]
-    FreeModule = session["FreeModule"]
 
     module = ZZ**3
     assert module.base_ring() is ZZ
     assert module.module_rank() == 3
     assert module is ZZ**3
-    assert FreeModule(ZZ, ZZ(3)) is module
-    assert FreeModule(ZZ, SageZZ(3)) is module
+    assert ZZ.free_module(ZZ(3)) is module
+    assert ZZ.free_module(SageZZ(3)) is module
 
 
 def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> None:

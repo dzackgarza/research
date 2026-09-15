@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import BasedFreeModule, ZZ
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormEmbedding,
     FormModules,
@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _zero_formed_line():
-    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    module = ZZ.free_module(finite_ordered_set(("e",)))
     return FormModules(ZZ)(
         module.bilinear_forms(ZZ)(lambda _left, _right: ZZ.zero())
     )

@@ -8,7 +8,6 @@ image, and the monomorphism is injective there.
 """
 
 from dzack_research.preamble.all import (
-    BasedFreeModule,
     FinitelyPresentedModule,
     ZZ,
 )
@@ -16,8 +15,8 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_a_projection_off_a_free_summand_has_a_section() -> None:
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("c",)))
+    plane = ZZ.free_module(finite_ordered_set(("a", "b")))
+    line = ZZ.free_module(finite_ordered_set(("c",)))
     projection = plane.module_category().Mor(plane, line)(
         {"a": line.module_generator("c"), "b": line.zero()}
     )
@@ -31,8 +30,8 @@ def test_a_projection_off_a_free_summand_has_a_section() -> None:
 
 
 def test_a_split_inclusion_has_a_retraction_that_is_the_identity_on_the_source() -> None:
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("c",)))
+    plane = ZZ.free_module(finite_ordered_set(("a", "b")))
+    line = ZZ.free_module(finite_ordered_set(("c",)))
     inclusion = line.module_category().Mor(line, plane)({"c": plane.module_generator("a")})
 
     retraction = inclusion.retraction()
@@ -44,8 +43,8 @@ def test_a_split_inclusion_has_a_retraction_that_is_the_identity_on_the_source()
 
 
 def test_the_cokernel_projection_kills_exactly_the_image() -> None:
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("c",)))
+    plane = ZZ.free_module(finite_ordered_set(("a", "b")))
+    line = ZZ.free_module(finite_ordered_set(("c",)))
     inclusion = line.module_category().Mor(line, plane)({"c": plane.module_generator("a")})
 
     projection = inclusion.cokernel_projection()
@@ -56,8 +55,8 @@ def test_the_cokernel_projection_kills_exactly_the_image() -> None:
 
 
 def test_a_presented_module_with_no_torsion_is_recognised_as_free() -> None:
-    free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
-    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    free = ZZ.free_module(finite_ordered_set(("g", "h")))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
     torsion_free = FinitelyPresentedModule(
         relations.module_category().Mor(relations, free)({"r": free.module_generator("g")})
     )

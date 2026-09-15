@@ -7,7 +7,7 @@ presented kernel/cokernel machinery rather than requiring provenance from a
 map over the unlocalized source ring.
 """
 
-from dzack_research.preamble.all import QQ, BasedFreeModule, PolynomialRing
+from dzack_research.preamble.all import QQ, PolynomialRing
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -16,8 +16,8 @@ def test_direct_map_over_a_prime_local_ring_has_exact_kernel_and_cokernel() -> N
     x = ring.algebra_generator("x")
     point = ring.spectrum()(ring.ideal(x))
     local = point.local_ring()
-    source = BasedFreeModule(local, finite_ordered_set(("a", "b")))
-    target = BasedFreeModule(local, finite_ordered_set(("c",)))
+    source = local.free_module(finite_ordered_set(("a", "b")))
+    target = local.free_module(finite_ordered_set(("c",)))
     morphism = source.module_category().Mor(source, target)(
         {
             "a": target.module_generator("c"),
@@ -36,7 +36,7 @@ def test_direct_local_map_detects_a_nonunit_cokernel() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
     local = ring.spectrum()(ring.ideal(x)).local_ring()
-    module = BasedFreeModule(local, finite_ordered_set(("g",)))
+    module = local.free_module(finite_ordered_set(("g",)))
     generator = module.module_generator("g")
     multiplication_by_x = module.module_category().Mor(module, module)(
         {"g": module.scalar_multiple(local(x), generator)}

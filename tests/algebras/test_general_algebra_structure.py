@@ -11,7 +11,6 @@ import pytest
 from dzack_research.preamble.all import (
     Algebras,
     AssociativeAlgebras,
-    BasedFreeModule,
     BilinearMap,
     CommutativeAlgebras,
     EndofunctorAlgebras,
@@ -44,7 +43,7 @@ class _TensorSquareFunctor(Functor):
 
 
 def _two_products_on_one_module():
-    module = BasedFreeModule(QQ, finite_ordered_set(("1", "x")))
+    module = QQ.free_module(finite_ordered_set(("1", "x")))
     one = module.module_generator("1")
     x = module.module_generator("x")
     tensor_square = Modules(QQ).tensor_product((module, module))
@@ -170,7 +169,7 @@ def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
 
 
 def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
-    module = BasedFreeModule(QQ, finite_ordered_set(("a", "b")))
+    module = QQ.free_module(finite_ordered_set(("a", "b")))
     a = module.module_generator("a")
     b = module.module_generator("b")
     tensor_square = Modules(QQ).tensor_product((module, module))

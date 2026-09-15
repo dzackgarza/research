@@ -5,9 +5,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModule,
-)
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasRefinement,
@@ -60,7 +57,7 @@ def _identity_transition(label, domain, codomain):
 
 def _rank_one_sheaf(datum):
     local_modules = {
-        index: FreeModule(datum.chart(index).coordinate_algebra(), 1)
+        index: datum.chart(index).coordinate_algebra().free_module(1)
         for index in datum.chart_indices()
     }
     transitions = {
@@ -209,7 +206,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     pullback = morphism.module_pullback_functor()
     direct = morphism.direct_image_functor()
 
-    target_module = FreeModule(plane.coordinate_algebra(), 1)
+    target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     target_label = target_module.module_generating_set()[0]
     times_two = target_module.module_category().Mor(target_module, target_module)(
@@ -229,7 +226,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     assert pulled_two * pulled_identity == pulled_two
     assert pulled_identity * pulled_two == pulled_two
 
-    source_module = FreeModule(line.coordinate_algebra(), 1)
+    source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     source_label = source_module.module_generating_set()[0]
     times_three = source_module.module_category().Mor(source_module, source_module)(
@@ -254,7 +251,7 @@ def test_affine_quasi_coherent_pullback_is_left_adjoint_to_direct_image() -> Non
     plane, line, morphism = _cusp_parametrization()
     adjunction = morphism.quasi_coherent_adjunction()
 
-    target_module = FreeModule(plane.coordinate_algebra(), 1)
+    target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     pulled = adjunction.left_adjoint().on_object(target_sheaf)
     pushed_back = adjunction.right_adjoint().on_object(pulled)
@@ -262,7 +259,7 @@ def test_affine_quasi_coherent_pullback_is_left_adjoint_to_direct_image() -> Non
     assert unit.domain() is target_module
     assert unit.codomain() is pushed_back.module()
 
-    source_module = FreeModule(line.coordinate_algebra(), 1)
+    source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     pushed = adjunction.right_adjoint().on_object(source_sheaf)
     pulled_back = adjunction.left_adjoint().on_object(pushed)

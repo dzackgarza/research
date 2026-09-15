@@ -11,7 +11,6 @@ prime to its germ.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -66,7 +65,7 @@ def test_a_localization_restricts_into_a_prime_localization_as_a_germ() -> None:
 
 
 def test_restricting_a_localized_module_carries_generators_to_generators() -> None:
-    module = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    module = ZZ.free_module(finite_ordered_set(("u", "v")))
     inverted_two = ZZ.localization(2)
     inverted_six = ZZ.localization(2, 3)
     sections = inverted_two.localize_module(module)

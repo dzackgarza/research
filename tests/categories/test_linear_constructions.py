@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     ZZ,
-    BasedFreeModule,
     BiproductBifunctor,
     CokernelArrowFunctor,
     DualizationFunctor,
@@ -23,9 +22,9 @@ def _assert_module_maps_agree(left, right) -> None:
 
 
 def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> None:
-    m = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    n = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
-    p = BasedFreeModule(ZZ, finite_ordered_set(("r", "s")))
+    m = ZZ.free_module(finite_ordered_set(("x", "y")))
+    n = ZZ.free_module(finite_ordered_set(("u", "v")))
+    p = ZZ.free_module(finite_ordered_set(("r", "s")))
     x, y = m.module_generators()
     u, v = n.module_generators()
     r, s = p.module_generators()
@@ -104,8 +103,8 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
 def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> None:
     finite_free_arrow_category = FinitelyGeneratedFreeModules(ZZ).ArrowCategory()
 
-    plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
+    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
+    line = ZZ.free_module(finite_ordered_set(("z",)))
     x, y = plane.module_generators()
     z = line.module_generator("z")
     projection = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
@@ -139,8 +138,8 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
         kernel_object.module_category().Mor(kernel_object, kernel_object).identity(),
     )
 
-    cyclic_source = BasedFreeModule(ZZ, finite_ordered_set(("a",)))
-    cyclic_target = BasedFreeModule(ZZ, finite_ordered_set(("b",)))
+    cyclic_source = ZZ.free_module(finite_ordered_set(("a",)))
+    cyclic_target = ZZ.free_module(finite_ordered_set(("b",)))
     a = cyclic_source.module_generator("a")
     b = cyclic_target.module_generator("b")
     twice = cyclic_source.module_category().Mor(cyclic_source, cyclic_target)({"a": 2 * b})

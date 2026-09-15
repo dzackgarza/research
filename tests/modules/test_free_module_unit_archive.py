@@ -3,9 +3,6 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/framed_free_modules.sage",
@@ -19,7 +16,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_canonical_free_generator_recovers_its_framing_label() -> None:
-    module = FreeModuleOn(ZZ, ("alpha", "beta"))
+    module = ZZ.free_module(("alpha", "beta"))
 
     for label in module.module_generating_set():
         generator = module.module_generator(label)
@@ -27,7 +24,7 @@ def test_canonical_free_generator_recovers_its_framing_label() -> None:
 
 
 def test_non_generator_linear_combinations_have_no_underlying_label() -> None:
-    module = FreeModuleOn(ZZ, ("alpha", "beta"))
+    module = ZZ.free_module(("alpha", "beta"))
     alpha = module.module_generator("alpha")
     beta = module.module_generator("beta")
 
@@ -40,7 +37,7 @@ def test_non_generator_linear_combinations_have_no_underlying_label() -> None:
 
 
 def test_archived_framed_free_module_surface_is_owned_by_the_live_free_module() -> None:
-    module = FreeModuleOn(ZZ, ("alpha", "beta"))
+    module = ZZ.free_module(("alpha", "beta"))
     alpha = module.module_generator("alpha")
     beta = module.module_generator("beta")
     framing = module.framing_morphism()

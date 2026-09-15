@@ -11,12 +11,11 @@ acquire that ordinary forgetful adjunction.
 import pytest
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _rank_one(label):
-    return BasedFreeModule(ZZ, finite_ordered_set((label,)))
+    return ZZ.free_module(finite_ordered_set((label,)))
 
 
 def test_archive_free_algebra_claim_is_retained_only_for_tensor_and_symmetric() -> None:

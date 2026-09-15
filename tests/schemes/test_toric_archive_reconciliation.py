@@ -10,7 +10,6 @@ fan and a polarizing polytope are not conflated.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    BasedFreeModule,
     LatticePolygon,
     RationalPolyhedralFans,
     ToricSchemes,
@@ -28,7 +27,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _plane_fans():
-    return RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    return RationalPolyhedralFans(ZZ.free_module(2))
 
 
 def test_archived_fan_datum_is_the_live_toric_variety_owner() -> None:

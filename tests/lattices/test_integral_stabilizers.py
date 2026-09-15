@@ -13,7 +13,6 @@ Unverified: written without running the suite.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FreeModule,
     Lattices,
     Modules,
     IntegralStructureAction,
@@ -33,7 +32,7 @@ def test_an_isometry_carrying_the_standard_lattice_onto_itself_stabilizes_it() -
     r"""The swap of the two isotropic generators preserves ``ZZ e_0 + ZZ e_1``."""
     plane, space = _the_rational_hyperbolic_plane()
     e0, e1 = plane.module_generators()
-    standard_module = FreeModule(ZZ, 2)
+    standard_module = ZZ.free_module(2)
     standard = standard_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )
@@ -47,7 +46,7 @@ def test_an_isometry_moving_a_generator_off_the_lattice_leaves_the_stabilizer() 
     r"""``diag(2, 1/2)`` sends ``e_1`` to ``e_1/2``, which is not in the lattice."""
     plane, space = _the_rational_hyperbolic_plane()
     e0, e1 = plane.module_generators()
-    standard_module = FreeModule(ZZ, 2)
+    standard_module = ZZ.free_module(2)
     standard = standard_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )
@@ -71,7 +70,7 @@ def test_an_isometry_shrinking_an_isotropic_line_leaves_its_stabilizer() -> None
     """
     plane, space = _the_rational_hyperbolic_plane()
     e0, e1 = plane.module_generators()
-    line_module = FreeModule(ZZ, 1)
+    line_module = ZZ.free_module(1)
     line = line_module.Mono(space)({0: space.wrap(e0)})
     orthogonal_group = plane.Aut()
     scaling = orthogonal_group(
@@ -94,9 +93,9 @@ def test_commensurable_lattices_have_different_stabilizers_in_one_group() -> Non
     plane, space = _the_rational_hyperbolic_plane()
     e0, e1 = plane.module_generators()
     half = plane.scalar_multiple(QQ(1) / 2, e1)
-    standard_module = FreeModule(ZZ, 2)
-    finer_module = FreeModule(ZZ, 2)
-    doubled_module = FreeModule(ZZ, 2)
+    standard_module = ZZ.free_module(2)
+    finer_module = ZZ.free_module(2)
+    doubled_module = ZZ.free_module(2)
     standard = standard_module.Mono(space)(
         {0: space.wrap(e0), 1: space.wrap(e1)}
     )

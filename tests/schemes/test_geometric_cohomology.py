@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     NN,
     QQ,
     ZZ,
-    BasedFreeModule,
     Cat,
     RationalPolyhedralFans,
     ToricFundamentalGroups,
@@ -15,7 +14,7 @@ from dzack_research.preamble.all import (
 
 
 def _projective_plane():
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     return fans.projective_space_fan().toric_variety(QQ)
 
 
@@ -99,7 +98,7 @@ def test_projective_plane_middle_cohomology_form_has_square_one() -> None:
 
 
 def test_hirzebruch_zero_middle_cohomology_form_is_unimodular_hyperbolic() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
     formed = surface.middle_cohomology_form()
 
@@ -134,7 +133,7 @@ def test_projective_plane_hodge_numbers_are_diagonal_and_connected_to_integral_c
 
 
 def test_hirzebruch_zero_has_hodge_number_h11_two() -> None:
-    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    fans = RationalPolyhedralFans(ZZ.free_module(2))
     surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
 
     assert surface.hodge_structure().hodge_number(1, 1) == 2

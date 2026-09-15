@@ -64,7 +64,6 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -513,11 +512,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The projective plane, as the toric variety of the fan of ``P^2``."""
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
-        )
 
-        cocharacters = BasedFreeModule(_integers(), 2)
+        cocharacters = _integers().free_module(2)
         return RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
             self.base_ring()
         )
@@ -1216,10 +1212,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             if not self.is_cartier(divisor):
                 raise ValueError("the represented section space requires a Cartier divisor")
-            return BasedFreeModule(
-                self.scheme_base_ring(),
-                self.divisor_section_characters(divisor),
-            )
+            return self.scheme_base_ring().free_module(self.divisor_section_characters(divisor))
 
         def cox_monomial_of_section(self, divisor, character):
             r"""Return the Cox monomial representing ``chi^m`` as a section of ``O(D)``.
@@ -1256,7 +1249,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 lambda character: self.cox_monomial_of_section(divisor, character),
                 name="Homogeneous Cox monomial sections",
             )
-            return BasedFreeModule(self.scheme_base_ring(), monomials)
+            return self.scheme_base_ring().free_module(monomials)
 
         @cached_method
         def section_homogeneous_polynomial_isomorphism(self, divisor):
@@ -1614,8 +1607,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             invariants = tuple(int(value) for value in engine.invariants())
             integers = _integers()
             rank = len(invariants)
-            free = BasedFreeModule(integers, rank)
-            relations = BasedFreeModule(integers, rank)
+            free = integers.free_module(rank)
+            relations = integers.free_module(rank)
             relation = relations.module_category().Mor(relations, free)(
                 {
                     position: (

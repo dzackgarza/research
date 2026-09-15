@@ -1,7 +1,7 @@
 r"""Preservation surfaces for shared center and algebra-cokernel constructions."""
 
 from dzack_research.preamble.all import QQ, Algebras, MatrixSpace, Modules
-from dzack_research.preamble.categories.modules import BasedFreeModule, BilinearMap
+from dzack_research.preamble.categories.modules import BilinearMap
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -23,7 +23,7 @@ def test_center_of_unital_associative_algebra_retains_its_unit() -> None:
 
 
 def test_nonassociative_center_remains_a_central_submodule() -> None:
-    module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
+    module = QQ.free_module(finite_ordered_set(("x", "y")))
     multiplication = Modules(QQ).tensor_product((module, module)).from_bilinear(
         BilinearMap(
             module,
