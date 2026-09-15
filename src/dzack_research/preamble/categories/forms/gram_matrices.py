@@ -62,7 +62,7 @@ class GramTensorGraph(SageObject):
 
     def tensor(self):
         r"""Recover the represented type-``(0,2)`` Gram tensor exactly."""
-        return gram_tensor_from_graph(self, self.base_ring())
+        return _gram_tensor_from_graph(self, self.base_ring())
 
     def _engine_graph(self):
         r"""Return the private NetworkX graph used for connectivity algorithms."""
@@ -78,7 +78,7 @@ class GramTensorGraph(SageObject):
         return f"Gram graph on {self.cardinality()} framing positions"
 
 
-def gram_tensor_graph(gram):
+def _gram_tensor_graph(gram):
     r"""Return the owned weighted graph presented by a symmetric Gram tensor."""
     if gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError("a Gram object is a type-(0,2) tensor")
@@ -97,7 +97,7 @@ def gram_tensor_graph(gram):
     )
 
 
-def gram_tensor_from_graph(graph, base_ring):
+def _gram_tensor_from_graph(graph, base_ring):
     r"""Recover the type-``(0,2)`` Gram tensor presented by a weighted graph."""
     if isinstance(graph, GramTensorGraph):
         vertices = tuple(graph.vertices())
@@ -120,14 +120,14 @@ def gram_tensor_from_graph(graph, base_ring):
     return tensor(base_ring, (), (len(vertices), len(vertices)), values)
 
 
-def tensor_connected_component_cuts(gram) -> list[int]:
+def _tensor_connected_component_cuts(gram) -> list[int]:
     r"""Return cuts between consecutive connected diagonal blocks."""
     if gram.tensor_order() != 2:
         raise TypeError("connected block cuts require a two-index tensor")
     n = gram.tensor_shape()[0]
     if n <= 1:
         return []
-    graph = gram_tensor_graph(gram)._engine_graph()
+    graph = gram.gram_graph()._engine_graph()
     graph.remove_edges_from(list(nx.selfloop_edges(graph)))
     components = sorted(
         (sorted(component) for component in nx.connected_components(graph)),
@@ -140,7 +140,4 @@ def tensor_connected_component_cuts(gram) -> list[int]:
 
 __all__ = [
     "GramTensorGraph",
-    "gram_tensor_from_graph",
-    "gram_tensor_graph",
-    "tensor_connected_component_cuts",
 ]

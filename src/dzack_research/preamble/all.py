@@ -243,9 +243,6 @@ from dzack_research.preamble.categories.forms import (  # noqa: F401
     QuadraticFormMorphism,
     QuadraticForms,
     QuadraticMap,
-    gram_tensor_from_graph,
-    gram_tensor_graph,
-    tensor_connected_component_cuts,
 )
 from dzack_research.preamble.categories.functions import (  # noqa: F401
     C,

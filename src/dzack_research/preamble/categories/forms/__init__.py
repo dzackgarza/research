@@ -24,12 +24,7 @@ _EXPORTS = {'BilinearFormHomset': ('dzack_research.preamble.categories.forms.for
                    'QuadraticForm'),
  'GramTensorGraph': ('dzack_research.preamble.categories.forms.gram_matrices',
                      'GramTensorGraph'),
- 'gram_tensor_from_graph': ('dzack_research.preamble.categories.forms.gram_matrices',
-                            'gram_tensor_from_graph'),
- 'gram_tensor_graph': ('dzack_research.preamble.categories.forms.gram_matrices',
-                       'gram_tensor_graph'),
- 'tensor_connected_component_cuts': ('dzack_research.preamble.categories.forms.gram_matrices',
-                                     'tensor_connected_component_cuts')}
+}
 
 __all__ = ['BilinearFormMorphism',
  'BilinearFormHomset',
@@ -48,9 +43,7 @@ __all__ = ['BilinearFormMorphism',
  'is_bilinear_form',
  'is_quadratic_form',
  'quadratic_map_from_morphism',
- 'gram_tensor_from_graph',
- 'gram_tensor_graph',
- 'tensor_connected_component_cuts']
+]
 
 def __getattr__(name):
     try:

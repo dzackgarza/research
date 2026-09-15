@@ -348,6 +348,22 @@ class Tensor:
         r"""Return the cardinal number of tensor indices."""
         return cardinal(len(self._index_ranks()))
 
+    def gram_graph(self):
+        r"""Return the weighted graph presented by this type-``(0,2)`` Gram tensor."""
+        from dzack_research.preamble.categories.forms.gram_matrices import (
+            _gram_tensor_graph,
+        )
+
+        return _gram_tensor_graph(self)
+
+    def gram_connected_component_cuts(self):
+        r"""Return cuts between consecutive connected Gram blocks."""
+        from dzack_research.preamble.categories.forms.gram_matrices import (
+            _tensor_connected_component_cuts,
+        )
+
+        return _tensor_connected_component_cuts(self)
+
     def tensor_space(self):
         r"""Return the module of which this tensor is an element.
 
