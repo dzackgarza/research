@@ -224,6 +224,14 @@ class Functor(SageObject):
             return self
         return _CompositeFunctor(self, other)
 
+    def restrict(self, indexing_functor: Functor) -> Functor:
+        r"""Return this diagram precomposed by ``indexing_functor``."""
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            RestrictedDiagram,
+        )
+
+        return RestrictedDiagram(self, indexing_functor)
+
     def functor_category(self):
         r"""Return the represented functor category containing this functor."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -590,4 +598,3 @@ class _CompositeAdjunction(Adjunction):
     def counit(self, obj: Parent) -> Morphism:
         first_counit = self.first().counit(self.second().right_adjoint()(obj))
         return self.second().counit(obj) * self.second().left_adjoint()(first_counit)
-

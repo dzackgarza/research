@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     InverseSystem,
     LimitsOfCategory,
     PosetCategory,
-    restrict_diagram,
 )
 from dzack_research.preamble.categories.functors.core import (
     Functor,
@@ -153,7 +152,7 @@ def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None
             return shape.identity(shape.target())
 
     indexing = CollapseToTarget()
-    restricted = restrict_diagram(diagram, indexing)
+    restricted = diagram.restrict(indexing)
     assert restricted.original_diagram() is diagram
     assert restricted.indexing_functor() is indexing
     assert restricted(shape.source()) is line
@@ -448,7 +447,7 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
                 self(morphism.domain()), self(morphism.codomain())
             ).unique()
 
-    restricted = restrict_diagram(system, RectangleInclusion())
+    restricted = system.restrict(RectangleInclusion())
     construction = LimitsOfCategory(rectangle, line.category()).construction(restricted)
     assert construction.diagram() is restricted
     assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line

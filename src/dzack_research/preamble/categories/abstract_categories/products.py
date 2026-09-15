@@ -600,15 +600,6 @@ class RestrictedDiagram(Functor):
     def _apply_morphism(self, morphism):
         return self.original_diagram()(self.indexing_functor()(morphism))
 
-    def restrict(self, indexing_functor):
-        return RestrictedDiagram(self, indexing_functor)
-
-
-def restrict_diagram(diagram: Functor, indexing_functor: Functor) -> RestrictedDiagram:
-    r"""Return the represented restriction of ``diagram`` along ``indexing_functor``."""
-    return RestrictedDiagram(diagram, indexing_functor)
-
-
 class SelectedLimitConstruction(SageObject):
     r"""A selected universal cone over one represented diagram."""
 
@@ -1616,5 +1607,4 @@ __all__ = [
     "TensorProductCategory",
     "coproduct_cocone_category",
     "product_cone_category",
-    "restrict_diagram",
 ]
