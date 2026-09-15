@@ -811,7 +811,7 @@ class ConeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cone_category(self) -> ConeCategory:
+    def cone_category(self) -> _ConeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -847,7 +847,7 @@ class CoconeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cocone_category(self) -> CoconeCategory:
+    def cocone_category(self) -> _CoconeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -878,7 +878,7 @@ class CoconeHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = CoconeHomset
 
 
-class ConeCategory(OwnedCategory):
+class _ConeCategory(OwnedCategory):
     r"""The category of cones over one represented diagram.
 
     Unverified specimens test nonidentity maps of cones and cocones, including
@@ -942,7 +942,7 @@ class ConeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cone_category(self) -> ConeCategory:
+        def cone_category(self) -> _ConeCategory:
             return self.category()
 
         def diagram(self) -> Functor:
@@ -987,7 +987,7 @@ class ConeCategory(OwnedCategory):
     def __contains__(self, candidate: Any) -> bool:
         category = getattr(candidate, "category", lambda: None)()
         return (
-            isinstance(category, ConeCategory)
+            isinstance(category, _ConeCategory)
             and category.diagram() is self.diagram()
         )
 
@@ -1008,7 +1008,7 @@ class ConeCategory(OwnedCategory):
 
 
 
-class CoconeCategory(OwnedCategory):
+class _CoconeCategory(OwnedCategory):
     r"""The category of cocones under one represented diagram."""
 
     _HomCategory = CoconeHomCategoryConstruction
@@ -1024,7 +1024,7 @@ class CoconeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cocone_category(self) -> CoconeCategory:
+        def cocone_category(self) -> _CoconeCategory:
             return self.category()
 
         def diagram(self) -> Functor:
@@ -1069,7 +1069,7 @@ class CoconeCategory(OwnedCategory):
     def __contains__(self, candidate: Any) -> bool:
         category = getattr(candidate, "category", lambda: None)()
         return (
-            isinstance(category, CoconeCategory)
+            isinstance(category, _CoconeCategory)
             and category.diagram() is self.diagram()
         )
 
@@ -1090,12 +1090,12 @@ class CoconeCategory(OwnedCategory):
 
 
 
-class SpanCategory(ConeCategory):
+class _SpanCategory(_ConeCategory):
     r"""Spans in one category, over the shape ``. <- . -> .``.
 
     That shape needs no new vocabulary.  A span :math:`A\leftarrow C\to B` is
     an apex with one arrow to each of two objects, which is exactly a cone
-    over the discrete diagram on those two, so ``ConeCategory`` already owns
+    over the discrete diagram on those two, so the cone category already owns
     it and this is that category read as spans.
 
     A span is an object here rather than a pair of arguments, so it has an
@@ -1126,14 +1126,14 @@ class SpanCategory(ConeCategory):
             return f"Span {self.left_leg().codomain()} <- {self.apex()} -> {self.right_leg().codomain()}"
 
 
-class ProductConeCategory(ConeCategory):
+class _ProductConeCategory(_ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
     def super_categories(self):
         return [(self.diagram()).Cones()]
 
 
-class CoproductCoconeCategory(CoconeCategory):
+class _CoproductCoconeCategory(_CoconeCategory):
     r"""Selected coproduct cocones under one finite discrete diagram."""
 
     def super_categories(self):
