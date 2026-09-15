@@ -31,9 +31,9 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     PrimitiveIsotropicSublatticeOrbitDecomposition,
     PrimitiveIsotropicVectorLocus,
     PrimitiveIsotropicVectorOrbitDecomposition,
-    isotropic_equivalence_witness,
-    isotropic_orbit_representatives,
-    isotropic_stabilizer_generators,
+    _isotropic_equivalence_witness,
+    _isotropic_orbit_representatives,
+    _isotropic_stabilizer_generators,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     torsion_form_isometry,
@@ -1924,7 +1924,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
 
-        return isotropic_orbit_representatives(self, rank, flag=flag)
+        return _isotropic_orbit_representatives(self, rank, flag=flag)
 
     def orbit_decomposition(self, locus):
         r"""Return exact orbit data on a represented locus supported by this group.
@@ -1944,11 +1944,11 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):
 
-        return isotropic_equivalence_witness(self, left, right, flag=flag)
+        return _isotropic_equivalence_witness(self, left, right, flag=flag)
 
     def isotropic_stabilizer_generators(self, obj, *, flag=False):
 
-        return isotropic_stabilizer_generators(self, obj, flag=flag)
+        return _isotropic_stabilizer_generators(self, obj, flag=flag)
 
     def compose(self, second, first):
         r"""Return ``second ∘ first`` as an isometry."""

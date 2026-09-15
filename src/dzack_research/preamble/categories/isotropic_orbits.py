@@ -700,7 +700,7 @@ def _gram_rows(lattice):
     ]
 
 
-def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
+def _isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     r"""Return full-``O(L)`` orbit representatives of primitive isotropic subobjects/flags."""
     lattice = orthogonal_group.domain()
     rank = lattice.base_ring()(rank)
@@ -736,7 +736,7 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     return finite_ordered_set(tuple(result))
 
 
-def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
+def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     r"""Return an isometry carrying one primitive isotropic subobject/flag to another."""
     lattice = orthogonal_group.domain()
     if flag:
@@ -778,7 +778,7 @@ def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     return isometry
 
 
-def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
+def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     r"""Return generators of the full-orthogonal-group stabilizer of an isotropic subobject/flag."""
     lattice = orthogonal_group.domain()
     nature = "flag" if flag else "plane"
@@ -818,7 +818,4 @@ __all__ = [
     "PrimitiveIsotropicVectorOrbit",
     "PrimitiveIsotropicVectorOrbitDecomposition",
     "VectorLocus",
-    "isotropic_equivalence_witness",
-    "isotropic_orbit_representatives",
-    "isotropic_stabilizer_generators",
 ]
