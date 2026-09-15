@@ -2,7 +2,7 @@ r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import _torsion_form_isometry
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -332,7 +332,7 @@ def _finite_form_isometries(start):
         forward = automorphism.forward() * start.forward()
         inverse = start.inverse() * automorphism.inverse_morphism()
 
-        yield torsion_form_isometry(
+        yield _torsion_form_isometry(
             forward,
             inverse,
             quadratic=hasattr(source, "q") and hasattr(target, "q"),

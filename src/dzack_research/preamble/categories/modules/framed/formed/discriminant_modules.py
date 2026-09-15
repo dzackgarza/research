@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _p_adic_jordan_form,
     _torsion_form_automorphism_group,
     _p_adic_jordan_module_generators,
-    torsion_form_isometry,
+    _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -359,7 +359,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 formed.forget_form_morphism()
                 * normalization.inverse()
             )
-            return torsion_form_isometry(
+            return _torsion_form_isometry(
                 forward,
                 inverse,
                 quadratic=False,
@@ -621,7 +621,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 formed.forget_form_morphism()
                 * normalization.inverse()
             )
-            return torsion_form_isometry(
+            return _torsion_form_isometry(
                 forward,
                 inverse,
                 quadratic=True,

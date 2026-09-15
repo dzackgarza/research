@@ -116,7 +116,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _form_gram_on,
     _relations_among_generators,
     _torsion_form_modules,
-    torsion_form_isometry,
+    _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
@@ -2363,7 +2363,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             forward = source_form.module_category().Mor(source_form, target_form)({label: target_form.module_generator(label) for label in labels})
             inverse = target_form.module_category().Mor(target_form, source_form)({label: source_form.module_generator(label) for label in labels})
-            return torsion_form_isometry(forward, inverse, quadratic=quadratic)
+            return _torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
         @cached_method
         def discriminant_bilinear_form(self):

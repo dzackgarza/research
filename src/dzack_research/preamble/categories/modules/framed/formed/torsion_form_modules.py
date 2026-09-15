@@ -193,7 +193,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
         return self._inverse
 
 
-def torsion_form_isometry(forward, inverse, *, quadratic: bool):
+def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     r"""Return the form isometry represented by mutually inverse module maps."""
     return TorsionFormIsometry(
         forward.parent(),
@@ -683,7 +683,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
             regenerated.zero(),
         )
     forward = form.module_category().Mor(form, regenerated)(forward_images)
-    return torsion_form_isometry(forward, inverse, quadratic=quadratic)
+    return _torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 
 def _prime_indexed_generators(generators_by_prime):
@@ -915,7 +915,7 @@ class TorsionFormTwistFunctor(Functor):
     def _apply_morphism(self, isometry):
         source = self.object_image(isometry.domain())
         target = self.object_image(isometry.codomain())
-        return torsion_form_isometry(
+        return _torsion_form_isometry(
             _twisted_module_morphism(isometry.forward(), source, target),
             _twisted_module_morphism(isometry.inverse_morphism(), target, source),
             quadratic=self._quadratic,
@@ -1486,7 +1486,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         original_unformed = module_isomorphism.inverse()(unformed)
         inverse_images[label] = form.equip_form_morphism()(original_unformed)
     inverse = normalized.module_category().Mor(normalized, form)(inverse_images)
-    return torsion_form_isometry(forward, inverse, quadratic=quadratic)
+    return _torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 
 class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
@@ -2183,5 +2183,4 @@ __all__ = [
     "TorsionFormIsometry",
     "TorsionFormOrthogonalGroup",
     "TorsionQuadraticFormModules",
-    "torsion_form_isometry",
 ]

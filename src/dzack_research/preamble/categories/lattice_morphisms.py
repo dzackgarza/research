@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     _isotropic_stabilizer_generators,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-    torsion_form_isometry,
+    _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
@@ -696,7 +696,7 @@ class LatticeIsometry(LatticeEmbedding):
 
         forward = self._discriminant_forward_morphism()
         inverse = (~self)._discriminant_forward_morphism()
-        return torsion_form_isometry(
+        return _torsion_form_isometry(
             forward,
             inverse,
             quadratic=self.domain().is_even(),
