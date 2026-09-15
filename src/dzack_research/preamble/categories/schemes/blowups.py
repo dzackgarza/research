@@ -16,7 +16,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroup,
     PicardGroups,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -239,7 +238,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
                 _integers(),
                 finite_ordered_set(("H", "E")),
             )
-            return PicardGroup(
+            return PicardGroups()(
                 module,
                 scheme=self,
                 construction_data={

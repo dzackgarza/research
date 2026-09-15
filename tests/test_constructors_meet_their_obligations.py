@@ -238,11 +238,11 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # ---- divisors ----
         # One free module each: every one of these refines the module it is
         # handed into its own divisor category.
-        "divisor group": lambda: DivisorGroup(FreeModuleOn(ZZ, Sets.Δ[3])),
-        "weil divisor group": lambda: WeilDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[4])),
-        "cartier divisor group": lambda: CartierDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[5])),
-        "picard group": lambda: PicardGroup(FreeModuleOn(ZZ, Sets.Δ[6])),
-        "class group": lambda: ClassGroup(FreeModuleOn(ZZ, Sets.Δ[7])),
+        "divisor group": lambda: DivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[3])),
+        "weil divisor group": lambda: WeilDivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[4])),
+        "cartier divisor group": lambda: CartierDivisorGroups()(FreeModuleOn(ZZ, Sets.Δ[5])),
+        "picard group": lambda: PicardGroups()(FreeModuleOn(ZZ, Sets.Δ[6])),
+        "class group": lambda: ClassGroups()(FreeModuleOn(ZZ, Sets.Δ[7])),
         # ---- schemes ----
         "affine space": lambda: AffineSpace(2, QQ),
         "projective space": lambda: ProjectiveSpace(2, QQ),

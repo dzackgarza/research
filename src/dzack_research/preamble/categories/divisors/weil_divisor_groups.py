@@ -21,6 +21,18 @@ class WeilDivisorGroups(Category):
     def super_categories(self):
         return [DivisorGroups()]
 
+    def _call_(self, module, scheme=None):
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        if module not in FramedFreeModules(_own_ring(SageZZ)):
+            raise TypeError("Weil divisors are free on specified codimension-one subvarieties")
+        return _module_in_role(
+            module,
+            self,
+            "a Weil divisor group requires a represented free-module presentation",
+            construction_data=None if scheme is None else {"divisor_scheme": scheme},
+        )
+
     class ParentMethods:
         def divisor_scheme(self):
             scheme = getattr(self, "_preamble_divisor_scheme", None)
@@ -88,16 +100,3 @@ class WeilDivisorGroups(Category):
             from dzack_research.preamble.categories.divisors.general_divisors import _principal_weil_divisor
 
             return _principal_weil_divisor(self, rational_function)
-
-
-def WeilDivisorGroup(module, scheme=None):
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    if module not in FramedFreeModules(_own_ring(SageZZ)):
-        raise TypeError("Weil divisors are free on specified codimension-one subvarieties")
-    return _module_in_role(
-        module,
-        WeilDivisorGroups(),
-        "a Weil divisor group requires a represented free-module presentation",
-        construction_data=None if scheme is None else {"divisor_scheme": scheme},
-    )

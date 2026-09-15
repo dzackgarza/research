@@ -59,6 +59,26 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FinitelyPresentedModules(self.base_ring())]
 
+    def _call_(self, module, scheme, cycle_dimension):
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
+        )
+
+        if module.base_ring() is not self.base_ring():
+            raise ValueError("a Chow group uses the base ring of its represented module")
+        if module not in _SelectedFinitePresentationModules(self.base_ring()):
+            raise TypeError(
+                "a represented Chow group requires a selected finite presentation"
+            )
+        return module._same_presentation_module(
+            module.module_generating_set(),
+            _extra_categories=(self,),
+            _extra_construction_data={
+                "chow_scheme": scheme,
+                "cycle_dimension": int(cycle_dimension),
+            },
+        )
+
     class ParentMethods:
         def chow_scheme(self):
             return self._preamble_chow_scheme
@@ -179,7 +199,7 @@ class AffineCodimensionOneChowComparison(SageObject):
             weil_to_cycles * divisor_classes.principal_to_weil_morphism()
         )
         chow_cokernel = principal_to_cycles.cokernel()
-        chow = ChowGroup(
+        chow = ChowGroups(chow_cokernel.base_ring())(
             chow_cokernel,
             scheme,
             int(scheme.dimension()) - 1,
@@ -441,33 +461,9 @@ def _fundamental_cycle(closed_subscheme):
             coefficients[point] = multiplicity
     return cycles.linear_combination(coefficients)
 
-
-def ChowGroup(module, scheme, cycle_dimension):
-    r"""Read ``module`` as ``A_cycle_dimension(scheme)`` without changing it."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _SelectedFinitePresentationModules,
-    )
-
-    ring = module.base_ring()
-    if module not in _SelectedFinitePresentationModules(ring):
-        raise TypeError(
-            "a represented Chow group requires a selected finite presentation"
-        )
-    result = module._same_presentation_module(
-        module.module_generating_set(),
-        _extra_categories=(ChowGroups(ring),),
-        _extra_construction_data={
-            "chow_scheme": scheme,
-            "cycle_dimension": int(cycle_dimension),
-        },
-    )
-    return result
-
-
 __all__ = [
     "AffineCodimensionOneChowComparison",
     "AlgebraicCycleGroups",
-    "ChowGroup",
     "ChowGroups",
     "SerreIntersectionData",
     "TorusInvariantCycleGroups",

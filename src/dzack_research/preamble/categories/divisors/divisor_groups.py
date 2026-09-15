@@ -58,17 +58,16 @@ class DivisorGroups(Category):
 
         return [FramedFreeModules(_own_ring(SageZZ))]
 
+    def _call_(self, module):
+        from sage.rings.integer_ring import ZZ as SageZZ
 
-def DivisorGroup(module):
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    if module not in FramedFreeModules(_own_ring(SageZZ)):
-        raise TypeError("a divisor group is a free abelian group on specified prime divisors")
-    return _module_in_role(
-        module,
-        DivisorGroups(),
-        "a divisor group requires a represented free-module presentation",
-    )
+        if module not in FramedFreeModules(_own_ring(SageZZ)):
+            raise TypeError("a divisor group is a free abelian group on specified prime divisors")
+        return _module_in_role(
+            module,
+            self,
+            "a divisor group requires a represented free-module presentation",
+        )
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):

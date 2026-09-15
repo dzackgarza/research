@@ -11,17 +11,16 @@ from dzack_research.preamble.all import (
     Spec,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
-    CartierDivisorGroup,
+    CartierDivisorGroups,
 )
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
     FiniteAtlasCartierDivisor,
 )
 from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroup,
     PicardGroups,
 )
-from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 
 
 def _cyclic_module(order):
@@ -51,7 +50,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
     assert field.class_number() == 2
     order = field.ring_of_integers()
     base = Spec(order, base_ring=order)
-    base_picard = PicardGroup(_cyclic_module(2), scheme=base)
+    base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
     relative_line = ProjectiveSpace(1, order)
     picard = relative_line.picard_group(base_picard)
 
@@ -118,8 +117,8 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     assert divisor_of_x == 2 * prime_divisor
 
     principal = FreeModule(ZZ, 1)
-    cartier = CartierDivisorGroup(FreeModule(ZZ, 1), scheme=scheme)
-    weil_presentation = WeilDivisorGroup(FreeModule(ZZ, 1), scheme=scheme)
+    cartier = CartierDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
+    weil_presentation = WeilDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = weil_presentation.module_generator(0)

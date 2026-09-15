@@ -2,20 +2,15 @@ r"""Archive reconciliation for the five divisor-group role categories."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    CartierDivisorGroup,
     CartierDivisorGroups,
     Cat,
-    ClassGroup,
     ClassGroups,
-    DivisorGroup,
     DivisorGroups,
     FormalDivisor,
     FormalDivisorGroups,
     FreeModuleOn,
-    PicardGroup,
     PicardGroups,
     Set,
-    WeilDivisorGroup,
     WeilDivisorGroups,
 )
 
@@ -52,11 +47,11 @@ def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
     primes = Set(("D0", "D1"))
     free = FreeModuleOn(ZZ, primes)
 
-    divisors = DivisorGroup(free)
-    weil = WeilDivisorGroup(free)
-    cartier = CartierDivisorGroup(free)
-    picard = PicardGroup(free)
-    classes = ClassGroup(free)
+    divisors = DivisorGroups()(free)
+    weil = WeilDivisorGroups()(free)
+    cartier = CartierDivisorGroups()(free)
+    picard = PicardGroups()(free)
+    classes = ClassGroups()(free)
 
     assert divisors in DivisorGroups()
     assert weil in WeilDivisorGroups()

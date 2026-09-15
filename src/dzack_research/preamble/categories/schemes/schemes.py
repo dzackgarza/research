@@ -2246,12 +2246,12 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "the represented affine-space class group currently requires a field base"
                 )
-            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             integers = _own_ring(SageZZ)
-            return ClassGroup(
+            return ClassGroups()(
                 BasedFreeModule(integers, finite_ordered_set(())), scheme=self
             )
 
@@ -2337,7 +2337,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "the represented projective-space divisor class groups currently require a field base"
                 )
-            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
             from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
@@ -2347,7 +2347,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             zero_module = BasedFreeModule(integers, finite_ordered_set(()))
             base_scheme = self.base_scheme()
             base_picard = PicardGroups().trivial(base_scheme)
-            base_class = ClassGroup(zero_module, scheme=base_scheme)
+            base_class = ClassGroups()(zero_module, scheme=base_scheme)
             comparison = base_picard.module_category().Mor(base_picard, base_class)({})
             return projective_space_divisor_class_theory(
                 self, base_picard, base_class, comparison

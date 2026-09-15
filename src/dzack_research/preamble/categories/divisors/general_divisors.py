@@ -15,9 +15,9 @@ presentation is retained rather than identified with the full divisor group.
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -291,7 +291,7 @@ def projective_space_divisor_class_theory(
     modules = Modules(integers)
     picard_biproduct = modules.biproduct((base_picard_group, picard_hyperplane))
     class_biproduct = modules.biproduct((base_class_group, class_hyperplane))
-    picard = PicardGroup(
+    picard = PicardGroups()(
         picard_biproduct,
         scheme=projective_space,
         construction_data={
@@ -300,7 +300,7 @@ def projective_space_divisor_class_theory(
             "projective_picard_biproduct": picard_biproduct,
         },
     )
-    classes = ClassGroup(class_biproduct, scheme=projective_space)
+    classes = ClassGroups()(class_biproduct, scheme=projective_space)
     picard_hyperplane_label = picard_hyperplane.module_generating_set()[0]
     class_hyperplane_label = class_hyperplane.module_generating_set()[0]
     hyperplane_map = picard_hyperplane.module_category().Mor(picard_hyperplane, class_hyperplane)(
@@ -346,7 +346,7 @@ def _projective_space_picard_group(projective_space, base_picard_group):
         raise TypeError("a Picard group is an abelian group over ZZ")
     hyperplane = FreshFreeModuleOn(integers, finite_ordered_set(("O(1)",)))
     decomposition = Modules(integers).biproduct((base_picard_group, hyperplane))
-    return PicardGroup(
+    return PicardGroups()(
         decomposition,
         scheme=projective_space,
         construction_data={
@@ -393,8 +393,8 @@ class DivisorClassComparison(SageObject):
         self._cartier_to_weil = cartier_to_weil
         cartier_cokernel = principal_to_cartier.cokernel()
         weil_cokernel = principal_to_weil.cokernel()
-        self._picard_group = PicardGroup(cartier_cokernel, scheme=scheme)
-        self._class_group = ClassGroup(weil_cokernel, scheme=scheme)
+        self._picard_group = PicardGroups()(cartier_cokernel, scheme=scheme)
+        self._class_group = ClassGroups()(weil_cokernel, scheme=scheme)
         self._cartier_class_projection = self._projection_to_role(
             cartier_cokernel.cokernel_projection(),
             cartier_cokernel,

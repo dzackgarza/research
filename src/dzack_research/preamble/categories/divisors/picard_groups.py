@@ -35,9 +35,22 @@ class PicardGroups(Category):
         )
 
         integers = _own_ring(SageZZ)
-        return PicardGroup(
+        return self(
             BasedFreeModule(integers, finite_ordered_set(())),
             scheme=scheme,
+        )
+
+    def _call_(self, module, scheme=None, construction_data=None):
+        if module not in self.super_categories()[0]:
+            raise TypeError("a Picard group must carry its quotient framing")
+        data = dict(construction_data or {})
+        if scheme is not None:
+            data["picard_scheme"] = scheme
+        return _module_in_role(
+            module,
+            self,
+            "a Picard group requires a represented framed-module presentation",
+            construction_data=data or None,
         )
 
     class ParentMethods:
@@ -87,18 +100,3 @@ class PicardGroups(Category):
             label = factor.module_generating_set()[0]
             image = self.projective_picard_biproduct().injection(1)(factor.module_generator(label))
             return self._from_projective_biproduct(image)
-
-
-def PicardGroup(module, scheme=None, construction_data=None):
-    category = PicardGroups()
-    if module not in category.super_categories()[0]:
-        raise TypeError("a Picard group must carry its quotient framing")
-    data = dict(construction_data or {})
-    if scheme is not None:
-        data["picard_scheme"] = scheme
-    return _module_in_role(
-        module,
-        category,
-        "a Picard group requires a represented framed-module presentation",
-        construction_data=data or None,
-    )

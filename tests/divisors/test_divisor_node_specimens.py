@@ -10,18 +10,17 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Spec,
 )
-from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.general_divisors import (
     projective_space_divisor_class_theory,
 )
 from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroup,
     PicardGroups,
 )
 
 
 def _zero_class_group(scheme):
-    return ClassGroup(FreeModule(ZZ, 0), scheme=scheme)
+    return ClassGroups()(FreeModule(ZZ, 0), scheme=scheme)
 
 
 def _cyclic_module(order):
@@ -58,8 +57,8 @@ def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> 
     order = field.ring_of_integers()
     base = Spec(order, base_ring=order)
     projective = ProjectiveSpace(2, order)
-    base_picard = PicardGroup(_cyclic_module(2), scheme=base)
-    base_class = ClassGroup(_cyclic_module(2), scheme=base)
+    base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
+    base_class = ClassGroups()(_cyclic_module(2), scheme=base)
     base_comparison = base_picard.module_category().Mor(base_picard, base_class)(
         {0: base_class.module_generator(0)}
     )

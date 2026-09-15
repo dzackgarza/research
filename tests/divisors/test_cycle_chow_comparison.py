@@ -9,13 +9,13 @@ from dzack_research.preamble.all import (
     Spec,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
-    CartierDivisorGroup,
+    CartierDivisorGroups,
 )
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
 )
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
-    WeilDivisorGroup,
+    WeilDivisorGroups,
 )
 
 
@@ -28,8 +28,8 @@ def _affine_plane_divisor_presentation():
     prime_divisor = full_weil.prime_divisor(prime)
 
     principal = FreeModule(ZZ, 1)
-    cartier = CartierDivisorGroup(FreeModule(ZZ, 1), scheme=scheme)
-    finite_weil = WeilDivisorGroup(FreeModule(ZZ, 1), scheme=scheme)
+    cartier = CartierDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
+    finite_weil = WeilDivisorGroups()(FreeModule(ZZ, 1), scheme=scheme)
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = finite_weil.module_generator(0)

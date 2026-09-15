@@ -52,16 +52,16 @@ from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebra,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
-    CartierDivisorGroup,
+    CartierDivisorGroups,
 )
 from dzack_research.preamble.categories.divisors.chow_groups import (
-    ChowGroup,
+    ChowGroups,
     TorusInvariantCycleGroups,
 )
-from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
-    WeilDivisorGroup,
+    WeilDivisorGroups,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -669,7 +669,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 _integers(),
                 finite_ordered_set(tuple(self.fan().cones(1))),
             )
-            return WeilDivisorGroup(module)
+            return WeilDivisorGroups()(module)
 
         weil_divisor_group = torus_invariant_divisor_group
 
@@ -688,7 +688,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "the represented Cartier divisor group is currently constructed "
                 "for a smooth fan, where every invariant Weil divisor is Cartier"
             )
-            return CartierDivisorGroup(self.weil_divisor_group())
+            return CartierDivisorGroups()(self.weil_divisor_group())
 
         @cached_method
         def cartier_to_weil_morphism(self):
@@ -852,7 +852,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             fan, so the class group is this cokernel whether or not ``X`` has a
             torus factor; it is exact on the left exactly when ``X`` has none.
             """
-            return ClassGroup(self.character_divisor_morphism().cokernel())
+            return ClassGroups()(self.character_divisor_morphism().cokernel())
 
         @cached_method
         def class_group_projection(self):
@@ -1018,7 +1018,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "the divisors in question, since the group of torus-invariant "
                 "Cartier divisors has no represented construction"
             )
-            return PicardGroup(self.character_divisor_morphism().cokernel())
+            return PicardGroups()(self.character_divisor_morphism().cokernel())
 
         @cached_method
         def cartier_class_projection(self):
@@ -1630,8 +1630,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 FinitelyPresentedModule,
             )
 
-            return ChowGroup(
-                FinitelyPresentedModule(relation),
+            module = FinitelyPresentedModule(relation)
+            return ChowGroups(module.base_ring())(
+                module,
                 self,
                 cycle_dimension,
             )
