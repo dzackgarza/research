@@ -151,21 +151,10 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
             return True
 
 
-def regular_dg_module(dga):
-    r"""Read a DGA as its canonical right DG-module over itself."""
-    from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-        DifferentialGradedAlgebras,
-    )
-
-    if dga not in DifferentialGradedAlgebras(dga.base_ring()):
-        raise TypeError("the regular DG-module construction requires a differential graded algebra")
-    return dga
-
 
 __all__ = [
     "DifferentialGradedAlgebraParameters",
     "DifferentialGradedModules",
     "GradedAlgebraParameters",
     "GradedAlgebraModules",
-    "regular_dg_module",
 ]

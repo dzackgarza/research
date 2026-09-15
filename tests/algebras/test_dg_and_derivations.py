@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.algebras import (
 from dzack_research.preamble.categories.modules import (
     DifferentialGradedModules,
     GradedAlgebraModules,
-    regular_dg_module,
 )
 
 
@@ -25,7 +24,7 @@ def test_a_dga_is_canonically_its_regular_dg_module() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
     x = algebra.algebra_generator("x")
     dga = algebra.de_rham_algebra()
-    regular = regular_dg_module(dga)
+    regular = dga.regular_dg_module()
     X = regular.from_degree_zero(x)
     dX = regular.d(X)
 

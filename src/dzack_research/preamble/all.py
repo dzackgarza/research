@@ -644,7 +644,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     Subgroups,
     Submonoids,
     Torsors,
-    absolute_galois_group,
     absolute_galois_group_category,
     continuous_group_homset,
     exact_field_homset,
@@ -769,8 +768,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     VectorSpaces,
     biproduct_morphism,
     internal_hom_morphism,
-    module_from_action,
-    regular_dg_module,
     tensor_product_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401

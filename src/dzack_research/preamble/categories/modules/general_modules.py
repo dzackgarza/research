@@ -387,11 +387,7 @@ def GeneralModule(
     )
 
 
-module_from_action = GeneralModule
-
-
 __all__ = [
     "GeneralModule",
     "GeneralModules",
-    "module_from_action",
 ]

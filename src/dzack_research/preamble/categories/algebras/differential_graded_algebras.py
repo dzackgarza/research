@@ -109,6 +109,10 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         def dga(self):
             return self
 
+        def regular_dg_module(self):
+            r"""Read this DGA as its canonical right DG-module over itself."""
+            return self
+
         def right_action(self):
             return lambda module_element, algebra_element: module_element * algebra_element
 
