@@ -64,7 +64,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     x = Sets.Δ[2]
     y = Sets.Δ[4]
     inclusion = set_injection(x, y, lambda value: y(int(value) + 1))
-    arrows = ArrowCategory(Sets())
+    arrows = Sets().ArrowCategory()
     inclusion_object = arrows(inclusion)
     assert inclusion_object in arrows
     assert common_category(x, y).is_subcategory(Sets())

@@ -26,6 +26,7 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
+
 def _polynomial_ring(ring, *names):
     return PolynomialRing(ring, names if len(names) > 1 else names[0])
 

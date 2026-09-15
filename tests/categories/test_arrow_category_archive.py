@@ -26,7 +26,7 @@ def test_arrow_category_homs_are_commuting_squares_with_componentwise_compositio
     points = Sets.Δ[1]
     identity = Sets().Mor(points, points).identity()
     swap = Sets().Mor(points, points)(lambda point: points[1 - int(point)])
-    arrows = ArrowCategory(Sets())
+    arrows = Sets().ArrowCategory()
     arrow_object = arrows(identity)
     hom = arrows.Mor(arrow_object, arrow_object)
     square = hom(swap, swap)

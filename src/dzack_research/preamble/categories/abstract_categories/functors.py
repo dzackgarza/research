@@ -14,9 +14,6 @@ from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
     OppositeMorphism,
@@ -171,7 +168,7 @@ class DomainFunctor(Functor):
     r"""The domain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
-        super().__init__(ArrowCategory(category), category)
+        super().__init__(category.ArrowCategory(), category)
 
     def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.source_object()
@@ -184,7 +181,7 @@ class CodomainFunctor(Functor):
     r"""The codomain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
-        super().__init__(ArrowCategory(category), category)
+        super().__init__(category.ArrowCategory(), category)
 
     def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.target_object()

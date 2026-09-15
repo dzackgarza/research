@@ -2,7 +2,6 @@ r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
 from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
@@ -78,7 +77,7 @@ class _ArrowConstructionFunctor(Functor):
     r"""A functor out of the genuine arrow category of a represented category."""
 
     def __init__(self, object_category, codomain) -> None:
-        super().__init__(ArrowCategory(object_category), codomain)
+        super().__init__(object_category.ArrowCategory(), codomain)
 
 
 class KernelArrowFunctor(_ArrowConstructionFunctor):

@@ -225,7 +225,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "image set": lambda: ImageSet(lambda n: n, Sets.Δ[2]),
         # ---- categorical constructions ----
         "coproduct of sets": lambda: CoproductOfSets(Sets.Δ[1], Sets.Δ[2]),
-        "isomorphism homset": lambda: IsoCategoryOf(Sets()).Of(Sets.Δ[1], Sets.Δ[1]),
+        "isomorphism homset": lambda: Sets().Iso(Sets.Δ[1], Sets.Δ[1]),
         # The five limit constructors, on one-object diagrams.  Not the direct
         # sum row above: ``Lattices(ZZ)("A1") + Lattices(ZZ)("A2")`` goes through the
         # lattice-specific block-diagonal sum and reaches none of these.

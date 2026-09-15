@@ -1,8 +1,5 @@
 r"""Distinct semantic category parameters receive distinct deterministic order keys."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    HomCategoryOf,
-)
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveSemigroups,
     Semigroups,
@@ -14,8 +11,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 
 
 def test_additive_and_multiplicative_hom_families_do_not_collapse_in_c3_ordering() -> None:
-    multiplicative = HomCategoryOf(Semigroups())
-    additive = HomCategoryOf(AdditiveSemigroups())
+    multiplicative = Semigroups().HomCategory()
+    additive = AdditiveSemigroups().HomCategory()
 
     assert multiplicative._cmp_key != additive._cmp_key
     family = RingHomCategoryConstruction(OwnedRings())

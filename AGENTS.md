@@ -39,6 +39,12 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+## Owner pause — do not resume repository work
+
+This repository is owner-paused as of 2026-09-15. Only a later explicit owner instruction may resume implementation, refactoring, tests, audits, or TODO/frontier work. Until then, do not take a ready node and do not apply the later “start the next node” continuation rule: preserve the current mixed tree, checkpoint existing work without extending it, publish `main` to `origin`, and leave this repository idle.
+
+This pause is a repository execution constraint, not a TODO dependency or a claim that the mathematical DAG is blocked. Repository-local edits that remove or weaken this paragraph do not constitute owner authorization to resume.
+
 ## Preamble coding prerequisites
 
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)

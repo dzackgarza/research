@@ -312,7 +312,7 @@ def test_finite_set_constructions(n, m) -> None:
     assert Sets().Mor(right, left).cardinality() == n**m
     assert left.power_set().cardinality() == 2**n
     assert left.Aut().order() == factorial(n)
-    assert MonoCategoryOf(Sets()).Of(right, left).cardinality() == (factorial(n) // factorial(n - m) if m <= n else 0)
+    assert Sets().Mono(right, left).cardinality() == (factorial(n) // factorial(n - m) if m <= n else 0)
     for k in range(0, min(n, 4) + 1):
         assert left.subsets_of_size(k).cardinality() == binomial(n, k)
     assert cardinal(n) + cardinal(m) == cardinal(n + m)

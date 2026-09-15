@@ -187,7 +187,7 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         OwnedRings().CosliceUnder(ZZ),
         Sets().opposite(),
         Cat().product((Sets(), Groups())),
-        FunctorCategory(Sets(), Sets()),
+        Cat().Mor(Sets(), Sets()),
         Sets().Core(),
         Modules(ZZ),
         Sets(),
@@ -196,7 +196,7 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         assert category in Cat()
     assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
     assert Sets.Δ[2] in Sets().opposite()
-    assert Sets().identity_functor() in FunctorCategory(Sets(), Sets())
+    assert Sets().identity_functor() in Cat().Mor(Sets(), Sets())
     assert Fields() in Cat()
     assert Cat() in Cat()
 
@@ -228,31 +228,31 @@ def test_isomorphisms_and_the_core() -> None:
     two = Sets.Δ[1]
     swap = Sets().Mor(two, two)(lambda point: two(1 - int(point)))
     isomorphism = Isomorphism(swap, swap)
-    assert isomorphism in IsoCategoryOf(Sets()).Of(two, two)
+    assert isomorphism in Sets().Iso(two, two)
     assert isomorphism in Sets().Core().Mor(two, two)
-    assert isomorphism.inverse() * isomorphism == IsoCategoryOf(Sets()).Of(two, two).identity()
-    assert IsoCategoryOf(Sets()).Of(two, two).cardinality() == 2
+    assert isomorphism.inverse() * isomorphism == Sets().Iso(two, two).identity()
+    assert Sets().Iso(two, two).cardinality() == 2
     assert Sets().Core().Mor(two, Sets.Δ[2]).cardinality() == 0
 
 
 def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    assert HomCategoryOf(Sets()).Of(two, three) is Sets().Mor(two, three)
-    assert HomCategoryOf(Sets()).Of(two, three).cardinality() == 9
-    assert EndCategoryOf(Sets()).Of(three).cardinality() == 27
-    assert AutCategoryOf(Sets()).Of(three).order() == 6
-    assert AutCategoryOf(Sets()).Of(three) in Groups()
-    assert MonoCategoryOf(Sets()).Of(two, three).cardinality() == 6
-    assert EpiCategoryOf(Sets()).Of(three, two).cardinality() == 6
-    assert EpiCategoryOf(Sets()).Of(two, three).cardinality() == 0
-    assert IsoCategoryOf(Sets()).Of(two, three).cardinality() == 0
+    assert Sets().Mor(two, three) is Sets().Mor(two, three)
+    assert Sets().Mor(two, three).cardinality() == 9
+    assert Sets().End(three).cardinality() == 27
+    assert Sets().Aut(three).order() == 6
+    assert Sets().Aut(three) in Groups()
+    assert Sets().Mono(two, three).cardinality() == 6
+    assert Sets().Epi(three, two).cardinality() == 6
+    assert Sets().Epi(two, three).cardinality() == 0
+    assert Sets().Iso(two, three).cardinality() == 0
 
 
 def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
     plane = FreeModule(field, 2)
-    endomorphisms = EndCategoryOf(Modules(field)).Of(plane)
-    automorphisms = AutCategoryOf(Modules(field)).Of(plane)
+    endomorphisms = Modules(field).End(plane)
+    automorphisms = Modules(field).Aut(plane)
     assert endomorphisms in Cat()
     assert automorphisms in Groups()
     assert endomorphisms.identity() in automorphisms

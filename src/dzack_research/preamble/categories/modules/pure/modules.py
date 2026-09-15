@@ -1479,11 +1479,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         those objects and morphisms, so this category exposes that owner
         rather than inventing a second presentation-morphism implementation.
         """
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            ArrowCategory,
-        )
-
-        return ArrowCategory(Modules(self.base_ring()))
+        return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
         def __init__(
@@ -2136,11 +2132,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
         the left edge is an arbitrary ``R``-linear map between the selected free
         sources, not necessarily one induced by a function of label sets.
         """
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            ArrowCategory,
-        )
-
-        return ArrowCategory(Modules(self.base_ring()))
+        return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
         def __init__(

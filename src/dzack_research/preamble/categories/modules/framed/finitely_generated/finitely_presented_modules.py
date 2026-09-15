@@ -15,7 +15,6 @@ from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
     Isomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -1023,7 +1022,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 for row_index, row in enumerate(relation_rows)
                 for column_index, coefficient in enumerate(row)
             ):
-                arrows = ArrowCategory(Modules(ring))
+                arrows = Modules(ring).ArrowCategory()
                 original_object = arrows(presentation)
                 identity = arrows.Mor(original_object, original_object).identity()
                 return Isomorphism(identity, identity)
@@ -1083,7 +1082,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 (~column_change_backend).transpose(),
             )
 
-            arrows = ArrowCategory(Modules(ring))
+            arrows = Modules(ring).ArrowCategory()
             original_object = arrows(presentation)
             normalized_object = arrows(normalized_presentation)
             forward = arrows.Mor(original_object, normalized_object)(

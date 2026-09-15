@@ -4,17 +4,11 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineSpace,
     Algebras,
-    AutCategoryOf,
-    EndCategoryOf,
-    EpiCategoryOf,
     FinitelyPresentedAlgebra,
     Groups,
-    HomCategoryOf,
-    IsoCategoryOf,
     Isomorphism,
     Lattices,
     Modules,
-    MonoCategoryOf,
     OpenImmersions,
     Sets,
     SymmetricAlgebraOn,
@@ -41,7 +35,7 @@ ARCHIVE_RECONCILIATION = {
 def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     source = Sets.Δ[2]
     target = Sets.Δ[1]
-    hom_family = HomCategoryOf(Sets())
+    hom_family = Sets().HomCategory()
     hom_category = hom_family.Of(source, target)
     map_ = Sets().Mor(source, target)(lambda value: target(value % 2))
     assert map_ in hom_category
@@ -49,7 +43,7 @@ def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     assert arrow_object.arrow() is map_
     assert hom_category.identity_2(map_).domain() is arrow_object
 
-    end = EndCategoryOf(Sets()).Of(source)
+    end = Sets().End(source)
     identity = end.identity_endomorphism()
     for value in source:
         assert identity(value) == value
@@ -61,15 +55,15 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
     inclusion = set_injection(source, target, lambda value: target(value + 1))
     quotient = set_surjection(target, source, lambda value: source(value % 2))
 
-    monos = MonoCategoryOf(Sets()).Of(source, target)
-    epis = EpiCategoryOf(Sets()).Of(target, source)
+    monos = Sets().Mono(source, target)
+    epis = Sets().Epi(target, source)
     assert inclusion in monos
     assert quotient in epis
 
     swap = Sets().Mor(source, source)(lambda value: source(1 - int(value)))
     isomorphism = Isomorphism(swap, swap)
-    isos = IsoCategoryOf(Sets()).Of(source, source)
-    auts = AutCategoryOf(Sets()).Of(source)
+    isos = Sets().Iso(source, source)
+    auts = Sets().Aut(source)
     assert auts is isos
     assert isomorphism in isos
     assert isomorphism in auts
@@ -148,17 +142,17 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     isomorphism = Isomorphism(identity, identity)
     forget = algebra_underlying_module_functor(QQ)
 
-    hom_source = HomCategoryOf(Algebras(QQ)).Of(algebra, algebra)(identity)
+    hom_source = Algebras(QQ).Mor(algebra, algebra)(identity)
     hom_image = induced_hom_functor(forget, algebra, algebra)(hom_source)
     assert hom_image.parent() is Modules(QQ).Mor(forget(algebra), forget(algebra))
     assert hom_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
-    end_source = EndCategoryOf(Algebras(QQ)).Of(algebra)(identity)
+    end_source = Algebras(QQ).End(algebra)(identity)
     end_image = induced_end_functor(forget, algebra)(end_source)
     assert end_image.parent() is Modules(QQ).End(forget(algebra))
     assert end_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
-    aut_source = AutCategoryOf(Algebras(QQ)).Of(algebra)(isomorphism)
+    aut_source = Algebras(QQ).Aut(algebra)(isomorphism)
     aut_image = induced_aut_functor(forget, algebra)(aut_source)
     assert aut_image.parent() is Modules(QQ).Aut(forget(algebra))
     assert aut_image.forward().domain() is forget(algebra)
@@ -220,9 +214,9 @@ def test_restricted_hom_families_compose_nonidentity_set_injections_in_the_base_
     first = set_injection(source, middle, lambda value: middle(int(value)))
     second = set_injection(middle, target, lambda value: target(int(value) + 1))
 
-    mono_source = MonoCategoryOf(Sets()).Of(source, middle)
-    mono_target = MonoCategoryOf(Sets()).Of(middle, target)
-    mono_composite = MonoCategoryOf(Sets()).Of(source, target)
+    mono_source = Sets().Mono(source, middle)
+    mono_target = Sets().Mono(middle, target)
+    mono_composite = Sets().Mono(source, target)
 
     assert first in mono_source
     assert second in mono_target

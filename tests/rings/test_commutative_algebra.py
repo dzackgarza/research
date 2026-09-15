@@ -1,19 +1,19 @@
 from dzack_research.preamble.all import (
+    GF,
+    QQ,
+    ZZ,
     AffineSpace,
     ArtinianRings,
     CommutativeAlgebras,
     CompleteLocalRings,
     DualNumbers,
-    GF,
     IntegralDomains,
     LocalRings,
     NoetherianRings,
     PolynomialRing,
     PowerSeriesRing,
     ProjectiveSpace,
-    QQ,
     Set,
-    ZZ,
     Zmod,
 )
 
@@ -160,8 +160,8 @@ def test_nonfinite_base_rejects_arithmetic_zeta_interface() -> None:
 
 
 def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() -> None:
-    from dzack_research.preamble.categories.group.magmas import Monoids
     from dzack_research.preamble.all import generated_submonoid
+    from dzack_research.preamble.categories.group.magmas import Monoids
 
     powers_of_two = generated_submonoid(ZZ, (ZZ(2),))
     subobjects = Monoids().Subobjects(ZZ)
@@ -425,11 +425,11 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
 
 def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        BasedFreeModule,
-    )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
+    )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        BasedFreeModule,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
@@ -620,7 +620,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
 def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
     import logging
 
-    from dzack_research.preamble.all import FreeModule, GF, module_homset, ring_as_module
+    from dzack_research.preamble.all import GF, FreeModule, module_homset, ring_as_module
 
     field = GF(3)
     finite = ring_as_module(field)

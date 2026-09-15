@@ -14,9 +14,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    CosliceCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
@@ -476,7 +473,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             self._closure,
             category=category,
         )
-        self._slice_category = CosliceCategory(OwnedFields(), self._field)
+        self._slice_category = OwnedFields().CosliceUnder(self._field)
         self._extension_object = self._slice_category(self._embedding)
 
     def base_field(self):

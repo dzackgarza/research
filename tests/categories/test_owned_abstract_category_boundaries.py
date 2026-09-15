@@ -69,11 +69,11 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
     discrete = DiscreteCategory(points)
     categories = (
         Sets().Core(),
-        SubobjectCategory(Sets(), points),
+        Sets().Subobjects(points),
         WideSubcategory(Sets(), MonomorphismArrowCategory(Sets())),
         EndofunctorAlgebras(IdentityFunctor(Sets())),
         HomCategories(),
-        HomCategoryOf(Sets()),
+        Sets().HomCategory(),
         LimitsOfCategory(discrete, Sets()),
         BiproductCategory((points, points)),
         TensorProductCategory((points, points)),
@@ -99,7 +99,7 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     sets = Sets()
     points = finite_ordered_set(("a", "b"))
 
-    assert sets.ArrowCategory() is ArrowCategory(sets)
+    assert sets.ArrowCategory() is sets.ArrowCategory()
     assert sets.Core().base_category() is sets
     assert sets.opposite() is sets.opposite()
     product = Cat().product((sets, sets))
@@ -107,7 +107,7 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     assert pair.first() is points
     assert pair.second() is points
     assert tuple(pair) == (points, points)
-    assert sets.Subobjects(points) is SubobjectCategory(sets, points)
+    assert sets.Subobjects(points) is sets.Subobjects(points)
 
 
 def test_cat_parent_method_provider_is_plain_and_reuses_the_hom_packet_owner() -> None:
