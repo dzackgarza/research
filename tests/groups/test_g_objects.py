@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     Groups,
     Modules,
     Sets,
-    finite_g_set,
 )
 
 
@@ -29,7 +28,7 @@ def _swap_two_of_three():
     def action(group_element, point):
         return point if group_element == group.one() else swapped[point]
 
-    return group, finite_g_set(points, group, action)
+    return group, FiniteGSets(group)(points, action)
 
 
 def _regular_representation(ring):

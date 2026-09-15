@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     FiniteSets,
     Groups,
     Modules,
-    finite_g_set,
     free_group_underlying_set_adjunction,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
@@ -32,7 +31,7 @@ def _nontrivial_c2_set():
             return ZZ(0)
         return point
 
-    return group, finite_g_set(points, group, action)
+    return group, FiniteGSets(group)(points, action)
 
 
 def _s3_c2_sign_module():

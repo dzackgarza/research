@@ -286,14 +286,14 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
-        from dzack_research.preamble.categories.group.g_sets import trivial_g_set
+        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
         from dzack_research.preamble.categories.modules.pure.modules import Modules
         from dzack_research.preamble.categories.schemes.schemes import AffineGSchemes, Schemes
 
         category = self.underlying_category()
         sample = category.an_object()
         if category is Sets():
-            return trivial_g_set(sample, self.acting_group())
+            return FiniteGSets(self.acting_group()).trivial(sample)
         match category:
             case Schemes():
                 return AffineGSchemes(self.acting_group(), category.base_ring()).an_object()

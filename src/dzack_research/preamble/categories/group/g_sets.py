@@ -77,7 +77,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             finite_ordinal_set,
         )
 
-        return trivial_g_set(finite_ordinal_set(3), self.group())
+        return self.trivial(finite_ordinal_set(3))
 
     @staticmethod
     def __classcall__(cls, group):
@@ -102,7 +102,11 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
     def _call_(self, point_set, action):
         r"""The finite ``G``-set on ``point_set`` with the action ``action(g, x)``."""
-        return finite_g_set(point_set, self.group(), action)
+        return _finite_g_set_from_action(self.group(), point_set, action)
+
+    def trivial(self, point_set):
+        r"""Equip ``point_set`` with the trivial action of this category's group."""
+        return self(point_set, lambda _group_element, point: point)
 
     # Functors out of finite G-sets, sited on their domain.
 
@@ -387,7 +391,7 @@ class OrbitSets(OwnedCategory):
 
         group = Groups.S(3)
         return g_set_orbits_trivial_adjunction(group).left_adjoint()(
-            trivial_g_set(Sets.Δ[2], group)
+            FiniteGSets(group).trivial(Sets.Δ[2])
         )
 
     def super_categories(self):
@@ -592,17 +596,7 @@ def _finite_g_set_from_action(group, point_set, action):
     )
 
 
-def finite_g_set(point_set, group, action):
-    r"""Return the finite owned ``G``-set defined by ``action(g,x)``."""
-    return _finite_g_set_from_action(group, point_set, action)
-
-
-def trivial_g_set(point_set, group):
-    r"""Equip a finite set with the trivial ``group``-action."""
-    return finite_g_set(point_set, group, lambda _group_element, point: point)
-
-
-def fixed_point_set(g_set):
+def _fixed_point_set(g_set):
     r"""Return the finite fixed-point set ``X^G``."""
     group = g_set.acting_group()
     assert group.is_finitely_generated() is True, (
@@ -707,7 +701,4 @@ __all__ = [
     "GSets",
     "OrbitSets",
     "Torsors",
-    "finite_g_set",
-    "fixed_point_set",
-    "trivial_g_set",
 ]

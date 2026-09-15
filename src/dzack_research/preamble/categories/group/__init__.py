@@ -15,9 +15,6 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
  'GSetMorphism': ('dzack_research.preamble.categories.group.g_sets', 'GSetMorphism'),
  'OrbitSets': ('dzack_research.preamble.categories.group.g_sets', 'OrbitSets'),
  'Torsors': ('dzack_research.preamble.categories.group.g_sets', 'Torsors'),
- 'finite_g_set': ('dzack_research.preamble.categories.group.g_sets', 'finite_g_set'),
- 'fixed_point_set': ('dzack_research.preamble.categories.group.g_sets', 'fixed_point_set'),
- 'trivial_g_set': ('dzack_research.preamble.categories.group.g_sets', 'trivial_g_set'),
  'FiniteGroupClassFunction': ('dzack_research.preamble.categories.group.class_functions',
                               'FiniteGroupClassFunction'),
  'finite_group_class_function': ('dzack_research.preamble.categories.group.class_functions',
@@ -228,12 +225,11 @@ __all__ = ['AbsoluteDecompositionGroup',
  'finite_frobenius_class',
  'finite_inertia_group',
  'first_exact_embedding',
- 'fixed_point_set',
  'generated_submonoid',
  'groups',
  'predicate_submonoid',
  'restrict_along',
- 'trivial_g_set']
+]
 
 def __getattr__(name):
     try:

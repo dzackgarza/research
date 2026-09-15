@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     Modules,
     Sets,
     Torsors,
-    finite_g_set,
 )
 from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
 
@@ -52,7 +51,7 @@ def _swap_action():
             return point
         return points(1 - int(point))
 
-    acted = finite_g_set(points, group, action)
+    acted = FiniteGSets(group)(points, action)
     return group, generator, acted
 
 
@@ -144,7 +143,7 @@ def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics(
 
 def test_regular_finite_g_set_is_a_torsor_with_unique_transporters_and_stabilizers() -> None:
     group = Groups.S(3)
-    regular = finite_g_set(tuple(group), group, lambda left, right: left * right)
+    regular = FiniteGSets(group)(tuple(group), lambda left, right: left * right)
     identity = group.one()
     target = group.group_generators()[0]
 
@@ -168,7 +167,7 @@ def test_regular_finite_g_set_is_a_torsor_with_unique_transporters_and_stabilize
 def test_transitive_action_with_nontrivial_stabilizer_is_not_a_torsor() -> None:
     group = Groups.S(3)
     points = (1, 2, 3)
-    natural = finite_g_set(points, group, lambda group_element, point: group_element(point))
+    natural = FiniteGSets(group)(points, lambda group_element, point: group_element(point))
 
     assert natural.is_transitive_action()
     assert not natural.is_free_action()

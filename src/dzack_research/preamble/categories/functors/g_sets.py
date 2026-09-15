@@ -18,9 +18,7 @@ from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
     GSets,
     OrbitSets,
-    _finite_g_set_from_action,
-    fixed_point_set,
-    trivial_g_set,
+    _fixed_point_set,
 )
 from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -44,7 +42,7 @@ class TrivialGSetFunctor(Functor):
         return self._group
 
     def _apply_object(self, set_object):
-        return trivial_g_set(set_object, self.group())
+        return FiniteGSets(self.group()).trivial(set_object)
 
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
@@ -92,7 +90,7 @@ class GSetFixedPointsFunctor(Functor):
         return self._group
 
     def _apply_object(self, g_set):
-        return fixed_point_set(g_set)
+        return _fixed_point_set(g_set)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -171,7 +169,7 @@ class FreeGSetFunctor(Functor):
                 )
             )
 
-        return _finite_g_set_from_action(self.group(), point_set, action)
+        return FiniteGSets(self.group())(point_set, action)
 
     def free_point(self, free_g_set, group_element, point):
         return free_g_set.point_set()(
@@ -267,7 +265,7 @@ class CofreeGSetFunctor(Functor):
                 ),
             )
 
-        return _finite_g_set_from_action(self.group(), point_set, action)
+        return FiniteGSets(self.group())(point_set, action)
 
     def function_value(self, cofree_g_set, function_point, group_element):
         if function_point not in cofree_g_set:

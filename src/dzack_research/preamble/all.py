@@ -658,15 +658,12 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     field_generators,
     finite_decomposition_group,
     finite_frobenius_class,
-    finite_g_set,
     finite_inertia_group,
     first_exact_embedding,
-    fixed_point_set,
     generated_submonoid,
     groups,
     predicate_submonoid,
     restrict_along,
-    trivial_g_set,
 )
 from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401
     HyperbolicLattices,

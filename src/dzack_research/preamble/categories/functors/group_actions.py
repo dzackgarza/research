@@ -422,15 +422,11 @@ class RestrictionOfGroupActionFunctor(Functor):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
         if category is Sets():
-            from dzack_research.preamble.categories.group.g_sets import (
-                FiniteGSets,
-                finite_g_set,
-            )
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 
             if acted in FiniteGSets(morphism.codomain()):
-                return finite_g_set(
+                return FiniteGSets(morphism.domain())(
                     acted.point_set(),
-                    morphism.domain(),
                     lambda group_element, point: acted.act(morphism(group_element), point),
                 )
 
