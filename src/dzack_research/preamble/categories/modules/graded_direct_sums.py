@@ -12,9 +12,6 @@ from dzack_research.preamble.categories.modules.graded_modules import (
     _grading_identity,
     _require_grading_monoid,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
 )
@@ -61,9 +58,7 @@ class GradedDirectSumElement(ModuleElement):
         coefficients = {}
         labels = self.parent().module_generating_set()
         for degree, component in self._components.items():
-            for label, coefficient in module_coefficients(
-                component, self.parent().graded_piece(degree)
-            ).items():
+            for label, coefficient in self.parent().graded_piece(degree).framing_coefficients(component).items():
                 coefficients[
                     labels(self.parent().degree_index_set()(degree), label)
                 ] = coefficient

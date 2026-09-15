@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _initialize_module_hom_parent,
     _ModuleHomsetCommonMethods,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
@@ -280,7 +279,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             parent = self.parent()
             if parent.grading_monoid() is not _own_ring(SageZZ):
                 raise TypeError("top degree is represented here only for the integer grading")
-            support = module_coefficients(self, parent)
+            support = parent.framing_coefficients(self)
             if not support:
                 return -_Infinity
             return max(
@@ -293,7 +292,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             parent = self.parent()
             degrees = {
                 parent.degree_on_module_generator(parent.module_generator(label))
-                for label in module_coefficients(self, parent)
+                for label in parent.framing_coefficients(self)
             }
             return len(degrees) <= 1
 
@@ -301,7 +300,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             r"""Return the degree-indexed nonzero homogeneous components."""
             parent = self.parent()
             components = {}
-            for label, coefficient in module_coefficients(self, parent).items():
+            for label, coefficient in parent.framing_coefficients(self).items():
                 generator = parent.module_generator(label)
                 degree = parent.degree_on_module_generator(generator)
                 component = components.get(degree, parent.zero())
@@ -316,7 +315,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             if parent.grading_monoid() is not _own_ring(SageZZ):
                 raise TypeError("degree truncation is represented here only for the integer grading")
             result = parent.zero()
-            for label, coefficient in module_coefficients(self, parent).items():
+            for label, coefficient in parent.framing_coefficients(self).items():
                 generator = parent.module_generator(label)
                 if parent.degree_on_module_generator(generator) < degree:
                     result += parent.scalar_multiple(coefficient, generator)

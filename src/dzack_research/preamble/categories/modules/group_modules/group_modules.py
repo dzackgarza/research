@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.modules.group_modules.isotypic import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     _ModuleHomsetCommonMethods,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -561,10 +560,7 @@ class ModulesOverGroupAlgebra(Modules):
         def _selected_module_coefficients(self, element):
             if self._is_the_regular_module():
                 return super()._selected_module_coefficients(element)
-            return module_coefficients(
-                self.forget_action_morphism()(element),
-                self.unacted_module(),
-            )
+            return self.unacted_module().framing_coefficients(self.forget_action_morphism()(element))
 
         def _selected_presentation_rows(self):
             if self._is_the_regular_module():
@@ -1236,7 +1232,7 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
         return module._underlying_additive_element(module(module_element_value))
 
     def linearized_scalar(scalar):
-        coefficients = module_coefficients(group_algebra(scalar), group_algebra)
+        coefficients = group_algebra.framing_coefficients(group_algebra(scalar))
 
         def apply(additive_vector):
             vector = module_element(additive_vector)

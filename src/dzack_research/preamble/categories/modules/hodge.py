@@ -1,9 +1,6 @@
 r"""Determinant, Poincaré-duality, and Hodge constructions on finite free modules."""
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -115,8 +112,8 @@ def _volume_scalars(module, volume):
         raise TypeError("the Hodge datum requires an isomorphism det(M) ~= R")
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
-    forward_coefficients = module_coefficients(volume(top), scalars)
-    inverse_coefficients = module_coefficients(volume.inverse()(one), determinant)
+    forward_coefficients = scalars.framing_coefficients(volume(top))
+    inverse_coefficients = determinant.framing_coefficients(volume.inverse()(one))
     scalar_label = next(iter(scalars.module_generating_set()))
     determinant_label = next(iter(determinant.module_generating_set()))
     return (

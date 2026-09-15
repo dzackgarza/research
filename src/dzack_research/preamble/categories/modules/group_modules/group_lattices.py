@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.lattices import (
     RootLattices,
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import _equip_action
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -163,7 +162,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     source_group_module.module_generator(label),
                 )
                 return self.linear_combination(
-                    module_coefficients(backing_image, source_group_module)
+                    source_group_module.framing_coefficients(backing_image)
                 )
 
             orthogonal_group = self.Aut()
