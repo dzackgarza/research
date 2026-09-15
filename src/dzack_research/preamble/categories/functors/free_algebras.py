@@ -6,7 +6,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     _symmetric_algebra_of,
@@ -80,7 +79,9 @@ class SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(\operatorname{Sym}_R:\mathbf{Mod}_R\to\mathbf{CAlg}_R\)."""
 
     _constructor = staticmethod(_symmetric_algebra_of)
-    _codomain_category = staticmethod(CommutativeAlgebras)
+    _codomain_category = staticmethod(
+        lambda base_ring: Algebras(base_ring).Associative().Unital().Commutative()
+    )
     _name = "Symmetric algebra"
 
 

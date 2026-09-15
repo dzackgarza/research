@@ -1,7 +1,7 @@
 r"""The de Rham functor and notation use the category-owned construction."""
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.de_rham_algebras import (
     DeRhamAlgebra,
     DeRhamAlgebras,
@@ -9,12 +9,12 @@ from dzack_research.preamble.categories.algebras.de_rham_algebras import (
 
 
 def test_de_rham_routes_share_one_category_owned_object() -> None:
-    algebra = CommutativeAlgebras(ZZ).an_object()
+    algebra = Algebras(ZZ).Associative().Unital().Commutative().an_object()
     category = DeRhamAlgebras(ZZ)
 
     declared = category(algebra)
     notation = algebra.de_rham_algebra()
-    functor_image = CommutativeAlgebras(ZZ).de_rham()(algebra)
+    functor_image = Algebras(ZZ).Associative().Unital().Commutative().de_rham()(algebra)
 
     assert declared is notation
     assert declared is functor_image

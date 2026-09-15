@@ -1412,7 +1412,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             """
             from dzack_research.preamble.categories.algebras.algebras import (
                 Algebras,
-                CommutativeAlgebras,
             )
 
             # The integers are being constructed when this runs for them, so
@@ -1429,7 +1428,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 # completes this canonical self-algebra placement after its
                 # defining scalar map has been installed.
                 if not hasattr(self, "_preamble_algebra_generating_set"):
-                    placements.append(CommutativeAlgebras(self))
+                    placements.append(Algebras(self).Associative().Unital().Commutative())
             refine(self, placements)
 
         def _fresh_free_module_on(self, labels, **options):
@@ -2171,7 +2170,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         # During construction of an engine-backed owned ring, ``self`` already
         # exists and already carries its engine, but ``Parent.__init__`` has not
         # yet installed its category.  A self-referential placement such as
-        # ``CommutativeAlgebras(R)`` must therefore accept that constructing
+        # ``Algebras(R).Associative().Unital().Commutative()`` must therefore accept that constructing
         # parent directly rather than asking category membership of an object
         # whose category is precisely what is being built.
         if not isinstance(base_ring, _OwnedRingParent):

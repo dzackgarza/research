@@ -94,7 +94,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             AlgebrasWithChosenMultiplication(self.base_ring()),
-            AssociativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative(),
         ]
 
     class ParentMethods:
@@ -1393,7 +1393,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def an_object(self):
             r"""A commutative product supplied by an ordinary commutative ring."""
-            return CommutativeAlgebras(self.base_ring()).an_object()
+            return Algebras(self.base_ring()).Associative().Unital().Commutative().an_object()
 
         class ParentMethods:
             def is_commutative(self) -> bool:
@@ -1914,10 +1914,10 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
         r"""``R[x] \otimes_R R[y]``, the coproduct of two polynomial algebras."""
 
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).coproduct((ring.free_module(("x",)).symmetric_algebra(), ring.free_module(("y",)).symmetric_algebra()))
+        return Algebras(ring).Associative().Unital().Commutative().coproduct((ring.free_module(("x",)).symmetric_algebra(), ring.free_module(("y",)).symmetric_algebra()))
 
     def super_categories(self):
-        return [CommutativeAlgebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital().Commutative()]
 
     class ParentMethods:
         def coproduct_factors(self):
@@ -1975,13 +1975,13 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         common = ring.free_module(("t",)).symmetric_algebra()
         left = ring.free_module(("x",)).symmetric_algebra()
         right = ring.free_module(("y",)).symmetric_algebra()
-        return CommutativeAlgebras(ring).pushout(
+        return Algebras(ring).Associative().Unital().Commutative().pushout(
             common.Mor(left)({"t": left.algebra_generator("x")}),
             common.Mor(right)({"t": right.algebra_generator("y")}),
         )
 
     def super_categories(self):
-        return [CommutativeAlgebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital().Commutative()]
 
     class ParentMethods:
         def pushout_span(self):
@@ -2496,7 +2496,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         self._preamble_algebra_generating_set = None if labels is None else finite_ordered_set(labels)
         placement = [Algebras(base).Associative().Unital(), OwnedAlgebras(base)]
         if engine in SageCommutativeAlgebras(_engine_ring(base)):
-            placement.append(CommutativeAlgebras(base))
+            placement.append(Algebras(base).Associative().Unital().Commutative())
         if labels is not None:
             placement.append(FramedAlgebras(base))
         placement.extend(categories)
@@ -2512,7 +2512,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 raise ValueError("an unframed algebra cannot carry framed generator values")
             self._preamble_algebra_generator_values = None
             if self.is_commutative() is True:
-                refine(self, [CommutativeAlgebras(self)])
+                refine(self, [Algebras(self).Associative().Unital().Commutative()])
             return
 
         selected_labels = self._preamble_algebra_generating_set
@@ -2556,7 +2556,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             name=f"Algebra generator values of {self}",
         )
         if self.is_commutative() is True:
-            refine(self, [CommutativeAlgebras(self)])
+            refine(self, [Algebras(self).Associative().Unital().Commutative()])
 
 
 def _default_structure_map(base, algebra):
@@ -2765,7 +2765,7 @@ def _algebra_from_multiplication(
     if commutative is None:
         commutative = _multiplication_is_commutative(multiplication)
     if commutative and unital:
-        placement.append(CommutativeAlgebras(ring))
+        placement.append(Algebras(ring).Associative().Unital().Commutative())
     placement.extend(extra_categories)
     return _module_presented_by_multiplication(
         module,
@@ -2935,27 +2935,10 @@ __all__ = [
     "Algebras",
     "AlgebrasWithChosenFinitePresentation",
     "AlgebrasWithChosenMultiplication",
-    "AssociativeAlgebras",
     "AssociativeAlgebrasWithChosenMultiplication",
     "CommutativeAlgebraCoproducts",
     "CommutativeAlgebraPushouts",
-    "CommutativeAlgebras",
     "FinitelyPresentedAlgebras",
     "FramedAlgebras",
     "OwnedAlgebras",
 ]
-
-
-def CommutativeAlgebras(base_ring):
-    r"""The category of commutative ``R``-algebras.
-
-    This conventional name retains the usual associative-unital meaning.
-    Commutativity itself remains an independent axiom on the general algebra
-    node.
-    """
-    return Algebras(base_ring).Associative().Unital().Commutative()
-
-
-def AssociativeAlgebras(base_ring):
-    r"""The associative refinement of the general ``R``-algebra node."""
-    return Algebras(base_ring).Associative()

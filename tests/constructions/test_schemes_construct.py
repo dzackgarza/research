@@ -62,7 +62,7 @@ def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
     assert plane in SmoothSchemes(ring)
     assert plane in Schemes(ring)
     assert plane.relative_dimension() == 2
-    assert plane.coordinate_ring() in CommutativeAlgebras(ring)
+    assert plane.coordinate_ring() in Algebras(ring).Associative().Unital().Commutative()
     assert plane.coordinate_ring().krull_dimension() == ring.krull_dimension() + 2
     assert (plane in IntegralSchemes(ring)) == (ring in IntegralDomains())
     assert plane.scheme_base_ring() is ring
@@ -179,7 +179,7 @@ def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
 
 
 def test_spec_is_a_contravariant_functor(field) -> None:
-    spec = CommutativeAlgebras(field).spectrum()
+    spec = Algebras(field).Associative().Unital().Commutative().spectrum()
     polynomials = PolynomialRing(field, "x")
     x = polynomials.algebra_generator("x")
     squaring = polynomials.Mor(polynomials)({"x": x**2})

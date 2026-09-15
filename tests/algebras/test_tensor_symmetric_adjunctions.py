@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     ZZ,
     Algebras,
     BilinearMap,
-    CommutativeAlgebras,
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModule,
     FinitelyPresentedModules,
@@ -101,7 +100,7 @@ def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_ever
 
     assert tensor in Algebras(ZZ)
     assert tensor in TensorAlgebras(ZZ)
-    assert symmetric in CommutativeAlgebras(ZZ)
+    assert symmetric in Algebras(ZZ).Associative().Unital().Commutative()
     assert symmetric in SymmetricAlgebras(ZZ)
 
     # The degree-one relations generate a two-sided ideal in T(M), hence hold
@@ -268,8 +267,8 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
 def test_symmetric_adjunction_targets_the_owned_commutative_algebra_category() -> None:
     adjunction = Modules(ZZ).symmetric_algebra_adjunction()
-    assert adjunction.left_adjoint().codomain() == CommutativeAlgebras(ZZ)
-    assert adjunction.right_adjoint().domain() == CommutativeAlgebras(ZZ)
+    assert adjunction.left_adjoint().codomain() == Algebras(ZZ).Associative().Unital().Commutative()
+    assert adjunction.right_adjoint().domain() == Algebras(ZZ).Associative().Unital().Commutative()
 
     tensor_adjunction = Modules(ZZ).tensor_algebra_adjunction()
     assert tensor_adjunction.left_adjoint().codomain() == Algebras(ZZ)
@@ -287,7 +286,7 @@ def test_counit_naturality_and_right_triangle_on_a_nonfree_presented_algebra(
 
     assert algebra in FinitelyPresentedModules(ZZ)
     assert algebra not in FinitelyGeneratedFreeModules(ZZ)
-    assert algebra in CommutativeAlgebras(ZZ)
+    assert algebra in Algebras(ZZ).Associative().Unital().Commutative()
     assert involution(one * epsilon) == involution(one) * involution(epsilon)
     assert involution(epsilon * epsilon) == involution(epsilon) * involution(epsilon)
 

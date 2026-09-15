@@ -9,7 +9,7 @@ from dzack_research.preamble.all import (
     AlgebrasWithChosenFinitePresentation,
     Groups,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
@@ -25,7 +25,7 @@ def _coordinate_swap_action() -> tuple:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,
@@ -40,7 +40,7 @@ def _central_sign_action() -> tuple:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    sign = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": -x, "y": -y}))
+    sign = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": -x, "y": -y}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,
@@ -143,7 +143,7 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    rotation = CommutativeAlgebras(QQ).spectrum()(
+    rotation = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": -y, "y": x - y})
     )
     rotation_squared = rotation * rotation
@@ -206,7 +206,7 @@ def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    nonlinear = CommutativeAlgebras(QQ).spectrum()(
+    nonlinear = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": -x, "y": y + x**3})
     )
     identity = scheme.categorical_identity_morphism()

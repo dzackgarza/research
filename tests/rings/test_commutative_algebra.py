@@ -4,7 +4,7 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineSpace,
     ArtinianRings,
-    CommutativeAlgebras,
+    Algebras,
     CompleteLocalRings,
     IntegralDomains,
     LocalRings,
@@ -307,7 +307,7 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
 
 
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
-    from dzack_research.preamble.all import CommutativeAlgebras, Spec
+    from dzack_research.preamble.all import Algebras, Spec
 
     source = QQ.polynomial_ring("x")
     middle = QQ.polynomial_ring("t")
@@ -316,15 +316,15 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     t = middle.algebra_generator("t")
     u = target.algebra_generator("u")
 
-    assert source in CommutativeAlgebras(QQ)
-    assert middle in CommutativeAlgebras(QQ)
-    assert target in CommutativeAlgebras(QQ)
+    assert source in Algebras(QQ).Associative().Unital().Commutative()
+    assert middle in Algebras(QQ).Associative().Unital().Commutative()
+    assert target in Algebras(QQ).Associative().Unital().Commutative()
 
     first = source.Mor(middle)({"x": middle(t**2)})
     second = middle.Mor(target)({"t": target(u + 1)})
     composite = second * first
 
-    spec = CommutativeAlgebras(QQ).spectrum()
+    spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
     spec_source = spec(source)
     spec_middle = spec(middle)
     spec_target = spec(target)
@@ -352,7 +352,7 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     assert composed_scheme.codomain() is spec_source
     assert composite_spec.coordinate_algebra_morphism()(source(x)) == composite(source(x))
 
-    identity = CommutativeAlgebras(QQ).Mor(source, source).identity()
+    identity = Algebras(QQ).Associative().Unital().Commutative().Mor(source, source).identity()
     identity_spec = spec(identity)
     assert identity_spec.domain() is spec_source
     assert identity_spec.codomain() is spec_source
@@ -361,7 +361,7 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
 def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -> None:
     left = QQ.polynomial_ring("x")
     right = QQ.polynomial_ring("y")
-    coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
+    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
 
     x = left.algebra_generator("x")
@@ -387,7 +387,7 @@ def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
     left = (left_free).quotient_by_relations((x**2,))
     right = (right_free).quotient_by_relations((y**3,))
 
-    coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
+    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
     xbar = left.algebra_generator("x")
     ybar = right.algebra_generator("y")
@@ -405,7 +405,7 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
     left_span = common.Mor(left)({"s": x**2})
     right_span = common.Mor(right)({"s": y**3})
 
-    pushout = CommutativeAlgebras(QQ).pushout(left_span, right_span)
+    pushout = Algebras(QQ).Associative().Unital().Commutative().pushout(left_span, right_span)
     left_map, right_map = pushout.pushout_maps()
     assert left_map(x) ** 2 == right_map(y) ** 3
 

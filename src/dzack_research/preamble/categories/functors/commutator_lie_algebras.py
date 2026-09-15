@@ -8,7 +8,7 @@ functor names the passage rather than building a second model.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import Algebras, AssociativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.lie_algebras import (
     CommutatorLieAlgebras,
 )
@@ -24,7 +24,7 @@ class CommutatorLieAlgebraFunctor(Functor):
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            AssociativeAlgebras(self._base_ring),
+            Algebras(self._base_ring).Associative(),
             CommutatorLieAlgebras(self._base_ring),
         )
 

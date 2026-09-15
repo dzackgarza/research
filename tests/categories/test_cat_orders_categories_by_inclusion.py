@@ -15,7 +15,7 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebras,
+    Algebras,
 )
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebras,
@@ -50,7 +50,7 @@ def test_the_meet_of_one_family_sits_under_its_join() -> None:
 
 def test_meet_drops_strict_supercategories_before_building_the_dynamic_class() -> None:
     affine = AffineSemigroupAlgebras(ZZ)
-    commutative = CommutativeAlgebras(ZZ)
+    commutative = Algebras(ZZ).Associative().Unital().Commutative()
     presented = AlgebrasWithChosenFinitePresentation(ZZ)
 
     met = Cat().meet((affine, commutative, presented))

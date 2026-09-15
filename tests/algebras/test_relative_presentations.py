@@ -2,7 +2,7 @@ from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebraPushouts,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -17,7 +17,7 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
     ybar = family.algebra_generator("y")
 
     assert family.base_ring() is parameter
-    assert family in CommutativeAlgebras(parameter)
+    assert family in Algebras(parameter).Associative().Unital().Commutative()
     assert family in AlgebrasWithChosenFinitePresentation(parameter)
     structure = family.algebra_structure_morphism()
     assert structure.domain() is parameter
@@ -72,7 +72,7 @@ def test_pushout_accepts_maps_from_a_presented_source() -> None:
     assert left.parent() is source.Mor(source)
     assert right.parent() is source.Mor(target)
 
-    pushout = CommutativeAlgebras(QQ).pushout(left, right)
+    pushout = Algebras(QQ).Associative().Unital().Commutative().pushout(left, right)
     assert pushout in CommutativeAlgebraPushouts(QQ)
     left_pushout, right_pushout = pushout.pushout_maps()
     assert left_pushout(left(tbar)) == right_pushout(right(tbar))
@@ -100,7 +100,7 @@ def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() ->
     assert gaussian.algebra_presentation_morphism()(gaussian.relations().value(0)) == 0
     assert gaussian.lift_to_presentation(primitive) == gaussian.presentation_ring().algebra_generator("i")
 
-    split = CommutativeAlgebras(QQ).coproduct((gaussian, gaussian))
+    split = Algebras(QQ).Associative().Unital().Commutative().coproduct((gaussian, gaussian))
     assert split in CommutativeAlgebraCoproducts(QQ)
     assert split not in IntegralDomains()
 

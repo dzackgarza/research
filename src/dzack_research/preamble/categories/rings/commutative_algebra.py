@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.abstract_categories.products import (
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebras,
     OwnedAlgebras,
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
@@ -2382,7 +2381,7 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedArtinianRings())
 
     return _object_of(
-        Category.join((QuotientRings(), CommutativeAlgebras(source), *placements)),
+        Category.join((QuotientRings(), Algebras(source).Associative().Unital().Commutative(), *placements)),
         source=source,
         defining_ideal=defining_ideal,
         _engine_ring=quotient_engine,
@@ -2674,8 +2673,8 @@ def _finite_generated_localization(source, submonoid):
     if algebra_source is not None:
         algebra_base = algebra_source.base_ring()
         algebra_categories = [Algebras(algebra_base).Associative().Unital(), OwnedAlgebras(algebra_base)]
-        if algebra_source in CommutativeAlgebras(algebra_base):
-            algebra_categories.append(CommutativeAlgebras(algebra_base))
+        if algebra_source in Algebras(algebra_base).Associative().Unital().Commutative():
+            algebra_categories.append(Algebras(algebra_base).Associative().Unital().Commutative())
     return _object_of(
         Category.join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
@@ -3023,8 +3022,8 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     )
     if algebra_source is not None:
         placements.extend((Algebras(base).Associative().Unital(), OwnedAlgebras(base)))
-        if source in CommutativeAlgebras(base):
-            placements.append(CommutativeAlgebras(base))
+        if source in Algebras(base).Associative().Unital().Commutative():
+            placements.append(Algebras(base).Associative().Unital().Commutative())
     return _object_of(
         Category.join([PrimeLocalizations(), *placements]),
         source=source,
@@ -3299,7 +3298,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            CommutativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().Commutative(),
             OwnedAdicallyCompleteRings(),
         ]
 

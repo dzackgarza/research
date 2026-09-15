@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
 )
@@ -253,7 +252,7 @@ class SparseFreeAlgebra(Parent):
             FramedModules(self._base_ring),
         ]
         if flavor == "symmetric":
-            categories.append(CommutativeAlgebras(self._base_ring))
+            categories.append(Algebras(self._base_ring).Associative().Unital().Commutative())
         Parent.__init__(
             self,
             base=_engine_ring(self._base_ring),

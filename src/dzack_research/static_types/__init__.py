@@ -1052,9 +1052,9 @@ def cup(left, right):
 
 def de_rham_map(morphism):
     """Apply the live affine de Rham functor to one relative algebra morphism."""
-    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-    return CommutativeAlgebras(morphism.domain().base_ring()).de_rham()(morphism)
+    return Algebras(morphism.domain().base_ring()).Associative().Unital().Commutative().de_rham()(morphism)
 
 
 def pullback_form(morphism, form):
@@ -1064,9 +1064,9 @@ def pullback_form(morphism, form):
 
 def de_rham_cohomology_map(morphism, degree):
     """Return the map induced on degree-``degree`` algebraic de Rham cohomology."""
-    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-    return CommutativeAlgebras(morphism.domain().base_ring()).de_rham_cohomology(
+    return Algebras(morphism.domain().base_ring()).Associative().Unital().Commutative().de_rham_cohomology(
         int(degree)
     )(morphism)
 

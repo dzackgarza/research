@@ -138,7 +138,7 @@ def test_an_algebraic_geometry_session(name) -> None:
     assert generic not in spectrum.closed_set(ring.ideal(x))
 
     # Spec is a contravariant functor: a ring map gives a scheme map the other way.
-    spec = CommutativeAlgebras(base).spectrum()
+    spec = Algebras(base).Associative().Unital().Commutative().spectrum()
     affine_line = PolynomialRing(base, "t")
     t = affine_line.algebra_generator("t")
     parametrization = ring.Mor(affine_line)({"x": t**2, "y": t**3})

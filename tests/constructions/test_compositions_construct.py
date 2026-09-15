@@ -33,8 +33,8 @@ def test_polynomials_over_quotients_orders_and_polynomial_rings(build) -> None:
     assert over_quotient.krull_dimension() == 1
     assert iterated in IntegralDomains()
     assert iterated.krull_dimension() == 2
-    assert iterated in CommutativeAlgebras(PolynomialRing(QQ, "x"))
-    assert iterated in CommutativeAlgebras(QQ)
+    assert iterated in Algebras(PolynomialRing(QQ, "x")).Associative().Unital().Commutative()
+    assert iterated in Algebras(QQ).Associative().Unital().Commutative()
 
 
 def test_matrices_over_polynomial_rings_and_modules_over_matrix_algebras() -> None:
@@ -118,14 +118,14 @@ def test_kahler_differentials_of_localizations_and_quotients(build) -> None:
 def test_tensor_products_and_pushouts_of_algebras() -> None:
     first = PolynomialRing(QQ, "x")
     second = PolynomialRing(QQ, "y")
-    plane = CommutativeAlgebras(QQ).coproduct((first, second))
+    plane = Algebras(QQ).Associative().Unital().Commutative().coproduct((first, second))
     assert plane in CommutativeAlgebraCoproducts(QQ)
-    assert plane in CommutativeAlgebras(QQ)
+    assert plane in Algebras(QQ).Associative().Unital().Commutative()
     assert plane.krull_dimension() == 2
     assert plane in IntegralDomains()
     assert plane.coproduct_injection(0)(first.algebra_generator("x")) * plane.coproduct_injection(1)(second.algebra_generator("y")) != plane.zero()
     gaussian = build_gaussian_rationals()
-    split = CommutativeAlgebras(QQ).coproduct((gaussian, gaussian))
+    split = Algebras(QQ).Associative().Unital().Commutative().coproduct((gaussian, gaussian))
     assert split not in IntegralDomains()
     assert split.krull_dimension() == 0
 
@@ -133,7 +133,7 @@ def test_tensor_products_and_pushouts_of_algebras() -> None:
     t = parameter.algebra_generator("t")
     square = parameter.Mor(first)({"t": first.algebra_generator("x") ** 2})
     cube = parameter.Mor(second)({"t": second.algebra_generator("y") ** 3})
-    glued = CommutativeAlgebras(QQ).pushout(square, cube)
+    glued = Algebras(QQ).Associative().Unital().Commutative().pushout(square, cube)
     assert glued in CommutativeAlgebraPushouts(QQ)
     assert glued.krull_dimension() == 1
     assert glued in IntegralDomains()

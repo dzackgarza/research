@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebras,
+    Algebras,
     FramedAlgebras,
     _engine_algebra_morphism,
 )
@@ -923,9 +923,9 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine line over the base ring."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
+        return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
     def _repr_object_names(self):
         return f"schemes over {self.base_ring()}"
@@ -1465,9 +1465,9 @@ class FiniteTypeSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, of finite type over the base ring."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
+        return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
 
 class IntegralSchemes(_SchemePropertyCategory):
@@ -1480,9 +1480,9 @@ class IntegralSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, integral because its coordinate algebra is a domain."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
+        return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
 
 class NormalSchemes(_SchemePropertyCategory):
@@ -1525,9 +1525,9 @@ class AffineSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line over the base ring."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
+        return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
     def _call_(self, algebra):
         r"""Construct ``Spec(A)`` over this category's represented scalar base."""
@@ -2107,9 +2107,9 @@ class QuasiAffineSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, which is affine."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
+        return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
     def super_categories(self):
         return [Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]
@@ -3459,8 +3459,8 @@ def _affine_spec_morphism(algebra_morphism):
     source_base = source_algebra.base_ring()
     target_base = target_algebra.base_ring()
     if (
-        source_algebra not in CommutativeAlgebras(source_base)
-        or target_algebra not in CommutativeAlgebras(target_base)
+        source_algebra not in Algebras(source_base).Associative().Unital().Commutative()
+        or target_algebra not in Algebras(target_base).Associative().Unital().Commutative()
     ):
         raise TypeError("affine Spec acts on a represented algebra morphism")
     return _affine_morphism_from_pullback(
@@ -3947,7 +3947,7 @@ def _scheme_product(*schemes):
                     )
         else:
             algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
-            commutative_algebras = CommutativeAlgebras(base)
+            commutative_algebras = Algebras(base).Associative().Unital().Commutative()
             algebra = commutative_algebras.coproduct((algebras[0], algebras[1]))
             factor_maps = list(algebra.coproduct_injections())
             for next_algebra in algebras[2:]:
@@ -4276,14 +4276,14 @@ def _scheme_fiber_product(left_map, right_map):
         # A colimit under the initial object is the colimit of the discrete
         # diagram, so X x_{Spec R} Y = Spec(A tensor_R B) and the induced map
         # out of it is the coproduct's own factorization.
-        algebra_pushout = CommutativeAlgebras(base_ring).coproduct(
+        algebra_pushout = Algebras(base_ring).Associative().Unital().Commutative().coproduct(
             (left.coordinate_algebra(), right.coordinate_algebra())
         )
         left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
         cocone_factorization = algebra_pushout.from_cocone
     else:
         try:
-            algebra_pushout = CommutativeAlgebras(base_ring).pushout(
+            algebra_pushout = Algebras(base_ring).Associative().Unital().Commutative().pushout(
                 left_pullback,
                 right_pullback,
             )

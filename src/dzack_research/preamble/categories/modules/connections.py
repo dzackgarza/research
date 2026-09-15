@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
@@ -43,7 +43,7 @@ class CommutativeAlgebraParameters(OwnedCategory):
 
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        return CommutativeAlgebras(_own_ring(SageZZ)).an_object()
+        return Algebras(_own_ring(SageZZ)).Associative().Unital().Commutative().an_object()
 
     def super_categories(self):
         return [Objects()]
@@ -53,7 +53,7 @@ class CommutativeAlgebraParameters(OwnedCategory):
             ring = candidate.base_ring()
         except (AttributeError, TypeError):
             return False
-        return candidate in CommutativeAlgebras(ring)
+        return candidate in Algebras(ring).Associative().Unital().Commutative()
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -423,7 +423,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
     def __init__(self, family, restricted_source, restricted_target) -> None:
         module = restricted_source.module_over_extension()
         algebra = module.base_ring()
-        if algebra not in CommutativeAlgebras(algebra.base_ring()):
+        if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
                 "an algebraic connection here requires a module over a commutative algebra"
             )
@@ -510,7 +510,7 @@ class ConnectionCategoryConstruction(_RestrictedHomCategoryOf):
 @cached_function(key=lambda module: id(module))
 def _connections(module) -> ConnectionSpace:
     algebra = module.base_ring()
-    if algebra not in CommutativeAlgebras(algebra.base_ring()):
+    if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
         raise TypeError(
             "an algebraic connection here requires a module over a commutative algebra"
         )

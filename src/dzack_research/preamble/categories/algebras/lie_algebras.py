@@ -139,13 +139,13 @@ class CommutatorLieAlgebras(LieAlgebras):
     r"""Associative algebras read as Lie algebras under \([x,y]=xy-yx\).
 
     The bracket is stated by
-    :class:`~dzack_research.preamble.categories.algebras.algebras.AssociativeAlgebras`,
+    associative refinement ``Algebras(R).Associative()``,
     which owns the product it is built from; this category adds the Lie
     structure that product determines.  The passage is named by
-    ``AssociativeAlgebras(R).commutator_lie_algebra()``.
+    ``Algebras(R).Associative().commutator_lie_algebra()``.
 
     Membership is a fact about every associative algebra over a commutative
-    ring, and ``AssociativeAlgebras`` states it once for all of them.  This
+    ring, and the associative refinement states it once for all of them.  This
     category does not name the associative algebras in turn: knowing that a
     bracket is a commutator does not hand back the product it came from, since
     many associative products share one commutator.  The passage in that

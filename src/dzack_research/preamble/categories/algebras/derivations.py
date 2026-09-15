@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -44,7 +44,7 @@ def _commutative_presentation_data(algebra):
     r"""Return ``(P, labels, variables, relations, lift)`` for ``A = P/I``."""
 
     base = algebra.base_ring()
-    if algebra not in CommutativeAlgebras(base):
+    if algebra not in Algebras(base).Associative().Unital().Commutative():
         raise TypeError("Kähler calculus requires a commutative algebra")
 
     if algebra in AlgebrasWithChosenFinitePresentation(base):

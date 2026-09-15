@@ -1,10 +1,10 @@
 r"""A commutative owned ring becomes its own commutative algebra after initialization."""
 
-from dzack_research.preamble.all import ZZ, CommutativeAlgebras
+from dzack_research.preamble.all import ZZ, Algebras
 
 
 def test_integer_ring_self_algebra_uses_the_finished_owned_parent() -> None:
-    category = CommutativeAlgebras(ZZ)
+    category = Algebras(ZZ).Associative().Unital().Commutative()
 
     assert ZZ in category
     assert ZZ.algebra_base_ring() is ZZ

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import AA, ZZ, CommutativeAlgebras, QuadraticField
+from dzack_research.preamble.all import AA, ZZ, Algebras, QuadraticField
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,
@@ -29,6 +29,6 @@ def test_number_field_and_order_operations_survive_the_owned_category_boundary()
     assert field.primitive_element().parent() is field
     assert field.embeddings(AA).cardinality() == 2
     assert order in OrdersWithChosenIntegralBasis()
-    assert order in CommutativeAlgebras(ZZ)
+    assert order in Algebras(ZZ).Associative().Unital().Commutative()
     assert order.base_ring() is ZZ
     assert order.integral_basis().cardinality() == 2

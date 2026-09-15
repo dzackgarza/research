@@ -1,6 +1,6 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
-    CommutativeAlgebras,
+    Algebras,
     DeRhamAlgebra,
     DifferentialGradedAlgebras,
     GradedCommutativeAlgebras,
@@ -235,7 +235,7 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     t = target.algebra_generator("t")
     morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, target)({"x": t**2})
 
-    functor = CommutativeAlgebras(QQ).de_rham()
+    functor = Algebras(QQ).Associative().Unital().Commutative().de_rham()
     source_dr = functor(source)
     target_dr = functor(target)
     mapped = functor(morphism)
@@ -251,8 +251,8 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
     degree_zero = QQ.free_module(("t",)).symmetric_algebra()
     x = source.algebra_generator("x")
     t = degree_zero.algebra_generator("t")
-    adjunction = CommutativeAlgebras(QQ).de_rham_adjunction()
-    assert adjunction.left_adjoint() is CommutativeAlgebras(QQ).de_rham()
+    adjunction = Algebras(QQ).Associative().Unital().Commutative().de_rham_adjunction()
+    assert adjunction.left_adjoint() is Algebras(QQ).Associative().Unital().Commutative().de_rham()
     assert adjunction.right_adjoint() is DifferentialGradedAlgebras(QQ).degree_zero_algebra()
     target = adjunction.left_adjoint()(degree_zero)
     algebra_map = Algebras(source.base_ring()).Associative().Unital().Mor(source, degree_zero)({"x": t**2})

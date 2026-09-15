@@ -326,7 +326,7 @@ def test_polynomials_and_ideals_over_catalogue_rings(name, n) -> None:
     ring = specimen(name)
     polynomials = PolynomialRing(ring, "x")
     x = polynomials.algebra_generator("x")
-    assert polynomials in CommutativeAlgebras(ring)
+    assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert (x**n).degree() == n
     assert ((x + 1) ** n).degree() == n
     assert ((x + 1) ** n)(ring.one()) == 2**n * ring.one()

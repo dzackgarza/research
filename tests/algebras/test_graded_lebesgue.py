@@ -59,8 +59,6 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     RR = session["RR"]
     Lp = session["Lp"]
     Algebras = session["Algebras"]
-    AssociativeAlgebras = session["AssociativeAlgebras"]
-    CommutativeAlgebras = session["CommutativeAlgebras"]
     GradedAlgebras = session["GradedAlgebras"]
     GradedModules = session["GradedModules"]
     GradedLebesgueAlgebra = session["GradedLebesgueAlgebra"]
@@ -93,9 +91,9 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert algebra is not module
     assert algebra in GradedAlgebras(RR, NonNegativeReals)
     assert algebra in Algebras(RR)
-    assert algebra in CommutativeAlgebras(RR)
+    assert algebra in Algebras(RR).Associative().Unital().Commutative()
     assert algebra in AlgebrasWithChosenMultiplication(RR)
-    assert algebra in AssociativeAlgebras(RR)
+    assert algebra in Algebras(RR).Associative()
     assert algebra in LebesgueGradedModules(RR)
     assert algebra.is_graded()
     assert algebra.grading_monoid() is NonNegativeReals
@@ -140,7 +138,6 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     RR = session["RR"]
     Lp = session["Lp"]
     Algebras = session["Algebras"]
-    AssociativeAlgebras = session["AssociativeAlgebras"]
     GradedAlgebras = session["GradedAlgebras"]
     GradedModules = session["GradedModules"]
     LebesgueConvolutionAlgebra = session["LebesgueConvolutionAlgebra"]
@@ -164,7 +161,7 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     pairing_morphism = algebra.integral_pairing_morphism()
 
     assert algebra is not GradedLebesgueModule(UnitInterval)
-    assert algebra in AssociativeAlgebras(RR)
+    assert algebra in Algebras(RR).Associative()
     assert algebra in AssociativeAlgebrasWithChosenMultiplication(RR)
     assert algebra in LebesgueGradedModules(RR)
     assert algebra in Algebras(RR)

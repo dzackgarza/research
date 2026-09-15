@@ -3,7 +3,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
@@ -73,7 +72,7 @@ class DeRhamFunctor(Functor):
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            CommutativeAlgebras(self._base_ring),
+            Algebras(self._base_ring).Associative().Unital().Commutative(),
             StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
         )
 
@@ -99,7 +98,7 @@ class DegreeZeroDGAFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
             StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
-            CommutativeAlgebras(self._base_ring),
+            Algebras(self._base_ring).Associative().Unital().Commutative(),
         )
 
     def base_ring(self):

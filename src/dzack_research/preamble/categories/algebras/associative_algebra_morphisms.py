@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 class AssociativeAlgebraMorphism(ModuleMorphism):
     r"""An \(R\)-linear map with \(f(xy)=f(x)f(y)\).
 
-    The morphisms of :class:`AssociativeAlgebras`.  No unit is preserved,
+    The morphisms of the associative refinement ``Algebras(R).Associative()``.  No unit is preserved,
     because a non-unital algebra has none; the unital condition belongs to
     :class:`AlgebraMorphism`, whose category states it.
     """

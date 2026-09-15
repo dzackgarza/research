@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     RR,
     Algebras,
     C,
-    CommutativeAlgebras,
     FormedModules,
     FormModules,
     Lp,
@@ -36,7 +35,7 @@ def test_c_is_parameterized_by_regularity_and_spaces() -> None:
     assert maps is C(Infinity, RR)
     assert maps in VectorSpaces(RR)
     assert maps in Algebras(RR)
-    assert maps in CommutativeAlgebras(RR)
+    assert maps in Algebras(RR).Associative().Unital().Commutative()
     assert maps.differentiability() is Infinity
     assert maps.domain() is RR
     assert maps.codomain() is RR

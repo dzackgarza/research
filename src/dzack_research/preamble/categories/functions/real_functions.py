@@ -58,7 +58,7 @@ from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.algebras.algebras import (
-    CommutativeAlgebras,
+    Algebras,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormedModules,
@@ -266,7 +266,7 @@ def _is_rr_module(space) -> bool:
 def _mapping_space_category(codomain):
     r"""Vector spaces when \(Y\) is an \(\mathbb R\)-module; the function algebra when \(Y=\mathbb R\)."""
     if codomain is RR:
-        return VectorSpaces(RR) & CommutativeAlgebras(RR)
+        return VectorSpaces(RR) & Algebras(RR).Associative().Unital().Commutative()
     if _is_rr_module(codomain):
         return VectorSpaces(RR)
     return Sets()

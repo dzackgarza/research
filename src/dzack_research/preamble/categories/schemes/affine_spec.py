@@ -3,7 +3,7 @@
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.functors import ContravariantFunctor
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
@@ -20,7 +20,7 @@ class AffineSpecFunctor(ContravariantFunctor):
         self._base_ring = base
         ContravariantFunctor.__init__(
             self,
-            CommutativeAlgebras(base),
+            Algebras(base).Associative().Unital().Commutative(),
             AffineSchemes(base),
         )
 

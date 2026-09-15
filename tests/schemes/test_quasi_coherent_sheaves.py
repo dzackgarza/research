@@ -5,7 +5,7 @@ from dzack_research.preamble.all import (
     LocalRings,
     QQ,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -62,7 +62,7 @@ def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:
     y = algebra.algebra_generator("y")
     line = QQ.polynomial_ring("t")
     t = line.algebra_generator("t")
-    parametrization = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
+    parametrization = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
     affine_line = parametrization.domain()
 
     # f_* of the structure sheaf of the line is QQ[t] read as a QQ[x,y]-module
@@ -109,7 +109,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     # Base change along the closed point x = 1 gives Spec of QQ[z]/(z^2 - 1), two points.
     point_algebra = QQ.polynomial_ring("u")
     u = point_algebra.algebra_generator("u")
-    point_map = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(point_algebra)({"x": point_algebra.one()}))
+    point_map = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(point_algebra)({"x": point_algebra.one()}))
     fibre = point_map.codomain().scheme_category().fiber_product(relative.arrow(), point_map)
     fibre_algebra = fibre.coordinate_algebra()
     zf = fibre_algebra.algebra_generator(("left", "z"))

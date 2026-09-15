@@ -12,7 +12,7 @@ from dzack_research.preamble.all import (
     Groups,
     Schemes,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
@@ -43,7 +43,7 @@ class _SwapChart:
         self.y = self.algebra.algebra_generator("y")
         self.chart = Spec(self.algebra)
         swap_pullback = self.algebra.Mor(self.algebra)({"x": self.y, "y": self.x})
-        swap = CommutativeAlgebras(QQ).spectrum()(swap_pullback)
+        swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(swap_pullback)
         identity = self.chart.categorical_identity_morphism()
         self.acted = AffineGSchemes(self.group, QQ)(
             self.chart,
@@ -393,7 +393,7 @@ def test_one_chart_artin_schreier_glued_quotient_is_free() -> None:
     algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     chart = Spec(algebra)
-    translation = CommutativeAlgebras(field).spectrum()(
+    translation = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + algebra.one()})
     )
     identity = chart.categorical_identity_morphism()

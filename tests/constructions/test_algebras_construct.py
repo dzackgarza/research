@@ -30,7 +30,7 @@ def test_free_algebra_over_every_commutative_ring(commutative_ring) -> None:
     assert free is symmetric
     assert free in Algebras(ring)
     assert free in FreeAlgebras(ring)
-    assert free in CommutativeAlgebras(ring)
+    assert free in Algebras(ring).Associative().Unital().Commutative()
     assert free in CommutativeRings()
     assert a * b == b * a
     assert (a + b) * (a + b) == a * a + ring(2) * a * b + b * b
@@ -43,7 +43,7 @@ def test_symmetric_algebra_is_the_polynomial_algebra(commutative_ring) -> None:
     x = symmetric.algebra_generator("x")
     y = symmetric.algebra_generator("y")
 
-    assert symmetric in CommutativeAlgebras(ring)
+    assert symmetric in Algebras(ring).Associative().Unital().Commutative()
     assert symmetric in SymmetricAlgebras(ring)
     assert symmetric in GradedAlgebras(ring)
     assert x * y == y * x
@@ -56,7 +56,7 @@ def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
     ring = commutative_ring
     module = FreeModule(ring, 3)
     symmetric = SymmetricAlgebraOf(module)
-    assert symmetric in CommutativeAlgebras(ring)
+    assert symmetric in Algebras(ring).Associative().Unital().Commutative()
     assert symmetric.free_source_module() is module
     assert symmetric.graded_piece(1).module_rank() == 3
     assert symmetric.graded_piece(2).module_rank() == 6
@@ -92,7 +92,7 @@ def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
 
     assert tensor in TensorAlgebras(ring)
     assert tensor in Algebras(ring)
-    assert tensor not in CommutativeAlgebras(ring)
+    assert tensor not in Algebras(ring).Associative().Unital().Commutative()
     assert a * b != b * a
     assert tensor.graded_piece(2).module_rank() == 4
     assert tensor.graded_piece(3).module_rank() == 8
@@ -101,7 +101,7 @@ def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
 def test_polynomial_ring_is_a_commutative_algebra(commutative_ring) -> None:
     ring = commutative_ring
     polynomials = PolynomialRing(ring, ("x", "y"))
-    assert polynomials in CommutativeAlgebras(ring)
+    assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert polynomials in Algebras(ring)
     assert polynomials.algebra_base_ring() is ring
     assert polynomials.algebra_structure_morphism()(ring.one()) == polynomials.one()
@@ -117,7 +117,7 @@ def test_matrix_algebra_is_a_lie_algebra_under_the_commutator(commutative_ring) 
     matrices = MatrixSpace(ring, 2)
     e01 = matrices.matrix_unit(0, 1)
     e10 = matrices.matrix_unit(1, 0)
-    commutator = AssociativeAlgebras(ring).commutator_lie_algebra()(matrices)
+    commutator = Algebras(ring).Associative().commutator_lie_algebra()(matrices)
     module = commutator.underlying_module()
     left = module(e01)
     right = module(e10)
@@ -146,7 +146,7 @@ def test_coordinate_axes_as_a_presented_algebra(field) -> None:
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
 
-    assert axes in CommutativeAlgebras(field)
+    assert axes in Algebras(field).Associative().Unital().Commutative()
     assert axes in FinitelyPresentedAlgebras(field)
     assert xbar * ybar == axes.zero()
     assert xbar != axes.zero()

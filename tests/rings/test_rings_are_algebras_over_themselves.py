@@ -12,7 +12,6 @@ import pytest
 from dzack_research.preamble.all import (
     RR,
     Algebras,
-    CommutativeAlgebras,
     Fields,
     FinitelyGeneratedFreeModules,
     Groups,
@@ -54,7 +53,7 @@ def test_a_commutative_ring_is_a_commutative_algebra_over_itself_and_over_the_in
     promoted_ring: Any,
 ) -> None:
     ring = promoted_ring
-    assert ring in CommutativeAlgebras(ring)
+    assert ring in Algebras(ring).Associative().Unital().Commutative()
     assert ring in Algebras(ZZ)
     assert ring in Modules(ring)
     identity = Algebras(ring).Mor(ring, ring).identity()
@@ -65,7 +64,7 @@ def test_a_commutative_ring_is_a_commutative_algebra_over_itself_and_over_the_in
 def test_a_noncommutative_ring_is_an_algebra_over_the_integers_only() -> None:
     group_algebra = ZZ[Groups.S(3)]
     assert group_algebra in Algebras(ZZ)
-    assert group_algebra not in CommutativeAlgebras(group_algebra)
+    assert group_algebra not in Algebras(group_algebra).Associative().Unital().Commutative()
     assert group_algebra.is_commutative() is False
 
 
@@ -81,8 +80,8 @@ def test_scalar_restriction_is_visible_in_the_module_and_algebra_category_towers
     assert Algebras(field).is_subcategory(Algebras(QQ))
     assert Algebras(QQ).is_subcategory(Algebras(ZZ))
 
-    assert CommutativeAlgebras(group_algebra).is_subcategory(CommutativeAlgebras(field))
-    assert CommutativeAlgebras(field).is_subcategory(CommutativeAlgebras(QQ))
+    assert Algebras(group_algebra).Associative().Unital().Commutative().is_subcategory(Algebras(field).Associative().Unital().Commutative())
+    assert Algebras(field).Associative().Unital().Commutative().is_subcategory(Algebras(QQ).Associative().Unital().Commutative())
 
 
 def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_morphism() -> None:
@@ -125,7 +124,7 @@ def test_commutativity_and_localization_remain_coherent_on_non_engine_ring_paren
         "the denominator is one",
     )
     assert subring.is_commutative() is True
-    assert subring in CommutativeAlgebras(subring)
+    assert subring in Algebras(subring).Associative().Unital().Commutative()
 
     localization = QQ.localize_at_prime(QQ.ideal(QQ.zero()))
     assert localization.localization_source() is QQ
@@ -156,7 +155,7 @@ def test_the_integers_are_an_algebra_over_themselves() -> None:
     """
     assert ZZ.algebra_base_ring() is ZZ
     assert ZZ.base_ring() is ZZ
-    assert ZZ in CommutativeAlgebras(ZZ)
+    assert ZZ in Algebras(ZZ).Associative().Unital().Commutative()
     assert ZZ in Modules(ZZ)
 
 

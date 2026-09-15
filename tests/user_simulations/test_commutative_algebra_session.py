@@ -36,7 +36,7 @@ def test_a_plane_curve_session(name) -> None:
     rendered(plane)
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    assert plane in CommutativeAlgebras(field)
+    assert plane in Algebras(field).Associative().Unital().Commutative()
     assert plane in IntegralDomains()
     assert plane in NoetherianRings()
     assert plane not in PrincipalIdealDomains()
@@ -67,7 +67,7 @@ def test_a_plane_curve_session(name) -> None:
     rendered(cusp)
     xbar = cusp.algebra_generator("x")
     ybar = cusp.algebra_generator("y")
-    assert cusp in CommutativeAlgebras(field)
+    assert cusp in Algebras(field).Associative().Unital().Commutative()
     assert cusp in IntegralDomains()
     assert cusp in NoetherianRings()
     assert cusp.krull_dimension() == 1

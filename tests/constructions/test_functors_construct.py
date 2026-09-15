@@ -61,12 +61,12 @@ def test_functors_over_every_commutative_ring(commutative_ring) -> None:
     assert free.module_rank() == 3
     assert Modules(ring).underlying_set()(module) in Sets()
     assert Modules(ring).dualization()(module).module_rank() == 2
-    assert Modules(ring).symmetric_algebra()(module) in CommutativeAlgebras(ring)
+    assert Modules(ring).symmetric_algebra()(module) in Algebras(ring).Associative().Unital().Commutative()
     assert Modules(ring).tensor_algebra()(module) in Algebras(ring)
     assert Modules(ring).exterior_algebra()(module).graded_piece(2).module_rank() == 1
-    assert CommutativeAlgebras(ring).spectrum()(polynomials) in AffineSchemes(ring)
-    assert CommutativeAlgebras(ring).spectrum()(polynomials).relative_dimension() == 1
-    assert CommutativeAlgebras(ring).de_rham()(polynomials) in StrictlyCommutativeDifferentialGradedAlgebras(ring)
+    assert Algebras(ring).Associative().Unital().Commutative().spectrum()(polynomials) in AffineSchemes(ring)
+    assert Algebras(ring).Associative().Unital().Commutative().spectrum()(polynomials).relative_dimension() == 1
+    assert Algebras(ring).Associative().Unital().Commutative().de_rham()(polynomials) in StrictlyCommutativeDifferentialGradedAlgebras(ring)
 
 
 def test_free_forgetful_adjunction_over_every_commutative_ring(commutative_ring) -> None:
@@ -105,7 +105,7 @@ def test_algebra_adjunctions_over_every_commutative_ring(commutative_ring) -> No
 
 
 def test_de_rham_adjunction_over_every_field(field) -> None:
-    adjunction = CommutativeAlgebras(field).de_rham_adjunction()
+    adjunction = Algebras(field).Associative().Unital().Commutative().de_rham_adjunction()
     polynomials = PolynomialRing(field, "x")
     de_rham = adjunction.left_adjoint()(polynomials)
     assert adjunction.right_adjoint()(de_rham) is polynomials

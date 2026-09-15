@@ -219,7 +219,7 @@ def test_polynomial_ring_over_every_commutative_ring(commutative_ring) -> None:
     x = polynomials.algebra_generator("x")
 
     assert polynomials in CommutativeRings()
-    assert polynomials in CommutativeAlgebras(ring)
+    assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert polynomials.base_ring() is ring
     assert (x + 1) ** 2 == x**2 + 2 * x + 1
     assert (polynomials in IntegralDomains()) == (ring in IntegralDomains())
@@ -235,7 +235,7 @@ def test_polynomial_ring_in_two_variables_over_every_commutative_ring(commutativ
     x = polynomials.algebra_generator("x")
     y = polynomials.algebra_generator("y")
 
-    assert polynomials in CommutativeAlgebras(ring)
+    assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert x * y == y * x
     assert (polynomials in IntegralDomains()) == (ring in IntegralDomains())
     assert polynomials not in PrincipalIdealDomains()
@@ -253,7 +253,7 @@ def test_laurent_polynomials_over_every_commutative_ring(commutative_ring) -> No
     laurent = LaurentPolynomialRing(ring, "x")
     x = laurent.algebra_generator("x")
 
-    assert laurent in CommutativeAlgebras(ring)
+    assert laurent in Algebras(ring).Associative().Unital().Commutative()
     assert x * x**-1 == laurent.one()
     assert (laurent in IntegralDomains()) == (ring in IntegralDomains())
 
@@ -264,7 +264,7 @@ def test_power_series_over_every_commutative_ring(commutative_ring) -> None:
     t = series.power_series_variable()
 
     assert series in FormalPowerSeriesRings(ring)
-    assert series in CommutativeAlgebras(ring)
+    assert series in Algebras(ring).Associative().Unital().Commutative()
     assert (series in IntegralDomains()) == (ring in IntegralDomains())
     assert (series in NoetherianRings()) == (ring in NoetherianRings())
     assert (series in LocalRings()) == (ring in LocalRings())
@@ -279,7 +279,7 @@ def test_dual_numbers_over_every_commutative_ring(commutative_ring) -> None:
     dual = ring.dual_numbers()
     epsilon = dual.algebra_generator("epsilon")
 
-    assert dual in CommutativeAlgebras(ring)
+    assert dual in Algebras(ring).Associative().Unital().Commutative()
     assert epsilon != dual.zero()
     assert epsilon * epsilon == dual.zero()
     assert dual not in IntegralDomains()
@@ -311,14 +311,14 @@ def test_matrix_algebra_over_a_finite_ring_is_finite(build, name, size) -> None:
 def test_a_commutative_ring_is_an_algebra_over_itself(commutative_ring) -> None:
     ring = commutative_ring
     assert ring in Algebras(ring)
-    assert ring in CommutativeAlgebras(ring)
-    assert ring.as_algebra_over(ring) in CommutativeAlgebras(ring)
+    assert ring in Algebras(ring).Associative().Unital().Commutative()
+    assert ring.as_algebra_over(ring) in Algebras(ring).Associative().Unital().Commutative()
 
 
 def test_a_commutative_ring_is_an_algebra_over_the_integers(commutative_ring) -> None:
     ring = commutative_ring
     algebra = ring.as_ZZ_algebra()
-    assert algebra in CommutativeAlgebras(ZZ)
+    assert algebra in Algebras(ZZ).Associative().Unital().Commutative()
     assert algebra.algebra_structure_morphism()(1) == algebra.one()
 
 

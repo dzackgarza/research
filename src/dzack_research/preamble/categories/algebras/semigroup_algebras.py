@@ -6,7 +6,7 @@ from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
 
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebras,
+    Algebras,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -24,7 +24,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            CommutativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().Commutative(),
             AlgebrasWithChosenFinitePresentation(self.base_ring()),
         ]
 
@@ -34,7 +34,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
 
     def __contains__(self, candidate) -> bool:
         return (
-            candidate in CommutativeAlgebras(self.base_ring())
+            candidate in Algebras(self.base_ring()).Associative().Unital().Commutative()
             and candidate in AlgebrasWithChosenFinitePresentation(self.base_ring())
             and hasattr(candidate, "_preamble_affine_semigroup_generator_coordinates")
         )

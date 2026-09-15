@@ -1,5 +1,5 @@
 from dzack_research.preamble.all import (
-    CommutativeAlgebras,
+    Algebras,
     AlgebraRestrictionOfScalarsFunctor,
     FramedAlgebras,
     QQ,
@@ -37,7 +37,7 @@ def _assert_algebra_maps_agree(left, right) -> None:
 
 def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     extension_ring, ring_map, source, target = _quadratic_algebra_tower()
-    adjunction = CommutativeAlgebras(ring_map.domain()).base_change_adjunction(ring_map)
+    adjunction = Algebras(ring_map.domain()).Associative().Unital().Commutative().base_change_adjunction(ring_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 
@@ -87,7 +87,7 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
 
 def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None:
     _, ring_map, source, target = _quadratic_algebra_tower()
-    adjunction = CommutativeAlgebras(ring_map.domain()).base_change_adjunction(ring_map)
+    adjunction = Algebras(ring_map.domain()).Associative().Unital().Commutative().base_change_adjunction(ring_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 

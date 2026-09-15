@@ -125,11 +125,11 @@ def test_extension_of_scalars_of_an_algebra(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
     polynomials = PolynomialRing(source, "x")
-    extended = CommutativeAlgebras(source).scalar_extension(phi)(polynomials)
-    assert extended in CommutativeAlgebras(target)
+    extended = Algebras(source).Associative().Unital().Commutative().scalar_extension(phi)(polynomials)
+    assert extended in Algebras(target).Associative().Unital().Commutative()
     assert extended.algebra_generators().cardinality() == 1
     assert (extended in IntegralDomains()) == (target in IntegralDomains())
-    adjunction = CommutativeAlgebras(source).base_change_adjunction(phi)
+    adjunction = Algebras(source).Associative().Unital().Commutative().base_change_adjunction(phi)
     assert adjunction.left_adjoint()(polynomials) == extended
     assert adjunction.unit(polynomials).domain() is polynomials
 

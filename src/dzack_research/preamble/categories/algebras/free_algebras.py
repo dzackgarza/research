@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
-    CommutativeAlgebras,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
@@ -310,7 +309,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         placement = [
             FinitelyPresentedAlgebras(base),
             AlgebrasWithChosenFinitePresentation(base),
-            CommutativeAlgebras(base),
+            Algebras(base).Associative().Unital().Commutative(),
             *tuple(extra_categories),
         ]
         if finite_free_degree is not None:
@@ -1108,7 +1107,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
         return [
             GradedAlgebras(self.base_ring()),
-            CommutativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().Commutative(),
         ]
 
     class ParentMethods:
@@ -1283,7 +1282,7 @@ def _commutative_algebra_coproduct_backend(left, right):
     base = left.base_ring()
     if right.base_ring() is not base:
         raise ValueError("commutative-algebra coproducts require one scalar base")
-    category = CommutativeAlgebras(base)
+    category = Algebras(base).Associative().Unital().Commutative()
     if left not in category or right not in category:
         raise TypeError("both factors must be commutative algebras over the common base")
     if left not in FramedAlgebras(base) or right not in FramedAlgebras(base):
@@ -1330,7 +1329,7 @@ def _quotient_by_algebra_elements_backend(
     base = algebra.base_ring()
     selected = tuple(elements)
     if not selected:
-        identity = CommutativeAlgebras(base).Mor(algebra, algebra).identity()
+        identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
     if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
         presentation = algebra.presentation_ring()
@@ -1414,7 +1413,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         return [
             GradedAlgebras(self.base_ring()),
-            CommutativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().Commutative(),
         ]
 
     _HomCategory = PowerAlgebraHomCategoryConstruction

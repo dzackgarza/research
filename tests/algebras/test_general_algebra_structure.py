@@ -10,9 +10,7 @@ import pytest
 
 from dzack_research.preamble.all import (
     Algebras,
-    AssociativeAlgebras,
     BilinearMap,
-    CommutativeAlgebras,
     Functor,
     Modules,
     QQ,
@@ -198,12 +196,12 @@ def test_algebra_axiom_placement_and_module_forgetting_are_distinct() -> None:
     algebras = Algebras(QQ)
 
     assert not algebras.is_subcategory(Modules(QQ))
-    assert AssociativeAlgebras(QQ).is_subcategory(algebras)
+    assert Algebras(QQ).Associative().is_subcategory(algebras)
     assert algebras.Associative().Unital().is_subcategory(algebras.Unital())
-    assert CommutativeAlgebras(QQ).is_subcategory(
+    assert Algebras(QQ).Associative().Unital().Commutative().is_subcategory(
         algebras.Associative().Unital()
     )
-    assert CommutativeAlgebras(QQ).is_subcategory(algebras.Commutative())
+    assert Algebras(QQ).Associative().Unital().Commutative().is_subcategory(algebras.Commutative())
 
 
 def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:

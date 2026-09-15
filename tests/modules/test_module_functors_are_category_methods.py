@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     ZZ,
     Algebras,
     AlternatingAlgebras,
-    CommutativeAlgebras,
     FinitelyGeneratedFreeModules,
     Modules,
     Sets,
@@ -62,9 +61,9 @@ def test_the_symmetric_algebra_functor_is_asked_of_the_module_category() -> None
     plane, swap = _plane_with_swap()
     symmetric = Modules(ZZ).symmetric_algebra()
 
-    assert symmetric.codomain() == CommutativeAlgebras(Modules(ZZ).base_ring())
+    assert symmetric.codomain() == Algebras(Modules(ZZ).base_ring()).Associative().Unital().Commutative()
     algebra = symmetric(plane)
-    assert algebra in CommutativeAlgebras(ZZ)
+    assert algebra in Algebras(ZZ).Associative().Unital().Commutative()
     assert algebra.graded_piece(1).module_rank() == 2
     assert algebra.graded_piece(2).module_rank() == 3
     x, y = algebra.algebra_generator(0), algebra.algebra_generator(1)

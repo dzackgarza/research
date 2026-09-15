@@ -54,7 +54,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
     CyclicCoverAlgebra,
@@ -759,7 +759,7 @@ class CyclicCovers(OwnedCategory):
                 element = element * generator
             cover_algebra = self.coordinate_algebra()
             scaling = cover_algebra(root_of_unity ** exponents[group_element])
-            return CommutativeAlgebras(self.scheme_base_ring()).spectrum()(
+            return Algebras(self.scheme_base_ring()).Associative().Unital().Commutative().spectrum()(
                 cover_algebra.Mor(cover_algebra)(
                     {CYCLIC_COVER_VARIABLE: scaling * self.cover_variable()}
                 )

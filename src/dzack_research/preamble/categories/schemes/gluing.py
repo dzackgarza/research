@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
     FramedAlgebras,
     _algebra_structure_view,
 )
@@ -4183,11 +4182,11 @@ class CompatibleLocalAlgebraSections(CompatibleLocalSectionsModule):
         self._preamble_base_ring = gluing_datum.scheme().coordinate_algebra()
         self._preamble_algebra_base_ring = self._preamble_base_ring
         self._preamble_is_commutative = all(
-            algebra in CommutativeAlgebras(algebra.base_ring())
+            algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative()
             for algebra in gluing_datum.local_algebras()
         )
         category = (
-            CommutativeAlgebras(self._preamble_base_ring)
+            Algebras(self._preamble_base_ring).Associative().Unital().Commutative()
             if self._preamble_is_commutative
             else Algebras(self._preamble_base_ring).Associative().Unital()
         )

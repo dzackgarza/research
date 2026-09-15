@@ -18,7 +18,7 @@ from dzack_research.preamble.all import (
     SeparatedSchemes,
     SmoothSchemes,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -79,7 +79,7 @@ def test_base_change_transports_automorphisms_and_satisfies_the_identity_and_com
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
     changed_swap = change(swap)
@@ -125,7 +125,7 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
     y = presentation.algebra_generator("y")
     family_algebra = (presentation).quotient_by_relations((x * y - t,))
     residue_algebra = parameter.quotient_ring(parameter.ideal(t))
-    spec = CommutativeAlgebras(parameter).spectrum()
+    spec = Algebras(parameter).Associative().Unital().Commutative().spectrum()
     line = Schemes(parameter).base_scheme()
     family = spec(family_algebra)
     point = spec(residue_algebra)

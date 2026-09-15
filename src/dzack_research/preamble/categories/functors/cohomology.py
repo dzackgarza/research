@@ -2,7 +2,7 @@ r"""Cohomology functors for represented cochain complexes and de Rham DGAs."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebras,
 )
@@ -72,7 +72,7 @@ class DeRhamCohomologyFunctor(_CompositeFunctor):
 
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
-        de_rham = CommutativeAlgebras(self._base_ring).de_rham()
+        de_rham = Algebras(self._base_ring).Associative().Unital().Commutative().de_rham()
         forget_to_complex = StrictlyCommutativeDifferentialGradedAlgebras(
             self._base_ring
         ).inclusion_into(CochainComplexes(self._base_ring))
@@ -127,7 +127,7 @@ class DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
 
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            CommutativeAlgebras(self._base_ring).de_rham(),
+            Algebras(self._base_ring).Associative().Unital().Commutative().de_rham(),
             DifferentialGradedAlgebras(self._base_ring).cohomology_algebra(),
         )
 

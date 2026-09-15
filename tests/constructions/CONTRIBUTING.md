@@ -75,7 +75,7 @@ One rule per kind:
 - A *functor* is a method of its domain category, named by the
   construction, taking only what fixes the codomain:
   `Modules(ZZ[H]).induction(G)`, `FiniteGSets(G).orbits_functor()`,
-  `Groups().abelianization()`, `CommutativeAlgebras(R).spectrum()`.
+  `Groups().abelianization()`, `Algebras(R).Associative().Unital().Commutative().spectrum()`.
 - An *adjunction* is a method of the left adjoint's domain category, named
   by the pair: `Modules(ZZ[H]).induction_restriction_adjunction(G)`,
   `FiniteSets().free_underlying_adjunction(G)`.

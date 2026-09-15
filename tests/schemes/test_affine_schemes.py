@@ -148,7 +148,7 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     from dzack_research.preamble.all import (
-        CommutativeAlgebras,
+        Algebras,
         Spec,
     )
 
@@ -162,7 +162,7 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     right = Spec(right_algebra)
 
     product = left.scheme_category().product((left, right))
-    tensor = CommutativeAlgebras(QQ).coproduct((left_algebra, right_algebra))
+    tensor = Algebras(QQ).Associative().Unital().Commutative().coproduct((left_algebra, right_algebra))
     first, second = product.projections()
 
     assert product.coordinate_algebra() is tensor
@@ -173,7 +173,7 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
 
 
 def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None:
-    from dzack_research.preamble.all import CommutativeAlgebras
+    from dzack_research.preamble.all import Algebras
 
     base = Spec(QQ)
     assert base.scheme_base_ring() is QQ
@@ -190,7 +190,7 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
     y = right_algebra.algebra_generator("y")
     t = target_algebra.algebra_generator("t")
 
-    spec = CommutativeAlgebras(QQ).spectrum()
+    spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
     left = spec(left_algebra)
     assert left.structure_morphism().domain() is left
     assert left.structure_morphism().codomain() is base
@@ -229,7 +229,7 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
 
 
 def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() -> None:
-    from dzack_research.preamble.all import CommutativeAlgebras
+    from dzack_research.preamble.all import Algebras
 
     common = QQ.polynomial_ring("s")
     left_algebra = QQ.polynomial_ring("x")
@@ -242,7 +242,7 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
 
     common_to_left = common.Mor(left_algebra)({"s": x**2})
     common_to_right = common.Mor(right_algebra)({"s": y**3})
-    spec = CommutativeAlgebras(QQ).spectrum()
+    spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
     left_map = spec(common_to_left)
     right_map = spec(common_to_right)
 
@@ -275,7 +275,7 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
 
 
 def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None:
-    from dzack_research.preamble.all import CommutativeAlgebras
+    from dzack_research.preamble.all import Algebras
 
     parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
@@ -285,7 +285,7 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
     family_algebra = (presentation).quotient_by_relations((x * y - t,))
     residue_algebra = parameter.quotient_ring(parameter.ideal(t))
 
-    spec = CommutativeAlgebras(parameter).spectrum()
+    spec = Algebras(parameter).Associative().Unital().Commutative().spectrum()
     parameter_scheme = Spec(parameter, base_ring=parameter)
     family = spec(family_algebra)
     zero = spec(residue_algebra)

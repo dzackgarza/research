@@ -1,7 +1,7 @@
 r"""Kähler differential notation and consumers use the category constructor."""
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentialModules,
     KahlerDifferentials,
@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.algebras.kahler_differentials import (
 
 
 def test_kahler_notation_is_the_category_owned_object() -> None:
-    algebra = CommutativeAlgebras(ZZ).an_object()
+    algebra = Algebras(ZZ).Associative().Unital().Commutative().an_object()
     category = KahlerDifferentialModules(algebra)
 
     declared = category(algebra)

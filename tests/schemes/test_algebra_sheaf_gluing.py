@@ -48,7 +48,6 @@ def _two_chart_sign_datum():
 def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions() -> None:
     from dzack_research.preamble.categories.algebras.algebras import (
         Algebras,
-        CommutativeAlgebras,
     )
 
     algebra, _cover, local_algebras, datum = _two_chart_sign_datum()
@@ -56,7 +55,7 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
     sheaf = datum.sheaf()
 
     assert sections in Algebras(algebra)
-    assert sections in CommutativeAlgebras(algebra)
+    assert sections in Algebras(algebra).Associative().Unital().Commutative()
     assert sections.algebra_base_ring() is algebra
     assert not sections.is_framed()
     assert sheaf.global_sections() is sections

@@ -15,7 +15,7 @@ from dzack_research.preamble.all import (
     Groups,
     Schemes,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -26,7 +26,7 @@ def _translation_of_the_affine_line():
     algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
-    translation = CommutativeAlgebras(field).spectrum()(algebra.Mor(algebra)({"x": x + algebra.one()}))
+    translation = Algebras(field).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": x + algebra.one()}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, field)(
         scheme,
@@ -61,10 +61,10 @@ def _klein_four_on_the_affine_plane():
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    translation = CommutativeAlgebras(field).spectrum()(
+    translation = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + algebra.one(), "y": y})
     )
-    shear = CommutativeAlgebras(field).spectrum()(algebra.Mor(algebra)({"x": x, "y": y + x**2 + x}))
+    shear = Algebras(field).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": x, "y": y + x**2 + x}))
     identity = scheme.categorical_identity_morphism()
 
     generators = tuple(group.group_generators())
@@ -147,7 +147,7 @@ def test_scheme_theoretic_fixed_locus_retains_nonreduced_structure() -> None:
     x = algebra(x)
     e = algebra(e)
     scheme = Spec(algebra)
-    involution = CommutativeAlgebras(field).spectrum()(
+    involution = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + e**2, "e": e})
     )
     identity = scheme.categorical_identity_morphism()

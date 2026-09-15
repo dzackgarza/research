@@ -7,7 +7,7 @@ from dzack_research.preamble.all import (
     Groups,
     QuadraticField,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -17,7 +17,7 @@ def _swap_action():
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,

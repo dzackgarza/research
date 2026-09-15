@@ -2,7 +2,6 @@ r"""Engine-backed algebra views use the owned algebra category graph."""
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
     FramedAlgebras,
     OwnedAlgebras,
 )
@@ -15,6 +14,6 @@ def test_base_ring_as_algebra_has_owned_mathematical_placement() -> None:
 
     assert algebra in Algebras(integers).Associative().Unital()
     assert algebra in OwnedAlgebras(integers)
-    assert algebra in CommutativeAlgebras(integers)
+    assert algebra in Algebras(integers).Associative().Unital().Commutative()
     assert algebra not in FramedAlgebras(integers)
     assert algebra.base_ring() is integers

@@ -7,7 +7,7 @@ its two essential operations: carrying a finite presentation from ``ZZ`` to
 """
 
 from dzack_research.preamble.all import (
-    CommutativeAlgebras,
+    Algebras,
     QQ,
     ZZ,
 )
@@ -29,7 +29,7 @@ def _quadratic_integer_algebra():
 def test_archived_algebra_base_change_is_the_live_scalar_extension_functor() -> None:
     algebra = _quadratic_integer_algebra()
     ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
-    extension = CommutativeAlgebras(ring_map.domain()).base_change_adjunction(ring_map).left_adjoint()
+    extension = Algebras(ring_map.domain()).Associative().Unital().Commutative().base_change_adjunction(ring_map).left_adjoint()
     extended = extension(algebra)
 
     assert extended.base_ring() is QQ
@@ -45,7 +45,7 @@ def test_archived_algebra_base_change_carries_a_nonidentity_morphism() -> None:
         {"x": -algebra.algebra_generator("x")}
     )
     ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
-    extension = CommutativeAlgebras(ring_map.domain()).base_change_adjunction(ring_map).left_adjoint()
+    extension = Algebras(ring_map.domain()).Associative().Unital().Commutative().base_change_adjunction(ring_map).left_adjoint()
     extended = extension(algebra)
     extended_involution = extension(involution)
     generator = extended.algebra_generator("x")
@@ -59,11 +59,11 @@ def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None
     first = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
     second = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
 
-    first_adjunction = CommutativeAlgebras(first.domain()).base_change_adjunction(first)
-    second_adjunction = CommutativeAlgebras(second.domain()).base_change_adjunction(second)
+    first_adjunction = Algebras(first.domain()).Associative().Unital().Commutative().base_change_adjunction(first)
+    second_adjunction = Algebras(second.domain()).Associative().Unital().Commutative().base_change_adjunction(second)
 
-    assert first_adjunction is CommutativeAlgebras(first.domain()).base_change_adjunction(first)
-    assert second_adjunction is CommutativeAlgebras(second.domain()).base_change_adjunction(second)
+    assert first_adjunction is Algebras(first.domain()).Associative().Unital().Commutative().base_change_adjunction(first)
+    assert second_adjunction is Algebras(second.domain()).Associative().Unital().Commutative().base_change_adjunction(second)
     assert first_adjunction is not second_adjunction
     assert first_adjunction.left_adjoint().ring_map() is first
     assert second_adjunction.left_adjoint().ring_map() is second

@@ -14,7 +14,7 @@ from dzack_research.preamble.all import (
     Groups,
     Schemes,
     Spec,
-    CommutativeAlgebras,
+    Algebras,
 )
 
 
@@ -24,7 +24,7 @@ def _swapped_plane():
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,
@@ -46,7 +46,7 @@ def _label_of_the_first_symmetric_function(acted, x, y):
 def test_an_equivariant_translation_descends_to_the_symmetric_quotient() -> None:
     group, algebra, x, y, acted = _swapped_plane()
     one = algebra.one()
-    translation = CommutativeAlgebras(QQ).spectrum()(
+    translation = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + one, "y": y + one})
     )
     equivariant = GObjects(group, Schemes(QQ)).Mor(acted, acted)(translation)

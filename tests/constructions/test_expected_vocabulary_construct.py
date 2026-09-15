@@ -23,7 +23,7 @@ def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
     algebra = GroupAlgebra(ring, group)
     assert algebra in Algebras(ring)
     assert algebra.module_rank() == 6
-    assert algebra not in CommutativeAlgebras(ring)
+    assert algebra not in Algebras(ring).Associative().Unital().Commutative()
     assert algebra.center().module_rank() == 3
     assert algebra.augmentation()(algebra(group.one())) == ring.one()
     assert algebra(group.group_generators()[0]) * algebra(group.group_generators()[0].inverse()) == algebra.one()
@@ -32,7 +32,7 @@ def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
 def test_the_group_algebra_by_subscript_notation() -> None:
     group = Groups.C(4)
     algebra = QQ[group]
-    assert algebra in CommutativeAlgebras(QQ)
+    assert algebra in Algebras(QQ).Associative().Unital().Commutative()
     assert algebra.module_rank() == 4
     assert algebra.is_semisimple()
     assert not GF(2)[group].is_semisimple()

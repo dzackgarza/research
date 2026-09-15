@@ -37,9 +37,7 @@ from dzack_research.preamble.categories.abstract_categories.products import _fin
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
-    AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
-    CommutativeAlgebras,
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -480,14 +478,14 @@ class _LebesgueAlgebraFromMultiplication(Parent):
                     [
                         AlgebrasWithChosenMultiplication(ring),
                         GradedAlgebras(ring, monoid),
-                        CommutativeAlgebras(ring),
+                        Algebras(ring).Associative().Unital().Commutative(),
                     ]
                 )
             case False:
                 categories.extend(
                     [
                         AssociativeAlgebrasWithChosenMultiplication(ring),
-                        AssociativeAlgebras(ring),
+                        Algebras(ring).Associative(),
                     ]
                 )
         Parent.__init__(

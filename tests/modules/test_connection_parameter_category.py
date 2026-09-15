@@ -1,7 +1,7 @@
 import pytest
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules import (
     CommutativeAlgebraParameters,
     ModulesWithConnection,
@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 
 def test_connection_categories_state_their_commutative_algebra_parameter_domain() -> None:
     integers = _own_ring(SageZZ)
-    algebra = CommutativeAlgebras(integers).an_object()
+    algebra = Algebras(integers).Associative().Unital().Commutative().an_object()
 
     assert algebra in CommutativeAlgebraParameters()
     assert (

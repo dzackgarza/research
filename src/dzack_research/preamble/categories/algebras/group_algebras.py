@@ -16,7 +16,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
-    CommutativeAlgebras,
     UnitalMultiplicativeAlgebraMorphism,
     _unit_morphism_from_element,
 )
@@ -204,7 +203,7 @@ def _group_algebra(base_ring, group):
     algebra._preamble_group = group
     refine(algebra, GroupAlgebras(ring))
     if algebra.is_commutative():
-        refine(algebra, CommutativeAlgebras(ring))
+        refine(algebra, Algebras(ring).Associative().Unital().Commutative())
     return algebra
 
 

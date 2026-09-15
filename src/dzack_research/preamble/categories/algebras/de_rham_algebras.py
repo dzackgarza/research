@@ -1,6 +1,6 @@
 r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
     StrictlyCommutativeDifferentialGradedAlgebras,
@@ -26,7 +26,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         over ``R``.
         """
         ring = self.base_ring()
-        polynomial = CommutativeAlgebras(ring).an_object()
+        polynomial = Algebras(ring).Associative().Unital().Commutative().an_object()
         label = next(iter(polynomial.algebra_generating_set()))
         generator = polynomial.algebra_generator(label)
         return self((polynomial).quotient_by_relations((generator**2,)))
@@ -38,7 +38,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         owns the Kähler-differential/exterior-algebra realization and identity
         cache; :func:`DeRhamAlgebra` is notation for this operation.
         """
-        if algebra not in CommutativeAlgebras(self.base_ring()):
+        if algebra not in Algebras(self.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
                 "an algebraic de Rham algebra is constructed from a commutative algebra over the same base ring"
             )

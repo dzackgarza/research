@@ -2,7 +2,7 @@
 
 
 from dzack_research.preamble.categories.algebras.algebras import (
-    CommutativeAlgebras,
+    Algebras,
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
@@ -106,7 +106,7 @@ def _symmetric_algebra_of(module):
         _extra_categories=(
             GradedFreeAlgebras(base),
             SymmetricAlgebras(base),
-            CommutativeAlgebras(base),
+            Algebras(base).Associative().Unital().Commutative(),
             GradedAlgebras(base),
         ),
         _free_source_module=module,
