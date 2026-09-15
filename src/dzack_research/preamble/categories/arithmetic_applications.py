@@ -11,7 +11,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.catalogue import Involutions, NamedLattices
-from dzack_research.preamble.categories.isotropic_orbits import tits_building_incidence
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
@@ -138,7 +137,7 @@ class EnriquesHigherWittApplication(SageObject):
         return self.lattice().cusps(2)
 
     def full_orthogonal_tits_building_incidence(self):
-        return tits_building_incidence(self.lattice())
+        return self.lattice().tits_building_incidence()
 
 
 class EnriquesEquivariantK3Application(SageObject):

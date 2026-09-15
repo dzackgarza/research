@@ -1,10 +1,7 @@
 r"""Exact line/plane incidence in the Enriques lattice quotient building."""
 
 from dzack_research.preamble.all import NamedLattices
-from dzack_research.preamble.categories.isotropic_orbits import (
-    tits_building_incidence,
-    transport_isotropic_object,
-)
+from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
 
 
 def _same_subobject(left, right) -> bool:
@@ -18,7 +15,7 @@ def _same_subobject(left, right) -> bool:
 
 def test_enriques_line_plane_incidence_retains_flags_and_transporters() -> None:
     lattice = NamedLattices.TEn
-    incidences = tits_building_incidence(lattice)
+    incidences = lattice.tits_building_incidence()
 
     assert incidences.cardinality() > 0
     for incidence in incidences:
@@ -43,7 +40,7 @@ def test_enriques_line_plane_incidence_retains_flags_and_transporters() -> None:
 
 
 def test_incidence_stabilizers_fix_both_terms_of_the_flag() -> None:
-    for incidence in tits_building_incidence(NamedLattices.TEn):
+    for incidence in NamedLattices.TEn.tits_building_incidence():
         assert incidence.stabilizer_generators().cardinality() > 0
         for isometry in incidence.stabilizer_generators():
             moved_line = transport_isotropic_object(isometry, incidence.line())

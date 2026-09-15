@@ -226,12 +226,55 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
 
         def tits_building_incidence(self):
-            r"""Return this subgroup's rank-one/rank-two quotient-building incidence."""
+            r"""Return this subgroup's line/plane quotient-building incidence.
+
+            Rank-two flags are split under the same finite-character quotient
+            as the line and plane orbits, so each edge retains actual subgroup
+            transporters to its two cusp vertices rather than transporters
+            inherited from the full orthogonal group.
+            """
             from dzack_research.preamble.categories.isotropic_orbits import (
-                arithmetic_tits_building_incidence,
+                ArithmeticCuspIncidence,
+            )
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                finite_ordered_set,
             )
 
-            return arithmetic_tits_building_incidence(self)
+            lattice = self.supergroup().domain()
+            line_cusps = self.cusps(1)
+            plane_cusps = self.cusps(2)
+            incidences = []
+            for flag in self.isotropic_orbit_representatives(2, flag=True):
+                line, plane = flag.terms()
+                line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+                plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+                if len(line_vertices) != 1 or len(plane_vertices) != 1:
+                    raise ArithmeticError(
+                        "an arithmetic flag term does not determine a unique subgroup cusp orbit"
+                    )
+                line_cusp = line_vertices[0]
+                plane_cusp = plane_vertices[0]
+                line_transporter = line_cusp.transporter_witness(line)
+                plane_transporter = plane_cusp.transporter_witness(plane)
+                if line_transporter is None or plane_transporter is None:
+                    raise ArithmeticError(
+                        "an arithmetic flag term lies in a cusp with no subgroup transporter"
+                    )
+                incidences.append(
+                    ArithmeticCuspIncidence(
+                        self,
+                        flag,
+                        line_cusp,
+                        plane_cusp,
+                        line_transporter,
+                        plane_transporter,
+                    )
+                )
+            if any(incidence.lattice() is not lattice for incidence in incidences):
+                raise ArithmeticError(
+                    "an arithmetic cusp incidence changed its ambient lattice"
+                )
+            return finite_ordered_set(tuple(incidences))
 
         def _repr_(self):
             return f"{{g in {self._containing_group} : {self._description}}}"

@@ -667,89 +667,6 @@ class ArithmeticCuspIncidence(SageObject):
         )
 
 
-def tits_building_incidence(lattice):
-    r"""Return the finite line/plane incidence in the ``O(L)`` quotient building.
-
-    Rank-two flag representatives come from the exact indefinite backend with
-    ``choice='flag'``.  Their first and second terms determine unique line and
-    plane cusp orbits.  The returned records retain the actual nested
-    embeddings and the transporters to the selected representatives of those
-    cusp vertices.
-    """
-    line_cusps = lattice.cusps(1)
-    plane_cusps = lattice.cusps(2)
-    orthogonal_group = lattice.Aut()
-    incidences = []
-    for flag in orthogonal_group.isotropic_orbit_representatives(2, flag=True):
-        line, plane = flag.terms()
-        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
-        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
-        if len(line_vertices) != 1 or len(plane_vertices) != 1:
-            raise ArithmeticError(
-                "an isotropic flag term does not determine a unique cusp orbit"
-            )
-        line_cusp = line_vertices[0]
-        plane_cusp = plane_vertices[0]
-        line_transporter = line_cusp.transporter_witness(line)
-        plane_transporter = plane_cusp.transporter_witness(plane)
-        if line_transporter is None or plane_transporter is None:
-            raise ArithmeticError("a flag term lies in a cusp with no transporter witness")
-        incidences.append(
-            CuspIncidence(
-                flag,
-                line_cusp,
-                plane_cusp,
-                line_transporter,
-                plane_transporter,
-                orthogonal_group.isotropic_stabilizer_generators(flag, flag=True),
-            )
-        )
-    return finite_ordered_set(tuple(incidences))
-
-
-def arithmetic_tits_building_incidence(subgroup):
-    r"""Return the line/plane incidence in the arithmetic quotient by ``subgroup``.
-
-    Rank-two flag representatives are split under the same finite-character
-    quotient as the line and plane orbits.  The resulting edge therefore
-    retains actual ``Gamma``-transporters to its two cusp vertices instead of
-    inheriting transporters from the full orthogonal group.
-    """
-    lattice = subgroup.supergroup().domain()
-    line_cusps = subgroup.cusps(1)
-    plane_cusps = subgroup.cusps(2)
-    incidences = []
-    for flag in subgroup.isotropic_orbit_representatives(2, flag=True):
-        line, plane = flag.terms()
-        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
-        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
-        if len(line_vertices) != 1 or len(plane_vertices) != 1:
-            raise ArithmeticError(
-                "an arithmetic flag term does not determine a unique subgroup cusp orbit"
-            )
-        line_cusp = line_vertices[0]
-        plane_cusp = plane_vertices[0]
-        line_transporter = line_cusp.transporter_witness(line)
-        plane_transporter = plane_cusp.transporter_witness(plane)
-        if line_transporter is None or plane_transporter is None:
-            raise ArithmeticError(
-                "an arithmetic flag term lies in a cusp with no subgroup transporter"
-            )
-        incidences.append(
-            ArithmeticCuspIncidence(
-                subgroup,
-                flag,
-                line_cusp,
-                plane_cusp,
-                line_transporter,
-                plane_transporter,
-            )
-        )
-    if any(incidence.lattice() is not lattice for incidence in incidences):
-        raise ArithmeticError("an arithmetic cusp incidence changed its ambient lattice")
-    return finite_ordered_set(tuple(incidences))
-
-
 def _embedded_basis(subobject):
     inclusion = subobject.inclusion()
     return tuple(inclusion(generator) for generator in subobject.module_generators())
@@ -913,10 +830,8 @@ __all__ = [
     "PrimitiveIsotropicVectorOrbit",
     "PrimitiveIsotropicVectorOrbitDecomposition",
     "VectorLocus",
-    "arithmetic_tits_building_incidence",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",
-    "tits_building_incidence",
     "transport_isotropic_object",
 ]
