@@ -44,8 +44,8 @@ from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.group_modules.isotypic import (
     _split_irreducible_characters,
-    isotypic_component,
-    isotypic_decomposition,
+    _isotypic_component,
+    _isotypic_decomposition,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -706,17 +706,17 @@ class ModulesOverGroupAlgebra(Modules):
                 finite_ordered_set,
             )
 
-            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if isotypic_component(self, character).module_rank() != 0))
+            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if self.isotypic_component(character).module_rank() != 0))
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""
 
-            return isotypic_component(self, character)
+            return _isotypic_component(self, character)
 
         def isotypic_decomposition(self):
             r"""Return the sum of isotypic components together with its inclusion in ``M``."""
 
-            return isotypic_decomposition(self)
+            return _isotypic_decomposition(self)
 
         def restrict_action_to(self, inclusion):
             r"""Return the subobject ``S`` of ``M`` in ``Modules(R[G])``, as its inclusion.

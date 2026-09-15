@@ -226,7 +226,7 @@ def _kernel_subobject_of_matrix(module, matrix):
     return coefficient_module.module_category().Mor(coefficient_module, coefficient_module)(images).kernel()
 
 
-def isotypic_component(module, character):
+def _isotypic_component(module, character):
     r"""Return ``M ∩ V_character`` as a subobject of ``M``."""
     characters = _split_irreducible_characters(module)
     selected = next(
@@ -262,11 +262,11 @@ def isotypic_component(module, character):
     return _kernel_subobject_of_matrix(module, relation)
 
 
-def isotypic_decomposition(module):
+def _isotypic_decomposition(module):
     r"""Return ``⊕ M_chi -> M`` over the characters present in ``M``."""
     coefficient_module = module.unacted_module()
     characters = tuple(module.isotypic_characters())
-    components = tuple(isotypic_component(module, character) for character in characters)
+    components = tuple(module.isotypic_component(character) for character in characters)
     spanning = tuple(
         component.inclusion()(generator)
         for component in components
@@ -287,6 +287,4 @@ def isotypic_decomposition(module):
 __all__ = [
     "IsotypicCharacter",
     "IsotypicDecompositions",
-    "isotypic_component",
-    "isotypic_decomposition",
 ]
