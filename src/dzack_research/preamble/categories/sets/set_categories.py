@@ -2872,21 +2872,6 @@ class FinitelySupportedFunctionSets(OwnedCategory):
         return [Sets()]
 
 
-def placement_of(parent: Parent) -> Category:
-    r"""Return the strongest represented owned Set cardinality category for ``parent``."""
-    if parent in FiniteSets():
-        return FiniteSets()
-    if parent in CountablyInfiniteSets():
-        return CountablyInfiniteSets()
-    if parent in UncountableSets():
-        return UncountableSets()
-    if parent in InfiniteSets():
-        return InfiniteSets()
-    if parent in CountableSets():
-        return CountableSets()
-    return Sets()
-
-
 def register_set_axioms() -> None:
     r"""Compatibility entry point: the live owned categories need no Sage-global mutation."""
     return None
@@ -2925,7 +2910,6 @@ __all__ = [
     "Sets",
     "TotallyOrderedSets",
     "UncountableSets",
-    "placement_of",
     "finite_ordinal_set",
     "register_set_axioms",
 ]

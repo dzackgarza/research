@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetSubcategoryMethods,
     TotallyOrderedSets,
     UncountableSets,
-    placement_of,
     register_set_axioms,
 )
 
@@ -26,6 +25,6 @@ __all__ = [
     "CountableSets", "CountablyInfiniteSets", "FiniteSets",
     "FinitelySupportedFunctionSets", "InfiniteSets", "NaturalNumber",
     "NaturalNumbers", "NN", "PartiallyOrderedSets", "SetSubcategoryMethods",
-    "Sets", "TotallyOrderedSets", "UncountableSets", "placement_of",
+    "Sets", "TotallyOrderedSets", "UncountableSets",
     "register_set_axioms",
 ]
