@@ -5,14 +5,14 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import (
-    construction_contract,
-    hom_construction_contract,
+    _construction_contract,
+    _hom_construction_contract,
 )
 
 
 def test_module_constructor_contract_discovers_its_base_ring() -> None:
     integers = _own_ring(SageZZ)
-    contract = construction_contract(Modules(integers))
+    contract = _construction_contract(Modules(integers))
 
     base_parameters = contract.named("base_ring")
     assert base_parameters
@@ -31,7 +31,7 @@ def test_module_constructor_contract_discovers_its_base_ring() -> None:
 
 def test_algebra_constructor_contract_separates_multiplication_from_module_data() -> None:
     integers = _own_ring(SageZZ)
-    contract = construction_contract(Algebras(integers))
+    contract = _construction_contract(Algebras(integers))
 
     required = contract.required_names()
     assert "multiplication_source_module" in required
@@ -44,7 +44,7 @@ def test_algebra_constructor_contract_separates_multiplication_from_module_data(
 
 def test_constructor_contract_retains_the_open_cooperative_boundary() -> None:
     integers = _own_ring(SageZZ)
-    contract = construction_contract(Algebras(integers))
+    contract = _construction_contract(Algebras(integers))
 
     providers = {provider.__qualname__ for provider in contract.variadic_providers}
     assert any(name.endswith("Algebras.ParentMethods") for name in providers)
@@ -54,7 +54,7 @@ def test_constructor_contract_retains_the_open_cooperative_boundary() -> None:
 
 def test_constructor_contract_retains_adoption_and_refinement_hooks() -> None:
     integers = _own_ring(SageZZ)
-    contract = construction_contract(Algebras(integers))
+    contract = _construction_contract(Algebras(integers))
 
     hook_names = {provider.__qualname__ for provider in contract.hook_providers}
     assert any(name.endswith("Modules.ParentMethods") for name in hook_names)
@@ -64,7 +64,7 @@ def test_hom_constructor_contract_retains_family_and_endpoints() -> None:
     integers = _own_ring(SageZZ)
     modules = Modules(integers)
     module = modules.an_object()
-    contract = hom_construction_contract(modules, module, module)
+    contract = _hom_construction_contract(modules, module, module)
 
     required = contract.required_names()
     assert "domain" in required
@@ -75,7 +75,7 @@ def test_hom_constructor_contract_retains_family_and_endpoints() -> None:
 
 
 def test_specialized_constructor_can_derive_general_constructor_data() -> None:
-    contract = construction_contract(FiniteOrderedSets())
+    contract = _construction_contract(FiniteOrderedSets())
 
     assert contract.named("index_set")
     assert "index_set" in contract.derived_names()

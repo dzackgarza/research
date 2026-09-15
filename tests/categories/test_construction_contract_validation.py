@@ -1,7 +1,7 @@
 import pytest
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.owned_category import construction_contract, object_of
+from dzack_research.preamble.owned_category import _construction_contract, object_of
 
 
 class ClosedConstructionCategory(OwnedCategory):
@@ -41,7 +41,7 @@ class OpenConstructionCategory(OwnedCategory):
 
 def test_closed_contract_requires_named_data_before_construction() -> None:
     category = ClosedConstructionCategory()
-    contract = construction_contract(category)
+    contract = _construction_contract(category)
 
     assert contract.required_names() == frozenset({"required_value"})
     assert contract.optional_names() == frozenset({"optional_value"})
@@ -59,7 +59,7 @@ def test_closed_contract_rejects_undeclared_data() -> None:
 
 def test_open_contract_still_requires_its_named_data_but_forwards_the_rest() -> None:
     category = OpenConstructionCategory()
-    contract = construction_contract(category)
+    contract = _construction_contract(category)
 
     assert contract.required_names() == frozenset({"required_value"})
     assert contract.is_open()

@@ -834,7 +834,7 @@ def _construction_contract_from_type(
     )
 
 
-def construction_contract(category: Category) -> ConstructionContract:
+def _construction_contract(category: Category) -> ConstructionContract:
     r"""Discover the defining data contributed by ``category.ObjectType``'s MRO.
 
     Only constructors declared in the preamble are part of this mathematical
@@ -850,7 +850,7 @@ def construction_contract(category: Category) -> ConstructionContract:
     )
 
 
-def hom_construction_contract(
+def _hom_construction_contract(
     category: Category,
     domain: Parent,
     codomain: Parent,
@@ -858,7 +858,7 @@ def hom_construction_contract(
     r"""Discover how the fixed Hom parent ``Hom_category(domain,codomain)`` is built.
 
     This is the contract of the selected Hom object itself: its Hom family and
-    endpoints.  It is deliberately distinct from :func:`construction_contract`
+    endpoints.  It is deliberately distinct from :func:`_construction_contract`
     on the fixed Hom category, which describes construction of an arrow *in*
     that Hom.
     """
@@ -885,7 +885,7 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
     homset does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
-    construction_contract(category).validate(data)
+    _construction_contract(category).validate(data)
     return category.ObjectType(category=category, **data)
 
 
