@@ -1,7 +1,6 @@
 r"""Archive reconciliation for arrow categories, restricted arrows, and cores."""
 
 from dzack_research.preamble.all import (
-    ArrowCategory,
     AutomorphismArrowCategory,
     EndArrowCategory,
     EpimorphismArrowCategory,

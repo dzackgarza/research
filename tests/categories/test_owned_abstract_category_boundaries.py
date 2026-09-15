@@ -2,16 +2,13 @@ r"""Pure abstract category objects use the owned runtime category boundary."""
 
 from dzack_research.preamble.all import Cat, Sets
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
     EndofunctorAlgebras,
     MonomorphismArrowCategory,
-    SubobjectCategory,
     WideSubcategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategories,
-    HomCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     BiproductCategory,

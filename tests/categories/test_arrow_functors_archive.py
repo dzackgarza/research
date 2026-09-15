@@ -1,7 +1,6 @@
 r"""Archived domain/codomain functors on the represented arrow category."""
 
 from dzack_research.preamble.all import (
-    ArrowCategory,
     CodomainFunctor,
     DomainFunctor,
     Sets,

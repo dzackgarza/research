@@ -5,7 +5,6 @@ sets and subsets, the Hom sets between them, and the cardinal arithmetic
 those constructions realize.
 """
 
-import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 

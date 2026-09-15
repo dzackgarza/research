@@ -50,7 +50,6 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
 
 def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objects() -> None:
     from dzack_research.preamble.all import (
-        ArrowCategory,
         AutomorphismArrowCategory,
         EndArrowCategory,
         IsoArrowCategory,
