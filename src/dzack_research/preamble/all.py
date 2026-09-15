@@ -128,7 +128,6 @@ from dzack_research.preamble.categories.algebras import (
     GradedDerivation,
     GradedDerivationSpace,
     GradedFreeAlgebras,
-    GroupAlgebra,
     GroupAlgebraFunctor,
     GroupAlgebras,
     KahlerDifferentialModules,

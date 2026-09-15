@@ -286,6 +286,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "TensorAlgebraOn",
         "AlternatingAlgebraOn",
         "DividedPowerAlgebraOn",
+        "GroupAlgebra",
         "common_category",
         "ContinuousGroupHomset",
         "ExactFieldHomset",

@@ -434,14 +434,11 @@ class RestrictionOfGroupActionFunctor(Functor):
         match category:
             case Modules():
                 base_ring = category.base_ring()
-                from dzack_research.preamble.categories.algebras.group_algebras import (
-                    GroupAlgebra,
-                )
                 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
                     _equip_action,
                 )
 
-                source_modules = Modules(GroupAlgebra(base_ring, morphism.codomain()))
+                source_modules = Modules(base_ring[morphism.codomain()])
                 if acted not in source_modules:
                     action = action_functor_of(acted, morphism.codomain(), category)
                     from dzack_research.preamble.categories.group.classifying_categories import (

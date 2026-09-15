@@ -12,7 +12,6 @@ only restricts the scalar ring.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.functors.scalar_change import (
     RestrictionOfScalarsFunctor,
@@ -46,8 +45,8 @@ class GroupModuleScalarExtensionFunctor(Functor):
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
-            Modules(GroupAlgebra(self._source_ring, group)),
-            Modules(GroupAlgebra(self._target_ring, group)),
+            Modules(self._source_ring[group]),
+            Modules(self._target_ring[group]),
         )
 
     def ring_map(self):
@@ -89,8 +88,8 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
-            Modules(GroupAlgebra(self._target_ring, group)),
-            Modules(GroupAlgebra(self._source_ring, group)),
+            Modules(self._target_ring[group]),
+            Modules(self._source_ring[group]),
         )
 
     def ring_map(self):

@@ -13,7 +13,6 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeHomset,
     LatticeMorphism,
@@ -281,7 +280,7 @@ def group_lattice(lattice, group_or_action, action=None):
         lattice.gram_tensor(),
         module_generators=lattice.module_generating_set(),
     )
-    extra_categories = [Lattices(GroupAlgebra(base_ring, group))]
+    extra_categories = [Lattices(base_ring[group])]
     construction_data = [("group_module_source", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())

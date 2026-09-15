@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.group_algebras import (
-    GroupAlgebra,
     GroupAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
@@ -314,7 +313,7 @@ class ModulesOverGroupAlgebra(Modules):
 
     def restriction(self, subgroup):
         r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
-        return self.restriction_of_scalars(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
+        return self.restriction_of_scalars(Modules(self.coefficient_ring()[subgroup])._group_algebra_inclusion(self.acting_group()))
 
     def induction(self, supergroup):
         r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
@@ -330,7 +329,7 @@ class ModulesOverGroupAlgebra(Modules):
 
     def restriction_coinduction_adjunction(self, subgroup):
         r"""``Res_H^G -| Coind_H^G``."""
-        return self.restriction_coextension_adjunction(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
+        return self.restriction_coextension_adjunction(Modules(self.coefficient_ring()[subgroup])._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
         _derived_construction_parameters = frozenset(
@@ -1234,7 +1233,7 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
     if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
         raise TypeError("a nonfree group module requires a chosen finite presentation")
 
-    group_algebra = GroupAlgebra(base_ring, group)
+    group_algebra = base_ring[group]
     additive_group = module.underlying_additive_group()
     additive_endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
 

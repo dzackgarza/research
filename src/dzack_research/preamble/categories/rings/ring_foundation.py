@@ -1481,7 +1481,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.algebras.free_algebras import (
                 PolynomialRing,
             )
-            from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+            from dzack_research.preamble.categories.algebras.group_algebras import _group_algebra
             from dzack_research.preamble.categories.group.groups import OwnedGroups
             from dzack_research.preamble.categories.rings.number_fields import (
                 _refine_number_field_view,
@@ -1492,7 +1492,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 case str():
                     return PolynomialRing(self, names)
                 case _ if names in OwnedGroups():
-                    return GroupAlgebra(self, names)
+                    return _group_algebra(self, names)
                 case tuple() if all(isinstance(part, str) for part in names):
                     return PolynomialRing(self, names)
                 case list():

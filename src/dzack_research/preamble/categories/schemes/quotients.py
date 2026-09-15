@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ContravariantFunctor,
 )
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -281,7 +280,7 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
         ContravariantFunctor.__init__(
             self,
             AffineGSchemes(group, base),
-            Modules(GroupAlgebra(base, group)),
+            Modules(base[group]),
         )
 
     def acting_group(self):

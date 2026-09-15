@@ -184,9 +184,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def _augmentation(self, group):
         r"""The augmentation ``epsilon: R[G] -> R``, ``g |-> 1``."""
-        from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
-
-        return GroupAlgebra(self.base_ring(), group).augmentation()
+        return self.base_ring()[group].augmentation()
 
     def trivial_action(self, group):
         r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""

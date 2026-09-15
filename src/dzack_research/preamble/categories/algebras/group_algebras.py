@@ -56,7 +56,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""\(R[C_2]\), the smallest group algebra with a nontrivial group."""
-        return GroupAlgebra(self.base_ring(), OwnedGroups.C(2))
+        return self.base_ring()[OwnedGroups.C(2)]
 
     @classmethod
     def _repr_object_names(cls):
@@ -173,7 +173,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
 
 @cached_function
-def GroupAlgebra(base_ring, group):
+def _group_algebra(base_ring, group):
     r"""The group algebra \(R[G]\): the free \(R\)-module on \(G\), multiplied by the group law."""
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
@@ -263,7 +263,7 @@ class GroupAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, group):
-        return GroupAlgebra(self._base_ring, group)
+        return self._base_ring[group]
 
     def _apply_morphism(self, group_morphism):
         source = self(group_morphism.domain())
