@@ -1554,13 +1554,6 @@ class TensorProductCategory(OwnedCategoryBase):
             return False
 
 
-def common_category_of(objects: IndexedFamily | Iterable[Parent]) -> Category:
-    family = _finite_factor_family(objects)
-    if family.cardinality() == cardinal(0):
-        raise ValueError("a common category requires at least one object")
-    return Category.meet([obj.category() for obj in family])
-
-
 def _discrete_diagram(factors, target_category=None):
     family = _finite_factor_family(factors)
     if family.cardinality() == cardinal(0):
@@ -1570,7 +1563,11 @@ def _discrete_diagram(factors, target_category=None):
             )
         target = target_category
     else:
-        target = common_category_of(family) if target_category is None else target_category
+        target = (
+            Cat().join(tuple(obj.category() for obj in family))
+            if target_category is None
+            else target_category
+        )
 
     index = DiscreteCategory(family.index_set())
     return DiscreteDiagram(index, target, family)
@@ -1617,7 +1614,6 @@ __all__ = [
     "Span",
     "SpanCategory",
     "TensorProductCategory",
-    "common_category_of",
     "coproduct_cocone_category",
     "product_cone_category",
     "restrict_diagram",
