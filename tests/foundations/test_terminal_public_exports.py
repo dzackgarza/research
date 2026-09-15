@@ -191,6 +191,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "scheme_product",
         "scheme_fiber_product",
         "scheme_base_change_functor",
+        "definite_complement_extensions",
+        "gluing_route_discriminant_classes",
         "slice_base_change_adjunction",
         "cartesian_product_of",
         "CartesianProductMorphism",

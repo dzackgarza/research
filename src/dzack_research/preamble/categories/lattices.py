@@ -162,8 +162,8 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.categories.vector_configurations import VectorConfigurations
 from dzack_research.preamble.categories.vector_orbits import (
     VectorPrimitiveExtension,
-    definite_complement_extensions,
-    gluing_route_discriminant_classes,
+    _definite_complement_extensions,
+    _gluing_route_discriminant_classes,
     stable_complement_root_reflections,
 )
 from dzack_research.preamble.refine import refine
@@ -2636,12 +2636,12 @@ class Lattices(OwnedCategoryOverBaseRing):
         def definite_complement_extensions(self, left, right):
             r"""Return all isometries ``g`` with ``g(left)=right`` in the definite-complement regime."""
 
-            return definite_complement_extensions(self, left, right)
+            return _definite_complement_extensions(self, left, right)
 
         def gluing_route_discriminant_classes(self, left, right):
             r"""Return admissible ``O(A_L)`` classes from the primitive-extension gluing route."""
 
-            return gluing_route_discriminant_classes(self, left, right)
+            return _gluing_route_discriminant_classes(self, left, right)
 
         def stable_complement_root_reflections(self, element):
             r"""Return stable reflections in root-orbit representatives of ``element^perp``."""

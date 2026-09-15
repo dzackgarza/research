@@ -208,7 +208,7 @@ def _isometries_between_definite_lattices(source, target):
         yield homset.act(automorphism, first)
 
 
-def definite_complement_extensions(lattice, left, right):
+def _definite_complement_extensions(lattice, left, right):
     r"""Return every ``g in O(L)`` carrying ``left`` to ``right`` when complements are definite.
 
     This is Dawes' definite-complement route.  An isometry of the two
@@ -343,7 +343,7 @@ def _finite_form_isometries(start):
         )
 
 
-def gluing_route_discriminant_classes(lattice, left, right):
+def _gluing_route_discriminant_classes(lattice, left, right):
     r"""Return the finite discriminant classes compatible with ``left -> right``.
 
     For the primitive extensions ``M_i=Zw_i perp w_i^perp`` this enumerates
@@ -480,7 +480,5 @@ def stable_complement_root_reflections(lattice, element):
 
 __all__ = [
     "VectorPrimitiveExtension",
-    "definite_complement_extensions",
-    "gluing_route_discriminant_classes",
     "stable_complement_root_reflections",
 ]

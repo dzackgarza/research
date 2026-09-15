@@ -882,8 +882,6 @@ from dzack_research.preamble.categories.vector_configurations import (  # noqa: 
 )
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
-    definite_complement_extensions,
-    gluing_route_discriminant_classes,
 )
 from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F401
     VinbergInvariantMatrices,
