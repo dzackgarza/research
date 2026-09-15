@@ -725,7 +725,6 @@ from dzack_research.preamble.categories.schemes import (
     PointedAnalyticFundamentalGroup,
     ProductProjectiveSpaces,
     ProductSchemes,
-    ProjectiveCompleteIntersection,
     ProjectiveCompleteIntersections,
     ProjectiveCurveNormalizationData,
     ProjectiveGeneralLinearGroup2,

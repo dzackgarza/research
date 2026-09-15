@@ -3,7 +3,7 @@
 from dzack_research.preamble.all import (
     QQ,
     NamedLattices,
-    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
     ProjectiveSpace,
 )
 
@@ -11,7 +11,7 @@ from dzack_research.preamble.all import (
 def _fermat_quartic():
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    return ProjectiveCompleteIntersection(
+    return ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
     )
 

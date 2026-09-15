@@ -2,7 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    ProjectiveCompleteIntersection,
     ProjectiveCompleteIntersections,
     ProjectiveSpace,
 )
@@ -20,7 +19,7 @@ ARCHIVE_RECONCILIATION = {
 def test_projective_complete_intersection_retains_equations_multidegree_and_adjunction_integer() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    curve = ProjectiveCompleteIntersection(
+    curve = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0 * x1 - x2**2, x0**3 + x1**3 + x3**3)
     )
 
@@ -39,13 +38,13 @@ def test_redundant_homogeneous_equations_are_not_misclassified_as_a_complete_int
     redundant = space.closed_subscheme(x0, x0 * x1)
 
     with pytest.raises(ValueError):
-        ProjectiveCompleteIntersection(redundant)
+        ProjectiveCompleteIntersections(redundant.scheme_base_ring())(redundant)
 
 
 def test_smooth_complete_intersection_surface_uses_adjunction_for_del_pezzo_degree() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    cubic = ProjectiveCompleteIntersection(
+    cubic = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
     )
 
@@ -59,7 +58,7 @@ def test_smooth_complete_intersection_surface_uses_adjunction_for_del_pezzo_degr
 def test_quartic_k3_boundary_is_not_misclassified_as_del_pezzo() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    quartic = ProjectiveCompleteIntersection(
+    quartic = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
     )
 
@@ -72,7 +71,7 @@ def test_quartic_k3_boundary_is_not_misclassified_as_del_pezzo() -> None:
 def test_normality_of_complete_intersections_uses_r1_not_smoothness() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, _x3 = space.gens()
-    quadric_cone = ProjectiveCompleteIntersection(
+    quadric_cone = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0 * x1 - x2**2)
     )
 
@@ -84,7 +83,9 @@ def test_normality_of_complete_intersections_uses_r1_not_smoothness() -> None:
 def test_a_singular_complete_intersection_curve_is_not_normal() -> None:
     plane = ProjectiveSpace(2, QQ)
     x, y, z = plane.gens()
-    cusp = ProjectiveCompleteIntersection(plane.closed_subscheme(y**2 * z - x**3))
+    cusp = ProjectiveCompleteIntersections(plane.scheme_base_ring())(
+        plane.closed_subscheme(y**2 * z - x**3)
+    )
 
     assert not cusp.is_smooth()
     assert not cusp.is_normal()
@@ -94,7 +95,7 @@ def test_a_singular_complete_intersection_curve_is_not_normal() -> None:
 def test_complete_intersection_adjunction_is_an_actual_line_bundle_isomorphism() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    curve = ProjectiveCompleteIntersection(
+    curve = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0 * x1 - x2**2, x0**3 + x1**3 + x3**3)
     )
     comparison = curve.adjunction_comparison()
@@ -115,7 +116,7 @@ def test_complete_intersection_adjunction_is_an_actual_line_bundle_isomorphism()
 def test_del_pezzo_complete_intersection_uses_actual_anticanonical_ampleness() -> None:
     space = ProjectiveSpace(3, QQ)
     x0, x1, x2, x3 = space.gens()
-    cubic = ProjectiveCompleteIntersection(
+    cubic = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
     )
 
@@ -129,7 +130,7 @@ def test_del_pezzo_complete_intersection_uses_actual_anticanonical_ampleness() -
 def test_two_quadrics_in_projective_four_space_form_a_degree_four_del_pezzo_surface() -> None:
     space = ProjectiveSpace(4, QQ, names=("A", "B", "C", "D", "E"))
     A, B, C, D, E = space.gens()
-    surface = ProjectiveCompleteIntersection(
+    surface = ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(B * D - A * E, C**2 - A * E)
     )
 

@@ -3,7 +3,7 @@
 from dzack_research.preamble.all import (
     QQ,
     PolynomialRing,
-    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
     ProjectiveSpace,
 )
 
@@ -19,7 +19,7 @@ def _hesse_cubic_family():
     z = ring.algebra_generator("z")
     scalar = ring.algebra_structure_morphism()
     equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-    family = ProjectiveCompleteIntersection(plane.closed_subscheme(equation))
+    family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane.closed_subscheme(equation))
     return parameter, family
 
 

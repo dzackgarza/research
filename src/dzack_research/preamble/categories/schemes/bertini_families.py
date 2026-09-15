@@ -24,7 +24,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
-    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
 )
 from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
@@ -44,7 +44,7 @@ class HesseBertiniFamily(SageObject):
         z = relative_ring.algebra_generator("z")
         scalar = relative_ring.algebra_structure_morphism()
         equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-        family = ProjectiveCompleteIntersection(plane.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane.closed_subscheme(equation))
 
         reference_plane = ProjectiveSpace(2, base, names=("x", "y", "z"))
         bundle = reference_plane.O(3)

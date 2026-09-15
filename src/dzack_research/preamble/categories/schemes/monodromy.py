@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
-    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
@@ -221,7 +221,7 @@ class LegendreMonodromyFamily(SageObject):
         z = section_ring.algebra_generator("z")
         scalar_t = section_ring.algebra_structure_morphism()(t)
         equation = y**2 * z - x * (x - z) * (x - scalar_t * z)
-        family = ProjectiveCompleteIntersection(ambient.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(ambient.scheme_base_ring())(ambient.closed_subscheme(equation))
 
         at_zero = parameter.Mor(rationals)({"t": rationals.zero()})
         at_half = parameter.Mor(rationals)({"t": rationals(1) / rationals(2)})

@@ -108,7 +108,41 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
     def an_object(self):
         plane = ProjectiveSpace(2, self.base_ring())
         x, y, z = plane.gens()
-        return ProjectiveCompleteIntersection(plane.closed_subscheme(x * z - y**2))
+        return self(plane.closed_subscheme(x * z - y**2))
+
+    def _call_(self, subscheme):
+        r"""Place a projective closed subscheme with its selected regular sequence."""
+        base = subscheme.scheme_base_ring()
+        if base is not self.base_ring():
+            raise ValueError("a complete intersection is placed over this category's base ring")
+        if not _complete_intersection_base_supported(base):
+            raise TypeError(
+                "the represented complete-intersection criterion requires a field or a polynomial parameter algebra over a field"
+            )
+        if subscheme not in ClosedSubschemes(base):
+            raise TypeError(
+                "a projective complete intersection starts from a represented closed subscheme"
+            )
+        ambient = subscheme.inclusion().codomain()
+        if ambient not in ProjectiveSpaces(base):
+            raise TypeError(
+                "the represented complete-intersection criterion requires projective-space ambient"
+            )
+        equations = tuple(subscheme.defining_equations())
+        if not equations:
+            raise ValueError(
+                "select at least one homogeneous equation for this complete-intersection construction"
+            )
+        codimension = int(subscheme.codimension())
+        if codimension != len(equations):
+            raise ValueError(
+                f"the selected {len(equations)} equations have codimension {codimension}, so they are not a regular sequence"
+            )
+        subscheme._preamble_complete_intersection_ambient = ambient
+        subscheme._preamble_complete_intersection_degrees = tuple(
+            int(equation.degree()) for equation in equations
+        )
+        return refine_scheme(subscheme, base, [self])
 
     def _repr_object_names(self):
         return f"projective complete intersections over {self.base_ring()}"
@@ -206,7 +240,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                     changed_bundle.global_sections().homogeneous_polynomial(target_section)
                 )
 
-            changed = ProjectiveCompleteIntersection(
+            changed = ProjectiveCompleteIntersections(ring_map.codomain())(
                 changed_ambient.closed_subscheme(tuple(changed_equations))
             )
             ambient_projection = changed_ambient.left_projection()
@@ -335,33 +369,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return coefficient**2 * self.projective_degree()
 
 
-def ProjectiveCompleteIntersection(subscheme):
-    r"""Place a projective closed subscheme at its selected complete-intersection owner."""
-    base = subscheme.scheme_base_ring()
-    if not _complete_intersection_base_supported(base):
-        raise TypeError(
-            "the represented complete-intersection criterion requires a field or a polynomial parameter algebra over a field"
-        )
-    if subscheme not in ClosedSubschemes(base):
-        raise TypeError("a projective complete intersection starts from a represented closed subscheme")
-    ambient = subscheme.inclusion().codomain()
-    if ambient not in ProjectiveSpaces(base):
-        raise TypeError("the represented complete-intersection criterion requires projective-space ambient")
-    equations = tuple(subscheme.defining_equations())
-    if not equations:
-        raise ValueError("select at least one homogeneous equation for this complete-intersection construction")
-    codimension = int(subscheme.codimension())
-    if codimension != len(equations):
-        raise ValueError(
-            f"the selected {len(equations)} equations have codimension {codimension}, so they are not a regular sequence"
-        )
-    subscheme._preamble_complete_intersection_ambient = ambient
-    subscheme._preamble_complete_intersection_degrees = tuple(int(equation.degree()) for equation in equations)
-    return refine_scheme(subscheme, base, [ProjectiveCompleteIntersections(base)])
-
-
 __all__ = [
     "CompleteIntersectionAdjunctionComparison",
-    "ProjectiveCompleteIntersection",
     "ProjectiveCompleteIntersections",
 ]
