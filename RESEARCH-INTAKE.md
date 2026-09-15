@@ -31,6 +31,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | p-curvature | User note 2026-09-15 | `p`-curvature of a connection in characteristic `p` (`ψ_p: T_{X/S} → End(E)`) | `categories/connections/p_curvature.py` + `categories/characteristic_p/` | Proposed — see note below |
 | Zeta of varieties / Weil conjectures (concrete cases) | User note 2026-09-15 | `Z(X/F_q,T)` for `X/F_q`; closed forms via explicit `|X(F_{q^r})|` for `A^n, P^n, Gr(k,n)`, some curves; verify Weil (rationality, functional equation, RH) | `categories/zeta/zeta.py` + `categories/varieties/point_counts.py` | Proposed — see note below |
 | Lefschetz trace operationalized (Frob) | User note 2026-09-15 | Operationalize `N_r = Σ (-1)^i Tr(Frob^r \| H^i_{c,ét}(Q_ℓ))` — compute `Tr(Frob)` on étale cohomology | `categories/etale/trace_formula.py` + `categories/etale/frobenius.py` | Proposed — see note below |
+| HH(A) — Hochschild homology | User note 2026-09-15 | Hochschild homology `HH_*(A)` for (dg) algebras `A`; complex `C(A)`, `HH = H_*(C)`, HKR, etc. | `categories/homology/hochschild.py` + `categories/algebras/dg_algebras.py` | Proposed — see note below |
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 
@@ -452,3 +453,17 @@ Requires: `Frob : X_{\bar F_q} → X_{\bar F_q}` as `Fr_q × id` on `X×_{F_q}\b
 For concrete families (`A^n, P^n, Gr(k,n)` and some curves) the trace is already known from explicit `P_i`: e.g. `Tr(Frob|H^{2j}(P^n))=q^j`, otherwise `0`; for `Gr`, `Tr` is `q^{something}` via Schubert. The operational trace must reproduce those `N_r` via the sum, certifying the formula for those `X`. For general `X`, the trace is the computational content of Monsky-Washnitzer / rigid cohomology `H^i_{MW}` with Frobenius lift, behind the same `RΓ_c` interface — private adapter, but `X.etale_cohomology(i)` and `Frob.matrix()` stay owned.
 
 Intended owners: `categories/etale/trace_formula.py` (`LefschetzTrace` with `Tr(Frob^r|H^i_c)` and `N_r = Σ (-1)^i Tr`), `categories/etale/frobenius.py` (`Frobenius : End(H^i_c)` as `RΓ_c(Fr_q)`), `categories/etale/monsky_washnitzer.py` (private MW adapter for general `X` when `RΓ_c` not yet known). Not a free `trace_frobenius(X)` — `X.etale_cohomology_c(i, Q_ell).frobenius().trace(r)` on the cohomology object, with `X.point_count(r)` on the variety object for comparison.
+
+## Desired capability: HH(A) — Hochschild homology — note 2026-09-15
+
+Support `HH(A)` — Hochschild homology of an (associative, possibly dg) algebra `A`.
+
+* `HH(A)` is not a bare list of groups computed by a helper. It is the homology of the Hochschild complex `C(A): ... → A^{⊗ n+1} → A^{⊗ n} → ...` with differential `b(a0⊗...⊗an)= Σ (-1)^i ... + (-1)^n a_n a_0 ⊗ ...`, as object `HH(A) = ⊕_n HH_n(A) : GrMod` (`HH_0 = A/[A,A]`, etc.). For dg `A`, `C(A)` is the derived tensor `C(A)= A ⊗^{L}_{A⊗A^{op}} A : Ch`, i.e. `HH(A)= Tor^{A⊗A^{op}}_*(A,A)`. Need `HH(A)` as functor `HH: Alg_{dg} → GrMod` (or `D(Ab)`), with `HH(A)` computed as `H_*(C(A))`.
+
+* Requires: category `Alg_{dg}(k)` (dg algebras over `k` with `k` a commutative ring), `Enveloping algebra `A^e = A⊗A^{op} : Alg`, `Bimod_A = Mod_{A^e}`, and derived `⊗^L`. Interface must be `A.hochschild_complex()` returning `C(A) : Ch(k)` and `A.hochschild_homology(n)` returning `HH_n(A) : Mod_k` with `HH_0 = abelianization`.
+
+* Expected compatibilities (at least for smooth cases): HKR isomorphism for smooth commutative `A = O(X)`: `HH_n(A) ≅ Ω^n_{X/k}` as objects of `GrMod`, with Connes differential `B: HH_n → HH_{n+1}` matching `d_{dR}`. For scheme `X`, `HH(X)=HH(Perf(X))` and `HH(X) ≅ ⊕ H^i(X, Ω^j)`. Need `HH` to compose with `Perf` and `QCoh` via Morita invariance `HH(A) ≅ HH(Perf_A)`.
+
+* In some cases (smooth proper `X` of dimension `n`, e.g. `P^n, Gr(k,n),` smooth curves) `HH_*(X)` is finite and explicitly computable via HKR, and must be verified. For general `A`, `HH` is retained as formal complex with known type, not forced to compute.
+
+Intended owners: `categories/homology/hochschild.py` (`HochschildComplex`, `HH(A)` functor with `Tor^{A^e}`), `categories/algebras/dg_algebras.py` (`DgAlgebra` with `A^e`, `Bimod`), `categories/schemes/hochschild_kostant_rosenberg.py` (HKR `HH_n(O_X) ≅ Ω^n`). Not a free `hochschild_homology(A)` — `A.hochschild_complex()`, `A.hh(n)` on the algebra object, with `Perf(X).hh()` for schemes.
