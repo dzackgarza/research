@@ -104,6 +104,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "lie_algebra_homset",
         "isometry_primitive_extension",
         "module_localization_functor",
+        "primitive_isotropic_vectors",
         "commutative_algebra_coproduct",
         "commutative_algebra_pushout",
         "centralizer",

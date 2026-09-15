@@ -33,7 +33,6 @@ from dzack_research.preamble.all import (
     cusps,
     nikulin_invariants,
     primitive_isotropic,
-    primitive_isotropic_vectors,
     transport_isotropic_object,
 )
 
@@ -86,7 +85,7 @@ def test_primitive_isotropic_vectors_are_cut_out_by_their_definition() -> None:
     lattice = NamedLattices.E10
     generators = lattice.module_generators()
     isotropic, partner, root = (generators[index] for index in range(3))
-    vectors = primitive_isotropic_vectors(lattice)
+    vectors = lattice.primitive_isotropic_vectors()
 
     assert isotropic in vectors
     assert partner in vectors
@@ -97,7 +96,7 @@ def test_primitive_isotropic_vectors_are_cut_out_by_their_definition() -> None:
 
     definite = NamedLattices.E8
     assert all(
-        vector not in primitive_isotropic_vectors(definite)
+        vector not in definite.primitive_isotropic_vectors()
         for vector in definite.module_generators()
     )
 

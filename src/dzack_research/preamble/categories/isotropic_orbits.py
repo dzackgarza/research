@@ -73,22 +73,6 @@ class PrimitiveIsotropicVectorLocus(SageObject):
         return f"Primitive isotropic vectors of {self.lattice()}"
 
 
-def primitive_isotropic_vectors(lattice):
-    r"""Return the exact primitive-isotropic-vector locus of ``lattice``.
-
-    Membership is ``q(v) = 0`` together with the saturation of ``Z v``, which
-    is the statement ``div(v) = 1`` in ``Z v``: the vector is not a proper
-    multiple of another lattice vector.  Both conditions are decided from
-    their definitions, so the set is exact.
-
-    For an indefinite isotropic lattice this set is countably infinite, so it
-    is presented by its membership and not by an enumeration.  Its ``O(L)``
-    orbits are the cusps, and they are finite in number; representatives come
-    from ``L.O().isotropic_orbit_representatives(1)``.
-    """
-    return PrimitiveIsotropicVectorLocus(lattice)
-
-
 class PrimitiveIsotropicVectorOrbit(SageObject):
     r"""One ``O(L)``-orbit inside the primitive isotropic vector locus."""
 
@@ -1012,7 +996,6 @@ __all__ = [
     "isotropic_stabilizer_generators",
     "primitive_isotropic_subobject",
     "primitive_isotropic_sublattices",
-    "primitive_isotropic_vectors",
     "tits_building_incidence",
     "transport_isotropic_object",
     "vector_locus",

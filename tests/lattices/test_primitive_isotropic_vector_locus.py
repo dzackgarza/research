@@ -1,16 +1,17 @@
-from dzack_research.preamble.all import NamedLattices, primitive_isotropic_vectors
+from dzack_research.preamble.all import NamedLattices
 
 
 def test_lattice_owns_the_same_primitive_isotropic_membership_condition() -> None:
     lattice = NamedLattices.E10
     locus = lattice.primitive_isotropic_vectors()
-    standalone = primitive_isotropic_vectors(lattice)
+    repeated = lattice.primitive_isotropic_vectors()
     isotropic = lattice.module_generator(0)
 
     assert locus.lattice() is lattice
     assert locus.universe() is lattice
     assert isotropic in locus
-    assert isotropic in standalone
+    assert repeated is locus
+    assert isotropic in repeated
     assert lattice.zero() not in locus
     assert 2 * isotropic not in locus
 

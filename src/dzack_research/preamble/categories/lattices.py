@@ -90,11 +90,11 @@ from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
+    PrimitiveIsotropicVectorLocus,
     isotropic_flag_locus,
     isotropic_sublattice_locus,
     primitive_isotropic_sublattices,
     primitive_isotropic_subobject,
-    primitive_isotropic_vectors,
     vector_locus,
 )
 from dzack_research.preamble.categories.lattice_morphisms import (
@@ -2652,8 +2652,16 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def primitive_isotropic_vectors(self):
-            r"""Return the exact locus of nonzero primitive isotropic vectors of this lattice."""
-            return primitive_isotropic_vectors(self)
+            r"""Return the exact locus of nonzero primitive isotropic vectors.
+
+            Membership is ``q(v) = 0`` together with saturation of ``Z v``:
+            the vector is not a proper multiple of another lattice vector.
+            For an indefinite isotropic lattice this locus is countably
+            infinite, so it is represented by exact membership rather than by
+            enumeration; its finite ``O(L)`` orbit decomposition gives the
+            cusps.
+            """
+            return PrimitiveIsotropicVectorLocus(self)
 
         def primitive_isotropic_sublattices(self, rank=1):
             r"""Return primitive totally isotropic rank-``rank`` subobjects of this lattice."""
