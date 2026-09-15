@@ -2,7 +2,6 @@ r"""Graded derivations use the owned category meet for restricted-Hom placement.
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
-    FinitelyPresentedAlgebra,
     KahlerDifferentials,
 )
 from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
@@ -12,7 +11,7 @@ def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> 
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
+    algebra = (polynomial).quotient_by_relations([x * y])
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
     values = algebra.regular_module()

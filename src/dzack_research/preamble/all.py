@@ -110,7 +110,6 @@ from dzack_research.preamble.categories.algebras import (
     DifferentialComponentMorphism,
     DifferentialGradedAlgebras,
     DividedPowerAlgebras,
-    FinitelyPresentedAlgebra,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
     FreeAlgebras,

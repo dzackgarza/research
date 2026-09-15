@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     CommutativeAlgebras,
     QQ,
     ZZ,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 
@@ -25,7 +24,7 @@ ARCHIVE_RECONCILIATION = {
 def _quadratic_integer_algebra():
     polynomial = ZZ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    return FinitelyPresentedAlgebra(polynomial, (x**2 - 2,))
+    return (polynomial).quotient_by_relations((x**2 - 2,))
 
 
 def test_archived_algebra_base_change_is_the_live_scalar_extension_functor() -> None:

@@ -252,14 +252,13 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
 
 
 def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None:
-    from dzack_research.preamble.all import FinitelyPresentedAlgebra
 
     parameter = PolynomialRing(QQ, "t")
     t = parameter.algebra_generator("t")
     presentation = PolynomialRing(parameter, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    family = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    family = (presentation).quotient_by_relations((x * y - t,))
     x_family = family.algebra_generator("x")
 
     principal = family.ideal(x_family)
@@ -382,14 +381,13 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
 
 def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
-    from dzack_research.preamble.all import FinitelyPresentedAlgebra
 
     left_free = PolynomialRing(QQ, "x")
     right_free = PolynomialRing(QQ, "y")
     x = left_free.algebra_generator("x")
     y = right_free.algebra_generator("y")
-    left = FinitelyPresentedAlgebra(left_free, (x**2,))
-    right = FinitelyPresentedAlgebra(right_free, (y**3,))
+    left = (left_free).quotient_by_relations((x**2,))
+    right = (right_free).quotient_by_relations((y**3,))
 
     coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
@@ -743,11 +741,10 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
 
 
 def test_selected_presented_algebra_localization_has_exact_fraction_equality() -> None:
-    from dzack_research.preamble.categories.algebras import FinitelyPresentedAlgebra
 
     presentation = PolynomialRing(QQ, ("x", "y"))
     x, y = presentation.algebra_generators()
-    axes = FinitelyPresentedAlgebra(presentation, (x * y,))
+    axes = (presentation).quotient_by_relations((x * y,))
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
     localized = axes.localization(xbar)
@@ -770,13 +767,12 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
 
 def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
     from dzack_research.preamble.categories.algebras import (
-        FinitelyPresentedAlgebra,
         KahlerDifferentials,
     )
 
     presentation = PolynomialRing(QQ, ("x", "y"))
     x, y = presentation.algebra_generators()
-    axes = FinitelyPresentedAlgebra(presentation, (x * y,))
+    axes = (presentation).quotient_by_relations((x * y,))
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
     omega = axes.kahler_differentials()

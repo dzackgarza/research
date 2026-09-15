@@ -2,7 +2,6 @@ r"""Comparison maps at the supported local-module boundary."""
 
 from dzack_research.preamble.all import (
     QQ,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -41,7 +40,7 @@ def test_nonreduced_local_map_kernel_agrees_before_and_after_transport() -> None
     presentation = PolynomialRing(QQ, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    node = FinitelyPresentedAlgebra(presentation, (x * y,))
+    node = (presentation).quotient_by_relations((x * y,))
     x0 = node.algebra_generator("x")
     y0 = node.algebra_generator("y")
     point = node.spectrum()(node.ideal(x0, y0))

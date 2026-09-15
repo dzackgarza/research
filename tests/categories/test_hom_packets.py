@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineSpace,
     Algebras,
-    FinitelyPresentedAlgebra,
     Groups,
     Isomorphism,
     Lattices,
@@ -135,7 +134,7 @@ def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -
 def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     polynomial = QQ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
     isomorphism = Isomorphism(identity, identity)
     forget = Algebras(QQ).underlying_module()

@@ -63,7 +63,7 @@ def test_a_plane_curve_session(name) -> None:
     assert origin.quotient_ring() in Fields()
 
     # The coordinate ring of the cusp.
-    cusp = FinitelyPresentedAlgebra(plane, [y**2 - x**3])
+    cusp = (plane).quotient_by_relations([y**2 - x**3])
     rendered(cusp)
     xbar = cusp.algebra_generator("x")
     ybar = cusp.algebra_generator("y")

@@ -7,7 +7,6 @@ finitely framed over their scalars.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedAlgebra,
     Groups,
     Modules,
 )
@@ -21,7 +20,7 @@ def _gaussian_rationals():
     r"""``S = QQ[x]/(x^2 + 1)`` with its class ``i`` of ``x`` and its structure map ``QQ -> S``."""
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
-    scalars = FinitelyPresentedAlgebra(polynomials, [x**2 + 1])
+    scalars = (polynomials).quotient_by_relations([x**2 + 1])
     return scalars, scalars(x), scalars._ring_morphism_defining_algebra_structure()
 
 

@@ -15,9 +15,6 @@ the identity; and \(\mathbf Q\), where evaluating \(\bar x\) at one and
 \(\bar y\) at zero respects \(xy=0\) and sends \(\bar y/\bar x\) to zero.
 """
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras import (
-    FinitelyPresentedAlgebra,
-)
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
@@ -26,7 +23,7 @@ def _axes_and_punctured_axis():
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(polynomial, [x * y])
+    axes = (polynomial).quotient_by_relations([x * y])
     return axes, axes.algebra_generator("x"), axes.algebra_generator("y")
 
 

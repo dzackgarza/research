@@ -3,7 +3,6 @@ from dzack_research.preamble.categories.algebras import (
     CommutativeAlgebras,
     DeRhamAlgebra,
     DifferentialGradedAlgebras,
-    FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
     KahlerDifferentials,
     StrictlyCommutativeDifferentialGradedAlgebras,
@@ -33,7 +32,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
+    algebra = (polynomial).quotient_by_relations([x * y])
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
@@ -94,7 +93,7 @@ def test_relative_conormal_and_tangent_comparison_for_xy_equals_t() -> None:
     presentation = PolynomialRing(parameter, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    algebra = (presentation).quotient_by_relations((x * y - t,))
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
@@ -161,7 +160,7 @@ def test_de_rham_differential_descends_through_a_singular_quotient() -> None:
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
+    algebra = (polynomial).quotient_by_relations([x * y])
     de_rham = algebra.de_rham_algebra()
     X = de_rham.from_degree_zero(algebra.algebra_generator("x"))
     Y = de_rham.from_degree_zero(algebra.algebra_generator("y"))
@@ -174,7 +173,7 @@ def test_de_rham_differential_descends_through_a_singular_quotient() -> None:
 def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
     polynomial = QQ.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     xbar = algebra.algebra_generator("x")
 
     omega = algebra.kahler_differentials()
@@ -189,7 +188,6 @@ def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
 
 def test_kahler_differentials_and_universal_derivation_commute_with_localization() -> None:
     from dzack_research.preamble.categories.algebras import (
-        FinitelyPresentedAlgebra,
         KahlerDifferentialModules,
     )
     from dzack_research.preamble.categories.modules.localizations import (
@@ -199,7 +197,7 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(polynomial, [x * y])
+    axes = (polynomial).quotient_by_relations([x * y])
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
     localized = axes.localization(xbar)

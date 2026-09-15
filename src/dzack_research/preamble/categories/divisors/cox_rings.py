@@ -4,7 +4,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -96,9 +95,7 @@ def _cox_ring(scheme):
     rays = scheme.fan().cones(1)
     names = tuple(f"x{position}" for position in range(int(rays.cardinality())))
     presentation = PolynomialRing(scheme.scheme_base_ring(), names)
-    ring = FinitelyPresentedAlgebra(
-        presentation,
-        (),
+    ring = (presentation).quotient_by_relations((),
         _extra_categories=(CoxRings(scheme),),
         _extra_construction_data=(
             ("_preamble_cox_scheme", scheme),

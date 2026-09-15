@@ -259,7 +259,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
         )
         for relation in algebra.relations()
     )
-    return FinitelyPresentedAlgebra(target_presentation_ring, mapped_relations)
+    return (target_presentation_ring).quotient_by_relations(mapped_relations)
 
 
 class _PresentedAlgebraParent(_OwnedAlgebraParent):
@@ -723,25 +723,6 @@ def _finitely_presented_algebra_from_data(
         presentation_flattening=presentation_flattening,
         generator_values=generator_values,
         presentation_lift=presentation_lift,
-    )
-
-
-def FinitelyPresentedAlgebra(
-    presentation_ring,
-    relations,
-    *,
-    _extra_categories=(),
-    _extra_construction_data=None,
-    _free_source_module=None,
-):
-    r"""Notebook notation for the selected finite-presentation algebra constructor."""
-    category = AlgebrasWithChosenFinitePresentation(presentation_ring.base_ring())
-    return category._call_(
-        presentation_ring,
-        relations,
-        extra_categories=_extra_categories,
-        extra_construction_data=_extra_construction_data,
-        free_source_module=_free_source_module,
     )
 
 
@@ -1318,9 +1299,7 @@ def _commutative_algebra_coproduct_backend(left, right):
     )
     construction_data = (("_preamble_coproduct_factors", (left, right)),)
     if relations:
-        return FinitelyPresentedAlgebra(
-            presentation,
-            relations,
+        return (presentation).quotient_by_relations(relations,
             _extra_categories=(CommutativeAlgebraCoproducts(base),),
             _extra_construction_data=construction_data,
         )
@@ -1360,9 +1339,7 @@ def _quotient_by_algebra_elements_backend(
         raise NotImplementedError(
             "quotienting a commutative algebra requires a selected polynomial presentation"
         )
-    quotient = FinitelyPresentedAlgebra(
-        presentation,
-        relations,
+    quotient = (presentation).quotient_by_relations(relations,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )

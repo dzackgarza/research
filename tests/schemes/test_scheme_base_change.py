@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     AffineSpace,
     AffineSpaces,
     FiberProductSchemes,
-    FinitelyPresentedAlgebra,
     FiniteTypeSchemes,
     IntegralSchemes,
     NormalSchemes,
@@ -125,7 +124,7 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
     presentation = PolynomialRing(parameter, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    family_algebra = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    family_algebra = (presentation).quotient_by_relations((x * y - t,))
     residue_algebra = parameter.quotient_ring(parameter.ideal(t))
     spec = CommutativeAlgebras(parameter).spectrum()
     line = Schemes(parameter).base_scheme()

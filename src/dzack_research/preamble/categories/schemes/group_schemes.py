@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -419,9 +418,7 @@ def _roots_of_unity_group_scheme(base_ring, degree: int):
     base = _own_ring(base_ring)
     presentation = PolynomialRing(base, "u")
     u_presentation = presentation.algebra_generator("u")
-    algebra = FinitelyPresentedAlgebra(
-        presentation,
-        (u_presentation**degree - presentation.one(),),
+    algebra = (presentation).quotient_by_relations((u_presentation**degree - presentation.one(),),
     )
     u = algebra.algebra_generator("u")
     scheme = Spec(algebra, base_ring=base)

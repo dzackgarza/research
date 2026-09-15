@@ -579,6 +579,24 @@ class _CommutativeUnitalAlgebraParentMethods:
 
         return _quotient_by_algebra_elements_backend(self, elements)
 
+    def quotient_by_relations(
+        self,
+        relations,
+        *,
+        _extra_categories=(),
+        _extra_construction_data=None,
+        _free_source_module=None,
+    ):
+        r"""Return the selected finite-presentation quotient by ``relations``."""
+        category = AlgebrasWithChosenFinitePresentation(self.base_ring())
+        return category._call_(
+            self,
+            relations,
+            extra_categories=_extra_categories,
+            extra_construction_data=_extra_construction_data,
+            free_source_module=_free_source_module,
+        )
+
 
 class _AlgebraTensorSquareFunctor(Functor):
     r"""The diagonal tensor-square endofunctor on modules over a commutative ring."""
@@ -1632,14 +1650,8 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            FinitelyPresentedAlgebra,
-        )
-
-        return FinitelyPresentedAlgebra(
-            self.base_ring().free_module(("x",)).symmetric_algebra(),
-            ("x^2",),
-        )
+        presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
+        return presentation.quotient_by_relations(("x^2",))
 
     @classmethod
     def _repr_object_names(cls):
@@ -1658,14 +1670,8 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            FinitelyPresentedAlgebra,
-        )
-
-        return FinitelyPresentedAlgebra(
-            self.base_ring().free_module(("x",)).symmetric_algebra(),
-            ("x^2",),
-        )
+        presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
+        return presentation.quotient_by_relations(("x^2",))
 
     @classmethod
     def _repr_object_names(cls):

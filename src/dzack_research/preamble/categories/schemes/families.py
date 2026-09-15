@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -31,9 +30,7 @@ class RelativeAffineFamily(SageObject):
         self._equations = tuple(
             self._presentation_ring(equation) for equation in raw_equations
         )
-        self._total_algebra = FinitelyPresentedAlgebra(
-            self._presentation_ring,
-            self._equations,
+        self._total_algebra = (self._presentation_ring).quotient_by_relations(self._equations,
         )
         self._base_scheme = Schemes(parameter_algebra).base_scheme()
         self._total_space = Spec(self._total_algebra, base_ring=parameter_algebra)

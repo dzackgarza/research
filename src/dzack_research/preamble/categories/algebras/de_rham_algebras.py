@@ -28,15 +28,11 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         ``R[x]/(x^2)`` is still nontrivial Kähler calculus and is finite free
         over ``R``.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import (
-            FinitelyPresentedAlgebra,
-        )
-
         ring = self.base_ring()
         polynomial = CommutativeAlgebras(ring).an_object()
         label = next(iter(polynomial.algebra_generating_set()))
         generator = polynomial.algebra_generator(label)
-        return self(FinitelyPresentedAlgebra(polynomial, (generator**2,)))
+        return self((polynomial).quotient_by_relations((generator**2,)))
 
     def _call_(self, algebra):
         r"""Construct ``Omega^*_{A/R}`` from the represented ``R``-algebra ``A``.

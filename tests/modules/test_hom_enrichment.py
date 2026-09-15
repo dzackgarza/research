@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
     FinitelyPresentedModules,
     InternalHomModules,
@@ -95,7 +94,7 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
+    algebra = (polynomial).quotient_by_relations([x * y])
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 

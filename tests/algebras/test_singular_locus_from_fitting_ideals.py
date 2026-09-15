@@ -8,7 +8,6 @@ d is one, and its singular locus is the origin alone.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedAlgebra,
     KahlerDifferentials,
     PolynomialRing,
     QQ,
@@ -19,7 +18,7 @@ def test_the_node_is_singular_at_the_origin_and_nowhere_else() -> None:
     plane = PolynomialRing(QQ, "x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    node = FinitelyPresentedAlgebra(plane, [y**2 - x**3 - x**2])
+    node = (plane).quotient_by_relations([y**2 - x**3 - x**2])
     differentials = node.kahler_differentials()
 
     singular = differentials.non_smooth_locus(1)

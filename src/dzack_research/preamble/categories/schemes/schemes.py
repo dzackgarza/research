@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _engine_algebra_morphism,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     FreeAlgebras,
     GradedFreeAlgebras,
     PolynomialRing,
@@ -3424,7 +3423,7 @@ def _affine_linear_invariant_algebra_data(
                 raise ArithmeticError("the elimination backend returned a non-eliminated relation")
             relation_terms[powers[ambient_count:]] = coefficient
         relations.append(presentation._from_engine_element(presentation_engine(relation_terms)))
-    invariant_algebra = presentation if not relations else FinitelyPresentedAlgebra(presentation, tuple(relations))
+    invariant_algebra = presentation if not relations else (presentation).quotient_by_relations(tuple(relations))
     invariant_labels = tuple(invariant_algebra.algebra_generating_set())
     inclusion = invariant_algebra.Mor(algebra)({label: invariant_elements[index] for index, label in enumerate(invariant_labels)})
     return invariant_algebra, inclusion, engine_invariants

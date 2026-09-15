@@ -8,7 +8,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
     SymmetricAlgebras,
 )
@@ -227,15 +226,13 @@ class IsolatedHypersurfaceSingularity:
         return tuple(ring._from_engine_element(value) for value in self._engine_derivatives)
 
     def milnor_algebra(self):
-        return FinitelyPresentedAlgebra(self.polynomial_ring(), self.jacobian_generators())
+        return (self.polynomial_ring()).quotient_by_relations(self.jacobian_generators())
 
     def milnor_number(self):
         return _own_ring(SageZZ)(self._milnor_number)
 
     def tjurina_algebra(self):
-        return FinitelyPresentedAlgebra(
-            self.polynomial_ring(),
-            (self.equation(), *self.jacobian_generators()),
+        return (self.polynomial_ring()).quotient_by_relations((self.equation(), *self.jacobian_generators()),
         )
 
     def tjurina_number(self):
@@ -250,7 +247,7 @@ class IsolatedHypersurfaceSingularity:
         return _own_ring(SageZZ)(dimension)
 
     def completed_local_ring(self, *, precision=20):
-        hypersurface = FinitelyPresentedAlgebra(self.polynomial_ring(), (self.equation(),))
+        hypersurface = (self.polynomial_ring()).quotient_by_relations((self.equation(),))
         maximal = hypersurface.ideal(*tuple(hypersurface.algebra_generators()))
         return hypersurface.adic_completion(maximal, precision=precision)
 
@@ -445,7 +442,7 @@ class IsolatedHypersurfaceSingularity:
         singular_lib("normal.lib")
         conductor_engine = singular_function("normalConductor")(equation_ideal, ring=engine)
         conductor = _from_engine_ideal(ring, conductor_engine)
-        curve = FinitelyPresentedAlgebra(ring, (self.equation(),))
+        curve = (ring).quotient_by_relations((self.equation(),))
         curve_conductor = curve.ideal(
             *(curve(generator) for generator in conductor.ideal_generators())
         )

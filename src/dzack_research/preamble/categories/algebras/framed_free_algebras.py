@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     FreeAlgebras,
     GradedFreeAlgebras,
     PolynomialRing,
@@ -122,9 +121,7 @@ def _symmetric_algebra_of(module):
         relation_value,
         name="Symmetric-algebra defining relations",
     )
-    return FinitelyPresentedAlgebra(
-        presentation_ring,
-        relations,
+    return (presentation_ring).quotient_by_relations(relations,
         _extra_categories=(
             GradedFreeAlgebras(base),
             SymmetricAlgebras(base),

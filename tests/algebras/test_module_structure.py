@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -100,7 +99,7 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
     presentation = PolynomialRing(parameter, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    family = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    family = (presentation).quotient_by_relations((x * y - t,))
 
     assert family in Modules(parameter)
     assert family.is_integral_domain()
@@ -108,7 +107,7 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
     assert family.is_flat()
 
     killed_presentation = PolynomialRing(parameter, ("z", "w"))
-    killed = FinitelyPresentedAlgebra(killed_presentation, (t,))
+    killed = (killed_presentation).quotient_by_relations((t,))
     assert killed.is_integral_domain()
     assert not killed.is_torsion_free()
     assert not killed.is_flat()
@@ -117,7 +116,7 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
 def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication() -> None:
     presentation = PolynomialRing(QQ, "z")
     z = presentation.algebra_generator("z")
-    algebra = FinitelyPresentedAlgebra(presentation, (z**2 - QQ.one(),))
+    algebra = (presentation).quotient_by_relations((z**2 - QQ.one(),))
 
     assert int(algebra.module_rank()) == 2
     multiplication = algebra.multiplication_morphism()

@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
-    FinitelyPresentedAlgebra,
 )
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
@@ -63,7 +62,7 @@ def test_nonnegative_dga_has_the_same_zero_incoming_complex_boundary() -> None:
     field = GF(2)
     polynomial = field.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     dga = algebra.de_rham_algebra()
 
     incoming = dga.differential_component(-1)

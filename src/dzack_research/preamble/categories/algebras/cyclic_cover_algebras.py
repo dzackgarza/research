@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
@@ -74,9 +73,7 @@ def cyclic_cover_presentation(
 
     presentation = PolynomialRing(algebra, CYCLIC_COVER_VARIABLE)
     variable = presentation.algebra_generator(CYCLIC_COVER_VARIABLE)
-    return FinitelyPresentedAlgebra(
-        presentation,
-        (variable ** Integer(degree) - presentation(branch_coefficient),),
+    return (presentation).quotient_by_relations((variable ** Integer(degree) - presentation(branch_coefficient),),
     )
 
 

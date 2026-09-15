@@ -4,7 +4,6 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 
@@ -13,7 +12,7 @@ def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
     plane = PolynomialRing(QQ, ("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    cusp = FinitelyPresentedAlgebra(plane, (y**2 - x**3,))
+    cusp = (plane).quotient_by_relations((y**2 - x**3,))
     xbar = cusp.algebra_generator("x")
     ybar = cusp.algebra_generator("y")
     maximal = cusp.ideal(xbar, ybar)

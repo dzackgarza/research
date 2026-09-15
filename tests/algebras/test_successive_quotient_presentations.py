@@ -8,7 +8,6 @@ as a second quotient object.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
     QQ,
 )
@@ -18,9 +17,9 @@ def test_a_second_cut_stays_on_the_first_presentation() -> None:
     plane = PolynomialRing(QQ, "x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(plane, [x * y])
+    axes = (plane).quotient_by_relations([x * y])
 
-    axis = FinitelyPresentedAlgebra(axes, [axes(x)])
+    axis = (axes).quotient_by_relations([axes(x)])
 
     assert axis.presentation_ring() is plane
     assert axis.base_ring() is QQ
@@ -30,9 +29,9 @@ def test_the_second_cut_imposes_both_relations() -> None:
     plane = PolynomialRing(QQ, "x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(plane, [x * y])
+    axes = (plane).quotient_by_relations([x * y])
 
-    axis = FinitelyPresentedAlgebra(axes, [axes(x)])
+    axis = (axes).quotient_by_relations([axes(x)])
 
     assert axis(x) == axis.zero()
     assert axis(y) != axis.zero()

@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     NN,
     QQ,
     ZZ,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
     QuadraticField,
 )
@@ -39,7 +38,7 @@ def test_presented_algebra_retains_relation_and_explicit_scalar_change() -> None
     presentation = PolynomialRing(QQ, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    quotient = FinitelyPresentedAlgebra(presentation, (x * y,))
+    quotient = (presentation).quotient_by_relations((x * y,))
     gaussian = QuadraticField(-1, "i")
     extension = QQ.Mor(gaussian)(lambda value: gaussian(value))
     changed = quotient.base_change(extension)

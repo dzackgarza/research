@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import FinitelyPresentedAlgebra, PolynomialRing, QQ, Spec
+from dzack_research.preamble.all import PolynomialRing, QQ, Spec
 
 
 def test_localization_of_a_presented_domain_has_its_own_affine_spectrum() -> None:
@@ -6,7 +6,7 @@ def test_localization_of_a_presented_domain_has_its_own_affine_spectrum() -> Non
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     z = presentation.algebra_generator("z")
-    quadric = FinitelyPresentedAlgebra(presentation, (x * y - z**2,))
+    quadric = (presentation).quotient_by_relations((x * y - z**2,))
     xbar = quadric.algebra_generator("x")
     localized = quadric.localization(xbar)
 

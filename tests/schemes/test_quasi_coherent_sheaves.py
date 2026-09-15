@@ -2,7 +2,6 @@ r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, d
 
 from dzack_research.preamble.all import (
     AffineSpace,
-    FinitelyPresentedAlgebra,
     LocalRings,
     PolynomialRing,
     QQ,
@@ -99,7 +98,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     x = algebra.algebra_generator("x")
     cover_presentation = PolynomialRing(QQ, ("x", "z"))
     xc, z = cover_presentation.algebra_generators()
-    cover_algebra = FinitelyPresentedAlgebra(cover_presentation, (z**2 - xc,))
+    cover_algebra = (cover_presentation).quotient_by_relations((z**2 - xc,))
     structure = algebra.Mor(cover_algebra)({"x": cover_algebra.algebra_generator("x")})
     relative = line.relative_spectrum(structure)
 

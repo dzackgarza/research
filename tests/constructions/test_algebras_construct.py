@@ -142,7 +142,7 @@ def test_coordinate_axes_as_a_presented_algebra(field) -> None:
     plane = PolynomialRing(field, ("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(plane, [x * y])
+    axes = (plane).quotient_by_relations([x * y])
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
 
@@ -215,7 +215,7 @@ def test_kahler_differentials_of_the_coordinate_axes(field) -> None:
     plane = PolynomialRing(field, ("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    axes = FinitelyPresentedAlgebra(plane, [x * y])
+    axes = (plane).quotient_by_relations([x * y])
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
     omega = axes.kahler_differentials()

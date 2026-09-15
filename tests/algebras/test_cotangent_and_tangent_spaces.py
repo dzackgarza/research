@@ -8,7 +8,6 @@ dimension one, which is what makes the origin singular.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedAlgebra,
     KahlerDifferentials,
     PolynomialRing,
     QQ,
@@ -30,7 +29,7 @@ def test_the_node_has_a_two_dimensional_cotangent_space_at_its_singular_point() 
     plane = PolynomialRing(QQ, "x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    node = FinitelyPresentedAlgebra(plane, [y**2 - x**3 - x**2])
+    node = (plane).quotient_by_relations([y**2 - x**3 - x**2])
     differentials = node.kahler_differentials()
     origin = node.spectrum()(node.ideal(node(x), node(y)))
 

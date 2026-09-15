@@ -3,7 +3,6 @@ r"""Supported singularity equivalences and the regular/smooth boundary."""
 from dzack_research.preamble.all import (
     GF,
     QQ,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
     Spec,
 )
@@ -53,7 +52,7 @@ def test_regular_purely_inseparable_field_extension_is_not_smooth_over_its_base(
     a_in_base = parameters.fraction_field_map()(a)
     line = PolynomialRing(base, ("x",))
     x = line.algebra_generator("x")
-    extension = FinitelyPresentedAlgebra(line, (x**2 - a_in_base,))
+    extension = (line).quotient_by_relations((x**2 - a_in_base,))
 
     assert extension.is_field()
     scheme = Spec(extension, base_ring=base)

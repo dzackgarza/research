@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
-    FinitelyPresentedAlgebra,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras, CommutativeAlgebras
 from dzack_research.preamble.categories.modules import (
@@ -45,7 +44,7 @@ def test_algebraic_de_rham_cohomology_is_literal_functor_composition() -> None:
     field = GF(2)
     polynomial = field.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     xbar = algebra.algebra_generator("x")
     collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
@@ -67,7 +66,7 @@ def test_algebraic_de_rham_cohomology_ring_is_functorial() -> None:
     field = GF(2)
     polynomial = field.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     xbar = algebra.algebra_generator("x")
     collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 

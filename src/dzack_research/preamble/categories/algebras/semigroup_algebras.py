@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -84,9 +83,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             ("_preamble_affine_semigroup_generator_coordinates", coordinates),
             *tuple(extra_construction_data),
         )
-        return FinitelyPresentedAlgebra(
-            presentation,
-            relations,
+        return (presentation).quotient_by_relations(relations,
             _extra_categories=tuple(extra_categories),
             _extra_construction_data=construction_data,
         )

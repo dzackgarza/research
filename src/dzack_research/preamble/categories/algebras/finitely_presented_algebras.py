@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FinitelyPresentedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     GradedFreeAlgebras,
     TensorAlgebras,
     _PresentedAlgebraParent,
@@ -219,6 +218,5 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
 
 __all__ = [
     "AlgebrasWithChosenFinitePresentation",
-    "FinitelyPresentedAlgebra",
     "FinitelyPresentedAlgebras",
 ]

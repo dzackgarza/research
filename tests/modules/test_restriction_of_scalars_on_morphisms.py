@@ -60,14 +60,13 @@ def test_restricting_along_the_identity_keeps_the_action_of_the_endomorphism() -
 def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and_images() -> None:
     from dzack_research.preamble.all import (
         GF,
-        FinitelyPresentedAlgebra,
         ModulesWithChosenFinitePresentation,
     )
 
     prime = GF(2)
     presentation = prime.free_module(("x",)).symmetric_algebra()
     x = presentation.algebra_generator("x")
-    extension = FinitelyPresentedAlgebra(presentation, (x**2,))
+    extension = (presentation).quotient_by_relations((x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
     line = extension.free_module(1)
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
@@ -83,7 +82,7 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
     assert image.inclusion().codomain() is restricted
 
 def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_under_addition() -> None:
-    from dzack_research.preamble.all import GF, FinitelyPresentedAlgebra
+    from dzack_research.preamble.all import GF
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_coefficients,
     )
@@ -91,7 +90,7 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     prime = GF(2)
     presentation = prime.free_module(("x",)).symmetric_algebra()
     x = presentation.algebra_generator("x")
-    extension = FinitelyPresentedAlgebra(presentation, (x**2,))
+    extension = (presentation).quotient_by_relations((x**2,))
     ring_map = prime.Mor(extension)(lambda scalar: extension(scalar))
     line = extension.free_module(1)
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)

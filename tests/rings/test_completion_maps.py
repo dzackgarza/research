@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     ArtinianRings,
     CompleteLocalRings,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -27,9 +26,7 @@ def test_zero_adic_completion_has_identity_kernel_and_zero_extended_ideal() -> N
 
 
 def test_nilpotent_adic_completion_keeps_the_source_but_not_a_truncation_artifact() -> None:
-    dual = FinitelyPresentedAlgebra(
-        QQ.free_module(("e",)).symmetric_algebra(),
-        ("e^2",),
+    dual = (QQ.free_module(("e",)).symmetric_algebra()).quotient_by_relations(("e^2",),
     )
     e = dual.algebra_generator("e")
     ideal = dual.ideal(e)
@@ -44,9 +41,7 @@ def test_nilpotent_adic_completion_keeps_the_source_but_not_a_truncation_artifac
 
 
 def test_idempotent_adic_completion_is_nonseparated_and_kills_the_stable_ideal() -> None:
-    product = FinitelyPresentedAlgebra(
-        QQ.free_module(("e",)).symmetric_algebra(),
-        ("e^2-e",),
+    product = (QQ.free_module(("e",)).symmetric_algebra()).quotient_by_relations(("e^2-e",),
     )
     e = product.algebra_generator("e")
     ideal = product.ideal(e)

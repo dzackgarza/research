@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     CommutativeAlgebras,
     AlgebraRestrictionOfScalarsFunctor,
-    FinitelyPresentedAlgebra,
     FramedAlgebras,
     QQ,
     ZZ,
@@ -12,24 +11,18 @@ from dzack_research.preamble.all import (
 def _quadratic_algebra_tower():
     scalar_presentation = QQ.free_module(["s"]).symmetric_algebra()
     s = scalar_presentation.algebra_generator("s")
-    extension_ring = FinitelyPresentedAlgebra(
-        scalar_presentation,
-        (s**2 - 2,),
+    extension_ring = (scalar_presentation).quotient_by_relations((s**2 - 2,),
     )
     ring_map = extension_ring.algebra_structure_morphism()
 
     source_presentation = QQ.free_module(["x"]).symmetric_algebra()
     x = source_presentation.algebra_generator("x")
-    source = FinitelyPresentedAlgebra(
-        source_presentation,
-        (x**4 - 2,),
+    source = (source_presentation).quotient_by_relations((x**4 - 2,),
     )
 
     target_presentation = extension_ring.free_module(["y"]).symmetric_algebra()
     y = target_presentation.algebra_generator("y")
-    target = FinitelyPresentedAlgebra(
-        target_presentation,
-        (y**2 - extension_ring.algebra_generator("s"),),
+    target = (target_presentation).quotient_by_relations((y**2 - extension_ring.algebra_generator("s"),),
     )
     return extension_ring, ring_map, source, target
 

@@ -10,7 +10,6 @@ an object-level base-change operation.
 
 from dzack_research.preamble.all import (
     QQ,
-    FinitelyPresentedAlgebra,
     Modules,
 )
 
@@ -33,7 +32,7 @@ ARCHIVE_RECONCILIATION = {
 def _gaussian_extension():
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
-    scalars = FinitelyPresentedAlgebra(polynomials, [x**2 + 1])
+    scalars = (polynomials).quotient_by_relations([x**2 + 1])
     i = scalars(x)
     structure_map = scalars._ring_morphism_defining_algebra_structure()
     return scalars, i, structure_map

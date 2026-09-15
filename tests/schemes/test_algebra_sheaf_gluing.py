@@ -2,13 +2,10 @@ from __future__ import annotations
 
 
 def _quadratic_algebra(ring):
-    from dzack_research.preamble.all import FinitelyPresentedAlgebra
 
     presentation = ring.free_module(("z",)).symmetric_algebra()
     z = presentation.algebra_generator("z")
-    return FinitelyPresentedAlgebra(
-        presentation,
-        (z * z - ring.one(),),
+    return (presentation).quotient_by_relations((z * z - ring.one(),),
     )
 
 

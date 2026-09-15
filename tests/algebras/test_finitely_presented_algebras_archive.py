@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 
@@ -13,7 +12,6 @@ ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/algebras/finitely_presented_algebras.sage",
     "live_owner": "src/dzack_research/preamble/categories/algebras/algebras.py",
     "owner_overrides": {
-        "FinitelyPresentedAlgebra": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
         "FinitelyPresentedAlgebras.ParentMethods.framing_morphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
     },
     "disposition": "reconciled-live-owner",
@@ -24,7 +22,7 @@ def test_archived_finite_presentation_retains_ring_relations_and_generators() ->
     presentation = PolynomialRing(QQ, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(presentation, (x * y,))
+    algebra = (presentation).quotient_by_relations((x * y,))
 
     assert algebra in AlgebrasWithChosenFinitePresentation(QQ)
     assert algebra.presentation_ring() is presentation
@@ -46,7 +44,7 @@ def test_archived_presented_algebra_morphism_is_determined_by_generator_images()
     presentation = PolynomialRing(QQ, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    algebra = FinitelyPresentedAlgebra(presentation, (x * y,))
+    algebra = (presentation).quotient_by_relations((x * y,))
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
@@ -56,9 +54,8 @@ def test_archived_presented_algebra_morphism_is_determined_by_generator_images()
     assert swap(xbar * ybar) == algebra.zero()
 
 
-def test_selected_finite_presentation_constructor_is_owned_by_its_category() -> None:
+def test_selected_finite_presentation_constructor_is_owned_by_its_presentation() -> None:
     from dzack_research.preamble.categories.algebras.free_algebras import (
-        FinitelyPresentedAlgebra,
         PolynomialRing,
     )
 
@@ -68,7 +65,7 @@ def test_selected_finite_presentation_constructor_is_owned_by_its_category() -> 
         presentation,
         (x**2,),
     )
-    notation = FinitelyPresentedAlgebra(presentation, (x**2,))
+    notation = (presentation).quotient_by_relations((x**2,))
 
     assert declared in AlgebrasWithChosenFinitePresentation(QQ)
     assert notation in AlgebrasWithChosenFinitePresentation(QQ)

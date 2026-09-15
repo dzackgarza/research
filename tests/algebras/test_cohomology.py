@@ -2,7 +2,6 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.algebras import (
     CohomologyAlgebras,
     DeRhamAlgebra,
-    FinitelyPresentedAlgebra,
     StrictlyGradedCommutativeAlgebras,
 )
 
@@ -11,7 +10,7 @@ def test_dga_cohomology_is_a_graded_algebra_with_descended_product() -> None:
     field = GF(2)
     polynomial = field.free_module(("x",)).symmetric_algebra()
     x = polynomial.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
+    algebra = (polynomial).quotient_by_relations([x**2])
     xbar = algebra.algebra_generator("x")
     dga = algebra.de_rham_algebra()
 

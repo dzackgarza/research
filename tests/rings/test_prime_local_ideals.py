@@ -10,7 +10,6 @@ than by the name it was built under.
 
 from dzack_research.preamble.all import (
     CommutativeIdeals,
-    FinitelyPresentedAlgebra,
     PolynomialRing,
     PrincipalIdealDomains,
     QQ,
@@ -50,7 +49,7 @@ def test_prime_local_ideals_of_a_nonreduced_quotient_need_no_fraction_field() ->
     presentation = PolynomialRing(QQ, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    node = FinitelyPresentedAlgebra(presentation, (x * y,))
+    node = (presentation).quotient_by_relations((x * y,))
     x0 = node.algebra_generator("x")
     y0 = node.algebra_generator("y")
 

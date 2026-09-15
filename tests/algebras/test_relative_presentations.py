@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 
@@ -16,7 +15,7 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
     presentation = PolynomialRing(parameter, ("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
-    family = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    family = (presentation).quotient_by_relations((x * y - t,))
     xbar = family.algebra_generator("x")
     ybar = family.algebra_generator("y")
 
@@ -52,7 +51,7 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
 def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
     presentation = PolynomialRing(QQ, "x")
     x = presentation.algebra_generator("x")
-    algebra = FinitelyPresentedAlgebra(presentation, ())
+    algebra = (presentation).quotient_by_relations(())
     xbar = algebra.algebra_generator("x")
 
     assert algebra.lift_to_presentation(xbar) == x
@@ -63,12 +62,12 @@ def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
 def test_pushout_accepts_maps_from_a_presented_source() -> None:
     source_presentation = PolynomialRing(QQ, "t")
     t = source_presentation.algebra_generator("t")
-    source = FinitelyPresentedAlgebra(source_presentation, (t**2,))
+    source = (source_presentation).quotient_by_relations((t**2,))
     tbar = source.algebra_generator("t")
 
     target_presentation = PolynomialRing(QQ, "x")
     x = target_presentation.algebra_generator("x")
-    target = FinitelyPresentedAlgebra(target_presentation, (x**2,))
+    target = (target_presentation).quotient_by_relations((x**2,))
     xbar = target.algebra_generator("x")
 
     left = source.Mor(source).identity()
