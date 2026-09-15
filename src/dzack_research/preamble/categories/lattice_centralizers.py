@@ -1136,35 +1136,6 @@ class IsometryPrimitiveExtension:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
 
 
-def cyclotomic_summand(isometry, order):
-    r"""Return ``ker Phi_d(f)`` as a primitive sublattice of the isometry's lattice.
-
-    ``Phi_d`` is the ``d``-th cyclotomic polynomial and ``d`` is ``order``.
-    The kernel of a module morphism into a torsion-free module is saturated,
-    so the result is a primitive sublattice with no separate saturation step.
-    For ``f`` of finite order ``n`` these summands, over the divisors ``d`` of
-    ``n``, span a finite-index sublattice of ``L``; each is the intersection
-    of ``L`` with the rational subspace ``V_{Phi_d}``.
-    """
-    lattice = isometry.domain()
-    assert isometry.codomain() is lattice, "a cyclotomic summand is cut out by an automorphism of one lattice"
-    ring = lattice.base_ring()
-    from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
-
-    coefficients = cyclotomic_coeffs(int(order))
-
-    def image(label):
-        iterate = lattice.module_generator(label)
-        total = lattice.zero()
-        for coefficient in coefficients:
-            total = total + lattice.scalar_multiple(ring(int(coefficient)), iterate)
-            iterate = isometry(iterate)
-        return total
-
-    evaluated = module_homset(lattice, lattice)({label: image(label) for label in lattice.module_generating_set()})
-    return evaluated.kernel()
-
-
 __all__ = [
     "CyclotomicDecomposition",
     "EquivariantLattice",
@@ -1172,5 +1143,4 @@ __all__ = [
     "EquivariantVectorOrbitDecomposition",
     "IsometryPrimitiveExtension",
     "PolarizedEquivariantLattice",
-    "cyclotomic_summand",
 ]

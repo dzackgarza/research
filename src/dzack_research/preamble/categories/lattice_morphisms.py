@@ -631,14 +631,34 @@ class LatticeIsometry(LatticeEmbedding):
         return self.primitive_extension().centralizer_group()
 
     def cyclotomic_summand(self, order):
-        r"""Return ``ker(Phi_order(self))`` as a primitive lattice subobject."""
+        r"""Return ``ker Phi_d(self)`` as a primitive sublattice.
+
+        Here ``d`` is ``order``.  The kernel of a module morphism into a
+        torsion-free module is saturated, so no separate saturation step is
+        needed.  If this isometry has finite order ``n``, the summands over
+        divisors ``d`` of ``n`` span a finite-index sublattice and each is the
+        intersection with the rational cyclotomic subspace ``V_{Phi_d}``.
+        """
         if self.domain() is not self.codomain():
             raise ValueError("a cyclotomic summand is cut out by a lattice automorphism")
-        from dzack_research.preamble.categories.lattice_centralizers import (
-            cyclotomic_summand,
-        )
+        from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
 
-        return cyclotomic_summand(self, order)
+        lattice = self.domain()
+        ring = lattice.base_ring()
+        coefficients = cyclotomic_coeffs(int(order))
+
+        def image(label):
+            iterate = lattice.module_generator(label)
+            total = lattice.zero()
+            for coefficient in coefficients:
+                total = total + lattice.scalar_multiple(ring(int(coefficient)), iterate)
+                iterate = self(iterate)
+            return total
+
+        evaluated = module_homset(lattice, lattice)(
+            {label: image(label) for label in lattice.module_generating_set()}
+        )
+        return evaluated.kernel()
 
     def equivariant_vector_orbit_representatives(self, square):
         r"""Return vector-orbit representatives under ``Z_{O(L)}(self)`` in the supported regime."""

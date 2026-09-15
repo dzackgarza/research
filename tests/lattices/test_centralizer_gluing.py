@@ -22,7 +22,6 @@ from dzack_research.preamble.all import (
     Lattices,
     NamedLattices,
     ZZ,
-    cyclotomic_summand,
     finite_ordered_set,
 )
 
@@ -88,8 +87,8 @@ def test_the_swap_restricts_to_plus_and_minus_one_on_its_summands() -> None:
 def test_the_first_two_cyclotomic_summands_split_an_involution() -> None:
     _lattice, swap = _hyperbolic_swap()
 
-    fixed = cyclotomic_summand(swap, 1)
-    negated = cyclotomic_summand(swap, 2)
+    fixed = swap.cyclotomic_summand(1)
+    negated = swap.cyclotomic_summand(2)
     assert fixed.module_rank() == 1
     assert negated.module_rank() == 1
     assert fixed.is_primitive()
@@ -126,9 +125,9 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
 def test_the_enriques_cyclotomic_summands_are_the_two_eigen_sublattices() -> None:
     involution = Involutions.I_En
 
-    assert cyclotomic_summand(involution, 1).module_rank() == 10
-    assert cyclotomic_summand(involution, 2).module_rank() == 12
-    assert cyclotomic_summand(involution, 3).module_rank() == 0
+    assert involution.cyclotomic_summand(1).module_rank() == 10
+    assert involution.cyclotomic_summand(2).module_rank() == 12
+    assert involution.cyclotomic_summand(3).module_rank() == 0
 
 
 def _a2_diagram_involution():

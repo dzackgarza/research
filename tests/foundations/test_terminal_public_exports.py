@@ -96,6 +96,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "cochain_homset",
         "algebra_homset",
         "cohomology_algebra_homset",
+        "cyclotomic_summand",
         "dga_homset",
         "graded_algebra_homset",
         "group_homset",
