@@ -123,6 +123,12 @@ class RingMorphism(Morphism):
             raise ValueError("the ring morphisms are not composable")
         return result
 
+    def as_algebra(self):
+        r"""Return the codomain viewed as the algebra defined by this structure map."""
+        from dzack_research.preamble.categories.algebras.algebras import _own_algebra
+
+        return _own_algebra(self)
+
     def is_identity(self) -> bool:
         if self.domain() is not self.codomain():
             return False

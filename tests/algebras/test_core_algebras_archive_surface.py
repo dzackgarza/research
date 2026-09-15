@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     OwnedAlgebras,
     finite_algebra_generators,
-    own_algebra,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
@@ -27,8 +26,8 @@ def test_archived_owned_algebra_retains_the_scalar_structure_map() -> None:
     integers_to_rationals = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
     rationals_identity = QQ.Mor(QQ).identity()
 
-    over_integers = own_algebra(integers_to_rationals)
-    over_rationals = own_algebra(rationals_identity)
+    over_integers = integers_to_rationals.as_algebra()
+    over_rationals = rationals_identity.as_algebra()
 
     assert over_integers in OwnedAlgebras(ZZ)
     assert over_rationals in OwnedAlgebras(QQ)

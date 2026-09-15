@@ -2719,7 +2719,7 @@ def _algebra_from_multiplication(
 
 
 @cached_function
-def own_algebra(structure_map):
+def _own_algebra(structure_map):
     r"""Return the algebra object presented by the supplied ring map."""
     if not isinstance(structure_map, Map):
         raise TypeError("an algebra is presented by a ring map")
@@ -2896,7 +2896,6 @@ __all__ = [
     "OwnedAlgebras",
     "algebra_structure_view",
     "finite_algebra_generators",
-    "own_algebra",
     "refine_algebra",
 ]
 
