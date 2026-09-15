@@ -15,9 +15,6 @@ from dzack_research.preamble.all import (
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    power_algebra_homset,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -407,7 +404,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         * iterated_free.one(),
     )
     algebra_augmentation = Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free)(augmentation)
-    power_identity = power_algebra_homset(exterior, exterior).identity()
+    power_identity = exterior.Mor(exterior).identity()
     composite_augmentation = algebra_augmentation * power_identity
     assert composite_augmentation(exterior.one()) == iterated_free.one()
     assert (

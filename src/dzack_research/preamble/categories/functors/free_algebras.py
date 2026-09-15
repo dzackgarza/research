@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 from dzack_research.preamble.categories.algebras.power_algebras import (
     _alternating_algebra_of,
     _divided_power_algebra_of,
-    power_algebra_homset,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
@@ -113,7 +112,7 @@ class AlternatingAlgebraFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return power_algebra_homset(source, target)(morphism)
+        return source.Mor(target)(morphism)
 
     def _repr_(self):
         return f"Alternating algebra functor on {self.base_ring()}-modules"
@@ -138,7 +137,7 @@ class DividedPowerAlgebraFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return power_algebra_homset(source, target)(morphism)
+        return source.Mor(target)(morphism)
 
     def _repr_(self):
         return f"Divided-power algebra functor on {self.base_ring()}-modules"

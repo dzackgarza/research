@@ -67,8 +67,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                         'PowerAlgebraHomset'),
  'PowerAlgebraMorphism': ('dzack_research.preamble.categories.algebras.power_algebras',
                           'PowerAlgebraMorphism'),
- 'power_algebra_homset': ('dzack_research.preamble.categories.algebras.power_algebras',
-                          'power_algebra_homset'),
  'FinitelyPresentedAlgebraOn': ('dzack_research.preamble.categories.algebras.finitely_presented_algebras',
                                 'FinitelyPresentedAlgebraOn'),
  'AugmentedAlgebras': ('dzack_research.preamble.categories.algebras.augmented_algebras',
@@ -212,7 +210,6 @@ __all__ = ['AugmentedAlgebras',
  'StrictlyCommutativeDifferentialGradedAlgebras',
  'finite_algebra_generators',
  'polynomial_ring',
- 'power_algebra_homset',
  'refine_algebra',
 ]
 

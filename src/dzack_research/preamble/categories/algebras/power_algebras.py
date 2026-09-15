@@ -108,12 +108,6 @@ class PowerAlgebra(GradedDirectSumModule):
     def free_source_module(self):
         return self._preamble_free_algebra_source_module
 
-    def _power_algebra_homset(self, codomain):
-        r"""Return the concrete Hom parent for two compatible power algebras."""
-        if not isinstance(codomain, PowerAlgebra) or codomain.flavor() != self.flavor():
-            raise TypeError("power-algebra Hom requires two algebras of one flavor")
-        return power_algebra_homset(self, codomain)
-
     def _power_algebra_homset_class(self):
         return PowerAlgebraHomset
 
@@ -284,7 +278,7 @@ class PowerAlgebraMorphism(Morphism):
             return other
         if other.is_identity():
             return self
-        return power_algebra_homset(other.domain(), self.codomain())(self.degree_one_map() * other.degree_one_map())
+        return other.domain().Mor(self.codomain())(self.degree_one_map() * other.degree_one_map())
 
 
 class PowerAlgebraHomset(CategoricalHomset):
@@ -310,10 +304,6 @@ class PowerAlgebraHomset(CategoricalHomset):
         identity._preamble_is_identity = True
         return identity
 
-
-def power_algebra_homset(domain, codomain):
-    category = AlternatingAlgebras(domain.base_ring()) if domain.flavor() == "alternating" else DividedPowerAlgebras(domain.base_ring())
-    return category.Mor(domain, codomain)
 
 
 @cached_function(key=lambda module, flavor: (id(module), flavor))
@@ -412,5 +402,4 @@ __all__ = [
     "PowerAlgebraElement",
     "PowerAlgebraHomset",
     "PowerAlgebraMorphism",
-    "power_algebra_homset",
 ]
