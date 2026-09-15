@@ -220,6 +220,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "cohomology_algebra_functor",
         "de_rham_cohomology_functor",
         "de_rham_cohomology_algebra_functor",
+        "tensor_algebra_adjunction",
+        "symmetric_algebra_adjunction",
         "tensor_power_permutation",
         "divided_power_product",
         "alternating_power_product",

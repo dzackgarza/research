@@ -353,12 +353,6 @@ from dzack_research.preamble.categories.functors.free_algebras import (
 from dzack_research.preamble.categories.functors.free_algebras import (
     TensorAlgebraFunctor as TensorAlgebraFunctor,
 )
-from dzack_research.preamble.categories.functors.free_algebras import (
-    symmetric_algebra_adjunction as symmetric_algebra_adjunction,
-)
-from dzack_research.preamble.categories.functors.free_algebras import (
-    tensor_algebra_adjunction as tensor_algebra_adjunction,
-)
 from dzack_research.preamble.categories.functors.free_forgetful import (
     FreeForgetfulAdjunction as FreeForgetfulAdjunction,
 )

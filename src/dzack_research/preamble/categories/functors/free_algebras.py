@@ -224,12 +224,12 @@ def _divided_power_algebra_functor(base_ring) -> DividedPowerAlgebraFunctor:
 
 
 @cached_function
-def tensor_algebra_adjunction(base_ring) -> TensorAlgebraAdjunction:
+def _tensor_algebra_adjunction(base_ring) -> TensorAlgebraAdjunction:
     return TensorAlgebraAdjunction(base_ring)
 
 
 @cached_function
-def symmetric_algebra_adjunction(base_ring) -> SymmetricAlgebraAdjunction:
+def _symmetric_algebra_adjunction(base_ring) -> SymmetricAlgebraAdjunction:
     return SymmetricAlgebraAdjunction(base_ring)
 
 
@@ -240,6 +240,4 @@ __all__ = [
     "SymmetricAlgebraFunctor",
     "TensorAlgebraAdjunction",
     "TensorAlgebraFunctor",
-    "symmetric_algebra_adjunction",
-    "tensor_algebra_adjunction",
 ]

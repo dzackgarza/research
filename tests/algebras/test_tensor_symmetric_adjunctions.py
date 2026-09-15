@@ -14,8 +14,6 @@ from dzack_research.preamble.all import (
     Modules,
     SymmetricAlgebras,
     TensorAlgebras,
-    symmetric_algebra_adjunction,
-    tensor_algebra_adjunction,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (
     power_algebra_homset,
@@ -25,6 +23,15 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _cyclic(order):
     return FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((order,))
+
+
+def _algebra_adjunction(flavor):
+    modules = Modules(ZZ)
+    match flavor:
+        case "tensor":
+            return modules.tensor_algebra_adjunction()
+        case "symmetric":
+            return modules.symmetric_algebra_adjunction()
 
 
 def _dual_numbers_mod_four():
@@ -183,14 +190,11 @@ def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve
     )
 
 
-@pytest.mark.parametrize(
-    "adjunction_factory",
-    (tensor_algebra_adjunction, symmetric_algebra_adjunction),
-)
+@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
 def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
-    adjunction_factory,
+    adjunction_flavor,
 ) -> None:
-    adjunction = adjunction_factory(ZZ)
+    adjunction = _algebra_adjunction(adjunction_flavor)
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     source = _cyclic(8)
@@ -267,23 +271,20 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
 
 def test_symmetric_adjunction_targets_the_owned_commutative_algebra_category() -> None:
-    adjunction = symmetric_algebra_adjunction(ZZ)
+    adjunction = Modules(ZZ).symmetric_algebra_adjunction()
     assert adjunction.left_adjoint().codomain() == CommutativeAlgebras(ZZ)
     assert adjunction.right_adjoint().domain() == CommutativeAlgebras(ZZ)
 
-    tensor_adjunction = tensor_algebra_adjunction(ZZ)
+    tensor_adjunction = Modules(ZZ).tensor_algebra_adjunction()
     assert tensor_adjunction.left_adjoint().codomain() == Algebras(ZZ)
     assert tensor_adjunction.right_adjoint().domain() == Algebras(ZZ)
 
 
-@pytest.mark.parametrize(
-    "adjunction_factory",
-    (tensor_algebra_adjunction, symmetric_algebra_adjunction),
-)
+@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
 def test_counit_naturality_and_right_triangle_on_a_nonfree_presented_algebra(
-    adjunction_factory,
+    adjunction_flavor,
 ) -> None:
-    adjunction = adjunction_factory(ZZ)
+    adjunction = _algebra_adjunction(adjunction_flavor)
     algebra, involution = _dual_numbers_mod_four()
     one = algebra.module_generator(0)
     epsilon = algebra.module_generator(1)
@@ -314,14 +315,11 @@ def test_counit_naturality_and_right_triangle_on_a_nonfree_presented_algebra(
         assert triangle(element) == element
 
 
-@pytest.mark.parametrize(
-    "adjunction_factory",
-    (tensor_algebra_adjunction, symmetric_algebra_adjunction),
-)
+@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
 def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
-    adjunction_factory,
+    adjunction_flavor,
 ) -> None:
-    adjunction = adjunction_factory(ZZ)
+    adjunction = _algebra_adjunction(adjunction_flavor)
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2, 3))

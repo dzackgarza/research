@@ -387,18 +387,18 @@ class Modules(OwnedCategoryOverBaseRing):
         def symmetric_algebra_adjunction(self):
             r"""``Sym_R -| U``, between ``Mod_R`` and commutative ``R``-algebras."""
             from dzack_research.preamble.categories.functors.free_algebras import (
-                symmetric_algebra_adjunction,
+                _symmetric_algebra_adjunction,
             )
 
-            return symmetric_algebra_adjunction(self.base_ring())
+            return _symmetric_algebra_adjunction(self.base_ring())
 
         def tensor_algebra_adjunction(self):
             r"""``T_R -| U``, between ``Mod_R`` and associative unital ``R``-algebras."""
             from dzack_research.preamble.categories.functors.free_algebras import (
-                tensor_algebra_adjunction,
+                _tensor_algebra_adjunction,
             )
 
-            return tensor_algebra_adjunction(self.base_ring())
+            return _tensor_algebra_adjunction(self.base_ring())
 
         def tensor_product(self, factors):
             r"""Return $\bigotimes_{i \in I} M_i$ for an indexed family of modules.
