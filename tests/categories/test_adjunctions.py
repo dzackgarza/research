@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -327,7 +326,7 @@ def test_fraction_field_is_left_adjoint_to_ring_of_integers_with_embedding_natur
     assert fraction_field(order) is field
     assert ring_of_integers(field) is order
 
-    identity = number_field_homset(fraction_field(order), field).identity()
+    identity = fraction_field(order).Mor(field).identity()
     restricted = adjunction.hom_set_isomorphism_forward(identity, order)
     recovered = adjunction.hom_set_isomorphism_inverse(restricted)
     for basis_element in order.integral_basis():
@@ -336,7 +335,7 @@ def test_fraction_field_is_left_adjoint_to_ring_of_integers_with_embedding_natur
 
     conjugation = next(
         embedding
-        for embedding in number_field_homset(field, field).embeddings()
+        for embedding in field.Mor(field).embeddings()
         if embedding(field.primitive_element()) != field.primitive_element()
     )
     left, right = adjunction.counit_transformation().naturality_square(conjugation)

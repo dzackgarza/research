@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
 
@@ -79,7 +78,7 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
     assert fraction_field(maximal_order) is field
     assert fraction_field(nonmaximal_order) is field
 
-    identity = number_field_homset(field, field).identity()
+    identity = field.Mor(field).identity()
     maximal_restriction = adjunction.hom_set_isomorphism_forward(
         identity,
         maximal_order,

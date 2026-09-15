@@ -89,11 +89,11 @@ class NumberFieldEmbedding(Morphism):
         target = self.codomain()
         source = other.domain()
         if _engine_ring(source) is SageQQ:
-            return number_field_homset(source, target)(
+            return source.Mor(target)(
                 _engine_ring(source).hom(_engine_ring(target))
             )
         primitive = source.primitive_element()
-        return number_field_homset(source, target)(self(other(primitive)))
+        return source.Mor(target)(self(other(primitive)))
 
 
 class NumberFieldHomset(CategoricalHomset):
@@ -144,11 +144,6 @@ class NumberFieldHomset(CategoricalHomset):
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
-
-
-@cached_function
-def number_field_homset(domain, codomain) -> NumberFieldHomset:
-    return domain.Mor(codomain)
 
 
 class OrderEmbedding(Morphism):
@@ -216,12 +211,12 @@ class OrderHomset(CategoricalHomset):
         source_field = self.domain().fraction_field()
         target_field = self.codomain().fraction_field()
         if not isinstance(field_embedding, NumberFieldEmbedding):
-            field_embedding = number_field_homset(source_field, target_field)(field_embedding)
+            field_embedding = source_field.Mor(target_field)(field_embedding)
         elif (
             field_embedding.domain() is not source_field
             or field_embedding.codomain() is not target_field
         ):
-            field_embedding = number_field_homset(source_field, target_field)(
+            field_embedding = source_field.Mor(target_field)(
                 field_embedding._engine_morphism_crossing()
             )
         return self.element_class(self, field_embedding)
@@ -230,7 +225,7 @@ class OrderHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
         field = self.domain().fraction_field()
-        return self(number_field_homset(field, field).identity())
+        return self(field.Mor(field).identity())
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
@@ -246,6 +241,5 @@ __all__ = [
     "NumberFieldHomset",
     "OrderEmbedding",
     "OrderHomset",
-    "number_field_homset",
     "order_homset",
 ]

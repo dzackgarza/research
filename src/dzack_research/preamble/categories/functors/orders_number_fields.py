@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldEmbedding,
     OrderEmbedding,
-    number_field_homset,
     order_homset,
 )
 from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
@@ -35,7 +34,7 @@ class FractionFieldFunctor(Functor):
     def _apply_morphism(self, embedding: OrderEmbedding):
         source = self(embedding.domain())
         target = self(embedding.codomain())
-        return number_field_homset(source, target)(
+        return source.Mor(target)(
             embedding.field_embedding()._engine_morphism_crossing()
         )
 
@@ -71,20 +70,20 @@ class OrderNumberFieldAdjunction(Adjunction):
         field = self.left_adjoint()(order)
         maximal_order = self.right_adjoint()(field)
         return order_homset(order, maximal_order)(
-            number_field_homset(field, field).identity()
+            field.Mor(field).identity()
         )
 
     def counit(self, field):
         source = self.left_adjoint()(self.right_adjoint()(field))
         if _engine_ring(source) is _engine_ring(field):
             if source is field:
-                return number_field_homset(field, field).identity()
+                return field.Mor(field).identity()
             if _engine_ring(source).degree() == 1:
-                return number_field_homset(source, field)(
+                return source.Mor(field)(
                     _engine_ring(source).hom(_engine_ring(field))
                 )
-            return number_field_homset(source, field)(field.primitive_element())
-        embeddings = number_field_homset(source, field).embeddings()
+            return source.Mor(field)(field.primitive_element())
+        embeddings = source.Mor(field).embeddings()
         if len(embeddings) != 1:
             raise ValueError("the counit requires the canonical identification Frac(O_K) = K")
         return embeddings[0]
