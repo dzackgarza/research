@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Spec,
     CommutativeAlgebras,
-    reynolds_invariant_base_change_hypothesis,
 )
 
 
@@ -48,9 +47,8 @@ def test_invariant_quotient_base_change_has_canonical_comparison_and_reynolds_is
 def test_reynolds_base_change_hypothesis_refuses_modular_characteristic() -> None:
     group = Groups.C(2)
     field = GF(2)
-    identity = field.Mor(field).identity()
 
-    assert reynolds_invariant_base_change_hypothesis(group, identity) is False
+    assert group.order_is_invertible_in(field) is False
 
 
 def test_affine_invariant_family_map_descends_through_same_universal_quotient() -> None:

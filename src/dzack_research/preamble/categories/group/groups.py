@@ -2211,6 +2211,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return _finite_order(self)
             return self.cardinality()
 
+        def order_is_invertible_in(self, ring) -> bool:
+            r"""Return whether ``|G|`` is a unit in ``ring`` for this finite group."""
+            assert self in OwnedFiniteGroups(), (
+                "invertibility of the group order in a coefficient ring currently requires a finite group"
+            )
+            return bool(ring(int(self.order())).is_unit())
+
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
 

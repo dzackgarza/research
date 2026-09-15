@@ -736,12 +736,10 @@ from dzack_research.preamble.categories.schemes import (
     analytic_disc_family,
     glued_invariant_quotient,
     hesse_bertini_family,
-    horikawa_enriques_surface,
     horikawa_k3_family,
     legendre_monodromy_family,
     rational_quintic_with_nonrational_node_normalization,
     rational_quintic_with_two_nodes_normalization,
-    reynolds_invariant_base_change_hypothesis,
     roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401

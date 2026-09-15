@@ -275,6 +275,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "compose_adjunctions",
         "category_packet",
         "diagonal_gram",
+        "horikawa_enriques_surface",
+        "reynolds_invariant_base_change_hypothesis",
         "NodalCubicFundamentalGroup",
         "PGL2FundamentalGroup",
         "ProjectiveLineFundamentalGroup",

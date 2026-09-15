@@ -344,13 +344,10 @@ class HorikawaEnriquesBaseChangeComparison(SageObject):
 
 
 
-def horikawa_enriques_surface(k3_member=None):
-    return HorikawaEnriquesSurface(k3_member)
 
 
 __all__ = [
     "EnriquesMarkedIntegralCohomology",
     "HorikawaEnriquesBaseChangeComparison",
     "HorikawaEnriquesSurface",
-    "horikawa_enriques_surface",
 ]

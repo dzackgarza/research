@@ -59,24 +59,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
 )
 
 
-def reynolds_invariant_base_change_hypothesis(group, ring_map) -> bool:
-    r"""Return the finite linearly-reductive hypothesis used by the comparison.
-
-    For a finite constant group over a field, averaging by ``1/|G|`` splits
-    invariants exactly when ``|G|`` is invertible.  A field extension preserves
-    the coefficient characteristic, so this is the represented regime in which
-    invariants commute with scalar extension.  Failure of this predicate is
-    *not* a negative theorem about a particular modular example; it says only
-    that the Reynolds comparison theorem is unavailable.
-    """
-    source = _own_ring(ring_map.domain())
-    target = _own_ring(ring_map.codomain())
-    if source not in OwnedFields() or target not in OwnedFields():
-        return False
-    if group.is_finite() is not True:
-        return False
-    order = target(int(group.order()))
-    return order != target.zero() and bool(order.is_unit())
 
 
 class AffineInvariantQuotientBaseChangeComparison(SageObject):
@@ -157,10 +139,19 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
         return self._comparison_morphism
 
     def reynolds_hypothesis_holds(self) -> bool:
-        return reynolds_invariant_base_change_hypothesis(
-            self.source_acted_scheme().acting_group(),
-            self.ring_map(),
-        )
+        source = _own_ring(self.ring_map().domain())
+        target = _own_ring(self.ring_map().codomain())
+        match source in OwnedFields() and target in OwnedFields():
+            case False:
+                return False
+            case True:
+                pass
+        group = self.source_acted_scheme().acting_group()
+        match group.is_finite():
+            case True:
+                return group.order_is_invertible_in(target)
+            case _:
+                return False
 
     @cached_method
     def reynolds_isomorphism(self):
@@ -330,5 +321,4 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
 __all__ = [
     "AffineInvariantQuotientBaseChangeComparison",
     "AffineQuotientFunctor",
-    "reynolds_invariant_base_change_hypothesis",
 ]
