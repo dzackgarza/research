@@ -549,7 +549,6 @@ from dzack_research.preamble.categories.modules import (
     FreeFormModules,
     FreeModules,
     FreeResolution,
-    GeneralModule,
     GeneralModules,
     GradedAlgebraModules,
     GradedModules,

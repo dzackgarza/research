@@ -1,6 +1,6 @@
 r"""Construction preserves defining actions and the forgetful functor to Ab."""
 
-from dzack_research.preamble.all import AdditiveGroups, Algebras, GeneralModule, Modules, QQ, Rings
+from dzack_research.preamble.all import AdditiveGroups, Algebras, GeneralModules, Modules, QQ, Rings
 
 
 def test_left_regular_matrix_module_retains_its_additive_action() -> None:
@@ -75,8 +75,7 @@ def test_additive_forgetting_retains_maps_between_two_actions_on_one_group() -> 
 
 
 def test_elementwise_module_presentation_supplies_the_same_action_accessor() -> None:
-    module = GeneralModule(
-        QQ,
+    module = GeneralModules(QQ).from_operations(
         QQ,
         addition=lambda left, right: left + right,
         zero=QQ.zero(),
