@@ -20,8 +20,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
                            'OpenSubgroupInclusion'),
  'absolute_galois_group': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
                            'absolute_galois_group'),
- 'open_absolute_galois_subgroup': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                                   'open_absolute_galois_subgroup'),
  'AbsoluteGaloisGroups': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
                           'AbsoluteGaloisGroups'),
  'AbsoluteGaloisGroupsOfFiniteFields': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
@@ -135,7 +133,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'finite_frobenius_class',
  'finite_inertia_group',
  'first_exact_embedding',
- 'open_absolute_galois_subgroup',
  'restrict_along']
 
 def __getattr__(name):

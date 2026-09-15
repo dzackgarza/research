@@ -144,8 +144,6 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
                           'finite_inertia_group'),
  'first_exact_embedding': ('dzack_research.preamble.categories.group.profinite',
                            'first_exact_embedding'),
- 'open_absolute_galois_subgroup': ('dzack_research.preamble.categories.group.profinite',
-                                   'open_absolute_galois_subgroup'),
  'restrict_along': ('dzack_research.preamble.categories.group.profinite', 'restrict_along')}
 
 __all__ = ['AbsoluteDecompositionGroup',
@@ -233,7 +231,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'fixed_point_set',
  'generated_submonoid',
  'groups',
- 'open_absolute_galois_subgroup',
  'predicate_submonoid',
  'restrict_along',
  'trivial_g_set']

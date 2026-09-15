@@ -111,6 +111,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "isometry_primitive_extension",
         "lorentzian_reduction_complex",
         "module_localization_functor",
+        "open_absolute_galois_subgroup",
         "primitive_isotropic",
         "primitive_isotropic_vectors",
         "splits_two_hyperbolic_planes",

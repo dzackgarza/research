@@ -49,7 +49,7 @@ def test_decomposition_and_inertia_groups(build, name, prime) -> None:
 def test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups() -> None:
     galois = AbsoluteGaloisGroup(QQ)
     gaussian = QuadraticField(-1, "i")
-    open_subgroup = open_absolute_galois_subgroup(galois, gaussian)
+    open_subgroup = galois.open_subgroup(gaussian)
 
     assert galois in AbsoluteGaloisGroups()
     assert galois in ProfiniteGroups()
@@ -62,7 +62,7 @@ def test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups() -> 
     assert open_subgroup.inclusion().is_injective()
     assert galois.one() in open_subgroup
     cubic = NumberField(PolynomialRing(QQ, "x").algebra_generator("x") ** 3 - 2, "c")
-    assert open_absolute_galois_subgroup(galois, cubic).index() == 3
+    assert galois.open_subgroup(cubic).index() == 3
 
 
 def test_frobenius_elements_and_galois_characters() -> None:

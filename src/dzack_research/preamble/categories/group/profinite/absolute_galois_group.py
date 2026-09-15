@@ -1151,10 +1151,6 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
             f"{self._supergroup} corresponding to {self._extension_field}"
         )
 
-
-def open_absolute_galois_subgroup(supergroup, extension, embedding=None):
-    return supergroup.open_subgroup(extension, embedding=embedding)
-
 absolute_galois_group = AbsoluteGaloisGroup
 
 
@@ -1168,5 +1164,4 @@ __all__ = [
     "OpenGaloisSubgroupConjugacyClass",
     "OpenSubgroupInclusion",
     "absolute_galois_group",
-    "open_absolute_galois_subgroup",
 ]

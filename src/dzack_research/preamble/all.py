@@ -673,7 +673,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     fixed_point_set,
     generated_submonoid,
     groups,
-    open_absolute_galois_subgroup,
     predicate_submonoid,
     restrict_along,
     trivial_g_set,

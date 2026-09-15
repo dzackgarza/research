@@ -73,7 +73,7 @@ def test_a_galois_theory_session(name) -> None:
     absolute = AbsoluteGaloisGroup(QQ)
     rendered(absolute)
     assert absolute in ProfiniteGroups()
-    open_subgroup = open_absolute_galois_subgroup(absolute, field)
+    open_subgroup = absolute.open_subgroup(field)
     rendered(open_subgroup)
     assert open_subgroup.index() == degree
     assert open_subgroup.fixed_field() is field
