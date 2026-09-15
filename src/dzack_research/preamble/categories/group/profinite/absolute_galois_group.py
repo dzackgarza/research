@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
-    absolute_galois_group_category,
+    _absolute_galois_group_category,
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
@@ -452,7 +452,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
         category = Cat().meet(
-            (absolute_galois_group_category(self._field), *tuple(extra_categories))
+            (_absolute_galois_group_category(self._field), *tuple(extra_categories))
         )
         # The elements are field automorphisms of the closure, so this is the
         # subcategory of Aut_Fields(closure) fixing the structure map from K.

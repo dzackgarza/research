@@ -500,7 +500,6 @@ from dzack_research.preamble.categories.group import (
     Subgroups,
     Submonoids,
     Torsors,
-    absolute_galois_group_category,
     groups,
 )
 from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401

@@ -148,7 +148,7 @@ class OpenAbsoluteGaloisSubgroups(OwnedCategory):
             return self._inclusion
 
 
-def absolute_galois_group_category(field):
+def _absolute_galois_group_category(field):
     from sage.categories.finite_fields import FiniteFields
 
     return (
@@ -162,5 +162,4 @@ __all__ = [
     "AbsoluteGaloisGroups",
     "AbsoluteGaloisGroupsOfFiniteFields",
     "OpenAbsoluteGaloisSubgroups",
-    "absolute_galois_group_category",
 ]

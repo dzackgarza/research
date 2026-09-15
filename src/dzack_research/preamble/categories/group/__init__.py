@@ -112,8 +112,6 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
  'QuadraticCharacter': ('dzack_research.preamble.categories.group.profinite', 'QuadraticCharacter'),
  'RestrictedProfiniteCharacter': ('dzack_research.preamble.categories.group.profinite',
                                   'RestrictedProfiniteCharacter'),
- 'absolute_galois_group_category': ('dzack_research.preamble.categories.group.profinite',
-                                    'absolute_galois_group_category'),
 }
 
 __all__ = ['AbsoluteDecompositionGroup',
@@ -184,7 +182,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'RestrictedProfiniteCharacter',
  'Submonoids',
  'Torsors',
- 'absolute_galois_group_category',
  'groups',
 ]
 

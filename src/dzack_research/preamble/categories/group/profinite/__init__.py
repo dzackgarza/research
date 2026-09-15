@@ -24,8 +24,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
                                         'AbsoluteGaloisGroupsOfFiniteFields'),
  'OpenAbsoluteGaloisSubgroups': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
                                  'OpenAbsoluteGaloisSubgroups'),
- 'absolute_galois_group_category': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
-                                    'absolute_galois_group_category'),
  'ExactFieldMorphism': ('dzack_research.preamble.categories.group.profinite.field_morphisms',
                         'ExactFieldMorphism'),
  'CyclotomicCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
@@ -94,7 +92,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'ProfiniteGroups',
  'QuadraticCharacter',
  'RestrictedProfiniteCharacter',
- 'absolute_galois_group_category',
 ]
 
 def __getattr__(name):
