@@ -14,7 +14,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
-    category_packet,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
@@ -1536,7 +1535,7 @@ class ModuleEmbeddingHomset(CategoricalHomset):
         )
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
         inherited = [
@@ -2219,7 +2218,7 @@ class ModuleAutomorphismGroup(CategoricalHomset):
             return Unknown
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         module = self.domain()
         supers = [
             packet.Homs().Of(module, module),

@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     IsoCategoryConstruction,
-    category_packet,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
@@ -1071,7 +1070,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     def super_categories(self):
         if self.supergroup() is not self:
             return [self.supergroup()]
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         form = self.domain()
         supers = [
             packet.Homs().Of(form, form),

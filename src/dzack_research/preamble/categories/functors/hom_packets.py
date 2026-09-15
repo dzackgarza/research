@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomArrowIdentity,
-    category_packet,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 
@@ -16,11 +15,11 @@ class _InducedHomFunctor(Functor):
 
     def __init__(self, functor, domain_object, codomain_object) -> None:
         self._functor = functor
-        source = category_packet(functor.domain()).Homs().Of(
+        source = functor.domain().category_packet().Homs().Of(
             domain_object,
             codomain_object,
         )
-        target = category_packet(functor.codomain()).Homs().Of(
+        target = functor.codomain().category_packet().Homs().Of(
             functor.on_object(domain_object),
             functor.on_object(codomain_object),
         )
@@ -70,8 +69,8 @@ class _InducedEndFunctor(Functor):
 
     def __init__(self, functor, obj) -> None:
         self._functor = functor
-        source = category_packet(functor.domain()).Ends().Of(obj)
-        target = category_packet(functor.codomain()).Ends().Of(
+        source = functor.domain().category_packet().Ends().Of(obj)
+        target = functor.codomain().category_packet().Ends().Of(
             functor.on_object(obj)
         )
         super().__init__(source, target)
@@ -109,8 +108,8 @@ class _InducedAutFunctor(Functor):
 
     def __init__(self, functor, obj) -> None:
         self._functor = functor
-        source = category_packet(functor.domain()).Auts().Of(obj)
-        target = category_packet(functor.codomain()).Auts().Of(
+        source = functor.domain().category_packet().Auts().Of(obj)
+        target = functor.codomain().category_packet().Auts().Of(
             functor.on_object(obj)
         )
         super().__init__(source, target)

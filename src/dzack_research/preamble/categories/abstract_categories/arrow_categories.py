@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     RestrictedHomCategoryOf,
     _category_hom,
     _category_homset,
-    category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
@@ -701,10 +700,9 @@ class MonomorphismArrowCategory(ArrowCategory):
         if not super()._accepts_arrow(arrow):
             return False
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            category_packet,
-        )
+                )
 
-        return category_packet(self.base_category()).Monos().accepts(arrow)
+        return self.base_category().category_packet().Monos().accepts(arrow)
 
 
 class EpimorphismArrowCategory(ArrowCategory):
@@ -720,10 +718,9 @@ class EpimorphismArrowCategory(ArrowCategory):
         if not super()._accepts_arrow(arrow):
             return False
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            category_packet,
-        )
+                )
 
-        return category_packet(self.base_category()).Epis().accepts(arrow)
+        return self.base_category().category_packet().Epis().accepts(arrow)
 
 
 def _subobject_source(subobject):
@@ -1016,7 +1013,7 @@ class FixedWideHomCategory(FixedRestrictedHomCategory):
 
     def super_categories(self) -> list[Category]:
         return [
-            category_packet(self.base_category().base_category()).Homs().Of(
+            self.base_category().base_category().category_packet().Homs().Of(
                 self.domain_object(),
                 self.codomain_object(),
             )
@@ -1039,7 +1036,7 @@ class WideHomCategoryConstruction(RestrictedHomCategoryOf):
         return self.base_category().admits(arrow)
 
     def super_categories(self) -> list[Category]:
-        return [category_packet(self.base_category().base_category()).Homs()]
+        return [self.base_category().base_category().category_packet().Homs()]
 
 
 class WideSubcategory(OwnedCategoryBase):

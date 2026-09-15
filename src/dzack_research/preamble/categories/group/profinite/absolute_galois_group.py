@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
-    category_packet,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
@@ -318,7 +317,7 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
             raise ValueError("the closure automorphism does not commute with K -> Kbar")
         self._element = element
         base = element.parent().base_field()
-        self._left = category_packet(OwnedFields()).Homs().Of(base, base).identity()
+        self._left = OwnedFields().category_packet().Homs().Of(base, base).identity()
         self._right = element.as_morphism()
 
     def left(self):

@@ -12,7 +12,6 @@ import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    category_packet,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
@@ -958,7 +957,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         )
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
         inherited = [
@@ -1268,7 +1267,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
         inherited = [

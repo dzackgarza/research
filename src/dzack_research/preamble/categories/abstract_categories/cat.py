@@ -883,7 +883,6 @@ class FunctorCategory(FixedHomCategory):
     category, whose morphisms are actual natural transformations::
 
         sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-        sage: from dzack_research.preamble.categories.abstract_categories.hom_categories import category_packet
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: points = finite_ordered_set(("a", "b"))
         sage: category = DiscreteCategory(points)
@@ -903,7 +902,7 @@ class FunctorCategory(FixedHomCategory):
         True
         sage: transformations is hom.arrow_set().two_hom(identity, identity)
         True
-        sage: transformations is category_packet(hom.arrow_set()).Homs().Of(identity, identity)
+        sage: transformations is hom.arrow_set().category_packet().Homs().Of(identity, identity)
         True
         sage: eta = transformations(lambda obj: category.Mor(obj, obj).identity())
         sage: (eta * eta).component(category("a")) == eta.component(category("a"))

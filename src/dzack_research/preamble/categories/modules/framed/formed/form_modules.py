@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     MonoCategoryConstruction,
     _category_homset,
-    category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -436,7 +435,7 @@ class FormEmbeddingHomset(CategoricalHomset):
         return embedding
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         source = self.domain()
         target = self.codomain()
         inherited = [

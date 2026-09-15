@@ -61,7 +61,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     IsoCategoryConstruction,
     _category_homset,
-    category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -1617,7 +1616,7 @@ class GroupAutomorphismGroup(GroupHomset):
         )
 
     def super_categories(self):
-        packet = category_packet(self.base_category())
+        packet = self.base_category().category_packet()
         group = self.domain()
         supers = [
             packet.Homs().Of(group, group),

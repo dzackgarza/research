@@ -96,30 +96,31 @@ class CategoryPacketMethods:
         """
         return obj
 
-    def _category_packet(self):
+    def category_packet(self):
+        r"""Return the Hom/End/Mono/Epi/Iso/Aut packet owned by this category."""
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            category_packet,
+            _category_packet,
         )
 
-        return category_packet(self)
+        return _category_packet(self)
 
     def HomCategory(self) -> Category:
-        return self._category_packet().Homs()
+        return self.category_packet().Homs()
 
     def EndCategory(self) -> Category:
-        return self._category_packet().Ends()
+        return self.category_packet().Ends()
 
     def MonoCategory(self) -> Category:
-        return self._category_packet().Monos()
+        return self.category_packet().Monos()
 
     def EpiCategory(self) -> Category:
-        return self._category_packet().Epis()
+        return self.category_packet().Epis()
 
     def IsoCategory(self) -> Category:
-        return self._category_packet().Isos()
+        return self.category_packet().Isos()
 
     def AutCategory(self) -> Category:
-        return self._category_packet().Auts()
+        return self.category_packet().Auts()
 
     def Mor(self, source: Parent, target: Parent) -> Category:
         return self.HomCategory().Of(source, target)

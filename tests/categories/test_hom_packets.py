@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     OpenImmersions,
     Sets,
     SymmetricAlgebraOn,
-    category_packet,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
@@ -73,10 +72,10 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
 def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     algebras = Algebras(QQ)
     modules = Modules(QQ)
-    packet = category_packet(algebras)
+    packet = algebras.category_packet()
 
     assert packet.C() is algebras
-    module_packet = category_packet(modules)
+    module_packet = modules.category_packet()
     forget = Algebras(QQ).underlying_module()
     assert forget.domain() is algebras
     assert forget.codomain() is modules
