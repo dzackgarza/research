@@ -37,9 +37,6 @@ from dzack_research.preamble.categories.algebras.graded_algebras import GradedAl
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     StrictlyGradedCommutativeAlgebras,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -830,7 +827,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             degree = int(degree)
             piece = self.graded_piece(degree)
             element = piece(element)
-            coefficients = module_coefficients(element, piece)
+            coefficients = piece.framing_coefficients(element)
             return sum(
                 (
                     coefficient

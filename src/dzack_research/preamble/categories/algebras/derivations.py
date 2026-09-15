@@ -23,9 +23,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
@@ -468,7 +465,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
 
     def _selected_module_coefficients(self, derivation):
         classifiers = self._kahler_classifier_module()
-        return module_coefficients(self._to_kahler_classifier(derivation), classifiers)
+        return classifiers.framing_coefficients(self._to_kahler_classifier(derivation))
 
     def __call__(self, generator_images):
         r"""Construct a derivation from its generator images, not an arrow object."""

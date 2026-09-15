@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -195,7 +194,7 @@ class PowerAlgebra(GradedDirectSumModule):
     def augmentation(self, value):
         value = self(value)
         component = value.homogeneous_component(0)
-        coefficients = module_coefficients(component, self.graded_piece(0))
+        coefficients = self.graded_piece(0).framing_coefficients(component)
         return self.base_ring()(coefficients.get(0, self.base_ring().zero()))
 
     def _ring_morphism_defining_algebra_structure(self):
@@ -368,7 +367,7 @@ def _alternating_extension(module_morphism):
         result = target.zero()
         for degree, component in element.homogeneous_components().items():
             piece = source.graded_piece(degree)
-            for basis_label, coefficient in module_coefficients(component, piece).items():
+            for basis_label, coefficient in piece.framing_coefficients(component).items():
                 if degree == 0:
                     value = target.one()
                 elif degree == 1:

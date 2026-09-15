@@ -15,9 +15,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FramedModules,
@@ -323,7 +320,7 @@ def _construct_kahler_differentials(algebra):
 
         def conormal_image(label):
             differential = presentation_derivation(ideal_generators[label])
-            coefficients = module_coefficients(differential, presentation_omega)
+            coefficients = presentation_omega.framing_coefficients(differential)
             return ambient_differentials.linear_combination(
                 {
                     differential_label: quotient_map(coefficient)

@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
@@ -145,10 +144,7 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
                 tensor_power,
                 tensor_element,
             )
-            for tensor_label, coefficient in module_coefficients(
-                representative,
-                tensor_power,
-            ).items():
+            for tensor_label, coefficient in tensor_power.framing_coefficients(representative).items():
                 result += _engine_element(
                     tensor_power.base_ring(), coefficient
                 ) * self._free_word(
