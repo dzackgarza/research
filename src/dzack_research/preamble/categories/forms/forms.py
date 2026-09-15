@@ -286,6 +286,13 @@ class _CallableForm(Element):
     def codomain(self):
         return self.parent().codomain()
 
+    def classifying_morphism(self):
+        r"""Return the unique linear map ``Gamma^2(M) -> W`` classifying this quadratic map."""
+        if self.parent().kind() != "quadratic":
+            raise TypeError("a classifying morphism here belongs to a quadratic map")
+        square = self.module().divided_square()
+        return square.from_quadratic(self, self.codomain())
+
     def __call__(self, *arguments):
         if self.parent().kind() == "quadratic":
             if len(arguments) != 1:
@@ -575,15 +582,6 @@ def _quadratic_map(module, value_module, function):
     r"""Return the quadratic map ``module -> value_module`` via its classifier."""
     forms = module.quadratic_forms(value_module)
     return forms.from_quadratic_map(function)
-
-
-def classifying_morphism(quadratic):
-    r"""Return the unique linear map ``Gamma^2(M) -> W`` classifying ``quadratic``."""
-
-    if isinstance(quadratic, QuadraticModuleMorphism):
-        return quadratic
-    square = quadratic.module().divided_square()
-    return square.from_quadratic(quadratic, quadratic.codomain())
 
 
 def _quadratic_map_from_morphism(module, morphism):

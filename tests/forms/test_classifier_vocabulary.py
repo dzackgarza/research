@@ -1,9 +1,6 @@
 import pytest
 
 from dzack_research.preamble.all import NN, ZZ
-from dzack_research.preamble.categories.forms import (
-    classifying_morphism,
-)
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFormForgetfulAdjunction,
     BilinearFreeFormAdjunction,
@@ -92,14 +89,14 @@ def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations()
         )
 
     quadratic = module.quadratic_map(ZZ, quadratic_value)
-    classifier = classifying_morphism(quadratic)
+    classifier = quadratic.classifying_morphism()
     recovered = module.quadratic_map_from_morphism(classifier)
     for value in (x, y, x + y, 2 * x - y):
         assert recovered(value) == quadratic(value)
-    assert classifying_morphism(recovered).domain() is classifier.domain()
+    assert recovered.classifying_morphism().domain() is classifier.domain()
     for label in classifier.domain().module_generating_set():
         generator = classifier.domain().module_generator(label)
-        assert classifying_morphism(recovered)(generator) == classifier(generator)
+        assert recovered.classifying_morphism()(generator) == classifier(generator)
 
 
 def test_archive_tautological_names_are_the_live_classifier_adjunctions() -> None:
