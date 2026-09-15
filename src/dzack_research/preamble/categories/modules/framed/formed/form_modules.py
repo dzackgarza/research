@@ -17,8 +17,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.forms.forms import (
-    is_bilinear_form,
-    is_quadratic_form,
+    _is_bilinear_form as _form_is_bilinear,
+    _is_quadratic_form as _form_is_quadratic,
 )
 from dzack_research.preamble.categories.modules.base_change import (
     _base_change_codomain,
@@ -101,12 +101,12 @@ class FormValueObjects(OwnedCategory):
 
 def _is_bilinear_form(form) -> bool:
 
-    return is_bilinear_form(form)
+    return _form_is_bilinear(form)
 
 
 def _is_quadratic_form(form) -> bool:
 
-    return is_quadratic_form(form)
+    return _form_is_quadratic(form)
 
 
 @cached_function(key=lambda formed_module: id(formed_module))
@@ -181,7 +181,7 @@ class FormedModuleMorphism(Morphism):
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
     and a module map on the value objects, satisfying the form square.  The
     form is preserved exactly, and the morphism is an isometry onto its image,
-    exactly when ``h`` is the identity; :func:`is_form_morphism` asks that.
+    exactly when ``h`` is the identity; :meth:`preserves_form_exactly` asks that.
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
@@ -205,6 +205,16 @@ class FormedModuleMorphism(Morphism):
 
     def value_morphism(self):
         return self._value_morphism
+
+    def preserves_form_exactly(self) -> bool:
+        r"""Return whether the value-object map is the identity."""
+        value_morphism = self.value_morphism()
+        values = value_morphism.domain()
+        if value_morphism.codomain() is not values:
+            return False
+        # A Hom object has one identity, so this is object identity. Comparing
+        # morphisms extensionally would require extra finite-presentation data.
+        return value_morphism is values.module_category().Mor(values, values).identity()
 
     def is_injective(self) -> bool:
         r"""Return whether the underlying module map is injective."""
@@ -1727,23 +1737,3 @@ class _HeterogeneousPairing(Parent):
 def _heterogeneous_pairing(pairing):
     return _HeterogeneousPairing(pairing)
 
-
-def is_form_morphism(morphism) -> bool:
-    r"""Return whether a formed morphism preserves the form exactly.
-
-    A morphism of formed modules is a pair ``(f,h)``.  It preserves the form
-    exactly -- it is an isometry onto its image -- when ``h`` is the identity
-    of the value module.
-    """
-    if not isinstance(morphism, FormedModuleMorphism):
-        return False
-    value_morphism = morphism.value_morphism()
-    values = value_morphism.domain()
-    if value_morphism.codomain() is not values:
-        return False
-    # A Hom object has one identity, so this is object identity.  Comparing the
-    # two morphisms instead would ask for module-morphism equality, which is
-    # not decidable without a chosen finite presentation of the source, and the
-    # value module here is often Q/Z, which has no finite generating set.
-
-    return value_morphism is values.module_category().Mor(values, values).identity()

@@ -507,7 +507,7 @@ def _callable_form_space(left_module, right_module, value_module, kind):
     return space
 
 
-def is_bilinear_form(form) -> bool:
+def _is_bilinear_form(form) -> bool:
     if isinstance(form, _CallableForm):
         return form.parent().kind() == "bilinear" and form.left_module() is form.right_module()
 
@@ -517,7 +517,7 @@ def is_bilinear_form(form) -> bool:
     )
 
 
-def is_quadratic_form(form) -> bool:
+def _is_quadratic_form(form) -> bool:
     if isinstance(form, _CallableForm):
         return form.parent().kind() == "quadratic"
 

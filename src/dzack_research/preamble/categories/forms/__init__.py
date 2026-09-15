@@ -10,8 +10,6 @@ _EXPORTS = {'BilinearFormHomset': ('dzack_research.preamble.categories.forms.for
  'QuadraticFormMorphism': ('dzack_research.preamble.categories.forms.forms',
                            'QuadraticFormMorphism'),
  'classifying_morphism': ('dzack_research.preamble.categories.forms.forms', 'classifying_morphism'),
- 'is_bilinear_form': ('dzack_research.preamble.categories.forms.forms', 'is_bilinear_form'),
- 'is_quadratic_form': ('dzack_research.preamble.categories.forms.forms', 'is_quadratic_form'),
  'GramTensorGraph': ('dzack_research.preamble.categories.forms.gram_matrices',
                      'GramTensorGraph'),
 }
@@ -24,8 +22,6 @@ __all__ = ['BilinearFormMorphism',
  'QuadraticFormMorphism',
  'GramTensorGraph',
  'classifying_morphism',
- 'is_bilinear_form',
- 'is_quadratic_form',
 ]
 
 def __getattr__(name):

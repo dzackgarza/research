@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormModules,
     QuadraticFormModules,
     SymmetricBilinearFormModules,
-    is_form_morphism,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -48,5 +47,5 @@ def test_identity_in_the_formed_homset_is_an_exact_form_morphism() -> None:
 
     assert identity.domain() is formed
     assert identity.codomain() is formed
-    assert is_form_morphism(identity)
+    assert identity.preserves_form_exactly()
     assert all(identity(generator) == generator for generator in formed.module_generators())
