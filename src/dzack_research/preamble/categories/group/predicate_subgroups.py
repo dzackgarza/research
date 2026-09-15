@@ -10,10 +10,8 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.orthogonal_quotients import (
     OrthogonalCharacterQuotient,
-    subgroup_isotropic_are_equivalent,
-    subgroup_isotropic_orbit_representatives,
-    subgroup_vector_orbit_representatives,
-    subgroup_vectors_are_equivalent,
+    _subgroup_isotropic_orbit_representatives,
+    _subgroup_vector_orbit_representatives,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
@@ -177,37 +175,35 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
         def vector_orbit_representatives(self, square):
 
-            return subgroup_vector_orbit_representatives(self, square)
+            return _subgroup_vector_orbit_representatives(self, square)
 
         def vectors_are_equivalent(self, left, right) -> bool:
 
-            return subgroup_vectors_are_equivalent(self, left, right)
+            return self.vector_equivalence_witness(left, right) is not None
 
         def vector_equivalence_witness(self, left, right):
             from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_vector_equivalence_witness,
+                _subgroup_vector_equivalence_witness,
             )
 
-            return subgroup_vector_equivalence_witness(self, left, right)
+            return _subgroup_vector_equivalence_witness(self, left, right)
 
         def isotropic_orbit_representatives(self, rank, *, flag=False):
 
-            return subgroup_isotropic_orbit_representatives(
+            return _subgroup_isotropic_orbit_representatives(
                 self, rank, flag=flag
             )
 
         def isotropic_are_equivalent(self, left, right, *, flag=False) -> bool:
 
-            return subgroup_isotropic_are_equivalent(
-                self, left, right, flag=flag
-            )
+            return self.isotropic_equivalence_witness(left, right, flag=flag) is not None
 
         def isotropic_equivalence_witness(self, left, right, *, flag=False):
             from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_isotropic_equivalence_witness,
+                _subgroup_isotropic_equivalence_witness,
             )
 
-            return subgroup_isotropic_equivalence_witness(
+            return _subgroup_isotropic_equivalence_witness(
                 self, left, right, flag=flag
             )
 

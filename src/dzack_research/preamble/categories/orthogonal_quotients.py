@@ -375,7 +375,7 @@ def _finite_subgroup_vector_orbit_representatives(subgroup, square):
     return finite_ordered_set(tuple(representatives))
 
 
-def subgroup_vector_orbit_representatives(subgroup, square):
+def _subgroup_vector_orbit_representatives(subgroup, square):
     if not subgroup.contains_character_kernel():
         return _finite_subgroup_vector_orbit_representatives(subgroup, square)
     quotient = OrthogonalCharacterQuotient(subgroup)
@@ -393,7 +393,7 @@ def subgroup_vector_orbit_representatives(subgroup, square):
     return finite_ordered_set(tuple(representatives))
 
 
-def subgroup_vector_equivalence_witness(subgroup, left, right):
+def _subgroup_vector_equivalence_witness(subgroup, left, right):
     orthogonal_group = subgroup.supergroup()
     if not subgroup.contains_character_kernel():
         lattice = orthogonal_group.domain()
@@ -415,10 +415,6 @@ def subgroup_vector_equivalence_witness(subgroup, left, right):
     )
 
 
-def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
-    return subgroup_vector_equivalence_witness(subgroup, left, right) is not None
-
-
 def _assert_isotropic_splitting_has_character_data(subgroup) -> None:
     r"""Assert that a subgroup splitting isotropic orbits carries character data.
 
@@ -438,7 +434,7 @@ def _assert_isotropic_splitting_has_character_data(subgroup) -> None:
     )
 
 
-def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
+def _subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
     _assert_isotropic_splitting_has_character_data(subgroup)
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()
@@ -456,7 +452,7 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
     return finite_ordered_set(tuple(representatives))
 
 
-def subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):
+def _subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):
     _assert_isotropic_splitting_has_character_data(subgroup)
     orthogonal_group = subgroup.supergroup()
     witness = orthogonal_group.isotropic_equivalence_witness(
@@ -472,18 +468,4 @@ def subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False)
     )
 
 
-def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
-    return subgroup_isotropic_equivalence_witness(
-        subgroup, left, right, flag=flag
-    ) is not None
-
-
-__all__ = [
-    "OrthogonalCharacterQuotient",
-    "subgroup_isotropic_are_equivalent",
-    "subgroup_isotropic_equivalence_witness",
-    "subgroup_isotropic_orbit_representatives",
-    "subgroup_vector_equivalence_witness",
-    "subgroup_vector_orbit_representatives",
-    "subgroup_vectors_are_equivalent",
-]
+__all__ = ["OrthogonalCharacterQuotient"]
