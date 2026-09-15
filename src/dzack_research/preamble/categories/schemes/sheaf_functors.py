@@ -142,7 +142,7 @@ class AffineQuasiCoherentAdjunction(SageObject):
         return f"Affine quasi-coherent pullback/direct-image adjunction along {self.scheme_morphism()}"
 
 
-def affine_quasi_coherent_adjunction(scheme_morphism):
+def _affine_quasi_coherent_adjunction(scheme_morphism):
     r"""Return the affine ``f^* \dashv f_*`` owner for ``scheme_morphism``."""
     return AffineQuasiCoherentAdjunction(scheme_morphism)
 
@@ -151,5 +151,4 @@ __all__ = [
     "AffineQuasiCoherentAdjunction",
     "AffineQuasiCoherentDirectImageFunctor",
     "AffineQuasiCoherentPullbackFunctor",
-    "affine_quasi_coherent_adjunction",
 ]

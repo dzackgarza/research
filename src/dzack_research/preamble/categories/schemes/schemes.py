@@ -451,10 +451,10 @@ class SchemeMorphism(Morphism):
     def quasi_coherent_adjunction(self):
         r"""Return the affine adjunction ``f^* \dashv f_*`` on represented QCoh."""
         from dzack_research.preamble.categories.schemes.sheaf_functors import (
-            affine_quasi_coherent_adjunction,
+            _affine_quasi_coherent_adjunction,
         )
 
-        return affine_quasi_coherent_adjunction(self)
+        return _affine_quasi_coherent_adjunction(self)
 
     def module_pullback_functor(self):
         r"""Return ``f^* : QCoh(Y) -> QCoh(X)`` for this affine morphism."""
