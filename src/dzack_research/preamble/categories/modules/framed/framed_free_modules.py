@@ -370,7 +370,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def subobject_on(self, module_generating_set):
             r"""Return the submodule spanned by the specified elements."""
 
-            return module_subobject_on(self, module_generating_set)
+            return _module_subobject_on(self, module_generating_set)
 
         def whole_subobject(self):
             r"""Return this free module as the full subobject of itself.
@@ -665,7 +665,7 @@ def _span_basis_elements(module, module_generating_set):
     )
 
 
-def module_subobject_on(module, module_generating_set):
+def _module_subobject_on(module, module_generating_set):
     r"""Return the submodule spanned by one explicitly finite family.
 
     The finite PID backend is restricted to the union of supports of the input
