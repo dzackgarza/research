@@ -29,6 +29,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Monodromy groups/reps + π1/H1 + CW + graded | User note 2026-09-15 | Semantic `π1(X,x)`, `H1^sing`, monodromy groups/reps; CW complexes with sphere homotopy DB; `ZZ^n`-graded complexes / spectral sequences | `categories/topology/` / `categories/homotopy/` + `categories/graded/` | Proposed — see note below |
 | Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
 | p-curvature | User note 2026-09-15 | `p`-curvature of a connection in characteristic `p` (`ψ_p: T_{X/S} → End(E)`) | `categories/connections/p_curvature.py` + `categories/characteristic_p/` | Proposed — see note below |
+| Zeta of varieties / Weil conjectures (concrete cases) | User note 2026-09-15 | `Z(X/F_q,T)` for `X/F_q`; closed forms via explicit `|X(F_{q^r})|` for `A^n, P^n, Gr(k,n)`, some curves; verify Weil (rationality, functional equation, RH) | `categories/zeta/zeta.py` + `categories/varieties/point_counts.py` | Proposed — see note below |
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 
@@ -366,3 +367,31 @@ where `D^{[p]}` is the `p`-th iterate (restricted Lie algebra structure on deriv
 Requires: category `Conn(X/S)` in characteristic `p`, restricted Lie algebra `T_{X/S}` with `D ↦ D^{[p]}`, Frobenius twist `X^{(1)}`, Cartier operator, and functor `ψ_p: Conn → Higgs_{X^{(1)}}` to Higgs fields (`End(E)`-valued 1-forms). Need `ψ_p` as morphism `T_{X/S} → End(E)` on the connection object, not a bare matrix `A_p`. Instances: Gauss-Manin `∇_{GM}` reduced mod `p`, its `p`-curvature is the obstruction whose vanishing detects algebraicity of periods; for `PF(w)` operator `L ∈ D_S`, `ψ_p(L)` is its `p`-curvature as `p`-linear operator on `D_S`-module.
 
 Intended owners: `categories/connections/p_curvature.py` (`p_curvature(∇): Higgs`), `categories/characteristic_p/cartier.py` (`Frobenius`, `Cartier descent`), `categories/connections/characteristic_p.py` (`Conn_p`, `ψ_p` with `D^{[p]}`). Not a free `p_curvature(matrix)` — `∇.p_curvature(D)` on the connection object in `FlatConn(X/S)` over `F_p`.
+
+## Desired capability: zeta functions of varieties over F_q and Weil verification — note 2026-09-15
+
+Need to work with zeta functions of varieties over `F_q`, and at least for (some) curves, affine spaces, projective spaces, Grassmannians, etc. where point counts have explicit formulas, get closed forms and verify all Weil conjectures hold for them.
+
+* Zeta function is not a Python `float` from `exp(Σ N_r T^r/r)` numerically. It is the formal series/exponential
+  ```
+  Z(X/F_q, T) = exp( Σ_{r≥1} |X(F_{q^r})| T^r / r ) ∈ 1 + T·Q[[T]]
+  ```
+  equivalently Euler product `∏_{x∈|X|} (1 - T^{deg x})^{-1}`, object of `Q(T)` (rational function when Weil holds) with its `T`-adic parent `Q[[T]]`. Interface lives on the variety: `X.zeta()` returns `Z` as element `Z : Q(T)` with numerator/denominator `P_i(T)`, not a bare power series guess.
+
+* Concrete point counts with closed forms (must be exact, not enumerating `F_{q^r}` for large `r`):
+  * `A^n: |A^n(F_{q^r})| = q^{n r}` → `Z = 1/(1 - q^n T)`
+  * `P^n: |P^n(F_{q^r})| = (q^{(n+1)r}-1)/(q^r-1) = 1+q^r+…+q^{nr}` → `Z = 1/((1-T)(1-qT)…(1-q^n T))`
+  * `Gr(k,n): |Gr(k,n)(F_{q^r})| = Gaussian binomial  [n choose k]_{q^r}` with `q`-factorial formula → `Z = ∏_{i=0}^{k(n-k)} 1/(1-q^i T)^{c_i}` with explicit `c_i` or product of `q`-integers; closed via `q`-binomial rationality
+  * Some curves: `A^1` minus `n` points, elliptic curve `E: y^2 = x^3+ax+b` with `|E(F_{q^r})| = q^r+1 - α^r - \bar α^r` (`α\bar α = q`), hyperelliptic of low genus where `L`-polynomial is known; at least need interface `Curve.point_count(r)` that is exact and `Z`-rational.
+
+* Must get closed forms: `Z(X,T) = ∏_{i=0}^{2 dim X} P_i(T)^{(-1)^{i+1}}` with `P_i(T) = det(1 - T·Frob | H^i_{c,ét}(X_{\bar F_q}, Q_ℓ)) ∈ Z[T]`, `P_0 = 1-T`, `P_{2n}=1-q^n T` for connected `X`. Construction is `X → (N_r = |X(F_{q^r})|) → Z = exp` with rational reconstruction (compare coefficients `N_r` with `log Z` expansion), not numeric `exp`.
+
+* Must verify all Weil conjectures for these concrete `X` and return certificates, not just claim:
+  * (W1) Rationality: `Z ∈ Q(T)` — check `Z` is rational function with `Z ∈ 1+T·Z[[T]]`
+  * (W2) Functional equation: `Z(X, 1/(q^n T)) = ± q^{nχ/2} T^{χ} Z(X,T)` with `χ = Σ (-1)^i b_i`, `n=dim X`; verify as identity in `Q(T)`
+  * (W3) Riemann hypothesis: `P_i(T)=∏(1-α_{ij} T)` with `|α_{ij}| = q^{w/2}` for `w=i` (purity) — verify by factoring `P_i` over `C` and checking `|α| = q^{i/2}` via `QQbar` absolute value, or via `ℓ`-adic weights. For concrete cases this is checkable: `P_i` split with known roots `q^{j}` or Weil numbers `α, \bar α`.
+  * (W4) Betti numbers: `deg P_i = b_i = dim H^i_{ét}` — compare with known `b_i` from `ℓ`-adic cohomology (e.g. `b_i(P^n)=1` for even `i≤2n` else `0`; `b_i(Gr)` via Schubert cells).
+
+* Requires: site cohomology `RΓ_c(X_{ét}, Q_ℓ)` from six-functor `R f_!` already noted, trace formula `N_r = Σ (-1)^i Tr(Frob^r | H^i_c)`, and the comparison `Z = ∏ det(1-T·Frob|H^i_c)^{(-1)^{i+1}}`. The same `R f_!` and `Q_ℓ` owners above must supply `H^i_c` and `Frob` action.
+
+Intended owners: `categories/zeta/zeta.py` (`Variety.zeta(): Q(T)` via `N_r`), `categories/varieties/point_counts.py` (`X.point_count(r): NN` exact for `A^n`, `P^n`, `Gr(k,n)`, some curves), `categories/etale/weil.py` (`WeilVerification` with `rationality`, `functional_equation`, `rh_roots`, `betti` checks). Not a free `zeta_via_brute_force(X,q)` — `X.zeta()` on the variety object in `Sch/F_q` with `Q_ℓ`-cohomology behind the same site, and `Z.verify_weil()` returning certificates for the concrete families.
