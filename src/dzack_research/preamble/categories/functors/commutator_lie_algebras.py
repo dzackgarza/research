@@ -90,11 +90,10 @@ class CommutatorLieAlgebraFunctor(Functor):
 
 
 @cached_function
-def commutator_lie_algebra_functor(base_ring) -> CommutatorLieAlgebraFunctor:
+def _commutator_lie_algebra_functor(base_ring) -> CommutatorLieAlgebraFunctor:
     return CommutatorLieAlgebraFunctor(base_ring)
 
 
 __all__ = [
     "CommutatorLieAlgebraFunctor",
-    "commutator_lie_algebra_functor",
 ]

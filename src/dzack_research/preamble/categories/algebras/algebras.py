@@ -1179,10 +1179,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             def commutator_lie_algebra(self):
                 r"""Return the functor sending ``m`` to the Lie product ``m-m tau``."""
                 from dzack_research.preamble.categories.functors.commutator_lie_algebras import (
-                    commutator_lie_algebra_functor,
+                    _commutator_lie_algebra_functor,
                 )
 
-                return commutator_lie_algebra_functor(self.base_ring())
+                return _commutator_lie_algebra_functor(self.base_ring())
 
         @classmethod
         def _repr_object_names(cls):
