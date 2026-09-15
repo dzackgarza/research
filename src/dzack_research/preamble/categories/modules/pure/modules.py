@@ -400,6 +400,22 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _tensor_algebra_adjunction(self.base_ring())
 
+        def bilinear_free_form_adjunction(self):
+            r"""Return the free bilinear-form/underlying-module adjunction on ``Mod_R``."""
+            from dzack_research.preamble.categories.functors.free_forms import (
+                _bilinear_free_form_adjunction,
+            )
+
+            return _bilinear_free_form_adjunction(self.base_ring())
+
+        def quadratic_free_form_adjunction(self):
+            r"""Return the free quadratic-form/underlying-module adjunction on ``Mod_R``."""
+            from dzack_research.preamble.categories.functors.free_forms import (
+                _quadratic_free_form_adjunction,
+            )
+
+            return _quadratic_free_form_adjunction(self.base_ring())
+
         def tensor_product(self, factors):
             r"""Return $\bigotimes_{i \in I} M_i$ for an indexed family of modules.
 

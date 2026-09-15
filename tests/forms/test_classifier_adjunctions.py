@@ -7,8 +7,6 @@ from dzack_research.preamble.all import (
     QQ,
     QuadraticField,
     ZZ,
-    bilinear_free_form_adjunction,
-    quadratic_free_form_adjunction,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     _represented_value_module,
@@ -136,14 +134,14 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
 
 
 @pytest.mark.parametrize(
-    "adjunction_factory, expected_classifier_invariants",
+    "adjunction_method, expected_classifier_invariants",
     [
-        (bilinear_free_form_adjunction, 4),
-        (quadratic_free_form_adjunction, 8),
+        ("bilinear_free_form_adjunction", 4),
+        ("quadratic_free_form_adjunction", 8),
     ],
 )
 def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_triangles(
-    adjunction_factory,
+    adjunction_method,
     expected_classifier_invariants,
 ) -> None:
     source = _cyclic(4)
@@ -152,7 +150,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     quotient_generator = quotient.module_generator(0)
     projection = source.module_category().Mor(source, quotient)({0: quotient_generator})
 
-    adjunction = adjunction_factory(ZZ)
+    adjunction = getattr(source.module_category(), adjunction_method)()
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     free_source = free(source)

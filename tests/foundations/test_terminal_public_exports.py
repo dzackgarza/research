@@ -164,6 +164,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "finite_group_class_function",
         "character_set",
         "character_from_class_function",
+        "bilinear_free_form_adjunction",
+        "quadratic_free_form_adjunction",
         "base_change_adjunction",
         "restriction_coextension_adjunction",
         "algebra_base_change_adjunction",

@@ -377,12 +377,6 @@ from dzack_research.preamble.categories.functors.free_forms import (
 from dzack_research.preamble.categories.functors.free_forms import (
     QuadraticUnderlyingModuleFunctor as QuadraticUnderlyingModuleFunctor,
 )
-from dzack_research.preamble.categories.functors.free_forms import (
-    bilinear_free_form_adjunction as bilinear_free_form_adjunction,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    quadratic_free_form_adjunction as quadratic_free_form_adjunction,
-)
 from dzack_research.preamble.categories.functors.free_groups import (
     FreeGroupFunctor as FreeGroupFunctor,
 )

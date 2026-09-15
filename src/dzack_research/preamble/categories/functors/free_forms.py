@@ -249,12 +249,12 @@ QuadraticFormForgetfulAdjunction = QuadraticFreeFormAdjunction
 
 
 @cached_function
-def bilinear_free_form_adjunction(base_ring) -> BilinearFreeFormAdjunction:
+def _bilinear_free_form_adjunction(base_ring) -> BilinearFreeFormAdjunction:
     return BilinearFreeFormAdjunction(base_ring)
 
 
 @cached_function
-def quadratic_free_form_adjunction(base_ring) -> QuadraticFreeFormAdjunction:
+def _quadratic_free_form_adjunction(base_ring) -> QuadraticFreeFormAdjunction:
     return QuadraticFreeFormAdjunction(base_ring)
 
 
@@ -272,6 +272,4 @@ __all__ = [
     "TautologicalBilinearFormFunctor",
     "TautologicalFormFunctor",
     "TautologicalQuadraticFormFunctor",
-    "bilinear_free_form_adjunction",
-    "quadratic_free_form_adjunction",
 ]
