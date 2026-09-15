@@ -6,7 +6,7 @@ from dzack_research.preamble.all import QQ, PolynomialRing, Spec
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.divisors.cox_rings import CoxRing, CoxRings
+from dzack_research.preamble.categories.divisors.cox_rings import CoxRings
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
     RepresentedToricSchemes,
     ToricSchemes,
@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
 def test_cox_ring_category_uses_the_actual_toric_scheme_parameter() -> None:
     plane = ToricSchemes(QQ).an_object()
     category = CoxRings(plane)
-    cox = CoxRing(plane)
+    cox = plane.cox_ring()
 
     assert plane in RepresentedToricSchemes()
     assert isinstance(category, OwnedParameterizedCategory)

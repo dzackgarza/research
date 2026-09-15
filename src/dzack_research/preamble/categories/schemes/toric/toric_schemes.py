@@ -1674,18 +1674,21 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         @cached_method
         def cox_ring(self):
             r"""Return the Cox homogeneous coordinate ring graded by ``Cl(X)``."""
-            from dzack_research.preamble.categories.divisors.cox_rings import CoxRing
+            from dzack_research.preamble.categories.divisors.cox_rings import _cox_ring
 
-            return CoxRing(self)
+            return _cox_ring(self)
 
         @cached_method
         def section_ring(self, divisor):
             r"""Return ``oplus_{n>=0} H^0(X,O_X(nD))`` as an owned graded algebra."""
             from dzack_research.preamble.categories.divisors.section_rings import (
-                SectionRing,
+                SectionRings,
             )
 
-            return SectionRing(self, self.weil_divisor_group()(divisor))
+            return SectionRings(self.scheme_base_ring())(
+                self,
+                self.weil_divisor_group()(divisor),
+            )
 
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""

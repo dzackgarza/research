@@ -755,9 +755,9 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     @cached_method
     def section_ring(self):
-        from dzack_research.preamble.categories.divisors.section_rings import SectionRing
+        from dzack_research.preamble.categories.divisors.section_rings import SectionRings
 
-        return SectionRing(self)
+        return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
         changed_space = self.projective_space().base_change(ring_map)
@@ -1102,9 +1102,9 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     @cached_method
     def section_ring(self):
-        from dzack_research.preamble.categories.divisors.section_rings import SectionRing
+        from dzack_research.preamble.categories.divisors.section_rings import SectionRings
 
-        return SectionRing(self)
+        return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
         changed_product = self.projective_product().base_change(ring_map)

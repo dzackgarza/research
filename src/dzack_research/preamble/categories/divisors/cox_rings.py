@@ -91,7 +91,7 @@ class CoxRings(OwnedParameterizedCategory):
             return selected
 
 
-def CoxRing(scheme):
+def _cox_ring(scheme):
     r"""Return ``k[x_rho | rho in Sigma(1)]`` with ``deg(x_rho)=[D_rho]``."""
     rays = scheme.fan().cones(1)
     names = tuple(f"x{position}" for position in range(int(rays.cardinality())))
@@ -113,4 +113,4 @@ def CoxRing(scheme):
     return ring
 
 
-__all__ = ["CoxRing", "CoxRings"]
+__all__ = ["CoxRings"]

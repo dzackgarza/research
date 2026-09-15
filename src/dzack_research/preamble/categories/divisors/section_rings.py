@@ -378,10 +378,4 @@ def _toric_divisor_section_ring(category, scheme, divisor):
     )
 
 
-def SectionRing(source, divisor=None):
-    r"""Construct a section algebra through its owning :class:`SectionRings` category."""
-    scheme = source if divisor is not None else source.scheme()
-    return SectionRings(scheme.scheme_base_ring())(source, divisor)
-
-
-__all__ = ["SectionRing", "SectionRings"]
+__all__ = ["SectionRings"]
