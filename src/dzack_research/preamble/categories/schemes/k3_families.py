@@ -46,10 +46,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.schemes.cyclic_covers import (
-    cyclic_cover_base_change,
-    relative_cyclic_cover_lift,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpace,
     Schemes,
@@ -218,13 +214,11 @@ class HorikawaK3DoubleCover(SageObject):
         )
         relative = cyclic_algebra.relative_spectrum()
         generator = next(iter(family.acting_group().group_generators()))
-        nikulin_lift = relative_cyclic_cover_lift(
-            cyclic_algebra,
+        nikulin_lift = cyclic_algebra.lift_linearized_group_element(
             family.nikulin_linearization(),
             generator,
         )
-        enriques_lift = relative_cyclic_cover_lift(
-            cyclic_algebra,
+        enriques_lift = cyclic_algebra.lift_linearized_group_element(
             family.enriques_linearization(),
             generator,
         )
@@ -364,9 +358,7 @@ class HorikawaK3BaseChangeComparison(SageObject):
     r"""Base change of one Horikawa cover with commuting lifted involutions."""
 
     def __init__(self, source, ring_map) -> None:
-        cyclic_comparison = cyclic_cover_base_change(
-            source.cyclic_algebra(), ring_map
-        )
+        cyclic_comparison = source.cyclic_algebra().base_change(ring_map)
         changed_cyclic = cyclic_comparison.changed_cyclic_algebra()
         changed_line = cyclic_comparison.changed_line_bundle()
         changed_surface = changed_line.projective_product()
@@ -392,13 +384,11 @@ class HorikawaK3BaseChangeComparison(SageObject):
             sign,
         )
         generator = next(iter(group.group_generators()))
-        changed_nikulin_lift = relative_cyclic_cover_lift(
-            changed_cyclic,
+        changed_nikulin_lift = changed_cyclic.lift_linearized_group_element(
             changed_nikulin_linearization,
             generator,
         )
-        changed_enriques_lift = relative_cyclic_cover_lift(
-            changed_cyclic,
+        changed_enriques_lift = changed_cyclic.lift_linearized_group_element(
             changed_enriques_linearization,
             generator,
         )

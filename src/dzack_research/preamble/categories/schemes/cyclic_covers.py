@@ -200,7 +200,7 @@ def relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     return automorphism
 
 
-def cyclic_cover_base_change(cyclic_algebra, ring_map):
+def _cyclic_cover_base_change(cyclic_algebra, ring_map):
     return CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map)
 
 
@@ -474,7 +474,7 @@ class RelativeCyclicCoverLift(SageObject):
 
 
 
-def relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
+def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
     r"""Lift one line-bundle-linearized base automorphism to the cyclic cover.
 
     If ``lambda_g:g^*L -> L`` is the selected linearization, the generator of
@@ -854,7 +854,5 @@ __all__ = [
     "CyclicCoverBaseChangeComparison",
     "CyclicCovers",
     "RelativeCyclicCoverLift",
-    "cyclic_cover_base_change",
-    "relative_cyclic_cover_lift",
     "relative_cyclic_local_deck_transformation",
 ]

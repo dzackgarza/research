@@ -367,10 +367,18 @@ class CyclicCoverAlgebra(SageObject):
 
     def base_change(self, ring_map):
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
-            cyclic_cover_base_change,
+            _cyclic_cover_base_change,
         )
 
-        return cyclic_cover_base_change(self, ring_map)
+        return _cyclic_cover_base_change(self, ring_map)
+
+    def lift_linearized_group_element(self, linearization, group_element):
+        r"""Lift ``group_element`` through the selected line-bundle linearization."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            _relative_cyclic_cover_lift,
+        )
+
+        return _relative_cyclic_cover_lift(self, linearization, group_element)
 
     def constant_deck_transformation(self):
         r"""Return the deck generator when the scalar base contains a primitive ``n``-th root."""
