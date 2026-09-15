@@ -344,7 +344,7 @@ def _horizontal_connection_maps():
     connection_space = _connection_space()
     connection = connection_space(lambda _label: connection_space.target_module().zero())
     structured_module = ModuleWithConnection(connection)
-    return connection_homset(structured_module, structured_module)
+    return structured_module.Mor(structured_module)
 
 
 def _is_owned_object(parent: Parent) -> bool:

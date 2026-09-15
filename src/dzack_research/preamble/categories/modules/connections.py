@@ -8,6 +8,7 @@ from sage.structure.element import Element
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
+    _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -95,6 +96,15 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
         return [Modules(self.algebra())]
 
+    def Mor(self, domain, codomain):
+        r"""Return horizontal module maps between two objects with connection."""
+        if domain not in self or codomain not in self:
+            raise TypeError("a connection Hom requires two modules with connection over this algebra")
+        return ConnectionMorphismCategoryConstruction(Modules(self.algebra())).Of(
+            domain,
+            codomain,
+        )
+
     class ParentMethods:
         def __init__(self, source_connection, **rest) -> None:
             self._preamble_source_connection = source_connection
@@ -123,8 +133,18 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
             return Connections(self)(transported_image)
 
+        def Mor(self, codomain, category=None):
+            connections = ModulesWithConnection(self.base_ring())
+            if codomain in connections and (
+                category is None or category.is_subcategory(connections)
+            ):
+                return connections.Mor(self, codomain)
+            if category is None:
+                return module_homset(self, codomain)
+            return _category_homset(category, self, codomain)
+
         def _Hom_(self, codomain, category=None):
-            return module_homset(self, codomain)
+            return self.Mor(codomain, category=category)
 
 
 class ModulesWithFlatConnection(OwnedParameterizedCategory):
@@ -572,7 +592,9 @@ class ConnectionHomset(RestrictedHomCategoryParent):
                 domain_or_codomain,
                 codomain,
             )
-        return connection_homset(family_or_domain, domain_or_codomain)
+        return ModulesWithConnection(family_or_domain.base_ring()).Mor(
+            family_or_domain, domain_or_codomain
+        )
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
@@ -611,15 +633,6 @@ class ConnectionMorphismCategoryConstruction(RestrictedHomCategoryOf):
 
     def accepts(self, arrow) -> bool:
         return getattr(arrow, "_preamble_connection_morphism", None) is not None
-
-
-def connection_homset(domain, codomain):
-    if domain.base_ring() is not codomain.base_ring():
-        raise ValueError("connection morphisms require one coefficient algebra")
-    return ConnectionMorphismCategoryConstruction(Modules(domain.base_ring())).Of(
-        domain,
-        codomain,
-    )
 
 
 def ModuleWithConnection(connection):
@@ -860,5 +873,4 @@ __all__ = [
     "ModuleWithConnection",
     "ModulesWithConnection",
     "ModulesWithFlatConnection",
-    "connection_homset",
 ]

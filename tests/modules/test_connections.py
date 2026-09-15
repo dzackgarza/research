@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.modules import (
     Modules,
     ModulesWithFlatConnection,
     ModulesWithConnection,
-    connection_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.static_types import (
@@ -67,7 +66,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert structured in ModulesWithConnection(algebra)
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()
-    horizontal_maps = connection_homset(structured, structured)
+    horizontal_maps = structured.Mor(structured)
     module_morphisms = Modules(algebra).Mor(structured, structured)
     identity = horizontal_maps.identity()
     assert not isinstance(horizontal_maps, Homset)
@@ -90,7 +89,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     )
     other = ModuleWithConnection(nonzero)
     with pytest.raises(ValueError, match="not horizontal"):
-        connection_homset(structured, other)(
+        structured.Mor(other)(
             {"e": other.module_generator("e")}
         )
 

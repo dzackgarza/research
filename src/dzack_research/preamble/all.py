@@ -808,7 +808,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     VectorSpaces,
     VolumeTrivialization,
     biproduct_morphism,
-    connection_homset,
     divided_square_morphism,
     fibered_formed_module_homset,
     form_embedding,
