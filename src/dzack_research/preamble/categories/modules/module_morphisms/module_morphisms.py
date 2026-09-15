@@ -1117,6 +1117,38 @@ class ModuleMorphism(Morphism):
 
         return _ext_map(self, other, degree=degree, argument=argument, lift=lift)
 
+    def divided_square(self):
+        r"""Return ``Gamma^2(self)`` on the divided squares of the endpoints."""
+        from dzack_research.preamble.categories.modules.powers import (
+            _divided_square_morphism,
+        )
+
+        return _divided_square_morphism(self)
+
+    def symmetric_power(self, degree):
+        r"""Return ``Sym^degree(self)``."""
+        from dzack_research.preamble.categories.modules.powers import (
+            _symmetric_power_morphism,
+        )
+
+        return _symmetric_power_morphism(self, degree)
+
+    def exterior_power(self, degree):
+        r"""Return ``Lambda^degree(self)``."""
+        from dzack_research.preamble.categories.modules.powers import (
+            _alternating_power_morphism,
+        )
+
+        return _alternating_power_morphism(self, degree)
+
+    def divided_power(self, degree):
+        r"""Return ``Gamma^degree(self)``."""
+        from dzack_research.preamble.categories.modules.powers import (
+            _divided_power_morphism,
+        )
+
+        return _divided_power_morphism(self, degree)
+
     def base_change(self, ring_map):
         r"""Extend this represented linear map along ``ring_map : R -> S``."""
         ring = self.domain().base_ring()

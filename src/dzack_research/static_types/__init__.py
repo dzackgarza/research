@@ -826,9 +826,7 @@ def wedge_exterior(module, left_degree, left, right_degree, right):
 
 def exterior_power_morphism(morphism, degree):
     """Apply the live exterior-power functor to a module morphism."""
-    from dzack_research.preamble.categories.modules import alternating_power_morphism
-
-    return alternating_power_morphism(morphism, int(degree))
+    return morphism.exterior_power(int(degree))
 
 
 def embed_exterior_form(de_rham, degree, exterior_element):

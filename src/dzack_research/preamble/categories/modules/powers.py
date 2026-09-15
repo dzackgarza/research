@@ -276,7 +276,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
     def pullback(self, morphism):
         if morphism.codomain() is not self.module():
             raise ValueError("the pullback map must land in the form's module")
-        induced = divided_square_morphism(morphism)
+        induced = morphism.divided_square()
         result = self * induced
         values = self.__dict__.get("_preamble_quadratic_lift_coordinate_values")
         if values is not None:
@@ -720,16 +720,10 @@ def _divided_square(module):
     )
 
 
-def divided_square_morphism(morphism, source=None, target=None):
+def _divided_square_morphism(morphism):
     r"""Return ``Gamma^2(f)`` for a module morphism ``f``."""
-    if source is None:
-        source = morphism.domain().divided_square()
-    if target is None:
-        target = morphism.codomain().divided_square()
-    if source.divided_square_source() is not morphism.domain():
-        raise ValueError("the source divided square has the wrong module")
-    if target.divided_square_source() is not morphism.codomain():
-        raise ValueError("the target divided square has the wrong module")
+    source = morphism.domain().divided_square()
+    target = morphism.codomain().divided_square()
     return source.from_quadratic(
         lambda element: target.quadratic(morphism(element)),
         target,
@@ -992,18 +986,18 @@ def _power_morphism(morphism, degree: int, flavor: str):
     return source.module_category().Mor(source, target)(image_of_source_label)
 
 
-def symmetric_power_morphism(morphism, degree):
+def _symmetric_power_morphism(morphism, degree):
     return _power_morphism(morphism, degree, "symmetric")
 
 
-def alternating_power_morphism(morphism, degree):
+def _alternating_power_morphism(morphism, degree):
     return _power_morphism(morphism, degree, "alternating")
 
 
-def divided_power_morphism(morphism, degree):
+def _divided_power_morphism(morphism, degree):
     degree = _degree(degree)
     if degree == 2:
-        return divided_square_morphism(morphism)
+        return morphism.divided_square()
     return _power_morphism(morphism, degree, "divided")
 
 
@@ -1258,14 +1252,11 @@ __all__ = [
     "DividedPowerModules",
     "SymmetricPowerModules",
     "TensorPowerModules",
-    "alternating_power_morphism",
     "alternating_power_product",
     "divided_power_element",
     "divided_power_invariant_inclusion",
-    "divided_power_morphism",
     "divided_power_product",
     "divided_square_invariant_inclusion",
-    "symmetric_power_morphism",
     "tensor_power_permutation",
     "tensor_power_polarization",
     "tensor_square_polarization",

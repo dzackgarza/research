@@ -28,10 +28,8 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    alternating_power_morphism,
     alternating_power_product,
     divided_power_element,
-    divided_power_morphism,
     divided_power_product,
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
@@ -270,9 +268,13 @@ class PowerAlgebraMorphism(Morphism):
         if element.parent() is not self.domain():
             element = self.domain()(element)
         result = self.codomain().zero()
-        power_map = alternating_power_morphism if self.domain().flavor() == "alternating" else divided_power_morphism
+        degree_one_map = self.degree_one_map()
         for degree, component in element.homogeneous_components().items():
-            mapped = power_map(self.degree_one_map(), degree)(component)
+            match self.domain().flavor():
+                case "alternating":
+                    mapped = degree_one_map.exterior_power(degree)(component)
+                case "divided":
+                    mapped = degree_one_map.divided_power(degree)(component)
             result += self.codomain()._from_component(degree, mapped)
         return result
 

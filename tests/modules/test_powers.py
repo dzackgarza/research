@@ -7,8 +7,6 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     FinitelyPresentedTorsionModules,
     divided_power_invariant_inclusion,
-    divided_power_morphism,
-    symmetric_power_morphism,
     tensor_power_permutation,
     tensor_power_polarization,
 )
@@ -84,17 +82,17 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
     shear = module.module_category().Mor(module, module)({"x": x + y, "y": y})
     scale = module.module_category().Mor(module, module)({"x": 2 * x, "y": 3 * y})
 
-    for degree, power_morphism in (
-        (2, symmetric_power_morphism),
-        (3, symmetric_power_morphism),
-        (2, divided_power_morphism),
-        (3, divided_power_morphism),
+    for induced_power in (
+        lambda morphism: morphism.symmetric_power(2),
+        lambda morphism: morphism.symmetric_power(3),
+        lambda morphism: morphism.divided_power(2),
+        lambda morphism: morphism.divided_power(3),
     ):
-        composite = power_morphism(scale * shear, degree)
-        stepwise = power_morphism(scale, degree) * power_morphism(shear, degree)
+        composite = induced_power(scale * shear)
+        stepwise = induced_power(scale) * induced_power(shear)
         _assert_maps_agree(composite, stepwise)
 
-        identity = power_morphism(module.module_category().Mor(module, module).identity(), degree)
+        identity = induced_power(module.module_category().Mor(module, module).identity())
         identity_domain = identity.domain()
         identity_codomain = identity.codomain()
         _assert_maps_agree(

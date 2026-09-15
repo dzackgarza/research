@@ -18,9 +18,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.powers import (
-    divided_square_morphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, FinitelyPresentedModules, Modules
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -162,11 +159,7 @@ class FreeQuadraticFormFunctor(Functor):
             * morphism
             * source.forget_form_morphism()
         )
-        value_map = divided_square_morphism(
-            morphism,
-            source=source.value_module(),
-            target=target.value_module(),
-        )
+        value_map = morphism.divided_square()
         return source.Mor(target)((module_map, value_map))
 
 

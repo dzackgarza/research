@@ -4,9 +4,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import (
-    alternating_power_morphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -266,8 +263,8 @@ def _hodge_star(metric, volume, degree):
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
     correlation = metric.correlation_isomorphism()
     poincare = metric.poincare_duality(volume, degree)
-    raise_metric = alternating_power_morphism(correlation.inverse(), degree)
-    lower_metric = alternating_power_morphism(correlation.forward(), degree)
+    raise_metric = correlation.inverse().exterior_power(degree)
+    lower_metric = correlation.forward().exterior_power(degree)
     forward = poincare.forward() * raise_metric
     inverse = lower_metric * poincare.inverse()
     result = Isomorphism(forward, inverse)
@@ -292,7 +289,7 @@ def _multivector_hodge_star(metric, volume, degree):
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
     correlation = metric.algebraic_correlation_morphism()
     poincare_complement = metric.poincare_duality(volume, rank - degree)
-    lower_metric = alternating_power_morphism(correlation, degree)
+    lower_metric = correlation.exterior_power(degree)
     forward = poincare_complement.inverse() * lower_metric
     source = metric.exterior_power(degree)
     target = metric.exterior_power(rank - degree)
