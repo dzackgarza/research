@@ -65,7 +65,7 @@ from sage.functions.hyperbolic import cosh, sech, sinh, tanh
 from sage.functions.log import exp
 from sage.functions.other import abs_symbolic
 from sage.functions.trig import arctan, cos, sin
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
@@ -405,6 +405,29 @@ class FunctionModules(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         return [Modules(self.base_ring())]
 
+    @cached_method
+    def of(self, kind: str, domain_name: str) -> Parent:
+        r"""Return the represented function module of ``kind`` on ``domain_name``.
+
+        The category already owns both the scalar ring and the construction
+        contract.  Keeping the cache here also preserves the mathematical
+        identity of the represented module: repeated requests for the same
+        kind and domain return the same parent.
+        """
+        return _object_of(
+            self,
+            kind=kind,
+            domain_name=domain_name,
+        )
+
+    def smooth(self, domain_name: str = _THE_REAL_LINE) -> Parent:
+        r"""Return ``C^infty`` on the named domain in this scalar category."""
+        return self.of(_SMOOTH, domain_name)
+
+    def square_integrable(self, domain_name: str = _THE_REAL_LINE) -> Parent:
+        r"""Return ``L^2`` on the named domain in this scalar category."""
+        return self.of(_SQUARE_INTEGRABLE, domain_name)
+
     class ParentMethods:
         r"""One module of functions: the kind, and the domain they live on."""
 
@@ -506,29 +529,3 @@ class FunctionModules(OwnedCategoryOverBaseRing):
 
         def _repr_(self: Self) -> str:
             return f"function in {self.parent()}"
-
-
-@cached_function
-def FunctionModule(base_ring: Ring, kind: str, domain_name: str) -> Parent:
-    r"""Return the $R$-module of functions of a stated kind on a stated domain.
-
-    Cached on its arguments: one module per $(R,\text{kind},\text{domain})$, or
-    two parents print alike and their elements refuse to add.
-    """
-    return _object_of(
-        FunctionModules(base_ring),
-        kind=kind,
-        domain_name=domain_name,
-    )
-
-
-def smooth_functions(base_ring: Ring, domain_name: str = _THE_REAL_LINE) -> Parent:
-    r"""Return $C^\infty$ on the named domain, as an $R$-module."""
-    return FunctionModule(base_ring, _SMOOTH, domain_name)
-
-
-def square_integrable_functions(
-    base_ring: Ring, domain_name: str = _THE_REAL_LINE
-) -> Parent:
-    r"""Return $L^2$ on the named domain, as an $R$-module."""
-    return FunctionModule(base_ring, _SQUARE_INTEGRABLE, domain_name)
