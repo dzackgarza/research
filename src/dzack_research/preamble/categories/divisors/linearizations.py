@@ -39,7 +39,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 
 
-class ProjectiveLineBundleLinearizationIsomorphism(SageObject):
+class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
     r"""One selected ``lambda_g : g^*L -> L`` in the standard ``O(d)`` model."""
 
     def __init__(self, linearization, group_element) -> None:
@@ -77,7 +77,7 @@ class ProjectiveLineBundleLinearizationIsomorphism(SageObject):
         )
 
 
-class ProjectiveLineBundleLinearization(SageObject):
+class _ProjectiveLineBundleLinearization(SageObject):
     r"""A character-twisted linearization of ``O(d)`` under a projective action."""
 
     def __init__(self, line_bundle, scheme_action_functor, character) -> None:
@@ -157,7 +157,7 @@ class ProjectiveLineBundleLinearization(SageObject):
 
     @cached_method
     def linearization_isomorphism(self, group_element):
-        return ProjectiveLineBundleLinearizationIsomorphism(self, group_element)
+        return _ProjectiveLineBundleLinearizationIsomorphism(self, group_element)
 
     def cocycle_holds(self, left, right) -> bool:
         r"""Check the character part of ``lambda_{gh}=lambda_g o g^*lambda_h``.
@@ -349,7 +349,7 @@ class ProjectiveLineBundleLinearization(SageObject):
 
 
 
-class ProductProjectiveLineBundleLinearization(ProjectiveLineBundleLinearization):
+class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearization):
     r"""A C2 coordinate linearization of ``O(d_1,...,d_r)`` on a projective product.
 
     The scheme action stores the scalar weight of every homogeneous coordinate.
@@ -462,7 +462,7 @@ class ProductProjectiveLineBundleLinearization(ProjectiveLineBundleLinearization
         id(OwnedGroups().C(2) if group is None else group),
     )
 )
-def C2DiagonalProductProjectiveAction(projective_product, group=None):
+def _c2_diagonal_product_projective_action(projective_product, group=None):
     r"""Return the diagonal sign action ``[x0:x1] |-> [x0:-x1]`` on every P1 factor."""
     base = projective_product.scheme_base_ring()
     factors = projective_product.factors()
@@ -543,23 +543,9 @@ def C2DiagonalProductProjectiveAction(projective_product, group=None):
     return action
 
 
-def C2ProductProjectiveLinearization(line_bundle, twist=1):
-    r"""Linearize a multiprojective ``O(d_1,...,d_r)`` for the diagonal sign action."""
-    base = line_bundle.projective_product().scheme_base_ring()
-    group = OwnedGroups().C(2)
-    scalar = base(twist)
-    if scalar not in (base.one(), -base.one()):
-        raise ValueError("a C2 character twist is +1 or -1")
-    action = C2DiagonalProductProjectiveAction(line_bundle.projective_product(), group)
-    return ProductProjectiveLineBundleLinearization(
-        line_bundle,
-        action,
-        lambda element: base.one() if element == group.one() else scalar,
-    )
-
 
 @cached_function(key=lambda projective_line, group=None: (id(projective_line), id(OwnedGroups().C(2) if group is None else group)))
-def ProjectiveLineCoordinateSwapAction(projective_line, group=None):
+def _projective_line_coordinate_swap_action(projective_line, group=None):
     r"""Return the ``C2`` action on ``P^1`` interchanging its two coordinates."""
     base = projective_line.scheme_base_ring()
     if int(projective_line.relative_dimension()) != 1:
@@ -589,30 +575,5 @@ def ProjectiveLineCoordinateSwapAction(projective_line, group=None):
     )
 
 
-def C2ProjectiveLineLinearization(line_bundle, twist=1):
-    r"""Linearize ``O(d)`` for coordinate swap, twisted by the trivial/sign character."""
-    base = line_bundle.projective_space().scheme_base_ring()
-    group = OwnedGroups().C(2)
-    scalar = base(twist)
-    if scalar not in (base.one(), -base.one()):
-        raise ValueError("a C2 character twist is +1 or -1")
-    action = ProjectiveLineCoordinateSwapAction(
-        line_bundle.projective_space(),
-        group,
-    )
-    return ProjectiveLineBundleLinearization(
-        line_bundle,
-        action,
-        lambda group_element: base.one() if group_element == group.one() else scalar,
-    )
 
-
-__all__ = [
-    "C2DiagonalProductProjectiveAction",
-    "C2ProductProjectiveLinearization",
-    "C2ProjectiveLineLinearization",
-    "ProductProjectiveLineBundleLinearization",
-    "ProjectiveLineBundleLinearization",
-    "ProjectiveLineBundleLinearizationIsomorphism",
-    "ProjectiveLineCoordinateSwapAction",
-]
+__all__ = []

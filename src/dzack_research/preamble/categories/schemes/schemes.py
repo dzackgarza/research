@@ -2303,6 +2303,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         return _placed_over_stated_base(candidate, self, ProjectiveSpaces)
 
     class ParentMethods:
+        def coordinate_swap_action(self, group=None):
+            r"""Return the C2 action interchanging the two coordinates of this projective line."""
+            from dzack_research.preamble.categories.divisors.linearizations import (
+                _projective_line_coordinate_swap_action,
+            )
+
+            return _projective_line_coordinate_swap_action(self, group)
+
         @cached_method
         def fan(self):
             r"""Return the owned standard fan of ``P^n``."""
@@ -2759,6 +2767,14 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
         return _placed_over_stated_base(candidate, self, ProductProjectiveSpaces)
 
     class ParentMethods:
+        def c2_diagonal_sign_action(self, group=None):
+            r"""Return the diagonal sign action on every projective-line factor."""
+            from dzack_research.preamble.categories.divisors.linearizations import (
+                _c2_diagonal_product_projective_action,
+            )
+
+            return _c2_diagonal_product_projective_action(self, group)
+
         @cached_method
         def standard_affine_atlas(self):
             r"""Return the product of the factors' standard affine atlases."""

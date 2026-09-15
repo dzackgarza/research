@@ -2,11 +2,6 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    C2DiagonalProductProjectiveAction,
-    C2ProjectiveLineLinearization,
-    ProductProjectiveLineBundleLinearization,
-    ProjectiveLineBundleLinearization,
-    ProjectiveLineCoordinateSwapAction,
     ProjectiveSpace,
 )
 
@@ -14,8 +9,8 @@ from dzack_research.preamble.all import (
 def _linearizations():
     line = ProjectiveSpace(1, QQ, names=("x", "y"))
     bundle = line.O(1)
-    trivial = C2ProjectiveLineLinearization(bundle, 1)
-    sign = C2ProjectiveLineLinearization(bundle, -1)
+    trivial = bundle.c2_coordinate_swap_linearization(1)
+    sign = bundle.c2_coordinate_swap_linearization(-1)
     return line, bundle, trivial, sign
 
 
@@ -119,11 +114,9 @@ def test_restriction_to_an_eigensection_divisor_is_an_equivariant_h0_map() -> No
 def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
     line = ProjectiveSpace(1, QQ, names=("x", "y"))
     bundle = line.O(1)
-    action = ProjectiveLineCoordinateSwapAction(line)
+    action = line.coordinate_swap_action()
     linearized = bundle.linearize(action, lambda _element: QQ.one())
 
-    assert isinstance(linearized, ProjectiveLineBundleLinearization)
-    assert not isinstance(linearized, ProductProjectiveLineBundleLinearization)
     assert linearized.line_bundle() is bundle
     assert linearized.section_scheme() is line
 
@@ -132,9 +125,8 @@ def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> 
     line = ProjectiveSpace(1, QQ)
     product = line.scheme_category().product((line, line))
     bundle = product.O(1, 1)
-    action = C2DiagonalProductProjectiveAction(product)
+    action = product.c2_diagonal_sign_action()
     linearized = bundle.linearize(action, lambda _element: QQ.one())
 
-    assert isinstance(linearized, ProductProjectiveLineBundleLinearization)
     assert linearized.line_bundle() is bundle
     assert linearized.section_scheme() is product

@@ -624,14 +624,37 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
-            ProjectiveLineBundleLinearization,
+            _ProjectiveLineBundleLinearization,
         )
 
-        return ProjectiveLineBundleLinearization(
+        return _ProjectiveLineBundleLinearization(
             self,
             scheme_action_functor,
             character,
         )
+
+    def c2_coordinate_swap_linearization(self, twist=1):
+        r"""Linearize this ``O(d)`` for coordinate swap with the selected C2 character."""
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        base = self.projective_space().scheme_base_ring()
+        group = OwnedGroups().C(2)
+        scalar = base(twist)
+        match scalar in (base.one(), -base.one()):
+            case False:
+                raise ValueError("a C2 character twist is +1 or -1")
+            case True:
+                pass
+        action = self.projective_space().coordinate_swap_action(group)
+
+        def character(element):
+            match group(element) == group.one():
+                case True:
+                    return base.one()
+                case False:
+                    return scalar
+
+        return self.linearize(action, character)
 
     def linear_system(self, sections=None):
         from dzack_research.preamble.categories.divisors.linear_systems import (
@@ -1052,14 +1075,37 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
-            ProductProjectiveLineBundleLinearization,
+            _ProductProjectiveLineBundleLinearization,
         )
 
-        return ProductProjectiveLineBundleLinearization(
+        return _ProductProjectiveLineBundleLinearization(
             self,
             scheme_action_functor,
             character,
         )
+
+    def c2_diagonal_sign_linearization(self, twist=1):
+        r"""Linearize this multidegree for the diagonal sign action and selected C2 character."""
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        base = self.projective_product().scheme_base_ring()
+        group = OwnedGroups().C(2)
+        scalar = base(twist)
+        match scalar in (base.one(), -base.one()):
+            case False:
+                raise ValueError("a C2 character twist is +1 or -1")
+            case True:
+                pass
+        action = self.projective_product().c2_diagonal_sign_action(group)
+
+        def character(element):
+            match group(element) == group.one():
+                case True:
+                    return base.one()
+                case False:
+                    return scalar
+
+        return self.linearize(action, character)
 
     def homogeneous_polynomial_sections(self):
         return self.global_sections()

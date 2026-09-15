@@ -37,10 +37,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
-from dzack_research.preamble.categories.divisors.linearizations import (
-    C2DiagonalProductProjectiveAction,
-    ProductProjectiveLineBundleLinearization,
-)
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -78,23 +74,20 @@ class HorikawaK3Family(SageObject):
         cover_line_bundle = surface.O(2, 2)
         branch_line_bundle = cover_line_bundle.tensor_power(2)
         group = OwnedGroups().C(2)
-        action = C2DiagonalProductProjectiveAction(surface, group)
+        action = surface.c2_diagonal_sign_action(group)
         trivial = lambda element: base.one()
         sign = lambda element: (
             base.one() if group(element) == group.one() else -base.one()
         )
-        branch_linearization = ProductProjectiveLineBundleLinearization(
-            branch_line_bundle,
+        branch_linearization = branch_line_bundle.linearize(
             action,
             trivial,
         )
-        nikulin_linearization = ProductProjectiveLineBundleLinearization(
-            cover_line_bundle,
+        nikulin_linearization = cover_line_bundle.linearize(
             action,
             trivial,
         )
-        enriques_linearization = ProductProjectiveLineBundleLinearization(
-            cover_line_bundle,
+        enriques_linearization = cover_line_bundle.linearize(
             action,
             sign,
         )
@@ -363,9 +356,7 @@ class HorikawaK3BaseChangeComparison(SageObject):
         changed_line = cyclic_comparison.changed_line_bundle()
         changed_surface = changed_line.projective_product()
         group = source.family().acting_group()
-        changed_action = C2DiagonalProductProjectiveAction(
-            changed_surface, group
-        )
+        changed_action = changed_surface.c2_diagonal_sign_action(group)
         target_base = _own_ring(ring_map.codomain())
         trivial = lambda _element: target_base.one()
         sign = lambda element: (
@@ -373,13 +364,11 @@ class HorikawaK3BaseChangeComparison(SageObject):
             if group(element) == group.one()
             else -target_base.one()
         )
-        changed_nikulin_linearization = ProductProjectiveLineBundleLinearization(
-            changed_line,
+        changed_nikulin_linearization = changed_line.linearize(
             changed_action,
             trivial,
         )
-        changed_enriques_linearization = ProductProjectiveLineBundleLinearization(
-            changed_line,
+        changed_enriques_linearization = changed_line.linearize(
             changed_action,
             sign,
         )
