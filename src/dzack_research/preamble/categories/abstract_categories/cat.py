@@ -302,6 +302,12 @@ class Cat(CategoryPacketMethods, Category):
         Iso = CategoryPacketMethods.Iso
         Aut = CategoryPacketMethods.Aut
 
+        def inclusion_into(self, supercategory: Category):
+            r"""Return the canonical inclusion functor into a declared supercategory."""
+            from dzack_research.preamble.categories.functors.core import _CategoryInclusionFunctor
+
+            return _CategoryInclusionFunctor(self, supercategory)
+
         @property
         def ObjectType(self) -> type[Parent]:
             r"""Return the complete implementation type for objects of this category."""
@@ -876,7 +882,7 @@ class FunctorCategory(FixedHomCategory):
     Unverified construction specimens: all Cat Hom entrances select one
     category, whose morphisms are actual natural transformations::
 
-        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, NaturalTransformations
+        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         sage: from dzack_research.preamble.categories.abstract_categories.hom_categories import category_packet
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: points = finite_ordered_set(("a", "b"))
@@ -892,7 +898,7 @@ class FunctorCategory(FixedHomCategory):
         sage: hom.arrow_set() is cat.functor_homset(category, category)
         True
         sage: identity = IdentityFunctor(category)
-        sage: transformations = NaturalTransformations(identity, identity)
+        sage: transformations = identity.natural_transformations_to(identity)
         sage: transformations is hom.Mor(hom(identity), hom(identity))
         True
         sage: transformations is hom.arrow_set().two_hom(identity, identity)

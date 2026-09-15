@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     abelianization_adjunction,
     alternating_algebra_functor,
     base_change_adjunction,
-    category_inclusion,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
     module_homset,
@@ -457,11 +456,11 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
     from dzack_research.preamble.all import BilinearForm, Lattices
 
     formed = BilinearForm(lattice, ZZ, [[0, 1], [1, 0]])
-    forget_form = category_inclusion(FormModules(ZZ), Modules(ZZ))
+    forget_form = FormModules(ZZ).inclusion_into(Modules(ZZ))
     assert forget_form(formed) is formed
 
     hyperbolic = Lattices(ZZ)("U")
-    forget_lattice = category_inclusion(Lattices(ZZ), Modules(ZZ))
+    forget_lattice = Lattices(ZZ).inclusion_into(Modules(ZZ))
     assert forget_lattice(hyperbolic) is hyperbolic
 
 

@@ -98,6 +98,17 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "predicate_subgroup",
         "DeRhamAlgebra",
         "KahlerDifferentials",
+        "NaturalTransformations",
+        "NaturalIsomorphism",
+        "compose_functors",
+        "category_inclusion",
+        "induced_hom_functor",
+        "induced_end_functor",
+        "induced_aut_functor",
+        "CategoryInclusionFunctor",
+        "InducedHomFunctor",
+        "InducedEndFunctor",
+        "InducedAutFunctor",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)

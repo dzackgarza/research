@@ -17,11 +17,6 @@ from dzack_research.preamble.all import (
     set_injection,
     set_surjection,
 )
-from dzack_research.preamble.categories.functors.hom_packets import (
-    induced_aut_functor,
-    induced_end_functor,
-    induced_hom_functor,
-)
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
 ARCHIVE_RECONCILIATION = {
@@ -142,17 +137,17 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     forget = algebra_underlying_module_functor(QQ)
 
     hom_source = Algebras(QQ).Mor(algebra, algebra)(identity)
-    hom_image = induced_hom_functor(forget, algebra, algebra)(hom_source)
+    hom_image = forget.induced_hom_functor(algebra, algebra)(hom_source)
     assert hom_image.parent() is Modules(QQ).Mor(forget(algebra), forget(algebra))
     assert hom_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
     end_source = Algebras(QQ).End(algebra)(identity)
-    end_image = induced_end_functor(forget, algebra)(end_source)
+    end_image = forget.induced_end_functor(algebra)(end_source)
     assert end_image.parent() is Modules(QQ).End(forget(algebra))
     assert end_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
     aut_source = Algebras(QQ).Aut(algebra)(isomorphism)
-    aut_image = induced_aut_functor(forget, algebra)(aut_source)
+    aut_image = forget.induced_aut_functor(algebra)(aut_source)
     assert aut_image.parent() is Modules(QQ).Aut(forget(algebra))
     assert aut_image.forward().domain() is forget(algebra)
     assert aut_image.forward().codomain() is forget(algebra)

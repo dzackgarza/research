@@ -216,9 +216,59 @@ class Functor(SageObject):
     def __call__(self, value: Parent | Map) -> Parent | Map:
         return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
 
-    def then(self, other: Functor) -> CompositeFunctor:
-        r"""Return ``other ∘ self``."""
+    def then(self, other: Functor) -> Functor:
+        r"""Return ``other ∘ self``, retaining the nonidentity factor when possible."""
+        if isinstance(self, IdentityFunctor):
+            return other
+        if isinstance(other, IdentityFunctor):
+            return self
         return CompositeFunctor(self, other)
+
+    def functor_category(self):
+        r"""Return the represented functor category containing this functor."""
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Mor(self.domain(), self.codomain())
+
+    def natural_transformations_to(self, target: Functor):
+        r"""Return the Hom of natural transformations ``self ⇒ target``."""
+        if self.domain() != target.domain() or self.codomain() != target.codomain():
+            raise ValueError("natural transformations require parallel functors")
+        category = self.functor_category()
+        return category.Mor(self, target)
+
+    def natural_isomorphism_to(
+        self,
+        target: Functor,
+        components: Callable[[Parent], Morphism],
+        inverse_components: Callable[[Parent], Morphism],
+    ):
+        r"""Return the selected natural isomorphism ``self ≅ target``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+
+        forward = self.natural_transformations_to(target)(components)
+        inverse = target.natural_transformations_to(self)(inverse_components)
+        return _isomorphism_from_known_inverse_pair(forward, inverse)
+
+    def induced_hom_functor(self, domain_object: Parent, codomain_object: Parent):
+        r"""Return the functor induced by this functor on one Hom category."""
+        from dzack_research.preamble.categories.functors.hom_packets import _InducedHomFunctor
+
+        return _InducedHomFunctor(self, domain_object, codomain_object)
+
+    def induced_end_functor(self, obj: Parent):
+        r"""Return the functor induced by this functor on ``End(obj)``."""
+        from dzack_research.preamble.categories.functors.hom_packets import _InducedEndFunctor
+
+        return _InducedEndFunctor(self, obj)
+
+    def induced_aut_functor(self, obj: Parent):
+        r"""Return the functor induced by this functor on ``Aut(obj)``."""
+        from dzack_research.preamble.categories.functors.hom_packets import _InducedAutFunctor
+
+        return _InducedAutFunctor(self, obj)
 
     def factors(self) -> tuple[Functor, ...]:
         return (self,)
@@ -253,7 +303,7 @@ class IdentityFunctor(Functor):
         return f"Identity functor of {self.domain()}"
 
 
-class CategoryInclusionFunctor(Functor):
+class _CategoryInclusionFunctor(Functor):
     r"""The canonical functor along a declared subcategory inclusion.
 
     If ``C`` is a subcategory of ``D``, every object and morphism of ``C`` is
@@ -282,13 +332,6 @@ class CategoryInclusionFunctor(Functor):
     def _repr_(self):
         return f"Inclusion {self.domain()} -> {self.codomain()}"
 
-
-def category_inclusion(
-    subcategory: Category,
-    supercategory: Category,
-) -> CategoryInclusionFunctor:
-    r"""Return the canonical functor attached to ``subcategory <= supercategory``."""
-    return CategoryInclusionFunctor(subcategory, supercategory)
 
 
 class CompositeFunctor(Functor):

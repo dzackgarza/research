@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
-    category_inclusion,
 )
 from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
@@ -77,10 +76,9 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
         de_rham = de_rham_functor(self._base_ring)
-        forget_to_complex = category_inclusion(
-            StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
-            CochainComplexes(self._base_ring),
-        )
+        forget_to_complex = StrictlyCommutativeDifferentialGradedAlgebras(
+            self._base_ring
+        ).inclusion_into(CochainComplexes(self._base_ring))
         de_rham_complex = CompositeFunctor(de_rham, forget_to_complex)
         super().__init__(
             de_rham_complex,

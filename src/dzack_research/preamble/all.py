@@ -92,10 +92,7 @@ from dzack_research.preamble.categories.abstract_categories.functors import (  #
     DiscreteDiagram,
     DiscreteFunctor,
     DomainFunctor,
-    NaturalIsomorphism,
-    NaturalTransformations,
     ObjectSetFunctor,
-    compose_functors,
 )
 from dzack_research.preamble.categories.algebras import (  # noqa: F401
     AlgebraHomset,
@@ -360,9 +357,6 @@ from dzack_research.preamble.categories.functors.core import (
     Adjunction as Adjunction,
 )
 from dzack_research.preamble.categories.functors.core import (
-    CategoryInclusionFunctor as CategoryInclusionFunctor,
-)
-from dzack_research.preamble.categories.functors.core import (
     CompositeAdjunction as CompositeAdjunction,
 )
 from dzack_research.preamble.categories.functors.core import (
@@ -376,9 +370,6 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
-)
-from dzack_research.preamble.categories.functors.core import (
-    category_inclusion as category_inclusion,
 )
 from dzack_research.preamble.categories.functors.core import (
     compose_adjunctions as compose_adjunctions,
@@ -520,24 +511,6 @@ from dzack_research.preamble.categories.functors.group_scalar_change import (
 )
 from dzack_research.preamble.categories.functors.group_scalar_change import (
     group_module_base_change_adjunction as group_module_base_change_adjunction,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    InducedAutFunctor as InducedAutFunctor,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    InducedEndFunctor as InducedEndFunctor,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    InducedHomFunctor as InducedHomFunctor,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    induced_aut_functor as induced_aut_functor,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    induced_end_functor as induced_end_functor,
-)
-from dzack_research.preamble.categories.functors.hom_packets import (
-    induced_hom_functor as induced_hom_functor,
 )
 from dzack_research.preamble.categories.functors.linear_constructions import (
     BiproductBifunctor as BiproductBifunctor,

@@ -24,12 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
-    Functor,
-    IdentityFunctor,
-    NaturalTransformation,
-)
+from dzack_research.preamble.categories.functors.core import CompositeFunctor, Functor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -459,54 +454,9 @@ class ConstantDiagram(Functor):
         return _category_homset(self.codomain(), value, value).identity()
 
 
-def compose_functors(second: Functor, first: Functor) -> Functor:
-    r"""Return ``second ∘ first`` in the current functor core."""
-    if first.codomain() != second.domain():
-        raise ValueError("functors compose only when their middle category agrees")
-    if isinstance(first, IdentityFunctor):
-        return second
-    if isinstance(second, IdentityFunctor):
-        return first
-    return CompositeFunctor(first, second)
-
 
 ComposedFunctor = CompositeFunctor
 
-
-def NaturalTransformations(source: Functor, target: Functor) -> Parent:
-    r"""Return the actual Hom in the functor category."""
-    if source.domain() != target.domain() or source.codomain() != target.codomain():
-        raise ValueError("natural transformations require parallel functors")
-    from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-    category = Cat().Mor(source.domain(), source.codomain())
-    return category.Mor(category(source), category(target))
-
-
-
-def NaturalIsomorphism(
-    source: Functor,
-    target: Functor,
-    components: Callable[[Parent], Morphism],
-    inverse_components: Callable[[Parent], Morphism],
-):
-    r"""Return the isomorphism in ``[C,D]`` selected by inverse components.
-
-    The two supplied component families define inverse natural transformations.
-    Their categorical packaging is therefore an isomorphism between the two
-    functor objects, not a Python pair of transformations.
-    """
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        _isomorphism_from_known_inverse_pair,
-    )
-
-    forward = NaturalTransformations(source, target)(
-        NaturalTransformation(source, target, components)
-    )
-    inverse = NaturalTransformations(target, source)(
-        NaturalTransformation(target, source, inverse_components)
-    )
-    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
 __all__ = [
@@ -518,10 +468,7 @@ __all__ = [
     "DiscreteDiagram",
     "DiscreteFunctor",
     "DomainFunctor",
-    "NaturalIsomorphism",
-    "NaturalTransformations",
     "ObjectSetFunctor",
-    "compose_functors",
     "CartesianProductFunctor",
     "ColimitFunctor",
     "CoproductFunctor",

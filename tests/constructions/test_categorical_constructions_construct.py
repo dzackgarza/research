@@ -206,16 +206,16 @@ def test_identity_and_inclusion_functors() -> None:
     three = Sets.Δ[2]
     assert identity(three) is three
     assert identity(Sets().Mor(three, three).identity()) == Sets().Mor(three, three).identity()
-    inclusion = category_inclusion(Fields(), CommutativeRings())
+    inclusion = Fields().inclusion_into(CommutativeRings())
     assert inclusion(QQ) is QQ
     assert inclusion.domain() is Fields()
     assert inclusion.codomain() is CommutativeRings()
-    assert category_inclusion(AbelianGroups(), Groups())(Groups.C(4)) is Groups.C(4)
+    assert AbelianGroups().inclusion_into(Groups())(Groups.C(4)) is Groups.C(4)
 
 
 def test_natural_transformations_between_functors() -> None:
     identity = Sets().identity_functor()
-    transformations = NaturalTransformations(identity, identity)
+    transformations = identity.natural_transformations_to(identity)
     assert transformations in Sets()
     three = Sets.Δ[2]
     unit = transformations.identity()

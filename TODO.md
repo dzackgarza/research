@@ -636,7 +636,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 
 ### Owner API and construction data
 
-- [ ] **`owner-api-convergence`**. **Needs:** `owner-api-functor-operations`.
+- [ ] **`owner-api-convergence`**. **Needs:** none.
   Remove the public/global operation language forbidden by `ARC-12`, `API-07`, `STY-01`--`04`, and `OWN-02`.
   **Observed gap:** `preamble.all` still exports construction verbs such as products, coproducts, tensor products, kernels/cokernels, pushouts, localizations, completions, and quotients as free functions; the audit also found 261 exported owner-in-argument functions across 107 files.
   **Owners:** the actual category/object/morphism/Hom/functor that determines each operation; `preamble.all` is only the session aggregator and must not become a second operation registry.
@@ -645,12 +645,6 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** a source/export audit finds no free-standing public operation whose owner is already supplied as an argument; `from dzack_research.preamble.all import *` exposes mathematical objects/categories and deliberate session vocabulary but not a duplicate operation catalogue; the negative test surface needed by `ownership-test-contract` can distinguish the removed route.
 
 
-- [ ] **`owner-api-functor-operations`**. **Needs:** none.
-  Converge the remaining free-standing operations whose owner is a functor or functor category.
-  **Observed current residue:** `compose_functors(second, first)`, `NaturalTransformations(source, target)`, `NaturalIsomorphism(source, target, ...)`, `category_inclusion(subcategory, supercategory)`, and `induced_hom_functor`/`induced_end_functor`/`induced_aut_functor` remain public globals after the earlier broad owner migration.
-  **Owners:** `Functor.then`, the represented functor category `[C,D]` and its `Mor`, the source category's inclusion into a declared supercategory, and the base functor that induces Hom/End/Aut transport.
-  **Deliver:** expose any missing owner methods exactly once, migrate source/tests/static projections to them, delete the public wrapper functions and session exports, and keep the existing `CategoryInclusionFunctor`/`Induced*Functor` objects only as the represented result types where useful.
-  **Acceptance:** no public global in this cluster accepts its owner functor/category in argument position; composition, natural-transformation Hom selection, a nontrivial natural isomorphism, category inclusion, and nonidentity Hom/End/Aut transport remain expressible through their owners.  Bank the behavioral specimens unexecuted for `terminal-session`.
 - [ ] **`framing-primary-epi`**. **Needs:** none.
   Rebuild framed-module construction around the selected epimorphism `Free_R(S) -> M` as the defining datum required by `CON-11`, `OWN-03`, `ARC-20`, and `STY-152`.
   **Observed gap:** generic framing currently stores a generating set/function and reconstructs `Free_R(S)` and the generator map later when `framing_morphism()` is queried.

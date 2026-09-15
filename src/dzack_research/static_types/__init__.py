@@ -594,26 +594,6 @@ def functor_morphism_image(functor, morphism):
     return functor.on_morphism(morphism)
 
 
-def induced_hom(functor, source, target):
-    """Return the represented Hom functor induced by ``functor``."""
-    from dzack_research.preamble.categories.functors.hom_packets import induced_hom_functor
-
-    return induced_hom_functor(functor, source, target)
-
-
-def induced_end(functor, obj):
-    """Return the represented End functor induced by ``functor``."""
-    from dzack_research.preamble.categories.functors.hom_packets import induced_end_functor
-
-    return induced_end_functor(functor, obj)
-
-
-def induced_aut(functor, obj):
-    """Return the represented Aut functor induced by ``functor``."""
-    from dzack_research.preamble.categories.functors.hom_packets import induced_aut_functor
-
-    return induced_aut_functor(functor, obj)
-
 
 def module_element_of(module, value):
     """Typed identity view anchored by one already-typed module parent."""
@@ -1339,9 +1319,6 @@ __all__ = [
     "interior_operator",
     "identity_automorphism",
     "identity_endomorphism",
-    "induced_aut",
-    "induced_end",
-    "induced_hom",
     "inverse_automorphism",
     "iso_object_view",
     "isomorphism_view",
