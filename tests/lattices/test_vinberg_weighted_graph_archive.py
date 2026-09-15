@@ -5,8 +5,8 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.vinberg_invariants import (
+    ProjectiveWeightedGraphs,
     VinbergInvariantMatrices,
-    projective_weighted_graph,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -45,8 +45,7 @@ def test_symmetric_weighted_graph_round_trips_to_its_vinberg_invariants() -> Non
 
 def test_asymmetric_projective_graph_is_not_silently_read_as_a_vinberg_matrix() -> None:
     integers = _own_ring(SageZZ)
-    graph = projective_weighted_graph(
-        integers,
+    graph = ProjectiveWeightedGraphs(integers).from_weights(
         ("a", "b"),
         {("a", "b"): (integers.one(), integers.one())},
         directed=True,

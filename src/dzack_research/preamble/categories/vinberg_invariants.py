@@ -74,6 +74,56 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Sets()]
 
+    def from_weights(
+        self,
+        vertices,
+        edge_weights,
+        *,
+        vertex_weights=None,
+        directed=False,
+        symmetric=False,
+    ):
+        r"""Return the represented projectively weighted graph on ``vertices``."""
+        base_ring = self.base_ring()
+        vertices = finite_ordered_set(vertices)
+        projective_line = _projective_line_over(base_ring)
+        normalized_edges = {
+            tuple(edge): projective_line(weight)
+            for edge, weight in dict(edge_weights).items()
+        }
+        if any(
+            len(edge) != 2 or edge[0] not in vertices or edge[1] not in vertices
+            for edge in normalized_edges
+        ):
+            raise ValueError("a projectively weighted edge has two endpoints in the vertex set")
+        if vertex_weights is None:
+            normalized_vertices = {
+                vertex: projective_line([1, 1]) for vertex in vertices
+            }
+        else:
+            normalized_vertices = {
+                vertex: projective_line(weight)
+                for vertex, weight in dict(vertex_weights).items()
+            }
+        if set(normalized_vertices) != set(vertices):
+            raise ValueError("a projectively weighted graph requires one vertex weight per vertex")
+        if symmetric:
+            for left, right in normalized_edges:
+                if (right, left) in normalized_edges:
+                    if normalized_edges[left, right] != normalized_edges[right, left]:
+                        raise ValueError(
+                            "a symmetric projective weighting has equal reverse edge weights"
+                        )
+        return object_of(
+            self,
+            base_ring=base_ring,
+            vertices=tuple(vertices),
+            edge_weights=normalized_edges,
+            vertex_weights=normalized_vertices,
+            directed=directed,
+            symmetric=symmetric,
+        )
+
     class ParentMethods:
         def __init__(
             self,
@@ -156,8 +206,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             vertex_weights = {
                 vertex: self.vertex_weight(vertex) for vertex in selected
             }
-            return projective_weighted_graph(
-                self.base_ring(),
+            return ProjectiveWeightedGraphs(self.base_ring()).from_weights(
                 tuple(selected),
                 edge_weights,
                 vertex_weights=vertex_weights,
@@ -217,58 +266,6 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             else:
                 orientation = "graph"
             return f"Projectively weighted {orientation} on {self.cardinality()} vertices"
-
-
-def projective_weighted_graph(
-    base_ring,
-    vertices,
-    edge_weights,
-    *,
-    vertex_weights=None,
-    directed=False,
-    symmetric=False,
-):
-    r"""Return the represented finite projectively weighted graph or digraph."""
-    vertices = finite_ordered_set(vertices)
-    projective_line = _projective_line_over(base_ring)
-    normalized_edges = {
-        tuple(edge): projective_line(weight)
-        for edge, weight in dict(edge_weights).items()
-    }
-    if any(
-        len(edge) != 2 or edge[0] not in vertices or edge[1] not in vertices
-        for edge in normalized_edges
-    ):
-        raise ValueError("a projectively weighted edge has two endpoints in the vertex set")
-    if vertex_weights is None:
-        normalized_vertices = {
-            vertex: projective_line([1, 1]) for vertex in vertices
-        }
-    else:
-        normalized_vertices = {
-            vertex: projective_line(weight)
-            for vertex, weight in dict(vertex_weights).items()
-        }
-    if set(normalized_vertices) != set(vertices):
-        raise ValueError("a projectively weighted graph requires one vertex weight per vertex")
-    if symmetric:
-        for left, right in normalized_edges:
-            if (right, left) in normalized_edges:
-                if normalized_edges[left, right] != normalized_edges[right, left]:
-                    raise ValueError(
-                        "a symmetric projective weighting has equal reverse edge weights"
-                    )
-    return object_of(
-        ProjectiveWeightedGraphs(base_ring),
-        base_ring=base_ring,
-        vertices=tuple(vertices),
-        edge_weights=normalized_edges,
-        vertex_weights=normalized_vertices,
-        directed=directed,
-        symmetric=symmetric,
-    )
-
-
 def _reflection_cosine(index):
     r"""Return \(\cos(\pi/n)\) as an exact algebraic real."""
     index = SageZZ(index)
@@ -499,8 +496,7 @@ class VinbergInvariantMatrices(OwnedCategory):
                     self._numerators[i][i],
                     self._denominators[i][i],
                 )
-            return projective_weighted_graph(
-                self._base_ring,
+            return ProjectiveWeightedGraphs(self._base_ring).from_weights(
                 vertices,
                 edge_weights,
                 vertex_weights=vertex_weights,
@@ -699,6 +695,5 @@ def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators):
 __all__ = [
     "ProjectiveWeightedGraphs",
     "VinbergInvariantMatrices",
-    "projective_weighted_graph",
     "reflection_cosines",
 ]

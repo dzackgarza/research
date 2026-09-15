@@ -23,7 +23,6 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.vinberg_invariants import (
     ProjectiveWeightedGraphs,
-    projective_weighted_graph,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -217,8 +216,7 @@ def test_the_invariant_matrix_restricts_and_draws_its_weighted_graph() -> None:
 
 
 def test_projective_weighted_digraphs_keep_orientation_and_exact_weights() -> None:
-    graph = projective_weighted_graph(
-        ZZ,
+    graph = ProjectiveWeightedGraphs(ZZ).from_weights(
         ("a", "b"),
         {("a", "b"): (2, 3)},
         vertex_weights={"a": (1, 2), "b": (3, 4)},
