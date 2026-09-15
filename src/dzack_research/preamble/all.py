@@ -284,9 +284,6 @@ from dzack_research.preamble.categories.functors.cardinality import (
 from dzack_research.preamble.categories.functors.cochain_complexes import (
     CochainUnderlyingGradedModuleFunctor as CochainUnderlyingGradedModuleFunctor,
 )
-from dzack_research.preamble.categories.functors.cochain_complexes import (
-    cochain_underlying_graded_module_functor as cochain_underlying_graded_module_functor,
-)
 from dzack_research.preamble.categories.functors.cohomology import (
     CohomologyAlgebraFunctor as CohomologyAlgebraFunctor,
 )

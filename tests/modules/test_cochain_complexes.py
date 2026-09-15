@@ -1,7 +1,6 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.functors.cochain_complexes import cochain_underlying_graded_module_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
@@ -108,7 +107,7 @@ def test_cochain_morphisms_are_degree_zero_chain_maps() -> None:
 def test_forgetful_functor_retains_the_same_graded_module() -> None:
     C0 = _rank_one("e")
     complex_ = CochainComplexes(ZZ)({0: C0}, {})
-    forget = cochain_underlying_graded_module_functor(ZZ)
+    forget = CochainComplexes(ZZ).underlying_graded_module()
 
     assert forget(complex_) is complex_
     assert forget.domain() is CochainComplexes(ZZ)

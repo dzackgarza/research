@@ -23,11 +23,10 @@ class CochainUnderlyingGradedModuleFunctor(Functor):
 
 
 @cached_function
-def cochain_underlying_graded_module_functor(base_ring):
+def _cochain_underlying_graded_module_functor(base_ring):
     return CochainUnderlyingGradedModuleFunctor(base_ring)
 
 
 __all__ = [
     "CochainUnderlyingGradedModuleFunctor",
-    "cochain_underlying_graded_module_functor",
 ]

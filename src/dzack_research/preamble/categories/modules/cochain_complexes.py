@@ -112,6 +112,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
     _HomCategory = None
 
+    def underlying_graded_module(self):
+        r"""Return the forgetful functor from cochain complexes to graded modules."""
+        from dzack_research.preamble.categories.functors.cochain_complexes import (
+            _cochain_underlying_graded_module_functor,
+        )
+
+        return _cochain_underlying_graded_module_functor(self.base_ring())
+
     def cohomology(self, degree):
         r"""Return the degree-``degree`` cohomology functor on this category."""
         from dzack_research.preamble.categories.functors.cohomology import (
