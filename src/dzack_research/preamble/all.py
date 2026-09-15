@@ -67,7 +67,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     ProductConeCategory,
     ProductMorphism,
     ProductsOfCategory,
-    Span,
     SpanCategory,
     SubobjectHomset,
     SubobjectMorphism,

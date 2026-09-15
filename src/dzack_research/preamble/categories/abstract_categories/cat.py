@@ -566,10 +566,20 @@ class Cat(CategoryPacketMethods, Category):
             colimit, which it asks this category for.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
-                Span,
+                SpanCategory,
+                _discrete_diagram,
             )
 
-            return Span(left_leg, right_leg)
+            assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
+            legs = (left_leg, right_leg)
+            diagram = _discrete_diagram(
+                (left_leg.codomain(), right_leg.codomain()),
+                target_category=self,
+            )
+            return SpanCategory(diagram).cone(
+                left_leg.domain(),
+                lambda index: legs[int(index.value())],
+            )
 
         def pushout(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
             r"""Return the pushout of the span these two legs form.

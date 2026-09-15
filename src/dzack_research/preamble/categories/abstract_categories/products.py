@@ -1126,30 +1126,6 @@ class SpanCategory(ConeCategory):
             return f"Span {self.left_leg().codomain()} <- {self.apex()} -> {self.right_leg().codomain()}"
 
 
-def Span(left_leg: Morphism, right_leg: Morphism) -> Parent:
-    r"""Return the span the two legs form, as an object.
-
-    The legs share a domain, which is the apex; their codomains are the two
-    feet.
-    """
-    assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
-    legs = (left_leg, right_leg)
-    target = Category.meet(
-        [
-            left_leg.parent().homset_category(),
-            right_leg.parent().homset_category(),
-        ]
-    )
-    diagram = _discrete_diagram(
-        (left_leg.codomain(), right_leg.codomain()),
-        target_category=target,
-    )
-    return SpanCategory(diagram).cone(
-        left_leg.domain(),
-        lambda index: legs[int(index.value())],
-    )
-
-
 class ProductConeCategory(ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
@@ -1602,7 +1578,6 @@ __all__ = [
     "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
-    "Span",
     "SpanCategory",
     "TensorProductCategory",
     "coproduct_cocone_category",

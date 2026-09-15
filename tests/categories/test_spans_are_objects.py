@@ -9,7 +9,6 @@ category for.
 
 from dzack_research.preamble.all import (
     Sets,
-    Span,
     cardinal,
 )
 
@@ -21,7 +20,7 @@ def _two_element_span():
     right_foot = Sets.Δ[2]
     left_leg = Sets().Mor(apex, left_foot)(lambda _value: left_foot(0))
     right_leg = Sets().Mor(apex, right_foot)(lambda _value: right_foot(0))
-    return Span(left_leg, right_leg), apex, left_leg, right_leg
+    return Sets().span(left_leg, right_leg), apex, left_leg, right_leg
 
 
 def test_a_span_holds_its_apex_and_both_legs() -> None:
