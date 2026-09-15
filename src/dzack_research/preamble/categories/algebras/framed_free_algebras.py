@@ -28,20 +28,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-def polynomial_ring(base_ring, names):
-    r"""Return the symmetric algebra using standard polynomial-ring syntax."""
-    if isinstance(names, str):
-        labels = tuple(part.strip() for part in names.split(","))
-    elif isinstance(names, int):
-        labels = tuple(f"x{i}" for i in range(names))
-    else:
-        labels = tuple(names)
-    return _symmetric_algebra_on(base_ring, labels)
-
-
-
 def _has_represented_finite_framing(module) -> bool:
     r"""Return whether the selected framing is finite construction data."""
     ring = module.base_ring()

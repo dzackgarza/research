@@ -48,8 +48,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
  'SymmetricAlgebras': ('dzack_research.preamble.categories.algebras.free_algebras',
                        'SymmetricAlgebras'),
  'TensorAlgebras': ('dzack_research.preamble.categories.algebras.free_algebras', 'TensorAlgebras'),
- 'polynomial_ring': ('dzack_research.preamble.categories.algebras.framed_free_algebras',
-                     'polynomial_ring'),
  'PowerAlgebra': ('dzack_research.preamble.categories.algebras.power_algebras', 'PowerAlgebra'),
  'PowerAlgebraHomset': ('dzack_research.preamble.categories.algebras.power_algebras',
                         'PowerAlgebraHomset'),
@@ -183,7 +181,6 @@ __all__ = ['AugmentedAlgebras',
  'StrictlyGradedCommutativeAlgebras',
  'StrictlyCommutativeDifferentialGradedAlgebras',
  'finite_algebra_generators',
- 'polynomial_ring',
  'refine_algebra',
 ]
 
