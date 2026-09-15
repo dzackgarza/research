@@ -6,8 +6,8 @@ from dzack_research.preamble.categories.algebras import (
     algebra_homset,
 )
 from dzack_research.preamble.categories.functors.cohomology import (
-    de_rham_cohomology_algebra_functor,
     cohomology_functor,
+    de_rham_cohomology_algebra_functor,
     de_rham_cohomology_functor,
 )
 from dzack_research.preamble.categories.modules import (
