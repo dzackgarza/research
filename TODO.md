@@ -620,7 +620,7 @@ Treat the pin as blocked, record it that way against the affected items in the o
   A mathematically incorrect expectation may change only under the exception in `AGENTS.md`, with the correction justified in its commit.
   **Acceptance:** the actual failed proposition is established and the affected downstream construction remains coherent.
 
-- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
+- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
   **Fresh-session invariant:** before this node can close, a fresh live Sage process on the repository's active environment must execute `from dzack_research.preamble.all import *` successfully and expose at least the core `Cat` and `Lattices` entry points.
   Regenerate the preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with the live session; graph node counts are an inventory, not acceptance by themselves.
   Treat a preamble-owned import warning or an import-order-dependent result as a terminal repair, not as harmless startup noise.
@@ -630,9 +630,25 @@ Treat the pin as blocked, record it that way against the affected items in the o
 
 ## Complaint-driven architecture remediation
 
-The 2026-09-15 source audit in [COMPLAINTS.md](COMPLAINTS.md#foundational-mathematics) found twenty systematic violations of the normative architecture.  Those observations are evidence, not an execution plan; this section is the one scheduling surface for repairing them.  Every node below is required source work.  When a node is delivered, remove the corresponding resolved complaint evidence in the same commit rather than appending a status line to the complaint.
+The 2026-09-15 audit in [COMPLAINTS.md](COMPLAINTS.md) found twenty systematic violations of the normative architecture plus two concrete workflow/environment papercuts.  Those observations are evidence, not an execution plan; this section is the one scheduling surface for repairing them.  The foundational nodes below are required source work; the workflow nodes repair prerequisites of that work or its terminal execution.  When a node is delivered, remove the corresponding resolved complaint evidence in the same commit rather than appending a status line to the complaint.
 
 The audit counts are discovery measurements, not acceptance thresholds.  A node closes when the mathematical owner and affected consumers are correct, not when a grep count reaches zero.  Conversely, a broad node must inspect the complete occurrence family named by its complaint before closure; fixing only the representative example is not enough.
+
+### Workflow and execution prerequisites
+
+- [ ] **`agent-memory-entrypoint`**. **Needs:** none.
+  Restore the architectural-context lookup required by `AGENTS.md` before preamble remediation begins.
+  **Observed gap:** the documented `agent-memory search --scope both ...` command is absent from the supported shell even though the project vault exists and remains readable.
+  **Owner:** repository/tooling environment provisioning and the generated agent-memory instruction block in `AGENTS.md`.
+  **Deliver:** make the documented direct command available in the supported shell, or change the generated instruction block to one canonical fallback invocation that is actually available on this host.  Do not make ad-hoc direct vault greps a second supported workflow.
+  **Acceptance:** from the repository shell, the documented command successfully searches both project and global memory for a known project term and returns the project binding without modifying the vault.
+
+- [ ] **`research-sage-runtime`**. **Needs:** `architecture-remediation`.
+  Restore the tracked Sage runtime before terminal execution resumes.
+  **Observed gap:** `.envrc` names a source-checkout launcher that resolves into a stub-source tree and cannot import Sage; source inspection alone therefore cannot close the environment complaint.
+  **Owner:** the tracked `.envrc` runtime contract and the supported static Sage installation for this repository.
+  **Deliver:** select the actual supported Sage executable in `.envrc` (or repair the intended installation at its stable path) without creating another temporary Sage distribution; preserve the repository's intended dependency/runtime semantics rather than treating any Python with a `sage` module as interchangeable.
+  **Acceptance:** after source remediation has closed and terminal execution is authorized, the tracked environment launches Sage, preparses the repository's `.sage` inputs through the normal project route, and a fresh process reaches the `terminal-session` star-import invariant.  This node does not authorize running Sage while `architecture-remediation` remains open.
 
 ### Owner API and construction data
 
@@ -770,7 +786,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
-- [ ] **`architecture-remediation`**. **Needs:** `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `agent-memory-entrypoint`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.
 
