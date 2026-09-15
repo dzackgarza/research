@@ -51,7 +51,7 @@ from dzack_research.preamble.categories._lattice import (
 from dzack_research.preamble.categories._lattice import (
     signature_pairs as signature_pairs,
 )
-from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
+from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
     IsoCategoryConstruction,
@@ -1306,7 +1306,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             except ValueError:
                 return None
 
-            return DirectSumDecomposition(self, factors)
+            return DirectSumObjects().verify_decomposition(self, factors)
 
         def is_decomposable(self):
             return self.decomposition() is not None

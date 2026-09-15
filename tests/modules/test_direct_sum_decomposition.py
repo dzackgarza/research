@@ -3,7 +3,7 @@ import pytest
 from dzack_research.preamble.all import (
     Modules,
     BasedFreeModule,
-    DirectSumDecomposition,
+    DirectSumObjects,
     ZZ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -14,7 +14,7 @@ def test_direct_sum_decomposition_is_structure_on_the_existing_biproduct() -> No
     left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
     direct_sum = Modules(left.base_ring()).biproduct([left, right])
-    equipped = DirectSumDecomposition(direct_sum, (left, right))
+    equipped = DirectSumObjects().verify_decomposition(direct_sum, (left, right))
 
     assert equipped is direct_sum
     assert equipped.summand(0) is left
@@ -35,7 +35,7 @@ def test_direct_sum_decomposition_rejects_post_construction_relabelling() -> Non
     )
 
     with pytest.raises(ValueError, match="constructor-owned labels"):
-        DirectSumDecomposition(direct_sum, family)
+        DirectSumObjects().verify_decomposition(direct_sum, family)
 
     assert direct_sum.summand(0) is left
     assert direct_sum.summand(1) is right
@@ -46,4 +46,4 @@ def test_direct_sum_decomposition_rejects_an_unverified_family() -> None:
     right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
     unrelated = BasedFreeModule(ZZ, finite_ordered_set(("z", "w")))
     with pytest.raises(ValueError):
-        DirectSumDecomposition(unrelated, (left, right))
+        DirectSumObjects().verify_decomposition(unrelated, (left, right))

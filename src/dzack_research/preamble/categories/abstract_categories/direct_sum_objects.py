@@ -35,6 +35,50 @@ class DirectSumObjects(OwnedCategory):
     def super_categories(self):
         return [Objects()]
 
+    def verify_decomposition(
+        self,
+        underlying_object: Parent,
+        summands: IndexedFamily | Iterable[Parent],
+        summand_index_set: Parent | None = None,
+    ) -> Parent:
+        r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``."""
+        if isinstance(summands, IndexedFamily):
+            if summand_index_set is not None and summands.index_set() is not summand_index_set:
+                raise ValueError("an indexed summand family already owns its index set")
+            family = summands
+            labels = family.index_set()
+        else:
+            values = tuple(summands)
+            labels = (
+                Sets.Δ[len(values) - 1]
+                if summand_index_set is None
+                else finite_ordered_set(summand_index_set)
+            )
+            if labels.cardinality() != cardinal(len(values)):
+                raise ValueError("the summand family and its index set have different cardinalities")
+            family = indexed_family(
+                labels,
+                lambda label: values[int(labels.ranking_map()(label))],
+                name=f"Direct summands of {underlying_object}",
+            )
+
+        if underlying_object not in self:
+            raise ValueError(
+                "direct-sum decomposition data must be supplied by the object's constructor"
+            )
+        try:
+            selected = underlying_object._preamble_direct_sum_summands
+            selected_labels = underlying_object._preamble_direct_sum_index_set
+        except AttributeError as error:
+            raise ValueError(
+                "direct-sum placement is missing its constructor-owned summand data"
+            ) from error
+        if labels != selected_labels:
+            raise ValueError("the stated summand labels differ from the constructor-owned labels")
+        if any(selected[label] is not family[label] for label in labels):
+            raise ValueError("the stated summands differ from the constructor-owned summands")
+        return underlying_object
+
     class ParentMethods:
         def __init__(self, summands: IndexedFamily, **rest) -> None:
             if not isinstance(summands, IndexedFamily):
@@ -58,55 +102,4 @@ class DirectSumObjects(OwnedCategory):
         def number_of_summands(self) -> Parent:
             return self.summand_index_set().cardinality()
 
-
-def DirectSumDecomposition(
-    underlying_object: Parent,
-    summands: IndexedFamily | Iterable[Parent],
-    summand_index_set: Parent | None = None,
-) -> Parent:
-    r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``.
-
-    Direct-sum data is construction data, so this accessor never equips an
-    already existing parent.  It only verifies that the stated family agrees
-    with the decomposition selected by that parent's constructor.
-    """
-    if isinstance(summands, IndexedFamily):
-        if summand_index_set is not None and summands.index_set() is not summand_index_set:
-            raise ValueError("an indexed summand family already owns its index set")
-        family = summands
-        labels = family.index_set()
-    else:
-        values = tuple(summands)
-        labels = (
-            Sets.Δ[len(values) - 1]
-            if summand_index_set is None
-            else finite_ordered_set(summand_index_set)
-        )
-        if labels.cardinality() != cardinal(len(values)):
-            raise ValueError("the summand family and its index set have different cardinalities")
-        family = indexed_family(
-            labels,
-            lambda label: values[int(labels.ranking_map()(label))],
-            name=f"Direct summands of {underlying_object}",
-        )
-
-    if underlying_object not in DirectSumObjects():
-        raise ValueError(
-            "direct-sum decomposition data must be supplied by the object's constructor"
-        )
-    try:
-        selected = underlying_object._preamble_direct_sum_summands
-        selected_labels = underlying_object._preamble_direct_sum_index_set
-    except AttributeError as error:
-        raise ValueError(
-            "direct-sum placement is missing its constructor-owned summand data"
-        ) from error
-    if labels != selected_labels:
-        raise ValueError("the stated summand labels differ from the constructor-owned labels")
-    if any(selected[label] is not family[label] for label in labels):
-        raise ValueError("the stated summands differ from the constructor-owned summands")
-    return underlying_object
-
-
-
-__all__ = ["DirectSumDecomposition", "DirectSumObjects"]
+__all__ = ["DirectSumObjects"]
