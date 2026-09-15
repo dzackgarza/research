@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
-    group_module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -84,7 +83,7 @@ def _transport_element(element, source, target):
 
 def _equivariant_hom(domain, codomain, images):
     r"""Construct a group-module map whose equivariance is structural."""
-    return group_module_homset(domain, codomain)._from_equivariant_images(images)
+    return domain.Mor(codomain)._from_equivariant_images(images)
 
 
 def _coset_sum_labels(representatives, source_labels):

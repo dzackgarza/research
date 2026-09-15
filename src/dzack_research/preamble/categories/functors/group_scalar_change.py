@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.functors.scalar_change import (
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
-    group_module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -72,7 +71,7 @@ class GroupModuleScalarExtensionFunctor(Functor):
             morphism.codomain().unacted_module(), target.unacted_module()
         )
         transported = scalar_extension(underlying)
-        return group_module_homset(source, target)._from_equivariant_images(
+        return source.Mor(target)._from_equivariant_images(
             transported,
             verify_linearity=False,
         )
@@ -137,7 +136,7 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
             target.unacted_module(),
         )
         transported = restriction(morphism.underlying_module_morphism())
-        return group_module_homset(source, target)._from_equivariant_images(
+        return source.Mor(target)._from_equivariant_images(
             transported,
             verify_linearity=False,
         )
@@ -171,7 +170,7 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
         underlying.left_adjoint().adopt_object_image(source_module, extended_module)
         underlying.right_adjoint().adopt_object_image(extended_module, restricted_module)
         unit = underlying.unit(source_module)
-        return group_module_homset(group_module, restricted)._from_equivariant_images(
+        return group_module.Mor(restricted)._from_equivariant_images(
             unit,
             verify_linearity=False,
         )
@@ -186,7 +185,7 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
         underlying.right_adjoint().adopt_object_image(target_module, restricted_module)
         underlying.left_adjoint().adopt_object_image(restricted_module, extended_module)
         counit = underlying.counit(target_module)
-        return group_module_homset(extended, group_module)._from_equivariant_images(
+        return extended.Mor(group_module)._from_equivariant_images(
             counit,
             verify_linearity=False,
         )

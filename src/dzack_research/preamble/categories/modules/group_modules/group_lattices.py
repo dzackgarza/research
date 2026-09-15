@@ -38,7 +38,7 @@ class GroupLatticeMorphism(LatticeMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        return group_lattice_homset(other.domain(), self.codomain()).elementwise(
+        return other.domain().Mor(self.codomain()).elementwise(
             lambda element: self(other(element))
         )
 
@@ -136,7 +136,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             if codomain in group_lattices and (
                 category is None or category.is_subcategory(group_lattices)
             ):
-                return group_lattice_homset(self, codomain)
+                return group_lattices.Mor(self, codomain)
             return super().Mor(codomain, category)
 
         def _Hom_(self, codomain, category=None):
@@ -144,7 +144,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             if codomain in group_lattices and (
                 category is None or category.is_subcategory(group_lattices)
             ):
-                return group_lattice_homset(self, codomain)
+                return group_lattices.Mor(self, codomain)
             return super()._Hom_(codomain, category)
 
         def is_trivial_action(self) -> bool:
@@ -298,15 +298,6 @@ def group_lattice(lattice, group_or_action, action=None):
     return result
 
 
-def group_lattice_homset(domain, codomain):
-    r"""Return the form-preserving equivariant Homset of two lattices for one ``G``."""
-    group_algebra = domain.group_algebra()
-    if codomain.group_algebra() is not group_algebra:
-        raise ValueError("group-lattice morphisms require one group algebra")
-    if codomain.group() != domain.group():
-        raise ValueError("group-lattice morphisms require one acting group")
-    return Lattices(group_algebra).Mor(domain, codomain)
-
 
 __all__ = [
     "GroupLatticeHomCategoryConstruction",
@@ -314,5 +305,4 @@ __all__ = [
     "GroupLatticeHomset",
     "LatticesOverGroupAlgebra",
     "group_lattice",
-    "group_lattice_homset",
 ]

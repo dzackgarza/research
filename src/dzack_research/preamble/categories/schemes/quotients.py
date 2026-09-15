@@ -43,9 +43,6 @@ from dzack_research.preamble.categories.abstract_categories.functors import (
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    group_module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
@@ -319,7 +316,7 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
         pullback = arrow.underlying_arrow().coordinate_algebra_morphism()
         forget = source.forget_action_morphism()
         equip = target.equip_action_morphism()
-        return group_module_homset(source, target)(
+        return source.Mor(target)(
             {
                 label: equip(pullback(forget(source.module_generator(label))))
                 for label in source.module_generating_set()

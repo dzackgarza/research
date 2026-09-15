@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.functors.scalar_change import (
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _trivial_action,
-    group_module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -241,7 +240,7 @@ class TrivialActionFunctor(RestrictionOfScalarsFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return group_module_homset(source, target)._from_equivariant_images(
+        return source.Mor(target)._from_equivariant_images(
             morphism,
             verify_linearity=False,
         )
@@ -331,7 +330,7 @@ class TrivialInvariantsAdjunction(RestrictionCoextensionAdjunction):
     def counit(self, group_module):
         invariants = self.right_adjoint()(group_module)
         trivial = self.left_adjoint()(invariants)
-        return group_module_homset(trivial, group_module)(
+        return trivial.Mor(group_module)(
             lambda label: _invariant_element(
                 group_module,
                 invariants,
@@ -353,7 +352,7 @@ class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
         coinvariants = self.left_adjoint()(group_module)
         trivial = self.right_adjoint()(coinvariants)
         if group_module.is_trivial_action():
-            return group_module_homset(group_module, trivial)(
+            return group_module.Mor(trivial)(
                 lambda label: trivial.equip_action_morphism()(
                     group_module.forget_action_morphism()(
                         group_module.module_generator(label)
@@ -361,7 +360,7 @@ class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
                 )
             )
         projection = coinvariants.presentation_projection()
-        return group_module_homset(group_module, trivial)(
+        return group_module.Mor(trivial)(
             lambda label: trivial.equip_action_morphism()(
                 projection(
                     group_module.forget_action_morphism()(

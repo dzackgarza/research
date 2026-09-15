@@ -25,9 +25,6 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    group_module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
@@ -258,7 +255,7 @@ class ProjectiveLineBundleLinearization(SageObject):
             )
             for label in source.module_generating_set()
         }
-        return group_module_homset(source, target)(images)
+        return source.Mor(target)(images)
 
     def is_eigensection(self, section, character) -> bool:
         sections = self.line_bundle().global_sections()
@@ -337,7 +334,7 @@ class ProjectiveLineBundleLinearization(SageObject):
             )
             for label in source.module_generating_set()
         }
-        return group_module_homset(source, target)(images)
+        return source.Mor(target)(images)
 
     def twist(self, character):
         return type(self)(

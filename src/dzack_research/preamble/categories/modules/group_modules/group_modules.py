@@ -606,7 +606,7 @@ class ModulesOverGroupAlgebra(Modules):
             exposed by the resulting Hom object's :meth:`underlying_homset`.
             """
             if category is None or category.is_subcategory(Modules(self.group_algebra())):
-                return group_module_homset(self, codomain)
+                return Modules(self.group_algebra()).Mor(self, codomain)
             return super().Mor(codomain, category)
 
         def End(self):
@@ -631,7 +631,7 @@ class ModulesOverGroupAlgebra(Modules):
         def _Hom_(self, codomain, category=None):
             if codomain not in Modules(self.group_algebra()):
                 raise TypeError("an R[G]-module morphism requires the same acting group")
-            return group_module_homset(self, codomain)
+            return Modules(self.group_algebra()).Mor(self, codomain)
 
         def _finite_action_endomorphism_family(self):
             r"""Return ``{id_M} union {rho(s) : s in S}`` for a chosen finite ``S``.
@@ -745,7 +745,7 @@ class ModulesOverGroupAlgebra(Modules):
                 return inclusion.lift(self.action_of(group_element)(inclusion(vector)))
 
             acted = _equip_action(submodule, self.group(), restricted_action)
-            equivariant_inclusion = group_module_homset(acted, self)(
+            equivariant_inclusion = acted.Mor(self)(
                 lambda label: self.equip_action_morphism()(
                     inclusion(submodule.module_generator(label))
                 )
@@ -773,7 +773,7 @@ class ModulesOverGroupAlgebra(Modules):
             """
             if inclusion.codomain() is not self.unacted_module():
                 raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
-            equivariant = group_module_homset(self, self)(endomorphism)
+            equivariant = self.Mor(self)(endomorphism)
             acted_inclusion = self.restrict_action_to(inclusion)
             return equivariant.restrict_to(acted_inclusion)
 
@@ -796,10 +796,10 @@ class ModulesOverGroupAlgebra(Modules):
             )
 
             acted_inclusion = self.restrict_action_to(inclusion)
-            forward = group_module_homset(self, self)(automorphism.forward()).restrict_to(
+            forward = self.Mor(self)(automorphism.forward()).restrict_to(
                 acted_inclusion
             )
-            inverse = group_module_homset(self, self)(automorphism.inverse()).restrict_to(
+            inverse = self.Mor(self)(automorphism.inverse()).restrict_to(
                 acted_inclusion
             )
             piece = acted_inclusion.domain()
@@ -1036,7 +1036,7 @@ class GroupModuleMorphism(ModuleMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        return group_module_homset(other.domain(), self.codomain())._from_equivariant_images(
+        return other.domain().Mor(self.codomain())._from_equivariant_images(
             lambda element: self(other(element)),
             elementwise=True,
             verify_linearity=False,
@@ -1065,7 +1065,7 @@ class GroupModuleMorphism(ModuleMorphism):
         if piece not in Modules(ambient.group_algebra()):
             raise TypeError("the restricted subobject must carry the same group-module structure")
 
-        return group_module_homset(piece, piece)._from_equivariant_images(
+        return piece.Mor(piece)._from_equivariant_images(
             lambda element: inclusion.lift(self(inclusion(element))),
             elementwise=True,
             verify_linearity=False,
@@ -1074,7 +1074,7 @@ class GroupModuleMorphism(ModuleMorphism):
     def inverse(self):
         r"""The inverse of an equivariant isomorphism, still equivariant."""
         ordinary_inverse = self.underlying_module_morphism().inverse()
-        return group_module_homset(self.codomain(), self.domain())._from_equivariant_images(
+        return self.codomain().Mor(self.domain())._from_equivariant_images(
             ordinary_inverse,
             verify_linearity=False,
         )
@@ -1184,13 +1184,6 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
     def _repr_(self):
         return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"
 
-
-def group_module_homset(domain, codomain) -> GroupModuleHomset:
-    group_algebra = domain.group_algebra()
-    group = domain.group()
-    if codomain.group_algebra() is not group_algebra or codomain.group() != group:
-        raise ValueError("R[G]-module morphisms require one group algebra and acting group")
-    return Modules(group_algebra).Mor(domain, codomain)
 
 
 def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=False):
@@ -1307,5 +1300,4 @@ __all__ = [
     "GroupModuleHomset",
     "GroupModuleMorphism",
     "ModulesOverGroupAlgebra",
-    "group_module_homset",
 ]
