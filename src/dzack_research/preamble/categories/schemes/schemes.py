@@ -2313,6 +2313,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             lattice = BasedFreeModule(integers, int(self.relative_dimension()))
             return RationalPolyhedralFans(lattice).projective_space_fan()
 
+        def point_blowup(self, point):
+            r"""Blow up this represented projective plane at ``point``."""
+            from dzack_research.preamble.categories.schemes.blowups import (
+                _projective_point_blowup,
+            )
+
+            return _projective_point_blowup(self, point)
+
         @cached_method
         def divisor_class_theory(self):
             r"""Return ``Pic(P^n_k)=Cl(P^n_k)=ZZ`` with the hyperplane comparison."""

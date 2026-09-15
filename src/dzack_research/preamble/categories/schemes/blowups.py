@@ -50,7 +50,7 @@ def _integers():
     return _own_ring(SageZZ)
 
 
-class ProjectivePointBlowupCanonicalComparison(SageObject):
+class _ProjectivePointBlowupCanonicalComparison(SageObject):
     r"""The line-bundle comparison ``omega_B ~= pi^*omega_P tensor O_B(E)``."""
 
     def __init__(self, blowup) -> None:
@@ -104,9 +104,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         plane = ProjectiveSpace(2, self.base_ring())
-        return ProjectivePointBlowup(
-            plane,
-            plane.point_morphism((1, 1, 1)),
+        return plane.point_blowup(
+            plane.point_morphism((1, 1, 1))
         )
 
     class ParentMethods:
@@ -329,7 +328,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         @cached_method
         def canonical_comparison(self):
-            return ProjectivePointBlowupCanonicalComparison(self)
+            return _ProjectivePointBlowupCanonicalComparison(self)
 
         @cached_method
         def canonical_line_bundle(self):
@@ -359,7 +358,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
 
 
-def ProjectivePointBlowup(projective_plane, point):
+def _projective_point_blowup(projective_plane, point):
     r"""Return ``Bl_point(P^2)`` from its regular-center Rees graph in ``P^2 x P^1``."""
     base = projective_plane.scheme_base_ring()
     if base not in OwnedFields():
@@ -424,7 +423,5 @@ def ProjectivePointBlowup(projective_plane, point):
 
 
 __all__ = [
-    "ProjectivePointBlowup",
-    "ProjectivePointBlowupCanonicalComparison",
     "ProjectivePointBlowups",
 ]

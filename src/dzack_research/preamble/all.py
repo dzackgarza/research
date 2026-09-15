@@ -719,8 +719,6 @@ from dzack_research.preamble.categories.schemes import (
     ProjectiveCurveNormalizationData,
     ProjectiveGeneralLinearGroup2,
     ProjectiveLineFundamentalGroup,
-    ProjectivePointBlowup,
-    ProjectivePointBlowupCanonicalComparison,
     ProjectivePointBlowups,
     ProjectiveSchemes,
     ProjectiveSpace,

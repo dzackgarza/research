@@ -1,12 +1,12 @@
 """Regular-center projective blowups use their Rees graph and retained transforms."""
 
-from dzack_research.preamble.all import QQ, ProjectivePointBlowup, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpace
 
 
 def _blowup_and_cusp():
     plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
     point = plane.point_morphism((1, 1, 1))
-    blowup = ProjectivePointBlowup(plane, point)
+    blowup = plane.point_blowup(point)
     ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
