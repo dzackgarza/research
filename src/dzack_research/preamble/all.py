@@ -696,7 +696,6 @@ from dzack_research.preamble.categories.schemes import (
     legendre_monodromy_family,
     rational_quintic_with_nonrational_node_normalization,
     rational_quintic_with_two_nodes_normalization,
-    roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401
     CyclicCovers,

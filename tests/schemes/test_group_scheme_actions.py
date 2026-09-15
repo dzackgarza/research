@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     AffineGroupSchemeActions,
     AffineGroupSchemes,
     AffineSpace,
-    roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
@@ -15,7 +14,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 
 
 def _mu_two_scaling_action():
-    mu_two = roots_of_unity_group_scheme(QQ, 2)
+    mu_two = AffineGroupSchemes(QQ).roots_of_unity(2)
     line = AffineSpace(1, QQ, names=("x",))
     line_algebra = line.coordinate_algebra()
     x = line_algebra.algebra_generator("x")
@@ -37,7 +36,7 @@ def _mu_two_scaling_action():
 
 
 def test_mu_two_is_a_group_scheme_not_an_abstract_group() -> None:
-    mu_two = roots_of_unity_group_scheme(QQ, 2)
+    mu_two = AffineGroupSchemes(QQ).roots_of_unity(2)
 
     assert mu_two in AffineGroupSchemes(QQ)
     assert mu_two.scheme().scheme_base_ring() is QQ

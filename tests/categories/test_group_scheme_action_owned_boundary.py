@@ -1,9 +1,9 @@
-from dzack_research.preamble.all import QQ, AffineGroupSchemeActions, roots_of_unity_group_scheme
+from dzack_research.preamble.all import QQ, AffineGroupSchemeActions, AffineGroupSchemes
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 
 
 def test_affine_group_scheme_action_category_is_owned_and_retains_its_parameter() -> None:
-    group = roots_of_unity_group_scheme(QQ, 2)
+    group = AffineGroupSchemes(QQ).roots_of_unity(2)
     actions = AffineGroupSchemeActions(group)
 
     assert isinstance(actions, OwnedCategory)
@@ -15,7 +15,7 @@ def test_affine_group_scheme_action_category_is_owned_and_retains_its_parameter(
 
 
 def test_equivariant_identity_survives_the_owned_category_boundary() -> None:
-    group = roots_of_unity_group_scheme(QQ, 2)
+    group = AffineGroupSchemes(QQ).roots_of_unity(2)
     acted = AffineGroupSchemeActions(group).an_object()
     identity = acted.Mor(acted).identity()
 

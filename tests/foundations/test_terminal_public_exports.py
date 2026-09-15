@@ -289,6 +289,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "GroupAlgebra",
         "FractionFieldQuotient",
         "FinitelyPresentedAlgebraOn",
+        "roots_of_unity_group_scheme",
         "DualNumbers",
         "Span",
         "common_category",

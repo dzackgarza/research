@@ -68,8 +68,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.group_schemes import (
+    AffineGroupSchemes,
     AffineGroupSchemeActions,
-    roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
@@ -130,7 +130,9 @@ def _local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
     local_base = _relative_cover_chart(cyclic_algebra, chart_index).coordinate_algebra()
     local_algebra = cyclic_algebra.local_algebra(chart_index)
     local_scheme = Spec(local_algebra)
-    group_scheme = roots_of_unity_group_scheme(local_base, int(cyclic_algebra.degree()))
+    group_scheme = AffineGroupSchemes(local_base).roots_of_unity(
+        int(cyclic_algebra.degree())
+    )
     product = local_scheme.scheme_category().product((group_scheme.scheme(), local_scheme))
     product_algebra = product.coordinate_algebra()
     group_pullback = product.projection(0).coordinate_algebra_morphism()
@@ -631,9 +633,8 @@ class CyclicCovers(OwnedCategory):
     @cached_method
     def deck_group(self):
         r"""Return the canonical deck group scheme ``mu_n``."""
-        return roots_of_unity_group_scheme(
-            self.base_algebra(),
-            self.cover_degree(),
+        return AffineGroupSchemes(self.base_algebra()).roots_of_unity(
+            self.cover_degree()
         )
 
     @cached_method

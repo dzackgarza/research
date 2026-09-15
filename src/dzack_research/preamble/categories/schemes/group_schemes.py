@@ -74,8 +74,12 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
             inverse,
         )
 
+    def roots_of_unity(self, degree: int):
+        r"""Return the affine group scheme ``mu_degree`` over this base."""
+        return _roots_of_unity_group_scheme(self.base_ring(), degree)
+
     def an_object(self):
-        return roots_of_unity_group_scheme(self.base_ring(), 1)
+        return self.roots_of_unity(1)
 
     _HomCategory = AffineGroupSchemeHomCategoryConstruction
 
@@ -402,7 +406,7 @@ class AffineGroupSchemeActionHomset(CategoricalHomset):
         return self(self.domain().scheme().categorical_identity_morphism())
 
 
-def roots_of_unity_group_scheme(base_ring, degree: int):
+def _roots_of_unity_group_scheme(base_ring, degree: int):
     r"""Return ``mu_degree = Spec(R[u]/(u^degree - 1))`` over ``Spec(R)``.
 
     The construction is valid over every represented commutative base ring;
