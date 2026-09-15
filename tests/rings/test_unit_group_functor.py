@@ -21,13 +21,14 @@ from dzack_research.preamble.rings import GF
 
 
 def _units_of_the_field_of_five_elements():
-    return OwnedRings().unit_group()(GF(5))
+    return GF(5).unit_group()
 
 
 def test_the_units_of_a_field_are_a_group_and_exclude_zero() -> None:
     field = GF(5)
     units = _units_of_the_field_of_five_elements()
 
+    assert OwnedRings().unit_group()(field) is units
     assert units in OwnedGroups()
     assert field(2) in units
     assert field(0) not in units

@@ -1445,6 +1445,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return FreeModule(self, exponent)
 
         @cached_method
+        def unit_group(self):
+            r"""Return ``self^×``, the group of units of this ring."""
+            return _unit_group(self)
+
+        @cached_method
         def regular_module(self):
             r"""Return ``{}_R R``, the rank-one left regular module.
 
@@ -1968,7 +1973,7 @@ class PrimeFields(OwnedCategory):
 
 
 @cached_function
-def unit_group(ring):
+def _unit_group(ring):
     r"""Return \(R^\times\), the group of units of the owned ring ``ring``.
 
     A ring is a monoid under multiplication, and its invertible elements are a
@@ -2009,7 +2014,7 @@ class UnitGroupFunctor(Functor):
         super().__init__(OwnedRings(), OwnedGroups())
 
     def _apply_object(self, ring):
-        return unit_group(ring)
+        return ring.unit_group()
 
     def _apply_morphism(self, morphism):
         source = self.object_image(morphism.domain())
