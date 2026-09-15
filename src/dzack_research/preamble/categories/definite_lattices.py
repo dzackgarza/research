@@ -12,7 +12,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleSubobjects,
@@ -428,7 +427,7 @@ def _shortest_vectors(lattice):
 def _target_coordinates(lattice, target):
     if getattr(target, "parent", lambda: None)() is lattice:
 
-        coefficients = module_coefficients(target, lattice)
+        coefficients = lattice.framing_coefficients(target)
         target = [
             coefficients.get(label, lattice.base_ring().zero())
             for label in lattice.module_generating_set()
@@ -800,7 +799,7 @@ def _contact_polytope(lattice):
 
 def _coordinate_tuple(lattice, element):
 
-    coefficients = module_coefficients(element, lattice)
+    coefficients = lattice.framing_coefficients(element)
     return tuple(coefficients.get(label, lattice.base_ring().zero()) for label in lattice.module_generating_set())
 
 

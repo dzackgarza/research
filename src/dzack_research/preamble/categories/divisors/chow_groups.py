@@ -10,9 +10,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeModules,
@@ -395,7 +392,7 @@ def _closed_immersion_cycle_pushforward(closed_subscheme, cycle):
     quotient_map = closed_subscheme.inclusion().coordinate_algebra_morphism()
     ambient_spectrum = ambient.underlying_space()
     coefficients = {}
-    for point, coefficient in module_coefficients(cycle, source).items():
+    for point, coefficient in source.framing_coefficients(cycle).items():
         contracted = quotient_map.contraction_of_ideal(point.ideal())
         image_point = ambient_spectrum(contracted)
         coefficients[image_point] = coefficients.get(
@@ -426,7 +423,7 @@ def _distinguished_open_cycle_pullback(open_subscheme, cycle):
     open_ring = open_subscheme.coordinate_algebra()
     open_spectrum = open_subscheme.underlying_space()
     coefficients = {}
-    for point, coefficient in module_coefficients(cycle, source).items():
+    for point, coefficient in source.framing_coefficients(cycle).items():
         extended = localization_map.extension_of_ideal(point.ideal())
         if extended.contains_ambient_element(open_ring.one()):
             continue

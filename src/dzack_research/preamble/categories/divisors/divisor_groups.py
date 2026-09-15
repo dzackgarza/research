@@ -6,9 +6,6 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules, FreshFreeModuleOn
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -124,9 +121,7 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
             return finite_ordered_set(
                 tuple(
                     (coefficient, prime_divisor)
-                    for prime_divisor, coefficient in module_coefficients(
-                        divisor, self
-                    ).items()
+                    for prime_divisor, coefficient in self.framing_coefficients(divisor).items()
                 )
             )
 

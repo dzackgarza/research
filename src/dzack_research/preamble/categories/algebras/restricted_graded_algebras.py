@@ -12,9 +12,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
@@ -239,7 +236,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
     def degree_zero_element(self, element):
         realized = self.realize(element)
         component = realized.homogeneous_component(0)
-        coefficients = module_coefficients(component, realized.parent().graded_piece(0))
+        coefficients = realized.parent().graded_piece(0).framing_coefficients(component)
         scalar = coefficients.get(0, self.degree_zero_algebra().zero())
         return self.degree_zero_algebra()(scalar)
 

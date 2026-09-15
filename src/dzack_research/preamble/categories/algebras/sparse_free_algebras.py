@@ -32,9 +32,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
@@ -502,7 +499,7 @@ class SparseFreeAlgebra(Parent):
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
                 element = _canonical_smith_representative(component, element)
-            for component_label, coefficient in module_coefficients(element, component).items():
+            for component_label, coefficient in component.framing_coefficients(element).items():
                 basis_label = self._basis_label_from_component(key, component_label)
                 normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(coefficient)
         return {label: coefficient for label, coefficient in normalized.items() if coefficient}
@@ -545,7 +542,7 @@ class SparseFreeAlgebra(Parent):
             raise TypeError("the element belongs to a different sparse free algebra")
         if value in self.free_source_module():
             result = self.zero()
-            for label, coefficient in module_coefficients(value, self.free_source_module()).items():
+            for label, coefficient in self.free_source_module().framing_coefficients(value).items():
                 result += coefficient * self.algebra_generator(label)
             return result
         try:
