@@ -679,10 +679,11 @@ class ModulesOverGroupAlgebra(Modules):
             ``G`` acts on ``Hom_R(M, M)`` by ``g . f = rho(g) f rho(g)^{-1}``,
             and the equivariant endomorphisms are its fixed points.
             """
-            from dzack_research.preamble.categories.modules.internal_hom import InternalHom
-
             coefficient_module = self.unacted_module()
-            endomorphisms = InternalHom(coefficient_module, coefficient_module)
+            endomorphisms = coefficient_module.module_category().Mor(
+                coefficient_module,
+                coefficient_module,
+            )
 
             def conjugation(group_element, endomorphism):
                 return self.action_of(group_element) * endomorphism * self.action_of(group_element.inverse())

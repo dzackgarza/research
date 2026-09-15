@@ -13,10 +13,7 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
-from dzack_research.preamble.categories.modules.internal_hom import (
-    InternalHom,
-    internal_hom_morphism,
-)
+from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -209,7 +206,7 @@ class CoextensionOfScalarsFunctor(Functor):
 
     def _apply_object(self, module):
         scalars = self.scalars_as_module()
-        hom = InternalHom(scalars, module)
+        hom = scalars.module_category().Mor(scalars, module)
         identity = module_homset(module, module).identity()
         endomorphisms = Modules(self._source_ring).End(hom)
         action = ring_morphism(
@@ -226,8 +223,8 @@ class CoextensionOfScalarsFunctor(Functor):
         target = self(morphism.codomain())
         scalars = self.scalars_as_module()
         postcomposition = internal_hom_morphism(
-            InternalHom(scalars, morphism.domain()),
-            InternalHom(scalars, morphism.codomain()),
+            scalars.module_category().Mor(scalars, morphism.domain()),
+            scalars.module_category().Mor(scalars, morphism.codomain()),
             module_homset(scalars, scalars).identity(),
             morphism,
         )
@@ -295,7 +292,7 @@ class RestrictionCoextensionAdjunction(Adjunction):
         restricted = self.left_adjoint()(module)
         coextended = self.right_adjoint()(restricted)
         scalars = self.right_adjoint().scalars_as_module()
-        hom = InternalHom(scalars, restricted)
+        hom = scalars.module_category().Mor(scalars, restricted)
 
         def image(element):
             return self.right_adjoint()._coextended_element(

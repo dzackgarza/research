@@ -21,10 +21,7 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
-from dzack_research.preamble.categories.modules.internal_hom import (
-    InternalHom,
-    internal_hom_morphism,
-)
+from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
@@ -79,11 +76,11 @@ def Ext(degree, module, other):
     length = resolution.length()
     identity = module_homset(other, other).identity()
     dualized = CochainComplexes(ring)(
-        {term: InternalHom(resolution.term(term), other) for term in range(length + 1)},
+        {term: resolution.term(term).module_category().Mor(resolution.term(term), other) for term in range(length + 1)},
         {
             term - 1: internal_hom_morphism(
-                InternalHom(resolution.term(term - 1), other),
-                InternalHom(resolution.term(term), other),
+                resolution.term(term - 1).module_category().Mor(resolution.term(term - 1), other),
+                resolution.term(term).module_category().Mor(resolution.term(term), other),
                 resolution.differential(term),
                 identity,
             )
@@ -178,8 +175,8 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
             if lifted.module_morphism() is not morphism:
                 raise ValueError("the selected Ext lift lies over a different module morphism")
             identity = module_homset(other, other).identity()
-            source_internal = InternalHom(target_resolution.term(degree), other)
-            target_internal = InternalHom(source_resolution.term(degree), other)
+            source_internal = target_resolution.term(degree).module_category().Mor(target_resolution.term(degree), other)
+            target_internal = source_resolution.term(degree).module_category().Mor(source_resolution.term(degree), other)
             component = internal_hom_morphism(
                 source_internal,
                 target_internal,
@@ -195,8 +192,8 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
             resolution = free_resolution(other, steps)
             term = resolution.term(degree)
             identity = module_homset(term, term).identity()
-            source_internal = InternalHom(term, morphism.domain())
-            target_internal = InternalHom(term, morphism.codomain())
+            source_internal = term.module_category().Mor(term, morphism.domain())
+            target_internal = term.module_category().Mor(term, morphism.codomain())
             component = internal_hom_morphism(
                 source_internal,
                 target_internal,

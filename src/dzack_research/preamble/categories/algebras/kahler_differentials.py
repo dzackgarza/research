@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -160,7 +159,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             if getattr(point, "parent", lambda: None)() is not spectrum:
                 point = spectrum(point)
             cotangent = self.cotangent_space(point)
-            return InternalHom(
+            return cotangent.module_category().Mor(
                 cotangent,
                 ring_as_module(point.residue_field()),
             )
@@ -241,7 +240,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             algebra = self.source_algebra()
             if target_module.base_ring() is not algebra:
                 raise TypeError("the Kähler representing property targets an A-module")
-            classifiers = InternalHom(self, target_module)
+            classifiers = self.module_category().Mor(self, target_module)
             if classifiers not in ModulesWithChosenFinitePresentation(algebra):
                 raise NotImplementedError(
                     "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"

@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedModule,
     FreeModule,
     FinitelyPresentedModules,
-    InternalHom,
     InternalHomModules,
     Modules,
     ProjectiveModules,
@@ -26,7 +25,7 @@ def test_module_hom_is_the_internal_hom_module() -> None:
 
     categorical_hom = source.Mor(target)
     direct_hom = module_homset(source, target)
-    internal_hom = InternalHom(source, target)
+    internal_hom = source.module_category().Mor(source, target)
 
     assert categorical_hom is direct_hom
     assert direct_hom is internal_hom
@@ -59,7 +58,7 @@ def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
     modules = Modules(QQ)
 
     categorical = modules.Mor(algebra, algebra)
-    internal = InternalHom(algebra, algebra)
+    internal = modules.Mor(algebra, algebra)
 
     assert categorical is internal
     assert categorical is modules.HomCategory().Of(algebra, algebra)
@@ -76,7 +75,7 @@ def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> No
     source = FreeModuleOn(ZZ, NN)
     target = FreeModuleOn(ZZ, NN)
 
-    internal = InternalHom(source, target)
+    internal = source.module_category().Mor(source, target)
 
     assert internal is module_homset(source, target)
     construction = internal.internal_hom_construction()

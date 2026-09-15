@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     ring_as_module,
 )
-from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     AlternatingPowerModules,
@@ -241,7 +240,7 @@ def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -
     constructions = (
         modules.biproduct((cyclic, free)),
         modules.tensor_product((cyclic, free)),
-        InternalHom(cyclic, cyclic),
+        cyclic.module_category().Mor(cyclic, cyclic),
         TensorPower(cyclic, 2),
         SymmetricPower(cyclic, 2),
         AlternatingPower(cyclic, 2),
@@ -291,7 +290,7 @@ def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None
     module = _cyclic_six_from_presentation()
     dual = module.dual_module()
 
-    assert dual is InternalHom(module, ring_as_module(ZZ))
+    assert dual is module.module_category().Mor(module, ring_as_module(ZZ))
     assert dual.source_module() is module
     assert dual.target_module() is ring_as_module(ZZ)
     assert dual in ModulesWithChosenFinitePresentation(ZZ)

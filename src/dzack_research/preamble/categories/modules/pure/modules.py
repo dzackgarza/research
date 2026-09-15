@@ -992,11 +992,7 @@ class Modules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 ring_as_module,
             )
-            from dzack_research.preamble.categories.modules.internal_hom import (
-                InternalHom,
-            )
-
-            return InternalHom(self, ring_as_module(ring))
+            return self.module_category().Mor(self, ring_as_module(ring))
 
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""

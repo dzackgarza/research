@@ -809,7 +809,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     HodgeStar,
     HodgeStarOverFractionField,
     Ideals,
-    InternalHom,
     InternalHomModules,
     LinearHomModules,
     LocalizedModules,

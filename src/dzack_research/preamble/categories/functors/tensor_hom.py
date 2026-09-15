@@ -3,10 +3,7 @@ r"""The tensor--internal-Hom adjunction on modules with chosen finite presentati
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.internal_hom import (
-    InternalHom,
-    internal_hom_morphism,
-)
+from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
@@ -62,7 +59,8 @@ class InternalHomFromFunctor(Functor):
         return self._fixed_source
 
     def _apply_object(self, module):
-        return InternalHom(self.fixed_source(), module)
+        source = self.fixed_source()
+        return source.module_category().Mor(source, module)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

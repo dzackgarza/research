@@ -214,14 +214,6 @@ def _internal_hom_model_data(homset):
     return model, inclusion, relation_matrix, presentation
 
 
-def InternalHom(source, target):
-    r"""Return the canonical enriched Hom object ``source.Hom(target)``."""
-    ring = _owned_ring(source.base_ring())
-    if _owned_ring(target.base_ring()) != ring:
-        raise ValueError("an internal Hom requires one common base ring")
-    return module_homset(source, target)
-
-
 def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, target_map):
     r"""Return the map on internal Homs induced by pre- and postcomposition.
 
@@ -245,7 +237,6 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
 
 
 __all__ = [
-    "InternalHom",
     "InternalHomConstruction",
     "InternalHomModules",
     "internal_hom_morphism",

@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 )
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    InternalHom,
     Modules,
     ModuleSubobjects,
     ring_as_module,
@@ -65,7 +64,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
 
     derivations = derivation.parent()
     representing = omega.derivation_classifier_isomorphism(values)
-    assert representing.domain() is InternalHom(omega, values)
+    assert representing.domain() is omega.module_category().Mor(omega, values)
     assert representing.codomain() is derivations
     assert representing in Modules(algebra).Iso(representing.domain(), derivations)
     represented_derivation = representing(classifier)
