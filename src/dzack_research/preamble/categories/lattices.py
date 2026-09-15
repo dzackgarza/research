@@ -94,7 +94,6 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     isotropic_flag_locus,
     isotropic_sublattice_locus,
     primitive_isotropic_sublattices,
-    primitive_isotropic_subobject,
     vector_locus,
 )
 from dzack_research.preamble.categories.lattice_morphisms import (
@@ -1974,7 +1973,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             subobject, so the quotient retains its inclusion, perpendicular,
             projection lifts and parabolic data.
             """
-            isotropic = primitive_isotropic_subobject(self, tuple(vectors))
+            isotropic = self.primitive_isotropic_subobject(*tuple(vectors))
             return isotropic.inclusion().isotropic_reduction()
 
         def radical_quotient(self):
@@ -2647,8 +2646,29 @@ class Lattices(OwnedCategoryOverBaseRing):
             return stable_complement_root_reflections(self, element)
 
         def primitive_isotropic_subobject(self, *basis):
+            r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
 
-            return primitive_isotropic_subobject(self, basis)
+            The returned subobject is admitted to ``PrimitiveIsotropicSubobjects``
+            and therefore retains the parabolic, Levi, and Eichler data of its
+            own cusp.  The stated family must be nonempty and independent.
+            """
+            from dzack_research.preamble.categories.isotropic_parabolics import (
+                primitive_isotropic,
+            )
+
+            elements = tuple(
+                element
+                if getattr(element, "parent", lambda: None)() is self
+                else self(element)
+                for element in basis
+            )
+            assert elements, "an isotropic sublattice is spanned by a nonempty family"
+            subobject = primitive_isotropic(self, elements)
+            assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
+                "the stated isotropic family is linearly dependent, so it does not "
+                "frame the sublattice it spans"
+            )
+            return subobject
 
         @cached_method
         def primitive_isotropic_vectors(self):

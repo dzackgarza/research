@@ -19,27 +19,6 @@ def _held(lattice, element):
     return element if getattr(element, "parent", lambda: None)() is lattice else lattice(element)
 
 
-def primitive_isotropic_subobject(lattice, basis):
-    r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
-
-    The subobject is admitted to ``PrimitiveIsotropicSubobjects``, so every
-    orbit representative produced here carries the parabolic subgroup, the
-    Levi restrictions and the Eichler transvections of its own cusp.
-    """
-    from dzack_research.preamble.categories.isotropic_parabolics import (
-        primitive_isotropic,
-    )
-
-    elements = tuple(_held(lattice, element) for element in basis)
-    assert elements, "an isotropic sublattice is spanned by a nonempty family"
-    subobject = primitive_isotropic(lattice, elements)
-    assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
-        "the stated isotropic family is linearly dependent, so it does not "
-        "frame the sublattice it spans"
-    )
-    return subobject
-
-
 class PrimitiveIsotropicVectorLocus(SageObject):
     r"""The exact locus of nonzero primitive isotropic vectors in one lattice."""
 
@@ -383,7 +362,7 @@ class IsotropicFlag:
         if not self._basis:
             raise ValueError("an isotropic flag requires a nonempty basis")
         self._terms = tuple(
-            primitive_isotropic_subobject(lattice, self._basis[: rank + 1])
+            lattice.primitive_isotropic_subobject(*self._basis[: rank + 1])
             for rank in range(len(self._basis))
         )
 
@@ -899,7 +878,7 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
         result.append(
             IsotropicFlag(lattice, basis)
             if flag
-            else primitive_isotropic_subobject(lattice, basis)
+            else lattice.primitive_isotropic_subobject(*basis)
         )
     return finite_ordered_set(tuple(result))
 
@@ -994,7 +973,6 @@ __all__ = [
     "isotropic_orbit_representatives",
     "isotropic_sublattice_locus",
     "isotropic_stabilizer_generators",
-    "primitive_isotropic_subobject",
     "primitive_isotropic_sublattices",
     "tits_building_incidence",
     "transport_isotropic_object",
