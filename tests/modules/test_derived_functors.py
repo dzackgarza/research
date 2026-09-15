@@ -8,11 +8,9 @@ cyclic module came out.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    ExtMap,
     FinitelyPresentedModule,
     FreeModule,
     PolynomialRing,
-    TorMap,
     ring_as_module,
 )
 
@@ -77,7 +75,7 @@ def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
 
     tor_source = six.tor(two, degree=1)
     tor_target = three.tor(two, degree=1)
-    tor_map = TorMap(1, quotient, two)
+    tor_map = quotient.tor_map(two, degree=1)
     cycle_module = tor_source.cochain_complex().graded_piece(tor_source.degree())
     cycle_label = next(iter(cycle_module.module_generating_set()))
     tor_class = tor_source.class_of_cycle(cycle_module.module_generator(cycle_label))
@@ -88,6 +86,6 @@ def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
     integers = ring_as_module(ZZ)
     ext_source = three.ext(integers, degree=1)
     ext_target = six.ext(integers, degree=1)
-    ext_map = ExtMap(1, quotient, integers)
+    ext_map = quotient.ext_map(integers, degree=1)
     assert ext_map.domain() is ext_source
     assert ext_map.codomain() is ext_target

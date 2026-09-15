@@ -111,8 +111,6 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
                      'CochainMorphism'),
  'CohomologyModules': ('dzack_research.preamble.categories.modules.cochain_complexes',
                        'CohomologyModules'),
- 'ExtMap': ('dzack_research.preamble.categories.modules.derived_functors', 'ExtMap'),
- 'TorMap': ('dzack_research.preamble.categories.modules.derived_functors', 'TorMap'),
  'DifferentialGradedAlgebraParameters': ('dzack_research.preamble.categories.modules.dg_modules',
                                          'DifferentialGradedAlgebraParameters'),
  'DifferentialGradedModules': ('dzack_research.preamble.categories.modules.dg_modules',

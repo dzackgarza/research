@@ -1083,6 +1083,28 @@ class ModuleMorphism(Morphism):
             raise ValueError("the first codomain must equal the second domain")
         return other * self
 
+    def tor_map(self, other, degree=0, *, argument=1, lift=None):
+        r"""Return the map on ``Tor_degree`` induced by this module morphism.
+
+        With ``argument=1``, ``self`` acts on the first Tor variable and
+        ``other`` is fixed.  With ``argument=2``, ``other`` is the fixed first
+        variable and ``self`` acts on the second.
+        """
+        from dzack_research.preamble.categories.modules.derived_functors import _tor_map
+
+        return _tor_map(self, other, degree=degree, argument=argument, lift=lift)
+
+    def ext_map(self, other, degree=0, *, argument=1, lift=None):
+        r"""Return the map on ``Ext^degree`` induced by this module morphism.
+
+        With ``argument=1`` this is contravariant in ``self``; with
+        ``argument=2`` the first module ``other`` is fixed and the induced map
+        is covariant in ``self``.
+        """
+        from dzack_research.preamble.categories.modules.derived_functors import _ext_map
+
+        return _ext_map(self, other, degree=degree, argument=argument, lift=lift)
+
     def base_change(self, ring_map):
         r"""Extend this represented linear map along ``ring_map : R -> S``."""
         ring = self.domain().base_ring()

@@ -91,7 +91,7 @@ def _ext(module, other, degree=0):
     return dualized.cohomology(degree)
 
 
-def TorMap(degree, morphism, other, *, argument=1, lift=None):
+def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
     r"""Return the map on ``Tor_degree`` induced by ``morphism`` in one argument.
 
     With ``argument=1`` this is the existing covariance in the resolved
@@ -142,7 +142,7 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
             source = other.tor(morphism.domain(), degree=degree)
             target = other.tor(morphism.codomain(), degree=degree)
         case _:
-            raise ValueError("TorMap argument must be 1 or 2")
+            raise ValueError("the Tor argument must be 1 or 2")
     return module_homset(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
@@ -150,7 +150,7 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
     )
 
 
-def ExtMap(degree, morphism, other, *, argument=1, lift=None):
+def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
     r"""Return the map on ``Ext^degree`` induced by ``morphism`` in one argument.
 
     The first variable is contravariant and the second is covariant.  Both
@@ -203,7 +203,7 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
             source = other.ext(morphism.domain(), degree=degree)
             target = other.ext(morphism.codomain(), degree=degree)
         case _:
-            raise ValueError("ExtMap argument must be 1 or 2")
+            raise ValueError("the Ext argument must be 1 or 2")
     return module_homset(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
@@ -211,4 +211,4 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
     )
 
 
-__all__ = ["ExtMap", "TorMap"]
+__all__ = []

@@ -1,6 +1,6 @@
 r"""Different chain lifts induce the same Tor and Ext maps."""
 
-from dzack_research.preamble.all import ZZ, ExtMap, FinitelyPresentedModule, FreeModule, TorMap
+from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, FreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import (
     FreeResolutionMorphism,
@@ -56,10 +56,10 @@ def test_tor_and_ext_maps_do_not_depend_on_the_selected_chain_lift() -> None:
         },
     )
 
-    tor_canonical = TorMap(1, identity, module, lift=canonical)
-    tor_alternative = TorMap(1, identity, module, lift=alternative)
-    ext_canonical = ExtMap(1, identity, module, lift=canonical)
-    ext_alternative = ExtMap(1, identity, module, lift=alternative)
+    tor_canonical = identity.tor_map(module, degree=1, lift=canonical)
+    tor_alternative = identity.tor_map(module, degree=1, lift=alternative)
+    ext_canonical = identity.ext_map(module, degree=1, lift=canonical)
+    ext_alternative = identity.ext_map(module, degree=1, lift=alternative)
 
     tor_source = tor_canonical.domain()
     tor_cycle_module = tor_source.cochain_complex().graded_piece(tor_source.degree())
