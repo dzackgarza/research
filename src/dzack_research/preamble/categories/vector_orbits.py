@@ -3,9 +3,6 @@ r"""Exact vector-orbit data for owned lattices."""
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import _torsion_form_isometry
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 
 
 class VectorPrimitiveExtension:
@@ -135,10 +132,7 @@ class VectorPrimitiveExtension:
         r"""Return the selected representative in ``A_M`` of a class of ``A_L``."""
         discriminant_class = self.discriminant_form(discriminant_class)
 
-        coefficients = module_coefficients(
-            discriminant_class,
-            self.discriminant_form,
-        )
+        coefficients = self.discriminant_form.framing_coefficients(discriminant_class)
         return sum(
             (
                 coefficients[label] * representative

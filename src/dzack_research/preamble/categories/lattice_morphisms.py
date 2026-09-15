@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     ModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -387,13 +386,17 @@ class LatticeEmbedding(LatticeMorphism):
         quotient_module_generators = quotient.smith_form_module_generators()
         rank = int(quotient_module_generators.cardinality())
         labels = Sets.Δ[rank - 1]
+
+        def lift(position):
+            quotient_generator = quotient_module_generators[int(position)]
+            coefficients = quotient_generator.parent().framing_coefficients(
+                quotient_generator
+            )
+            return perpendicular.linear_combination(coefficients)
+
         lifts = finite_indexed_family(
             labels,
-            lambda position: perpendicular.linear_combination(
-                module_coefficients(
-                    quotient_module_generators[int(position)]
-                )
-            ),
+            lift,
             name="Isotropic-reduction lifts",
         )
 

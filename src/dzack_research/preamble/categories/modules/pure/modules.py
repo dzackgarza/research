@@ -2304,9 +2304,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 )
 
             def transport(coordinate_vector):
-                coefficients = module_coefficients(
-                    coordinate_vector, coordinate_domain
-                )
+                coefficients = coordinate_domain.framing_coefficients(coordinate_vector)
                 return self.linear_combination(
                     {
                         source_label: coefficients[coordinate_label]
@@ -2786,17 +2784,11 @@ class RestrictedScalarsModuleView(Parent):
 
         element = self(element)
         extension_module = self.module_over_extension()
-        extension_coefficients = module_coefficients(
-            element.underlying_element(),
-            extension_module,
-        )
+        extension_coefficients = extension_module.framing_coefficients(element.underlying_element())
         coefficients = {}
         framing = self.module_generating_set()
         for module_label, scalar in extension_coefficients.items():
-            for scalar_label, coefficient in module_coefficients(
-                scalar,
-                self.extension_ring(),
-            ).items():
+            for scalar_label, coefficient in self.extension_ring().framing_coefficients(scalar).items():
                 label = framing((scalar_label, module_label))
                 coefficients[label] = self.base_ring()(coefficient)
         return coefficients
@@ -2920,7 +2912,7 @@ class RestrictedScalarsModuleView(Parent):
                     if not coefficient:
                         continue
                     product = extension_ring(scalar_generator * extension_ring(coefficient))
-                    for output_scalar_label, output_coefficient in module_coefficients(product, extension_ring).items():
+                    for output_scalar_label, output_coefficient in extension_ring.framing_coefficients(product).items():
                         column = restricted_labels.ranking_map()(restricted_labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
                         row[column] += ring(output_coefficient)
                 if any(row):
@@ -3072,8 +3064,8 @@ class BilinearMap(SageObject):
 
     def __call__(self, left_element, right_element):
 
-        left_coefficients = module_coefficients(left_element, self.left_factor())
-        right_coefficients = module_coefficients(right_element, self.right_factor())
+        left_coefficients = self.left_factor().framing_coefficients(left_element)
+        right_coefficients = self.right_factor().framing_coefficients(right_element)
         return sum(
             (
                 left_coefficient * right_coefficient * self.generator_image(left_label, right_label)
@@ -3139,8 +3131,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             r"""Return the universal pure tensor of two elements."""
             left, right = self._two_factors()
 
-            left_coefficients = module_coefficients(left_element, left)
-            right_coefficients = module_coefficients(right_element, right)
+            left_coefficients = left.framing_coefficients(left_element)
+            right_coefficients = right.framing_coefficients(right_element)
             labels = self.module_generating_set()
             return self.linear_combination(
                 {
@@ -3443,9 +3435,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 generator = source.module_generator(source_label)
                 coefficients = {}
                 for index in factors.index_set():
-                    for target_label, coefficient in module_coefficients(
-                        legs.value(index)(generator), factors.value(index)
-                    ).items():
+                    for target_label, coefficient in factors.value(index).framing_coefficients(legs.value(index)(generator)).items():
                         coefficients[_biproduct_label(labels, index, target_label)] = coefficient
                 return self.linear_combination(coefficients)
 
@@ -3663,7 +3653,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 column_label = columns[int(column_label)]
             generator_image = self.__dict__.get("_generator_image")
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
-            return module_coefficients(image, self.codomain())
+            return self.codomain().framing_coefficients(image)
 
         def matrix_entry(self, row_label, column_label):
             rows = self.parent().row_index_set()
@@ -3744,7 +3734,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
             target = target if target.parent() is self.codomain() else self.codomain()(target)
             ring = self.parent().base_ring()
-            coefficients = module_coefficients(target, self.codomain())
+            coefficients = self.codomain().framing_coefficients(target)
             rhs = sage_vector(
                 _engine_ring(ring),
                 [_engine_element(ring, coefficients.get(label, ring.zero())) for label in self.parent().row_index_set()],
@@ -3810,10 +3800,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     lambda label: localized_domain.linear_combination(
                         {
                             column_label: localization_map(coefficient)
-                            for column_label, coefficient in module_coefficients(
-                                inclusion(source_kernel.module_generator(label)),
-                                source_domain,
-                            ).items()
+                            for column_label, coefficient in source_domain.framing_coefficients(inclusion(source_kernel.module_generator(label))).items()
                             if coefficient
                         }
                     ),
