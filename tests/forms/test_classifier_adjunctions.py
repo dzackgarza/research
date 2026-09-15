@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     ZZ,
     bilinear_free_form_adjunction,
-    fibered_formed_module_homset,
     module_homset,
     quadratic_free_form_adjunction,
     ring_as_module,
@@ -87,7 +86,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
 
     zz_to_qq = ring_homset(ZZ, QQ)(lambda element: QQ(element))
     middle = source.base_change(zz_to_qq)
-    first_homset = fibered_formed_module_homset(source, middle, zz_to_qq)
+    first_homset = source.fibered_formed_homset(middle, zz_to_qq)
     source_over_qq = first_homset.base_changed_domain()
     middle_generator = middle.module_generator("e")
     first_module_map = module_homset(source_over_qq, middle)(
@@ -103,8 +102,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     field = QuadraticField(2, "a")
     qq_to_field = ring_homset(QQ, field)(lambda element: field(element))
     target = middle.base_change(qq_to_field)
-    second_homset = fibered_formed_module_homset(
-        middle,
+    second_homset = middle.fibered_formed_homset(
         target,
         qq_to_field,
     )
@@ -129,8 +127,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     # Identities are genuine fibered morphisms over identity ring maps, not
     # an unrelated fixed-fiber shortcut.
     identity_ring_map = ring_homset(QQ, QQ).identity()
-    middle_identity = fibered_formed_module_homset(
-        middle,
+    middle_identity = middle.fibered_formed_homset(
         middle,
         identity_ring_map,
     ).identity()

@@ -610,8 +610,8 @@ class FiberedFormedModuleMorphism(Morphism):
         if other.codomain() is not self.domain():
             raise ValueError("fibered formed morphisms are not composable")
         composite_ring_map = self.ring_map() * other.ring_map()
-        homset = fibered_formed_module_homset(
-            other.domain(), self.codomain(), composite_ring_map
+        homset = other.domain().fibered_formed_homset(
+            self.codomain(), composite_ring_map
         )
 
         direct_changed = homset.base_changed_domain()
@@ -700,11 +700,6 @@ class FiberedFormedModuleHomset(CategoricalHomset):
             }
         )
         return self((module_map, value_map))
-
-
-def fibered_formed_module_homset(domain, codomain, ring_map) -> FiberedFormedModuleHomset:
-    r"""Return formed morphisms ``domain -> codomain`` lying over ``ring_map``."""
-    return FiberedFormedModuleHomset(domain, codomain, ring_map)
 
 
 class PairedModules(OwnedParameterizedCategory):
@@ -906,9 +901,13 @@ class FormModules(OwnedCategoryOverBaseRing):
                 (module_morphism, value_morphism)
             )
 
+        def fibered_formed_homset(self, codomain, ring_map):
+            r"""Return formed morphisms from this module to ``codomain`` over ``ring_map``."""
+            return FiberedFormedModuleHomset(self, codomain, ring_map)
+
         def fibered_formed_hom(self, codomain, ring_map, module_morphism, value_morphism):
             r"""Construct a formed morphism over a coefficient-ring map."""
-            return fibered_formed_module_homset(self, codomain, ring_map)(
+            return self.fibered_formed_homset(codomain, ring_map)(
                 (module_morphism, value_morphism)
             )
 

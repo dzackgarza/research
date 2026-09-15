@@ -52,8 +52,6 @@ _EXPORTS = {'DiscriminantBilinearModules': ('dzack_research.preamble.categories.
                           'QuadraticFormModules'),
  'SymmetricBilinearFormModules': ('dzack_research.preamble.categories.modules.framed.formed.form_modules',
                                   'SymmetricBilinearFormModules'),
- 'fibered_formed_module_homset': ('dzack_research.preamble.categories.modules.framed.formed.form_modules',
-                                  'fibered_formed_module_homset'),
  'form_embedding': ('dzack_research.preamble.categories.modules.framed.formed.form_modules',
                     'form_embedding'),
  'is_form_morphism': ('dzack_research.preamble.categories.modules.framed.formed.form_modules',
@@ -94,7 +92,6 @@ __all__ = ['BilinearForm',
  'TorsionFormIsometry',
  'TorsionQuadraticFormModules',
  'form_embedding',
- 'fibered_formed_module_homset',
  'is_form_morphism']
 
 def __getattr__(name):
