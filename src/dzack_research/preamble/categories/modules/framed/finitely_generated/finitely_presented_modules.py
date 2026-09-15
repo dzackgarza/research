@@ -1359,7 +1359,7 @@ def _module_invariant_factor_form(module):
     """
     presentation_iso = module.invariant_factor_presentation()
     diagonal_presentation = presentation_iso.codomain().arrow()
-    full_normalized = FinitelyPresentedModule(diagonal_presentation)
+    full_normalized = diagonal_presentation.cokernel()
     invariants = module._invariants_with_units()
 
     invariant_positions = Sets.Δ[len(invariants) - 1]
@@ -1384,7 +1384,7 @@ def _module_invariant_factor_form(module):
             for reduced_position in relation_labels
         }
     )
-    reduced = FinitelyPresentedModule(reduced_presentation)
+    reduced = reduced_presentation.cokernel()
 
     full_labels = full_normalized.module_generating_set()
     full_to_reduced = full_normalized.module_category().Mor(full_normalized, reduced)(
@@ -2509,7 +2509,7 @@ def FinitelyPresentedModule(
                 for relation_label, row in zip(source_relation_labels, source_rows, strict=True)
             }
         )
-        source_quotient = FinitelyPresentedModule(source_presentation)
+        source_quotient = source_presentation.cokernel()
         localization = base_ring.localization_functor()
         local_extra_categories = list(_extra_categories)
         local_extra_data = dict(_extra_construction_data or {})

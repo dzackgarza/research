@@ -9,7 +9,6 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
     _row_normal_form,
 )
@@ -75,7 +74,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         ]
 
     def _call_(self, presentation):
-        module = FinitelyPresentedModule(presentation)
+        module = presentation.cokernel()
         if module.base_ring() is not self.base_ring():
             raise ValueError("a torsion presentation belongs to its coefficient ring")
         return _refine_finitely_presented_torsion_module(module)

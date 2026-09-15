@@ -26,9 +26,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.catalogue import Involutions, NamedLattices
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
@@ -47,11 +44,10 @@ def _cyclic_two_module():
     integers = _own_ring(SageZZ)
     generators = integers.free_module(1)
     relations = integers.free_module(1)
-    return FinitelyPresentedModule(
-        relations.Mor(generators)(
-            {0: integers(2) * generators.module_generator(0)}
-        )
+    presentation = relations.Mor(generators)(
+        {0: integers(2) * generators.module_generator(0)}
     )
+    return presentation.cokernel()
 
 
 class _EnriquesMarkedIntegralCohomology(SageObject):

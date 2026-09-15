@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
     _presentation_from_relation_rows,
     _presentation_matrix,
 )
@@ -138,7 +137,7 @@ def _finite_coset_sum(module, representatives):
         relation_labels,
         relations,
     )
-    return FinitelyPresentedModule(presentation)
+    return presentation.cokernel()
 
 
 class RestrictionOfActingGroupFunctor(RestrictionOfScalarsFunctor):

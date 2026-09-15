@@ -5,10 +5,9 @@ from sage.structure.sage_object import SageObject
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
+    _SelectedFinitePresentationModules,
     _presentation_from_relation_rows,
     _presentation_matrix,
-    _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -160,7 +159,7 @@ def _internal_hom_model_data(homset):
             kernel_relation_labels,
             kernel_relations,
         )
-        model = FinitelyPresentedModule(kernel_presentation)
+        model = kernel_presentation.cokernel()
         inclusion = ModuleEmbedding(
             _auxiliary_linear_module_homset(model, generator_assignments),
             {

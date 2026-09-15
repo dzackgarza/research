@@ -2915,11 +2915,7 @@ class RestrictedScalarsModuleView(Parent):
             raise NotImplementedError(
                 "this scalar restriction has no selected finite-presentation model"
             )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModule,
-        )
-
-        return FinitelyPresentedModule(self.presentation())
+        return self.presentation().cokernel()
 
     def is_zero(self):
         return self._selected_presentation_model().is_zero()
