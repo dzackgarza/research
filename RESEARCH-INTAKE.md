@@ -19,6 +19,7 @@ Remove a lead when the preamble owns the capability and specimens prove it, with
 | Families via f.as_family + periods / PF | User note 2026-09-15 | Scheme morphism as family; period `w(z)=∫_{γ_z}Ω_z` and its Picard-Fuchs equation `PF(w)` | `categories/schemes/families.py` via `Hom(Sch/C)` + `categories/schemes/periods.py` / Gauss-Manin | Proposed — see note below |
 | Generatingfunctionology (Wilf Ch.1-2) | User note 2026-09-15 | Symbolic recurrences, exact solutions, OGF/EGF, L-functions / zeta | `categories/generating_functions/` + `categories/rings/formal_power_series.py` / `D-Mod` | Proposed — see note below |
 | Monodromy groups/reps + π1/H1 + CW + graded | User note 2026-09-15 | Semantic `π1(X,x)`, `H1^sing`, monodromy groups/reps; CW complexes with sphere homotopy DB; `ZZ^n`-graded complexes / spectral sequences | `categories/topology/` / `categories/homotopy/` + `categories/graded/` | Proposed — see note below |
+| Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -147,3 +148,59 @@ In some easy cases the whole pipeline must compute: `X` concrete variety → `K 
 
 Intended owners: `categories/topology/cw_complexes.py` (`CWComplex`, `Cell`, `AttachingMap` in `Top`), `categories/topology/homotopy_groups.py` (`HomotopyGroupsDB` with `π_{n+k}(S^n)`, generators `Hopf`, `Whitehead`), `categories/topology/fundamental_group.py` (`π_1`, `H_1 = abelianization`), `categories/graded/graded_modules.py` (`ZZ^n-GrMod`, `GrComplex`, `DoubleComplex`), `categories/graded/spectral_sequences.py` (`SpectralSequence`, `SerreSS`) with unstable support. Monodromy ties back to `categories/functors/local_system.py` and `categories/schemes/monodromy.py`.
 
+## Intake: https://github.com/lairez/periods — functionality — 2026-09-15
+
+*Periods* is a Magma package for Lairez "Computing periods of rational integrals" (arXiv:1404.5069). Implements Griffiths-Dwork / Dimca Rham-Koszul reduction for hypersurface complements.
+
+Input `f ∈ Q(t,x1..xn)` rational, `t = A.1` parameter. Output differential operator `L ∈ Q[t]<∂_t>` (or `t∂_t`) annihilating periods `p(t)=∫_γ f(t,x)dx`, where `γ_t ∈ H_n(A^n \ V(q_t))` horizontal. `L·p=0` for all `γ`.
+
+* `Periods(f : r, variant)` — periods of `f` dx
+* `Diagonal(f : r)` — diagonal `Σ [x^n y^n z^n]F · t^n` via `1/(1-t xyz)` trick
+* `LaurentSequence(f)` — constant term of Laurent powers via residues — all reduce to periods
+
+Core steps:
+
+* Homogenize `f → fsf` square-free part, degree `d`
+* `InitRK(f : r, variant)` builds `R=k[x0..xn,u,v]` with Jacobian ideal `Jac(f)` and trivial syzygy ideal `tsyz`, Groebner `jac`, `syz` — reduction basis `W_r`
+* `TotDiff = ExtDiff - ExtProd` implements pole-order reduction `p/f^k → [p'] / f^{k-1}` modulo `Jac` + syzygies (Dimca)
+* `GaussManin(f,r,L)` — at generic `t=ipoint` compute cohomology basis `H = H^n_{dR}(complement)` and connection matrix `M: H' = M·H` via `HomReduceMatrix`. Loop over many `ipoint` (100,101,…) over many primes `p` and rationally reconstruct `M(t)=mat/den ∈ Q(t)^{m×m}` via `RHAddRat/RHAddMod` + `RatInterp`/`PolInterp` (Chinese remainder)
+* `Storjohann(A,b)` — high-order lifting + Keller-Gehrig + Padé to solve `A x = b` over `k[t]` without blow-up
+* `CyclicEquation(mat/den, vec)` — cyclic vector to scalar operator `L`
+
+Example: `f1=1/(1-(1-xy)z - t xy z(1-x)(1-y)(1-z))` → Apery operator order 3-4. `f2..f6` same operator via different `F`.
+
+Magma-only, CeCILL, preliminary. Provides no standalone D-module library — extraction is `RhamKoszul` reduction + `Storjohann` + `RatInterp` pattern.
+
+## How periods generalize — verbatim — 2026-09-15
+
+Hard code is choice of `f`. Method is for any `f`:
+
+**Fundamental object** (not hard-coded): For `f = p/q ∈ C(t,x1..xn) = C(S×A^n)` with `t` parameter (first variable hard-coded as `A.1`), family of hypersurfaces `V_t = V(q_t) ⊂ A^n`, complement `U_t = A^n \ V_t`. Period
+```
+p_γ(t) = ∫_{γ_t} f(t,x) dx1∧..∧dxn ,  γ_t ∈ H_n(U_t, C) horizontal
+```
+is pairing `H_n ⊗ H^n_{dR}(U_t)`. All `p_γ` satisfy same `L ∈ C(t)<∂_t>` — Picard-Fuchs. `Periods(f)` returns that `L`. `Diagonal` and `LaurentSequence` are not new — they are `Periods` after
+```
+Diag F(t) = [x^n y^n z^n]F = res F(x,y,z)/ (1-txyz)  → 1/(1 - y(1+x)... )
+ct(f^n) = res f^n dx/x
+```
+transforms coded in `misc/apery.m`. One computation replaces 6 examples.
+
+**What generalises directly** — change data, same functor:
+
+* `n = Rank(A)-1` variables, `deg f` arbitrary — `InitRK` builds `R=k[x0..xn,u,v]` with `jac = (∂_i f·u - ...)` generally. Groebner `jac` + syzygy `tsyz` via `LeadingMonomialIdeal` is generic.
+* `q_t` arbitrary denominator — `prepare_fraction` takes square-free part `fsf` and degree `deg`. No Apery coefficients remain.
+* `r` pole-order bound — `r=1` is Griffiths, `r>1` adds syzygy filtration `W_r`. Algorithm is generic in `r`; completeness threshold is `r ≥ n+1` (Dimca). `variant {"mindeg","profile"}` is heuristic choice of `C[t]`-basis minimizing `deg(den)` — generic rational-function minimisation.
+* Evaluation-interpolation — `GaussManin(f,r)` evaluates `f|_{t=ipoint}` at `ipoint=100,101,...` (or random `mod p`), computes `M(ipoint) ∈ F_p^{m×m}` via `HomReduceMatrix`, then `RatInterp`/`PolInterp` reconstructs `M(t) ∈ Q(t)` from many `F_p` evaluations. Method is generic `Q(t) = lim RatInterp(F_p)` via `RHNew` Chinese remainder. Replace `Q` by any number field `K` via `CoefficientRing(K)`.
+* Linear solve — `Storjohann(A,b,prec)` solves `A x = b` over `k[t]` for any `A,b`; not Apery-specific. `PolynomialLinearAlgebra` linearises any `k[x]`-module to matrix over `k`.
+
+**What changes category when you vary `S`:**
+* `Periods: Rat(S×A^n) → D_S-Mod`, `f ↦ L = Ann_{D_S}(p_γ)`. Hard: `S=A^1`. General: `S=A^k` → Pfaffian system `∂_i Φ = M_i(t) Φ` (Gauss-Manin connection `∇_{GM}: H^n_{dR}(U/S) → H^n_{dR} ⊗ Ω^1_S`). `LinearHomotopies.m: GaussManinLin(f0,f1)` already computes one direction of this: family `f_t=(1-t)f0+t f1` gives `mat(t)/den(t)`. Full multivariate is same `InitRK` with `k` parameters and `k` matrices.
+* Target `L` in `D_S` is cyclic vector reduction of `∇_{GM}`: `CyclicEquation(mat/den, vec) → L`. Generic for any `∇_{GM}`.
+
+**What does not generalise without new math:**
+* Single `t` only — need `D_S` in `k` variables for true multivariate PF ideal, not just one `mat/den`
+* Hypersurface complement only — general `X → S` proper smooth family needs Griffiths-Dwork for `P^n` complete intersections, not just `A^n \ V(q)`
+* No cycle choice — `L` annihilates *all* horizontal `γ`; to get *specific* `p_γ` need initial conditions `InitialConditionsOfCoordinate(gm,i,order)` which is only evaluation of `M` at `t=0` via `HomReduce`
+
+In preamble terms: `f: U → S` as family (`f.as_family`), `H = R^n f_* Ω^•_{U/S}` object of `QCoh(S)`, `∇_{GM}: H → H ⊗ Ω^1_S` flat connection, `L = Ann(w)` in `D_S-Mod` where `w = ∫_γ Ω` section of `H`. `periods` package is private adapter computing `∇_{GM}` via `Dwork` reduction + `Storjohann` + `RatInterp`, and `L` via cyclic vector.
