@@ -10,6 +10,14 @@ Use the intake to select the correct owner, trace the required construction, and
 Add a lead with source location, mathematical capability, intended preamble owner, and current status.
 Remove a lead when the preamble owns the capability and specimens prove it, with evidence in the delivery commit.
 
+## Reference implementations
+
+Where to look first for existing algorithms before writing new code. Check these before claiming a computation has no maintained implementation.
+
+| Domain | Reference implementation | What it provides |
+| --- | --- | --- |
+| Symbolic summation, recurrences, D-finite / holonomic, creative telescoping, OGF/EGF closure | https://caa.risc.jku.at/software — RISC Computer Algebra (ore_algebra, HolonomicFunctions, etc.) | Ore algebras, closure for D-finite, creative telescoping, recurrence solving, OGF/EGF translation, L-functions as D-finite objects; adapter candidates for generatingfunctionology and `Periods` |
+
 ## Leads
 
 | Lead | Source | Capability | Intended owner | Status |
