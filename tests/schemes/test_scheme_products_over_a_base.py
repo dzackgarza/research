@@ -23,7 +23,6 @@ from dzack_research.preamble.all import (
     SmoothSchemes,
     Spec,
     Surfaces,
-    scheme_product,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -35,7 +34,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_the_product_of_two_projective_lines_is_a_projective_surface() -> None:
     line = ProjectiveSpace(1, QQ)
-    quadric = scheme_product(line, line)
+    quadric = line.scheme_category().product((line, line))
 
     assert quadric in ProjectiveSchemes(QQ)
     assert quadric in FiniteTypeSchemes(QQ)
@@ -50,7 +49,7 @@ def test_the_product_of_two_projective_lines_is_a_projective_surface() -> None:
 
 def test_a_product_of_affine_spaces_is_affine_of_the_summed_dimension() -> None:
     line = AffineSpace(1, ZZ)
-    plane = scheme_product(line, line)
+    plane = line.scheme_category().product((line, line))
 
     assert plane in AffineSchemes(ZZ)
     assert plane in QuasiAffineSchemes(ZZ)
@@ -65,7 +64,7 @@ def test_a_mixed_affine_projective_product_retains_projections_and_exact_propert
     affine = AffineSpace(1, QQ)
     projective = ProjectiveSpace(1, QQ)
 
-    product = scheme_product(affine, projective)
+    product = affine.scheme_category().product((affine, projective))
 
     assert product.relative_dimension() == 2
     assert product.projection(0).codomain() is affine
@@ -82,7 +81,7 @@ def test_a_mixed_affine_projective_product_retains_projections_and_exact_propert
 def test_terminal_affine_factor_retains_the_selected_product_without_algebra_framing() -> None:
     line = AffineSpace(1, QQ)
     base = Spec(QQ, base_ring=QQ)
-    product = scheme_product(line, base)
+    product = line.scheme_category().product((line, base))
 
     assert product is not line
     assert product.coordinate_algebra() is line.coordinate_algebra()
@@ -118,7 +117,7 @@ def test_projective_line_diagonal_uses_the_projective_product_cone() -> None:
 def test_affine_line_times_plane_and_mixed_projective_affine_products_keep_dimensions_and_legs() -> None:
     line = AffineSpace(1, QQ)
     affine_plane = AffineSpace(2, QQ)
-    affine_product = scheme_product(line, affine_plane)
+    affine_product = line.scheme_category().product((line, affine_plane))
 
     assert affine_product in AffineSchemes(QQ)
     assert affine_product.relative_dimension() == 3
@@ -126,8 +125,8 @@ def test_affine_line_times_plane_and_mixed_projective_affine_products_keep_dimen
     assert affine_product.projection(1).codomain() is affine_plane
 
     projective_line = ProjectiveSpace(1, QQ)
-    projective_surface = scheme_product(projective_line, projective_line)
-    mixed = scheme_product(projective_surface, affine_plane)
+    projective_surface = projective_line.scheme_category().product((projective_line, projective_line))
+    mixed = projective_surface.scheme_category().product((projective_surface, affine_plane))
 
     assert mixed.relative_dimension() == 4
     assert mixed.projection(0).codomain() is projective_surface

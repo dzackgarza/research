@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     AffineSpace,
     ClosedEmbeddings,
     IntegralSchemes,
-    scheme_fiber_product,
 )
 
 
@@ -61,7 +60,10 @@ def test_a_tangent_line_meets_the_parabola_in_a_non_reduced_double_point() -> No
     assert meeting not in IntegralSchemes(QQ)
 
     # The same subscheme is the fibre product of the two inclusions over the plane.
-    pullback = scheme_fiber_product(tangent.inclusion(), parabola.inclusion())
+    pullback = tangent.scheme_category().fiber_product(
+        tangent.inclusion(),
+        parabola.inclusion(),
+    )
     pullback_x = pullback.coordinate_algebra().algebra_generator(("left", "x"))
     assert pullback_x**2 == pullback.coordinate_algebra().zero()
     assert pullback_x != pullback.coordinate_algebra().zero()

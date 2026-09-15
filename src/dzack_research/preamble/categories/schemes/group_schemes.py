@@ -33,7 +33,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     Spec,
     _affine_morphism_from_pullback,
-    scheme_product,
 )
 
 
@@ -128,7 +127,7 @@ class AffineGroupScheme(Parent):
         group = self.scheme()
         multiplication = self.multiplication()
         square = multiplication.domain()
-        triple = scheme_product(group, group, group)
+        triple = group.scheme_category().product((group, group, group))
         first, second, third = triple.projections()
 
         first_pair = _map_to_product(square, (first, second))
@@ -260,7 +259,7 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
     def an_object(self):
         group = self.group_scheme()
         base = group.base_scheme()
-        product = scheme_product(group.scheme(), base)
+        product = base.scheme_category().product((group.scheme(), base))
         action = product.projection(1)
         return self(base, action)
 
@@ -305,7 +304,7 @@ class AffineGroupSchemeAction(Parent):
         scheme = self.scheme()
         action = self.action_morphism()
         group_times_scheme = action.domain()
-        triple = scheme_product(group_scheme, group_scheme, scheme)
+        triple = group_scheme.scheme_category().product((group_scheme, group_scheme, scheme))
         first, second, point = triple.projections()
 
         group_square = group.multiplication().domain()
@@ -422,7 +421,7 @@ def roots_of_unity_group_scheme(base_ring, degree: int):
     )
     u = algebra.algebra_generator("u")
     scheme = Spec(algebra, base_ring=base)
-    square = scheme_product(scheme, scheme)
+    square = scheme.scheme_category().product((scheme, scheme))
     square_algebra = square.coordinate_algebra()
     first_pullback = square.projection(0).coordinate_algebra_morphism()
     second_pullback = square.projection(1).coordinate_algebra_morphism()

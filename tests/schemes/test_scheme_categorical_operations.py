@@ -22,7 +22,6 @@ from dzack_research.preamble.all import (
     SmoothSchemes,
     Spec,
     SpecFunctor,
-    scheme_product,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -112,7 +111,7 @@ def test_projective_closed_subschemes_require_homogeneous_equations() -> None:
 
 def test_the_diagonal_is_a_section_of_both_projections_and_a_closed_subscheme() -> None:
     plane, algebra, x, y = _plane()
-    product = scheme_product(plane, plane)
+    product = plane.scheme_category().product((plane, plane))
     diagonal = plane.diagonal_morphism()
 
     assert diagonal.domain() is plane
@@ -134,7 +133,7 @@ def test_the_diagonal_is_a_section_of_both_projections_and_a_closed_subscheme() 
 
 def test_the_graph_of_the_cusp_parametrization_is_a_curve_in_the_product() -> None:
     plane, x, y, line, t, parametrization = _cusp_parametrization()
-    product = scheme_product(line_scheme := parametrization.domain(), plane)
+    product = plane.scheme_category().product((line_scheme := parametrization.domain(), plane))
     graph = parametrization.graph_morphism()
 
     assert graph.domain() is line_scheme

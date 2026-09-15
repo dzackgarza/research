@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     Spec,
     Surfaces,
     Varieties,
-    scheme_product,
 )
 
 
@@ -42,7 +41,7 @@ def test_the_affine_plane_is_a_surface_and_the_lines_are_curves() -> None:
     assert plane not in Curves(QQ)
     assert projective_line in Curves(QQ)
     assert projective_plane in Surfaces(QQ)
-    assert scheme_product(projective_line, projective_line) in Surfaces(QQ)
+    assert projective_line.scheme_category().product((projective_line, projective_line)) in Surfaces(QQ)
 
     # The three hypotheses are each of them separately necessary.
     assert line in IntegralSchemes(QQ)

@@ -17,14 +17,14 @@ from dzack_research.preamble.all import (
     FiberProductSchemes,
     PolynomialRing,
     Spec,
-    scheme_fiber_product,
 )
 
 
 def _line_over(ring):
     r"""``A^1_R`` built as a spectrum, so its coordinate algebra names it back."""
     line = Spec(PolynomialRing(ring, "x"), base_ring=ring)
-    return line, scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
+    structure = line.structure_morphism()
+    return line, line.scheme_category().fiber_product(structure, structure)
 
 
 def test_the_affine_line_squared_over_the_base_is_the_affine_plane() -> None:
@@ -69,7 +69,10 @@ def test_fiber_of_the_first_projection_over_the_origin_is_an_affine_line() -> No
     x = algebra.algebra_generator("x")
     origin = line.closed_subscheme(x)
     first_projection = plane.fiber_product_projections()[0]
-    fiber = scheme_fiber_product(first_projection, origin.inclusion())
+    fiber = first_projection.codomain().scheme_category().fiber_product(
+        first_projection,
+        origin.inclusion(),
+    )
 
     assert fiber.fiber_product_base() is line
     assert fiber.left_projection().codomain() is plane

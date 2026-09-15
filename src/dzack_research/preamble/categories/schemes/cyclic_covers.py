@@ -77,7 +77,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Spec,
     _affine_morphism_from_pullback,
     affine_spec_morphism,
-    scheme_product,
 )
 from dzack_research.preamble.refine import refine
 
@@ -132,7 +131,7 @@ def local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
     local_algebra = cyclic_algebra.local_algebra(chart_index)
     local_scheme = Spec(local_algebra)
     group_scheme = roots_of_unity_group_scheme(local_base, int(cyclic_algebra.degree()))
-    product = scheme_product(group_scheme.scheme(), local_scheme)
+    product = local_scheme.scheme_category().product((group_scheme.scheme(), local_scheme))
     product_algebra = product.coordinate_algebra()
     group_pullback = product.projection(0).coordinate_algebra_morphism()
     cover_pullback = product.projection(1).coordinate_algebra_morphism()
@@ -681,7 +680,7 @@ class CyclicCovers(OwnedCategory):
         cover = Spec(cover_algebra)
         image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
         group_scheme = self.deck_group_scheme()
-        product = scheme_product(group_scheme.scheme(), cover)
+        product = cover.scheme_category().product((group_scheme.scheme(), cover))
         product_algebra = product.coordinate_algebra()
         group_pullback = product.projection(0).coordinate_algebra_morphism()
         cover_pullback = product.projection(1).coordinate_algebra_morphism()

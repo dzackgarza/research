@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.schemes.base_change import (
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     Spec,
-    scheme_fiber_product,
 )
 
 
@@ -74,7 +73,10 @@ class RelativeAffineFamily(SageObject):
         r"""Return ``X x_S S'`` for one represented ``S' -> S``."""
         if base_morphism.codomain() is not self.base_scheme():
             raise ValueError("a family fibre/base change requires a morphism into the family base")
-        return scheme_fiber_product(self.morphism(), base_morphism)
+        return base_morphism.codomain().scheme_category().fiber_product(
+            self.morphism(),
+            base_morphism,
+        )
 
     @cached_method
     def quotient_fiber(self, ideal):

@@ -319,7 +319,7 @@ class SchemeMorphism(Morphism):
     def graph_morphism(self):
         r"""``Gamma_f = (id, f): X -> X x_S Y``."""
         identity = self.domain().categorical_identity_morphism()
-        return scheme_product(self.domain(), self.codomain()).from_product_cone((identity, self))
+        return _scheme_product(self.domain(), self.codomain()).from_product_cone((identity, self))
 
     @cached_method
     def graph_subscheme(self):
@@ -331,7 +331,7 @@ class SchemeMorphism(Morphism):
         """
         base = self.codomain().scheme_base_ring()
         assert self.codomain() in AffineSchemes(base), "the graph is represented as a closed subscheme for affine targets"
-        product = scheme_product(self.domain(), self.codomain())
+        product = _scheme_product(self.domain(), self.codomain())
         to_domain = product.projection(0).coordinate_algebra_morphism()
         to_codomain = product.projection(1).coordinate_algebra_morphism()
         pullback = self.coordinate_algebra_morphism()
@@ -971,10 +971,10 @@ class Schemes(OwnedCategoryOverBaseRing):
             )
 
             family = _finite_factor_family(factors, name="Product factors")
-            return scheme_product(family)
+            return _scheme_product(family)
 
         def _categorical_product(self, left, right):
-            return scheme_product(left, right)
+            return _scheme_product(left, right)
 
         def fiber_product(self, left_leg, right_leg):
             r"""Return the fiber product of the cospan these two legs form."""
@@ -982,7 +982,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             return self._categorical_pullback(left_leg, right_leg)
 
         def _categorical_pullback(self, left_morphism, right_morphism):
-            return scheme_fiber_product(left_morphism, right_morphism)
+            return _scheme_fiber_product(left_morphism, right_morphism)
 
         def equalizer(self, left, right):
             r"""Return the equalizer ``Eq(f, g) -> X`` of two parallel morphisms."""
@@ -1233,7 +1233,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         def diagonal_morphism(self):
             r"""``Delta: X -> X x_S X``, the cone map with both legs the identity."""
             identity = self.categorical_identity_morphism()
-            return scheme_product(self, self).from_product_cone((identity, identity))
+            return _scheme_product(self, self).from_product_cone((identity, identity))
 
         @cached_method
         def diagonal_subscheme(self):
@@ -1249,7 +1249,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             assert self in AffineSchemes(base), (
                 "the diagonal is represented as a closed subscheme for affine schemes; for a glued scheme it is closed exactly when the scheme is separated"
             )
-            product = scheme_product(self, self)
+            product = _scheme_product(self, self)
             left = product.projection(0).coordinate_algebra_morphism()
             right = product.projection(1).coordinate_algebra_morphism()
             algebra = self.coordinate_algebra()
@@ -2490,10 +2490,10 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine plane as a product of two affine lines."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace
 
         ring = self.base_ring()
-        return scheme_product(AffineSpace(1, ring), AffineSpace(1, ring))
+        return _scheme_product(AffineSpace(1, ring), AffineSpace(1, ring))
 
     def _repr_object_names(self):
         return f"scheme products over {self.base_ring()}"
@@ -2653,10 +2653,10 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The product of two projective lines."""
-        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
         ring = self.base_ring()
-        return scheme_product(ProjectiveSpace(1, ring), ProjectiveSpace(1, ring))
+        return _scheme_product(ProjectiveSpace(1, ring), ProjectiveSpace(1, ring))
 
     def _repr_object_names(self):
         return f"products of projective spaces over {self.base_ring()}"
@@ -2701,7 +2701,7 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                     ),
                     name="Standard affine factors of a multiprojective chart",
                 )
-                chart = scheme_product(local_factors)
+                chart = _scheme_product(local_factors)
                 charts[choice] = chart
                 chart_algebra = chart.coordinate_algebra()
                 engine_coordinates = []
@@ -3576,7 +3576,7 @@ def _mixed_affine_projective_product(factors, base):
                 local_factors.append(scheme.standard_affine_chart(label[projective_slot[position]]))
             else:
                 local_factors.append(scheme)
-        charts[label] = scheme_product(tuple(local_factors))
+        charts[label] = _scheme_product(tuple(local_factors))
 
     overlap_cache = {}
 
@@ -3690,7 +3690,7 @@ def _mixed_affine_projective_product(factors, base):
     return product
 
 
-def scheme_product(*schemes):
+def _scheme_product(*schemes):
     r"""Return the categorical product in the currently supported scheme regimes.
 
     The defining datum is an indexed family.  Positional arguments and one
@@ -3794,7 +3794,7 @@ def scheme_product(*schemes):
             elif len(nonterminal_positions) == 1:
                 reduced = scheme_values[nonterminal_positions[0]]
             else:
-                reduced = scheme_product(
+                reduced = _scheme_product(
                     tuple(scheme_values[position] for position in nonterminal_positions)
                 )
             algebra = reduced.coordinate_algebra()
@@ -3864,7 +3864,7 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""``A^1 \times_{Spec R} A^1``, the affine plane as a fiber product."""
         line = AffineSpace(1, self.base_ring())
-        return scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
+        return _scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
 
     def super_categories(self):
         return [Schemes(self.base_ring())]
@@ -4125,7 +4125,7 @@ def _projective_space_scalar_base_change(left_map, right_map):
     return None
 
 
-def scheme_fiber_product(left_map, right_map):
+def _scheme_fiber_product(left_map, right_map):
     r"""Return ``X x_S Y`` in the represented affine and scalar-projective regimes."""
     if not isinstance(left_map, SchemeMorphism) or not isinstance(right_map, SchemeMorphism):
         raise TypeError("a represented scheme fiber product is specified by scheme morphisms")
@@ -4795,10 +4795,8 @@ __all__ = [
     "refine_scheme",
     "refine_scheme_morphism",
     "categorical_scheme_morphism",
-    "scheme_product",
     "affine_spec_morphism",
     "refine_closed_subscheme",
-    "scheme_fiber_product",
 ]
 
 Schemes._MonoCategory = SchemeMonomorphisms

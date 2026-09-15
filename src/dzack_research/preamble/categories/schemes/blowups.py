@@ -41,7 +41,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     categorical_scheme_morphism,
     refine_closed_subscheme,
     refine_scheme,
-    scheme_product,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -373,7 +372,7 @@ def ProjectivePointBlowup(projective_plane, point):
         raise ValueError("the blowup center must be a represented rational point of this P^2")
 
     direction = ProjectiveSpace(1, base, names=("U", "V"))
-    product = scheme_product(projective_plane, direction)
+    product = projective_plane.scheme_category().product((projective_plane, direction))
     graph_sections = product.O(1, 1).global_sections()
     source_embedding = graph_sections.factor_coordinate_embedding(0)
     direction_embedding = graph_sections.factor_coordinate_embedding(1)

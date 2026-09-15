@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
-    scheme_product,
 )
 
 
@@ -20,7 +19,7 @@ def _mu_two_scaling_action():
     line = AffineSpace(1, QQ, names=("x",))
     line_algebra = line.coordinate_algebra()
     x = line_algebra.algebra_generator("x")
-    product = scheme_product(mu_two.scheme(), line)
+    product = line.scheme_category().product((mu_two.scheme(), line))
     product_algebra = product.coordinate_algebra()
     group_pullback = product.projection(0).coordinate_algebra_morphism()
     point_pullback = product.projection(1).coordinate_algebra_morphism()

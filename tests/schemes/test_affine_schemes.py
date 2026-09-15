@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     Schemes,
     SmoothSchemes,
     Spec,
-    scheme_product,
 )
 
 
@@ -108,7 +107,7 @@ def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() ->
 def test_affine_space_product_is_a_scheme_product_with_actual_projections() -> None:
     line = AffineSpace(1, QQ, names=("u",))
     plane = AffineSpace(2, QQ, names=("v", "w"))
-    product = scheme_product(line, plane)
+    product = line.scheme_category().product((line, plane))
 
     assert product in Schemes(QQ)
     assert product in AffineSpaces(QQ)
@@ -130,7 +129,7 @@ def test_affine_space_product_is_a_scheme_product_with_actual_projections() -> N
 def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> None:
     first_factor = ProjectiveSpace(1, QQ, names=("x0", "x1"))
     second_factor = ProjectiveSpace(1, QQ, names=("y0", "y1"))
-    product = scheme_product(first_factor, second_factor)
+    product = first_factor.scheme_category().product((first_factor, second_factor))
 
     assert product in Schemes(QQ)
     assert product in ProductSchemes(QQ)
@@ -164,7 +163,7 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     left = Spec(left_algebra)
     right = Spec(right_algebra)
 
-    product = scheme_product(left, right)
+    product = left.scheme_category().product((left, right))
     tensor = CommutativeAlgebras(QQ).coproduct((left_algebra, right_algebra))
     first, second = product.projections()
 

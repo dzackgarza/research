@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     ProjectiveLineBundleLinearization,
     ProjectiveLineCoordinateSwapAction,
     ProjectiveSpace,
-    scheme_product,
 )
 
 
@@ -131,7 +130,7 @@ def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
 
 def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> None:
     line = ProjectiveSpace(1, QQ)
-    product = scheme_product(line, line)
+    product = line.scheme_category().product((line, line))
     bundle = product.O(1, 1)
     action = C2DiagonalProductProjectiveAction(product)
     linearized = bundle.linearize(action, lambda _element: QQ.one())

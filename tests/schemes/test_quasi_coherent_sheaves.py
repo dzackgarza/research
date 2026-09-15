@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QQ,
     Spec,
     SpecFunctor,
-    scheme_fiber_product,
 )
 
 
@@ -114,7 +113,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     point_algebra = PolynomialRing(QQ, "u")
     u = point_algebra.algebra_generator("u")
     point_map = SpecFunctor(QQ)(algebra.Mor(point_algebra)({"x": point_algebra.one()}))
-    fibre = scheme_fiber_product(relative.arrow(), point_map)
+    fibre = point_map.codomain().scheme_category().fiber_product(relative.arrow(), point_map)
     fibre_algebra = fibre.coordinate_algebra()
     zf = fibre_algebra.algebra_generator(("left", "z"))
     assert zf**2 == fibre_algebra.one()

@@ -778,7 +778,7 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
 from dzack_research.preamble.categories.rational_lattices import (
     RationalLattices as RationalLattices,
 )
-from dzack_research.preamble.categories.schemes import (  # noqa: F401
+from dzack_research.preamble.categories.schemes import (
     ADELogPair,
     ADELogPairs,
     AffineGroupSchemeActions,
@@ -919,8 +919,6 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     reynolds_invariant_base_change_hypothesis,
     roots_of_unity_group_scheme,
     scheme_base_change_functor,
-    scheme_fiber_product,
-    scheme_product,
     slice_base_change_adjunction,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401

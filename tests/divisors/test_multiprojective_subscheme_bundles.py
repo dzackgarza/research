@@ -1,6 +1,6 @@
 """Restricted multiprojective line bundles retain their exact multidegree."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace, scheme_product
+from dzack_research.preamble.all import QQ, ProjectiveSpace
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     ProductProjectiveSubschemeLineBundleIsomorphism,
 )
@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
 def test_restricted_multiprojective_bundles_tensor_and_compare_by_multidegree() -> None:
     plane = ProjectiveSpace(2, QQ)
     line = ProjectiveSpace(1, QQ)
-    product = scheme_product(plane, line)
+    product = plane.scheme_category().product((plane, line))
     sections = product.O(1, 1).global_sections()
     ring = sections.homogeneous_coordinate_ring()
     labels = tuple(ring.algebra_generating_set())

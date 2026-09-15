@@ -54,7 +54,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _normalized_space_names,
     categorical_scheme_morphism,
     refine_scheme,
-    scheme_fiber_product,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
@@ -220,7 +219,7 @@ class SchemeBaseChangeFunctor(Functor):
                     [FiberProductSchemes(target)],
                 )
             case _ if scheme in ProjectiveSpaces(source):
-                return scheme_fiber_product(
+                return scheme.scheme_category().fiber_product(
                     scheme.structure_morphism(),
                     self.base_morphism(),
                 )
@@ -309,7 +308,11 @@ class SlicePullbackFunctor(Functor):
         return self._base_morphism
 
     def _apply_object(self, family):
-        pulled_back = scheme_fiber_product(family.arrow(), self.base_morphism())
+        base_morphism = self.base_morphism()
+        pulled_back = base_morphism.codomain().scheme_category().fiber_product(
+            family.arrow(),
+            base_morphism,
+        )
         return self.codomain()(pulled_back.right_projection())
 
     def _apply_morphism(self, triangle):
