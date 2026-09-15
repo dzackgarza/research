@@ -813,11 +813,6 @@ class QuarticK3HodgeData(SageObject):
 
 
 
-def QuarticK3IntegralCohomology(scheme, degree):
-    r"""Return ``H^degree(X(CC),ZZ)`` for a represented smooth quartic K3."""
-    return QuarticK3IntegralTopology(scheme).integral_cohomology(degree)
-
-
 def _integral_topology_construction_data(
     scheme,
     degree,
@@ -1283,7 +1278,6 @@ __all__ = [
     "PGL2IntegralCohomology",
     "IntegralSingularCohomologyGroups",
     "QuarticK3IntegralTopology",
-    "QuarticK3IntegralCohomology",
     "AffineGeometricCohomology",
     "AffineGeometricCohomologyComplex",
     "AffineGeometricCohomologyComplexes",

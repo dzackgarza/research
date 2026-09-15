@@ -736,7 +736,6 @@ from dzack_research.preamble.categories.schemes import (
     ProjectiveSpace,
     ProjectiveSpaces,
     QuarticK3HodgeData,
-    QuarticK3IntegralCohomology,
     QuarticK3IntegralTopology,
     QuasiAffineSchemes,
     QuasiCoherentSheaves,
