@@ -1,17 +1,13 @@
 r"""Archive reconciliation for orthogonal complements of formed embeddings."""
 
-from dzack_research.preamble.all import QQ, BilinearForm, FreeModule
+from dzack_research.preamble.all import QQ, FreeModule
 
 
 def test_form_embedding_orthogonal_complement_is_the_pairing_kernel_with_restricted_form() -> None:
     line_module = FreeModule(QQ, 1)
     ambient_module = FreeModule(QQ, 3)
-    line = BilinearForm(line_module, QQ, [[1]])
-    ambient = BilinearForm(
-        ambient_module,
-        QQ,
-        [[1, 0, 0], [0, 2, 0], [0, 0, 3]],
-    )
+    line = line_module.equip_bilinear_form(QQ, [[1]])
+    ambient = ambient_module.equip_bilinear_form(QQ, [[1, 0, 0], [0, 2, 0], [0, 0, 3]])
     ambient_generators = tuple(ambient.module_generators())
     embedding = line.Mono(ambient)(
         {line.module_generating_set()[0]: ambient_generators[0]}
@@ -31,7 +27,7 @@ def test_form_embedding_orthogonal_complement_is_the_pairing_kernel_with_restric
 
 def test_identity_form_embedding_has_zero_orthogonal_complement_for_nondegenerate_form() -> None:
     module = FreeModule(QQ, 2)
-    formed = BilinearForm(module, QQ, [[0, 1], [1, 0]])
+    formed = module.equip_bilinear_form(QQ, [[0, 1], [1, 0]])
     embedding = formed.Mono(formed)(
         {
             label: formed.module_generator(label)

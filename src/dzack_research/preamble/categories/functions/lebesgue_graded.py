@@ -43,7 +43,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.forms.forms import Pairings
 from dzack_research.preamble.categories.functions.real_functions import (
     Lp,
     _integrability,
@@ -196,7 +195,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             composite = self.integral_pairing_morphism()
             multiplication = self.multiplication_morphism()
             tensor = multiplication.domain()
-            return Pairings(self, self, RR)(
+            return self.pairings_with(self, RR)(
                 lambda left, right, composite=composite, tensor=tensor: composite(
                     tensor.pure_tensor(left, right)
                 )

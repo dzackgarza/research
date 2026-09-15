@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
     OwnedCategoryOverBaseRing,
-    QuadraticMap,
     finite_ordered_set,
 )
 
@@ -22,7 +21,6 @@ def test_terminal_collection_vocabulary_is_public() -> None:
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
         OwnedCategoryOverBaseRing,
-        QuadraticMap,
         finite_ordered_set,
     )
 
@@ -257,6 +255,13 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "TrivialInvertibleSheaf",
         "ProjectiveO",
         "LineBundleCohomologySpace",
+        "Pairings",
+        "BilinearForms",
+        "QuadraticForms",
+        "QuadraticMap",
+        "quadratic_map_from_morphism",
+        "BilinearForm",
+        "QuadraticForm",
         "continuous_group_homset",
         "algebra_from_multiplication",
         "own_algebra",

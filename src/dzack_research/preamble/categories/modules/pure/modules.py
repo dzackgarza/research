@@ -806,6 +806,54 @@ class Modules(OwnedCategoryOverBaseRing):
         def module_category(self):
             return Modules(self.base_ring())
 
+        def pairings_with(self, right_module, value_module):
+            r"""Return bilinear pairings ``self x right_module -> value_module``."""
+            from dzack_research.preamble.categories.forms.forms import _pairings
+
+            return _pairings(self, right_module, value_module)
+
+        def bilinear_forms(self, value_module):
+            r"""Return bilinear forms ``self x self -> value_module``."""
+            from dzack_research.preamble.categories.forms.forms import _bilinear_forms
+
+            return _bilinear_forms(self, value_module)
+
+        def quadratic_forms(self, value_module):
+            r"""Return quadratic forms ``self -> value_module`` through ``Gamma^2(self)``."""
+            from dzack_research.preamble.categories.forms.forms import _quadratic_forms
+
+            return _quadratic_forms(self, value_module)
+
+        def quadratic_map(self, value_module, function):
+            r"""Return the quadratic map classified by ``function``."""
+            from dzack_research.preamble.categories.forms.forms import _quadratic_map
+
+            return _quadratic_map(self, value_module, function)
+
+        def quadratic_map_from_morphism(self, morphism):
+            r"""Recover the quadratic map classified by a map out of ``Gamma^2(self)``."""
+            from dzack_research.preamble.categories.forms.forms import (
+                _quadratic_map_from_morphism,
+            )
+
+            return _quadratic_map_from_morphism(self, morphism)
+
+        def equip_bilinear_form(self, value_module, datum):
+            r"""Return this module construction equipped with the selected bilinear form."""
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                _bilinear_form,
+            )
+
+            return _bilinear_form(self, value_module, datum)
+
+        def equip_quadratic_form(self, value_module, datum):
+            r"""Return this module construction equipped with the selected quadratic form."""
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                _quadratic_form,
+            )
+
+            return _quadratic_form(self, value_module, datum)
+
         def tensor_algebra(self):
             r"""Return the tensor algebra ``T_R(self)``."""
             return self.module_category().tensor_algebra()(self)

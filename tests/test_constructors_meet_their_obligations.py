@@ -288,8 +288,8 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # ---- forms ----
         # The two form homsets: built transiently everywhere a form is made,
         # and never asked for themselves.
-        "bilinear form homset": lambda: BilinearForms(Lattices(ZZ)("A2"), ZZ),
-        "quadratic form homset": lambda: QuadraticForms(Lattices(ZZ)("A2"), ZZ),
+        "bilinear form homset": lambda: Lattices(ZZ)("A2").bilinear_forms(ZZ),
+        "quadratic form homset": lambda: Lattices(ZZ)("A2").quadratic_forms(ZZ),
     }
 
 

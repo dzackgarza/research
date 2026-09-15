@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     FreeModuleOn,
     Lp,
     PairedModules,
-    Pairings,
     RR,
     ell,
 )
@@ -19,7 +18,7 @@ from dzack_research.preamble.all import (
 def test_a_pairing_of_distinct_modules_is_not_a_form() -> None:
     left = FreeModuleOn(ZZ, ["a"])
     right = FreeModuleOn(ZZ, ["b"])
-    pairing = Pairings(left, right, ZZ)([[2]])
+    pairing = left.pairings_with(right, ZZ)([[2]])
     paired = PairedModules(ZZ)(pairing)
     a = left.module_generator("a")
     b = right.module_generator("b")
@@ -36,11 +35,11 @@ def test_a_pairing_of_distinct_modules_is_not_a_form() -> None:
 
 def test_the_diagonal_pairing_is_a_formed_module() -> None:
     module = FreeModuleOn(ZZ, ["e"])
-    form = Pairings(module, module, ZZ)([[1]])
+    form = module.pairings_with(module, ZZ)([[1]])
     formed = PairedModules(ZZ)(form)
     generator = formed.module_generator("e")
 
-    assert form.parent() is Pairings(module, module, ZZ)
+    assert form.parent() is module.pairings_with(module, ZZ)
     assert formed in FormedModules(ZZ)
     assert formed in PairedModules(ZZ)
     assert formed in FormModules(ZZ)

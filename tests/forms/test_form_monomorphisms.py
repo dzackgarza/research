@@ -2,7 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import BasedFreeModule, ZZ
 from dzack_research.preamble.categories.abstract_categories.hom_categories import category_packet
-from dzack_research.preamble.categories.forms import BilinearForms
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormEmbedding,
     FormModule,
@@ -13,7 +12,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _zero_formed_line():
     module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    return FormModule(BilinearForms(module, ZZ)(lambda _left, _right: ZZ.zero()))
+    return FormModule(module.bilinear_forms(ZZ)(lambda _left, _right: ZZ.zero()))
 
 
 def test_form_embedding_is_certified_by_the_mono_subcategory() -> None:

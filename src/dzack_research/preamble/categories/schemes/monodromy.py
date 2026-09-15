@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.functors.group_actions import GroupActio
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    BilinearForm,
     FormModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -251,11 +250,7 @@ class LegendreMonodromyFamily(SageObject):
             generator,
         )
 
-        cohomology = BilinearForm(
-            FreeModule(integers, 2),
-            integers,
-            [[0, 1], [-1, 0]],
-        )
+        cohomology = FreeModule(integers, 2).equip_bilinear_form(integers, [[0, 1], [-1, 0]])
         labels = tuple(cohomology.module_generating_set())
         alpha_dual = cohomology.module_generator(labels[0])
         beta_dual = cohomology.module_generator(labels[1])

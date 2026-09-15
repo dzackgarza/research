@@ -22,10 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     IsoCategoryConstruction,
     category_packet,
 )
-from dzack_research.preamble.categories.forms.forms import (
-    BilinearForms,
-    QuadraticForms,
-)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
@@ -1590,7 +1586,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         if not _bilinear_descends(relations, values, value_module):
             raise ValueError("the bilinear form does not descend through the selected relations")
         formed = FormModule(
-            BilinearForms(module, value_module)(values),
+            module.bilinear_forms(value_module)(values),
             _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
@@ -1917,7 +1913,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         if not _quadratic_descends(relations, values, value_module):
             raise ValueError("the quadratic form does not descend through the selected relations")
         formed = FormModule(
-            QuadraticForms(module, value_module)(values),
+            module.quadratic_forms(value_module)(values),
             _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
@@ -2180,7 +2176,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
             equip = self.equip_form_morphism()
             associated = FormModule(
-                BilinearForms(module, bilinear_values)(
+                module.bilinear_forms(bilinear_values)(
                     lambda left, right: bilinear_values(
                         value_module.lift(
                             quadratic_form.lift_pairing(equip(left), equip(right))

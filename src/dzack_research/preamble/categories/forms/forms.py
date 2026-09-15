@@ -120,7 +120,7 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
                     ),
                 )
             )
-            return BilinearForms(morphism.domain(), self.codomain())(self * induced)
+            return morphism.domain().bilinear_forms(self.codomain())(self * induced)
 
         def descends_along(self, morphism, value_projection) -> bool:
             r"""Whether this form descends through ``coker(morphism)`` after projecting values."""
@@ -198,7 +198,7 @@ def _descended_bilinear_form(form, morphism, value_projection):
             }
         )
 
-    return BilinearForms(quotient, value_projection.codomain())(
+    return quotient.bilinear_forms(value_projection.codomain())(
         lambda left, right: value_projection(
             form(selected_lift(left), selected_lift(right))
         )
@@ -356,7 +356,7 @@ class _CallableForm(Element):
         """
         if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
             raise TypeError("this quadratic form has no chosen bilinear lift")
-        return BilinearForms(self.module(), self.codomain())(
+        return self.module().bilinear_forms(self.codomain())(
             lambda left, right: self._lift_evaluation(left, right)
         )
 
@@ -404,12 +404,12 @@ class _CallableForm(Element):
 
     def polar_form(self):
         if self.parent().kind() == "quadratic":
-            return BilinearForms(self.module(), self.codomain())(
+            return self.module().bilinear_forms(self.codomain())(
                 lambda left, right: self(left + right) - self(left) - self(right)
             )
         if self.left_module() is not self.right_module():
             raise TypeError("polar form syntax requires a bilinear form on one module")
-        return BilinearForms(self.module(), self.codomain())(
+        return self.module().bilinear_forms(self.codomain())(
             lambda left, right: 2 * self(left, right)
         )
 
@@ -422,12 +422,11 @@ class _CallableForm(Element):
         if morphism.codomain() is not self.module():
             raise ValueError("the pullback map must land in the form's module")
         if self.parent().kind() == "quadratic":
-            return QuadraticMap(
-                morphism.domain(),
+            return morphism.domain().quadratic_map(
                 self.codomain(),
                 lambda element: self(morphism(element)),
             )
-        return BilinearForms(morphism.domain(), self.codomain())(
+        return morphism.domain().bilinear_forms(self.codomain())(
             lambda left, right: self(morphism(left), morphism(right))
         )
 
@@ -525,10 +524,10 @@ def is_quadratic_form(form) -> bool:
     return isinstance(form, QuadraticModuleMorphism)
 
 
-def Pairings(left_module, right_module, value_module):
+def _pairings(left_module, right_module, value_module):
     r"""Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists."""
     if left_module is right_module:
-        return BilinearForms(left_module, value_module)
+        return left_module.bilinear_forms(value_module)
 
     if _value_module_over(value_module, left_module.base_ring()):
         try:
@@ -542,7 +541,7 @@ def Pairings(left_module, right_module, value_module):
     return _callable_form_space(left_module, right_module, value_module, "bilinear")
 
 
-def BilinearForms(module, value_module):
+def _bilinear_forms(module, value_module):
     r"""Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists."""
 
     if _value_module_over(value_module, module.base_ring()):
@@ -555,7 +554,7 @@ def BilinearForms(module, value_module):
     return _callable_form_space(module, module, value_module, "bilinear")
 
 
-def QuadraticForms(module, value_module):
+def _quadratic_forms(module, value_module):
     r"""Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented."""
 
     if _value_module_over(value_module, module.base_ring()):
@@ -572,9 +571,9 @@ QuadraticFormMorphism = QuadraticModuleMorphism
 QuadraticMapMorphism = QuadraticFormMorphism
 
 
-def QuadraticMap(module, value_module, function):
+def _quadratic_map(module, value_module, function):
     r"""Return the quadratic map ``module -> value_module`` via its classifier."""
-    forms = QuadraticForms(module, value_module)
+    forms = module.quadratic_forms(value_module)
     return forms.from_quadratic_map(function)
 
 
@@ -587,7 +586,7 @@ def classifying_morphism(quadratic):
     return square.from_quadratic(quadratic, quadratic.codomain())
 
 
-def quadratic_map_from_morphism(module, morphism):
+def _quadratic_map_from_morphism(module, morphism):
     r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``."""
 
     square = module.divided_square()
@@ -595,8 +594,7 @@ def quadratic_map_from_morphism(module, morphism):
         raise ValueError("the classifier morphism has the wrong divided-square domain")
     if isinstance(morphism, QuadraticModuleMorphism):
         return morphism
-    return QuadraticMap(
-        module,
+    return module.quadratic_map(
         morphism.codomain(),
         lambda element: morphism(square.quadratic(element)),
     )

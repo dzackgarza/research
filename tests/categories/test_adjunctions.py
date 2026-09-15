@@ -444,9 +444,9 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
     )
 
     lattice = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    from dzack_research.preamble.all import BilinearForm, Lattices
+    from dzack_research.preamble.all import Lattices
 
-    formed = BilinearForm(lattice, ZZ, [[0, 1], [1, 0]])
+    formed = lattice.equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
     forget_form = FormModules(ZZ).inclusion_into(Modules(ZZ))
     assert forget_form(formed) is formed
 

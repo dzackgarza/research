@@ -18,9 +18,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.forms.forms import (
-    BilinearForms,
-    QuadraticForms,
-    QuadraticMap,
     is_bilinear_form,
     is_quadratic_form,
 )
@@ -1026,11 +1023,11 @@ class FormModules(OwnedCategoryOverBaseRing):
                     )
                 except TypeError:
                     return FormModule(
-                        BilinearForms(self, self.value_module())(
+                        self.bilinear_forms(self.value_module())(
                             lambda left, right: scalar * form(left, right)
                         )
                     )
-                return FormModule(BilinearForms(self, self.value_module())(values))
+                return FormModule(self.bilinear_forms(self.value_module())(values))
             try:
                 values = form.lift_coordinate_values().map(
                     lambda value: scalar * value,
@@ -1038,13 +1035,12 @@ class FormModules(OwnedCategoryOverBaseRing):
                 )
             except TypeError:
                 return FormModule(
-                    QuadraticMap(
-                        self,
+                    self.quadratic_map(
                         self.value_module(),
                         lambda element: scalar * form(element),
                     )
                 )
-            return FormModule(QuadraticForms(self, self.value_module())(values))
+            return FormModule(self.quadratic_forms(self.value_module())(values))
 
         def base_change(self, ring_map):
             r"""Base-change a scalar-valued finite free form along ``R -> S``."""
@@ -1065,7 +1061,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 except TypeError:
                     changed_values = None
                 if changed_values is not None:
-                    return FormModule(BilinearForms(changed, target_ring)(changed_values))
+                    return FormModule(changed.bilinear_forms(target_ring)(changed_values))
 
                 def changed_bilinear_value(left, right):
                     left_coefficients = module_coefficients(left, changed)
@@ -1086,7 +1082,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     return result
 
                 return FormModule(
-                    BilinearForms(changed, target_ring)(changed_bilinear_value)
+                    changed.bilinear_forms(target_ring)(changed_bilinear_value)
                 )
 
             if not _is_quadratic_form(form):
@@ -1100,7 +1096,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             except TypeError:
                 changed_lift_values = None
             if changed_lift_values is not None:
-                return FormModule(QuadraticForms(changed, target_ring)(changed_lift_values))
+                return FormModule(changed.quadratic_forms(target_ring)(changed_lift_values))
 
             def changed_quadratic_value(element):
                 coefficients = module_coefficients(element, changed)
@@ -1127,7 +1123,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 return target_ring(result)
 
             return FormModule(
-                QuadraticMap(changed, target_ring, changed_quadratic_value)
+                changed.quadratic_map(target_ring, changed_quadratic_value)
             )
 
 
@@ -1226,12 +1222,9 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
                 equipped = equip(generator)
                 half(self.b(equipped, equipped))
 
-            return QuadraticForm(
-                unformed,
+            return unformed.equip_quadratic_form(
                 ring,
-                lambda element: half(
-                    self.b(equip(element), equip(element))
-                ),
+                lambda element: half(self.b(equip(element), equip(element))),
             )
 
         def algebraic_correlation_morphism(self):
@@ -1303,12 +1296,13 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             unformed = self.unformed_module()
             equip = self.equip_form_morphism()
             form = self._formed_form()
-            return BilinearForm(
-                unformed,
+            return unformed.equip_bilinear_form(
                 self.value_module(),
-                lambda left, right: form(equip(left) + equip(right))
-                - form(equip(left))
-                - form(equip(right)),
+                lambda left, right: (
+                    form(equip(left) + equip(right))
+                    - form(equip(left))
+                    - form(equip(right))
+                ),
             )
 
 
@@ -1648,13 +1642,13 @@ def _form_subobject_spanning(module, basis):
     )
 
 
-def BilinearForm(module, value_module, datum):
+def _bilinear_form(module, value_module, datum):
     r"""Return ``module`` equipped with the stated bilinear form."""
 
-    return FormModule(BilinearForms(module, value_module)(datum))
+    return FormModule(module.bilinear_forms(value_module)(datum))
 
 
-def QuadraticForm(module, value_module, datum):
+def _quadratic_form(module, value_module, datum):
     r"""Return ``module`` equipped with the stated quadratic form."""
 
     coordinate_datum = (
@@ -1666,9 +1660,9 @@ def QuadraticForm(module, value_module, datum):
         )
     )
     form = (
-        QuadraticForms(module, value_module)(datum)
+        module.quadratic_forms(value_module)(datum)
         if coordinate_datum
-        else QuadraticMap(module, value_module, datum)
+        else module.quadratic_map(value_module, datum)
     )
     return FormModule(form)
 

@@ -2,10 +2,6 @@ r"""Free bilinear/quadratic formed objects and their forgetful adjunctions."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.forms.forms import (
-    BilinearForms,
-    QuadraticMap,
-)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FinitelyPresentedBilinearFormModules,
@@ -101,7 +97,7 @@ class FreeBilinearFormFunctor(Functor):
 
         classifier = Modules(self.base_ring()).tensor_product((module, module))
         formed = FormModule(
-            BilinearForms(module, classifier)(
+            module.bilinear_forms(classifier)(
                 lambda left, right: classifier.pure_tensor(left, right)
             )
         )
@@ -145,7 +141,7 @@ class FreeQuadraticFormFunctor(Functor):
 
         classifier = module.divided_square()
         formed = FormModule(
-            QuadraticMap(module, classifier, classifier.quadratic)
+            module.quadratic_map(classifier, classifier.quadratic)
         )
         formed._preamble_form_classifier = classifier
         return formed

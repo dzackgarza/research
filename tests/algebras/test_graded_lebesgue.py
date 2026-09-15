@@ -68,7 +68,6 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     GradedTensorProductModules = session["GradedTensorProductModules"]
     LebesgueGradedModules = session["LebesgueGradedModules"]
     NonNegativeReals = session["NonNegativeReals"]
-    Pairings = session["Pairings"]
     AlgebrasWithChosenMultiplication = session["AlgebrasWithChosenMultiplication"]
 
     algebra = GradedLebesgueAlgebra
@@ -123,7 +122,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert pairing_morphism(
         multiplication.domain().pure_tensor(left, right)
     ) == RR(sqrt(pi / 2))
-    assert pairing.parent() is Pairings(algebra, algebra, RR)
+    assert pairing.parent() is algebra.pairings_with(algebra, RR)
     assert pairing(left, right) == Lp(2).b(gaussian, gaussian)
     assert epsilon(left) == RR.zero()
     assert epsilon(left) * epsilon(right) != epsilon(product)

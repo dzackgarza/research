@@ -1,11 +1,11 @@
 r"""Archive reconciliation for radicals of finite free formed modules."""
 
-from dzack_research.preamble.all import QQ, BilinearForm, FreeModule
+from dzack_research.preamble.all import QQ, FreeModule
 
 
 def test_radical_is_the_kernel_of_the_correlation_and_keeps_its_inclusion() -> None:
     module = FreeModule(QQ, 2)
-    formed = BilinearForm(module, QQ, [[1, 0], [0, 0]])
+    formed = module.equip_bilinear_form(QQ, [[1, 0], [0, 0]])
     first, second = tuple(formed.module_generators())
 
     radical = formed.radical()
@@ -20,7 +20,7 @@ def test_radical_is_the_kernel_of_the_correlation_and_keeps_its_inclusion() -> N
 
 def test_radical_quotient_is_the_actual_cokernel_with_the_descended_form() -> None:
     module = FreeModule(QQ, 2)
-    formed = BilinearForm(module, QQ, [[1, 0], [0, 0]])
+    formed = module.equip_bilinear_form(QQ, [[1, 0], [0, 0]])
     radical = formed.radical()
     quotient = formed.radical_quotient()
     underlying_quotient = radical.inclusion().cokernel()
@@ -34,7 +34,7 @@ def test_radical_quotient_is_the_actual_cokernel_with_the_descended_form() -> No
 
 def test_nondegenerate_form_has_zero_radical_and_unchanged_rank_after_quotient() -> None:
     module = FreeModule(QQ, 2)
-    formed = BilinearForm(module, QQ, [[0, 1], [1, 0]])
+    formed = module.equip_bilinear_form(QQ, [[0, 1], [1, 0]])
 
     assert formed.radical().module_rank() == 0
     quotient = formed.radical_quotient()

@@ -3,10 +3,6 @@ r"""Discriminant modules and their quotient-valued forms."""
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.forms.forms import (
-    BilinearForms,
-    QuadraticForms,
-)
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
@@ -543,7 +539,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
             unformed = self.unformed_module()
             return FormModule(
-                BilinearForms(unformed, self.bilinear_value_module())(gram),
+                unformed.bilinear_forms(self.bilinear_value_module())(gram),
                 _extra_categories=(
                     TorsionBilinearFormModules(self.base_ring()),
                     DiscriminantModules(self.base_ring()),
@@ -985,15 +981,19 @@ def _discriminant_module(lattice):
             quadratic_values = FractionFieldQuotient(ring, 2)
             construction_data["quadratic_value_module"] = quadratic_values
             categories.append(DiscriminantQuadraticModules(ring))
-            construction_data["source_form"] = QuadraticForms(
-                prototype, quadratic_values
-            )(_descended_quadratic_gram(
-                dual_lattice, labels, bilinear_values, quadratic_values
-            ))
+            construction_data["source_form"] = prototype.quadratic_forms(
+                quadratic_values
+            )(
+                _descended_quadratic_gram(
+                    dual_lattice, labels, bilinear_values, quadratic_values
+                )
+            )
         else:
-            construction_data["source_form"] = BilinearForms(
-                prototype, bilinear_values
-            )(_descended_bilinear_gram(dual_lattice, labels, bilinear_values))
+            construction_data["source_form"] = prototype.bilinear_forms(
+                bilinear_values
+            )(
+                _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
+            )
         construction_data["unformed_module"] = prototype
     return FinitelyPresentedModule(
         prototype.presentation(),

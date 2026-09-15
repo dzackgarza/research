@@ -87,7 +87,6 @@ from dzack_research.preamble.categories.definite_lattices import (
     _voronoi_cell,
     _voronoi_relevant_vectors,
 )
-from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.isotropic_orbits import (
     Cusp,
@@ -113,7 +112,6 @@ from dzack_research.preamble.categories.modules.framed.formed.discriminant_modul
     DiscriminantQuadraticModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    BilinearForm,
     FormedModules,
     SymmetricBilinearFormModules,
 )
@@ -1117,7 +1115,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def form(self):
             r"""Return the existing lattice pairing as a bilinear-form morphism."""
 
-            return BilinearForms(self, self.base_ring())(lambda left, right: self.b(left, right))
+            return self.bilinear_forms(self.base_ring())(lambda left, right: self.b(left, right))
 
         def value_module(self):
             return self.base_ring()
@@ -1856,11 +1854,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     module_generators=self.module_generating_set(),
                 )
             return refine_rational_lattice(
-                BilinearForm(
-                    self.dual_module(),
-                    fraction_field,
-                    inverse_components,
-                )
+                self.dual_module().equip_bilinear_form(fraction_field, inverse_components)
             )
 
         def metric_dual(self):

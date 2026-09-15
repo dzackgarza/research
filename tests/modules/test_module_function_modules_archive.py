@@ -3,7 +3,6 @@ r"""Archive reconciliation for function-valued modules with no finite framing.""
 import pytest
 from sage.all import RR, SR, cosh, exp, sech, sin, tanh, var
 
-from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.modules.pure.function_modules import (
     _MEMBER,
     _NOT_MEMBER,
@@ -59,7 +58,7 @@ def test_l2_accepts_opaque_callable_but_module_arithmetic_needs_no_recertificati
 def test_callable_bilinear_form_on_l2_needs_no_gram_matrix() -> None:
     t = var("t")
     l2 = square_integrable_functions(RR)
-    form = BilinearForms(l2, RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
+    form = l2.bilinear_forms(RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
     x = l2(lambda point: point)
     x2 = l2(lambda point: point**2)
 
@@ -122,7 +121,7 @@ def test_l2_is_closed_under_sums_certified_by_different_membership_criteria() ->
 def test_integral_pairing_is_symmetric_and_bilinear_on_archived_specimens() -> None:
     t = var("t")
     l2 = square_integrable_functions(RR)
-    form = BilinearForms(l2, RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
+    form = l2.bilinear_forms(RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
     x = l2(lambda point: point)
     x2 = l2(lambda point: point**2)
 

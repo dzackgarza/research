@@ -2,10 +2,7 @@ import pytest
 
 from dzack_research.preamble.all import NN, ZZ
 from dzack_research.preamble.categories.forms import (
-    BilinearForms,
-    QuadraticMap,
     classifying_morphism,
-    quadratic_map_from_morphism,
 )
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFormForgetfulAdjunction,
@@ -52,8 +49,8 @@ ARCHIVE_RECONCILIATION = {
         "BilinearFormMorphism.descends_along": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "BilinearFormMorphism.values_matrix": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "BilinearFormMorphism.image": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
-        "BilinearForm": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py",
-        "QuadraticForm": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py",
+        "BilinearForm": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "QuadraticForm": "src/dzack_research/preamble/categories/modules/pure/modules.py",
     },
     "disposition": "reconciled-live-owner",
 }
@@ -95,9 +92,9 @@ def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations()
             + 2 * y_coefficient**2
         )
 
-    quadratic = QuadraticMap(module, ZZ, quadratic_value)
+    quadratic = module.quadratic_map(ZZ, quadratic_value)
     classifier = classifying_morphism(quadratic)
-    recovered = quadratic_map_from_morphism(module, classifier)
+    recovered = module.quadratic_map_from_morphism(classifier)
     for value in (x, y, x + y, 2 * x - y):
         assert recovered(value) == quadratic(value)
     assert classifying_morphism(recovered).domain() is classifier.domain()
@@ -119,7 +116,7 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
     def coefficients(element):
         return module_coefficients(element, module)
 
-    bilinear = BilinearForms(module, ZZ)(
+    bilinear = module.bilinear_forms(ZZ)(
         lambda left, right: sum(
             (
                 left_coefficient * coefficients(right).get(label, ZZ.zero())
@@ -128,8 +125,7 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
             ZZ.zero(),
         )
     )
-    quadratic = QuadraticMap(
-        module,
+    quadratic = module.quadratic_map(
         ZZ,
         lambda element: sum(
             (coefficient**2 for coefficient in coefficients(element).values()),
@@ -146,11 +142,12 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
     with pytest.raises(TypeError, match="no finite Gram tensor"):
         pulled_bilinear.gram_tensor()
 
-    another_bilinear = BilinearForms(module, ZZ)(
+    another_bilinear = module.bilinear_forms(ZZ)(
         lambda left, right: pulled_bilinear(left, right)
     )
-    another_quadratic = QuadraticMap(
-        module, ZZ, lambda element: pulled_quadratic(element)
+    another_quadratic = module.quadratic_map(
+        ZZ,
+        lambda element: pulled_quadratic(element),
     )
     with pytest.raises(NotImplementedError, match="not decidable"):
         _ = pulled_bilinear == another_bilinear

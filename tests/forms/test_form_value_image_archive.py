@@ -1,6 +1,6 @@
 r"""Archive reconciliation for bilinear-form value tables and image modules."""
 
-from dzack_research.preamble.all import ZZ, BilinearForms
+from dzack_research.preamble.all import ZZ
 
 
 def _generator(module):
@@ -10,7 +10,7 @@ def _generator(module):
 def test_bilinear_value_matrix_and_image_keep_the_scale_submodule() -> None:
     module = ZZ.regular_module()
     generator = _generator(module)
-    form = BilinearForms(module, ZZ)([[ZZ(2)]])
+    form = module.bilinear_forms(ZZ)([[ZZ(2)]])
 
     assert form.values_matrix() == ((ZZ(2),),)
     image = form.image()

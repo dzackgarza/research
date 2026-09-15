@@ -2,8 +2,6 @@
 
 from dzack_research.preamble.all import (
     ZZ,
-    BilinearForms,
-    QuadraticMap,
 )
 
 
@@ -24,7 +22,7 @@ def _doubling(module):
 def test_archived_bilinear_form_is_the_live_tensor_hom_with_gram_and_pullback() -> None:
     module = _rank_one_module()
     generator = _generator(module)
-    form = BilinearForms(module, ZZ)([[ZZ.one()]])
+    form = module.bilinear_forms(ZZ)([[ZZ.one()]])
 
     assert form.module() is module
     assert form.codomain() is ZZ
@@ -39,11 +37,7 @@ def test_archived_bilinear_form_is_the_live_tensor_hom_with_gram_and_pullback() 
 def test_archived_quadratic_form_is_classified_by_divided_square_and_polarizes() -> None:
     module = _rank_one_module()
     generator = _generator(module)
-    quadratic = QuadraticMap(
-        module,
-        ZZ,
-        lambda element: element.to_tuple()[0] ** 2,
-    )
+    quadratic = module.quadratic_map(ZZ, lambda element: element.to_tuple()[0] ** 2)
 
     assert quadratic.module() is module
     assert quadratic.codomain() is ZZ

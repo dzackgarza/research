@@ -60,7 +60,6 @@ from sage.symbolic.ring import SR
 from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
-from dzack_research.preamble.categories.forms.forms import BilinearForms, Pairings
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormedModules,
     PairedModules,
@@ -312,7 +311,7 @@ def _lebesgue_pairing_module(left, right):
     r"""The pairing \(\int fg\colon L^p\otimes L^{p'}\to\mathbb R\)."""
     if left is right:
         return left
-    return PairedModules(RR)(Pairings(left, right, RR)(_l2_pairing))
+    return PairedModules(RR)(left.pairings_with(right, RR)(_l2_pairing))
 
 
 def _l2_pairing(left, right):
@@ -326,7 +325,7 @@ def _sequence_pairing_module(left, right):
     r"""The pairing \(\sum a_n b_n\colon \ell^p\otimes\ell^{p'}\to\mathbb R\)."""
     if left is right:
         return left
-    return PairedModules(RR)(Pairings(left, right, RR)(_ell2_pairing))
+    return PairedModules(RR)(left.pairings_with(right, RR)(_ell2_pairing))
 
 
 def _ell2_pairing(left, right):
@@ -970,7 +969,7 @@ class Lp(_FunctionSpace):
             )
         _FunctionSpace.__init__(self, RR, RR, category)
         if p == 2:
-            self._form = BilinearForms(self, RR)(_l2_pairing)
+            self._form = self.bilinear_forms(RR)(_l2_pairing)
             self._pairing = self._form
 
     def _element_constructor_(self, value):
@@ -1045,7 +1044,7 @@ class _ell(_FunctionSpace):
             )
         _FunctionSpace.__init__(self, NN, values, category, indeterminate=SR.var("n"))
         if p == 2:
-            self._form = BilinearForms(self, RR)(_ell2_pairing)
+            self._form = self.bilinear_forms(RR)(_ell2_pairing)
             self._pairing = self._form
 
     def integrability_exponent(self):
