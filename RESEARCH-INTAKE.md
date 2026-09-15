@@ -30,6 +30,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
 | p-curvature | User note 2026-09-15 | `p`-curvature of a connection in characteristic `p` (`ψ_p: T_{X/S} → End(E)`) | `categories/connections/p_curvature.py` + `categories/characteristic_p/` | Proposed — see note below |
 | Zeta of varieties / Weil conjectures (concrete cases) | User note 2026-09-15 | `Z(X/F_q,T)` for `X/F_q`; closed forms via explicit `|X(F_{q^r})|` for `A^n, P^n, Gr(k,n)`, some curves; verify Weil (rationality, functional equation, RH) | `categories/zeta/zeta.py` + `categories/varieties/point_counts.py` | Proposed — see note below |
+| Lefschetz trace operationalized (Frob) | User note 2026-09-15 | Operationalize `N_r = Σ (-1)^i Tr(Frob^r \| H^i_{c,ét}(Q_ℓ))` — compute `Tr(Frob)` on étale cohomology | `categories/etale/trace_formula.py` + `categories/etale/frobenius.py` | Proposed — see note below |
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 
@@ -435,3 +436,19 @@ To state `W(X/F_q)` you need these as categories/functors — not `q=5`, `X=P^2`
 
 **Not fundamental**
 * `q=7`, `X=A^n,P^n,Gr(k,n)`, `N_r = q^{nr}` or `q`-binomial, explicit `P_i = 1-q^j T` — elements `:NN` and morphisms `Spec F_{q^r}→X` whose counts give closed `Z = 1/(1-q^n T)` etc.; the functor `X ↦ Z(X)` and its factorisation are.
+
+## Desired capability: operationalize Lefschetz trace for Frob — note 2026-09-15
+
+Need a way to operationalize the Lefschetz trace formula, especially on étale cohomology for the trace of Frobenius.
+
+Need `Tr(Frob^r | H^i_{c,ét}(X_{\bar F_q}, Q_ℓ)) : Q_ℓ` as computable morphism on the cohomology object, not a formal symbol. Formula
+```
+N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^i_{c}(X_{\bar F_q}, Q_ℓ) )
+```
+must be executable: from `X : Sch/F_q` produce `H^i_c : Vect_{Q_ℓ}` with `Frob : End(H^i_c)` (via `X_ét`, `RΓ_c = R(p_!)`, `Q_ℓ(n)`), compute its trace via `Vect_{Q_ℓ}` linear algebra, and compare with `|X(F_{q^r})| : NN` (finite-set count). This is the bridge between counting and cohomology that makes `Z(X,T)=∏ P_i(T)^{(-1)^{i+1}}` effective, where `P_i(T)=det(1 - T·Frob | H^i_c)`.
+
+Requires: `Frob : X_{\bar F_q} → X_{\bar F_q}` as `Fr_q × id` on `X×_{F_q}\bar F_q`, its action `Frob^*: H^i_c → H^i_c` via functoriality of `RΓ_c`, and `Tr: End(V) → Q_ℓ` on `Vect_{Q_ℓ}` (finite-dimensional). Operationalization means: when `H^i_c` is presented (e.g. via known cell decomposition for `A^n, P^n, Gr` or via Monsky-Washnitzer / crystalline `RΓ_c` with Frobenius lift for general `X`), actually return matrix `M_i = Frob|_{H^i_c} : Mat_{b_i}(Q_ℓ)` and compute `Tr(M_i^r)`, `det(1 - T M_i)` exactly in `Z[T]`. Not a placeholder `trace_of_frob` stub.
+
+For concrete families (`A^n, P^n, Gr(k,n)` and some curves) the trace is already known from explicit `P_i`: e.g. `Tr(Frob|H^{2j}(P^n))=q^j`, otherwise `0`; for `Gr`, `Tr` is `q^{something}` via Schubert. The operational trace must reproduce those `N_r` via the sum, certifying the formula for those `X`. For general `X`, the trace is the computational content of Monsky-Washnitzer / rigid cohomology `H^i_{MW}` with Frobenius lift, behind the same `RΓ_c` interface — private adapter, but `X.etale_cohomology(i)` and `Frob.matrix()` stay owned.
+
+Intended owners: `categories/etale/trace_formula.py` (`LefschetzTrace` with `Tr(Frob^r|H^i_c)` and `N_r = Σ (-1)^i Tr`), `categories/etale/frobenius.py` (`Frobenius : End(H^i_c)` as `RΓ_c(Fr_q)`), `categories/etale/monsky_washnitzer.py` (private MW adapter for general `X` when `RΓ_c` not yet known). Not a free `trace_frobenius(X)` — `X.etale_cohomology_c(i, Q_ell).frobenius().trace(r)` on the cohomology object, with `X.point_count(r)` on the variety object for comparison.
