@@ -927,10 +927,8 @@ class Schemes(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The affine line over the base ring."""
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
-
         ring = self.base_ring()
-        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
 
     def _repr_object_names(self):
         return f"schemes over {self.base_ring()}"
@@ -1465,10 +1463,8 @@ class FiniteTypeSchemes(_SchemePropertyCategory):
     def an_object(self):
         r"""The affine line, of finite type over the base ring."""
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
-
         ring = self.base_ring()
-        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
 
 
 class IntegralSchemes(_SchemePropertyCategory):
@@ -1482,10 +1478,8 @@ class IntegralSchemes(_SchemePropertyCategory):
     def an_object(self):
         r"""The affine line, integral because its coordinate algebra is a domain."""
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
-
         ring = self.base_ring()
-        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
 
 
 class NormalSchemes(_SchemePropertyCategory):
@@ -1529,10 +1523,8 @@ class AffineSchemes(_SchemePropertyCategory):
     def an_object(self):
         r"""The affine line over the base ring."""
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
-
         ring = self.base_ring()
-        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
 
     def _call_(self, algebra):
         r"""Construct ``Spec(A)`` over this category's represented scalar base."""
@@ -2089,10 +2081,8 @@ class QuasiAffineSchemes(_SchemePropertyCategory):
     def an_object(self):
         r"""The affine line, which is affine."""
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
-
         ring = self.base_ring()
-        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+        return CommutativeAlgebras(ring).spectrum()(CommutativeAlgebras(ring).an_object())
 
     def super_categories(self):
         return [Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]

@@ -8,7 +8,7 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     QuadraticField,
     Spec,
-    SpecFunctor,
+    CommutativeAlgebras,
     reynolds_invariant_base_change_hypothesis,
 )
 
@@ -19,7 +19,7 @@ def _swap_action():
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,

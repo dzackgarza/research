@@ -38,10 +38,8 @@ class AffineSpecFunctor(ContravariantFunctor):
 
 
 @cached_function
-def affine_spec_functor(base_ring):
+def _affine_spec_functor(base_ring):
     return AffineSpecFunctor(base_ring)
 
 
-SpecFunctor = affine_spec_functor
-
-__all__ = ["AffineSpecFunctor", "SpecFunctor", "affine_spec_functor"]
+__all__ = ["AffineSpecFunctor"]

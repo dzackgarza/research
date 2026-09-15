@@ -468,10 +468,10 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
     def spectrum(self):
         r"""``Spec_R : CAlg_R^op -> AffSch_R``, the affine spectrum functor."""
         from dzack_research.preamble.categories.schemes.affine_spec import (
-            affine_spec_functor,
+            _affine_spec_functor,
         )
 
-        return affine_spec_functor(self.base_ring())
+        return _affine_spec_functor(self.base_ring())
 
     def de_rham(self):
         r"""``DR_R : CAlg_R -> SCDGA_R``, the algebraic de Rham functor."""

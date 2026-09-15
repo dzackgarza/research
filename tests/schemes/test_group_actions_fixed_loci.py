@@ -12,7 +12,7 @@ from dzack_research.preamble.all import (
     ProjectiveSpace,
     Schemes,
     Spec,
-    SpecFunctor,
+    CommutativeAlgebras,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -28,7 +28,7 @@ def _coordinate_swap_action() -> tuple:
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
-    swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
+    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,
@@ -89,7 +89,7 @@ def test_affine_scheme_action_rejects_generator_images_that_violate_relators() -
     algebra = PolynomialRing(QQ, "x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
-    dilation = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": x + x}))
+    dilation = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": x + x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
         scheme,

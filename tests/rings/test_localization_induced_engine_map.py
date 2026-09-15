@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import PolynomialRing, QQ, SpecFunctor
+from dzack_research.preamble.all import PolynomialRing, QQ, CommutativeAlgebras
 
 
 def test_localization_induced_map_retains_a_native_realization() -> None:
@@ -9,7 +9,7 @@ def test_localization_induced_map_retains_a_native_realization() -> None:
     localized_xy = ring.localization(x, y)
 
     induced = localized_x.induced_morphism(localized_xy.localization_map())
-    on_spectra = SpecFunctor(QQ)(induced)
+    on_spectra = CommutativeAlgebras(QQ).spectrum()(induced)
 
     assert induced(localized_x.localization_map()(x)).is_unit()
     assert induced(localized_x.localization_map()(y)) == localized_xy.localization_map()(y)

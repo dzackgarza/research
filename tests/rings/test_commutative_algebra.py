@@ -311,7 +311,7 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
 
 
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
-    from dzack_research.preamble.all import CommutativeAlgebras, Spec, SpecFunctor
+    from dzack_research.preamble.all import CommutativeAlgebras, Spec
 
     source = PolynomialRing(QQ, "x")
     middle = PolynomialRing(QQ, "t")
@@ -328,7 +328,7 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     second = middle.Mor(target)({"t": target(u + 1)})
     composite = second * first
 
-    spec = SpecFunctor(QQ)
+    spec = CommutativeAlgebras(QQ).spectrum()
     spec_source = spec(source)
     spec_middle = spec(middle)
     spec_target = spec(target)

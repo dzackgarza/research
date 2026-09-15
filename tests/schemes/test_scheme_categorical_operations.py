@@ -21,7 +21,7 @@ from dzack_research.preamble.all import (
     Schemes,
     SmoothSchemes,
     Spec,
-    SpecFunctor,
+    CommutativeAlgebras,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -45,7 +45,7 @@ def _cusp_parametrization():
     plane, algebra, x, y = _plane()
     line = PolynomialRing(QQ, "t")
     t = line.algebra_generator("t")
-    return plane, x, y, line, t, SpecFunctor(QQ)(algebra.Mor(line)({"x": t**2, "y": t**3}))
+    return plane, x, y, line, t, CommutativeAlgebras(QQ).spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
 
 
 def test_a_scheme_over_a_ring_is_a_scheme_over_every_scalar_base_of_that_ring() -> None:
@@ -150,8 +150,8 @@ def test_the_graph_of_the_cusp_parametrization_is_a_curve_in_the_product() -> No
 
 def test_the_fixed_subscheme_of_an_involution_is_the_equalizer_with_the_identity() -> None:
     plane, algebra, x, y = _plane()
-    swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
-    reflect = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": x, "y": -y}))
+    swap = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
+    reflect = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": x, "y": -y}))
 
     swap_fixed = swap.fixed_subscheme()
     reflect_fixed = reflect.fixed_subscheme()
