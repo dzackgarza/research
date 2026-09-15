@@ -507,15 +507,6 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         def intersected_subgroups(self):
             return self._preamble_intersected_subgroups
 
-
-
-def is_predicate_subgroup(group):
-    return any(
-        isinstance(category, PredicateSubgroups)
-        for category in group.category().all_super_categories(proper=False)
-    )
-
-
 __all__ = [
     "CentralizerSubgroups",
     "IntersectionSubgroups",
@@ -523,5 +514,4 @@ __all__ = [
     "PredicateSubgroups",
     "PreimageSubgroups",
     "StabilizerSubgroups",
-    "is_predicate_subgroup",
 ]

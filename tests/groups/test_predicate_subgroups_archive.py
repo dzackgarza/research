@@ -8,7 +8,7 @@ special constructions such as centralizers into dedicated subgroup categories.
 from dzack_research.preamble.all import Groups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,
-    is_predicate_subgroup,
+    PredicateSubgroups,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -22,7 +22,7 @@ def test_predicate_subgroup_retains_supergroup_predicate_and_inclusion() -> None
     group = Groups.S(3)
     subgroup = group.predicate_subgroup(lambda element: element.determinant() == 1, "det(g)=1")
 
-    assert is_predicate_subgroup(subgroup)
+    assert subgroup in PredicateSubgroups(group)
     assert subgroup.supergroup() is group
     assert subgroup.one() in subgroup
     assert subgroup.defining_predicate()(subgroup.one()) is True
@@ -38,7 +38,7 @@ def test_centralizer_is_a_structured_predicate_subgroup() -> None:
     element = group.group_generators()[0]
     centralizer = group.centralizer(element)
 
-    assert is_predicate_subgroup(centralizer)
+    assert centralizer in PredicateSubgroups(group)
     assert centralizer in CentralizerSubgroups(group)
     assert centralizer.centralizing_element() == element
     assert element in centralizer
