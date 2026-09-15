@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     _exact_field_morphism_from_engine,
-    exact_field_homset,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
@@ -48,7 +47,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     GaloisRestrictionMap,
     LiftCoset,
     _relative_degree,
-    continuous_group_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
@@ -603,7 +601,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             if self._is_finite_field():
                 self._one_element = FrobeniusElement(self, ZZ.zero())
             else:
-                identity = exact_field_homset(self._closure, self._closure).identity()
+                identity = self._closure.exact_morphisms_to(self._closure).identity()
                 self._one_element = AbsoluteGaloisGroupElement(self, exact_action=identity)
         return self._one_element
 
@@ -679,7 +677,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         exact = element.exact_action()
         if exact is not None:
             inverse_backend = exact._engine_morphism_crossing().inverse()
-            inverse = exact_field_homset(self._closure, self._closure)(inverse_backend)
+            inverse = self._closure.exact_morphisms_to(self._closure)(inverse_backend)
             return self(inverse)
         raise NotImplementedError(
             "the inverse requires globally exact realization data"
@@ -687,7 +685,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
     def _compatible_base_embedding(self, extension_field, closure_embedding):
         if extension_field is self._field:
-            return exact_field_homset(self._field, self._field).identity()
+            return self._field.exact_morphisms_to(self._field).identity()
         compatible = []
         for candidate in self._field.exact_embeddings(extension_field):
             if all(
@@ -719,7 +717,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             and base_embedding is None
         ):
             closure_candidates = (self._embedding,)
-            base_candidates = (exact_field_homset(self._field, self._field).identity(),)
+            base_candidates = (self._field.exact_morphisms_to(self._field).identity(),)
         else:
             closure_candidates = (
                 extension_field.exact_embeddings(self._closure)
@@ -857,7 +855,7 @@ class OpenSubgroupInclusion(Morphism):
     def __init__(self, subgroup) -> None:
         Morphism.__init__(
             self,
-            continuous_group_homset(subgroup, subgroup.supergroup()),
+            subgroup.continuous_morphisms_to(subgroup.supergroup()),
         )
 
     def _call_(self, element):

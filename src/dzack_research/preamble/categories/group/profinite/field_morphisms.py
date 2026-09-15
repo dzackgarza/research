@@ -143,7 +143,7 @@ class ExactFieldMorphism(Morphism):
         ):
             return NotImplemented
         backend = self._engine_morphism_crossing() * other._engine_morphism_crossing()
-        return exact_field_homset(other.domain(), self.codomain())(backend)
+        return other.domain().exact_morphisms_to(self.codomain())(backend)
 
     def restrict_along(self, embedding):
         r"""Solve ``j tau = self j`` for the exact restriction ``tau``."""
@@ -214,7 +214,7 @@ class ExactFieldHomset(CategoricalHomset):
 
 
 @cached_function
-def exact_field_homset(domain, codomain) -> ExactFieldHomset:
+def _exact_field_homset(domain, codomain) -> ExactFieldHomset:
     return ExactFieldHomset(domain, codomain)
 
 
@@ -222,7 +222,7 @@ def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMo
     r"""Wrap an exact Sage field map with the stated owned endpoints."""
     domain = _own_ring(domain)
     codomain = _own_ring(codomain)
-    return exact_field_homset(domain, codomain)(backend)
+    return domain.exact_morphisms_to(codomain)(backend)
 
 
 def _exact_embeddings(domain, codomain):
@@ -248,5 +248,4 @@ def _exact_embeddings(domain, codomain):
 __all__ = [
     "ExactFieldHomset",
     "ExactFieldMorphism",
-    "exact_field_homset",
 ]

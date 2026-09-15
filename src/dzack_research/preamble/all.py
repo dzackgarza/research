@@ -578,7 +578,7 @@ from dzack_research.preamble.categories.functors.tensor_hom import (
 from dzack_research.preamble.categories.functors.tensor_hom import (
     TensorHomAdjunction as TensorHomAdjunction,
 )
-from dzack_research.preamble.categories.group import (  # noqa: F401
+from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,
     AbsoluteGaloisGroup,
@@ -645,8 +645,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     Submonoids,
     Torsors,
     absolute_galois_group_category,
-    continuous_group_homset,
-    exact_field_homset,
     groups,
 )
 from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401

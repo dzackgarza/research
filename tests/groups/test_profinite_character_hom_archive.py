@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.group.profinite.galois_characters import
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     ContinuousGroupHomset,
-    continuous_group_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import GF
 
@@ -38,11 +37,11 @@ ARCHIVE_RECONCILIATION = {
 def test_continuous_group_hom_is_canonical_for_exact_endpoints() -> None:
     group = AbsoluteGaloisGroup(GF(5))
     character = CyclotomicCharacter(group, 3)
-    homset = continuous_group_homset(group, character.codomain())
+    homset = group.continuous_morphisms_to(character.codomain())
 
     assert isinstance(homset, ContinuousGroupHomset)
     assert character.parent() is homset
-    assert continuous_group_homset(group, character.codomain()) is homset
+    assert group.continuous_morphisms_to(character.codomain()) is homset
     assert homset.domain() is group
     assert homset.codomain() is character.codomain()
 
@@ -63,7 +62,7 @@ def test_nontrivial_cyclotomic_character_retains_factor_kernel_and_restriction()
     assert kernel.index() == 2
 
     restricted = character.restrict(kernel)
-    restricted_hom = continuous_group_homset(kernel, character.codomain())
+    restricted_hom = kernel.continuous_morphisms_to(character.codomain())
     assert restricted.parent() is restricted_hom
     assert restricted.domain() is kernel
     assert restricted.codomain() is character.codomain()

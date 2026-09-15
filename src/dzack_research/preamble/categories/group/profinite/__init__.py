@@ -30,8 +30,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
                       'ExactFieldHomset'),
  'ExactFieldMorphism': ('dzack_research.preamble.categories.group.profinite.field_morphisms',
                         'ExactFieldMorphism'),
- 'exact_field_homset': ('dzack_research.preamble.categories.group.profinite.field_morphisms',
-                        'exact_field_homset'),
  'CyclotomicCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
                          'CyclotomicCharacter'),
  'ProfiniteCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
@@ -67,8 +65,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
  'GaloisRestrictionMap': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
                           'GaloisRestrictionMap'),
  'LiftCoset': ('dzack_research.preamble.categories.group.profinite.galois_quotient', 'LiftCoset'),
- 'continuous_group_homset': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                             'continuous_group_homset'),
  'ProfiniteGroups': ('dzack_research.preamble.categories.group.profinite.profinite_groups',
                      'ProfiniteGroups')}
 
@@ -105,8 +101,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'QuadraticCharacter',
  'RestrictedProfiniteCharacter',
  'absolute_galois_group_category',
- 'continuous_group_homset',
- 'exact_field_homset',
 ]
 
 def __getattr__(name):

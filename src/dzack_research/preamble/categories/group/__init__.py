@@ -119,9 +119,6 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
                                   'RestrictedProfiniteCharacter'),
  'absolute_galois_group_category': ('dzack_research.preamble.categories.group.profinite',
                                     'absolute_galois_group_category'),
- 'continuous_group_homset': ('dzack_research.preamble.categories.group.profinite',
-                             'continuous_group_homset'),
- 'exact_field_homset': ('dzack_research.preamble.categories.group.profinite', 'exact_field_homset'),
 }
 
 __all__ = ['AbsoluteDecompositionGroup',
@@ -195,8 +192,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'Submonoids',
  'Torsors',
  'absolute_galois_group_category',
- 'continuous_group_homset',
- 'exact_field_homset',
  'groups',
 ]
 

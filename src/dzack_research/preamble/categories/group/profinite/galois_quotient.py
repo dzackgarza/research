@@ -422,7 +422,7 @@ class ContinuousGroupHomset(Homset):
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def continuous_group_homset(domain, codomain):
+def _continuous_group_homset(domain, codomain):
     r"""Return the canonical continuous-group Hom for these exact endpoints."""
     return ContinuousGroupHomset(domain, codomain)
 
@@ -432,7 +432,7 @@ class GaloisRestrictionMap(Morphism):
 
     def __init__(self, domain, codomain: FiniteGaloisQuotient) -> None:
         extension = domain.extension_data(codomain.extension_data())
-        Morphism.__init__(self, continuous_group_homset(domain, codomain))
+        Morphism.__init__(self, domain.continuous_morphisms_to(codomain))
         self._extension = extension
 
     def extension(self) -> FiniteGaloisExtension:
@@ -529,5 +529,4 @@ __all__ = [
     "FiniteExtensionAutomorphismGroup",
     "GaloisRestrictionMap",
     "LiftCoset",
-    "continuous_group_homset",
 ]

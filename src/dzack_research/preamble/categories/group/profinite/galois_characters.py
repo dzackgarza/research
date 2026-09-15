@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
-    continuous_group_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
 
@@ -36,7 +35,7 @@ class RestrictedProfiniteCharacter(Morphism):
         self._character = character
         Morphism.__init__(
             self,
-            continuous_group_homset(subgroup, character.codomain()),
+            subgroup.continuous_morphisms_to(character.codomain()),
         )
 
     def _call_(self, element):
@@ -51,7 +50,7 @@ class ProfiniteCharacter(Morphism):
 
     def __init__(self, domain, codomain, extension: FiniteGaloisExtension) -> None:
         self._factor_extension = extension
-        Morphism.__init__(self, continuous_group_homset(domain, codomain))
+        Morphism.__init__(self, domain.continuous_morphisms_to(codomain))
 
     def factor_extension(self) -> FiniteGaloisExtension:
         return self._factor_extension

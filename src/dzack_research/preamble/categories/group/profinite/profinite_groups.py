@@ -29,6 +29,14 @@ class ProfiniteGroups(OwnedCategory):
         def is_profinite(self):
             return True
 
+        def continuous_morphisms_to(self, codomain):
+            r"""Return the represented continuous-group Hom from this profinite group."""
+            from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+                _continuous_group_homset,
+            )
+
+            return _continuous_group_homset(self, codomain)
+
         @abstract_method(optional=True)
         def topological_group_generators(self):
             pass

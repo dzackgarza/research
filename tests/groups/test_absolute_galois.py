@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
-    exact_field_homset,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
@@ -104,11 +103,12 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
 ):
     group = AbsoluteGaloisGroup(QQ)
     closure = group.algebraic_closure()
-    homset = exact_field_homset(closure, closure)
+    homset = closure.exact_morphisms_to(closure)
     identity = homset.identity()
     same_identity = homset.identity()
-    separate_identity = exact_field_homset(closure, closure).identity()
+    separate_identity = closure.exact_morphisms_to(closure).identity()
 
+    assert closure.exact_morphisms_to(closure) is homset
     assert identity == same_identity
     assert hash(identity) == hash(same_identity)
     assert identity == separate_identity
@@ -122,7 +122,7 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
         if element == closure.one()
         else closure.zero())
     with pytest.raises(TypeError, match="genuine field-homomorphism"):
-        exact_field_homset(closure, closure)(fake_map)
+        closure.exact_morphisms_to(closure)(fake_map)
 
 
 def test_only_known_group_size_and_conjugacy_claims_are_decided() -> None:

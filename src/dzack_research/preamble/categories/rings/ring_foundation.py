@@ -1832,6 +1832,14 @@ class OwnedFields(OwnedCategory):
 
             return _field_generators(self)
 
+        def exact_morphisms_to(self, codomain):
+            r"""Return the exact-field morphism object from this field to ``codomain``."""
+            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                _exact_field_homset,
+            )
+
+            return _exact_field_homset(self, codomain)
+
         def exact_embeddings(self, codomain):
             r"""Return the exact embeddings of this field into ``codomain``."""
             from dzack_research.preamble.categories.group.profinite.field_morphisms import (
