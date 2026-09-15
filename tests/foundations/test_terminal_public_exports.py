@@ -126,6 +126,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "SymmetricAlgebraOf",
         "AlternatingAlgebraOf",
         "DividedPowerAlgebraOf",
+        "DividedSquare",
+        "QuadraticSquare",
         "finite_decomposition_group",
         "finite_inertia_group",
         "finite_frobenius_class",

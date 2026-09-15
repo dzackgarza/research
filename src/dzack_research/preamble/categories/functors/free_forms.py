@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    DividedSquare,
     divided_square_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, FinitelyPresentedModules, Modules
@@ -148,7 +147,7 @@ class FreeQuadraticFormFunctor(Functor):
 
     def _apply_object(self, module):
 
-        classifier = DividedSquare(module)
+        classifier = module.divided_square()
         formed = FormModule(
             QuadraticMap(module, classifier, classifier.quadratic)
         )

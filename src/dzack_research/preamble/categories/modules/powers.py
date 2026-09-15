@@ -396,10 +396,9 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The divided square of the free module of rank one."""
-        from dzack_research.preamble.categories.modules.powers import DividedSquare
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        return DividedSquare(Modules(self.base_ring()).an_object())
+        return Modules(self.base_ring()).an_object().divided_square()
 
     @classmethod
     def _repr_object_names(cls):
@@ -703,7 +702,7 @@ def _presented_degree_power(
 
 
 @cached_function(key=lambda module: id(module))
-def DividedSquare(module):
+def _divided_square(module):
     r"""Return ``Gamma^2_R(M)``, the universal target for quadratic maps."""
     return _presented_degree_power(
         module,
@@ -721,15 +720,12 @@ def DividedSquare(module):
     )
 
 
-QuadraticSquare = DividedSquare
-
-
 def divided_square_morphism(morphism, source=None, target=None):
     r"""Return ``Gamma^2(f)`` for a module morphism ``f``."""
     if source is None:
-        source = DividedSquare(morphism.domain())
+        source = morphism.domain().divided_square()
     if target is None:
-        target = DividedSquare(morphism.codomain())
+        target = morphism.codomain().divided_square()
     if source.divided_square_source() is not morphism.domain():
         raise ValueError("the source divided square has the wrong module")
     if target.divided_square_source() is not morphism.codomain():
@@ -817,7 +813,7 @@ def DividedPower(module, degree):
     """
     degree = _degree(degree)
     if degree == 2:
-        return DividedSquare(module)
+        return module.divided_square()
     if degree <= 1:
         return _presented_degree_power(module, degree, "divided")
     return _divided_power_nontrivial(module, degree)

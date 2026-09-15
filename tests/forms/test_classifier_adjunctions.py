@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import (
     BasedFreeModule,
     BilinearForm,
-    DividedSquare,
     FinitelyPresentedTorsionModules,
     QQ,
     QuadraticField,
@@ -62,7 +61,8 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
 def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
     module = _cyclic(4)
     generator = module.module_generator(0)
-    square = DividedSquare(module)
+    square = module.divided_square()
+    assert module.divided_square() is square
     universal_value = square.quadratic(generator)
 
     assert square.invariant_factors().cardinality() == 1

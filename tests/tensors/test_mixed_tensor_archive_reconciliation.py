@@ -28,7 +28,7 @@ ARCHIVE_RECONCILIATIONS = (
             "SymmetricPower": "src/dzack_research/preamble/categories/modules/powers.py",
             "AlternatingPower": "src/dzack_research/preamble/categories/modules/powers.py",
             "DividedPower": "src/dzack_research/preamble/categories/modules/powers.py",
-            "DividedSquare": "src/dzack_research/preamble/categories/modules/powers.py",
+            "DividedSquare": "src/dzack_research/preamble/categories/modules/pure/modules.py",
             "divided_power_invariant_inclusion": "src/dzack_research/preamble/categories/modules/powers.py",
             "tensor_power_polarization": "src/dzack_research/preamble/categories/modules/powers.py",
             "tensor_power_permutation": "src/dzack_research/preamble/categories/modules/powers.py",

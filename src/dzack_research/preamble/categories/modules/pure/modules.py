@@ -809,6 +809,12 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the divided-power algebra ``Gamma_R(self)``."""
             return self.module_category().divided_power_algebra()(self)
 
+        def divided_square(self):
+            r"""Return ``Gamma^2_R(self)``, the universal target for quadratic maps."""
+            from dzack_research.preamble.categories.modules.powers import _divided_square
+
+            return _divided_square(self)
+
         def _module_homset_class(self):
             r"""Return the canonical fixed homset for maps out of this module type."""
 

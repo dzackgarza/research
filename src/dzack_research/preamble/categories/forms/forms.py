@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    DividedSquare,
     QuadraticModuleHomset,
     QuadraticModuleMorphism,
 )
@@ -561,7 +560,7 @@ def QuadraticForms(module, value_module):
 
     if _value_module_over(value_module, module.base_ring()):
         try:
-            square = DividedSquare(module)
+            square = module.divided_square()
         except NotImplementedError:
             pass
         else:
@@ -584,14 +583,14 @@ def classifying_morphism(quadratic):
 
     if isinstance(quadratic, QuadraticModuleMorphism):
         return quadratic
-    square = DividedSquare(quadratic.module())
+    square = quadratic.module().divided_square()
     return square.from_quadratic(quadratic, quadratic.codomain())
 
 
 def quadratic_map_from_morphism(module, morphism):
     r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``."""
 
-    square = DividedSquare(module)
+    square = module.divided_square()
     if morphism.domain() is not square:
         raise ValueError("the classifier morphism has the wrong divided-square domain")
     if isinstance(morphism, QuadraticModuleMorphism):

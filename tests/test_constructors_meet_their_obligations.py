@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.forms.forms import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import DividedSquare
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
 ARCHIVE_RECONCILIATION = {
@@ -277,7 +276,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # free algebra's graded piece: they are where a form's domain comes
         # from, so a lattice is the specimen that matters.
         "tensor square": lambda: _tensor_square(Lattices(ZZ)("A2")),
-        "divided square": lambda: DividedSquare(Lattices(ZZ)("A2")),
+        "divided square": lambda: Lattices(ZZ)("A2").divided_square(),
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
         "finitely presented module": lambda: FinitelyPresentedModule(
@@ -466,12 +465,11 @@ def test_a_form_is_a_morphism_into_the_value_module() -> None:
             continue
         domain = form.domain()
         if isinstance(form, BilinearFormMorphism):
-            expected_constructor = _tensor_square
+            expected_domain = _tensor_square(parent)
         elif isinstance(form, QuadraticFormMorphism):
-            expected_constructor = DividedSquare
+            expected_domain = parent.divided_square()
         else:
             raise AssertionError(f"{name}: unrecognized represented form morphism {type(form)}")
-        expected_domain = expected_constructor(parent)
 
         assert domain is expected_domain, (
             f"{name}: the form has domain {domain}, not the degree-two "
