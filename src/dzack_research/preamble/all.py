@@ -210,16 +210,10 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     projective_space_picard_group,
     trivial_picard_group,
 )
-from dzack_research.preamble.categories.forms import (  # noqa: F401
-    BilinearForm,
+from dzack_research.preamble.categories.forms import (
     BilinearFormMorphism,
-    BilinearForms,
     PairingMorphism,
-    Pairings,
-    QuadraticForm,
     QuadraticFormMorphism,
-    QuadraticForms,
-    QuadraticMap,
 )
 from dzack_research.preamble.categories.functions import (  # noqa: F401
     C,
@@ -758,7 +752,6 @@ from dzack_research.preamble.categories.schemes import (
     Spec,
     StructureSheaf,
     Surfaces,
-    ToricFixedPointBlowup,
     ToricFixedPointBlowups,
     ToricFundamentalGroups,
     ToricGeometricLineBundleCohomologySpaces,

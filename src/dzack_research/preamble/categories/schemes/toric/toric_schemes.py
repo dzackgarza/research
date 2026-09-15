@@ -541,6 +541,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""The fan ``Sigma`` in ``N_R`` this variety was built from."""
             return self._preamble_toric_fan
 
+        def toric_fixed_point_blowup(self, center_cone):
+            r"""Blow up the torus-fixed point indexed by ``center_cone``."""
+            from dzack_research.preamble.categories.schemes.toric.blowups import (
+                _toric_fixed_point_blowup,
+            )
+
+            return _toric_fixed_point_blowup(self, center_cone)
+
         def cocharacter_lattice(self):
             r"""The lattice ``N`` of one-parameter subgroups of the torus."""
             return self.fan().cocharacter_lattice()

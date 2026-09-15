@@ -23,7 +23,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         surface = ToricSchemes(self.base_ring()).an_object()
-        return ToricFixedPointBlowup(surface, surface.fan().maximal_cones()[0])
+        return surface.toric_fixed_point_blowup(surface.fan().maximal_cones()[0])
 
     def super_categories(self):
         return [ToricSchemes(self.base_ring())]
@@ -139,7 +139,7 @@ def _same_ray_vector(left, right) -> bool:
     return bool(left == right)
 
 
-def ToricFixedPointBlowup(surface, center_cone):
+def _toric_fixed_point_blowup(surface, center_cone):
     r"""Blow up the torus-fixed point indexed by ``center_cone`` on a smooth toric surface."""
     base = surface.scheme_base_ring()
     if surface not in ToricSchemes(base):
@@ -193,4 +193,4 @@ def ToricFixedPointBlowup(surface, center_cone):
     return refine_scheme(blowup, base, [ToricFixedPointBlowups(base)])
 
 
-__all__ = ["ToricFixedPointBlowup", "ToricFixedPointBlowups"]
+__all__ = ["ToricFixedPointBlowups"]

@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
     RationalPolyhedralFans,
-    ToricFixedPointBlowup,
     ToricFixedPointBlowups,
 )
 
@@ -17,7 +16,7 @@ def test_blowup_of_a_torus_fixed_point_of_p2_is_the_star_subdivision_with_blowdo
     plane = _projective_plane()
     center = plane.fan().maximal_cones()[0]
 
-    blowup = ToricFixedPointBlowup(plane, center)
+    blowup = plane.toric_fixed_point_blowup(center)
 
     assert blowup in ToricFixedPointBlowups(QQ)
     assert blowup.blowup_source() is plane
@@ -31,7 +30,7 @@ def test_blowup_of_a_torus_fixed_point_of_p2_is_the_star_subdivision_with_blowdo
 
 def test_exceptional_curve_has_self_intersection_minus_one_and_picard_rank_increases() -> None:
     plane = _projective_plane()
-    blowup = ToricFixedPointBlowup(plane, plane.fan().maximal_cones()[0])
+    blowup = plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
     exceptional = blowup.exceptional_divisor()
 
@@ -51,7 +50,7 @@ def _ray_with_vector(fan, vector):
 def test_total_and_strict_transforms_distinguish_the_exceptional_multiplicity() -> None:
     plane = _projective_plane()
     center = plane.fan().maximal_cones()[0]
-    blowup = ToricFixedPointBlowup(plane, center)
+    blowup = plane.toric_fixed_point_blowup(center)
     center_vector = tuple(center.rays())[0]
     source_ray = _ray_with_vector(plane.fan(), center_vector)
     boundary = plane.torus_invariant_prime_divisor(source_ray)
@@ -67,7 +66,7 @@ def test_total_and_strict_transforms_distinguish_the_exceptional_multiplicity() 
 
 def test_picard_pullback_is_orthogonal_to_the_exceptional_class() -> None:
     plane = _projective_plane()
-    blowup = ToricFixedPointBlowup(plane, plane.fan().maximal_cones()[0])
+    blowup = plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
     source_picard = plane.picard_group()
     source_label = next(iter(source_picard.module_generating_set()))
     hyperplane = source_picard.module_generator(source_label)
@@ -95,9 +94,9 @@ def test_archived_three_step_projective_plane_blowup_chain_has_del_pezzo_degrees
     plane = _projective_plane()
     original_cones = tuple(tuple(cone.rays()) for cone in plane.fan().maximal_cones())
 
-    first = ToricFixedPointBlowup(plane, _maximal_cone_with_vectors(plane, original_cones[2]))
-    second = ToricFixedPointBlowup(first, _maximal_cone_with_vectors(first, original_cones[1]))
-    third = ToricFixedPointBlowup(second, _maximal_cone_with_vectors(second, original_cones[0]))
+    first = plane.toric_fixed_point_blowup(_maximal_cone_with_vectors(plane, original_cones[2]))
+    second = first.toric_fixed_point_blowup(_maximal_cone_with_vectors(first, original_cones[1]))
+    third = second.toric_fixed_point_blowup(_maximal_cone_with_vectors(second, original_cones[0]))
 
     assert first.is_del_pezzo()
     assert second.is_del_pezzo()
