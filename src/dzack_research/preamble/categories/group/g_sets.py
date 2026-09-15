@@ -234,12 +234,11 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             if point not in self:
                 raise ValueError(f"{point} is not a point of {self}")
             from dzack_research.preamble.categories.group.predicate_subgroups import (
-                stabilizer_subgroup,
+                StabilizerSubgroups,
             )
 
             group = self.acting_group()
-            return stabilizer_subgroup(
-                group,
+            return StabilizerSubgroups(group)(
                 point,
                 "pointwise",
                 lambda group_element: self.act(group_element, point) == point,

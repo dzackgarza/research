@@ -475,12 +475,11 @@ class ArithmeticCusp(SageObject):
     def stabilizer(self):
         r"""Return ``Gamma cap P_I`` for the chosen representative ``I``."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            stabilizer_subgroup,
+            StabilizerSubgroups,
         )
 
         parabolic = self.representative().parabolic_subgroup()
-        return stabilizer_subgroup(
-            self.subgroup(),
+        return StabilizerSubgroups(self.subgroup())(
             self.representative(),
             "setwise on the represented isotropic sublattice",
             lambda element: element in parabolic,
@@ -648,13 +647,12 @@ class ArithmeticCuspIncidence(SageObject):
     def stabilizer(self):
         r"""Return the subgroup of ``Gamma`` preserving both terms of the flag."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            stabilizer_subgroup,
+            StabilizerSubgroups,
         )
 
         line_stabilizer = self.line().parabolic_subgroup()
         plane_stabilizer = self.plane().parabolic_subgroup()
-        return stabilizer_subgroup(
-            self.subgroup(),
+        return StabilizerSubgroups(self.subgroup())(
             self.flag(),
             "setwise on both terms of the isotropic flag",
             lambda element: element in line_stabilizer and element in plane_stabilizer,

@@ -56,12 +56,11 @@ class EquivariantVectorOrbit(SageObject):
     def stabilizer(self):
         r"""Return the exact point stabilizer inside ``O(L,f)``."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            stabilizer_subgroup,
+            StabilizerSubgroups,
         )
 
         representative = self.representative()
-        return stabilizer_subgroup(
-            self.group(),
+        return StabilizerSubgroups(self.group())(
             representative,
             "pointwise",
             lambda automorphism: automorphism(representative) == representative,
@@ -249,13 +248,12 @@ class _EquivariantFiniteOrbit(SageObject):
 
     def stabilizer(self):
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            stabilizer_subgroup,
+            StabilizerSubgroups,
         )
 
         representative = self.representative()
         decomposition = self.decomposition()
-        return stabilizer_subgroup(
-            self.group(),
+        return StabilizerSubgroups(self.group())(
             representative,
             "on the represented finite family",
             lambda automorphism: decomposition.same(decomposition.act(automorphism, representative), representative),

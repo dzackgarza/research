@@ -156,8 +156,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 "discriminant_preimages": tuple(left.get("discriminant_preimages", ()))
                 + tuple(right.get("discriminant_preimages", ())),
             }
-            return intersection_subgroup(
-                self.supergroup(),
+            return IntersectionSubgroups(self.supergroup())(
                 (self, other),
                 character_data=data,
                 character_data_complete=(
@@ -509,66 +508,6 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             return self._preamble_intersected_subgroups
 
 
-def predicate_subgroup_category(containing_group):
-    return PredicateSubgroups(containing_group)
-
-
-def kernel_subgroup(morphism):
-    r"""Notebook notation for the category-owned kernel subgroup."""
-    return KernelSubgroups(morphism.domain())(morphism)
-
-
-def preimage_subgroup(
-    morphism,
-    subgroup,
-    *,
-    predicate=None,
-    description=None,
-    character_data=None,
-    character_data_complete=None,
-):
-    r"""Notebook notation for the category-owned inverse-image subgroup."""
-    return PreimageSubgroups(morphism.domain())(
-        morphism,
-        subgroup,
-        predicate=predicate,
-        description=description,
-        character_data=character_data,
-        character_data_complete=character_data_complete,
-    )
-
-
-def stabilizer_subgroup(
-    containing_group,
-    stabilized_object,
-    action,
-    predicate,
-    *,
-    description=None,
-):
-    r"""Notebook notation for the category-owned stabilizer subgroup."""
-    return StabilizerSubgroups(containing_group)(
-        stabilized_object,
-        action,
-        predicate,
-        description=description,
-    )
-
-
-def intersection_subgroup(
-    containing_group,
-    subgroups,
-    *,
-    character_data=None,
-    character_data_complete=None,
-):
-    r"""Notebook notation for the category-owned subgroup intersection."""
-    return IntersectionSubgroups(containing_group)(
-        subgroups,
-        character_data=character_data,
-        character_data_complete=character_data_complete,
-    )
-
 
 def is_predicate_subgroup(group):
     return any(
@@ -584,9 +523,5 @@ __all__ = [
     "PredicateSubgroups",
     "PreimageSubgroups",
     "StabilizerSubgroups",
-    "intersection_subgroup",
     "is_predicate_subgroup",
-    "kernel_subgroup",
-    "preimage_subgroup",
-    "stabilizer_subgroup",
 ]

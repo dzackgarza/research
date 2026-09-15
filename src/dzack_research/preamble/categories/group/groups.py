@@ -1342,12 +1342,35 @@ class GroupHomomorphism(GroupMorphism_libgap):
             preimage = preimage.Inverse()
         return _element_from_engine(self.domain(), preimage)
 
-    def kernel(self):
+    def preimage_subgroup(
+        self,
+        subgroup,
+        *,
+        predicate=None,
+        description=None,
+        character_data=None,
+        character_data_complete=None,
+    ):
+        r"""Return the inverse image of ``subgroup`` under this group morphism."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            kernel_subgroup,
+            PreimageSubgroups,
         )
 
-        return kernel_subgroup(self)
+        return PreimageSubgroups(self.domain())(
+            self,
+            subgroup,
+            predicate=predicate,
+            description=description,
+            character_data=character_data,
+            character_data_complete=character_data_complete,
+        )
+
+    def kernel(self):
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            KernelSubgroups,
+        )
+
+        return KernelSubgroups(self.domain())(self)
 
     def image(self):
 

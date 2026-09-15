@@ -21,10 +21,8 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
-    intersection_subgroup,
-    kernel_subgroup,
-    preimage_subgroup,
-    stabilizer_subgroup,
+    IntersectionSubgroups,
+    StabilizerSubgroups,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (
     PrimitiveIsotropicSublatticeLocus,
@@ -1495,8 +1493,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         else:
             def predicate(automorphism):
                 return automorphism.discriminant_morphism() in subgroup
-        return preimage_subgroup(
-            self.discriminant_representation(),
+        return self.discriminant_representation().preimage_subgroup(
             subgroup,
             predicate=predicate,
             description=f"rho_L(g) lies in {subgroup}",
@@ -1515,13 +1512,13 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return the subgroup ``morphism^{-1}(subgroup)`` of this group."""
         if morphism.domain() is not self:
             raise ValueError("a group preimage requires a morphism whose domain is this group")
-        return preimage_subgroup(morphism, subgroup)
+        return morphism.preimage_subgroup(subgroup)
 
     def kernel(self, morphism):
         r"""Return the kernel subgroup of a represented group morphism."""
         if morphism.domain() is not self:
             raise ValueError("a group kernel requires a morphism whose domain is this group")
-        return kernel_subgroup(morphism)
+        return morphism.kernel()
 
     def stable_subgroup(self):
         r"""Return ``ker(O(L) -> O(A_L))``."""
@@ -1541,7 +1538,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""
-        return intersection_subgroup(self, subgroups)
+        return IntersectionSubgroups(self)(subgroups)
 
     def lattice(self):
         r"""Return \(L\), the lattice this orthogonal group acts on."""
@@ -1576,8 +1573,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         assert target.parent() is lattice, (
             "a point stabilizer in O(L) fixes a vector of L"
         )
-        return stabilizer_subgroup(
-            self,
+        return StabilizerSubgroups(self)(
             target,
             "pointwise",
             lambda automorphism: automorphism(target) == target,
@@ -1598,8 +1594,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         embedded = tuple(
             embedding(generator) for generator in source.module_generators()
         )
-        return stabilizer_subgroup(
-            self,
+        return StabilizerSubgroups(self)(
             source,
             "pointwise",
             lambda automorphism: all(
@@ -1638,8 +1633,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 for vector in embedded
             )
 
-        return stabilizer_subgroup(
-            self,
+        return StabilizerSubgroups(self)(
             source,
             "setwise",
             preserves_image,
