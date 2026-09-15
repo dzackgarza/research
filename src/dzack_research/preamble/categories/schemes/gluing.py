@@ -2730,10 +2730,10 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
 
     def relative_spectrum(self):
         from dzack_research.preamble.categories.schemes.relative_spec import (
-            relative_spectrum,
+            _relative_spectrum,
         )
 
-        return relative_spectrum(self)
+        return _relative_spectrum(self)
 
 
 class FiniteAtlasAlgebraGluingMorphism(SageObject):
@@ -3670,10 +3670,10 @@ class AlgebraGluingDatum(Parent):
     def relative_spectrum(self):
         r"""Return ``Spec_X(A)`` for this represented quasi-coherent algebra datum."""
         from dzack_research.preamble.categories.schemes.relative_spec import (
-            relative_spectrum,
+            _relative_spectrum,
         )
 
-        return relative_spectrum(self)
+        return _relative_spectrum(self)
 
     def _repr_(self):
         return f"Algebra gluing datum on {self.cover()}"
@@ -3775,10 +3775,10 @@ class AlgebraGluingMorphism(Morphism):
     def relative_spectrum_morphism(self):
         r"""Return the contravariant morphism of relative spectra induced by this algebra map."""
         from dzack_research.preamble.categories.schemes.relative_spec import (
-            relative_spectrum_morphism,
+            _relative_spectrum_morphism,
         )
 
-        return relative_spectrum_morphism(self)
+        return _relative_spectrum_morphism(self)
 
     def then(self, other):
         if other.domain() is not self.codomain():

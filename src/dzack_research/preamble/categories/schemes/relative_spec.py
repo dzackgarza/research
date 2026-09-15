@@ -187,7 +187,7 @@ def _finite_atlas_relative_spectrum(datum):
 
 
 @cached_function(key=lambda datum: id(datum))
-def relative_spectrum(datum):
+def _relative_spectrum(datum):
     r"""Return ``Spec_X(A) -> X`` for represented algebra descent data ``datum``."""
     from dzack_research.preamble.categories.schemes.gluing import (
         FiniteAtlasAlgebraGluingDatum,
@@ -226,10 +226,10 @@ def relative_spectrum(datum):
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
 
-def relative_spectrum_morphism(morphism):
+def _relative_spectrum_morphism(morphism):
     r"""Return ``Spec(target) -> Spec(source)`` for an algebra-descent morphism."""
-    source_relative = relative_spectrum(morphism.domain())
-    target_relative = relative_spectrum(morphism.codomain())
+    source_relative = morphism.domain().relative_spectrum()
+    target_relative = morphism.codomain().relative_spectrum()
     source_scheme = source_relative.arrow().domain()
     target_scheme = target_relative.arrow().domain()
     local_maps = {}
@@ -246,4 +246,4 @@ def relative_spectrum_morphism(morphism):
     return induced
 
 
-__all__ = ["relative_spectrum", "relative_spectrum_morphism"]
+__all__ = []
