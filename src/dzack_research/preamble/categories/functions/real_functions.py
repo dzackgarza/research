@@ -992,6 +992,19 @@ class Lp(_FunctionSpace):
         r"""The space \(L^{p'}\) with \(1/p+1/p'=1\)."""
         return Lp(_conjugate_exponent(self.integrability_exponent()))
 
+    def integration_morphism(self):
+        r"""Integration \(\iota:L^1(\mathbb R)\to\mathbb R\)."""
+        if self.integrability_exponent() != 1:
+            raise TypeError("integration as a bounded linear functional is owned by L^1(RR)")
+
+        def evaluate(function, space=self):
+            function = space(function)
+            if function == space.zero():
+                return RR.zero()
+            return RR(_l2_pairing(function, space.one()))
+
+        return SetMorphism(OwnedSets().Mor(self, RR), evaluate)
+
     @cached_method
     def pairing_module(self):
         r"""The Hölder pairing module \(L^p\otimes L^{p'}\to\mathbb R\).

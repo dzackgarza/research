@@ -126,7 +126,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def algebra_from_multiplication(self, multiplication, *, unital=True):
             r"""Equip this graded Lebesgue module with its represented product."""
-            return intern_graded_lebesgue_algebra(
+            return _intern_graded_lebesgue_algebra(
                 multiplication,
                 self.base_ring(),
                 unital,
@@ -145,7 +145,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
 
         def integration_of_degree_one(self):
             r"""Integration \(\iota\colon L^1\to\mathbb R\) of the degree-\(1\) piece."""
-            return integration_morphism(self.graded_piece(self.grading_monoid()(1)))
+            return self.graded_piece(self.grading_monoid()(1)).integration_morphism()
 
         def integral_form(self):
             r"""The linear form \(\varepsilon=\iota\circ\pi_1\colon N\to\mathbb R\).
@@ -291,20 +291,8 @@ class LebesgueModuleHomset(CategoricalHomset):
         return f"Hom({self.domain()}, {self.codomain()})"
 
 
-def lebesgue_module_homset(domain, codomain) -> LebesgueModuleHomset:
+def _lebesgue_module_homset(domain, codomain) -> LebesgueModuleHomset:
     return LebesgueModuleHomset(domain, codomain)
-
-
-def integration_morphism(space):
-    r"""Integration \(\iota\colon L^1(\mathbb R)\to\mathbb R\), \(\iota(f)=\int f\)."""
-
-    def evaluate(function, space=space):
-        function = space(function)
-        if function == space.zero():
-            return RR.zero()
-        return RR(_l2_pairing(function, space.one()))
-
-    return SetMorphism(Sets().Mor(space, RR), evaluate)
 
 
 class _GradedLebesgueElement(ModuleElement):
@@ -451,7 +439,7 @@ def _lebesgue_multiplication(module, piece_product):
             )
         return module._from_components(components)
 
-    return lebesgue_module_homset(tensor, module)(evaluate)
+    return _lebesgue_module_homset(tensor, module)(evaluate)
 
 
 def _transport_multiplication(multiplication, algebra):
@@ -470,7 +458,7 @@ def _transport_multiplication(multiplication, algebra):
             {degree: product.homogeneous_component(degree) for degree in product._degrees()}
         )
 
-    return lebesgue_module_homset(tensor, algebra)(evaluate)
+    return _lebesgue_module_homset(tensor, algebra)(evaluate)
 
 
 class _LebesgueAlgebraFromMultiplication(Parent):
@@ -622,7 +610,7 @@ class GradedLebesgueModule(UniqueRepresentation, Parent):
         return self.zero()
 
 
-def intern_graded_lebesgue_algebra(multiplication, ring, unital):
+def _intern_graded_lebesgue_algebra(multiplication, ring, unital):
     r"""Intern a Lebesgue graded module on a morphism of its tensor square."""
     module = multiplication.codomain()
     if module not in LebesgueGradedModules(ring):
