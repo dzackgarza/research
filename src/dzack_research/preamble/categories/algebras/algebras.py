@@ -691,7 +691,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             base = self.algebra_base_ring()
             try:
                 scalar = base(element)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 pass
             else:
                 selected_unit = self.__dict__.get("_preamble_algebra_unit_morphism")
@@ -1397,7 +1397,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             _ = self_on_left
             try:
                 scalar = self.parent().base_ring()(actor)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return None
             return self.parent().scalar_multiple(scalar, self)
 
@@ -2350,24 +2350,6 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
 
 
-@cached_function
-def commutative_algebra_coproduct(left, right):
-    r"""Return ``left tensor_R right``, the coproduct in commutative algebras."""
-    base = left.base_ring()
-    if right.base_ring() is not base:
-        raise ValueError("commutative-algebra coproducts require one scalar base")
-    return CommutativeAlgebras(base)._categorical_coproduct(left, right)
-
-
-@cached_function
-def commutative_algebra_pushout(left_map, right_map):
-    r"""Return the pushout of two commutative-algebra maps with common domain."""
-    return CommutativeAlgebras(left_map.domain().base_ring())._categorical_pushout(
-        left_map,
-        right_map,
-    )
-
-
 class OwnedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras carrying their chosen structure map ``R -> A``.
 
@@ -2774,7 +2756,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
                     *tuple(engine_base.gens()),
                 )
                 native_matches_owned = all(native_base_map(scalar) == engine_base_image(scalar) for scalar in determining_scalars)
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 native_matches_owned = False
         else:
             native_matches_owned = False
@@ -2811,7 +2793,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         try:
             engine_labels = tuple(engine_domain.gens())
             selected_size = int(labels.cardinality().finite_value())
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             engine_labels = ()
             selected_size = -1
         if engine_labels and len(engine_labels) != selected_size:
@@ -2904,8 +2886,6 @@ __all__ = [
     "OwnedAlgebras",
     "algebra_from_multiplication",
     "algebra_structure_view",
-    "commutative_algebra_coproduct",
-    "commutative_algebra_pushout",
     "finite_algebra_generators",
     "own_algebra",
     "refine_algebra",

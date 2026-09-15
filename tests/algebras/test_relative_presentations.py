@@ -3,7 +3,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
-    commutative_algebra_pushout,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
@@ -77,7 +76,7 @@ def test_pushout_accepts_maps_from_a_presented_source() -> None:
     assert left.parent() is source.Mor(source)
     assert right.parent() is source.Mor(target)
 
-    pushout = commutative_algebra_pushout(left, right)
+    pushout = CommutativeAlgebras(QQ).pushout(left, right)
     assert pushout in CommutativeAlgebraPushouts(QQ)
     left_pushout, right_pushout = pushout.pushout_maps()
     assert left_pushout(left(tbar)) == right_pushout(right(tbar))
@@ -91,7 +90,6 @@ def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() ->
     )
     from dzack_research.preamble.categories.algebras.algebras import (
         CommutativeAlgebraCoproducts,
-        commutative_algebra_coproduct,
     )
 
     field = QuadraticField(-1, "i")
@@ -106,7 +104,7 @@ def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() ->
     assert gaussian.algebra_presentation_morphism()(gaussian.relations().value(0)) == 0
     assert gaussian.lift_to_presentation(primitive) == gaussian.presentation_ring().algebra_generator("i")
 
-    split = commutative_algebra_coproduct(gaussian, gaussian)
+    split = CommutativeAlgebras(QQ).coproduct((gaussian, gaussian))
     assert split in CommutativeAlgebraCoproducts(QQ)
     assert split not in IntegralDomains()
 

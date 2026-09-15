@@ -177,8 +177,6 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     algebra_from_multiplication,
     augmented_algebra,
     cohomology_algebra_homset,
-    commutative_algebra_coproduct,
-    commutative_algebra_pushout,
     dga_homset,
     graded_algebra_homset,
     lie_algebra_homset,
@@ -186,8 +184,12 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     restrict_algebra_scalars,
     restrict_graded_algebra_scalars,
 )
-from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras as MatrixAlgebras
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams as CoxeterDiagrams
+from dzack_research.preamble.categories.algebras.algebras import (
+    MatrixAlgebras as MatrixAlgebras,
+)
+from dzack_research.preamble.categories.coxeter_diagrams import (
+    CoxeterDiagrams as CoxeterDiagrams,
+)
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     AffineCodimensionOneChowComparison,
     AffineCycleGroup,
@@ -896,7 +898,9 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
     integral_stabilizer,
     integral_transporter,
 )
-from dzack_research.preamble.categories.rational_lattices import RationalLattices as RationalLattices
+from dzack_research.preamble.categories.rational_lattices import (
+    RationalLattices as RationalLattices,
+)
 from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
     lorentzian_reduction_complex,
 )
