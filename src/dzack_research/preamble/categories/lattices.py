@@ -46,7 +46,6 @@ from dzack_research.preamble.categories._lattice import (
     scale_gram_tensor,
     signature_pair,
     signature_pair_of_gram,
-    signature_pairs,
     tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
@@ -86,7 +85,6 @@ from dzack_research.preamble.categories.definite_lattices import (
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
     isotropic_flag_locus,

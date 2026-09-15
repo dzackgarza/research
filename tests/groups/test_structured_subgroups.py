@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     PredicateSubgroups,
     PreimageSubgroups,
     StabilizerSubgroups,
-    predicate_subgroup,
 )
 
 

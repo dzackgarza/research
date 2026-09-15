@@ -14,12 +14,11 @@ case that separates the unit group from the whole ring.
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     OwnedGroups,
     OwnedRings,
-    ZZ,
     module_homset,
-    predicate_subgroup,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

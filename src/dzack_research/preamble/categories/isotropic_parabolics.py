@@ -153,9 +153,6 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         @cached_method
         def parabolic_subgroup(self):
             r"""Return ``P_I = Stab_{O(L)}(I)`` as a predicate subgroup of ``O(L)``."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             return self.ambient_lattice().Aut().predicate_subgroup(self.stabilizes, f"g maps {self} onto itself")
 
@@ -220,9 +217,6 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         @cached_method
         def unipotent_radical(self):
             r"""Return ``U_I``, the kernel of ``P_I -> GL(I) x O(I^perp/I)``."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             inclusion = self.inclusion()
             embedded = self.embedded_module_generators()

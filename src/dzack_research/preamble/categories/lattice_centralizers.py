@@ -790,9 +790,6 @@ class IsometryPrimitiveExtension:
 
     def centralizer_group(self):
         r"""Return ``O(L,f) = Z_{O(L)}(f)`` as a predicate subgroup of ``O(L)``."""
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            centralizer,
-        )
 
         return self.lattice.Aut().centralizer(self.isometry)
 

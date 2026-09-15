@@ -5,7 +5,6 @@ import pytest
 from dzack_research.preamble.all import (
     ZZ,
     Lattices,
-    predicate_subgroup,
     primitive_isotropic,
 )
 

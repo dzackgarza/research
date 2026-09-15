@@ -9,7 +9,6 @@ from dzack_research.preamble.all import Groups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,
     is_predicate_subgroup,
-    predicate_subgroup,
 )
 
 ARCHIVE_RECONCILIATION = {

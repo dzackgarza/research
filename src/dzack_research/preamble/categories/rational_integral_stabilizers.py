@@ -407,9 +407,6 @@ def integral_stabilizer(rational_group, lattice_inclusion):
                 rational_group, lattice_inclusion
             ).lattice_stabilizer()
 
-    from dzack_research.preamble.categories.group.predicate_subgroups import (
-        predicate_subgroup,
-    )
     from dzack_research.preamble.categories.modules.pure.modules import (
         RestrictedScalarsModules,
     )

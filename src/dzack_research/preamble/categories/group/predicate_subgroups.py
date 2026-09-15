@@ -468,23 +468,6 @@ def predicate_subgroup_category(containing_group):
     return PredicateSubgroups(containing_group)
 
 
-def predicate_subgroup(
-    containing_group,
-    predicate,
-    description,
-    *,
-    character_data=None,
-    character_data_complete=None,
-):
-    r"""Notebook notation for the category-owned predicate subgroup."""
-    return PredicateSubgroups(containing_group)(
-        predicate,
-        description,
-        character_data=character_data,
-        character_data_complete=character_data_complete,
-    )
-
-
 def kernel_subgroup(morphism):
     r"""Notebook notation for the category-owned kernel subgroup."""
     return KernelSubgroups(morphism.domain())(morphism)
@@ -549,11 +532,6 @@ def is_predicate_subgroup(group):
     )
 
 
-def centralizer(containing_group, element):
-    r"""Notebook notation for the category-owned centralizer subgroup."""
-    return CentralizerSubgroups(containing_group)(element)
-
-
 __all__ = [
     "CentralizerSubgroups",
     "IntersectionSubgroups",
@@ -561,11 +539,9 @@ __all__ = [
     "PredicateSubgroups",
     "PreimageSubgroups",
     "StabilizerSubgroups",
-    "centralizer",
     "intersection_subgroup",
     "is_predicate_subgroup",
     "kernel_subgroup",
-    "predicate_subgroup",
     "preimage_subgroup",
     "stabilizer_subgroup",
 ]

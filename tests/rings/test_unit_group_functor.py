@@ -12,10 +12,9 @@ carries \(\mathbf Z^\times=\{\pm 1\}\) into \(\mathbf F_5^\times\), sending
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     OwnedGroups,
     OwnedRings,
-    ZZ,
-    predicate_subgroup,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.rings import GF
