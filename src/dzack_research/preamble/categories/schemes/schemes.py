@@ -24,7 +24,7 @@ from sage.structure.category_object import CategoryObject
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
-    MonoCategoryOf,
+    _MonoCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -4831,7 +4831,7 @@ class OpenImmersions(_SchemeSubobjectsOf):
             return inclusion
 
 
-class SchemeMonomorphisms(MonoCategoryOf):
+class SchemeMonomorphisms(_MonoCategoryOf):
     r"""Monomorphisms of schemes.
 
     A closed immersion and an open immersion are monomorphisms.  Which of the

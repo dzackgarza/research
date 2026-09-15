@@ -16,7 +16,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    RestrictedHomCategoryOf,
+    _RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
@@ -360,7 +360,7 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
         return f"Slice automorphism induced by {self._element}"
 
 
-class AbsoluteGaloisCategoryConstruction(RestrictedHomCategoryOf):
+class AbsoluteGaloisCategoryConstruction(_RestrictedHomCategoryOf):
     r"""Closure endomorphisms fixing one chosen embedded base field."""
 
     _declaration_name = "_AbsoluteGaloisCategory"

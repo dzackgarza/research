@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalIsomorphism,
     FixedRestrictedHomCategory,
     HomCategoryConstruction,
-    RestrictedHomCategoryOf,
+    _RestrictedHomCategoryOf,
     _category_hom,
     _category_homset,
 )
@@ -1000,7 +1000,7 @@ class FixedWideHomCategory(FixedRestrictedHomCategory):
         ]
 
 
-class WideHomCategoryConstruction(RestrictedHomCategoryOf):
+class WideHomCategoryConstruction(_RestrictedHomCategoryOf):
     r"""Hom categories cut out by a wide subcategory's arrow predicate."""
 
     FixedCategoryClass = FixedWideHomCategory

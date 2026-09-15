@@ -6,7 +6,7 @@ from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import Element
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    RestrictedHomCategoryOf,
+    _RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
     _category_homset,
 )
@@ -497,7 +497,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
 
 
-class ConnectionCategoryConstruction(RestrictedHomCategoryOf):
+class ConnectionCategoryConstruction(_RestrictedHomCategoryOf):
     _declaration_name = "_ConnectionCategory"
 
     def fixed_category_class(self):
@@ -625,7 +625,7 @@ class ConnectionHomset(RestrictedHomCategoryParent):
         )
 
 
-class ConnectionMorphismCategoryConstruction(RestrictedHomCategoryOf):
+class ConnectionMorphismCategoryConstruction(_RestrictedHomCategoryOf):
     _declaration_name = "_ConnectionMorphismCategory"
 
     def fixed_category_class(self):

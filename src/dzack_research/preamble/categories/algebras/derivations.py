@@ -17,7 +17,7 @@ from sage.structure.element import ModuleElement
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    RestrictedHomCategoryOf,
+    _RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
@@ -524,7 +524,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
 
 
-class DerivationCategoryConstruction(RestrictedHomCategoryOf):
+class DerivationCategoryConstruction(_RestrictedHomCategoryOf):
     _declaration_name = "_DerivationCategory"
 
     def fixed_category_class(self):
@@ -766,7 +766,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         )
 
 
-class GradedDerivationCategoryConstruction(RestrictedHomCategoryOf):
+class GradedDerivationCategoryConstruction(_RestrictedHomCategoryOf):
     _declaration_name = "_GradedDerivationCategory"
 
     @staticmethod
