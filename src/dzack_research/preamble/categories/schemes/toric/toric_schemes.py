@@ -1279,10 +1279,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def complete_linear_system(self, divisor):
             r"""Return ``|D|`` as the projectivization of the represented section space."""
             from dzack_research.preamble.categories.divisors.linear_systems import (
-                CompleteLinearSystem,
+                _complete_linear_system,
             )
 
-            return CompleteLinearSystem(
+            return _complete_linear_system(
                 self,
                 self.weil_divisor_group()(divisor),
                 self.divisor_section_space(divisor),

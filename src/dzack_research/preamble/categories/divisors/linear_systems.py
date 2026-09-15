@@ -474,7 +474,7 @@ def _weak_compositions(total, length):
             yield (first, *tail)
 
 
-def HomogeneousPolynomialSectionSpace(projective_scheme, degree, *, coordinate_names=None):
+def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordinate_names=None):
     r"""Return the degree-``d`` homogeneous polynomial space on ``P^n``.
 
     Basis labels are the actual monomials in an owned homogeneous-coordinate
@@ -517,7 +517,7 @@ def HomogeneousPolynomialSectionSpace(projective_scheme, degree, *, coordinate_n
     return space
 
 
-def MultiHomogeneousPolynomialSectionSpace(projective_product, degrees):
+def _multihomogeneous_polynomial_section_space(projective_product, degrees):
     r"""Return ``H^0(prod P^{n_i}, O(d_i))`` for nonnegative multidegree.
 
     Basis labels are the actual multihomogeneous monomials in one owned
@@ -599,7 +599,7 @@ def MultiHomogeneousPolynomialSectionSpace(projective_product, degrees):
     )
 
 
-def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_index):
+def _coordinate_hyperplane_section_restriction(projective_space, degree, coordinate_index):
     r"""Restrict degree-``d`` sections of ``P^n`` to ``x_i=0``.
 
     This is the exact map ``H^0(P^n,O(d)) -> H^0(P^{n-1},O(d))`` for the
@@ -614,7 +614,7 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     if coordinate_index < 0 or coordinate_index > dimension:
         raise ValueError("the coordinate index is outside the projective coordinate range")
     source_names = tuple(f"x{index}" for index in range(dimension + 1))
-    source = HomogeneousPolynomialSectionSpace(
+    source = _homogeneous_polynomial_section_space(
         projective_space,
         degree,
         coordinate_names=source_names,
@@ -624,7 +624,7 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     target_names = tuple(
         name for index, name in enumerate(source_names) if index != coordinate_index
     )
-    target = HomogeneousPolynomialSectionSpace(
+    target = _homogeneous_polynomial_section_space(
         hyperplane,
         degree,
         coordinate_names=target_names,
@@ -766,12 +766,7 @@ def _projective_section_restriction(
     )
 
 
-def ProjectiveSectionRestriction(line_bundle, closed_subscheme):
-    r"""Return the exact image-valued restriction map for ``H^0(P,L) -> H^0(Z,L|_Z)``."""
-    return _projective_section_restriction(line_bundle, closed_subscheme)
-
-
-def ProjectiveLinearSystem(line_bundle, sections):
+def _projective_linear_system(line_bundle, sections):
     r"""Return the projective linear system spanned by independent sections of ``line_bundle``."""
     scheme = line_bundle.projective_space()
     ambient = line_bundle.global_sections()
@@ -819,7 +814,7 @@ def _centered_jet_basis(base, dimension, jet_order):
     return ring, tuple(monomials), by_exponents
 
 
-def ProjectivePointJetEvaluation(line_bundle, point, jet_order):
+def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     r"""Return ``H^0(P,L) -> L_p / m_p^r L_p`` at a represented rational point.
 
     The local quotient is the defining object: choose a standard affine chart
@@ -940,8 +935,8 @@ def ProjectivePointJetEvaluation(line_bundle, point, jet_order):
     return evaluation
 
 
-def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet_order):
-    r"""Coordinate-point spelling of :func:`ProjectivePointJetEvaluation`."""
+def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index, jet_order):
+    r"""Coordinate-point realization of the projective point-jet evaluation."""
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
     if coordinate_index < 0 or coordinate_index > dimension:
@@ -952,7 +947,7 @@ def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet
         for index in range(dimension + 1)
     )
     point = projective_space.point_morphism(coordinates)
-    evaluation = ProjectivePointJetEvaluation(
+    evaluation = _projective_point_jet_evaluation(
         projective_space.O(degree),
         point,
         jet_order,
@@ -962,18 +957,9 @@ def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet
     return evaluation
 
 
-def SectionsVanishingAtPoint(line_bundle, point, vanishing_order):
-    r"""Sections whose germ lies in ``m_p^r L_p``."""
-    return ProjectivePointJetEvaluation(
-        line_bundle,
-        point,
-        vanishing_order,
-    ).kernel()
-
-
-def ImposedPointMultiplicityLinearSystem(line_bundle, point, vanishing_order):
+def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_order):
     r"""Projectivize sections vanishing to order at least ``r`` at ``point``."""
-    evaluation = ProjectivePointJetEvaluation(line_bundle, point, vanishing_order)
+    evaluation = _projective_point_jet_evaluation(line_bundle, point, vanishing_order)
     constrained = evaluation.kernel()
     dimension = int(constrained.dimension())
     if dimension == 0:
@@ -990,18 +976,8 @@ def ImposedPointMultiplicityLinearSystem(line_bundle, point, vanishing_order):
     )
 
 
-def SectionsVanishingToOrder(projective_space, degree, coordinate_index, vanishing_order):
-    r"""Return degree-``d`` sections vanishing to order at least ``r`` at a coordinate point."""
-    return CoordinatePointJetEvaluation(
-        projective_space,
-        degree,
-        coordinate_index,
-        vanishing_order,
-    ).kernel()
-
-
-def ImposedMultiplicityLinearSystem(projective_space, degree, coordinate_index, vanishing_order):
-    r"""Coordinate-point spelling of :func:`ImposedPointMultiplicityLinearSystem`."""
+def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coordinate_index, vanishing_order):
+    r"""Coordinate-point realization of the imposed-multiplicity linear system."""
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
     if coordinate_index < 0 or coordinate_index > dimension:
@@ -1013,7 +989,7 @@ def ImposedMultiplicityLinearSystem(projective_space, degree, coordinate_index, 
             for index in range(dimension + 1)
         )
     )
-    result = ImposedPointMultiplicityLinearSystem(
+    result = _imposed_point_multiplicity_linear_system(
         projective_space.O(degree),
         point,
         vanishing_order,
@@ -1023,7 +999,7 @@ def ImposedMultiplicityLinearSystem(projective_space, degree, coordinate_index, 
     return result
 
 
-def CompleteLinearSystem(scheme, divisor, section_space):
+def _complete_linear_system(scheme, divisor, section_space):
     r"""Return the complete linear system of ``divisor`` on ``scheme``.
 
     The represented convention is the projective space of nonzero global
@@ -1046,20 +1022,9 @@ def CompleteLinearSystem(scheme, divisor, section_space):
 
 
 __all__ = [
-    "CompleteLinearSystem",
     "CompleteLinearSystems",
-    "CoordinateHyperplaneSectionRestriction",
-    "CoordinatePointJetEvaluation",
-    "HomogeneousPolynomialSectionSpace",
     "HomogeneousPolynomialSectionSpaces",
-    "ImposedMultiplicityLinearSystem",
     "ImposedMultiplicityLinearSystems",
-    "ImposedPointMultiplicityLinearSystem",
     "ProjectiveJetSpaces",
-    "ProjectiveLinearSystem",
     "ProjectiveLinearSystems",
-    "ProjectivePointJetEvaluation",
-    "ProjectiveSectionRestriction",
-    "SectionsVanishingAtPoint",
-    "SectionsVanishingToOrder",
 ]

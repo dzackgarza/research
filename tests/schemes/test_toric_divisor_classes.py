@@ -18,19 +18,15 @@ from dzack_research.preamble.all import (
     ChowGroups,
     ClassGroups,
     CompleteLinearSystems,
-    CoordinateHyperplaneSectionRestriction,
-    CoordinatePointJetEvaluation,
     CoxRings,
     FiniteAtlasInvertibleSheaf,
     HomogeneousPolynomialSectionSpaces,
-    ImposedMultiplicityLinearSystem,
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
     PicardGroups,
     ProjectiveJetSpaces,
     RationalPolyhedralFans,
     SectionRings,
-    SectionsVanishingToOrder,
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
 )
@@ -483,7 +479,7 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
 def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel() -> None:
     plane = _projective_plane()
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
-    restriction = CoordinateHyperplaneSectionRestriction(projective_plane, 2, 0)
+    restriction = projective_plane.coordinate_hyperplane_section_restriction(2, 0)
 
     assert restriction.domain() in HomogeneousPolynomialSectionSpaces(QQ)
     assert restriction.codomain() in HomogeneousPolynomialSectionSpaces(QQ)
@@ -497,8 +493,8 @@ def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel(
 def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:
     plane = _projective_plane()
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
-    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 2)
-    singular_at_point = SectionsVanishingToOrder(projective_plane, 3, 0, 2)
+    jets = projective_plane.coordinate_point_jet_evaluation(3, 0, 2)
+    singular_at_point = projective_plane.sections_vanishing_to_order(3, 0, 2)
 
     assert jets.codomain() in ProjectiveJetSpaces(QQ)
     assert jets.domain().dimension() == 10
@@ -511,7 +507,7 @@ def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None
 def test_higher_jets_record_the_expected_truncated_local_monomials() -> None:
     plane = _projective_plane()
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
-    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 3)
+    jets = projective_plane.coordinate_point_jet_evaluation(3, 0, 3)
 
     assert jets.codomain().dimension() == 6
     assert jets.kernel().dimension() == 4
@@ -521,7 +517,7 @@ def test_higher_jets_record_the_expected_truncated_local_monomials() -> None:
 def test_imposed_double_point_sections_form_the_expected_projective_parameter_space() -> None:
     plane = _projective_plane()
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
-    system = ImposedMultiplicityLinearSystem(projective_plane, 3, 0, 2)
+    system = projective_plane.imposed_multiplicity_linear_system(3, 0, 2)
 
     assert system in ImposedMultiplicityLinearSystems(QQ)
     assert system.relative_dimension() == 6

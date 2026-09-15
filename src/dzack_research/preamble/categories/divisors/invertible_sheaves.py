@@ -510,7 +510,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def __init__(self, projective_space, degree) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            HomogeneousPolynomialSectionSpace,
+            _homogeneous_polynomial_section_space,
         )
         from dzack_research.preamble.categories.schemes.schemes import (
             ProjectiveSpaces,
@@ -538,7 +538,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
                 else ratio.inverse_of_unit() ** int(-self._degree)
             )
         section_space = (
-            HomogeneousPolynomialSectionSpace(
+            _homogeneous_polynomial_section_space(
                 projective_space,
                 self._degree,
                 coordinate_names=projective_space.variable_names(),
@@ -580,10 +580,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def restriction_map(self, closed_subscheme):
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            ProjectiveSectionRestriction,
+            _projective_section_restriction,
         )
 
-        return ProjectiveSectionRestriction(self, closed_subscheme)
+        return _projective_section_restriction(self, closed_subscheme)
 
     def restrict_to(self, closed_subscheme):
         r"""Return ``i^* O(d)`` for a represented projective closed immersion ``i``."""
@@ -635,7 +635,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def linear_system(self, sections=None):
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            ProjectiveLinearSystem,
+            _projective_linear_system,
         )
 
         selected = (
@@ -643,24 +643,24 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             if sections is None
             else tuple(sections)
         )
-        return ProjectiveLinearSystem(self, selected)
+        return _projective_linear_system(self, selected)
 
     def jet_evaluation(self, point, order):
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            ProjectivePointJetEvaluation,
+            _projective_point_jet_evaluation,
         )
 
-        return ProjectivePointJetEvaluation(self, point, order)
+        return _projective_point_jet_evaluation(self, point, order)
 
     def sections_vanishing_to_order(self, point, order):
         return self.jet_evaluation(point, order).kernel()
 
     def imposed_multiplicity_linear_system(self, point, order):
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            ImposedPointMultiplicityLinearSystem,
+            _imposed_point_multiplicity_linear_system,
         )
 
-        return ImposedPointMultiplicityLinearSystem(self, point, order)
+        return _imposed_point_multiplicity_linear_system(self, point, order)
 
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
@@ -919,7 +919,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def __init__(self, projective_product, degrees) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
-            MultiHomogeneousPolynomialSectionSpace,
+            _multihomogeneous_polynomial_section_space,
         )
         from dzack_research.preamble.categories.schemes.schemes import (
             ProductProjectiveSpaces,
@@ -986,7 +986,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
                 )
             units[source_choice, target_choice] = unit
         section_space = (
-            MultiHomogeneousPolynomialSectionSpace(
+            _multihomogeneous_polynomial_section_space(
                 projective_product,
                 self.multidegree(),
             )

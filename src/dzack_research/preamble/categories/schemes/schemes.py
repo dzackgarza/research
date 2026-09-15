@@ -2442,6 +2442,46 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             return ProjectiveO(self, degree)
 
+        def coordinate_hyperplane_section_restriction(self, degree, coordinate_index):
+            r"""Restrict ``O(degree)`` sections to the selected coordinate hyperplane."""
+            from dzack_research.preamble.categories.divisors.linear_systems import (
+                _coordinate_hyperplane_section_restriction,
+            )
+
+            return _coordinate_hyperplane_section_restriction(
+                self, degree, coordinate_index
+            )
+
+        def coordinate_point_jet_evaluation(self, degree, coordinate_index, jet_order):
+            r"""Evaluate ``O(degree)`` jets at the selected coordinate point."""
+            from dzack_research.preamble.categories.divisors.linear_systems import (
+                _coordinate_point_jet_evaluation,
+            )
+
+            return _coordinate_point_jet_evaluation(
+                self, degree, coordinate_index, jet_order
+            )
+
+        def sections_vanishing_to_order(
+            self, degree, coordinate_index, vanishing_order
+        ):
+            r"""Return ``O(degree)`` sections vanishing to the stated order."""
+            return self.coordinate_point_jet_evaluation(
+                degree, coordinate_index, vanishing_order
+            ).kernel()
+
+        def imposed_multiplicity_linear_system(
+            self, degree, coordinate_index, vanishing_order
+        ):
+            r"""Projectivize sections satisfying a coordinate-point multiplicity condition."""
+            from dzack_research.preamble.categories.divisors.linear_systems import (
+                _coordinate_imposed_multiplicity_linear_system,
+            )
+
+            return _coordinate_imposed_multiplicity_linear_system(
+                self, degree, coordinate_index, vanishing_order
+            )
+
         @cached_method
         def canonical_line_bundle(self):
             r"""Return ``omega_{P^n_R} = O(-n-1)`` in the standard smooth projective regime."""

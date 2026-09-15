@@ -22,7 +22,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
-from dzack_research.preamble.categories.divisors.linear_systems import ProjectiveLinearSystem
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersection,
@@ -56,7 +55,7 @@ class HesseBertiniFamily(SageObject):
         rz = ring.algebra_generator("z")
         fermat = sections.section_from_homogeneous_polynomial(rx**3 + ry**3 + rz**3)
         product = sections.section_from_homogeneous_polynomial(rx * ry * rz)
-        linear_system = ProjectiveLinearSystem(bundle, (fermat, product))
+        linear_system = bundle.linear_system((fermat, product))
         basepoint = reference_plane.point_morphism((base.one(), -base.one(), base.zero()))
         base_locus_point = linear_system.base_locus().corestriction(basepoint)
         value_evaluation = bundle.jet_evaluation(basepoint, 1)
