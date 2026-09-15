@@ -1,5 +1,4 @@
 r"""Local algebra invariants of supported hypersurface singularities."""
-
 from sage.libs.singular.function import lib as singular_lib
 from sage.libs.singular.function import singular_function
 from sage.matrix.constructor import matrix
@@ -7,7 +6,7 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
@@ -19,13 +18,17 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.rings.commutative_ideals import _from_engine_ideal
+from dzack_research.preamble.categories.rings.commutative_ideals import (
+    _from_engine_ideal,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 
 
 def _parse_ade_type(ade_type):
@@ -195,8 +198,8 @@ class IsolatedHypersurfaceSingularity:
         ring = self.polynomial_ring()
         if target.polynomial_ring() is not ring:
             raise ValueError("linear right-equivalence currently uses one selected plane ring")
-        forward = algebra_homset(ring, ring)(forward_images)
-        inverse = algebra_homset(ring, ring)(inverse_images)
+        forward = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(forward_images)
+        inverse = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(inverse_images)
         return PlaneLinearRightEquivalence(self, target, forward, inverse)
 
     def ade_type_via_linear_right_equivalence(self, forward_images, inverse_images):
@@ -207,7 +210,7 @@ class IsolatedHypersurfaceSingularity:
         coordinate-change morphism proving that statement.
         """
         ring = self.polynomial_ring()
-        forward = algebra_homset(ring, ring)(forward_images)
+        forward = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(forward_images)
         changed = IsolatedHypersurfaceSingularity(ring, forward(self.equation()))
         ade_type = changed.ade_normal_form_type()
         if ade_type is None:

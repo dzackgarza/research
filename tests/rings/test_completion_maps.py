@@ -1,5 +1,4 @@
 r"""Maps and ideal extensions attached to represented adic completions."""
-
 import pytest
 
 from dzack_research.preamble.all import (
@@ -8,8 +7,8 @@ from dzack_research.preamble.all import (
     CompleteLocalRings,
     FinitelyPresentedAlgebraOn,
     PolynomialRing,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
 def test_zero_adic_completion_has_identity_kernel_and_zero_extended_ideal() -> None:
@@ -110,10 +109,10 @@ def test_compatible_ring_map_induces_a_continuous_map_of_completions() -> None:
     line = PolynomialRing(QQ, ("x",))
     x = line.algebra_generator("x")
     completion = line.adic_completion(line.ideal(x))
-    square = algebra_homset(line, line)({"x": x**2})
+    square = Algebras(line.base_ring()).Associative().Unital().Mor(line, line)({"x": x**2})
     induced = completion.induced_map(square, completion)
     identity = completion.induced_map(
-        algebra_homset(line, line).identity(),
+        Algebras(line.base_ring()).Associative().Unital().Mor(line, line).identity(),
         completion,
     )
     x_hat = completion.completion_map()(x)
@@ -124,6 +123,6 @@ def test_compatible_ring_map_induces_a_continuous_map_of_completions() -> None:
     assert induced(x_hat) == x_hat**2
     assert induced(induced(x_hat)) == x_hat**4
 
-    incompatible = algebra_homset(line, line)({"x": line.one()})
+    incompatible = Algebras(line.base_ring()).Associative().Unital().Mor(line, line)({"x": line.one()})
     with pytest.raises(ValueError, match="does not map into"):
         completion.induced_map(incompatible, completion)

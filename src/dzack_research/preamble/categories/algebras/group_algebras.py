@@ -19,9 +19,10 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
     UnitalMultiplicativeAlgebraMorphism,
     _unit_morphism_from_element,
-    algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.augmented_algebras import AugmentedAlgebras
+from dzack_research.preamble.categories.algebras.augmented_algebras import (
+    AugmentedAlgebras,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
@@ -45,7 +46,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -135,7 +138,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                     for label in self.module_generating_set()
                 }
             )
-            return algebra_homset(self, ring)(counit)
+            return Algebras(self.base_ring()).Associative().Unital().Mor(self, ring)(counit)
 
         @cached_method
         def regular_representation(self):
@@ -278,7 +281,7 @@ class GroupAlgebraFunctor(Functor):
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
         return GroupAlgebraMorphism(
-            algebra_homset(source, target),
+            Algebras(source.base_ring()).Associative().Unital().Mor(source, target),
             group_morphism,
         )
 

@@ -175,7 +175,6 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     TensorAlgebras,
     VectorFields,
     algebra_from_multiplication,
-    algebra_homset,
     augmented_algebra,
     cohomology_algebra_homset,
     commutative_algebra_coproduct,
@@ -187,8 +186,12 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     restrict_algebra_scalars,
     restrict_graded_algebra_scalars,
 )
-from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras  # noqa: F401
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams  # noqa: F401
+from dzack_research.preamble.categories.algebras.algebras import (
+    MatrixAlgebras,  # noqa: F401
+)
+from dzack_research.preamble.categories.coxeter_diagrams import (
+    CoxeterDiagrams,  # noqa: F401
+)
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     AffineCodimensionOneChowComparison,
     AffineCycleGroup,
@@ -720,9 +723,7 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     finite_inertia_group,
     first_exact_embedding,
     fixed_point_set,
-    g_set_homset,
     generated_submonoid,
-    group_homset,
     groups,
     open_absolute_galois_subgroup,
     predicate_subgroup,
@@ -899,7 +900,9 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
     integral_stabilizer,
     integral_transporter,
 )
-from dzack_research.preamble.categories.rational_lattices import RationalLattices  # noqa: F401
+from dzack_research.preamble.categories.rational_lattices import (
+    RationalLattices,  # noqa: F401
+)
 from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
     lorentzian_reduction_complex,
 )
@@ -1169,7 +1172,12 @@ from dzack_research.preamble.rings import (  # noqa: F401
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
-from dzack_research.preamble.utilities import lmap, lzip, to_var_names, zipsum  # noqa: F401
+from dzack_research.preamble.utilities import (  # noqa: F401
+    lmap,
+    lzip,
+    to_var_names,
+    zipsum,
+)
 
 _language_runtime.install()
 

@@ -2140,14 +2140,14 @@ class AlgebraMorphism(Morphism):
             return NotImplemented if compose is None else compose(self)
         if self._engine_morphism is not None and other._engine_morphism is not None:
             composed_engine = self._engine_morphism * other._engine_morphism
-            return algebra_homset(other.domain(), self.codomain())(composed_engine)
+            return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(composed_engine)
         if other.domain() in FramedAlgebras(other.domain().base_ring()):
-            return algebra_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
+            return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
 
         if other.domain() in FramedModules(other.domain().base_ring()):
             module_map = module_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().module_generator(label))))
-            return algebra_homset(other.domain(), self.codomain())(module_map)
-        return algebra_homset(other.domain(), self.codomain())(
+            return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(module_map)
+        return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(
             SetMorphism(
                 Sets().Mor(other.domain(), self.codomain()),
                 lambda element: self(other(element)),
@@ -2204,7 +2204,7 @@ class PresentedAlgebraMorphism(Morphism):
         else:
             raise TypeError("a presented-algebra morphism is specified on its algebra generators")
         self._generator_images = selected
-        self._presentation_map = algebra_homset(domain.presentation_ring(), self.codomain())(selected)
+        self._presentation_map = Algebras(domain.presentation_ring().base_ring()).Associative().Unital().Mor(domain.presentation_ring(), self.codomain())(selected)
         zero = self.codomain().zero()
         for relation in domain.relations():
             if self._presentation_map(relation) != zero:
@@ -2252,7 +2252,7 @@ class PresentedAlgebraMorphism(Morphism):
             return NotImplemented
         if other.domain() not in FramedAlgebras(other.domain().base_ring()):
             return NotImplemented
-        return algebra_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
+        return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
 
 
 class _AlgebraHomsetCommonMethods:
@@ -2351,11 +2351,6 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
-
-
-def algebra_homset(domain, codomain):
-    r"""``Hom_{R-Alg}(domain, codomain)`` for ``R`` the base of ``domain``; both must be placed over ``R``."""
-    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 @cached_function
@@ -2919,7 +2914,6 @@ __all__ = [
     "OwnedAlgebras",
     "algebra_from_multiplication",
     "algebra_structure_view",
-    "algebra_homset",
     "commutative_algebra_coproduct",
     "commutative_algebra_pushout",
     "finite_algebra_generators",

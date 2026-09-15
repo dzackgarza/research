@@ -1,6 +1,8 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
@@ -242,10 +244,9 @@ class _PredicateSubgroupConstruction(OwnedParameterizedCategory):
 
 class KernelSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
-        from dzack_research.preamble.categories.group.groups import group_homset
 
         group = self.base()
-        return self(group_homset(group, group).identity())
+        return self(group.Mor(group).identity())
 
     def _call_(self, morphism):
         r"""Construct the kernel subgroup retaining its defining morphism."""
@@ -291,11 +292,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
 
 class PreimageSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
-        from dzack_research.preamble.categories.group.groups import group_homset
 
         group = self.base()
         whole = PredicateSubgroups(group)(lambda _element: True, "the whole group")
-        return self(group_homset(group, group).identity(), whole)
+        return self(group.Mor(group).identity(), whole)
 
     def _call_(
         self,

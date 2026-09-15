@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.group.g_sets import (
     OrbitSets,
     _finite_g_set_from_action,
     fixed_point_set,
-    g_set_homset,
     trivial_g_set,
 )
 from dzack_research.preamble.categories.group.groups import _owned_group
@@ -50,7 +49,7 @@ class TrivialGSetFunctor(Functor):
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
-        return g_set_homset(source, target)(set_morphism)
+        return source.Mor(target)(set_morphism)
 
     def _repr_(self):
         return f"Trivial {self.group()}-action on finite sets"
@@ -114,7 +113,7 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
     def unit(self, g_set):
         orbit_set = self.left_adjoint()(g_set)
         trivial_orbits = self.right_adjoint()(orbit_set)
-        return g_set_homset(g_set, trivial_orbits)(orbit_set.orbit_of)
+        return g_set.Mor(trivial_orbits)(orbit_set.orbit_of)
 
     def counit(self, set_object):
         trivial = self.right_adjoint()(set_object)
@@ -138,7 +137,7 @@ class GSetTrivialFixedAdjunction(Adjunction):
     def counit(self, g_set):
         fixed = self.right_adjoint()(g_set)
         trivial_fixed = self.left_adjoint()(fixed)
-        return g_set_homset(trivial_fixed, g_set)(lambda point: point)
+        return trivial_fixed.Mor(g_set)(lambda point: point)
 
 
 
@@ -182,7 +181,7 @@ class FreeGSetFunctor(Functor):
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
-        return g_set_homset(source, target)(
+        return source.Mor(target)(
             lambda point: self.free_point(
                 target,
                 point.component(0),
@@ -281,7 +280,7 @@ class CofreeGSetFunctor(Functor):
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
-        return g_set_homset(source, target)(
+        return source.Mor(target)(
             lambda function_point: self.function_point(
                 target,
                 lambda group_element: set_morphism(
@@ -311,7 +310,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
 
     def counit(self, g_set):
         free = self.left_adjoint()(self.right_adjoint()(g_set))
-        return g_set_homset(free, g_set)(
+        return free.Mor(g_set)(
             lambda point: g_set.act(point[0], point[1])
         )
 
@@ -326,7 +325,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
 
     def unit(self, g_set):
         cofree = self.right_adjoint()(self.left_adjoint()(g_set))
-        return g_set_homset(g_set, cofree)(
+        return g_set.Mor(cofree)(
             lambda point: self.right_adjoint().function_point(
                 cofree,
                 lambda group_element: g_set.act(group_element, point),

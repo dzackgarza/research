@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     OpenImmersions,
     Sets,
     SymmetricAlgebraOn,
-    algebra_homset,
     algebra_underlying_module_functor,
     category_packet,
     set_injection,
@@ -122,7 +121,7 @@ def test_join_hom_keeps_the_most_specific_inherited_arrow_theory() -> None:
 
 def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
-    structured_identity = algebra.Mor(algebra).identity()
+    structured_identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
     ordinary_hom = Algebras(QQ).Mor(algebra, algebra)
 
     assert structured_identity.parent() is not ordinary_hom
@@ -138,7 +137,7 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     polynomial = SymmetricAlgebraOn(QQ, ("x",))
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
-    identity = algebra_homset(algebra, algebra).identity()
+    identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
     isomorphism = Isomorphism(identity, identity)
     forget = algebra_underlying_module_functor(QQ)
 

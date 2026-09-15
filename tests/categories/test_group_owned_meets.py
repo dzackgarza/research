@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
     Subgroups,
-    group_homset,
 )
 from dzack_research.preamble.categories.group.magmas import Monoids
 
@@ -29,7 +28,7 @@ def test_transported_subgroup_keeps_owned_subgroup_and_group_placement() -> None
 
 def test_endomorphism_hom_and_automorphism_group_keep_owned_placements() -> None:
     group = OwnedGroups().S(3)
-    endomorphisms = group_homset(group, group)
+    endomorphisms = group.Mor(group)
     automorphisms = group.Aut()
 
     assert endomorphisms in Monoids()

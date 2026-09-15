@@ -3,8 +3,8 @@ from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
     SymmetricAlgebraOn,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.cohomology import (
     cohomology_functor,
     de_rham_cohomology_algebra_functor,
@@ -55,7 +55,7 @@ def test_algebraic_de_rham_cohomology_is_literal_functor_composition() -> None:
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
-    collapse = algebra_homset(algebra, algebra)({"x": algebra.zero()})
+    collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
     functor = de_rham_cohomology_functor(field, 1)
     h1 = functor(algebra)
@@ -77,7 +77,7 @@ def test_algebraic_de_rham_cohomology_ring_is_functorial() -> None:
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
-    collapse = algebra_homset(algebra, algebra)({"x": algebra.zero()})
+    collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
     functor = de_rham_cohomology_algebra_functor(field)
     cohomology = functor(algebra)

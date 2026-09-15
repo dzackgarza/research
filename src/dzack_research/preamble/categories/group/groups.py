@@ -39,7 +39,7 @@ from sage.groups.perm_gps.permgroup import (
 )
 from sage.libs.gap.element import GapElement
 from sage.libs.gap.libgap import libgap
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
@@ -1059,7 +1059,7 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     permutation_isomorphism = gap_quotient.IsomorphismPermGroup()
     permutation_model = permutation_isomorphism.Image()
     quotient = _own_group(PermutationGroup(gap_group=permutation_model))
-    projection = group_homset(group, quotient)(
+    projection = group.Mor(quotient)(
         gap_projection * permutation_isomorphism
     )
     return quotient, projection
@@ -1187,7 +1187,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
         if morphism.domain() is not self.codomain():
             raise ValueError("group-morphism composition requires matching middle groups")
         indices = self.domain().free_basis()
-        return group_homset(self.domain(), morphism.codomain())(
+        return self.domain().Mor(morphism.codomain())(
             SetMorphism(
                 Sets().Mor(indices, morphism.codomain()),
                 lambda index: morphism(self.generator_morphism()(index)),
@@ -1201,7 +1201,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
         if other.domain() not in GroupsWithChosenFreeBasis():
             return NotImplemented
         indices = other.domain().free_basis()
-        return group_homset(other.domain(), self.codomain())(
+        return other.domain().Mor(self.codomain())(
             SetMorphism(
                 Sets().Mor(indices, self.codomain()),
                 lambda index: self(other(other.domain().free_generator(index))),
@@ -1255,7 +1255,7 @@ class GroupHomomorphism(GroupMorphism_libgap):
             return NotImplemented
         source = other.domain()
         backend_generators = _gap_model(source).GeneratorsOfGroup()
-        return group_homset(source, self.codomain())(tuple(self(other(_element_from_engine(source, generator))) for generator in backend_generators))
+        return source.Mor(self.codomain())(tuple(self(other(_element_from_engine(source, generator))) for generator in backend_generators))
 
     def _call_(self, element):
         model = _element_to_engine(self.domain(), element)
@@ -1418,11 +1418,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
 
     def _repr_(self):
         return f"Hom({self.domain()}, {self.codomain()})"
-
-
-@cached_function
-def group_homset(domain, codomain):
-    return domain.Mor(codomain)
 
 
 class GroupAutomorphism(GroupHomomorphism):
@@ -1839,7 +1834,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def projection(label):
                 position = labels.index(label) + 1
-                return group_homset(product, family[label])(
+                return product.Mor(family[label])(
                     libgap.Projection(product_engine, position)
                 )
 
@@ -1864,7 +1859,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                             _element_to_engine(factor, factor_image)
                         )
                     images.append(image)
-                return group_homset(apex, product)._from_engine_generator_images(
+                return apex.Mor(product)._from_engine_generator_images(
                     source_generators,
                     images,
                 )
@@ -1936,7 +1931,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def injection(label):
                 position = labels.index(label)
-                return group_homset(family[label], coproduct)(
+                return family[label].Mor(coproduct)(
                     presentation_isomorphisms[position] * embeddings[position]
                 )
 
@@ -1973,7 +1968,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                                 leg(_element_from_engine(factor, factor_generator)),
                             )
                         )
-                return group_homset(coproduct, apex)._from_engine_generator_images(
+                return coproduct.Mor(apex)._from_engine_generator_images(
                     generator_models,
                     image_models,
                 )

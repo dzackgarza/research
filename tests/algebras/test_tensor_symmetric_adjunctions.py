@@ -1,9 +1,8 @@
 import pytest
 from sage.categories.morphism import SetMorphism
-from sage.categories.rings import Rings as SageRings
 
 from dzack_research.preamble.all import (
-    Modules,
+    ZZ,
     Algebras,
     AlternatingAlgebraOf,
     BasedFreeModule,
@@ -13,10 +12,9 @@ from dzack_research.preamble.all import (
     FinitelyPresentedModule,
     FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
+    Modules,
     SymmetricAlgebras,
     TensorAlgebras,
-    ZZ,
-    algebra_homset,
     module_homset,
     symmetric_algebra_adjunction,
     symmetric_algebra_functor,
@@ -55,7 +53,7 @@ def _dual_numbers_mod_four():
     one = algebra.module_generator(0)
     epsilon = algebra.module_generator(1)
     sign_module_map = module_homset(algebra, algebra)({0: one, 1: -epsilon})
-    sign_algebra_map = algebra_homset(algebra, algebra)(sign_module_map)
+    sign_algebra_map = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(sign_module_map)
     return algebra, sign_algebra_map
 
 
@@ -68,11 +66,11 @@ def test_module_map_is_adopted_as_an_algebra_map_only_when_it_preserves_the_laws
 
     nonunital = module_homset(algebra, algebra)({0: algebra.zero(), 1: epsilon})
     with pytest.raises(ValueError, match="preserve the unit"):
-        algebra_homset(algebra, algebra)(nonunital)
+        Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonunital)
 
     nonmultiplicative = module_homset(algebra, algebra)({0: one, 1: one})
     with pytest.raises(ValueError, match="not multiplicative"):
-        algebra_homset(algebra, algebra)(nonmultiplicative)
+        Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonmultiplicative)
 
 
 def _assert_module_maps_agree(left, right, probes) -> None:
@@ -232,7 +230,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     assert carried_unit.domain() is free_source
     assert carried_unit.codomain() is counit.domain()
     triangle = counit * carried_unit
-    identity = algebra_homset(free_source, free_source).identity()
+    identity = Algebras(free_source.base_ring()).Associative().Unital().Mor(free_source, free_source).identity()
     _assert_algebra_maps_agree(
         triangle,
         identity,
@@ -353,7 +351,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     degree_two_generator = degree_two.module_generator(degree_two_label)
     assert 2 * degree_two_generator == degree_two.zero()
 
-    invalid = algebra_homset(iterated_free, first_free)(
+    invalid = Algebras(iterated_free.base_ring()).Associative().Unital().Mor(iterated_free, first_free)(
         lambda _label: first_free.one()
     )
     with pytest.raises(ValueError, match="relations"):
@@ -379,7 +377,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     module_map_to_sparse = module_homset(dual_numbers, iterated_free)(
         {"one": iterated_free.one(), "epsilon": iterated_free.zero()}
     )
-    algebra_map_to_sparse = algebra_homset(dual_numbers, iterated_free)(
+    algebra_map_to_sparse = Algebras(dual_numbers.base_ring()).Associative().Unital().Mor(dual_numbers, iterated_free)(
         module_map_to_sparse
     )
     assert (
@@ -390,7 +388,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         algebra_map_to_sparse(dual_numbers.module_generator("epsilon"))
         == iterated_free.zero()
     )
-    sparse_identity = algebra_homset(iterated_free, iterated_free).identity()
+    sparse_identity = Algebras(iterated_free.base_ring()).Associative().Unital().Mor(iterated_free, iterated_free).identity()
     composite_to_sparse = sparse_identity * algebra_map_to_sparse
     assert (
         composite_to_sparse(dual_numbers.module_generator("one")) == iterated_free.one()
@@ -404,13 +402,13 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     exterior = AlternatingAlgebraOf(exterior_module)
     exterior_unit_label = exterior.module_generating_set()(0, 0)
     augmentation = SetMorphism(
-        exterior.Mor(iterated_free),
+        Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free),
         lambda element: element.monomial_coefficients().get(
             exterior_unit_label, ZZ.zero()
         )
         * iterated_free.one(),
     )
-    algebra_augmentation = algebra_homset(exterior, iterated_free)(augmentation)
+    algebra_augmentation = Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free)(augmentation)
     power_identity = power_algebra_homset(exterior, exterior).identity()
     composite_augmentation = algebra_augmentation * power_identity
     assert composite_augmentation(exterior.one()) == iterated_free.one()

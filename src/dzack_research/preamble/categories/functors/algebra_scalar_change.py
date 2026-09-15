@@ -21,10 +21,13 @@ from sage.rings.rational_field import QQ as SageQQ
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
-    algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
-from dzack_research.preamble.categories.algebras.restricted_scalars import restrict_algebra_scalars
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+    AlgebrasWithChosenFinitePresentation,
+)
+from dzack_research.preamble.categories.algebras.restricted_scalars import (
+    restrict_algebra_scalars,
+)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -177,7 +180,7 @@ class AlgebraScalarExtensionFunctor(Functor):
                 target_field = morphism.codomain().fraction_field()
                 match _engine_ring(source_field) is SageQQ:
                     case True:
-                        return algebra_homset(source, target).identity()
+                        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target).identity()
                     case False:
                         pass
                 match _engine_ring(source_field).is_absolute():
@@ -194,7 +197,7 @@ class AlgebraScalarExtensionFunctor(Functor):
                 target_image = target._from_engine_element(
                     _engine_element(target_field, primitive_image)
                 )
-                return algebra_homset(source, target)(
+                return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
                     {
                         label: target_image
                         for label in source.algebra_generating_set()
@@ -204,7 +207,7 @@ class AlgebraScalarExtensionFunctor(Functor):
                 pass
 
         if morphism.codomain() in SymmetricAlgebras(self._source_ring):
-            return algebra_homset(source, target)(
+            return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
                 lambda label: _base_change_symmetric_element(
                     morphism.codomain(),
                     morphism(morphism.domain().algebra_generator(label)),
@@ -213,7 +216,7 @@ class AlgebraScalarExtensionFunctor(Functor):
                 )
             )
 
-        return algebra_homset(source, target)(
+        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
             lambda label: _base_change_presented_element(
                 morphism.codomain(),
                 morphism(morphism.domain().algebra_generator(label)),
@@ -253,7 +256,7 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
         # check the selected relations.
 
         if source in FramedAlgebras(source.base_ring()):
-            return algebra_homset(source, target)(
+            return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
                 {
                     label: target(
                         morphism(
@@ -263,7 +266,7 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
                     for label in source.algebra_generating_set()
                 }
             )
-        return algebra_homset(source, target)(
+        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
             SetMorphism(
                 Sets().Mor(source, target),
                 lambda element: target(morphism(morphism.domain()(element))),
@@ -287,14 +290,14 @@ class AlgebraBaseChangeAdjunction(Adjunction):
     def unit(self, algebra):
         extended = self.left_adjoint()(algebra)
         restricted = self.right_adjoint()(extended)
-        return algebra_homset(algebra, restricted)(
+        return Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, restricted)(
             lambda label: restricted(extended.algebra_generator(label))
         )
 
     def counit(self, algebra):
         restricted = self.right_adjoint()(algebra)
         extended = self.left_adjoint()(restricted)
-        return algebra_homset(extended, algebra)(
+        return Algebras(extended.base_ring()).Associative().Unital().Mor(extended, algebra)(
             lambda label: algebra(restricted.algebra_generator(label))
         )
 

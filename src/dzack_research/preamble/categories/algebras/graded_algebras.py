@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     _unit_from_multiplication,
     _unit_morphism_from_element,
-    algebra_homset,
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
     GradedModules,
@@ -52,7 +51,7 @@ class GradedAlgebraMorphism(Morphism):
     def __init__(self, parent, images, *, check_degrees=True) -> None:
         Morphism.__init__(self, parent)
 
-        self._underlying = algebra_homset(self.domain(), self.codomain())(images)
+        self._underlying = Algebras(self.domain().base_ring()).Associative().Unital().Mor(self.domain(), self.codomain())(images)
         if check_degrees:
             self._check_degrees()
 

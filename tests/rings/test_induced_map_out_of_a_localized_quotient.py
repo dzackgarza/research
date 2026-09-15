@@ -14,13 +14,12 @@ Two targets.  The localization itself, where uniqueness makes the induced map
 the identity; and \(\mathbf Q\), where evaluating \(\bar x\) at one and
 \(\bar y\) at zero respects \(xy=0\) and sends \(\bar y/\bar x\) to zero.
 """
-
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     FinitelyPresentedAlgebra,
     SymmetricAlgebraOn,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
 def _axes_and_punctured_axis():
@@ -47,7 +46,7 @@ def test_the_map_induced_by_the_localization_map_is_the_identity() -> None:
 def test_an_evaluation_that_inverts_the_character_extends_to_the_localization() -> None:
     axes, xbar, ybar = _axes_and_punctured_axis()
     punctured = axes.localization(xbar)
-    evaluation = algebra_homset(axes, QQ)({"x": QQ.one(), "y": QQ.zero()})
+    evaluation = Algebras(axes.base_ring()).Associative().Unital().Mor(axes, QQ)({"x": QQ.one(), "y": QQ.zero()})
 
     induced = punctured.induced_morphism(evaluation)
 

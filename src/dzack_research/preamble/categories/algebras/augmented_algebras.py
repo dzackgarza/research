@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
     _OwnedAlgebraParent,
-    algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
@@ -45,7 +44,9 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         generator to \(0\); the augmented algebra is its domain, interned on
         that choice.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebraOn,
+        )
 
         ring = self.base_ring()
         polynomials = SymmetricAlgebraOn(ring, ("x",))
@@ -68,7 +69,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def augmentation(self):
-            return algebra_homset(self, self._preamble_augmentation_codomain)(
+            return Algebras(self.base_ring()).Associative().Unital().Mor(self, self._preamble_augmentation_codomain)(
                 dict(self._preamble_augmentation_images)
             )
 
@@ -94,7 +95,9 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
         generator to \(0\); the augmented algebra is its domain, interned on
         that choice.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebraOn,
+        )
 
         ring = self.base_ring()
         polynomials = SymmetricAlgebraOn(ring, ("x",))

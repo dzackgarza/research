@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.functors.cohomology import cohomology_fu
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _own_group,
-    group_homset,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
@@ -40,9 +39,16 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
     _engine_vector,
     _owned_vector,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import NN, cartesian_product_of
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    cartesian_product_of,
+)
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.refine import refine
 
@@ -1067,7 +1073,7 @@ class NodalCubicIntegralTopology(SageObject):
         r"""Return the induced map ``pi_1(P^1)->pi_1(C)`` of the pointed normalization."""
         source = self.normalization_fundamental_group()
         target = self.fundamental_group()
-        induced = group_homset(source, target)(())
+        induced = source.Mor(target)(())
         induced._preamble_pointed_scheme_morphism = self.normalization_morphism()
         induced._preamble_source_base_point = self.normalization_base_point()
         induced._preamble_target_base_point = self.base_point()

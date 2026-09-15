@@ -1,16 +1,14 @@
 
 from dzack_research.preamble.all import (
-    FiniteGSets,
-    FiniteSets,
-    BasedFreeModule,
-    finite_g_set,
-    FinitelyPresentedTorsionModules,
-    Modules,
-    Groups,
     ZZ,
+    BasedFreeModule,
+    FiniteGSets,
+    FinitelyPresentedTorsionModules,
+    FiniteSets,
+    Groups,
+    Modules,
+    finite_g_set,
     free_group_underlying_set_adjunction,
-    g_set_homset,
-    group_homset,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
@@ -84,7 +82,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     recovered_orbit_map = orbit_adjunction.hom_set_isomorphism_inverse(equivariant)
     _assert_maps_agree(orbit_map, recovered_orbit_map, orbits)
 
-    acted_endomorphism = g_set_homset(acted, acted)(
+    acted_endomorphism = acted.Mor(acted)(
         lambda point: acted.act(group_generator, point)
     )
     left, right = orbit_adjunction.unit_transformation().naturality_square(
@@ -104,7 +102,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     ) * orbit_adjunction.unit(trivial_target)
     _assert_maps_agree(
         first_triangle,
-        g_set_homset(trivial_target, trivial_target).identity(),
+        trivial_target.Mor(trivial_target).identity(),
         trivial_target,
     )
     second_triangle = orbit_adjunction.counit(orbits) * orbit_adjunction.left_adjoint()(
@@ -116,7 +114,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     fixed_adjunction = FiniteSets().trivial_fixed_adjunction(group)
     source = finite_ordered_set((ZZ(50), ZZ(60)))
     trivial_source = fixed_adjunction.left_adjoint()(source)
-    fixed_morphism = g_set_homset(trivial_source, acted)(lambda _point: ZZ(2))
+    fixed_morphism = trivial_source.Mor(acted)(lambda _point: ZZ(2))
     transpose = fixed_adjunction.hom_set_isomorphism_forward(fixed_morphism)
     recovered = fixed_adjunction.hom_set_isomorphism_inverse(transpose, acted)
     _assert_maps_agree(fixed_morphism, recovered, trivial_source)
@@ -153,7 +151,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
 
     free_adjunction = FiniteSets().free_underlying_adjunction(group)
     free = free_adjunction.left_adjoint()(source)
-    equivariant = g_set_homset(free, acted)(
+    equivariant = free.Mor(acted)(
         lambda point: acted.act(
             point[0], ZZ(0) if point[1] == 10 else ZZ(2)
         )
@@ -167,7 +165,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     _assert_maps_agree(left, right, source)
 
     group_generator = group.group_generators()[0]
-    acted_endomorphism = g_set_homset(acted, acted)(
+    acted_endomorphism = acted.Mor(acted)(
         lambda point: acted.act(group_generator, point)
     )
     left, right = free_adjunction.counit_transformation().naturality_square(
@@ -237,7 +235,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     left, right = adjunction.unit_transformation().naturality_square(source_map)
     _assert_maps_agree(left, right, source)
 
-    target_endomorphism = group_homset(target, target)(
+    target_endomorphism = target.Mor(target)(
         {target_generator: target_generator**2}
     )
     left, right = adjunction.counit_transformation().naturality_square(

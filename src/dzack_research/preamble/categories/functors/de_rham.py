@@ -1,10 +1,9 @@
 r"""The affine algebraic de Rham functor and its degree-zero adjunction."""
-
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
     CommutativeAlgebras,
-    algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
@@ -119,7 +118,7 @@ class DegreeZeroDGAFunctor(Functor):
         target_dga = morphism.codomain()
         source = self(source_dga)
         target = self(target_dga)
-        return algebra_homset(source, target)(
+        return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
             {
                 label: target_dga.degree_zero_element(
                     morphism(
@@ -150,14 +149,14 @@ class DeRhamAdjunction(Adjunction):
 
     def unit(self, algebra):
         degree_zero = self.right_adjoint()(self.left_adjoint()(algebra))
-        return algebra_homset(algebra, degree_zero)(
+        return Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, degree_zero)(
             {label: degree_zero.algebra_generator(label) for label in algebra.algebra_generating_set()}
         )
 
     def counit(self, dga):
         degree_zero = self.right_adjoint()(dga)
         source = self.left_adjoint()(degree_zero)
-        identity = algebra_homset(degree_zero, degree_zero).identity()
+        identity = Algebras(degree_zero.base_ring()).Associative().Unital().Mor(degree_zero, degree_zero).identity()
         return _extend_degree_zero_map(source, dga, identity)
 
 

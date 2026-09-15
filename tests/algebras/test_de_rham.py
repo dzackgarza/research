@@ -1,21 +1,27 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
+    AlternatingAlgebraOf,
     DeRhamAlgebra,
+    Derivations,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
     KahlerDifferentials,
     StrictlyCommutativeDifferentialGradedAlgebras,
     StrictlyGradedCommutativeAlgebras,
     SymmetricAlgebraOn,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.de_rham import (
     de_rham_adjunction,
     de_rham_functor,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, ring_as_module
-from dzack_research.preamble.categories.modules import InternalHom, ModuleSubobjects, Modules
-from dzack_research.preamble.categories.algebras import AlternatingAlgebraOf, Derivations
+from dzack_research.preamble.categories.modules import (
+    BasedFreeModule,
+    InternalHom,
+    Modules,
+    ModuleSubobjects,
+    ring_as_module,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -196,7 +202,9 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
         FinitelyPresentedAlgebra,
         KahlerDifferentialModules,
     )
-    from dzack_research.preamble.categories.modules.localizations import LocalizedModules
+    from dzack_research.preamble.categories.modules.localizations import (
+        LocalizedModules,
+    )
 
     polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = polynomial.algebra_generator("x")
@@ -238,7 +246,7 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     target = SymmetricAlgebraOn(QQ, ("t",))
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
-    morphism = algebra_homset(source, target)({"x": t**2})
+    morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, target)({"x": t**2})
 
     functor = de_rham_functor(QQ)
     source_dr = functor(source)
@@ -258,7 +266,7 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
     t = degree_zero.algebra_generator("t")
     adjunction = de_rham_adjunction(QQ)
     target = adjunction.left_adjoint()(degree_zero)
-    algebra_map = algebra_homset(source, degree_zero)({"x": t**2})
+    algebra_map = Algebras(source.base_ring()).Associative().Unital().Mor(source, degree_zero)({"x": t**2})
 
     transpose = adjunction.hom_set_isomorphism_inverse(
         algebra_map,

@@ -17,15 +17,18 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
-    algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _canonical_smith_representative
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+    _canonical_smith_representative,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _SelectedFinitePresentationModules,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     ring_as_module,
@@ -47,7 +50,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
+from dzack_research.preamble.categories.sets.fixed_size_selections import (
+    multisets_of_size,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -661,7 +666,7 @@ def compose_with_free_construction(left, right):
         engine_source.Hom(engine_target),
         lambda element: engine_target(left(right(engine_source(element)))),
     )
-    return algebra_homset(source, target)(composite)
+    return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(composite)
 
 
 class SparseFreeAlgebraMorphism(Morphism):
@@ -778,12 +783,12 @@ class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
 def sparse_free_algebra_homset(domain, codomain):
 
-    return algebra_homset(domain, codomain)
+    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 def free_construction_homset(domain, codomain):
 
-    return algebra_homset(domain, codomain)
+    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 def SparseTensorAlgebraOf(module):

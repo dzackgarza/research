@@ -385,10 +385,9 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     assert unit(group_generators[1]) != abelianization.one()
 
     target_generator = target.group_generators()[0]
-    from dzack_research.preamble.categories.group import group_homset
 
     assert adjunction.right_adjoint()(target) is target
-    sign_to_six = group_homset(group, target)(
+    sign_to_six = group.Mor(target)(
         {
             group_generators[0]: target.one(),
             group_generators[1]: target_generator**3,
@@ -400,12 +399,12 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert recovered(generator) == sign_to_six(generator)
 
     conjugation = group.Aut().one()
-    assert conjugation in group_homset(group, group)
+    assert conjugation in group.Mor(group)
     left, right = adjunction.unit_transformation().naturality_square(conjugation)
     for generator in group_generators:
         assert left(generator) == right(generator)
 
-    target_endomorphism = group_homset(target, target)(
+    target_endomorphism = target.Mor(target)(
         {target_generator: target_generator**5}
     )
     left, right = adjunction.counit_transformation().naturality_square(

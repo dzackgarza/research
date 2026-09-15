@@ -31,12 +31,15 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
     _OwnedAlgebraParent,
-    algebra_homset,
     refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
+    StrictlyGradedCommutativeAlgebras,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreeModuleOn,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -47,7 +50,9 @@ from dzack_research.preamble.categories.modules.powers import (
     SymmetricPower,
     TensorPower,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -376,10 +381,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             generator_values=selected_generator_values,
             categories=tuple(placement),
         )
-        self._preamble_algebra_presentation_morphism = algebra_homset(
-            presentation_ring,
-            self,
-        )(
+        self._preamble_algebra_presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
             lambda label: self.algebra_generator(label)
         )
         if commutative_backend:
@@ -759,7 +761,9 @@ def FinitelyPresentedAlgebra(
 class FreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The free algebra on one generator."""
-        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            TensorAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -790,7 +794,9 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The polynomial algebra on one generator, graded by degree."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -979,7 +985,9 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The tensor algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            TensorAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1125,7 +1133,9 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The symmetric algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1244,7 +1254,9 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The exterior algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import AlternatingAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            AlternatingAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return AlternatingAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1375,7 +1387,7 @@ def _quotient_by_algebra_elements_backend(
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )
-    quotient_map = algebra_homset(algebra, quotient)(
+    quotient_map = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, quotient)(
         {
             label: quotient.algebra_generator(label)
             for label in algebra.algebra_generating_set()
