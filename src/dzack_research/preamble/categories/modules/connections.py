@@ -28,9 +28,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import Graded
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import (
-    alternating_power_product,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -355,8 +352,7 @@ class Connection(Element):
             value,
             self.target_module(),
         ).items():
-            wedge = alternating_power_product(
-                omega,
+            wedge = omega.exterior_power_product(
                 1,
                 omega.module_generator(form_label),
                 1,
@@ -392,8 +388,7 @@ class Connection(Element):
             )
             d_coefficient = universal(self.algebra()(coefficient))
             if d_coefficient != omega.zero():
-                wedge = alternating_power_product(
-                    omega,
+                wedge = omega.exterior_power_product(
                     1,
                     d_coefficient,
                     1,
@@ -771,8 +766,7 @@ class ConnectionDeRhamModule:
                         connection_value,
                         self._connection.target_module(),
                     ).items():
-                        wedge = alternating_power_product(
-                            self._omega,
+                        wedge = self._omega.exterior_power_product(
                             1,
                             self._omega.module_generator(one_form_label),
                             degree,
@@ -835,8 +829,7 @@ class ConnectionDeRhamModule:
                                 right_form = exterior_algebra.graded_piece(
                                     right_degree
                                 ).module_generator(right_form_label)
-                                wedge = alternating_power_product(
-                                    self._omega,
+                                wedge = self._omega.exterior_power_product(
                                     left_degree,
                                     left_form,
                                     right_degree,

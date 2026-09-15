@@ -827,7 +827,7 @@ def _divided_power_nontrivial(module, degree):
     )
 
 
-def tensor_power_permutation(module, degree, positions):
+def _tensor_power_permutation(module, degree, positions):
     r"""Return the permutation of tensor factors specified by ``positions``."""
     degree = _degree(degree)
 
@@ -1001,7 +1001,7 @@ def _divided_power_morphism(morphism, degree):
     return _power_morphism(morphism, degree, "divided")
 
 
-def divided_power_product(module, left_degree, left, right_degree, right):
+def _divided_power_product(module, left_degree, left, right_degree, right):
     r"""Multiply homogeneous divided-power elements into ``Gamma^{a+b} M``."""
 
     left_degree = _degree(left_degree)
@@ -1049,7 +1049,7 @@ def divided_power_product(module, left_degree, left, right_degree, right):
     return target.linear_combination(result)
 
 
-def alternating_power_product(module, left_degree, left, right_degree, right):
+def _alternating_power_product(module, left_degree, left, right_degree, right):
     r"""Multiply homogeneous exterior-power elements by the wedge product."""
 
     left_degree = _degree(left_degree)
@@ -1120,7 +1120,7 @@ def _ordered_coefficient_support(module, coefficients):
     )
 
 
-def divided_power_element(module, degree, element):
+def _divided_power_element(module, degree, element):
     r"""Return ``gamma_degree(element)`` in ``Gamma^degree(module)``."""
 
     degree = _degree(degree)
@@ -1154,7 +1154,7 @@ def divided_power_element(module, degree, element):
     return target.linear_combination(result)
 
 
-def divided_power_invariant_inclusion(module, degree):
+def _divided_power_invariant_inclusion(module, degree):
     r"""Return ``Gamma^n M -> M^{tensor n}`` as the symmetric orbit sum."""
 
     degree = _degree(degree)
@@ -1204,7 +1204,7 @@ def divided_power_invariant_inclusion(module, degree):
     return source.module_category().Mor(source, target)(invariant)
 
 
-def tensor_power_polarization(module, degree):
+def _tensor_power_polarization(module, degree):
     r"""Return ``M^{tensor n} -> Gamma^n M`` by divided-power multiplication."""
 
     degree = _degree(degree)
@@ -1219,15 +1219,13 @@ def tensor_power_polarization(module, degree):
         word = _flatten_tensor_label(source_label, degree)
         iterator = iter(word)
         first_label = next(iterator)
-        result = divided_power_element(
-            module,
+        result = module.divided_power_element(
             1,
             module.module_generator(first_label),
         )
         current_degree = 1
         for label in iterator:
-            result = divided_power_product(
-                module,
+            result = module.divided_power_product(
                 current_degree,
                 result,
                 1,
@@ -1239,25 +1237,9 @@ def tensor_power_polarization(module, degree):
     return source.module_category().Mor(source, target)(polarized)
 
 
-def divided_square_invariant_inclusion(module):
-    return divided_power_invariant_inclusion(module, 2)
-
-
-def tensor_square_polarization(module):
-    return tensor_power_polarization(module, 2)
-
-
 __all__ = [
     "AlternatingPowerModules",
     "DividedPowerModules",
     "SymmetricPowerModules",
     "TensorPowerModules",
-    "alternating_power_product",
-    "divided_power_element",
-    "divided_power_invariant_inclusion",
-    "divided_power_product",
-    "divided_square_invariant_inclusion",
-    "tensor_power_permutation",
-    "tensor_power_polarization",
-    "tensor_square_polarization",
 ]

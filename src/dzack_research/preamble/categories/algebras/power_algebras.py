@@ -27,11 +27,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import (
-    alternating_power_product,
-    divided_power_element,
-    divided_power_product,
-)
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
@@ -163,14 +158,18 @@ class PowerAlgebra(GradedDirectSumModule):
         left = self(left)
         right = self(right)
         result = self.zero()
-        product = alternating_power_product if self.flavor() == "alternating" else divided_power_product
+        source_module = self.free_source_module()
+        match self.flavor():
+            case "alternating":
+                product = source_module.exterior_power_product
+            case "divided":
+                product = source_module.divided_power_product
         for left_degree, left_component in left.homogeneous_components().items():
             for right_degree, right_component in right.homogeneous_components().items():
                 target_degree = left_degree + right_degree
                 if target_degree not in self.degree_index_set():
                     continue
                 component = product(
-                    self.free_source_module(),
                     left_degree,
                     left_component,
                     right_degree,
@@ -194,8 +193,7 @@ class PowerAlgebra(GradedDirectSumModule):
             raise NotImplementedError("the represented canonical divided-power operation is currently evaluated on degree-one elements")
         return self.from_component(
             exponent,
-            divided_power_element(
-                self.free_source_module(),
+            self.free_source_module().divided_power_element(
                 exponent,
                 value.homogeneous_component(1),
             ),

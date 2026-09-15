@@ -813,10 +813,7 @@ def exterior_one(module, element):
 
 def wedge_exterior(module, left_degree, left, right_degree, right):
     """Multiply two live exterior-power elements."""
-    from dzack_research.preamble.categories.modules import alternating_power_product
-
-    return alternating_power_product(
-        module,
+    return module.exterior_power_product(
         int(left_degree),
         left,
         int(right_degree),

@@ -887,6 +887,66 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _divided_power(self, degree)
 
+        def tensor_power_permutation(self, degree, positions):
+            r"""Return the endomorphism permuting the factors of ``self^tensor degree``."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _tensor_power_permutation,
+            )
+
+            return _tensor_power_permutation(self, degree, positions)
+
+        def divided_power_product(self, left_degree, left, right_degree, right):
+            r"""Multiply homogeneous divided powers of ``self``."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _divided_power_product,
+            )
+
+            return _divided_power_product(
+                self, left_degree, left, right_degree, right
+            )
+
+        def exterior_power_product(self, left_degree, left, right_degree, right):
+            r"""Multiply homogeneous exterior powers of ``self`` by the wedge product."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _alternating_power_product,
+            )
+
+            return _alternating_power_product(
+                self, left_degree, left, right_degree, right
+            )
+
+        def divided_power_element(self, degree, element):
+            r"""Return ``gamma_degree(element)`` in ``Gamma^degree(self)``."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _divided_power_element,
+            )
+
+            return _divided_power_element(self, degree, element)
+
+        def divided_power_invariant_inclusion(self, degree):
+            r"""Return ``Gamma^degree(self) -> self^tensor degree`` by orbit sum."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _divided_power_invariant_inclusion,
+            )
+
+            return _divided_power_invariant_inclusion(self, degree)
+
+        def tensor_power_polarization(self, degree):
+            r"""Return ``self^tensor degree -> Gamma^degree(self)`` by polarization."""
+            from dzack_research.preamble.categories.modules.powers import (
+                _tensor_power_polarization,
+            )
+
+            return _tensor_power_polarization(self, degree)
+
+        def divided_square_invariant_inclusion(self):
+            r"""Return the degree-two divided-power invariant inclusion."""
+            return self.divided_power_invariant_inclusion(2)
+
+        def tensor_square_polarization(self):
+            r"""Return the degree-two tensor polarization map."""
+            return self.tensor_power_polarization(2)
+
         def _module_homset_class(self):
             r"""Return the canonical fixed homset for maps out of this module type."""
 

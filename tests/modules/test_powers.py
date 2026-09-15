@@ -6,9 +6,6 @@ from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     FinitelyPresentedTorsionModules,
-    divided_power_invariant_inclusion,
-    tensor_power_permutation,
-    tensor_power_polarization,
 )
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
@@ -58,8 +55,8 @@ def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> No
     for degree in (2, 3):
         divided = module.divided_power_module(degree)
         tensor = module.tensor_power(degree)
-        inclusion = divided_power_invariant_inclusion(module, degree)
-        polarization = tensor_power_polarization(module, degree)
+        inclusion = module.divided_power_invariant_inclusion(degree)
+        polarization = module.tensor_power_polarization(degree)
 
         for label in divided.module_generating_set():
             generator = divided.module_generator(label)
@@ -69,7 +66,7 @@ def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> No
         for label in tensor.module_generating_set():
             generator = tensor.module_generator(label)
             expected = sum(
-                (tensor_power_permutation(module, degree, sigma)(generator) for sigma in orbit_sum),
+                (module.tensor_power_permutation(degree, sigma)(generator) for sigma in orbit_sum),
                 tensor.zero(),
             )
             assert inclusion(polarization(generator)) == expected

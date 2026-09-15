@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.algebras.restricted_graded_algebras impo
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import alternating_power_product
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
 
@@ -93,8 +92,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
                 contribution = d_coefficient
             else:
                 basis_element = source_piece.module_generator(label)
-                contribution = alternating_power_product(
-                    omega,
+                contribution = omega.exterior_power_product(
                     1,
                     d_coefficient,
                     degree,
