@@ -437,12 +437,7 @@ class _HorikawaK3BaseChangeComparison(SageObject):
 
 
 
-def horikawa_k3_family(base_ring=None):
-    return HorikawaK3Family(base_ring)
-
-
 __all__ = [
     "HorikawaK3DoubleCover",
     "HorikawaK3Family",
-    "horikawa_k3_family",
 ]

@@ -1120,10 +1120,6 @@ class PGL2IntegralTopology(SageObject):
 
 
 
-def PGL2IntegralCohomology(degree):
-    return PGL2IntegralTopology().integral_cohomology(degree)
-
-
 def _require_smooth_complete_rational_toric_realization(scheme):
     if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
         raise NotImplementedError("the selected integral singular-cohomology comparison currently uses the specified QQ-to-CC realization")
@@ -1246,7 +1242,6 @@ __all__ = [
     "IntegralTopologicalCohomologyGroups",
     "ProjectiveGeneralLinearGroup2",
     "PGL2IntegralTopology",
-    "PGL2IntegralCohomology",
     "IntegralSingularCohomologyGroups",
     "AffineGeometricCohomologyComplexes",
     "ToricGeometricLineBundleCohomologySpaces",

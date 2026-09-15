@@ -234,12 +234,7 @@ class AnalyticDiscFamily(SageObject):
 
 
 
-def analytic_disc_family(radius=1):
-    return AnalyticDiscFamily(radius)
-
-
 __all__ = [
     "AffineSpaceAnalytificationFunctor",
     "AnalyticDiscFamily",
-    "analytic_disc_family",
 ]
