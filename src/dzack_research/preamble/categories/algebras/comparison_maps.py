@@ -36,7 +36,7 @@ class ConstructionAlgebraMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return construction_algebra_homset(other.domain(), self.codomain())(
+        return _construction_algebra_homset(other.domain(), self.codomain())(
             lambda element: self(other(element))
         )
 
@@ -58,7 +58,7 @@ class ConstructionAlgebraHomset(CategoricalHomset):
         return self.element_class(self, evaluator)
 
 
-def construction_algebra_homset(domain, codomain):
+def _construction_algebra_homset(domain, codomain):
     return ConstructionAlgebraHomset(domain, codomain)
 
 
@@ -125,34 +125,34 @@ def _evaluate_symmetric_representative(source, target, element):
         result += _owned_backend_coefficient(target, coefficient) * value
     return result
 
-def tensor_to_symmetric(module):
+def _tensor_to_symmetric(module):
     r"""Return the quotient morphism ``T(M) -> Sym(M)``."""
     source = module.tensor_algebra()
     target = module.symmetric_algebra()
-    return construction_algebra_homset(source, target)(
+    return _construction_algebra_homset(source, target)(
         lambda element: _evaluate_tensor_representative(source, target, element)
     )
 
 
-def tensor_to_alternating(module):
+def _tensor_to_alternating(module):
     r"""Return the quotient morphism ``T(M) -> Lambda(M)``."""
     source = module.tensor_algebra()
     target = module.exterior_algebra()
-    return construction_algebra_homset(source, target)(
+    return _construction_algebra_homset(source, target)(
         lambda element: _evaluate_tensor_representative(source, target, element)
     )
 
 
-def symmetric_to_divided(module):
+def _symmetric_to_divided(module):
     r"""Return ``Sym(M) -> Gamma(M)``, ``x^n |-> n! gamma_n(x)``."""
     source = module.symmetric_algebra()
     target = module.divided_power_algebra()
-    return construction_algebra_homset(source, target)(
+    return _construction_algebra_homset(source, target)(
         lambda element: _evaluate_symmetric_representative(source, target, element)
     )
 
 
-def divided_to_symmetric(module):
+def _divided_to_symmetric(module):
     r"""Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible."""
     source = module.divided_power_algebra()
     target = module.symmetric_algebra()
@@ -194,15 +194,10 @@ def divided_to_symmetric(module):
                 result += scalar * monomial
         return result
 
-    return construction_algebra_homset(source, target)(evaluate)
+    return _construction_algebra_homset(source, target)(evaluate)
 
 
 __all__ = [
     "ConstructionAlgebraHomset",
     "ConstructionAlgebraMorphism",
-    "construction_algebra_homset",
-    "divided_to_symmetric",
-    "symmetric_to_divided",
-    "tensor_to_alternating",
-    "tensor_to_symmetric",
 ]

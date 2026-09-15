@@ -102,12 +102,6 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
 
 
 def test_canonical_comparison_maps_between_the_four_free_constructions() -> None:
-    from dzack_research.preamble.categories.algebras import (
-                divided_to_symmetric,
-        symmetric_to_divided,
-        tensor_to_alternating,
-        tensor_to_symmetric,
-    )
     from dzack_research.preamble.all import QQ
 
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
@@ -118,22 +112,22 @@ def test_canonical_comparison_maps_between_the_four_free_constructions() -> None
     x_t = tensor.algebra_generator("x")
     y_t = tensor.algebra_generator("y")
 
-    to_symmetric = tensor_to_symmetric(module)
+    to_symmetric = module.tensor_to_symmetric()
     assert to_symmetric(x_t * y_t - y_t * x_t) == symmetric.zero()
 
-    to_alternating = tensor_to_alternating(module)
+    to_alternating = module.tensor_to_alternating()
     assert to_alternating(x_t * x_t) == alternating.zero()
     assert to_alternating(x_t * y_t + y_t * x_t) == alternating.zero()
 
-    to_divided = symmetric_to_divided(module)
+    to_divided = module.symmetric_to_divided()
     x_s = symmetric.algebra_generator("x")
     assert to_divided(x_s**3) == 6 * divided.divided_power(
         divided.algebra_generator("x"), 3
     )
 
     rational_module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
-    sym_to_div = symmetric_to_divided(rational_module)
-    div_to_sym = divided_to_symmetric(rational_module)
+    sym_to_div = rational_module.symmetric_to_divided()
+    div_to_sym = rational_module.divided_to_symmetric()
     symmetric_q = rational_module.symmetric_algebra()
     divided_q = rational_module.divided_power_algebra()
     x_q = symmetric_q.algebra_generator("x")

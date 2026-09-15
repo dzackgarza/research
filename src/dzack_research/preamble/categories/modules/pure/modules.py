@@ -806,6 +806,38 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the divided-power algebra ``Gamma_R(self)``."""
             return self.module_category().divided_power_algebra()(self)
 
+        def tensor_to_symmetric(self):
+            r"""Return the canonical quotient ``T(self) -> Sym(self)``."""
+            from dzack_research.preamble.categories.algebras.comparison_maps import (
+                _tensor_to_symmetric,
+            )
+
+            return _tensor_to_symmetric(self)
+
+        def tensor_to_alternating(self):
+            r"""Return the canonical quotient ``T(self) -> Lambda(self)``."""
+            from dzack_research.preamble.categories.algebras.comparison_maps import (
+                _tensor_to_alternating,
+            )
+
+            return _tensor_to_alternating(self)
+
+        def symmetric_to_divided(self):
+            r"""Return the canonical comparison ``Sym(self) -> Gamma(self)``."""
+            from dzack_research.preamble.categories.algebras.comparison_maps import (
+                _symmetric_to_divided,
+            )
+
+            return _symmetric_to_divided(self)
+
+        def divided_to_symmetric(self):
+            r"""Return ``Gamma(self) -> Sym(self)`` when the factorials are invertible."""
+            from dzack_research.preamble.categories.algebras.comparison_maps import (
+                _divided_to_symmetric,
+            )
+
+            return _divided_to_symmetric(self)
+
         def algebra_from_multiplication(
             self,
             multiplication,

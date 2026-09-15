@@ -351,7 +351,7 @@ def alternating_extension(module_morphism):
     """
     from dzack_research.preamble.categories.algebras.algebras import Algebras
     from dzack_research.preamble.categories.algebras.comparison_maps import (
-        construction_algebra_homset,
+        _construction_algebra_homset,
     )
 
     if not isinstance(module_morphism, ModuleMorphism):
@@ -401,7 +401,7 @@ def alternating_extension(module_morphism):
                 result += coefficient * value
         return result
 
-    return construction_algebra_homset(source, target)(evaluate)
+    return _construction_algebra_homset(source, target)(evaluate)
 
 
 __all__ = [

@@ -3,11 +3,7 @@ r"""Archive reconciliation for polynomial rings and the four free-algebra compar
 from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
-    divided_to_symmetric,
     polynomial_ring,
-    symmetric_to_divided,
-    tensor_to_alternating,
-    tensor_to_symmetric,
 )
 from dzack_research.preamble.categories.modules import BasedFreeModule
 
@@ -22,10 +18,10 @@ ARCHIVE_RECONCILIATION = {
         "DividedPowerAlgebraOn": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
         "AlternatingAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "DividedPowerAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "tensor_to_symmetric": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
-        "tensor_to_alternating": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
-        "symmetric_to_divided": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
-        "divided_to_symmetric": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
+        "tensor_to_symmetric": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "tensor_to_alternating": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "symmetric_to_divided": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "divided_to_symmetric": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "alternating_extension": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
         "divided_power_extension": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
     },
@@ -61,7 +57,7 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
     x_s = symmetric.algebra_generator("x")
     y_s = symmetric.algebra_generator("y")
 
-    to_symmetric = tensor_to_symmetric(module)
+    to_symmetric = module.tensor_to_symmetric()
     assert to_symmetric.domain() is tensor
     assert to_symmetric.codomain() is symmetric
     assert to_symmetric(x_t) == x_s
@@ -69,13 +65,13 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
     assert to_symmetric(x_t * y_t) == x_s * y_s
     assert to_symmetric(x_t * y_t - y_t * x_t) == symmetric.zero()
 
-    to_alternating = tensor_to_alternating(module)
+    to_alternating = module.tensor_to_alternating()
     assert to_alternating.domain() is tensor
     assert to_alternating.codomain() is alternating
     assert to_alternating(x_t * x_t) == alternating.zero()
     assert to_alternating(x_t * y_t + y_t * x_t) == alternating.zero()
 
-    to_divided = symmetric_to_divided(module)
+    to_divided = module.symmetric_to_divided()
     assert to_divided.domain() is symmetric
     assert to_divided.codomain() is divided
     assert to_divided(x_s**3) == 6 * divided.divided_power(
@@ -87,8 +83,8 @@ def test_divided_to_symmetric_is_the_factorial_inverse_over_QQ() -> None:
     module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
     symmetric = module.symmetric_algebra()
     divided = module.divided_power_algebra()
-    forward = symmetric_to_divided(module)
-    backward = divided_to_symmetric(module)
+    forward = module.symmetric_to_divided()
+    backward = module.divided_to_symmetric()
 
     x = symmetric.algebra_generator("x")
     y = symmetric.algebra_generator("y")
