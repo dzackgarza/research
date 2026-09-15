@@ -2,7 +2,6 @@ r"""Cohomology algebras are constructed by their codomain category."""
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
-    CohomologyAlgebra,
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
@@ -17,10 +16,10 @@ def test_notation_and_functor_land_in_the_category_owned_object() -> None:
     assert dga.graded_piece(0).module_generating_set().cardinality() == 2
 
     declared = category(dga)
-    notation = CohomologyAlgebra(dga)
+    owned = dga.cohomology_algebra()
     functor_image = DifferentialGradedAlgebras(ZZ).cohomology_algebra()(dga)
 
-    assert declared is notation
+    assert declared is owned
     assert declared is functor_image
     assert declared in category
     assert declared.source_dga() is dga

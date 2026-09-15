@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
-    CohomologyAlgebra,
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
@@ -109,7 +108,7 @@ class CohomologyAlgebraFunctor(Functor):
 
     def _apply_object(self, dga):
 
-        return CohomologyAlgebra(dga)
+        return dga.cohomology_algebra()
 
     def _apply_morphism(self, morphism):
 

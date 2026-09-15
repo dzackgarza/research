@@ -105,7 +105,6 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
     AugmentedAlgebras,
-    CohomologyAlgebra,
     CohomologyAlgebraElement,
     CohomologyAlgebraHomset,
     CohomologyAlgebraMorphism,

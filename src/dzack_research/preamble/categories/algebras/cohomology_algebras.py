@@ -56,8 +56,8 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
 
         The source DGA is the defining datum.  This category constructor owns
         both identity caching and the private graded-direct-sum realization;
-        :func:`CohomologyAlgebra` is notebook notation for this operation and
-        the cohomology-algebra functor lands here through the same path.
+        DGA objects and the cohomology-algebra functor both land here through
+        this one category-owned construction path.
         """
         dgas = DifferentialGradedAlgebras(self.base_ring())
         if dga not in dgas:
@@ -230,13 +230,7 @@ class CohomologyAlgebraHomset(CategoricalHomset):
 _COHOMOLOGY_ALGEBRA_CACHE = {}
 
 
-def CohomologyAlgebra(dga):
-    r"""Notebook notation for ``CohomologyAlgebras(R)(dga)``."""
-    return CohomologyAlgebras(dga.base_ring())(dga)
-
-
 __all__ = [
-    "CohomologyAlgebra",
     "CohomologyAlgebraElement",
     "CohomologyAlgebraHomset",
     "CohomologyAlgebraMorphism",

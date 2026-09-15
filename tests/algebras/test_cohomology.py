@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.algebras import (
-    CohomologyAlgebra,
     CohomologyAlgebras,
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
@@ -17,7 +16,7 @@ def test_dga_cohomology_is_a_graded_algebra_with_descended_product() -> None:
     xbar = algebra.algebra_generator("x")
     dga = algebra.de_rham_algebra()
 
-    cohomology = CohomologyAlgebra(dga)
+    cohomology = dga.cohomology_algebra()
     assert cohomology in CohomologyAlgebras(dga.base_ring())
     assert cohomology in StrictlyGradedCommutativeAlgebras(dga.base_ring())
     assert cohomology.source_dga() is dga

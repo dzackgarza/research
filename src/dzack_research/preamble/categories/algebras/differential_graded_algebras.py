@@ -115,6 +115,14 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return _cohomology_algebra_functor(self.base_ring())
 
     class ParentMethods:
+        def cohomology_algebra(self):
+            r"""Return the represented graded cohomology algebra ``H^*(self)``."""
+            from dzack_research.preamble.categories.algebras.cohomology_algebras import (
+                CohomologyAlgebras,
+            )
+
+            return CohomologyAlgebras(self.base_ring())(self)
+
         def degree_index_set(self):
             r"""Return the grading object as the inherited cochain degree set."""
             return self.grading_monoid()

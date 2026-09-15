@@ -2,7 +2,6 @@ r"""Cohomology algebra retains only commutativity justified by its source DGA.""
 from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
-    CohomologyAlgebra,
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
@@ -47,7 +46,7 @@ def test_general_cohomology_algebra_category_is_not_declared_commutative() -> No
 
 def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() -> None:
     dga = _noncommutative_zero_differential_dga()
-    cohomology = CohomologyAlgebra(dga)
+    cohomology = dga.cohomology_algebra()
 
     assert cohomology in CohomologyAlgebras(ZZ)
     assert cohomology in GradedAlgebras(ZZ)
@@ -69,7 +68,7 @@ def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() 
 
 def test_degree_zero_cohomology_of_nonnegative_unital_dga_retains_the_unit() -> None:
     dga = _noncommutative_zero_differential_dga()
-    cohomology = CohomologyAlgebra(dga)
+    cohomology = dga.cohomology_algebra()
     degree_zero = cohomology.graded_piece(0)
     unit_cycle = dga.one().homogeneous_component(0)
     unit_class = degree_zero.class_of_cycle(unit_cycle)
@@ -91,7 +90,7 @@ def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_z
     assert dga in CommutativeDifferentialGradedAlgebras(field)
     assert dga not in StrictlyGradedCommutativeAlgebras(field)
 
-    cohomology = CohomologyAlgebra(dga)
+    cohomology = dga.cohomology_algebra()
     x_class = cohomology.from_component(
         1,
         cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
@@ -108,7 +107,7 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     swap_algebra = Algebras(dga.base_ring()).Associative().Unital().Mor(dga, dga)({"x": y, "y": x})
     swap = DifferentialGradedAlgebras(dga.base_ring()).Mor(dga, dga)(swap_algebra)
 
-    cohomology = CohomologyAlgebra(dga)
+    cohomology = dga.cohomology_algebra()
     functor = DifferentialGradedAlgebras(ZZ).cohomology_algebra()
     assert functor.domain() is DifferentialGradedAlgebras(ZZ)
     assert functor(dga) is cohomology
