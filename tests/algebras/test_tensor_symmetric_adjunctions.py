@@ -4,7 +4,6 @@ from sage.categories.morphism import SetMorphism
 from dzack_research.preamble.all import (
     ZZ,
     Algebras,
-    AlternatingAlgebraOf,
     BasedFreeModule,
     BilinearMap,
     CommutativeAlgebras,
@@ -398,7 +397,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     )
 
     exterior_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    exterior = AlternatingAlgebraOf(exterior_module)
+    exterior = exterior_module.exterior_algebra()
     exterior_unit_label = exterior.module_generating_set()(0, 0)
     augmentation = SetMorphism(
         Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free),

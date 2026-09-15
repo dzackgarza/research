@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
-    AlternatingAlgebraOf,
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
@@ -24,7 +23,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def test_exterior_algebra_lands_in_strict_graded_commutative_algebras() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
-    exterior = AlternatingAlgebraOf(module)
+    exterior = module.exterior_algebra()
 
     assert exterior in StrictlyGradedCommutativeAlgebras(ZZ)
     assert exterior in GradedCommutativeAlgebras(ZZ)
@@ -147,9 +146,7 @@ def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_cons
 
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(QQ)
     assert de_rham.degree_zero_algebra() is algebra
-    assert de_rham.extension_algebra() is AlternatingAlgebraOf(
-        de_rham.kahler_differentials()
-    )
+    assert de_rham.extension_algebra() is de_rham.kahler_differentials().exterior_algebra()
 
     X = de_rham.from_degree_zero(x)
     Y = de_rham.from_degree_zero(y)

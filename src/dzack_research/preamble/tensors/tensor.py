@@ -1668,19 +1668,11 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
 
     def vector_tensor_algebra(self):
         r"""Return ``T(M)``, the contravariant tensor-algebra factor."""
-        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-            TensorAlgebraOf,
-        )
-
-        return TensorAlgebraOf(self.module())
+        return self.module().tensor_algebra()
 
     def covector_tensor_algebra(self):
         r"""Return ``T(M^*)``, the covariant tensor-algebra factor."""
-        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-            TensorAlgebraOf,
-        )
-
-        return TensorAlgebraOf(self.dual_module())
+        return self.dual_module().tensor_algebra()
 
     def algebra_base_ring(self):
         return self._base_ring

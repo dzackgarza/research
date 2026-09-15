@@ -325,22 +325,22 @@ def _power_algebra_of(module, flavor):
     return result
 
 
-def AlternatingAlgebraOf(module):
+def _alternating_algebra_of(module):
     return _power_algebra_of(module, "alternating")
 
 
-def DividedPowerAlgebraOf(module):
+def _divided_power_algebra_of(module):
     return _power_algebra_of(module, "divided")
 
 
 def AlternatingAlgebraOn(base_ring, algebra_generating_set):
 
-    return AlternatingAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
+    return _alternating_algebra_of(FreeModuleOn(base_ring, algebra_generating_set))
 
 
 def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
 
-    return DividedPowerAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
+    return _divided_power_algebra_of(FreeModuleOn(base_ring, algebra_generating_set))
 
 
 def alternating_extension(module_morphism):
@@ -385,7 +385,7 @@ def alternating_extension(module_morphism):
     ):
         raise ValueError("alternating generator images must anticommute")
 
-    source = AlternatingAlgebraOf(module)
+    source = module.exterior_algebra()
 
     def evaluate(element):
         element = source(element)
@@ -408,10 +408,8 @@ def alternating_extension(module_morphism):
 
 
 __all__ = [
-    "AlternatingAlgebraOf",
     "AlternatingAlgebraOn",
     "alternating_extension",
-    "DividedPowerAlgebraOf",
     "DividedPowerAlgebraOn",
     "PowerAlgebra",
     "PowerAlgebraElement",

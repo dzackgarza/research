@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     SymmetricAlgebraOn,
-    TensorAlgebraOf,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
@@ -33,7 +32,7 @@ from dzack_research.preamble.refine import refine
 
 def _noncommutative_zero_differential_dga():
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    algebra = TensorAlgebraOf(module)
+    algebra = module.tensor_algebra()
     algebra._preamble_differential = Differential(
         algebra,
         lambda _element: algebra.zero(),
@@ -141,7 +140,7 @@ def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> N
     )
 
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    algebra = TensorAlgebraOf(module)
+    algebra = module.tensor_algebra()
 
     def euler(element):
         element = algebra(element)

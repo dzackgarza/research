@@ -375,6 +375,14 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return alternating_algebra_functor(self.base_ring())
 
+        def divided_power_algebra(self):
+            r"""``Gamma_R : Mod_R -> DPAlg_R``, the divided-power algebra functor."""
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                divided_power_algebra_functor,
+            )
+
+            return divided_power_algebra_functor(self.base_ring())
+
         # An adjunction is a method of its left adjoint's domain category.
         # ``Sym_R`` and ``T_R`` are left adjoints out of ``Mod_R``, so their
         # adjunctions are asked for here.  ``Lambda_R`` has none.
@@ -784,6 +792,22 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def module_category(self):
             return Modules(self.base_ring())
+
+        def tensor_algebra(self):
+            r"""Return the tensor algebra ``T_R(self)``."""
+            return self.module_category().tensor_algebra()(self)
+
+        def symmetric_algebra(self):
+            r"""Return the symmetric algebra ``Sym_R(self)``."""
+            return self.module_category().symmetric_algebra()(self)
+
+        def exterior_algebra(self):
+            r"""Return the exterior algebra ``Lambda_R(self)``."""
+            return self.module_category().exterior_algebra()(self)
+
+        def divided_power_algebra(self):
+            r"""Return the divided-power algebra ``Gamma_R(self)``."""
+            return self.module_category().divided_power_algebra()(self)
 
         def _module_homset_class(self):
             r"""Return the canonical fixed homset for maps out of this module type."""

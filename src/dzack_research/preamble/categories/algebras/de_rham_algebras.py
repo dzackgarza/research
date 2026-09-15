@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import AlternatingAlgebraOf
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     RestrictedGradedAlgebra,
 )
@@ -55,7 +54,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         if cached is not None and cached.de_rham_source_algebra() is algebra:
             return cached
         omega = algebra.kahler_differentials()
-        exterior = AlternatingAlgebraOf(omega)
+        exterior = omega.exterior_algebra()
         ring_map = algebra.algebra_structure_morphism()
         result = _DeRhamAlgebra(algebra, exterior, omega, ring_map)
         _DE_RHAM_CACHE[id(algebra)] = result

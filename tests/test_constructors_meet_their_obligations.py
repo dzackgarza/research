@@ -256,13 +256,15 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # A different construction from the ``...On`` rows above: those build
         # the free algebra on a chosen generating set, these build it on a
         # module that already exists and keep that module's presentation.
-        "tensor algebra of a module": lambda: TensorAlgebraOf(BasedFreeModule(QQ, Sets.Δ[1])),
-        "symmetric algebra of a module": lambda: SymmetricAlgebraOf(
-            BasedFreeModule(QQ, Sets.Δ[1])
-        ),
-        "alternating algebra of a module": lambda: AlternatingAlgebraOf(
-            BasedFreeModule(QQ, Sets.Δ[1])
-        ),
+        "tensor algebra of a module": lambda: BasedFreeModule(
+            QQ, Sets.Δ[1]
+        ).tensor_algebra(),
+        "symmetric algebra of a module": lambda: BasedFreeModule(
+            QQ, Sets.Δ[1]
+        ).symmetric_algebra(),
+        "alternating algebra of a module": lambda: BasedFreeModule(
+            QQ, Sets.Δ[1]
+        ).exterior_algebra(),
         # ---- modules ----
         "fractional ideal": lambda: FractionalIdeal(ZZ, [2]),
         # An S-module from its scalar action, and the coextension of scalars

@@ -8,13 +8,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    SymmetricAlgebraOf,
-    TensorAlgebraOf,
-)
 from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
     PowerAlgebraElement,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -133,8 +127,8 @@ def _evaluate_symmetric_representative(source, target, element):
 
 def tensor_to_symmetric(module):
     r"""Return the quotient morphism ``T(M) -> Sym(M)``."""
-    source = TensorAlgebraOf(module)
-    target = SymmetricAlgebraOf(module)
+    source = module.tensor_algebra()
+    target = module.symmetric_algebra()
     return construction_algebra_homset(source, target)(
         lambda element: _evaluate_tensor_representative(source, target, element)
     )
@@ -142,8 +136,8 @@ def tensor_to_symmetric(module):
 
 def tensor_to_alternating(module):
     r"""Return the quotient morphism ``T(M) -> Lambda(M)``."""
-    source = TensorAlgebraOf(module)
-    target = AlternatingAlgebraOf(module)
+    source = module.tensor_algebra()
+    target = module.exterior_algebra()
     return construction_algebra_homset(source, target)(
         lambda element: _evaluate_tensor_representative(source, target, element)
     )
@@ -151,8 +145,8 @@ def tensor_to_alternating(module):
 
 def symmetric_to_divided(module):
     r"""Return ``Sym(M) -> Gamma(M)``, ``x^n |-> n! gamma_n(x)``."""
-    source = SymmetricAlgebraOf(module)
-    target = DividedPowerAlgebraOf(module)
+    source = module.symmetric_algebra()
+    target = module.divided_power_algebra()
     return construction_algebra_homset(source, target)(
         lambda element: _evaluate_symmetric_representative(source, target, element)
     )
@@ -160,8 +154,8 @@ def symmetric_to_divided(module):
 
 def divided_to_symmetric(module):
     r"""Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible."""
-    source = DividedPowerAlgebraOf(module)
-    target = SymmetricAlgebraOf(module)
+    source = module.divided_power_algebra()
+    target = module.symmetric_algebra()
     ring = module.base_ring()
 
     def evaluate(element):

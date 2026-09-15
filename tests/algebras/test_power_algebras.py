@@ -1,8 +1,4 @@
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
-)
 from dzack_research.preamble.categories.functors.free_algebras import (
     alternating_algebra_functor,
     divided_power_algebra_functor,
@@ -25,7 +21,7 @@ def test_exterior_algebra_of_a_presented_module_imposes_linear_relations_and_wed
     None
 ):
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
-    algebra = AlternatingAlgebraOf(module)
+    algebra = module.exterior_algebra()
     x = algebra.algebra_generator(0)
     y = algebra.algebra_generator(1)
 
@@ -50,7 +46,7 @@ def test_divided_power_algebra_has_integral_pd_laws_not_symmetric_multiplication
     None
 ):
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    algebra = DividedPowerAlgebraOf(module)
+    algebra = module.divided_power_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
 
@@ -110,9 +106,7 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
 
 def test_canonical_comparison_maps_between_the_four_free_constructions() -> None:
     from dzack_research.preamble.categories.algebras import (
-        SymmetricAlgebraOf,
-        TensorAlgebraOf,
-        divided_to_symmetric,
+                divided_to_symmetric,
         symmetric_to_divided,
         tensor_to_alternating,
         tensor_to_symmetric,
@@ -120,10 +114,10 @@ def test_canonical_comparison_maps_between_the_four_free_constructions() -> None
     from dzack_research.preamble.all import QQ
 
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    tensor = TensorAlgebraOf(module)
-    symmetric = SymmetricAlgebraOf(module)
-    alternating = AlternatingAlgebraOf(module)
-    divided = DividedPowerAlgebraOf(module)
+    tensor = module.tensor_algebra()
+    symmetric = module.symmetric_algebra()
+    alternating = module.exterior_algebra()
+    divided = module.divided_power_algebra()
     x_t = tensor.algebra_generator("x")
     y_t = tensor.algebra_generator("y")
 
@@ -143,8 +137,8 @@ def test_canonical_comparison_maps_between_the_four_free_constructions() -> None
     rational_module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
     sym_to_div = symmetric_to_divided(rational_module)
     div_to_sym = divided_to_symmetric(rational_module)
-    symmetric_q = SymmetricAlgebraOf(rational_module)
-    divided_q = DividedPowerAlgebraOf(rational_module)
+    symmetric_q = rational_module.symmetric_algebra()
+    divided_q = rational_module.divided_power_algebra()
     x_q = symmetric_q.algebra_generator("x")
     y_q = symmetric_q.algebra_generator("y")
     gamma2x = divided_q.divided_power(divided_q.algebra_generator("x"), 2)

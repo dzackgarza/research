@@ -2,11 +2,7 @@ r"""Archive reconciliation for polynomial rings and the four free-algebra compar
 
 from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
-    SymmetricAlgebraOf,
     SymmetricAlgebraOn,
-    TensorAlgebraOf,
     divided_to_symmetric,
     polynomial_ring,
     symmetric_to_divided,
@@ -20,12 +16,12 @@ ARCHIVE_RECONCILIATION = {
     "live_owner": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
     "owner_overrides": {
         "polynomial_ring": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
-        "TensorAlgebraOf": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
-        "SymmetricAlgebraOf": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
+        "TensorAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "SymmetricAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "AlternatingAlgebraOn": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
         "DividedPowerAlgebraOn": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
-        "AlternatingAlgebraOf": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
-        "DividedPowerAlgebraOf": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
+        "AlternatingAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "DividedPowerAlgebraOf": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "tensor_to_symmetric": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
         "tensor_to_alternating": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
         "symmetric_to_divided": "src/dzack_research/preamble/categories/algebras/comparison_maps.py",
@@ -50,10 +46,10 @@ def test_polynomial_ring_is_the_owned_free_commutative_algebra_on_its_variables(
 
 def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    tensor = TensorAlgebraOf(module)
-    symmetric = SymmetricAlgebraOf(module)
-    alternating = AlternatingAlgebraOf(module)
-    divided = DividedPowerAlgebraOf(module)
+    tensor = module.tensor_algebra()
+    symmetric = module.symmetric_algebra()
+    alternating = module.exterior_algebra()
+    divided = module.divided_power_algebra()
 
     assert tensor.free_source_module() is module
     assert symmetric.free_source_module() is module
@@ -89,8 +85,8 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
 
 def test_divided_to_symmetric_is_the_factorial_inverse_over_QQ() -> None:
     module = BasedFreeModule(QQ, finite_ordered_set(("x", "y")))
-    symmetric = SymmetricAlgebraOf(module)
-    divided = DividedPowerAlgebraOf(module)
+    symmetric = module.symmetric_algebra()
+    divided = module.divided_power_algebra()
     forward = symmetric_to_divided(module)
     backward = divided_to_symmetric(module)
 

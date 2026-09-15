@@ -8,7 +8,6 @@ does not publish owner-in-argument operations as free functions.
 import dzack_research.preamble.all as session
 from dzack_research.preamble.all import (
     AdicCompletions,
-    DividedPowerAlgebraOf,
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
     OwnedCategoryOverBaseRing,
@@ -21,7 +20,6 @@ from dzack_research.preamble.all import (
 def test_terminal_collection_vocabulary_is_public() -> None:
     names = (
         AdicCompletions,
-        DividedPowerAlgebraOf,
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
         OwnedCategoryOverBaseRing,
@@ -124,6 +122,10 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "field_generators",
         "exact_embeddings",
         "first_exact_embedding",
+        "TensorAlgebraOf",
+        "SymmetricAlgebraOf",
+        "AlternatingAlgebraOf",
+        "DividedPowerAlgebraOf",
         "finite_decomposition_group",
         "finite_inertia_group",
         "finite_frobenius_class",

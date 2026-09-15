@@ -137,10 +137,10 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
         and not cardinal(algebra_generating_set.cardinality()).is_finite()
     ):
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseSymmetricAlgebraOf,
+            _sparse_symmetric_algebra_of,
         )
 
-        return SparseSymmetricAlgebraOf(
+        return _sparse_symmetric_algebra_of(
             FreeModuleOn(base, algebra_generating_set)
         )
     labels = _finite_labels(algebra_generating_set)
@@ -163,10 +163,10 @@ def TensorAlgebraOn(base_ring, algebra_generating_set):
         and not cardinal(algebra_generating_set.cardinality()).is_finite()
     ):
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseTensorAlgebraOf,
+            _sparse_tensor_algebra_of,
         )
 
-        return SparseTensorAlgebraOf(
+        return _sparse_tensor_algebra_of(
             FreeModuleOn(base, algebra_generating_set)
         )
     labels = _finite_labels(algebra_generating_set)

@@ -2,9 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-    SparseTensorAlgebraOf,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModule,
 )
@@ -13,7 +10,7 @@ from dzack_research.preamble.categories.sets import NN
 
 def test_infinite_free_algebra_morphism_keeps_generator_images_lazy() -> None:
     module = FreeModule(ZZ, NN)
-    algebra = SparseTensorAlgebraOf(module)
+    algebra = module.tensor_algebra()
     evaluated = []
 
     def generator_image(label):

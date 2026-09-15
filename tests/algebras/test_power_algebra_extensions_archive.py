@@ -4,7 +4,6 @@ import pytest
 
 from dzack_research.preamble.all import ZZ, Algebras, BasedFreeModule, BilinearMap, Modules
 from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOf,
     alternating_extension,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -38,7 +37,7 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
     linear = source_module.module_category().Mor(source_module, target)({"x": epsilon})
 
     extension = alternating_extension(linear)
-    exterior = AlternatingAlgebraOf(source_module)
+    exterior = source_module.exterior_algebra()
     x = exterior.algebra_generator("x")
 
     assert extension.domain() is exterior

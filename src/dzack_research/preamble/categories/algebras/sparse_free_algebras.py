@@ -786,11 +786,11 @@ def free_construction_homset(domain, codomain):
     return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
-def SparseTensorAlgebraOf(module):
+def _sparse_tensor_algebra_of(module):
     return _sparse_free_algebra_of(module, "tensor")
 
 
-def SparseSymmetricAlgebraOf(module):
+def _sparse_symmetric_algebra_of(module):
     return _sparse_free_algebra_of(module, "symmetric")
 
 
@@ -819,8 +819,6 @@ __all__ = [
     "SparseFreeAlgebraElement",
     "SparseFreeAlgebraHomset",
     "SparseFreeAlgebraMorphism",
-    "SparseSymmetricAlgebraOf",
-    "SparseTensorAlgebraOf",
     "compose_with_free_construction",
     "free_construction_homset",
     "sparse_free_algebra_homset",

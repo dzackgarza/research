@@ -9,16 +9,16 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-    SymmetricAlgebraOf,
-    TensorAlgebraOf,
+    _symmetric_algebra_of,
+    _tensor_algebra_of,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
+    _alternating_algebra_of,
+    _divided_power_algebra_of,
     power_algebra_homset,
 )
 from dzack_research.preamble.categories.functors.algebra_modules import (
@@ -81,7 +81,7 @@ class _ModuleAlgebraFunctor(Functor):
 class TensorAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(T_R:\mathbf{Mod}_R\to\mathbf{Alg}_R\)."""
 
-    _constructor = staticmethod(TensorAlgebraOf)
+    _constructor = staticmethod(_tensor_algebra_of)
     _codomain_category = Algebras
     _name = "Tensor algebra"
 
@@ -89,7 +89,7 @@ class TensorAlgebraFunctor(_ModuleAlgebraFunctor):
 class SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(\operatorname{Sym}_R:\mathbf{Mod}_R\to\mathbf{CAlg}_R\)."""
 
-    _constructor = staticmethod(SymmetricAlgebraOf)
+    _constructor = staticmethod(_symmetric_algebra_of)
     _codomain_category = staticmethod(CommutativeAlgebras)
     _name = "Symmetric algebra"
 
@@ -111,7 +111,7 @@ class AlternatingAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, module):
-        return AlternatingAlgebraOf(module)
+        return _alternating_algebra_of(module)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -136,7 +136,7 @@ class DividedPowerAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, module):
-        return DividedPowerAlgebraOf(module)
+        return _divided_power_algebra_of(module)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

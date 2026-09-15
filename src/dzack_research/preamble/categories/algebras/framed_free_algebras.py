@@ -19,8 +19,8 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-    SparseSymmetricAlgebraOf,
-    SparseTensorAlgebraOf,
+    _sparse_symmetric_algebra_of,
+    _sparse_tensor_algebra_of,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
@@ -50,11 +50,11 @@ def _has_represented_finite_framing(module) -> bool:
 
     return module in ModulesWithChosenFinitePresentation(ring)
 
-def TensorAlgebraOf(module):
+def _tensor_algebra_of(module):
     r"""Return \(T_R(M)\), including the linear relations of ``M``."""
     if not _has_represented_finite_framing(module):
 
-        return SparseTensorAlgebraOf(module)
+        return _sparse_tensor_algebra_of(module)
 
     base = module.base_ring()
     presentation_ring = TensorAlgebraOn(base, module.module_generating_set())
@@ -64,11 +64,11 @@ def TensorAlgebraOf(module):
     return algebra
 
 
-def SymmetricAlgebraOf(module):
+def _symmetric_algebra_of(module):
     r"""Return \(\operatorname{Sym}_R(M)\) with ``M``'s linear relations."""
     if not _has_represented_finite_framing(module):
 
-        return SparseSymmetricAlgebraOf(module)
+        return _sparse_symmetric_algebra_of(module)
 
     base = module.base_ring()
     labels = _finite_labels(module.module_generating_set())

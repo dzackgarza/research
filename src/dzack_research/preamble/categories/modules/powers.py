@@ -141,11 +141,7 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
     class ParentMethods(_PowerModuleParentMethods):
         @cached_method
         def ambient_power_algebra(self):
-            from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-                TensorAlgebraOf,
-            )
-
-            return TensorAlgebraOf(self.power_source())
+            return self.power_source().tensor_algebra()
 
 
 class SymmetricPowerModules(OwnedCategoryOverBaseRing):
@@ -160,11 +156,7 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
     class ParentMethods(_PowerModuleParentMethods):
         @cached_method
         def ambient_power_algebra(self):
-            from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-                SymmetricAlgebraOf,
-            )
-
-            return SymmetricAlgebraOf(self.power_source())
+            return self.power_source().symmetric_algebra()
 
 
 class AlternatingPowerModules(OwnedCategoryOverBaseRing):
@@ -179,11 +171,7 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
     class ParentMethods(_PowerModuleParentMethods):
         @cached_method
         def ambient_power_algebra(self):
-            from dzack_research.preamble.categories.algebras.power_algebras import (
-                AlternatingAlgebraOf,
-            )
-
-            return AlternatingAlgebraOf(self.power_source())
+            return self.power_source().exterior_algebra()
 
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
@@ -198,11 +186,7 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
     class ParentMethods(_PowerModuleParentMethods):
         @cached_method
         def ambient_power_algebra(self):
-            from dzack_research.preamble.categories.algebras.power_algebras import (
-                DividedPowerAlgebraOf,
-            )
-
-            return DividedPowerAlgebraOf(self.power_source())
+            return self.power_source().divided_power_algebra()
 
 
 class QuadraticModuleMorphism(ModuleMorphism):

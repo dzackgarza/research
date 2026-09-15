@@ -270,9 +270,6 @@ def test_tensor_algebra_homogeneous_degree_is_free_word_length() -> None:
     import pytest
 
     from dzack_research.preamble.all import ZZ
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-        TensorAlgebraOf,
-    )
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
@@ -281,7 +278,7 @@ def test_tensor_algebra_homogeneous_degree_is_free_word_length() -> None:
     )
 
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    algebra = TensorAlgebraOf(module)
+    algebra = module.tensor_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
 
