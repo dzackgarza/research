@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
     predicate_subring,
-    ring_morphism,
 )
 from dzack_research.preamble.refine import refine
 
@@ -357,9 +356,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             restriction = source_localization.restriction_to(target_localization)
             source_chart = self.degree_zero_chart(source_localization)
             target_chart = self.degree_zero_chart(target_localization)
-            return ring_morphism(
-                source_chart,
-                target_chart,
+            return source_chart.Mor(target_chart)(
                 lambda element: target_chart(restriction(source_localization(element))),
             )
 

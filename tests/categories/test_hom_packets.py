@@ -194,12 +194,11 @@ def test_group_hom_end_and_aut_are_the_packet_objects() -> None:
 
 def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> None:
     from dzack_research.preamble.categories.rings.ring_foundation import (
-        OwnedRings,
-        ring_homset,
-    )
+    OwnedRings,
+)
 
     rings = OwnedRings()
-    hom = ring_homset(ZZ, ZZ)
+    hom = ZZ.Mor(ZZ)
     assert hom is rings.Mor(ZZ, ZZ)
     assert hom is rings.End(ZZ)
     identity = hom.identity()

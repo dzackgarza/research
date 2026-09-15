@@ -43,8 +43,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     _engine_ring,
-    ring_homset,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     DistinguishedAffineCovers,
@@ -1716,9 +1714,7 @@ class SemilinearAlgebraMorphism(SageObject):
         if morphism.domain() is not self.source():
             raise ValueError("a scalar-extension factor extends a map from the original algebra")
         source_structure = self.source().algebra_structure_morphism()
-        scalar_restriction = ring_morphism(
-            self.source().base_ring(),
-            morphism.codomain(),
+        scalar_restriction = self.source().base_ring().Mor(morphism.codomain())(
             lambda scalar: morphism(source_structure(scalar)),
         )
         target_scalars = self.target().base_ring()
@@ -1737,7 +1733,7 @@ class SemilinearAlgebraMorphism(SageObject):
                 )
             localization_steps.append(current.localization_map())
             current = current.localization_source()
-        source_map = ring_homset(localization_source, localization_source).identity()
+        source_map = localization_source.Mor(localization_source).identity()
         for step in reversed(localization_steps):
             source_map = step * source_map
         scalar_factor = target_scalars.induced_morphism(
@@ -1754,9 +1750,7 @@ class SemilinearAlgebraMorphism(SageObject):
                 for label in target_labels
             }
         )
-        return ring_morphism(
-            self.target(),
-            morphism.codomain(),
+        return self.target().Mor(morphism.codomain())(
             lambda element: morphism.codomain()(algebra_factor(self.target()(element))),
         )
 

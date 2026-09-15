@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    ring_morphism,
 )
 
 
@@ -159,9 +158,7 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         return self.scalar_multiple(scalar, self.one())
 
     def algebra_structure_morphism(self):
-        return ring_morphism(
-            self.base_ring(),
-            self,
+        return self.base_ring().Mor(self)(
             lambda scalar: self(scalar),
         )
 

@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.gluing import SemilinearAlgebraMorphism
 from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import (
@@ -278,9 +277,7 @@ class HorikawaEnriquesBaseChangeComparison(SageObject):
                 ring_map,
                 images,
             )
-            quotient_ring_map = ring_morphism(
-                source_invariants,
-                changed_invariants,
+            quotient_ring_map = source_invariants.Mor(changed_invariants)(
                 semilinear,
             )
             local_projection = affine_spec_morphism(quotient_ring_map)

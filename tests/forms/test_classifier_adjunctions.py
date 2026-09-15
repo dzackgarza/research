@@ -13,7 +13,7 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     _represented_value_module,
 )
-from dzack_research.preamble.categories.rings import ring_homset
+
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -82,7 +82,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     source = BilinearForm(module, ZZ, [[2]])
     source_generator = source.module_generator("e")
 
-    zz_to_qq = ring_homset(ZZ, QQ)(lambda element: QQ(element))
+    zz_to_qq = ZZ.Mor(QQ)(lambda element: QQ(element))
     middle = source.base_change(zz_to_qq)
     first_homset = source.fibered_formed_homset(middle, zz_to_qq)
     source_over_qq = first_homset.base_changed_domain()
@@ -98,7 +98,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     first = first_homset((first_module_map, first_value_map))
 
     field = QuadraticField(2, "a")
-    qq_to_field = ring_homset(QQ, field)(lambda element: field(element))
+    qq_to_field = QQ.Mor(field)(lambda element: field(element))
     target = middle.base_change(qq_to_field)
     second_homset = middle.fibered_formed_homset(
         target,
@@ -124,7 +124,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
 
     # Identities are genuine fibered morphisms over identity ring maps, not
     # an unrelated fixed-fiber shortcut.
-    identity_ring_map = ring_homset(QQ, QQ).identity()
+    identity_ring_map = QQ.Mor(QQ).identity()
     middle_identity = middle.fibered_formed_homset(
         middle,
         identity_ring_map,

@@ -9,7 +9,7 @@ actual scalar action.
 """
 
 from dzack_research.preamble.all import ZZ, FreeModule, Modules
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/pure/scalar_actions.sage",
@@ -27,7 +27,7 @@ def test_module_constructor_recovers_the_underlying_object_from_the_action() -> 
         scalar = ZZ(scalar)
         return endomorphisms({0: line.scalar_multiple(scalar, generator)})
 
-    action = ring_morphism(ZZ, endomorphisms, multiplication_by)
+    action = ZZ.Mor(endomorphisms)(multiplication_by)
     explicit = Modules(ZZ)(line, action)
     inferred = Modules(ZZ)(action)
 
@@ -43,12 +43,10 @@ def test_scalar_multiplication_is_evaluation_of_the_chosen_action() -> None:
     endomorphisms = Modules(ZZ).End(line)
     generator = line.module_generator(0)
 
-    action = ring_morphism(
-        ZZ,
-        endomorphisms,
+    action = ZZ.Mor(endomorphisms)(
         lambda scalar: endomorphisms(
-            {0: line.scalar_multiple(ZZ(scalar), generator)}
-        ),
+   {0: line.scalar_multiple(ZZ(scalar), generator)}
+),
     )
     acted = Modules(ZZ)(line, action)
     element = acted(line.scalar_multiple(ZZ(3), generator))

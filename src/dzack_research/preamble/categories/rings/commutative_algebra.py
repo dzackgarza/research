@@ -62,8 +62,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_quotient_cover_ideal,
     _engine_ring,
     _own_ring,
-    ring_homset,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -571,11 +569,9 @@ def _canonical_map(domain, codomain, engine_map=None):
         return codomain(value)
 
 
-    return ring_morphism(
-        domain,
-        codomain,
+    return domain.Mor(codomain)._elementwise_with_engine(
         image,
-        engine_morphism=engine_map,
+        engine_map,
     )
 
 
@@ -731,9 +727,7 @@ class QuotientRings(OwnedCategory):
             # construction datum at this level.
             super().__init__(base=source, **rest)
 
-            self._preamble_quotient_map = ring_morphism(
-                source,
-                self,
+            self._preamble_quotient_map = source.Mor(self)(
                 lambda element: self(element),
             )
 
@@ -1036,7 +1030,7 @@ class QuotientRings(OwnedCategory):
                 )
                 return target._from_engine_element(backend)
 
-            return ring_morphism(self, target, image)
+            return self.Mor(target)(image)
 
         @cached_method
         def conductor_ideal(self):
@@ -1097,8 +1091,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
     generator images of every normalization map, the conductor, and ``delta``
     in one exact computation.
     The returned Singular ring is converted by Sage's own ``sage()`` crossing,
-    then reconstructed through the source ring's ``quotient_ring`` method and
-    :func:`ring_morphism`.
+    then reconstructed through the source ring's ``quotient_ring`` and ``Mor`` methods.
     """
     source = quotient.quotient_source()
     source_engine = _engine_ring(source)
@@ -1171,13 +1164,18 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 *(quotient(generator) for generator in source_prime.ideal_generators())
             )
             engine_component_map = source_quotient_engine.hom(target_images, target_engine)
-            component_map = ring_morphism(
-                quotient,
-                component,
-                lambda element, component=component, engine_component_map=engine_component_map: component._from_engine_element(
+            def component_image(
+                element,
+                component=component,
+                engine_component_map=engine_component_map,
+            ):
+                return component._from_engine_element(
                     engine_component_map(_engine_element(quotient, element))
-                ),
-                engine_morphism=engine_component_map,
+                )
+
+            component_map = quotient.Mor(component)._elementwise_with_engine(
+                component_image,
+                engine_component_map,
             )
             normalizations.append(component)
             normalization_maps.append(component_map)
@@ -1202,7 +1200,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 )
                 return normalization._from_engine_element(backend)
 
-            normalization_map = ring_morphism(quotient, normalization, into_product)
+            normalization_map = quotient.Mor(normalization)(into_product)
 
         component_indices = finite_ordered_set(range(len(normalizations)))
         components = finite_indexed_family(
@@ -1705,9 +1703,7 @@ class AdicCompletions(Category):
             higher = self.adic_truncation(higher_exponent)
             lower = self.adic_truncation(lower_exponent)
             lower_projection = lower.quotient_map()
-            return ring_morphism(
-                higher,
-                lower,
+            return higher.Mor(lower)(
                 lambda element: lower_projection(element.lift()),
             )
 
@@ -1729,7 +1725,7 @@ class AdicCompletions(Category):
                 backend = _engine_element(self, self(element))
                 return quotient_map(projection_lift(backend, exponent))
 
-            return ring_morphism(self, target, image)
+            return self.Mor(target)(image)
 
         def induced_map(self, source_morphism, target_completion):
             r"""Return the continuous map of completions induced by ``source_morphism``.
@@ -1756,7 +1752,7 @@ class AdicCompletions(Category):
                 and source_morphism is identity_factory()
                 and target_completion is self
             ):
-                return ring_homset(self, self).identity()
+                return self.Mor(self).identity()
 
             def image(element):
                 selected = self(element)
@@ -1769,7 +1765,7 @@ class AdicCompletions(Category):
                     source_morphism(source_expression)
                 )
 
-            return ring_morphism(self, target_completion, image)
+            return self.Mor(target_completion)(image)
 
         @cached_method
         def maximal_localization_comparison(self):
@@ -2189,11 +2185,9 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 source_expression=selected,
             )
 
-        self._preamble_completion_map = ring_morphism(
-            source,
-            self,
+        self._preamble_completion_map = source.Mor(self)._elementwise_with_engine(
             completion_map_image,
-            engine_morphism=selected_engine_map,
+            selected_engine_map,
         )
         if algebra_base is None or algebra_base is source:
             self._preamble_structure_map = self._preamble_completion_map
@@ -2884,9 +2878,7 @@ def quotient_localization_comparison(source_quotient, localization_ring):
         return right_quotient_map(localized)
 
 
-    forward = ring_morphism(
-        localized_quotient,
-        quotient_after_localization,
+    forward = localized_quotient.Mor(quotient_after_localization)(
         forward_image,
     )
 
@@ -2898,9 +2890,7 @@ def quotient_localization_comparison(source_quotient, localization_ring):
             quotient_map(denominator),
         )
 
-    inverse = ring_morphism(
-        quotient_after_localization,
-        localized_quotient,
+    inverse = quotient_after_localization.Mor(localized_quotient)(
         inverse_image,
     )
     return QuotientLocalizationComparison(
@@ -2951,9 +2941,7 @@ def quotient_completion_comparison(source_quotient, source_ideal, *, precision=2
             source_completion.completion_map()(representative)
         )
 
-    source_to_right = ring_morphism(
-        source_quotient,
-        quotient_after_completion,
+    source_to_right = source_quotient.Mor(quotient_after_completion)(
         quotient_source_to_right,
     )
 
@@ -2966,9 +2954,7 @@ def quotient_completion_comparison(source_quotient, source_ideal, *, precision=2
             )
         return source_to_right(source_expression)
 
-    forward = ring_morphism(
-        completed_quotient,
-        quotient_after_completion,
+    forward = completed_quotient.Mor(quotient_after_completion)(
         forward_image,
     )
 
@@ -2988,9 +2974,7 @@ def quotient_completion_comparison(source_quotient, source_ideal, *, precision=2
         )
         return completion_to_completed_quotient(representative)
 
-    inverse = ring_morphism(
-        quotient_after_completion,
-        completed_quotient,
+    inverse = quotient_after_completion.Mor(completed_quotient)(
         inverse_image,
     )
     return QuotientCompletionComparison(

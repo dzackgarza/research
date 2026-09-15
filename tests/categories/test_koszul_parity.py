@@ -13,7 +13,7 @@ from dzack_research.preamble.all import (
     StrictlyGradedCommutativeAlgebras,
     ZZ,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import Zmod, ring_morphism
+from dzack_research.preamble.categories.rings.ring_foundation import Zmod
 
 
 def test_the_integer_grading_carries_its_canonical_parity() -> None:
@@ -29,7 +29,7 @@ def test_the_integer_grading_carries_its_canonical_parity() -> None:
 
 def test_a_superalgebra_is_graded_by_the_parity_it_states() -> None:
     two = Zmod(2)
-    identity = ring_morphism(two, two, lambda degree: degree)
+    identity = two.Mor(two)(lambda degree: degree)
     superalgebras = GradedCommutativeAlgebras(ZZ, two, identity)
 
     assert superalgebras.grading_monoid() is two
@@ -38,7 +38,7 @@ def test_a_superalgebra_is_graded_by_the_parity_it_states() -> None:
 
 def test_strict_graded_commutativity_keeps_the_grading_it_was_given() -> None:
     two = Zmod(2)
-    identity = ring_morphism(two, two, lambda degree: degree)
+    identity = two.Mor(two)(lambda degree: degree)
     strict = StrictlyGradedCommutativeAlgebras(ZZ, two, identity)
 
     assert strict.grading_monoid() is two

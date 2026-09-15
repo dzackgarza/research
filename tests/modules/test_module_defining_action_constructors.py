@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.modules.powers import (
     SymmetricPowerModules,
     TensorPowerModules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -117,7 +117,7 @@ def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism(
 
 def test_restriction_of_scalars_exposes_the_composed_action() -> None:
     extension = BasedFreeModule(QQ, finite_ordered_set(("e",)))
-    inclusion = ring_morphism(ZZ, QQ, QQ)
+    inclusion = ZZ.Mor(QQ)(QQ)
     restricted = extension.restrict_scalars(inclusion)
     element = restricted.wrap(extension.module_generator("e"))
 
@@ -292,12 +292,10 @@ def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     ring = MatrixSpace(QQ, 2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)
-    action = ring_morphism(
-        ring,
-        endomorphisms,
+    action = ring.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
-            lambda element: scalar * element,
-        ),
+   lambda element: scalar * element,
+),
     )
     regular = Modules(ring)(action)
     linear_endomorphisms = Modules(ring).End(regular)

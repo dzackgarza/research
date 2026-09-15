@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.forms.forms import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_constructors_meet_their_obligations.sage",
@@ -295,7 +295,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
 
 def _group_algebra_structure_map(group):
     group_algebra = ZZ[group]
-    return ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
+    return ZZ.Mor(group_algebra)(lambda integer: integer * group_algebra.one())
 
 
 def _module_from_scalar_action():
@@ -318,7 +318,7 @@ def _module_from_scalar_action():
             verify_linearity=False,
         )
 
-    return Modules(group_algebra)(plane, ring_morphism(group_algebra, endomorphisms, action))
+    return Modules(group_algebra)(plane, group_algebra.Mor(endomorphisms)(action))
 
 
 def _derivation_algebra():

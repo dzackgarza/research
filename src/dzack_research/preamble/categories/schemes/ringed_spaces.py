@@ -104,11 +104,9 @@ class StructureSheaf(SageObject):
         if target_open is ambient:
             if source_open is not ambient:
                 raise ValueError("a restriction map is contravariant in open-set inclusion")
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                ring_homset,
-            )
 
-            return remember(ring_homset(source_sections, source_sections).identity())
+
+            return remember(source_sections.Mor(source_sections).identity())
         if not _is_distinguished_open_of(target_open, ambient):
             raise ValueError("the restriction target is not a represented distinguished open of this affine scheme")
         target_sections = self.sections_on_distinguished_open(target_open)
@@ -119,11 +117,9 @@ class StructureSheaf(SageObject):
                 raise ArithmeticError("the distinguished-open inclusion has the wrong represented pullback")
             return remember(restriction)
         if source_open is target_open:
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                ring_homset,
-            )
 
-            return remember(ring_homset(source_sections, source_sections).identity())
+
+            return remember(source_sections.Mor(source_sections).identity())
         return remember(_localization_restriction_map(source_sections, target_sections))
 
     def associated_module_sheaf(self, module):
@@ -152,13 +148,11 @@ def _localization_restriction_map(source, target):
     r"""Return ``S^{-1}A -> T^{-1}A`` when the target inverts every element of ``S``."""
 
     from dzack_research.preamble.categories.rings.ring_foundation import (
-        LocalizationRings,
-        ring_homset,
-        ring_morphism,
-    )
+    LocalizationRings,
+)
 
     if source is target:
-        return ring_homset(source, source).identity()
+        return source.Mor(source).identity()
     if source not in LocalizationRings() or target not in LocalizationRings():
         raise TypeError("principal-open restriction between proper opens requires represented localizations")
     if source.localization_source() is not target.localization_source():
@@ -180,7 +174,7 @@ def _localization_restriction_map(source, target):
         denominator = target_unit(element.denominator())
         return numerator * denominator.inverse_of_unit()
 
-    return ring_morphism(source, target, restrict)
+    return source.Mor(target)(restrict)
 
 
 class DistinguishedAffineCovers(OwnedCategory):

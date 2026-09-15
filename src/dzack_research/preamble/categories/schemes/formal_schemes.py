@@ -2,7 +2,7 @@ r"""Adic formal spectra and their compatible infinitesimal thickenings."""
 
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
+
 from dzack_research.preamble.categories.schemes.schemes import Spec, affine_spec_morphism
 
 
@@ -13,10 +13,7 @@ class FormalCompletionComparison(SageObject):
         self._formal_spectrum = formal_spectrum
         self._first = formal_spectrum.completion(first_precision)
         self._second = formal_spectrum.completion(second_precision)
-        identity = ring_homset(
-            formal_spectrum.source_ring(),
-            formal_spectrum.source_ring(),
-        ).identity()
+        identity = formal_spectrum.source_ring().Mor(formal_spectrum.source_ring()).identity()
         self._forward = self._first.induced_map(identity, self._second)
         self._backward = self._second.induced_map(identity, self._first)
 
@@ -96,7 +93,7 @@ class FormalSpectrum(SageObject):
         higher = self.thickening_ring(higher_exponent)
         lower = self.thickening_ring(lower_exponent)
         lower_projection = lower.quotient_map()
-        return ring_homset(higher, lower).elementwise(
+        return higher.Mor(lower).elementwise(
             lambda element: lower_projection(element.lift())
         )
 
@@ -154,7 +151,7 @@ class FormalAffineMorphism(SageObject):
         target = self.domain().thickening_ring(exponent)
         target_projection = target.quotient_map()
         ring_map = self.coordinate_ring_morphism()
-        return ring_homset(source, target).elementwise(
+        return source.Mor(target).elementwise(
             lambda element: target_projection(ring_map(element.lift()))
         )
 

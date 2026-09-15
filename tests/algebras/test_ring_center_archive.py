@@ -1,7 +1,7 @@
 import pytest
 
 from dzack_research.preamble.all import QQ, CommutativeRings, FreeAlgebraOn, MatrixSpace, OwnedRings
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATIONS = (
@@ -21,9 +21,7 @@ ARCHIVE_RECONCILIATIONS = (
 def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
     matrices = MatrixSpace(QQ, 2)
     conjugator = matrices([[0, 1], [1, 0]])
-    conjugation = ring_morphism(
-        matrices,
-        matrices,
+    conjugation = matrices.Mor(matrices)(
         lambda element: conjugator * element * conjugator,
     )
     core = OwnedRings().Core()

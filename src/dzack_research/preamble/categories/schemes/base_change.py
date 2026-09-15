@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
@@ -118,11 +117,14 @@ def _base_change_unit(algebra, changed_algebra, ring_map):
                 changed_engine,
                 base_map=_engine_ring_map(ring_map),
             )
-    return ring_morphism(
-        algebra,
-        changed_algebra,
-        lambda element: _base_changed_element(algebra, element, changed_algebra, ring_map),
-        engine_morphism=engine,
+    return algebra.Mor(changed_algebra)._elementwise_with_engine(
+        lambda element: _base_changed_element(
+            algebra,
+            element,
+            changed_algebra,
+            ring_map,
+        ),
+        engine,
     )
 
 

@@ -1,7 +1,7 @@
 r"""Formal spectra retain the inverse system, not a computational precision."""
 
 from dzack_research.preamble.all import QQ, PolynomialRing
-from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
+
 from dzack_research.preamble.categories.schemes.formal_schemes import (
     formal_affine_morphism,
     formal_spectrum,
@@ -47,7 +47,7 @@ def test_continuous_formal_map_descends_compatibly_to_every_thickening() -> None
     y = target.algebra_generator("y")
     formal_source = formal_spectrum(source, source.ideal(x))
     formal_target = formal_spectrum(target, target.ideal(y))
-    ring_map = ring_homset(target, source).elementwise(lambda polynomial: source(polynomial(y=x)))
+    ring_map = target.Mor(source).elementwise(lambda polynomial: source(polynomial(y=x)))
     morphism = formal_affine_morphism(formal_source, formal_target, ring_map)
     stage = morphism.thickening_ring_map(3)
 

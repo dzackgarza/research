@@ -18,7 +18,7 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/group_modules/group_modules.sage",
@@ -147,7 +147,7 @@ def test_exact_additive_scalar_action_is_retained_as_the_defining_morphism() -> 
 
         return additive_endomorphisms.elementwise(apply)
 
-    rho = ring_morphism(group_algebra, additive_endomorphisms, scalar_image)
+    rho = group_algebra.Mor(additive_endomorphisms)(scalar_image)
     module = Modules(group_algebra)(line, rho)
 
     assert module.scalar_action() is rho

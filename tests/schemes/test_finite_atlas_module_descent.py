@@ -5,7 +5,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModule,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasModuleGluingMorphism,
@@ -52,10 +52,10 @@ def _distinct_punctured_lines():
         )
 
     forward = left_overlap.Mor(right_overlap)(
-        ring_morphism(right_ring, left_ring, to_left)
+        right_ring.Mor(left_ring)(to_left)
     )
     reverse = right_overlap.Mor(left_overlap)(
-        ring_morphism(left_ring, right_ring, to_right)
+        left_ring.Mor(right_ring)(to_right)
     )
     return left, right, Isomorphism(forward, reverse)
 
@@ -97,10 +97,10 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
         )
 
     forward = source_overlap.Mor(target_overlap)(
-        ring_morphism(target_ring, source_ring, pull_to_source)
+        target_ring.Mor(source_ring)(pull_to_source)
     )
     reverse = target_overlap.Mor(source_overlap)(
-        ring_morphism(source_ring, target_ring, pull_to_target)
+        source_ring.Mor(target_ring)(pull_to_target)
     )
     return Isomorphism(forward, reverse)
 

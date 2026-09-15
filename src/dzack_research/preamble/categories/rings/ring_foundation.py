@@ -113,7 +113,7 @@ class RingMorphism(Morphism):
             return other
         if other.is_identity():
             return self
-        return ring_homset(other.domain(), self.codomain()).elementwise(
+        return other.domain().Mor(self.codomain()).elementwise(
             lambda element: self(other(element)),
         )
 
@@ -305,6 +305,14 @@ class RingHomset(CategoricalHomset):
     def elementwise(self, function):
         return self.element_class(self, function)
 
+    def _elementwise_with_engine(self, function, engine_morphism):
+        r"""Construct an elementwise map retaining one private engine realization."""
+        return self.element_class(
+            self,
+            function,
+            engine_morphism=engine_morphism,
+        )
+
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on a ring endomorphism Hom-set")
@@ -323,29 +331,9 @@ class RingHomCategoryConstruction(HomCategoryConstruction):
         return RingHomset
 
 
-def ring_homset(domain, codomain) -> RingHomset:
-    r"""Return the canonical owned ``Mor_Ring(domain, codomain)`` object."""
-    return OwnedRings().Mor(domain, codomain)
-
-
 def _ring_mor_category(domain, codomain) -> RingHomset:
-    r"""Build ``Mor_Ring(domain, codomain)`` from its owned family.
-
-    `OwnedRings.Mor` is the public route and delegates here.  It must not call
-    `ring_homset`, which is that same public route under another name: while
-    the category method and the module function had different names the cycle
-    was invisible, and naming both `Mor` made it a self-call.
-    """
+    r"""Build ``Mor_Ring(domain, codomain)`` from its owned Hom family."""
     return RingHomCategoryConstruction(OwnedRings()).Of(domain, codomain)
-
-
-def ring_morphism(domain, codomain, function, *, engine_morphism=None) -> RingMorphism:
-    r"""Construct one owned ring morphism with an optional engine realization."""
-    return RingMorphism(
-        ring_homset(domain, codomain),
-        function,
-        engine_morphism=engine_morphism,
-    )
 
 
 def _ring_morphisms_equal(left, right) -> bool:
@@ -449,9 +437,7 @@ class PredicateSubrings(OwnedCategory):
             return self._zero
 
         def inclusion(self):
-            return ring_morphism(
-                self,
-                self._ambient_ring,
+            return self.Mor(self._ambient_ring)(
                 lambda element: element,
             )
 
@@ -630,9 +616,7 @@ class LocalizationRings(OwnedCategory):
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
             super().__init__(base=source.base_ring(), **rest)
 
-            self._preamble_localization_map = ring_morphism(
-                source,
-                self,
+            self._preamble_localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
             )
             if algebra_source is not None:
@@ -944,7 +928,7 @@ class LocalizationRings(OwnedCategory):
                 denominator = source_to_field(fraction.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return ring_morphism(self, self.fraction_field_realization(), image)
+            return self.Mor(self.fraction_field_realization())(image)
 
         @cached_method
         def fraction_field_comparison_inverse(self):
@@ -952,9 +936,7 @@ class LocalizationRings(OwnedCategory):
             if not self.is_fraction_field_localization():
                 raise ValueError("this localization is not the fraction-field specialization")
             field = self.fraction_field_realization()
-            return ring_morphism(
-                field,
-                self,
+            return field.Mor(self)(
                 lambda element: self._from_engine_element(_engine_element(field, element)),
             )
 
@@ -1050,11 +1032,9 @@ class LocalizationRings(OwnedCategory):
             except (AttributeError, NotImplementedError, TypeError, ValueError, RuntimeError):
                 pass
 
-            return ring_morphism(
-                self,
-                morphism.codomain(),
+            return self.Mor(morphism.codomain())._elementwise_with_engine(
                 image,
-                engine_morphism=engine_morphism,
+                engine_morphism,
             )
 
         def localization_map(self):
@@ -1129,7 +1109,7 @@ class LocalizationRings(OwnedCategory):
                 denominator = target(element.denominator())
                 return numerator * denominator.inverse_of_unit()
 
-            return ring_morphism(self, target, image)
+            return self.Mor(target)(image)
 
         def localization_fraction_data(self, element):
             r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
@@ -1533,7 +1513,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 raise TypeError("a ring Hom requires two owned rings")
             if category is not None and not category.is_subcategory(rings):
                 raise TypeError("this is not a ring homset category")
-            return ring_homset(self, codomain)
+            return rings.Mor(self, codomain)
 
         def cardinality(self):
             r"""Return the exact represented cardinal of the underlying set."""
@@ -1587,7 +1567,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             if self not in OwnedRings().Commutative():
                 raise TypeError(f"{self} is noncommutative, so the identity does not land in its center")
             center = self.ring_center()
-            return ring_morphism(self, center, lambda scalar: scalar)
+            return self.Mor(center)(lambda scalar: scalar)
 
         def algebra_structure_morphism(self):
             r"""The structure morphism of this ring as an algebra over itself.
@@ -1684,7 +1664,7 @@ class OwnedIntegralDomains(OwnedCategory):
             when it is nonzero.
             """
             if self in OwnedFields():
-                return ring_homset(self, self).identity()
+                return self.Mor(self).identity()
             localization = self.fraction_field_localization()
             return (
                 localization.fraction_field_comparison()
@@ -1785,7 +1765,7 @@ class OwnedLocalRings(OwnedCategory):
                 f"the residue map {self} -> {residue} is not constructed here; the level "
                 "that introduces the residue field of this ring supplies it"
             )
-            return ring_homset(self, self).identity()
+            return self.Mor(self).identity()
 
 
 class OwnedAdicallyCompleteRings(OwnedCategory):
@@ -1873,7 +1853,7 @@ class OwnedFields(OwnedCategory):
             return self
 
         def residue_map(self):
-            return ring_homset(self, self).identity()
+            return self.Mor(self).identity()
 
         def absolute_galois_group(self):
             r"""Return the absolute Galois group ``G_K`` of this field ``K``.
@@ -1998,9 +1978,7 @@ def _center_transport_of_ring_isomorphism(morphism):
             return source(element)
         return source_center.inclusion()(element)
 
-    return ring_morphism(
-        source_center,
-        target_center,
+    return source_center.Mor(target_center)(
         lambda element: target_center(morphism(ambient_source(element))),
     )
 
@@ -3091,12 +3069,10 @@ def Zmod(*args, **kwargs):
         residue = GF(prime)
         ring._preamble_maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
         ring._preamble_residue_field = residue
-        ring._preamble_residue_map = ring_morphism(
-            ring,
-            residue,
+        ring._preamble_residue_map = ring.Mor(residue)(
             lambda element: residue(
-                SageZZ(_engine_element(ring, element).lift())
-            ),
+SageZZ(_engine_element(ring, element).lift())
+),
         )
         refine(ring, OwnedLocalRings())
     return ring

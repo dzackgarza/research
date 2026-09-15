@@ -15,7 +15,7 @@ from dzack_research.preamble.all import (
     Set,
     ZZ,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 
 
@@ -58,13 +58,11 @@ def test_a_second_ring_acts_through_a_second_morphism_into_the_endomorphisms() -
     group = _integers_mod(3)
     field = GF(3)
     endomorphisms = Modules(ZZ).End(group)
-    action = ring_morphism(
-        field,
-        endomorphisms,
+    action = field.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
-            lambda element: group(int(scalar) * element.underlying_element() % 3),
-            verify_linearity=False,
-        ),
+   lambda element: group(int(scalar) * element.underlying_element() % 3),
+   verify_linearity=False,
+),
     )
 
     over_the_field = Modules(field)(group, action)

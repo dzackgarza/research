@@ -1007,7 +1007,7 @@ from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F40
 )
 from dzack_research.preamble.coble import Coble  # noqa: F401
 from dzack_research.preamble.logic import Predicate, Unknown, ask  # noqa: F401
-from dzack_research.preamble.rings import (  # noqa: F401
+from dzack_research.preamble.rings import (
     RR,
     AdicallyCompleteRings,
     AdicCompletions,
@@ -1046,9 +1046,8 @@ from dzack_research.preamble.rings import (  # noqa: F401
     Rings,
     UnitInterval,
     ZariskiClosedSubobject,
-    _restore_session_ring_bindings,  # noqa: F401
+    _restore_session_ring_bindings,
     predicate_subring,
-    ring_morphism,
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401

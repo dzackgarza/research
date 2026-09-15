@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
@@ -49,12 +48,12 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         about.
         """
         from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
         ring = self.base_ring()
         algebra = SymmetricAlgebraOn(ring, ("x",))
         return algebra.restrict_scalars(
-            ring_morphism(ring, ring, lambda element: element)
+            ring.Mor(ring)(lambda element: element)
         )
 
     @classmethod
@@ -123,9 +122,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         )
 
         source_structure = algebra.algebra_structure_morphism()
-        self._preamble_structure_map = ring_morphism(
-            base_ring,
-            self,
+        self._preamble_structure_map = base_ring.Mor(self)(
             lambda scalar: self(source_structure(ring_map(scalar))),
         )
 
@@ -166,16 +163,14 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             algebra_engine,
             base_map=engine_base_map,
         )
-        self._preamble_algebra_presentation_morphism = ring_morphism(
-            presentation_ring,
-            self,
+        self._preamble_algebra_presentation_morphism = presentation_ring.Mor(self)(
             lambda element: self._from_engine_element(
-                algebra_engine(
-                    presentation_engine_map(
-                        _engine_element(presentation_ring, element)
-                    )
-                )
-            ),
+algebra_engine(
+presentation_engine_map(
+_engine_element(presentation_ring, element)
+)
+)
+),
         )
 
 

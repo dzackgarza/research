@@ -59,7 +59,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_ring,
     _proper_restriction_base_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -1094,12 +1093,10 @@ class Modules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
-            return ring_morphism(
-                ring,
-                endomorphisms,
+            return ring.Mor(endomorphisms)(
                 lambda scalar: endomorphisms.elementwise(
-                    lambda element: self._owned_scalar_multiple(scalar, element),
-                ),
+             lambda element: self._owned_scalar_multiple(scalar, element),
+         ),
             )
 
         def scalar_action(self):
@@ -2456,12 +2453,12 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""``Res_{id}(R^2)``: a free module along the identity of ``R``."""
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         ring = self.base_ring()
         return BasedFreeModule(ring, finite_ordinal_set(2)).restrict_scalars(
-            ring_morphism(ring, ring, lambda element: element)
+            ring.Mor(ring)(lambda element: element)
         )
 
     @classmethod
@@ -2686,7 +2683,7 @@ class RestrictedScalarsModuleView(Parent):
         return indexed_family(
             self.module_generating_set(),
             self.module_generator,
-            
+
         )
 
     @cached_method

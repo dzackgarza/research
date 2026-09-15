@@ -1726,11 +1726,9 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
         return result
 
     def _ring_morphism_defining_algebra_structure(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
-        return ring_morphism(
-            self.base_ring(),
-            self,
+
+        return self.base_ring().Mor(self)(
             lambda scalar: self(scalar),
         )
 

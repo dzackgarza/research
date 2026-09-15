@@ -334,7 +334,7 @@ assert R.quotient(m) in Rings().FiniteFields()
 
 # Evaluation at a point is a ring morphism.
 R = QQ['x']
-ev0 = ring_morphism(R, QQ, lambda f: f(0))
+ev0 = R.Mor(QQ)(lambda f: f(0))
 assert ev0.is_ring_morphism()
 
 # Derivative is not a ring morphism.

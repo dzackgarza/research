@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     OwnedCategoryOverBaseRing,
     QuadraticMap,
     finite_ordered_set,
-    ring_morphism,
 )
 
 
@@ -25,7 +24,6 @@ def test_terminal_collection_vocabulary_is_public() -> None:
         OwnedCategoryOverBaseRing,
         QuadraticMap,
         finite_ordered_set,
-        ring_morphism,
     )
 
     assert all(name is not None for name in names)
@@ -149,6 +147,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "symmetric_power_morphism",
         "alternating_power_morphism",
         "divided_power_morphism",
+        "ring_homset",
+        "ring_morphism",
         "tensor_power_permutation",
         "divided_power_product",
         "alternating_power_product",

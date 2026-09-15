@@ -14,7 +14,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     own_algebra,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
-from dzack_research.preamble.categories.rings import ring_homset
+
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/algebras/algebras.sage",
@@ -24,8 +24,8 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_owned_algebra_retains_the_scalar_structure_map() -> None:
-    integers_to_rationals = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
-    rationals_identity = ring_homset(QQ, QQ).identity()
+    integers_to_rationals = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
+    rationals_identity = QQ.Mor(QQ).identity()
 
     over_integers = own_algebra(integers_to_rationals)
     over_rationals = own_algebra(rationals_identity)

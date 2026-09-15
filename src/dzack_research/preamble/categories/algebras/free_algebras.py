@@ -1107,14 +1107,12 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         @cached_method
         def center_inclusion(self):
             r"""Return the inclusion ``Z(T) -> T`` under the selected center identification."""
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                ring_morphism,
-            )
+
 
             center = self.ring_center()
             if center is self:
-                return ring_morphism(self, self, lambda element: element)
-            return ring_morphism(center, self, lambda scalar: self(scalar))
+                return self.Mor(self)(lambda element: element)
+            return center.Mor(self)(lambda scalar: self(scalar))
 
 
     class ElementMethods:

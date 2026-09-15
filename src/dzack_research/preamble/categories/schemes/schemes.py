@@ -60,7 +60,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _proper_restriction_base_ring,
-    ring_homset,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
@@ -246,10 +245,11 @@ class SchemeMorphism(Morphism):
         left_pullback = self._preamble_coordinate_algebra_morphism
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
-            composite_pullback = ring_homset(
-                left_pullback.domain(),
-                right_pullback.codomain(),
-            ).elementwise(lambda element: right_pullback(left_pullback(element)))
+            composite_pullback = left_pullback.domain().Mor(
+                right_pullback.codomain()
+            ).elementwise(
+                lambda element: right_pullback(left_pullback(element))
+            )
             return _RepresentedAffineSchemeMorphism(
                 homset,
                 composite_pullback,
@@ -801,7 +801,7 @@ def _algebra_structure_morphism_from_base(algebra, base_ring):
 
     base_ring = _own_ring(base_ring)
     if algebra is base_ring:
-        return ring_homset(base_ring, base_ring).identity()
+        return base_ring.Mor(base_ring).identity()
     algebra_base = getattr(algebra, "algebra_base_ring", lambda: None)()
     if algebra_base is None:
         raise ValueError(f"{algebra} has no represented algebra structure over {base_ring}")
@@ -809,7 +809,7 @@ def _algebra_structure_morphism_from_base(algebra, base_ring):
     if algebra_base is base_ring:
         return upper
     lower = _algebra_structure_morphism_from_base(algebra_base, base_ring)
-    return ring_homset(base_ring, algebra).elementwise(
+    return base_ring.Mor(algebra).elementwise(
         lambda scalar: upper(lower(scalar))
     )
 
@@ -2904,7 +2904,7 @@ def _initialize_owned_affine_spectrum(
     scheme._preamble_coordinate_algebra = algebra
 
     engine_identity = _engine_ring(algebra).hom(_engine_ring(algebra))
-    coordinate_identity = ring_homset(base, base).identity() if algebra is base else algebra.Mor(algebra).identity()
+    coordinate_identity = base.Mor(base).identity() if algebra is base else algebra.Mor(algebra).identity()
     scheme._preamble_identity_morphism = SchemeMorphism(
         _native_scheme_homset(scheme, scheme)(engine_identity, check=False),
         domain=scheme,
@@ -3804,7 +3804,7 @@ def scheme_product(*schemes):
                 extra_categories=(ProductSchemes(base),),
             )
             identity_pullback = (
-                ring_homset(base, base).identity()
+                base.Mor(base).identity()
                 if algebra is base
                 else algebra.Mor(algebra).identity()
             )

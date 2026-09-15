@@ -55,7 +55,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _OwnedRingElement,
     _OwnedRingParent,
     _proper_restriction_base_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -1236,14 +1235,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                         )
 
                         scalar_module = algebra_underlying_module_functor(base)(base)
-                        return ring_morphism(
-                            base,
-                            center,
+                        return base.Mor(center)(
                             lambda scalar: center(self(selected_unit(scalar_module(base(scalar))))),
                         )
-                    return ring_morphism(
-                        base,
-                        center,
+                    return base.Mor(center)(
                         lambda scalar: center(self(scalar)),
                     )
 
@@ -1264,7 +1259,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     center = self.ring_center()
                     if eta.codomain() is center:
                         return eta
-                    return ring_morphism(eta.domain(), center, eta)
+                    return eta.domain().Mor(center)(eta)
 
                 @cached_method
                 def one(self):
@@ -1576,9 +1571,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             center = self.ring_center()
             identity = self.identity()
-            return ring_morphism(
-                ring,
-                center,
+            return ring.Mor(center)(
                 lambda scalar: center(self.scalar_multiple(scalar, identity)),
             )
 
@@ -2328,7 +2321,7 @@ def _corestrict_algebra_morphism_to_center(morphism):
         image = morphism(domain.algebra_generator(label))
         if image not in center:
             raise ValueError(f"the image of algebra generator {label} is not central in {codomain}")
-    return ring_morphism(domain, center, lambda element: center(morphism(element)))
+    return domain.Mor(center)(lambda element: center(morphism(element)))
 
 
 class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
@@ -2521,9 +2514,7 @@ def _default_structure_map(base, algebra):
     ``algebra_structure_morphism`` method records the factorization through
     the centre.
     """
-    return ring_morphism(
-        base,
-        algebra,
+    return base.Mor(algebra)(
         lambda scalar: algebra(scalar),
     )
 
@@ -2580,9 +2571,7 @@ def algebra_structure_view(ring, structure_map):
         raise ValueError("an algebra-structure view requires a ring map into the selected ring")
     base = _own_ring(structure_map.domain())
     view = _OwnedAlgebraParent(_engine_ring(selected_ring), base, None)
-    view._preamble_structure_map = ring_morphism(
-        base,
-        view,
+    view._preamble_structure_map = base.Mor(view)(
         lambda scalar: view(structure_map(base(scalar))),
     )
     view._preamble_algebra_structure_ring = selected_ring

@@ -24,7 +24,7 @@ def _scaled_punctured_line_isomorphism(chart, punctured, scale):
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
     algebra = chart.coordinate_algebra()
     x = algebra.algebra_generator("x")
@@ -43,7 +43,7 @@ def _scaled_punctured_line_isomorphism(chart, punctured, scale):
             )
 
         return punctured.Mor(punctured)(
-            ring_morphism(localized, localized, pullback)
+            localized.Mor(localized)(pullback)
         )
 
     return Isomorphism(

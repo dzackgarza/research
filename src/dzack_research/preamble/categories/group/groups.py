@@ -81,7 +81,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -2308,9 +2307,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 def multiple(exponent, element):
                     return exponent * element if additive else element ** int(exponent)
 
-                return ring_morphism(
-                    integers,
-                    endomorphisms,
+                return integers.Mor(endomorphisms)(
                     lambda exponent: endomorphisms(lambda element: multiple(exponent, element)),
                 )
 

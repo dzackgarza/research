@@ -8,8 +8,6 @@ executes it before every import of a defining module in this package.
 from dzack_research.preamble.categories.rings.ring_foundation import (
     RingHomset,
     RingMorphism,
-    ring_homset,
-    ring_morphism,
 )
 
-__all__ = ["RingHomset", "RingMorphism", "ring_homset", "ring_morphism"]
+__all__ = ["RingHomset", "RingMorphism"]

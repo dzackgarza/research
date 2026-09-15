@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     RingMorphism,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.schemes import SchemeMorphism
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -93,14 +92,10 @@ class _SwapChart:
             result: Element = numerator_image * denominator_image.inverse_of_unit()
             return result
 
-        forward_ring_map: RingMorphism = ring_morphism(
-            localized,
-            localized,
+        forward_ring_map: RingMorphism = localized.Mor(localized)(
             forward_pullback,
         )
-        inverse_ring_map: RingMorphism = ring_morphism(
-            localized,
-            localized,
+        inverse_ring_map: RingMorphism = localized.Mor(localized)(
             inverse_pullback,
         )
         forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)
@@ -150,14 +145,10 @@ class _SwapChart:
             result: Element = numerator_image * denominator_image.inverse_of_unit()
             return result
 
-        forward_ring_map: RingMorphism = ring_morphism(
-            localized,
-            localized,
+        forward_ring_map: RingMorphism = localized.Mor(localized)(
             forward_pullback,
         )
-        inverse_ring_map: RingMorphism = ring_morphism(
-            localized,
-            localized,
+        inverse_ring_map: RingMorphism = localized.Mor(localized)(
             inverse_pullback,
         )
         forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)
@@ -362,14 +353,10 @@ def test_glued_quotient_rejects_a_nonequivariant_source_transition() -> None:
         result: Element = numerator_image * denominator_image.inverse_of_unit()
         return result
 
-    forward_ring_map: RingMorphism = ring_morphism(
-        localized,
-        localized,
+    forward_ring_map: RingMorphism = localized.Mor(localized)(
         forward_pullback,
     )
-    inverse_ring_map: RingMorphism = ring_morphism(
-        localized,
-        localized,
+    inverse_ring_map: RingMorphism = localized.Mor(localized)(
         inverse_pullback,
     )
     forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)

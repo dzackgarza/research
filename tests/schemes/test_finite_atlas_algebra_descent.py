@@ -4,7 +4,7 @@ from dzack_research.preamble.all import QQ, AffineSpace, PolynomialRing
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasAlgebraGluingDatum,
     SemilinearAlgebraMorphism,
@@ -55,10 +55,10 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
         )
 
     forward = source_overlap.Mor(target_overlap)(
-        ring_morphism(target_ring, source_ring, pull_to_source)
+        target_ring.Mor(source_ring)(pull_to_source)
     )
     reverse = target_overlap.Mor(source_overlap)(
-        ring_morphism(source_ring, target_ring, pull_to_target)
+        source_ring.Mor(target_ring)(pull_to_target)
     )
     return Isomorphism(forward, reverse)
 

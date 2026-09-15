@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -229,9 +228,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         return self._preamble_algebra_generator_values[label]
 
     def algebra_structure_morphism(self):
-        return ring_morphism(
-            self.base_ring(),
-            self,
+        return self.base_ring().Mor(self)(
             lambda scalar: self.from_degree_zero(self.degree_zero_algebra()(self.ring_map()(scalar))),
         )
 

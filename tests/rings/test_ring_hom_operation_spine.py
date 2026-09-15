@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     OwnedRngs,
     OwnedSemirings,
-    ring_homset,
 )
 
 
@@ -29,7 +28,7 @@ def test_ring_hom_is_owned_after_semiring_and_rng_hom_specialization() -> None:
 def test_framed_polynomial_ring_map_uses_owned_generator_images() -> None:
     polynomials = PolynomialRing(QQ, "x")
     x = polynomials.algebra_generator("x")
-    translate = ring_homset(polynomials, polynomials)({"x": x + polynomials.one()})
+    translate = polynomials.Mor(polynomials)({"x": x + polynomials.one()})
 
     assert translate.domain() is polynomials
     assert translate.codomain() is polynomials

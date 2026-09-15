@@ -66,7 +66,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -1269,9 +1268,7 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
             and ring_action.domain() is group_algebra
             and ring_action.codomain() is additive_endomorphisms
         )
-        else ring_morphism(
-            group_algebra,
-            additive_endomorphisms,
+        else group_algebra.Mor(additive_endomorphisms)(
             linearized_scalar,
         )
     )

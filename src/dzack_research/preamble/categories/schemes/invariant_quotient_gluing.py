@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
     GroupsWithChosenFiniteGeneratingSet,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     AffineSchemes,
@@ -482,7 +482,7 @@ class FiniteGluedInvariantQuotient(SageObject):
             return result
 
         factor: SchemeMorphism = morphism.domain().Mor(open_subscheme)(
-            ring_morphism(open_algebra, source_algebra, factor_pullback)
+            open_algebra.Mor(source_algebra)(factor_pullback)
         )
         return factor
 
@@ -939,7 +939,7 @@ def _c2_quotient_overlap_transition(
         return numerator_image * denominator_image.inverse_of_unit()
 
     return source_quotient_open.Mor(target_quotient_open)(
-        ring_morphism(target_quotient_ring, source_quotient_ring, pullback)
+        target_quotient_ring.Mor(source_quotient_ring)(pullback)
     )
 
 

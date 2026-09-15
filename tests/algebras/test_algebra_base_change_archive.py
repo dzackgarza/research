@@ -14,7 +14,7 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
     algebra_base_change_adjunction,
 )
-from dzack_research.preamble.categories.rings import ring_homset
+
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/functors/algebra_base_change.sage",
@@ -31,7 +31,7 @@ def _quadratic_integer_algebra():
 
 def test_archived_algebra_base_change_is_the_live_scalar_extension_functor() -> None:
     algebra = _quadratic_integer_algebra()
-    ring_map = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
+    ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
     extension = algebra_base_change_adjunction(ring_map).left_adjoint()
     extended = extension(algebra)
 
@@ -47,7 +47,7 @@ def test_archived_algebra_base_change_carries_a_nonidentity_morphism() -> None:
     involution = algebra.Mor(algebra)(
         {"x": -algebra.algebra_generator("x")}
     )
-    ring_map = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
+    ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
     extension = algebra_base_change_adjunction(ring_map).left_adjoint()
     extended = extension(algebra)
     extended_involution = extension(involution)
@@ -59,8 +59,8 @@ def test_archived_algebra_base_change_carries_a_nonidentity_morphism() -> None:
 
 
 def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None:
-    first = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
-    second = ring_homset(ZZ, QQ)(lambda scalar: QQ(scalar))
+    first = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
+    second = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
 
     first_adjunction = algebra_base_change_adjunction(first)
     second_adjunction = algebra_base_change_adjunction(second)

@@ -42,7 +42,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_engine_ring,
-    ring_homset,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -248,7 +247,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
                     def embedding_at(position):
                         engine_embedding = engine_embeddings[int(position)]
-                        return ring_homset(self, target).elementwise(
+                        return self.Mor(target).elementwise(
                             lambda element: target(
                                 engine_embedding(
                                     _engine_element(self, self(element))
@@ -262,7 +261,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     )
 
                     def embedding_at(position):
-                        return ring_homset(self, target)(
+                        return self.Mor(target)(
                             engine_embeddings[int(position)]
                         )
 

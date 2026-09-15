@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     MatrixSpace,
     Modules,
     finite_ordered_set,
-    ring_morphism,
 )
 
 
@@ -57,12 +56,10 @@ def test_noncommutative_regular_module_action_lands_in_additive_endomorphisms() 
     ring = MatrixSpace(QQ, 2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)
-    action = ring_morphism(
-        ring,
-        endomorphisms,
+    action = ring.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
-            lambda element: scalar * element,
-        ),
+   lambda element: scalar * element,
+),
     )
     regular = Modules(ring)(action)
 

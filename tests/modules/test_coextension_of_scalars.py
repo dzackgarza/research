@@ -16,7 +16,7 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 
 
 def _gaussian_rationals():
@@ -47,7 +47,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
             verify_linearity=False,
         )
 
-    gaussian_plane = Modules(scalars)(plane, ring_morphism(scalars, endomorphisms, action))
+    gaussian_plane = Modules(scalars)(plane, scalars.Mor(endomorphisms)(action))
 
     assert gaussian_plane in Modules(scalars)
     vector = gaussian_plane(e0 + 2 * e1)
@@ -77,7 +77,7 @@ def test_coextension_along_a_group_algebra_is_the_coinduced_module_of_the_trivia
     group = Groups.S(3)
     group_algebra = ZZ[group]
     coextension = Modules(ZZ).coextension_of_scalars(
-        ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
+        ZZ.Mor(group_algebra)(lambda integer: integer * group_algebra.one())
     )
     coextended = coextension(FreeModule(ZZ, 1))
 
@@ -115,7 +115,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     r"""Along ``ZZ -> ZZ[C2]`` restriction forgets the action and is left adjoint to coextension."""
     group = Groups.C(2)
     group_algebra = ZZ[group]
-    structure_map = ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
+    structure_map = ZZ.Mor(group_algebra)(lambda integer: integer * group_algebra.one())
     plane = FreeModule(ZZ, 2)
     labels = plane.module_generating_set()
     first, second = labels[0], labels[1]

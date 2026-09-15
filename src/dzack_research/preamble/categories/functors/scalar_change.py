@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
-    ring_morphism,
 )
 
 
@@ -207,12 +206,10 @@ class CoextensionOfScalarsFunctor(Functor):
         hom = scalars.module_category().Mor(scalars, module)
         identity = module.module_category().Mor(module, module).identity()
         endomorphisms = Modules(self._source_ring).End(hom)
-        action = ring_morphism(
-            self._target_ring,
-            endomorphisms,
+        action = self._target_ring.Mor(endomorphisms)(
             lambda scalar: internal_hom_morphism(
-                hom, hom, self._right_multiplication(scalar), identity
-            ),
+       hom, hom, self._right_multiplication(scalar), identity
+   ),
         )
         return Modules(self._target_ring)(hom, action)
 

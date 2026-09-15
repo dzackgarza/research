@@ -16,7 +16,7 @@ from dzack_research.preamble.all import (
     OwnedGroups,
     OwnedRings,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
 from dzack_research.preamble.rings import GF
 
 
@@ -51,7 +51,7 @@ def test_the_square_roots_of_one_are_a_subgroup_of_the_units() -> None:
 def test_reduction_carries_the_units_of_the_integers_into_the_units_of_the_field() -> None:
     field = GF(5)
     functor = OwnedRings().unit_group()
-    reduction = ring_morphism(ZZ, field, lambda integer: field(integer))
+    reduction = ZZ.Mor(field)(lambda integer: field(integer))
 
     restricted = functor(reduction)
 

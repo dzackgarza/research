@@ -65,7 +65,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.affine_spec import SpecFunctor
 from dzack_research.preamble.categories.schemes.group_schemes import (
@@ -284,7 +283,7 @@ class CyclicCoverBaseChangeComparison(SageObject):
                     )
                 return result
 
-            algebra_map = ring_morphism(source_local, changed_local, image)
+            algebra_map = source_local.Mor(changed_local)(image)
             local_projection = affine_spec_morphism(algebra_map)
             local_projections[source_index] = local_projection
             local_maps_to_cover[source_index] = (
@@ -527,7 +526,7 @@ def relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
                 )
             return result
 
-        pullback = ring_morphism(local_algebra, local_algebra, image)
+        pullback = local_algebra.Mor(local_algebra)(image)
         local_scheme = cover.chart(index)
         local_lifts[index] = _affine_morphism_from_pullback(
             local_scheme, local_scheme, pullback

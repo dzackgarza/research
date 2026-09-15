@@ -7,7 +7,7 @@ from dzack_research.preamble.all import (
     ZZ,
     algebra_base_change_adjunction,
 )
-from dzack_research.preamble.categories.rings import ring_homset
+
 
 
 def _quadratic_algebra_tower():
@@ -139,7 +139,7 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
 
 
 def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() -> None:
-    ring_map = ring_homset(ZZ, QQ)(lambda element: QQ(element))
+    ring_map = ZZ.Mor(QQ)(lambda element: QQ(element))
     restriction = AlgebraRestrictionOfScalarsFunctor(ring_map)
 
     source = SymmetricAlgebraOn(QQ, ["x"])

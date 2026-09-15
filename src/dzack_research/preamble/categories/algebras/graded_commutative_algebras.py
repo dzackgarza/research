@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     Zmod,
     _own_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.refine import refine
 
@@ -63,7 +62,7 @@ def _integer_koszul_parity():
     r"""Return the canonical reduction ``ZZ -> ZZ/2`` once."""
     integers = _own_ring(SageZZ)
     parity_target = Zmod(2)
-    return ring_morphism(integers, parity_target, parity_target)
+    return integers.Mor(parity_target)(parity_target)
 
 
 def koszul_parity(grading_monoid, parity=None):

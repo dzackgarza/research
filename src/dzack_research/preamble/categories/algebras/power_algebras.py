@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _owned_ring,
     predicate_subring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring as _engine_ring,
@@ -208,9 +207,7 @@ class PowerAlgebra(GradedDirectSumModule):
         return self.base_ring()(coefficients.get(0, self.base_ring().zero()))
 
     def _ring_morphism_defining_algebra_structure(self):
-        return ring_morphism(
-            self.base_ring(),
-            self,
+        return self.base_ring().Mor(self)(
             lambda scalar: self(scalar),
         )
 
