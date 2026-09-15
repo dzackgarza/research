@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     OpenImmersions,
     Sets,
     SymmetricAlgebraOn,
-    algebra_underlying_module_functor,
     category_packet,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
@@ -78,7 +77,7 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
 
     assert packet.C() is algebras
     module_packet = category_packet(modules)
-    forget = algebra_underlying_module_functor(QQ)
+    forget = Algebras(QQ).underlying_module()
     assert forget.domain() is algebras
     assert forget.codomain() is modules
     assert module_packet.Homs() not in packet.Homs().super_categories()
@@ -141,7 +140,7 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
     isomorphism = Isomorphism(identity, identity)
-    forget = algebra_underlying_module_functor(QQ)
+    forget = Algebras(QQ).underlying_module()
 
     hom_source = Algebras(QQ).Mor(algebra, algebra)(identity)
     hom_image = forget.induced_hom_functor(algebra, algebra)(hom_source)

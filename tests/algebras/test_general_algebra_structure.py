@@ -22,9 +22,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.algebras.algebras import (
     _unit_morphism_from_element,
 )
-from dzack_research.preamble.categories.functors.algebra_modules import (
-    algebra_underlying_module_functor,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -135,7 +132,7 @@ def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
     algebras = Algebras(QQ)
     dual = algebras(module, dual_numbers)
     split = algebras(module, split_idempotent)
-    forget = algebra_underlying_module_functor(QQ)
+    forget = Algebras(QQ).underlying_module()
 
     assert dual is not split
     assert dual in algebras
@@ -214,7 +211,7 @@ def test_algebra_axiom_placement_and_module_forgetting_are_distinct() -> None:
 def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
     module, dual_numbers, _split_idempotent = _two_products_on_one_module()
     one = module.module_generator("1")
-    scalar_module = algebra_underlying_module_functor(QQ)(QQ)
+    scalar_module = Algebras(QQ).underlying_module()(QQ)
     assert scalar_module in Modules(QQ)
     eta = _unit_morphism_from_element(module, one, QQ)
     unital = Algebras(QQ).Unital()(module, dual_numbers, eta)

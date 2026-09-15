@@ -402,12 +402,8 @@ class UnitalGeneralAlgebraHomCategoryConstruction(HomCategoryConstruction):
 
 def _unit_morphism_from_element(module, unit, ring):
     r"""Return the linear map ``U_R(R) -> module`` determined by ``1 |-> unit``."""
-    from dzack_research.preamble.categories.functors.algebra_modules import (
-        algebra_underlying_module_functor,
-    )
-
     ring = _owned_ring(ring)
-    scalar_module = algebra_underlying_module_functor(ring)(ring)
+    scalar_module = Algebras(ring).underlying_module()(ring)
     realize = getattr(scalar_module, "realize", None)
 
     def scalar_value(scalar):
@@ -442,11 +438,7 @@ def _equip_unit(algebra, unit_morphism, category):
     r"""Retain ``eta:R->M`` and verify its two unit equations when decidable."""
     ring = category.base_ring()
     module = algebra.underlying_module()
-    from dzack_research.preamble.categories.functors.algebra_modules import (
-        algebra_underlying_module_functor,
-    )
-
-    scalar_module = algebra_underlying_module_functor(ring)(ring)
+    scalar_module = Algebras(ring).underlying_module()(ring)
     if not isinstance(unit_morphism, Morphism):
         raise TypeError("a unit is supplied as a morphism R -> M")
     if unit_morphism.domain() is not scalar_module or unit_morphism.codomain() is not module:
@@ -626,7 +618,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             return [Algebras(base)]
         return [Sets()]
 
+    def underlying_module(self):
+        r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
+        from dzack_research.preamble.categories.functors.algebra_modules import (
+            _algebra_underlying_module_functor,
+        )
+
+        return _algebra_underlying_module_functor(self.base_ring(), self)
+
     class SubcategoryMethods:
+        def underlying_module(self):
+            r"""Return the forgetful functor from this refined algebra category."""
+            from dzack_research.preamble.categories.functors.algebra_modules import (
+                _algebra_underlying_module_functor,
+            )
+
+            return _algebra_underlying_module_functor(self.base_ring(), self)
+
         def Associative(self):
             r"""Return the refinement satisfying ``(xy)z=x(yz)``."""
             return self._with_axiom("Associative")
@@ -720,11 +728,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             else:
                 selected_unit = self.__dict__.get("_preamble_algebra_unit_morphism")
                 if selected_unit is not None:
-                    from dzack_research.preamble.categories.functors.algebra_modules import (
-                        algebra_underlying_module_functor,
-                    )
-
-                    scalar_module = algebra_underlying_module_functor(base)(base)
+                    scalar_module = Algebras(base).underlying_module()(base)
                     return self(selected_unit(scalar_module(scalar)))
             underlying = getattr(element, "underlying_element", None)
             if callable(underlying):
@@ -844,11 +848,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def underlying_module(self):
             r"""Return the exact carrier under ``Alg_R -> Mod_R``."""
-            from dzack_research.preamble.categories.functors.algebra_modules import (
-                algebra_underlying_module_functor,
-            )
-
-            return algebra_underlying_module_functor(self.base_ring())(self)
+            return Algebras(self.base_ring()).underlying_module()(self)
 
         @cached_method
         def multiplication_morphism(self):
@@ -1221,11 +1221,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     center = self.ring_center()
                     selected_unit = self.__dict__.get("_preamble_algebra_unit_morphism")
                     if selected_unit is not None:
-                        from dzack_research.preamble.categories.functors.algebra_modules import (
-                            algebra_underlying_module_functor,
-                        )
-
-                        scalar_module = algebra_underlying_module_functor(base)(base)
+                        scalar_module = Algebras(base).underlying_module()(base)
                         return base.Mor(center)(
                             lambda scalar: center(self(selected_unit(scalar_module(base(scalar))))),
                         )

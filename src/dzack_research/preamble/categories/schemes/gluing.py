@@ -31,9 +31,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     algebra_structure_view,
 )
-from dzack_research.preamble.categories.functors.algebra_modules import (
-    algebra_underlying_module_functor,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -3641,7 +3638,7 @@ class AlgebraGluingDatum(Parent):
         transitions = {}
         for (left_index, right_index), transition in self._transitions.items():
             ring = self.cover().overlap(left_index, right_index).coordinate_algebra()
-            forget = algebra_underlying_module_functor(ring)
+            forget = Algebras(ring).underlying_module()
             transitions[left_index, right_index] = Isomorphism(
                 forget(transition.forward()),
                 forget(transition.inverse()),
@@ -3747,9 +3744,9 @@ class AlgebraGluingMorphism(Morphism):
     def underlying_module_morphism(self):
         if self._underlying_module_morphism is None:
             module_maps = tuple(
-                algebra_underlying_module_functor(
+                Algebras(
                     self.cover().open(index).coordinate_algebra()
-                )(local_map)
+                ).underlying_module()(local_map)
                 for index, local_map in enumerate(self._local_maps)
             )
             self._underlying_module_morphism = self.domain().underlying_module_datum().Mor(

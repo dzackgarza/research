@@ -16,7 +16,6 @@ from dzack_research.preamble.all import (
     Modules,
     PolynomialRing,
     QQ,
-    algebra_underlying_module_functor,
 )
 
 
@@ -32,7 +31,7 @@ def _fat_point_projection():
 def test_the_underlying_map_sends_the_same_elements_to_the_same_images() -> None:
     fat_point, point, projection = _fat_point_projection()
     x = fat_point.algebra_generator("x")
-    forget = algebra_underlying_module_functor(QQ)
+    forget = Algebras(QQ).underlying_module()
 
     underlying = forget(projection)
 
@@ -45,7 +44,7 @@ def test_the_underlying_map_sends_the_same_elements_to_the_same_images() -> None
 
 def test_the_underlying_map_answers_the_module_level() -> None:
     fat_point, point, projection = _fat_point_projection()
-    forget = algebra_underlying_module_functor(QQ)
+    forget = Algebras(QQ).underlying_module()
 
     underlying = forget(projection)
     kernel = underlying.kernel()

@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     OwnedRings,
     QuadraticField,
     SymmetricAlgebraOn,
-    algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
@@ -66,7 +65,7 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
 
 
 def test_forgetful_functor_wraps_an_unframed_ring_with_its_scalar_base() -> None:
-    underlying = algebra_underlying_module_functor(ZZ)(ZZ)
+    underlying = Algebras(ZZ).underlying_module()(ZZ)
 
     assert underlying.base_ring() is ZZ
     assert underlying.realized_object() is ZZ
@@ -75,7 +74,7 @@ def test_forgetful_functor_wraps_an_unframed_ring_with_its_scalar_base() -> None
 
 def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
     order = _gaussian_integers()
-    underlying = algebra_underlying_module_functor(ZZ)
+    underlying = Algebras(ZZ).underlying_module()
 
     assert underlying.domain() is Algebras(ZZ)
     assert underlying.codomain() is Modules(ZZ)
@@ -92,7 +91,7 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
         assert module_identity(generator) == generator
 
     polynomials = SymmetricAlgebraOn(QQ, ["x"])
-    polynomial_underlying = algebra_underlying_module_functor(QQ)
+    polynomial_underlying = Algebras(QQ).underlying_module()
     assert polynomial_underlying(polynomials) is polynomials
     assert polynomials in Modules(QQ)
 

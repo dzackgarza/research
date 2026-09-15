@@ -73,8 +73,7 @@ class CommutatorLieAlgebraFunctor(Functor):
         The image is the map itself; \(A^-\) is \(A\), so nothing is
         transported.  Every linear-map question about it -- matrix, kernel,
         cokernel -- is the module level's, and
-        :func:`~dzack_research.preamble.categories.functors.algebra_modules.algebra_underlying_module_functor`
-        is where that map is asked for.
+        the algebra category's ``underlying_module()`` functor is where that map is asked for.
         """
         underlying = getattr(morphism, "underlying_morphism", None)
         if callable(underlying):

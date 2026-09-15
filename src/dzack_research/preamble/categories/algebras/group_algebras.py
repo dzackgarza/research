@@ -122,11 +122,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
         def augmentation(self):
             r"""The algebra morphism \(\varepsilon\colon R[G]\to R\), \(g\mapsto 1\)."""
             ring = self.base_ring()
-            from dzack_research.preamble.categories.functors.algebra_modules import (
-                algebra_underlying_module_functor,
-            )
-
-            target_module = algebra_underlying_module_functor(ring)(ring)
+            target_module = Algebras(ring).underlying_module()(ring)
             source_module = self.underlying_module()
             counit = source_module.module_category().Mor(source_module, target_module)(
                 {
@@ -295,16 +291,11 @@ class GroupAlgebraUnderlyingModuleFunctor(Functor):
     """
 
     def __init__(self, base_ring) -> None:
-        from dzack_research.preamble.categories.functors.algebra_modules import (
-            algebra_underlying_module_functor,
-        )
-
         ring = _owned_ring(base_ring)
         self._base_ring = ring
         self._group_algebra_functor = GroupAlgebraFunctor(ring)
-        self._underlying_module_functor = algebra_underlying_module_functor(
-            ring,
-            self._group_algebra_functor.codomain(),
+        self._underlying_module_functor = (
+            self._group_algebra_functor.codomain().underlying_module()
         )
         super().__init__(OwnedGroups(), self._underlying_module_functor.codomain())
 

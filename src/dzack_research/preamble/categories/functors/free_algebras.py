@@ -21,9 +21,6 @@ from dzack_research.preamble.categories.algebras.power_algebras import (
     _divided_power_algebra_of,
     power_algebra_homset,
 )
-from dzack_research.preamble.categories.functors.algebra_modules import (
-    algebra_underlying_module_functor,
-)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumModule,
@@ -164,10 +161,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
         left = self._left_functor_factory(self._base_ring)
-        right = algebra_underlying_module_functor(
-            self._base_ring,
-            left.codomain(),
-        )
+        right = left.codomain().underlying_module()
         super().__init__(left, right)
 
     def base_ring(self):

@@ -275,9 +275,6 @@ from dzack_research.preamble.categories.functors.abelianization import (
 from dzack_research.preamble.categories.functors.algebra_modules import (
     AlgebraUnderlyingModuleFunctor as AlgebraUnderlyingModuleFunctor,
 )
-from dzack_research.preamble.categories.functors.algebra_modules import (
-    algebra_underlying_module_functor as algebra_underlying_module_functor,
-)
 from dzack_research.preamble.categories.functors.algebra_scalar_change import (
     AlgebraBaseChangeAdjunction as AlgebraBaseChangeAdjunction,
 )

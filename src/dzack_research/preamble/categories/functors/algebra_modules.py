@@ -453,7 +453,7 @@ class AlgebraUnderlyingModuleFunctor(Functor):
 
 
 @cached_function
-def algebra_underlying_module_functor(
+def _algebra_underlying_module_functor(
     base_ring,
     algebra_category=None,
 ) -> AlgebraUnderlyingModuleFunctor:
@@ -463,5 +463,4 @@ def algebra_underlying_module_functor(
 __all__ = [
     "AlgebraUnderlyingModuleFunctor",
     "UnderlyingAlgebraModuleMorphism",
-    "algebra_underlying_module_functor",
 ]
