@@ -25,13 +25,9 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
     AlternatingPowerModules,
-    DividedPower,
     DividedPowerModules,
-    SymmetricPower,
     SymmetricPowerModules,
-    TensorPower,
     TensorPowerModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
@@ -236,10 +232,10 @@ def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -
         modules.biproduct((cyclic, free)),
         modules.tensor_product((cyclic, free)),
         cyclic.module_category().Mor(cyclic, cyclic),
-        TensorPower(cyclic, 2),
-        SymmetricPower(cyclic, 2),
-        AlternatingPower(cyclic, 2),
-        DividedPower(cyclic, 2),
+        cyclic.tensor_power(2),
+        cyclic.symmetric_power(2),
+        cyclic.exterior_power(2),
+        cyclic.divided_power_module(2),
     )
 
     for module in constructions:
@@ -257,10 +253,10 @@ def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -
         )
 
     powers = (
-        (TensorPower(cyclic, 2), TensorPowerModules(ZZ)),
-        (SymmetricPower(cyclic, 2), SymmetricPowerModules(ZZ)),
-        (AlternatingPower(cyclic, 2), AlternatingPowerModules(ZZ)),
-        (DividedPower(cyclic, 2), DividedPowerModules(ZZ)),
+        (cyclic.tensor_power(2), TensorPowerModules(ZZ)),
+        (cyclic.symmetric_power(2), SymmetricPowerModules(ZZ)),
+        (cyclic.exterior_power(2), AlternatingPowerModules(ZZ)),
+        (cyclic.divided_power_module(2), DividedPowerModules(ZZ)),
     )
     for power, category in powers:
         assert power in category

@@ -28,8 +28,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
-    DividedPower,
     alternating_power_morphism,
     alternating_power_product,
     divided_power_element,
@@ -70,7 +68,11 @@ class PowerAlgebra(GradedDirectSumModule):
         base = _owned_ring(module.base_ring())
         self._preamble_algebra_base_ring = base
 
-        constructor = AlternatingPower if flavor == "alternating" else DividedPower
+        match flavor:
+            case "alternating":
+                component_constructor = module.exterior_power
+            case "divided":
+                component_constructor = module.divided_power_module
         degree_index_set = None
         if flavor == "alternating":
             generator_count = module.module_generating_set().cardinality()
@@ -91,7 +93,7 @@ class PowerAlgebra(GradedDirectSumModule):
         GradedDirectSumModule.__init__(
             self,
             base,
-            lambda degree: constructor(module, int(degree)),
+            lambda degree: component_constructor(int(degree)),
             name=(f"Lambda({module})" if flavor == "alternating" else f"Gamma({module})"),
             degree_index_set=degree_index_set,
             extra_categories=tuple(categories),

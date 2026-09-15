@@ -35,7 +35,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import SymmetricPower
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
@@ -417,7 +416,10 @@ class SparseFreeAlgebra(Parent):
         if self.flavor() == "tensor":
             factors = tuple(source.module_component(source_key) for source_key in key)
         else:
-            factors = tuple(SymmetricPower(source.module_component(source_key), multiplicity) for source_key, multiplicity in self._component_items(key))
+            factors = tuple(
+                source.module_component(source_key).symmetric_power(multiplicity)
+                for source_key, multiplicity in self._component_items(key)
+            )
 
         if not factors:
             component = self.base_ring().regular_module()
@@ -452,7 +454,7 @@ class SparseFreeAlgebra(Parent):
             if multiplicity == 1:
                 factor_labels.append(next(iter(counts)))
             else:
-                factor = SymmetricPower(source_component, multiplicity)
+                factor = source_component.symmetric_power(multiplicity)
                 factor_labels.append(factor.module_generating_set().from_multiplicities(counts))
         return _nested_label(factor_labels)
 

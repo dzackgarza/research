@@ -4,12 +4,8 @@ from sage.arith.misc import factorial
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
-    AlternatingPower,
     BasedFreeModule,
-    DividedPower,
     FinitelyPresentedTorsionModules,
-    SymmetricPower,
-    TensorPower,
     divided_power_invariant_inclusion,
     divided_power_morphism,
     symmetric_power_morphism,
@@ -29,32 +25,32 @@ def _assert_maps_agree(left, right) -> None:
 
 def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_products() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
-    assert TensorPower(module, 2) is TensorPower(module, 2)
-    assert TensorPower(module, 3) is TensorPower(module, 3)
-    assert TensorPower(module, 2).module_rank() == 4
-    assert SymmetricPower(module, 2).module_rank() == 3
-    assert AlternatingPower(module, 2).module_rank() == 1
-    assert AlternatingPower(module, 3).module_rank() == 0
-    assert DividedPower(module, 3).module_rank() == 4
+    assert module.tensor_power(2) is module.tensor_power(2)
+    assert module.tensor_power(3) is module.tensor_power(3)
+    assert module.tensor_power(2).module_rank() == 4
+    assert module.symmetric_power(2).module_rank() == 3
+    assert module.exterior_power(2).module_rank() == 1
+    assert module.exterior_power(3).module_rank() == 0
+    assert module.divided_power_module(3).module_rank() == 4
 
 
 def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> None:
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
 
-    _factors = TensorPower(module, 3).invariant_factors()
+    _factors = module.tensor_power(3).invariant_factors()
     assert _factors.cardinality() == 1
     assert _factors[0] == 2
 
-    _factors = SymmetricPower(module, 3).invariant_factors()
+    _factors = module.symmetric_power(3).invariant_factors()
     assert _factors.cardinality() == 1
     assert _factors[0] == 2
-    _factors = DividedPower(module, 2).invariant_factors()
+    _factors = module.divided_power_module(2).invariant_factors()
     assert _factors.cardinality() == 1
     assert _factors[0] == 4
-    _factors = DividedPower(module, 3).invariant_factors()
+    _factors = module.divided_power_module(3).invariant_factors()
     assert _factors.cardinality() == 1
     assert _factors[0] == 2
-    _factors = DividedPower(module, 4).invariant_factors()
+    _factors = module.divided_power_module(4).invariant_factors()
     assert _factors.cardinality() == 1
     assert _factors[0] == 8
 
@@ -62,8 +58,8 @@ def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> No
 def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     for degree in (2, 3):
-        divided = DividedPower(module, degree)
-        tensor = TensorPower(module, degree)
+        divided = module.divided_power_module(degree)
+        tensor = module.tensor_power(degree)
         inclusion = divided_power_invariant_inclusion(module, degree)
         polarization = tensor_power_polarization(module, degree)
 
@@ -109,9 +105,9 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
 
 def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> None:
     module = BasedFreeModule(ZZ, NN)
-    symmetric = SymmetricPower(module, 2)
-    alternating = AlternatingPower(module, 2)
-    divided = DividedPower(module, 2)
+    symmetric = module.symmetric_power(2)
+    alternating = module.exterior_power(2)
+    divided = module.divided_power_module(2)
 
     symmetric_labels = symmetric.module_generating_set()
     alternating_labels = alternating.module_generating_set()

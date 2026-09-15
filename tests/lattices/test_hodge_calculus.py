@@ -2,7 +2,6 @@ import pytest
 
 from dzack_research.preamble.all import QQ, ZZ, Lattices
 from dzack_research.preamble.categories.modules import (
-    AlternatingPower,
     BasedFreeModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -56,8 +55,8 @@ def test_multivector_hodge_star_is_distinct_from_form_hodge_star() -> None:
     vector_star = lattice.multivector_hodge_star(volume, 1)
     form_star = lattice.hodge_star(volume, 1)
 
-    assert vector_star.domain() is AlternatingPower(lattice, 1)
-    assert vector_star.codomain() is AlternatingPower(lattice, 1)
+    assert vector_star.domain() is lattice.exterior_power(1)
+    assert vector_star.codomain() is lattice.exterior_power(1)
     assert form_star.domain() is lattice.exterior_forms(1)
     assert vector_star.domain() is not form_star.domain()
 

@@ -803,9 +803,7 @@ def kahler_classifier_isomorphism(omega, target_module):
 
 def exterior_power(module, degree):
     """Return the live exterior power ``Lambda^degree(module)``."""
-    from dzack_research.preamble.categories.modules import AlternatingPower
-
-    return AlternatingPower(module, int(degree))
+    return module.exterior_power(int(degree))
 
 
 def exterior_one(module, element):

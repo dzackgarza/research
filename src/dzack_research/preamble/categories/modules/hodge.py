@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
     alternating_power_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -54,7 +53,7 @@ def _determinant_line(module):
     r"""Return ``det(module) = Lambda^rank(module) module``."""
 
     rank = _require_finite_free(module)
-    return AlternatingPower(module, rank)
+    return module.exterior_power(rank)
 
 
 def _exterior_forms(module, degree):
@@ -64,7 +63,7 @@ def _exterior_forms(module, degree):
     degree = int(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
-    return AlternatingPower(module.dual_module(), degree)
+    return module.dual_module().exterior_power(degree)
 
 
 def _volume_trivialization(module, forward, inverse):
@@ -138,8 +137,8 @@ def _poincare_duality(module, volume, degree):
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
     volume_scalar, inverse_volume_scalar = _volume_scalars(module, volume)
     dual = module.dual_module()
-    source = AlternatingPower(module, degree)
-    target = AlternatingPower(dual, rank - degree)
+    source = module.exterior_power(degree)
+    target = dual.exterior_power(rank - degree)
     module_labels = tuple(module.module_generating_set())
     positions = {label: index for index, label in enumerate(module_labels)}
 
@@ -295,8 +294,8 @@ def _multivector_hodge_star(metric, volume, degree):
     poincare_complement = metric.poincare_duality(volume, rank - degree)
     lower_metric = alternating_power_morphism(correlation, degree)
     forward = poincare_complement.inverse() * lower_metric
-    source = AlternatingPower(metric, degree)
-    target = AlternatingPower(metric, rank - degree)
+    source = metric.exterior_power(degree)
+    target = metric.exterior_power(rank - degree)
     if forward.domain() is not source or forward.codomain() is not target:
         raise ArithmeticError("the represented multivector Hodge map has the wrong endpoints")
     return forward

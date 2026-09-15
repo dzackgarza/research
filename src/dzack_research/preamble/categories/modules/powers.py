@@ -736,7 +736,7 @@ def divided_square_morphism(morphism, source=None, target=None):
     )
 
 
-def TensorPower(module, degree):
+def _tensor_power(module, degree):
     r"""Return the selected iterated tensor power ``M^{\otimes degree}``."""
     degree = _degree(degree)
     if degree == 0:
@@ -749,7 +749,7 @@ def TensorPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _tensor_power_nontrivial(module, degree):
-    left = TensorPower(module, degree - 1)
+    left = module.tensor_power(degree - 1)
     family = _finite_factor_family((left, module), name="Tensor-power factors")
     return _module_tensor_product_with_data(
         family,
@@ -761,7 +761,7 @@ def _tensor_power_nontrivial(module, degree):
     )
 
 
-def SymmetricPower(module, degree):
+def _symmetric_power(module, degree):
     r"""Return ``Sym^degree(module)`` from the selected module presentation."""
     degree = _degree(degree)
     if degree <= 1:
@@ -783,7 +783,7 @@ def _symmetric_power_nontrivial(module, degree):
     )
 
 
-def AlternatingPower(module, degree):
+def _alternating_power(module, degree):
     r"""Return ``Lambda^degree(module)`` from the selected module presentation."""
     degree = _degree(degree)
     if degree <= 1:
@@ -805,7 +805,7 @@ def _alternating_power_nontrivial(module, degree):
     )
 
 
-def DividedPower(module, degree):
+def _divided_power(module, degree):
     r"""Return the divided power ``Gamma^degree(module)``.
 
     Degree two is the existing universal quadratic square; higher degrees use
@@ -843,7 +843,7 @@ def tensor_power_permutation(module, degree, positions):
         or any(int(position) < 0 or int(position) >= degree for position in positions)
     ):
         raise ValueError("positions must be a permutation of the tensor slots")
-    power = TensorPower(module, degree)
+    power = module.tensor_power(degree)
 
     if degree == 0:
         return power.module_category().Mor(power, power).identity()
@@ -865,9 +865,9 @@ def _power_morphism(morphism, degree: int, flavor: str):
 
     degree = _degree(degree)
     constructors = {
-        "symmetric": SymmetricPower,
-        "alternating": AlternatingPower,
-        "divided": DividedPower,
+        "symmetric": _symmetric_power,
+        "alternating": _alternating_power,
+        "divided": _divided_power,
     }
     source = constructors[flavor](morphism.domain(), degree)
     target = constructors[flavor](morphism.codomain(), degree)
@@ -1012,9 +1012,9 @@ def divided_power_product(module, left_degree, left, right_degree, right):
 
     left_degree = _degree(left_degree)
     right_degree = _degree(right_degree)
-    source_left = DividedPower(module, left_degree)
-    source_right = DividedPower(module, right_degree)
-    target = DividedPower(module, left_degree + right_degree)
+    source_left = module.divided_power_module(left_degree)
+    source_right = module.divided_power_module(right_degree)
+    target = module.divided_power_module(left_degree + right_degree)
     left_coefficients = module_coefficients(left, source_left)
     right_coefficients = module_coefficients(right, source_right)
 
@@ -1060,9 +1060,9 @@ def alternating_power_product(module, left_degree, left, right_degree, right):
 
     left_degree = _degree(left_degree)
     right_degree = _degree(right_degree)
-    source_left = AlternatingPower(module, left_degree)
-    source_right = AlternatingPower(module, right_degree)
-    target = AlternatingPower(module, left_degree + right_degree)
+    source_left = module.exterior_power(left_degree)
+    source_right = module.exterior_power(right_degree)
+    target = module.exterior_power(left_degree + right_degree)
     left_coefficients = module_coefficients(left, source_left)
     right_coefficients = module_coefficients(right, source_right)
     if left_degree == 0:
@@ -1131,14 +1131,14 @@ def divided_power_element(module, degree, element):
 
     degree = _degree(degree)
     if degree == 0:
-        target = DividedPower(module, 0)
+        target = module.divided_power_module(0)
         return target.module_generator(0)
     if degree == 1:
         return element
     if degree == 2:
-        return DividedPower(module, 2).quadratic(element)
+        return module.divided_power_module(2).quadratic(element)
 
-    target = DividedPower(module, degree)
+    target = module.divided_power_module(degree)
     coefficients = module_coefficients(element, module)
     if not coefficients:
         return target.zero()
@@ -1164,8 +1164,8 @@ def divided_power_invariant_inclusion(module, degree):
     r"""Return ``Gamma^n M -> M^{tensor n}`` as the symmetric orbit sum."""
 
     degree = _degree(degree)
-    source = DividedPower(module, degree)
-    target = TensorPower(module, degree)
+    source = module.divided_power_module(degree)
+    target = module.tensor_power(degree)
     source_labels = module.module_generating_set()
 
     def invariant(source_label):
@@ -1214,8 +1214,8 @@ def tensor_power_polarization(module, degree):
     r"""Return ``M^{tensor n} -> Gamma^n M`` by divided-power multiplication."""
 
     degree = _degree(degree)
-    source = TensorPower(module, degree)
-    target = DividedPower(module, degree)
+    source = module.tensor_power(degree)
+    target = module.divided_power_module(degree)
     if degree == 0:
         return source.module_category().Mor(source, target).identity()
     if degree == 1:
@@ -1254,13 +1254,9 @@ def tensor_square_polarization(module):
 
 
 __all__ = [
-    "AlternatingPower",
     "AlternatingPowerModules",
-    "DividedPower",
     "DividedPowerModules",
-    "SymmetricPower",
     "SymmetricPowerModules",
-    "TensorPower",
     "TensorPowerModules",
     "alternating_power_morphism",
     "alternating_power_product",

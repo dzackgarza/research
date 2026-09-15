@@ -43,12 +43,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
-    DividedPower,
-    SymmetricPower,
-    TensorPower,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -962,16 +956,16 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 # including zero; do not let this generic free-algebra method
                 # replace their degree-zero power module with the scalar ring.
                 case _ if self in AlternatingAlgebras(ring):
-                    return AlternatingPower(self.free_source_module(), degree)
+                    return self.free_source_module().exterior_power(degree)
                 case _ if self in DividedPowerAlgebras(ring):
-                    return DividedPower(self.free_source_module(), degree)
+                    return self.free_source_module().divided_power_module(degree)
                 # Every flavor uses its authoritative module-power owner in
                 # every degree.  In degree zero this is the rank-one scalar
                 # module, not the ring parent viewed through an unrelated API.
                 case _ if self in TensorAlgebras(ring):
-                    return TensorPower(self.free_source_module(), degree)
+                    return self.free_source_module().tensor_power(degree)
                 case _ if self in SymmetricAlgebras(ring):
-                    return SymmetricPower(self.free_source_module(), degree)
+                    return self.free_source_module().symmetric_power(degree)
             raise TypeError(
                 f"the graded free-algebra flavor of {self} is not represented"
             )
@@ -1286,7 +1280,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
         def graded_piece(self, degree):
 
-            return AlternatingPower(self.free_source_module(), degree)
+            return self.free_source_module().exterior_power(degree)
 
 
 def _presentation_data(algebra):
@@ -1473,7 +1467,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         def graded_piece(self, degree):
 
-            return DividedPower(self.free_source_module(), degree)
+            return self.free_source_module().divided_power_module(degree)
 
 
 def _multiply_in_target(target, factors):

@@ -863,6 +863,30 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _divided_square(self)
 
+        def tensor_power(self, degree):
+            r"""Return ``self^{tensor degree}``."""
+            from dzack_research.preamble.categories.modules.powers import _tensor_power
+
+            return _tensor_power(self, degree)
+
+        def symmetric_power(self, degree):
+            r"""Return ``Sym^degree(self)``."""
+            from dzack_research.preamble.categories.modules.powers import _symmetric_power
+
+            return _symmetric_power(self, degree)
+
+        def exterior_power(self, degree):
+            r"""Return ``Lambda^degree(self)``."""
+            from dzack_research.preamble.categories.modules.powers import _alternating_power
+
+            return _alternating_power(self, degree)
+
+        def divided_power_module(self, degree):
+            r"""Return the divided-power module ``Gamma^degree(self)``."""
+            from dzack_research.preamble.categories.modules.powers import _divided_power
+
+            return _divided_power(self, degree)
+
         def _module_homset_class(self):
             r"""Return the canonical fixed homset for maps out of this module type."""
 

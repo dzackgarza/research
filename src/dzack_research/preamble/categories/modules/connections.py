@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
     alternating_power_product,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -342,14 +341,14 @@ class Connection(Element):
     as_morphism = underlying_linear_morphism
 
     def curvature_target(self):
-        target_forms = AlternatingPower(self.one_forms(), 2)
+        target_forms = self.one_forms().exterior_power(2)
         return Modules(self.module().base_ring()).tensor_product(
             (self.module(), target_forms)
         )
 
     def _wedge_connection_value(self, value, one_form):
         omega = self.one_forms()
-        omega_two = AlternatingPower(omega, 2)
+        omega_two = omega.exterior_power(2)
         target_two = self.curvature_target()
         result = target_two.zero()
         for (module_label, form_label), coefficient in module_coefficients(
@@ -375,7 +374,7 @@ class Connection(Element):
 
     def curvature_on_generator(self, label):
         omega = self.one_forms()
-        omega_two = AlternatingPower(omega, 2)
+        omega_two = omega.exterior_power(2)
         target_two = self.curvature_target()
         universal = omega.universal_derivation()
         result = target_two.zero()
@@ -702,7 +701,7 @@ class ConnectionDeRhamModule:
                 self._dga = dga
 
                 def piece(degree):
-                    forms = AlternatingPower(omega, degree)
+                    forms = omega.exterior_power(degree)
                     return Modules(coefficient_module.base_ring()).tensor_product(
                         (coefficient_module, forms)
                     ).restrict_scalars(ring_map)
@@ -726,7 +725,7 @@ class ConnectionDeRhamModule:
                 return self._coefficient_module
 
             def from_coefficient(self, element):
-                forms_zero = AlternatingPower(self._omega, 0)
+                forms_zero = self._omega.exterior_power(0)
                 tensor_zero = Modules(self._coefficient_module.base_ring()).tensor_product(
                     (self._coefficient_module, forms_zero)
                 )
@@ -744,8 +743,8 @@ class ConnectionDeRhamModule:
                 )
 
             def _differentiate_component(self, degree, component):
-                source_forms = AlternatingPower(self._omega, degree)
-                target_forms = AlternatingPower(self._omega, degree + 1)
+                source_forms = self._omega.exterior_power(degree)
+                target_forms = self._omega.exterior_power(degree + 1)
                 modules = Modules(self._coefficient_module.base_ring())
                 source_tensor = modules.tensor_product(
                     (self._coefficient_module, source_forms)
@@ -808,7 +807,7 @@ class ConnectionDeRhamModule:
                 exterior_algebra = self._dga.extension_algebra()
                 result = self.zero()
                 for left_degree, left_component in module_element.homogeneous_components().items():
-                    left_forms = AlternatingPower(self._omega, left_degree)
+                    left_forms = self._omega.exterior_power(left_degree)
                     modules = Modules(self._coefficient_module.base_ring())
                     left_tensor = modules.tensor_product(
                         (self._coefficient_module, left_forms)
@@ -816,7 +815,7 @@ class ConnectionDeRhamModule:
                     left_underlying = self._underlying_component(left_component)
                     for right_degree, right_component in exterior_element.homogeneous_components().items():
                         target_degree = left_degree + right_degree
-                        target_forms = AlternatingPower(self._omega, target_degree)
+                        target_forms = self._omega.exterior_power(target_degree)
                         target_tensor = modules.tensor_product(
                             (self._coefficient_module, target_forms)
                         )
