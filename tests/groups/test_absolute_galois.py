@@ -4,7 +4,7 @@ from sage.misc.unknown import Unknown
 from sage.categories.homset import Homset
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
-from dzack_research.preamble.all import GF, NumberField, QQ, QuadraticField
+from dzack_research.preamble.all import GF, QQ, QuadraticField
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
@@ -43,7 +43,7 @@ def test_absolute_galois_surface_is_publicly_exported() -> None:
 def _cubic_number_field(radicand, name="a"):
     polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
-    return NumberField(x**3 - QQ(radicand), name)
+    return (x**3 - QQ(radicand)).number_field(name)
 
 
 def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps() -> (

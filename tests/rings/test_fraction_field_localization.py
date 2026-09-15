@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    NumberField,
     aleph0,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -102,7 +101,7 @@ def test_zero_divisor_ring_does_not_use_the_fraction_field_specialization() -> N
 def test_number_field_order_keeps_its_canonical_fraction_field() -> None:
     polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
-    field = NumberField(x**2 - 5, "a")
+    field = (x**2 - 5).number_field("a")
     order = field.ring_of_integers()
 
     localization = order.fraction_field_localization()

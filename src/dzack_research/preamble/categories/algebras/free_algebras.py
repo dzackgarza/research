@@ -1208,6 +1208,14 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         def homogeneous_component(self, degree):
             return self.parent().homogeneous_component(self, degree)
 
+        def number_field(self, *args, **kwargs):
+            r"""Return the number field defined by this polynomial."""
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _number_field,
+            )
+
+            return _number_field(self, *args, **kwargs)
+
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     r"""Exterior/alternating algebras."""

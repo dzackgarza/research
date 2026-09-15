@@ -22,9 +22,6 @@ from dzack_research.preamble.categories.rings.number_fields import (
     CyclotomicField as _CyclotomicField,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
-    NumberField as _NumberField,
-)
-from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
     _refine_number_field_view,
@@ -140,10 +137,6 @@ def QuadraticField(*args, **kwargs):
     return _QuadraticField(*args, **kwargs)
 
 
-def NumberField(polynomial, *args, **kwargs):
-    return _NumberField(polynomial, *args, **kwargs)
-
-
 def MatrixSpace(base_ring, nrows, ncols=None):
     r"""Return the public finite matrix Hom, with algebra structure when square."""
     return refine_matrix_algebra(_MatrixSpace(base_ring, nrows, ncols))
@@ -204,7 +197,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "ComplexField": ComplexField,
         "CyclotomicField": CyclotomicField,
         "QuadraticField": QuadraticField,
-        "NumberField": NumberField,
         "MatrixSpace": MatrixSpace,
     }
 
@@ -246,7 +238,6 @@ __all__ = [
     "MatrixSpace",
     "NoetherianRings",
     "NonNegativeReals",
-    "NumberField",
     "NumberFieldsWithChosenPrimitiveElement",
     "OrderedRings",
     "OwnedAdicallyCompleteRings",

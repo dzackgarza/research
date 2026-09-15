@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     Ideals,
     Lattices,
     ModuleSubobjects,
-    NumberField,
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
     OwnedOrders,
@@ -151,7 +150,7 @@ def test_number_field_properties_selected_primitive_element_and_order_are_distin
 def test_galois_group_does_not_mean_the_normal_closure_group() -> None:
     polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
-    field = NumberField(x**3 - 2, "a")
+    field = (x**3 - 2).number_field("a")
 
     assert not field.is_galois()
     with pytest.raises(ValueError, match="normal_closure_galois_group"):

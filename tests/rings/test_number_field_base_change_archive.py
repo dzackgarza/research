@@ -1,12 +1,12 @@
 r"""Archive reconciliation for the selected integral form of a number field."""
 
-from dzack_research.preamble.all import QQ, ZZ, NumberField
+from dzack_research.preamble.all import QQ, ZZ
 
 
 def _quadratic_field():
     polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
-    return NumberField(x**2 - 5, "a")
+    return (x**2 - 5).number_field("a")
 
 
 def test_selected_integral_form_is_the_power_order_not_the_maximal_order() -> None:

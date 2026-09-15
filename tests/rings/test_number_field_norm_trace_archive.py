@@ -1,12 +1,12 @@
 r"""Archive reconciliation for number-field norm and trace."""
 
-from dzack_research.preamble.all import QQ, NumberField
+from dzack_research.preamble.all import QQ
 
 
 def _quadratic_field():
     polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
-    return NumberField(x**2 - 2, "a")
+    return (x**2 - 2).number_field("a")
 
 
 def test_norm_and_trace_are_invariants_of_the_live_multiplication_map() -> None:

@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     QQ,
     AbsoluteGaloisGroup,
-    NumberField,
     QuadraticField,
 )
 
@@ -9,7 +8,7 @@ from dzack_research.preamble.all import (
 def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:
     x = QQ.polynomial_ring("x").algebra_generator("x")
     quadratic = QuadraticField(2, "s")
-    quartic = NumberField(x**4 - 2, "t")
+    quartic = (x**4 - 2).number_field("t")
     embeddings = quadratic.exact_embeddings(quartic)
 
     assert embeddings.cardinality() == 2

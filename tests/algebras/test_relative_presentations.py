@@ -108,14 +108,13 @@ def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() ->
 def test_relative_number_field_algebra_uses_an_absolute_primitive_presentation() -> None:
     from dzack_research.preamble.all import (
         FinitelyGeneratedFreeModules,
-        NumberField,
         QuadraticField,
     )
 
     base = QuadraticField(2, "a")
     relative_polynomials = base.polynomial_ring("u")
     u = relative_polynomials.algebra_generator("u")
-    field = NumberField(u**2 - base.primitive_element(), "b")
+    field = (u**2 - base.primitive_element()).number_field("b")
     algebra = field.as_algebra()
     primitive = algebra.algebra_generator("absolute_generator")
 

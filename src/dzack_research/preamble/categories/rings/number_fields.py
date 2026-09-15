@@ -70,10 +70,10 @@ def QuadraticField(discriminant, *args, **kwargs):
     return field
 
 
-def NumberField(polynomial, *args, **kwargs):
+def _number_field(polynomial, *args, **kwargs):
     parent = getattr(polynomial, "parent", lambda: None)()
     if parent not in OwnedRings():
-        raise TypeError("NumberField expects a polynomial in a preamble polynomial ring")
+        raise TypeError("number-field construction expects a polynomial in an owned polynomial ring")
     backend_polynomial = _engine_element(parent, polynomial)
     field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
     field._preamble_ring_display = f"Number field defined by {polynomial}"
