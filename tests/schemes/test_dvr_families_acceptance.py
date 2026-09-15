@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.schemes.families import affine_equation_family
 
 
 def _nodal_dvr_family():
@@ -12,7 +11,7 @@ def _nodal_dvr_family():
         y = relative.algebra_generator("y")
         return (x * y - relative.base_ring().localization_map()(t),)
 
-    return affine_equation_family(local, ("x", "y"), equation).as_dvr_family()
+    return local.affine_equation_family(("x", "y"), equation).as_dvr_family()
 
 
 def test_xy_equals_t_has_generic_special_and_completed_fibres_from_one_parameter_map() -> None:
@@ -60,6 +59,6 @@ def test_scalar_killed_family_detects_nonflatness_over_the_same_dvr() -> None:
     def killed_parameter(relative):
         return (relative.base_ring().localization_map()(t),)
 
-    nonflat = affine_equation_family(local, ("z",), killed_parameter).as_dvr_family()
+    nonflat = local.affine_equation_family(("z",), killed_parameter).as_dvr_family()
     assert not nonflat.family().is_flat()
     assert nonflat.special_parameter_map().domain() is local

@@ -230,19 +230,8 @@ class DVRRelativeAffineFamily(SageObject):
         )
 
 
-def affine_equation_family(parameter_algebra, relative_variables, equations):
-    r"""Construct a relative affine family from equations over the parameter algebra.
-
-    ``equations`` may be a finite ingress or a callable receiving the selected
-    relative polynomial presentation.  The callable form is useful when the
-    equations must refer to the exact owned presentation generators.
-    """
-    return RelativeAffineFamily(parameter_algebra, relative_variables, equations)
-
-
 __all__ = [
     "DVRSpecialFiberComparison",
     "DVRRelativeAffineFamily",
     "RelativeAffineFamily",
-    "affine_equation_family",
 ]

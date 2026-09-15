@@ -683,7 +683,6 @@ from dzack_research.preamble.categories.schemes import (
     ToricSchemes,
     ToricWeightCohomologyComplexes,
     Varieties,
-    affine_equation_family,
     hesse_bertini_family,
     legendre_monodromy_family,
     rational_quintic_with_nonrational_node_normalization,
