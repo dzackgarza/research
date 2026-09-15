@@ -205,19 +205,19 @@ def _gram_key(gram):
     return tuple(tuple(row) for row in gram.components())
 
 
-def register_indecomposable_gram(name, gram):
+def _register_indecomposable_gram(name, gram):
     r"""Register an exact Gram matrix under its indecomposable display name."""
     _INDECOMPOSABLE_NAMES.setdefault(_gram_key(gram), str(name))
 
 
-def register_indecomposable(name, lattice):
+def _register_indecomposable(name, lattice):
     r"""Register an indecomposable live lattice by exact Gram equality."""
     if lattice.is_decomposable():
         raise ValueError("only an indecomposable lattice can name one Gram block")
-    register_indecomposable_gram(name, lattice.gram_tensor())
+    _register_indecomposable_gram(name, lattice.gram_tensor())
 
 
-def indecomposable_name(lattice):
+def _indecomposable_name(lattice):
     r"""Return the registered exact or scalar-twist name, if one exists."""
     gram = lattice.gram_tensor().change_ring(_own_ring(SageZZ))
     exact = _INDECOMPOSABLE_NAMES.get(_gram_key(gram))
@@ -1315,7 +1315,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self._preamble_direct_sum_summands
 
         def indecomposable_name(self):
-            return indecomposable_name(self)
+            return _indecomposable_name(self)
 
         def indecomposable_summands(self):
             r"""Return the family of indecomposable summands, in order.

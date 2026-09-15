@@ -8,9 +8,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     Lattices,
+    _register_indecomposable_gram,
     nikulin_invariants,
-    register_indecomposable,
-    register_indecomposable_gram,
+    _register_indecomposable,
     signature_pair,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -176,24 +176,24 @@ for _name, _value in vars(NamedLattices).items():
 # Exact Gram-block names used by the represented direct-sum decomposition.
 # A1 and D2 are intentionally omitted: they are scalar twists of rank-one
 # blocks and should display as I_{0,1}(2), not as competing root names.
-register_indecomposable_gram("I_{1,0}", tensor(ZZ, (), (1, 1), [[1]]))
-register_indecomposable_gram("I_{0,1}", tensor(ZZ, (), (1, 1), [[-1]]))
+_register_indecomposable_gram("I_{1,0}", tensor(ZZ, (), (1, 1), [[1]]))
+_register_indecomposable_gram("I_{0,1}", tensor(ZZ, (), (1, 1), [[-1]]))
 for _rank in range(2, 22):
-    register_indecomposable_gram(
+    _register_indecomposable_gram(
         f"A_{{{_rank}}}",
         -_gram_from_engine_matrix(CartanType(["A", _rank]).cartan_matrix()),
     )
 for _rank in range(3, 23):
-    register_indecomposable_gram(
+    _register_indecomposable_gram(
         f"D_{{{_rank}}}",
         -_gram_from_engine_matrix(CartanType(["D", _rank]).cartan_matrix()),
     )
 for _rank in (6, 7, 8):
-    register_indecomposable_gram(
+    _register_indecomposable_gram(
         f"E_{{{_rank}}}",
         -_gram_from_engine_matrix(CartanType(["E", _rank]).cartan_matrix()),
     )
-register_indecomposable("U", NamedLattices.U)
+_register_indecomposable("U", NamedLattices.U)
 
 
 # Nikulin, Math. USSR-Izv. 14 (1980), DOI
