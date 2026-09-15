@@ -850,6 +850,12 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the tensor algebra ``T_R(self)``."""
             return self.module_category().tensor_algebra()(self)
 
+        def mixed_tensor_algebra(self):
+            r"""Return ``T(self) tensor T(self^*)`` with finite bidegree support."""
+            from dzack_research.preamble.tensors.tensor import MixedTensorAlgebraParent
+
+            return MixedTensorAlgebraParent(self)
+
         def symmetric_algebra(self):
             r"""Return the symmetric algebra ``Sym_R(self)``."""
             return self.module_category().symmetric_algebra()(self)

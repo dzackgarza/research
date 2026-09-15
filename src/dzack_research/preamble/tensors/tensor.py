@@ -1751,11 +1751,6 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
         return f"Mixed tensor algebra T({self.module()}) tensor T({self.module()}^*)"
 
 
-def MixedTensorAlgebra(module):
-    r"""Return ``T(M) tensor T(M^*)`` with finite support across bidegrees."""
-    return MixedTensorAlgebraParent(module)
-
-
 def _tensor_module(
     base_ring: Parent,
     upper_ranks: tuple[int, ...],
