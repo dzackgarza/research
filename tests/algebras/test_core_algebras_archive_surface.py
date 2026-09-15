@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
     OwnedAlgebras,
-    finite_algebra_generators,
 )
 
 
@@ -40,7 +39,7 @@ def test_archived_owned_algebra_retains_the_scalar_structure_map() -> None:
 
 def test_archived_framed_algebra_generators_are_the_selected_finite_family() -> None:
     polynomial = QQ.polynomial_ring(("x", "y"))
-    generators = finite_algebra_generators(polynomial)
+    generators = polynomial.finite_algebra_generators()
 
     assert polynomial in FramedAlgebras(QQ)
     assert polynomial.algebra_generating_set() == finite_ordered_set(("x", "y"))

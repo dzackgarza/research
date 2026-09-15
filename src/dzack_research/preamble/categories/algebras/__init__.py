@@ -26,11 +26,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
  'FramedAlgebras': ('dzack_research.preamble.categories.algebras.algebras', 'FramedAlgebras'),
  'MatrixAlgebras': ('dzack_research.preamble.categories.algebras.algebras', 'MatrixAlgebras'),
  'OwnedAlgebras': ('dzack_research.preamble.categories.algebras.algebras', 'OwnedAlgebras'),
- 'finite_algebra_generators': ('dzack_research.preamble.categories.algebras.algebras',
-                               'finite_algebra_generators'),
- 'refine_algebra': ('dzack_research.preamble.categories.algebras.algebras', 'refine_algebra'),
- 'refine_matrix_algebra': ('dzack_research.preamble.categories.algebras.algebras',
-                           'refine_matrix_algebra'),
  'CommutatorLieAlgebras': ('dzack_research.preamble.categories.algebras.lie_algebras',
                            'CommutatorLieAlgebras'),
  'LieAlgebraHomset': ('dzack_research.preamble.categories.algebras.lie_algebras',
@@ -180,8 +175,6 @@ __all__ = ['AugmentedAlgebras',
  'TensorAlgebras',
  'StrictlyGradedCommutativeAlgebras',
  'StrictlyCommutativeDifferentialGradedAlgebras',
- 'finite_algebra_generators',
- 'refine_algebra',
 ]
 
 def __getattr__(name):

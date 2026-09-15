@@ -44,7 +44,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
-    refine_commutative_algebra,
+    _refine_commutative_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -1616,7 +1616,7 @@ class AffineSchemes(_SchemePropertyCategory):
                 self._preamble_engine_coordinate_ring = engine
             base = self.scheme_base_ring()
             labels = tuple(getattr(engine, "variable_names", lambda: ())()) or None
-            selected = refine_commutative_algebra(_own_ring(engine), base, labels)
+            selected = _refine_commutative_algebra(_own_ring(engine), base, labels)
             self._preamble_coordinate_algebra = selected
             return selected
 
@@ -2264,7 +2264,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
             rationals = _own_ring(SageQQ)
             polynomial = rationals.polynomial_ring("T")
-            rational_functions = refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
+            rational_functions = _refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
             T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())
             d = int(self.relative_dimension())
@@ -2567,7 +2567,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             rationals = _own_ring(SageQQ)
             polynomial = rationals.polynomial_ring("T")
-            rational_functions = refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
+            rational_functions = _refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
             T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())
             d = int(self.relative_dimension())
@@ -3490,7 +3490,7 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
 
     labels = tuple(engine_coordinate_ring.variable_names())
     scheme._preamble_engine_coordinate_ring = engine_coordinate_ring
-    scheme._preamble_coordinate_algebra = refine_commutative_algebra(
+    scheme._preamble_coordinate_algebra = _refine_commutative_algebra(
         _own_ring(engine_coordinate_ring),
         base,
         labels,

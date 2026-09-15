@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     CommutativeAlgebras,
     FramedAlgebras,
-    algebra_structure_view,
+    _algebra_structure_view,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -1736,7 +1736,7 @@ class SemilinearAlgebraMorphism(SageObject):
         scalar_factor = target_scalars.induced_morphism(
             scalar_restriction * source_map
         )
-        target_view = algebra_structure_view(morphism.codomain(), scalar_factor)
+        target_view = _algebra_structure_view(morphism.codomain(), scalar_factor)
         source_labels = self.source().algebra_generating_set()
         target_labels = self.target().algebra_generating_set()
         if source_labels != target_labels:

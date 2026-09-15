@@ -3,7 +3,7 @@
 
 from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
-    refine_algebra,
+    _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
 from dzack_research.preamble.categories.algebras.free_algebras import (
@@ -73,7 +73,7 @@ def _symmetric_algebra_of(module):
     if len(labels) == 1:
         presentation_engine = base.polynomial_ring(1, names=_variable_names(labels))
 
-        presentation_ring = refine_algebra(
+        presentation_ring = _refine_algebra(
             presentation_engine,
             base,
             labels,

@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     OwnedAlgebras,
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
-    refine_algebra,
+    _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
@@ -73,9 +73,9 @@ from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 
 
-def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
+def _refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
     r"""Construct the commutative owned algebra view over ``base_ring``."""
-    return refine_algebra(algebra, base_ring, labels, *categories)
+    return _refine_algebra(algebra, base_ring, labels, *categories)
 
 
 class PrimeSpectra(OwnedCategory):
@@ -3436,7 +3436,7 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
 def _dual_numbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
-    polynomial = refine_algebra(
+    polynomial = _refine_algebra(
         _own_ring(_SagePolynomialRing(_engine_ring(base), name)),
         base,
         (name,),

@@ -1255,13 +1255,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return True
 
             def as_algebra_over(self, base_ring):
-                from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+                from dzack_research.preamble.categories.algebras.algebras import _refine_algebra
 
                 base = _own_ring(base_ring)
                 engine = _engine_ring(self)
                 if not engine.has_coerce_map_from(_engine_ring(base)):
                     raise ValueError(f"{self} has no represented canonical algebra structure over {base}")
-                return refine_algebra(self, base)
+                return _refine_algebra(self, base)
 
             def as_ZZ_algebra(self):
                 return self.as_algebra_over(_own_ring(SageZZ))
@@ -1483,13 +1483,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def matrix_space(self, nrows, ncols=None):
             r"""Return the finite matrix Hom over this ring, as an algebra when square."""
             from dzack_research.preamble.categories.algebras.algebras import (
-                refine_matrix_algebra,
+                _refine_matrix_algebra,
             )
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 _matrix_space,
             )
 
-            return refine_matrix_algebra(_matrix_space(self, nrows, ncols))
+            return _refine_matrix_algebra(_matrix_space(self, nrows, ncols))
 
         def formal_spectrum(self, ideal_of_definition):
             r"""Return ``Spf(self, ideal_of_definition)``."""

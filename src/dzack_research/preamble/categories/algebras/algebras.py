@@ -1542,6 +1542,19 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
                 raise ValueError(f"{label!r} is not an algebra-generator label")
             return self._preamble_algebra_generator_values[label]
 
+        def finite_algebra_generators(self):
+            r"""Return the selected algebra generators as a finite ordered family."""
+            labels = self.algebra_generating_set()
+            if not labels.cardinality().is_finite():
+                raise NotImplementedError(
+                    f"{self} has an infinite chosen algebra generating set"
+                )
+            return finite_ordered_image(
+                labels,
+                self.algebra_generator,
+                name=f"Selected algebra generators of {self}",
+            )
+
         @cached_method
         def algebra_generator_morphism(self):
             r"""Return the selected map from generator labels into the algebra."""
@@ -1632,7 +1645,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             return self.matrix_unit(label[0], label[1])
 
 
-def refine_matrix_algebra(homset):
+def _refine_matrix_algebra(homset):
     r"""Return a square matrix Hom after requiring constructor-time algebra placement."""
 
     ring = homset.base_ring()
@@ -2574,7 +2587,7 @@ def _owned_algebra_view(
     )
 
 
-def refine_algebra(
+def _refine_algebra(
     algebra,
     base_ring,
     labels=None,
@@ -2593,7 +2606,7 @@ def refine_algebra(
 
 
 @cached_function(key=lambda ring, structure_map: (id(ring), id(structure_map)))
-def algebra_structure_view(ring, structure_map):
+def _algebra_structure_view(ring, structure_map):
     r"""Return ``ring`` read as an algebra through the explicit map ``R -> ring``.
 
     The view is a scalar-structure object, not a second authoritative ring.
@@ -2912,20 +2925,6 @@ def _engine_morphism_from_generator_images(engine_domain, engine_codomain, image
     )
 
 
-def finite_algebra_generators(algebra):
-    r"""Return the chosen finite algebra generating family, when represented."""
-    if algebra not in FramedAlgebras(algebra.algebra_base_ring()):
-        raise NotImplementedError(f"{algebra} carries no chosen finite algebra generating set")
-    if not algebra.algebra_generating_set().cardinality().is_finite():
-        raise NotImplementedError(f"{algebra} has an infinite chosen algebra generating set")
-    labels = algebra.algebra_generating_set()
-    return finite_ordered_image(
-        labels,
-        algebra.algebra_generator,
-        name=f"Selected algebra generators of {algebra}",
-    )
-
-
 __all__ = [
     "AlgebraHomset",
     "AlgebraMorphism",
@@ -2940,9 +2939,6 @@ __all__ = [
     "FinitelyPresentedAlgebras",
     "FramedAlgebras",
     "OwnedAlgebras",
-    "algebra_structure_view",
-    "finite_algebra_generators",
-    "refine_algebra",
 ]
 
 

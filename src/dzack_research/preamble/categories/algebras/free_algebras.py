@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
     _OwnedAlgebraParent,
-    refine_algebra,
+    _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
@@ -89,7 +89,7 @@ def _polynomial_ring(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
     result = _own_ring(_SagePolynomialRing(_engine_ring(base), *args, **kwargs))
     labels = tuple(_engine_ring(result).variable_names())
-    algebra = refine_algebra(
+    algebra = _refine_algebra(
         result,
         base,
         labels,
@@ -109,7 +109,7 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
         _SageLaurentPolynomialRing(_engine_ring(base), *args, **kwargs)
     )
     labels = tuple(_engine_ring(result).variable_names())
-    algebra = refine_algebra(result, base, labels)
+    algebra = _refine_algebra(result, base, labels)
     algebra._preamble_ring_display = f"{base}[{', '.join(labels)}^±1]"
     algebra._preamble_ring_display_kind = "laurent_polynomial"
 
@@ -132,7 +132,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set):
     labels = _finite_labels(algebra_generating_set)
     algebra = base.polynomial_ring(_variable_names(labels))
 
-    return refine_algebra(
+    return _refine_algebra(
         algebra,
         base,
         labels,
@@ -158,7 +158,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set):
     labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
-    return refine_algebra(
+    return _refine_algebra(
         algebra,
         base,
         labels,
@@ -1311,7 +1311,7 @@ def _commutative_algebra_coproduct_backend(left, right):
             _extra_categories=(CommutativeAlgebraCoproducts(base),),
             _extra_construction_data=construction_data,
         )
-    return refine_algebra(
+    return _refine_algebra(
         presentation,
         base,
         combined_labels,
