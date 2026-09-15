@@ -16,9 +16,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,
 )
@@ -151,7 +148,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             """
 
             return self.dual_lattice().linear_combination(
-                module_coefficients(self(element), self)
+                self.framing_coefficients(self(element))
             )
 
 

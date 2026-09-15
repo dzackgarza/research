@@ -20,9 +20,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     FreeResolution,
@@ -438,7 +435,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             def lift_from_ambient(image, element):
                 element = element if element.parent() is self else self(element)
-                return image.linear_combination(module_coefficients(element, self))
+                return image.linear_combination(self.framing_coefficients(element))
 
             return FinitelyPresentedModule(
                 self.presentation(),
@@ -586,9 +583,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             kernel = multiplication.kernel()
             inclusion = kernel.inclusion()
             scalars = tuple(
-                module_coefficients(
-                    inclusion(kernel.module_generator(kernel_label)), line
-                ).get(coordinate("r"), ring.zero())
+                line.framing_coefficients(inclusion(kernel.module_generator(kernel_label))).get(coordinate("r"), ring.zero())
                 for kernel_label in kernel.module_generating_set()
             )
             return ring.ideal(*(scalars or (ring.zero(),)))
@@ -837,8 +832,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _framing_coordinates(self, element):
             r"""Coordinates of ``element`` as an indexed family on the chosen framing.
 
-            Protected contract: ``module_coefficients`` in ``module_morphisms``
-            reads the coordinates of an element of a presented module here.
+            Protected contract: ``framing_coefficients`` reads the coordinates
+            of an element of a presented module here.
             """
             custom = self.__dict__.get("_preamble_module_coordinate_function")
             if custom is not None:
@@ -895,7 +890,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     invariants.append(ring.zero())
                     continue
                 image = diagonal(source.module_generator(source_labels[position]))
-                coefficients = module_coefficients(image, target)
+                coefficients = target.framing_coefficients(image)
                 invariants.append(
                     _canonical_pid_associate(
                         ring,
@@ -1553,7 +1548,7 @@ class _GeneralPresentedModule:
         labels = self.module_generating_set()
 
         if self._relation_submodule is None:
-            coefficients = module_coefficients(lift, self._free_module)
+            coefficients = self._free_module.framing_coefficients(lift)
             zero = self.base_ring().zero()
             return indexed_family(
                 labels,
@@ -1672,7 +1667,7 @@ class _GeneralPresentedModule:
             ring = self.base_ring()
             if diagonal is not None and ring in PrincipalIdealDomains():
                 labels = tuple(self.module_generating_set())
-                coefficients = module_coefficients(vector, self._free_module)
+                coefficients = self._free_module.framing_coefficients(vector)
                 return all(
                     coefficients.get(label, ring.zero()) == ring.zero()
                     if scalar == ring.zero()
@@ -2003,10 +1998,7 @@ def _cap_presentation_kernel(morphism):
     target_relations = tuple(_matrix_coordinate_rows(_presentation_matrix(codomain)))
     morphism_rows = tuple(
         tuple(
-            module_coefficients(
-                morphism(domain.module_generator(source_label)),
-                codomain,
-            ).get(target_label, ring.zero())
+            codomain.framing_coefficients(morphism(domain.module_generator(source_label))).get(target_label, ring.zero())
             for target_label in target_labels
         )
         for source_label in source_labels
@@ -2049,7 +2041,7 @@ def _cap_presentation_kernel(morphism):
             element = domain(element)
         if morphism(element) != codomain.zero():
             raise ValueError("the element does not lie in the represented kernel")
-        coordinates = module_coefficients(element, domain)
+        coordinates = domain.framing_coefficients(element)
         source_row = tuple(
             coordinates.get(label, ring.zero()) for label in source_labels
         )
@@ -2104,10 +2096,7 @@ def _pid_presentation_kernel(morphism):
     lift_entries = []
     for target_label in target_labels:
         for source_label in source_labels:
-            coefficients = module_coefficients(
-                morphism(domain.module_generator(source_label)),
-                codomain,
-            )
+            coefficients = codomain.framing_coefficients(morphism(domain.module_generator(source_label)))
             lift_entries.append(
                 _engine_element(
                     ring,
@@ -2173,7 +2162,7 @@ def _pid_presentation_kernel(morphism):
     def lift_from_domain(kernel, element):
         if element.parent() is not domain:
             element = domain(element)
-        coefficients = module_coefficients(element, domain)
+        coefficients = domain.framing_coefficients(element)
         representative = free_cover(
             tuple(
                 _engine_element(
@@ -2299,7 +2288,7 @@ def _singular_presentation_kernel(morphism):
         coordinate_columns = []
         for source_label in source_labels:
             image = morphism(domain.module_generator(source_label))
-            coefficients = module_coefficients(image, codomain)
+            coefficients = codomain.framing_coefficients(image)
             coordinate_columns.append(tuple(to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in target_labels))
         f_matrix = matrix(
             singular_ring,
@@ -2364,7 +2353,7 @@ def _singular_presentation_kernel(morphism):
             if element == domain.zero():
                 return kernel.zero()
             raise ValueError("the element does not lie in the represented kernel")
-        coefficients = module_coefficients(element, domain)
+        coefficients = domain.framing_coefficients(element)
         requested = matrix(
             singular_ring,
             1,
@@ -2445,7 +2434,7 @@ def FinitelyPresentedModule(
     width = int(labels.cardinality())
     for source_label in presentation.domain().module_generating_set():
         image = presentation(presentation.domain().module_generator(source_label))
-        coefficients = module_coefficients(image, codomain)
+        coefficients = codomain.framing_coefficients(image)
         row = [base_ring.zero()] * width
         for label, coefficient in coefficients.items():
             row[int(label_ranking(label))] = coefficient

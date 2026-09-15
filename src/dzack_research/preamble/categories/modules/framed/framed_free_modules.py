@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -597,7 +596,7 @@ def _finite_support_labels(module, elements):
     support = []
     for candidate in elements:
         element = candidate if candidate.parent() is module else module(candidate)
-        for label in module_coefficients(element, module):
+        for label in module.framing_coefficients(element):
             if not any(label == known for known in support):
                 support.append(label)
     return finite_ordered_set(support)
@@ -636,7 +635,7 @@ def _span_basis_elements(module, module_generating_set):
     engine_rows = []
     for candidate in generators:
         element = candidate if candidate.parent() is module else module(candidate)
-        coefficients = module_coefficients(element, module)
+        coefficients = module.framing_coefficients(element)
         engine_rows.append(
             [
                 _engine_element(
@@ -737,7 +736,7 @@ def _module_subobject_constructor_data(module, basis):
         coordinate_matrix = ring.matrix_space(source_rank, support_rank_count).from_rows(
             tuple(
                 tuple(
-                    module_coefficients(basis[i], module).get(
+                    module.framing_coefficients(basis[i]).get(
                         support_labels[j],
                         ring.zero(),
                     )
@@ -751,7 +750,7 @@ def _module_subobject_constructor_data(module, basis):
 
     def lift_from_finite_support(source, element):
         element = element if element.parent() is module else module(element)
-        coefficients = module_coefficients(element, module)
+        coefficients = module.framing_coefficients(element)
         if any(label not in support_labels for label in coefficients):
             raise ValueError("the element has support outside this subobject")
         if source_rank == 0:

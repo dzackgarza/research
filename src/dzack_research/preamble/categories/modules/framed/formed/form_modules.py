@@ -41,7 +41,6 @@ from dzack_research.preamble.categories.modules.hodge import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -161,14 +160,12 @@ def _value_from_module_element(formed_module, element):
     extension = getattr(represented, "module_over_extension", lambda: None)()
     if extension is not None:
         restricted_element = represented(element)
-        coefficients = module_coefficients(
-            restricted_element.underlying_element(), extension
-        )
+        coefficients = extension.framing_coefficients(restricted_element.underlying_element())
         unit_label = extension.module_generating_set()[0]
         value_ring = formed_module.value_module()
         return value_ring(coefficients.get(unit_label, value_ring.zero()))
 
-    coefficients = module_coefficients(element, represented)
+    coefficients = represented.framing_coefficients(element)
     ring = formed_module.base_ring()
     labels = represented.module_generating_set()
     unit_label = labels[0]
@@ -537,7 +534,7 @@ def _base_change_element(module, changed_module, ring_map, element):
     fibers; the public scalar-extension object remains ``changed_module``.
     """
 
-    coefficients = module_coefficients(element, module)
+    coefficients = module.framing_coefficients(element)
     target_ring = changed_module.base_ring()
     return changed_module.linear_combination(
         {
@@ -1103,8 +1100,8 @@ class FormModules(OwnedCategoryOverBaseRing):
                     )
 
                 def changed_bilinear_value(left, right):
-                    left_coefficients = module_coefficients(left, changed)
-                    right_coefficients = module_coefficients(right, changed)
+                    left_coefficients = changed.framing_coefficients(left)
+                    right_coefficients = changed.framing_coefficients(right)
                     result = target_ring.zero()
                     for left_label, left_coefficient in left_coefficients.items():
                         source_left = source.module_generator(left_label)
@@ -1140,7 +1137,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 )
 
             def changed_quadratic_value(element):
-                coefficients = module_coefficients(element, changed)
+                coefficients = changed.framing_coefficients(element)
                 result = target_ring.zero()
                 for left_label, left_coefficient in coefficients.items():
                     source_left = source.module_generator(left_label)

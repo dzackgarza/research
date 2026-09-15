@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     _integral_left_solver,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
@@ -289,9 +288,7 @@ def _coordinate_rows(form, generators):
     labels = module.module_generating_set()
     def coordinate_rows():
         for generator in generators:
-            coefficients = module_coefficients(
-                _underlying_element(form, generator), module
-            )
+            coefficients = module.framing_coefficients(_underlying_element(form, generator))
             yield (
                 coefficients.get(label, ring.zero())
                 for label in labels
@@ -663,9 +660,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         ]
         solution = solve(target)
         generator_solution = system.codomain().left_projection()(solution)
-        generator_coefficients = module_coefficients(
-            generator_solution, lifts.codomain()
-        )
+        generator_coefficients = lifts.codomain().framing_coefficients(generator_solution)
         lift_labels = lifts.codomain().module_generating_set()
         forward_images[source_label] = sum(
             (
@@ -1186,7 +1181,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         for source_label in labels:
             original = inverse(normalized_form.module_generator(source_label))
             image = forward(morphism(original))
-            coefficients = module_coefficients(image, normalized_form)
+            coefficients = normalized_form.framing_coefficients(image)
             engine_rows.append(
                 [
                     _engine_element(
@@ -1262,7 +1257,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         element = self.domain()(element)
         normalized = self.normalization_isometry()(element)
         labels = tuple(self._normalized_form.module_generating_set())
-        coefficients = module_coefficients(normalized, self._normalized_form)
+        coefficients = self._normalized_form.framing_coefficients(normalized)
         cover = self._engine_module.V()
         lifted = sum(
             (
