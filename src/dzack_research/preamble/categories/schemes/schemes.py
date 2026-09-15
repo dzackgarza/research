@@ -345,11 +345,15 @@ class SchemeMorphism(Morphism):
         The square with the two projections commutes, so an automorphism of
         ``X`` over ``R`` becomes an automorphism of ``X_{R'}`` over ``R'``.
         """
+        return self.domain().scheme_category().base_change_functor(ring_map)(self)
+
+    def slice_base_change_adjunction(self):
+        r"""Return ``Sigma_self ⊣ self^*`` between the two scheme slice categories."""
         from dzack_research.preamble.categories.schemes.base_change import (
-            scheme_base_change_functor,
+            _slice_base_change_adjunction,
         )
 
-        return scheme_base_change_functor(ring_map)(self)
+        return _slice_base_change_adjunction(self)
 
     def inverse_image(self, closed_subscheme):
         r"""``f^{-1}(Z) = X x_Y Z`` as a closed subscheme of ``X``.
@@ -958,6 +962,18 @@ class Schemes(OwnedCategoryOverBaseRing):
     _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
 
     class SubcategoryMethods:
+        def base_change_functor(self, ring_map):
+            r"""Return ``- x_{Spec R} Spec R' : Sch/R -> Sch/R'`` along ``R -> R'``."""
+            from dzack_research.preamble.categories.schemes.base_change import (
+                _scheme_base_change_functor,
+            )
+
+            if _own_ring(ring_map.domain()) is not self.base_ring():
+                raise ValueError(
+                    "scheme base change is owned by the scheme category over the ring-map domain"
+                )
+            return _scheme_base_change_functor(ring_map)
+
         def product(self, factors):
             r"""Return $\prod_{i \in I} X_i$ for an indexed family of schemes.
 
@@ -1219,12 +1235,8 @@ class Schemes(OwnedCategoryOverBaseRing):
             the fibre product of ``X -> Spec R <- Spec R'``, so its two
             projections and the universal factorization are available on it.
             """
-            from dzack_research.preamble.categories.schemes.base_change import (
-                scheme_base_change_functor,
-            )
-
             assert self in Schemes(_own_ring(ring_map.domain())), "a scheme is base-changed along a morphism out of its own scalar base"
-            return scheme_base_change_functor(ring_map)(self)
+            return self.scheme_category().base_change_functor(ring_map)(self)
 
         def as_slice_object(self):
             return self.scheme_category().as_slice_object(self)

@@ -289,7 +289,7 @@ class SchemeBaseChangeFunctor(Functor):
 
 
 @cached_function
-def scheme_base_change_functor(ring_map) -> SchemeBaseChangeFunctor:
+def _scheme_base_change_functor(ring_map) -> SchemeBaseChangeFunctor:
     return SchemeBaseChangeFunctor(ring_map)
 
 
@@ -385,7 +385,7 @@ class SliceBaseChangeAdjunction(Adjunction):
 
 
 @cached_function
-def slice_base_change_adjunction(base_morphism) -> SliceBaseChangeAdjunction:
+def _slice_base_change_adjunction(base_morphism) -> SliceBaseChangeAdjunction:
     return SliceBaseChangeAdjunction(base_morphism)
 
 
@@ -394,6 +394,4 @@ __all__ = [
     "SliceBaseChangeAdjunction",
     "SliceCompositionFunctor",
     "SlicePullbackFunctor",
-    "scheme_base_change_functor",
-    "slice_base_change_adjunction",
 ]

@@ -7,9 +7,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
-from dzack_research.preamble.categories.schemes.base_change import (
-    scheme_base_change_functor,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     Spec,
@@ -178,21 +175,24 @@ class DVRRelativeAffineFamily(SageObject):
 
     @cached_method
     def generic_fiber(self):
-        return scheme_base_change_functor(self.generic_parameter_map())(
-            self.family().total_space()
-        )
+        total = self.family().total_space()
+        return total.scheme_category().base_change_functor(
+            self.generic_parameter_map()
+        )(total)
 
     @cached_method
     def special_fiber(self):
-        return scheme_base_change_functor(self.special_parameter_map())(
-            self.family().total_space()
-        )
+        total = self.family().total_space()
+        return total.scheme_category().base_change_functor(
+            self.special_parameter_map()
+        )(total)
 
     @cached_method
     def completed_total_space(self):
-        return scheme_base_change_functor(self.completion_parameter_map())(
-            self.family().total_space()
-        )
+        total = self.family().total_space()
+        return total.scheme_category().base_change_functor(
+            self.completion_parameter_map()
+        )(total)
 
     @cached_method
     def completed_family_morphism(self):
@@ -200,9 +200,10 @@ class DVRRelativeAffineFamily(SageObject):
 
     @cached_method
     def completed_special_fiber(self):
-        return scheme_base_change_functor(self.completion().residue_map())(
-            self.completed_total_space()
-        )
+        total = self.completed_total_space()
+        return total.scheme_category().base_change_functor(
+            self.completion().residue_map()
+        )(total)
 
     @cached_method
     def special_fiber_comparison(self):
@@ -211,7 +212,7 @@ class DVRRelativeAffineFamily(SageObject):
         completed_total = self.completed_total_space()
         completed_special = self.completed_special_fiber()
         completion_projection = completed_total.left_projection()
-        completed_residue_base = scheme_base_change_functor(
+        completed_residue_base = completed_total.scheme_category().base_change_functor(
             self.completion().residue_map()
         ).base_morphism()
 

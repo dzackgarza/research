@@ -21,8 +21,6 @@ from dzack_research.preamble.all import (
     SmoothSchemes,
     Spec,
     SpecFunctor,
-    scheme_base_change_functor,
-    slice_base_change_adjunction,
 )
 
 
@@ -38,7 +36,7 @@ def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> 
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     cusp = plane.closed_subscheme(y**2 - x**3)
-    change = scheme_base_change_functor(ring_map)
+    change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
     ordinary_changed_plane = AffineSpace(2, field, names=("x", "y"))
     changed_plane = change(plane)
@@ -84,7 +82,7 @@ def test_base_change_transports_automorphisms_and_satisfies_the_identity_and_com
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
-    change = scheme_base_change_functor(ring_map)
+    change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
     changed_swap = change(swap)
     changed_plane = change(plane)
@@ -95,14 +93,14 @@ def test_base_change_transports_automorphisms_and_satisfies_the_identity_and_com
 
     # Along the identity the projection is an isomorphism: a closed immersion
     # whose scheme-theoretic image is everything.
-    identity_change = scheme_base_change_functor(QQ.Mor(QQ).identity())
+    identity_change = Schemes(QQ).base_change_functor(QQ.Mor(QQ).identity())
     trivial = identity_change(plane)
     assert trivial.left_projection().is_closed_immersion()
     assert trivial.left_projection().scheme_theoretic_image().defining_ideal_owned() == algebra.ideal(algebra.zero())
 
     # Base change along K -> K after Q -> K agrees with base change along Q -> K
     # up to the canonical isomorphism, computed as the cone map into the composite.
-    twice = scheme_base_change_functor(field.Mor(field).identity())(changed_plane)
+    twice = Schemes(field).base_change_functor(field.Mor(field).identity())(changed_plane)
     comparison = changed_plane.from_pullback_cone(
         changed_plane.left_projection() * twice.left_projection(),
         twice.right_projection(),
@@ -134,7 +132,7 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
     family = spec(family_algebra)
     point = spec(residue_algebra)
     base_morphism = point.structure_morphism()
-    adjunction = slice_base_change_adjunction(base_morphism)
+    adjunction = base_morphism.slice_base_change_adjunction()
     over_line = adjunction.right_adjoint().domain()
     over_point = adjunction.left_adjoint().domain()
 
@@ -168,7 +166,7 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
 def test_projective_space_base_change_is_the_selected_nonaffine_pullback() -> None:
     field, ring_map = _extension()
     line = ProjectiveSpace(1, QQ)
-    change = scheme_base_change_functor(ring_map)
+    change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
     ordinary_target_line = ProjectiveSpace(1, field)
     changed = change(line)

@@ -830,8 +830,6 @@ from dzack_research.preamble.categories.schemes import (
     rational_quintic_with_two_nodes_normalization,
     reynolds_invariant_base_change_hypothesis,
     roots_of_unity_group_scheme,
-    scheme_base_change_functor,
-    slice_base_change_adjunction,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401
     CyclicCovers,

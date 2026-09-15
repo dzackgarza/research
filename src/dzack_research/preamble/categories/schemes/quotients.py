@@ -53,9 +53,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.schemes.base_change import (
-    scheme_base_change_functor,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     AffineSchemes,
@@ -117,7 +114,7 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
             raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
 
         group = acted_scheme.acting_group()
-        change = scheme_base_change_functor(ring_map)
+        change = acted_scheme.scheme_category().base_change_functor(ring_map)
         changed_carrier = change(acted_scheme)
         changed_actions = {
             group_element: change(acted_scheme.action_of(group_element))
