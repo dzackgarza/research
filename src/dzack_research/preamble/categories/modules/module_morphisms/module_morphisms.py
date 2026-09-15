@@ -7,7 +7,6 @@ from itertools import product
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
@@ -18,9 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedCategoryOverBaseRing,
-    OwnedOrders,
     OwnedRings,
-    _engine_element,
     _engine_ring,
     _owned_ring,
 )
@@ -150,69 +147,6 @@ def _solve_left_integrally(system, target, ring):
     original_solution = _solve_left_integrally_element(system, target, ring)
     coefficients = original_solution.parent().framing_coefficients(original_solution)
     return tuple(coefficients.get(label, ring.zero()) for label in original_solution.parent().module_generating_set())
-
-
-def module_coefficients(element, module=None) -> dict:
-    r"""Return coefficients in the selected framing of the stated module.
-
-    ``module`` is normally ``element.parent()``.  It is explicit at facade
-    boundaries such as number-field orders, whose Sage elements retain the
-    number field as their concrete parent even when regarded as elements of
-    the order.
-    """
-    if module is None:
-        module = element.parent()
-    coefficient_function = module.__dict__.get("_preamble_module_coefficient_function")
-    if coefficient_function is not None:
-        # The selected framing owns its coefficient map.  This takes
-        # precedence over any representation-specific realization such as a
-        # localization fraction model.
-        return {label: module.base_ring()(coefficient) for label, coefficient in coefficient_function(element).items() if coefficient != 0}
-
-    coordinate_function = module.__dict__.get("_preamble_module_coordinate_function")
-    if coordinate_function is not None:
-        labels = module.module_generating_set()
-        coordinates = iter(coordinate_function(element))
-        result = {}
-        for label in labels:
-            try:
-                coefficient = next(coordinates)
-            except StopIteration as error:
-                raise ValueError("the selected module-coordinate function returned too few coordinates") from error
-            coefficient = module.base_ring()(coefficient)
-            if coefficient != 0:
-                result[label] = coefficient
-        try:
-            next(coordinates)
-        except StopIteration:
-            return result
-        raise ValueError("the selected module-coordinate function returned too many coordinates")
-    selected = module._selected_module_coefficients(element)
-    if selected is not None:
-        return selected
-
-    if module in OwnedOrders():
-        labels = module.module_generating_set()
-        engine = _engine_ring(module)
-        backend_element = _engine_element(module, element)
-        coordinates = iter((SageZZ(backend_element),) if engine is SageZZ else engine.coordinates(backend_element))
-        result = {}
-        base = module.base_ring()
-        base_engine = _engine_ring(base)
-        for label in labels:
-            try:
-                coefficient = next(coordinates)
-            except StopIteration as error:
-                raise ValueError("the order coordinate backend returned too few coordinates") from error
-            if coefficient != 0:
-                result[label] = base._from_engine_element(base_engine(coefficient))
-        try:
-            next(coordinates)
-        except StopIteration:
-            return result
-        raise ValueError("the order coordinate backend returned too many coordinates")
-    # An element that stores its own finite support in the framing.
-    return dict(element.monomial_coefficients())
 
 
 def _enumerated_ring_elements(ring):

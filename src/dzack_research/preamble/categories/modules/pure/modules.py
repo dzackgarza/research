@@ -41,13 +41,13 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     SubFramingMorphism,
     TensorProductModuleHomset,
     _framing_morphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
+    OwnedOrders,
     OwnedRings,
     PrincipalIdealDomains,
     _engine_element,
@@ -1167,8 +1167,79 @@ class Modules(OwnedCategoryOverBaseRing):
             return None
 
         def framing_coefficients(self, element):
-            r"""Return the finite-support coefficients in this module's selected framing."""
-            return module_coefficients(element, self)
+            r"""Return the finite-support coefficients in this module's selected framing.
+
+            The framing is the mathematical owner of this coordinate map. In
+            particular, facade elements such as number-field order elements may
+            have a different concrete Sage parent without changing which module
+            supplies their selected coefficients.
+            """
+            coefficient_function = self.__dict__.get("_preamble_module_coefficient_function")
+            if coefficient_function is not None:
+                return {
+                    label: self.base_ring()(coefficient)
+                    for label, coefficient in coefficient_function(element).items()
+                    if coefficient != 0
+                }
+
+            coordinate_function = self.__dict__.get("_preamble_module_coordinate_function")
+            if coordinate_function is not None:
+                labels = self.module_generating_set()
+                coordinates = iter(coordinate_function(element))
+                result = {}
+                for label in labels:
+                    try:
+                        coefficient = next(coordinates)
+                    except StopIteration as error:
+                        raise ValueError(
+                            "the selected module-coordinate function returned too few coordinates"
+                        ) from error
+                    coefficient = self.base_ring()(coefficient)
+                    if coefficient != 0:
+                        result[label] = coefficient
+                try:
+                    next(coordinates)
+                except StopIteration:
+                    return result
+                raise ValueError(
+                    "the selected module-coordinate function returned too many coordinates"
+                )
+
+            selected = self._selected_module_coefficients(element)
+            if selected is not None:
+                return selected
+
+            if self in OwnedOrders():
+                from sage.rings.integer_ring import ZZ as SageZZ
+
+                labels = self.module_generating_set()
+                engine = _engine_ring(self)
+                backend_element = _engine_element(self, element)
+                coordinates = iter(
+                    (SageZZ(backend_element),)
+                    if engine is SageZZ
+                    else engine.coordinates(backend_element)
+                )
+                result = {}
+                base = self.base_ring()
+                base_engine = _engine_ring(base)
+                for label in labels:
+                    try:
+                        coefficient = next(coordinates)
+                    except StopIteration as error:
+                        raise ValueError(
+                            "the order coordinate backend returned too few coordinates"
+                        ) from error
+                    if coefficient != 0:
+                        result[label] = base._from_engine_element(base_engine(coefficient))
+                try:
+                    next(coordinates)
+                except StopIteration:
+                    return result
+                raise ValueError("the order coordinate backend returned too many coordinates")
+
+            # An element that stores its own finite support in the selected framing.
+            return dict(element.monomial_coefficients())
 
         def _represented_kernel_of_morphism(self, morphism):
             _ = morphism
