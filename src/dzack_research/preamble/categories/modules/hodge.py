@@ -50,14 +50,14 @@ def _unique_generator(module):
     return module.module_generator(labels[0])
 
 
-def DeterminantLine(module):
+def _determinant_line(module):
     r"""Return ``det(module) = Lambda^rank(module) module``."""
 
     rank = _require_finite_free(module)
     return AlternatingPower(module, rank)
 
 
-def ExteriorForms(module, degree):
+def _exterior_forms(module, degree):
     r"""Return ``Lambda^degree(module^vee)``."""
 
     rank = _require_finite_free(module)
@@ -67,14 +67,14 @@ def ExteriorForms(module, degree):
     return AlternatingPower(module.dual_module(), degree)
 
 
-def VolumeTrivialization(module, forward, inverse):
+def _volume_trivialization(module, forward, inverse):
     r"""Return the stated isomorphism ``det(module) ~= R``.
 
     No orientation or volume is inferred from a framing.  This constructor
     merely verifies two already represented mutually inverse module maps.
     """
 
-    determinant = DeterminantLine(module)
+    determinant = module.determinant_line()
     scalars = module.base_ring().regular_module()
     if forward.domain() is not determinant or forward.codomain() is not scalars:
         raise ValueError("the volume map must have type det(M) -> R")
@@ -86,14 +86,14 @@ def VolumeTrivialization(module, forward, inverse):
     return result
 
 
-def FramingVolumeTrivialization(module, unit=None):
+def _framing_volume_trivialization(module, unit=None):
     r"""Explicitly trivialize ``det(M)`` using the selected framing.
 
     This is deliberately opt-in: a chosen module framing is not silently
     treated as orientation data.  ``unit`` rescales the selected top wedge and
     must be a unit of the coefficient ring.
     """
-    determinant = DeterminantLine(module)
+    determinant = module.determinant_line()
     ring = module.base_ring()
     scalars = ring.regular_module()
     top = _unique_generator(determinant)
@@ -108,12 +108,12 @@ def FramingVolumeTrivialization(module, unit=None):
     inverse = scalars.module_category().Mor(scalars, determinant)(
         {next(iter(scalars.module_generating_set())): determinant.scalar_multiple(inverse_unit, top)}
     )
-    return VolumeTrivialization(module, forward, inverse)
+    return module.volume_trivialization(forward, inverse)
 
 
 def _volume_scalars(module, volume):
 
-    determinant = DeterminantLine(module)
+    determinant = module.determinant_line()
     scalars = module.base_ring().regular_module()
     if volume not in Modules(module.base_ring()).Iso(determinant, scalars):
         raise TypeError("the Hodge datum requires an isomorphism det(M) ~= R")
@@ -129,7 +129,7 @@ def _volume_scalars(module, volume):
     )
 
 
-def PoincareDuality(module, volume, degree):
+def _poincare_duality(module, volume, degree):
     r"""Return ``Lambda^k M ~= Lambda^(n-k) M^vee`` from ``volume``."""
 
     rank = _require_finite_free(module)
@@ -196,7 +196,7 @@ def PoincareDuality(module, volume, degree):
     return result
 
 
-def AlgebraicCorrelationMorphism(metric):
+def _algebraic_correlation_morphism(metric):
     r"""Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric."""
 
     _require_finite_free(metric)
@@ -225,14 +225,14 @@ def AlgebraicCorrelationMorphism(metric):
     return metric.module_category().Mor(metric, dual)(images)
 
 
-def CorrelationIsomorphism(metric):
+def _correlation_isomorphism(metric):
     r"""Return the perfect correlation ``M ~= M^vee`` for a unimodular form."""
 
     if not metric.is_unimodular():
         raise ValueError(
             "an integral Hodge star on covariant forms requires a perfect/unimodular metric"
         )
-    forward = AlgebraicCorrelationMorphism(metric)
+    forward = metric.algebraic_correlation_morphism()
     dual = forward.codomain()
     inverse = dual.module_category().Mor(dual, metric)(
         {
@@ -246,14 +246,14 @@ def CorrelationIsomorphism(metric):
     return result
 
 
-def HodgeDiscriminant(metric, volume):
+def _hodge_discriminant(metric, volume):
     r"""Return ``Delta_(g,eps) = det(g) / eps(e_1 wedge ... wedge e_n)^2``."""
     _require_finite_free(metric)
     _volume_scalar, inverse_volume_scalar = _volume_scalars(metric, volume)
     return metric.determinant() * inverse_volume_scalar**2
 
 
-def HodgeStar(metric, volume, degree):
+def _hodge_star(metric, volume, degree):
     r"""Return the Hodge isomorphism on covariant ``degree``-forms.
 
     For a perfect metric this is the categorical composite
@@ -265,21 +265,21 @@ def HodgeStar(metric, volume, degree):
     degree = int(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
-    correlation = CorrelationIsomorphism(metric)
-    poincare = PoincareDuality(metric, volume, degree)
+    correlation = metric.correlation_isomorphism()
+    poincare = metric.poincare_duality(volume, degree)
     raise_metric = alternating_power_morphism(correlation.inverse(), degree)
     lower_metric = alternating_power_morphism(correlation.forward(), degree)
     forward = poincare.forward() * raise_metric
     inverse = lower_metric * poincare.inverse()
     result = Isomorphism(forward, inverse)
-    source = ExteriorForms(metric, degree)
-    target = ExteriorForms(metric, rank - degree)
+    source = metric.exterior_forms(degree)
+    target = metric.exterior_forms(rank - degree)
     if result not in Modules(metric.base_ring()).Iso(source, target):
         raise ArithmeticError("the represented form Hodge maps failed to define an isomorphism")
     return result
 
 
-def MultivectorHodgeStar(metric, volume, degree):
+def _multivector_hodge_star(metric, volume, degree):
     r"""Return the integral multivector Hodge map ``Lambda^k M -> Lambda^(n-k) M``.
 
     Unlike the covariant-form Hodge star, this direction uses ``g^flat`` and
@@ -291,8 +291,8 @@ def MultivectorHodgeStar(metric, volume, degree):
     degree = int(degree)
     if degree < 0 or degree > rank:
         raise ValueError(f"an exterior degree must lie in [0,{rank}]")
-    correlation = AlgebraicCorrelationMorphism(metric)
-    poincare_complement = PoincareDuality(metric, volume, rank - degree)
+    correlation = metric.algebraic_correlation_morphism()
+    poincare_complement = metric.poincare_duality(volume, rank - degree)
     lower_metric = alternating_power_morphism(correlation, degree)
     forward = poincare_complement.inverse() * lower_metric
     source = AlternatingPower(metric, degree)
@@ -302,7 +302,7 @@ def MultivectorHodgeStar(metric, volume, degree):
     return forward
 
 
-def HodgeStarOverFractionField(metric, volume, degree):
+def _hodge_star_over_fraction_field(metric, volume, degree):
     r"""Return the covariant-form Hodge isomorphism after ``R -> Frac(R)``.
 
     This is the explicit scalar-extension path for a nondegenerate but
@@ -319,53 +319,13 @@ def HodgeStarOverFractionField(metric, volume, degree):
     except (AttributeError, NotImplementedError) as error:
         raise TypeError("the coefficient ring has no represented fraction field") from error
     if fraction_field is ring:
-        return HodgeStar(metric, volume, degree)
+        return metric.hodge_star(volume, degree)
     ring_map = _engine_ring(fraction_field).coerce_map_from(_engine_ring(ring))
     if ring_map is None:
         raise ValueError("the fraction field does not expose the canonical scalar extension")
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
-    changed_volume = FramingVolumeTrivialization(
-        changed_metric,
+    changed_volume = changed_metric.framing_volume_trivialization(
         unit=_engine_ring(fraction_field)(volume_scalar),
     )
-    return HodgeStar(changed_metric, changed_volume, degree)
-
-
-determinant_line = DeterminantLine
-exterior_forms = ExteriorForms
-volume_trivialization = VolumeTrivialization
-framing_volume_trivialization = FramingVolumeTrivialization
-poincare_duality = PoincareDuality
-algebraic_correlation_morphism = AlgebraicCorrelationMorphism
-correlation_isomorphism = CorrelationIsomorphism
-hodge_discriminant = HodgeDiscriminant
-hodge_star = HodgeStar
-hodge_star_over_fraction_field = HodgeStarOverFractionField
-multivector_hodge_star = MultivectorHodgeStar
-
-
-__all__ = [
-    "AlgebraicCorrelationMorphism",
-    "CorrelationIsomorphism",
-    "DeterminantLine",
-    "ExteriorForms",
-    "FramingVolumeTrivialization",
-    "HodgeDiscriminant",
-    "HodgeStar",
-    "HodgeStarOverFractionField",
-    "MultivectorHodgeStar",
-    "PoincareDuality",
-    "VolumeTrivialization",
-    "algebraic_correlation_morphism",
-    "correlation_isomorphism",
-    "determinant_line",
-    "exterior_forms",
-    "framing_volume_trivialization",
-    "hodge_discriminant",
-    "hodge_star",
-    "hodge_star_over_fraction_field",
-    "multivector_hodge_star",
-    "poincare_duality",
-    "volume_trivialization",
-]
+    return changed_metric.hodge_star(changed_volume, degree)

@@ -817,6 +817,46 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _connections(self)
 
+        def determinant_line(self):
+            r"""Return ``det(self) = Lambda^rank(self) self``."""
+            from dzack_research.preamble.categories.modules.hodge import (
+                _determinant_line,
+            )
+
+            return _determinant_line(self)
+
+        def exterior_forms(self, degree):
+            r"""Return ``Lambda^degree(self^vee)``."""
+            from dzack_research.preamble.categories.modules.hodge import (
+                _exterior_forms,
+            )
+
+            return _exterior_forms(self, degree)
+
+        def volume_trivialization(self, forward, inverse):
+            r"""Return the stated isomorphism ``det(self) ~= R``."""
+            from dzack_research.preamble.categories.modules.hodge import (
+                _volume_trivialization,
+            )
+
+            return _volume_trivialization(self, forward, inverse)
+
+        def framing_volume_trivialization(self, unit=None):
+            r"""Trivialize ``det(self)`` using the selected framing."""
+            from dzack_research.preamble.categories.modules.hodge import (
+                _framing_volume_trivialization,
+            )
+
+            return _framing_volume_trivialization(self, unit=unit)
+
+        def poincare_duality(self, volume, degree):
+            r"""Return Poincare duality in exterior degree ``degree``."""
+            from dzack_research.preamble.categories.modules.hodge import (
+                _poincare_duality,
+            )
+
+            return _poincare_duality(self, volume, degree)
+
         def divided_square(self):
             r"""Return ``Gamma^2_R(self)``, the universal target for quadratic maps."""
             from dzack_research.preamble.categories.modules.powers import _divided_square

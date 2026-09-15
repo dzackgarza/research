@@ -39,12 +39,12 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.hodge import (
-    AlgebraicCorrelationMorphism,
-    CorrelationIsomorphism,
-    HodgeDiscriminant,
-    HodgeStar,
-    HodgeStarOverFractionField,
-    MultivectorHodgeStar,
+    _algebraic_correlation_morphism,
+    _correlation_isomorphism,
+    _hodge_discriminant,
+    _hodge_star,
+    _hodge_star_over_fraction_field,
+    _multivector_hodge_star,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -1236,27 +1236,27 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
 
         def algebraic_correlation_morphism(self):
 
-            return AlgebraicCorrelationMorphism(self)
+            return _algebraic_correlation_morphism(self)
 
         def correlation_isomorphism(self):
 
-            return CorrelationIsomorphism(self)
+            return _correlation_isomorphism(self)
 
         def hodge_discriminant(self, volume):
 
-            return HodgeDiscriminant(self, volume)
+            return _hodge_discriminant(self, volume)
 
         def hodge_star(self, volume, degree):
 
-            return HodgeStar(self, volume, degree)
+            return _hodge_star(self, volume, degree)
 
         def hodge_star_over_fraction_field(self, volume, degree):
 
-            return HodgeStarOverFractionField(self, volume, degree)
+            return _hodge_star_over_fraction_field(self, volume, degree)
 
         def multivector_hodge_star(self, volume, degree):
 
-            return MultivectorHodgeStar(self, volume, degree)
+            return _multivector_hodge_star(self, volume, degree)
 
 
 class QuadraticFormModules(OwnedCategoryOverBaseRing):

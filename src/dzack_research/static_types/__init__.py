@@ -982,9 +982,7 @@ def lie_bracket(left, right):
 
 
 def form_hodge_star(metric, volume, degree, form):
-    from dzack_research.preamble.categories.modules import HodgeStar
-
-    return HodgeStar(metric, volume, degree)(form)
+    return metric.hodge_star(volume, degree)(form)
 
 
 def metric_tensor(metric):
@@ -994,43 +992,31 @@ def metric_tensor(metric):
 
 def correlation_morphism(metric):
     """Return the live correlation morphism ``g^flat : M -> M^vee``."""
-    from dzack_research.preamble.categories.modules import AlgebraicCorrelationMorphism
-
-    return AlgebraicCorrelationMorphism(metric)
+    return metric.algebraic_correlation_morphism()
 
 
 def correlation_isomorphism(metric):
     """Return the live perfect correlation isomorphism ``M ~= M^vee``."""
-    from dzack_research.preamble.categories.modules import CorrelationIsomorphism
-
-    return CorrelationIsomorphism(metric)
+    return metric.correlation_isomorphism()
 
 
 def poincare_duality(metric, volume, degree):
     """Return the live Poincaré-duality isomorphism in exterior degree ``degree``."""
-    from dzack_research.preamble.categories.modules import PoincareDuality
-
-    return PoincareDuality(metric, volume, int(degree))
+    return metric.poincare_duality(volume, int(degree))
 
 
 def hodge_star_isomorphism(metric, volume, degree):
     """Return the live covariant Hodge-star isomorphism on exterior forms."""
-    from dzack_research.preamble.categories.modules import HodgeStar
-
-    return HodgeStar(metric, volume, int(degree))
+    return metric.hodge_star(volume, int(degree))
 
 
 def form_hodge_star_over_fraction_field(metric, volume, degree, form):
     """Apply the live covariant Hodge star after explicit fraction-field extension."""
-    from dzack_research.preamble.categories.modules import HodgeStarOverFractionField
-
-    return HodgeStarOverFractionField(metric, volume, degree)(form)
+    return metric.hodge_star_over_fraction_field(volume, degree)(form)
 
 
 def multivector_hodge_star(metric, volume, degree, multivector):
-    from dzack_research.preamble.categories.modules import MultivectorHodgeStar
-
-    return MultivectorHodgeStar(metric, volume, degree)(multivector)
+    return metric.multivector_hodge_star(volume, degree)(multivector)
 
 
 def covariant_d(connection, coefficient_form):
