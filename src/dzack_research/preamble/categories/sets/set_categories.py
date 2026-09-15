@@ -161,6 +161,26 @@ class EnumeratedSets(OwnedCategory):
             r"""Return the point at ``position``, the ranking map run backwards."""
             return self.ranking_map().inverse()(position)
 
+        def fixed_size_selections(self, selection_size, *, repetition):
+            r"""Return the ordered selections of the stated size from this ranked set."""
+            from dzack_research.preamble.categories.sets.fixed_size_selections import (
+                _fixed_size_selections,
+            )
+
+            return _fixed_size_selections(
+                self,
+                selection_size,
+                repetition=repetition,
+            )
+
+        def ordered_subsets_of_size(self, size):
+            r"""Return increasing ``size``-element selections without repetition."""
+            return self.fixed_size_selections(size, repetition=False)
+
+        def multisets_of_size(self, size):
+            r"""Return increasing ``size``-element selections with repetition."""
+            return self.fixed_size_selections(size, repetition=True)
+
 
 class InfiniteEnumeratedSets(OwnedCategory):
     r"""Countably infinite enumerated sets."""

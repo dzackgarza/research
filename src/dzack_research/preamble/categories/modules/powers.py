@@ -59,10 +59,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.fixed_size_selections import (
-    multisets_of_size,
-    ordered_subsets_of_size,
-)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -480,9 +476,9 @@ def _degree(degree) -> int:
 def _free_degree_labels(source_labels, degree: int, flavor: str):
 
     if flavor in {"symmetric", "divided"}:
-        return multisets_of_size(source_labels, degree)
+        return source_labels.multisets_of_size(degree)
     if flavor == "alternating":
-        return ordered_subsets_of_size(source_labels, degree)
+        return source_labels.ordered_subsets_of_size(degree)
     raise ValueError(f"unknown power flavor {flavor!r}")
 
 
@@ -866,7 +862,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
     def image_of_source_label(source_label):
         if flavor == "alternating":
             polynomial = {
-                ordered_subsets_of_size(codomain_labels, 0)[0]:
+                codomain_labels.ordered_subsets_of_size(0)[0]:
                 morphism.codomain().base_ring().one()
             }
             for source_generator_label in source_label:
@@ -877,7 +873,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
                     morphism.codomain(),
                 )
                 next_polynomial = {}
-                singleton_indices = ordered_subsets_of_size(codomain_labels, 1)
+                singleton_indices = codomain_labels.ordered_subsets_of_size(1)
                 for wedge, coefficient in polynomial.items():
                     for target_label, scalar in image.items():
                         singleton = singleton_indices.from_multiplicities(
@@ -898,7 +894,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
             return target.linear_combination(polynomial)
 
         polynomial = {
-            multisets_of_size(codomain_labels, 0)[0]:
+            codomain_labels.multisets_of_size(0)[0]:
             morphism.codomain().base_ring().one()
         }
         accumulated_degree = 0
@@ -915,8 +911,8 @@ def _power_morphism(morphism, degree: int, flavor: str):
                 if not image:
                     return target.zero()
                 support = _ordered_coefficient_support(morphism.codomain(), image)
-                local_indices = multisets_of_size(support, power)
-                codomain_degree_indices = multisets_of_size(codomain_labels, power)
+                local_indices = support.multisets_of_size(power)
+                codomain_degree_indices = codomain_labels.multisets_of_size(power)
                 factor_polynomial = {}
                 for local_selection in local_indices:
                     coefficient = morphism.codomain().base_ring().one()
@@ -1014,7 +1010,7 @@ def _divided_power_product(module, left_degree, left, right_degree, right):
 
     def selection_of(label, degree):
         if degree == 1:
-            return multisets_of_size(source_labels, 1).from_multiplicities(
+            return source_labels.multisets_of_size(1).from_multiplicities(
                 {label: 1}
             )
         return label
@@ -1061,7 +1057,7 @@ def _alternating_power_product(module, left_degree, left, right_degree, right):
 
     def selection_of(label, degree):
         if degree == 1:
-            return ordered_subsets_of_size(source_labels, 1).from_multiplicities(
+            return source_labels.ordered_subsets_of_size(1).from_multiplicities(
                 {label: 1}
             )
         return label
@@ -1128,7 +1124,7 @@ def _divided_power_element(module, degree, element):
     if not coefficients:
         return target.zero()
     support = _ordered_coefficient_support(module, coefficients)
-    local_labels = multisets_of_size(support, degree)
+    local_labels = support.multisets_of_size(degree)
     target_labels = target.module_generating_set()
     source_labels = module.module_generating_set()
     result = {}
@@ -1159,7 +1155,7 @@ def _divided_power_invariant_inclusion(module, degree):
         if degree == 1:
             return target.module_generator(source_label)
         selection = (
-            multisets_of_size(source_labels, 1).from_multiplicities(
+            source_labels.multisets_of_size(1).from_multiplicities(
                 {source_label: 1}
             )
             if degree == 1

@@ -45,9 +45,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.fixed_size_selections import (
-    multisets_of_size,
-)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -313,7 +310,7 @@ class SparseFreeAlgebra(Parent):
             indices = OwnedSets.Δ[degree - 1]
             basis = OwnedSets().product(indexed_family(indices, lambda _position: self.algebra_generating_set()))
         else:
-            basis = multisets_of_size(self.algebra_generating_set(), degree)
+            basis = self.algebra_generating_set().multisets_of_size(degree)
         self._degree_basis_cache[degree] = basis
         return basis
 

@@ -260,8 +260,7 @@ class FixedSizeSelections(Parent):
         return self._repetition
 
     def with_size(self, selection_size: int) -> FixedSizeSelections:
-        return fixed_size_selections(
-            self.source(),
+        return self.source().fixed_size_selections(
             selection_size,
             repetition=self.allows_repetition(),
         )
@@ -427,7 +426,7 @@ class FixedSizeSelections(Parent):
 
 
 @cached_function(key=lambda source, selection_size, repetition: (id(source), int(selection_size), bool(repetition)))
-def fixed_size_selections(
+def _fixed_size_selections(
     source: Parent,
     selection_size: int,
     *,
@@ -441,18 +440,7 @@ def fixed_size_selections(
     return result
 
 
-def ordered_subsets_of_size(source: Parent, size: int) -> FixedSizeSelections:
-    return fixed_size_selections(source, size, repetition=False)
-
-
-def multisets_of_size(source: Parent, size: int) -> FixedSizeSelections:
-    return fixed_size_selections(source, size, repetition=True)
-
-
 __all__ = [
     "FixedSizeSelectionElement",
     "FixedSizeSelections",
-    "fixed_size_selections",
-    "multisets_of_size",
-    "ordered_subsets_of_size",
 ]
