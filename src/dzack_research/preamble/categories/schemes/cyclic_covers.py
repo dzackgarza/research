@@ -83,7 +83,7 @@ from dzack_research.preamble.refine import refine
 _ROOT_OF_UNITY_VARIABLE = "t"
 
 
-def relative_cyclic_cover(cyclic_algebra):
+def _relative_cyclic_cover(cyclic_algebra):
     r"""Return the cyclic cover through the general relative-Spec owner."""
     if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
         raise TypeError("relative cyclic cover requires cyclic-cover algebra descent data")
@@ -118,7 +118,7 @@ def _relative_cover_chart_indices(cyclic_algebra):
     return cover.atlas()
 
 
-def local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
+def _local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
     r"""Return the canonical ``mu_n`` action on one affine chart of a relative cyclic cover."""
     if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
         raise TypeError("a local cyclic deck action requires cyclic-cover algebra data")
@@ -152,7 +152,7 @@ def local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
     return AffineGroupSchemeActions(group_scheme)(local_scheme, action_morphism)
 
 
-def relative_cyclic_local_deck_transformation(
+def _relative_cyclic_local_deck_transformation(
     cyclic_algebra, chart_index, root_of_unity
 ):
     r"""Return ``z_i |-> root*z_i`` on one affine chart of a relative cover."""
@@ -171,7 +171,7 @@ def relative_cyclic_local_deck_transformation(
     return _affine_morphism_from_pullback(local_scheme, local_scheme, pullback)
 
 
-def relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
+def _relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     r"""Glue the chart automorphisms ``z_i -> zeta z_i`` on the relative cover."""
     if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
         raise TypeError("a relative deck transformation requires cyclic-cover algebra data")
@@ -184,15 +184,12 @@ def relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     glued = relative.arrow().domain()
     local_maps = {}
     for index in _relative_cover_chart_indices(cyclic_algebra):
-        local_automorphism = relative_cyclic_local_deck_transformation(
-            cyclic_algebra, index, root
-        )
+        local_automorphism = cyclic_algebra.local_deck_transformation(index, root)
         local_maps[index] = glued.chart_embedding(index) * local_automorphism
     automorphism = glued.Mor(glued)(local_maps)
     if any(
-        relative.arrow().local_map(index) * relative_cyclic_local_deck_transformation(
-            cyclic_algebra, index, root
-        )
+        relative.arrow().local_map(index)
+        * cyclic_algebra.local_deck_transformation(index, root)
         != relative.arrow().local_map(index)
         for index in _relative_cover_chart_indices(cyclic_algebra)
     ):
@@ -854,5 +851,4 @@ __all__ = [
     "CyclicCoverBaseChangeComparison",
     "CyclicCovers",
     "RelativeCyclicCoverLift",
-    "relative_cyclic_local_deck_transformation",
 ]

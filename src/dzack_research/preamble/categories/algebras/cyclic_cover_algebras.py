@@ -335,35 +335,35 @@ class CyclicCoverAlgebra(SageObject):
     def relative_spectrum(self):
         r"""Return the finite cover as the relative spectrum of this descended algebra."""
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
-            relative_cyclic_cover,
+            _relative_cyclic_cover,
         )
 
-        return relative_cyclic_cover(self)
+        return _relative_cyclic_cover(self)
 
     def local_deck_group_scheme_action(self, chart_index):
         r"""Return the canonical ``mu_n`` action on one affine cover chart."""
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
-            local_relative_cyclic_deck_action,
+            _local_relative_cyclic_deck_action,
         )
 
-        return local_relative_cyclic_deck_action(self, chart_index)
+        return _local_relative_cyclic_deck_action(self, chart_index)
 
     def local_deck_transformation(self, chart_index, root_of_unity):
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
-            relative_cyclic_local_deck_transformation,
+            _relative_cyclic_local_deck_transformation,
         )
 
-        return relative_cyclic_local_deck_transformation(
+        return _relative_cyclic_local_deck_transformation(
             self, chart_index, root_of_unity
         )
 
     def deck_transformation(self, root_of_unity):
         r"""Return the global deck automorphism ``z_i -> root*z_i`` when ``root^n=1``."""
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
-            relative_cyclic_deck_transformation,
+            _relative_cyclic_deck_transformation,
         )
 
-        return relative_cyclic_deck_transformation(self, root_of_unity)
+        return _relative_cyclic_deck_transformation(self, root_of_unity)
 
     def base_change(self, ring_map):
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
