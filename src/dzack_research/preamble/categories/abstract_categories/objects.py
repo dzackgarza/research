@@ -16,7 +16,7 @@ from dzack_research.preamble.owned_category import (  # noqa: F401
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
-def membership_by_definition(category: Category, candidate: Parent) -> bool:
+def _membership_by_definition(category: Category, candidate: Parent) -> bool:
     r"""Whether ``category``'s own definition puts ``candidate`` in it.
 
     ``False`` unless the category states, through ``additional_condition``,
@@ -111,7 +111,7 @@ class OwnedCategory(OwnedCategoryBase):
         ``FramedFreeModules(R)``, and left a free module over a field outside
         ``VectorSpaces(K)``.  Such a category answers by its definition.
         """
-        return super().__contains__(candidate) or membership_by_definition(self, candidate)
+        return super().__contains__(candidate) or _membership_by_definition(self, candidate)
 
 
 class OwnedParameterizedCategory(OwnedCategory):

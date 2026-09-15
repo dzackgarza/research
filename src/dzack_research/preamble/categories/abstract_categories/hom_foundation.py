@@ -25,7 +25,7 @@ class OwnedHomset(Homset):
         return self.identity()
 
 
-__all__ = ["CategoryPacketMethods", "OwnedHomset", "UnderlyingSetHomset", "has_category_packet_surface", "underlying_set_homset"]
+__all__ = ["CategoryPacketMethods", "OwnedHomset", "UnderlyingSetHomset"]
 
 class UnderlyingSetHomset(OwnedHomset):
     r"""Plain-function Homset used only when an owned category declares no stronger arrows."""
@@ -54,7 +54,7 @@ class UnderlyingSetHomset(OwnedHomset):
 
 _underlying_set_homsets = {}
 
-def underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHomset:
+def _underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHomset:
     r"""Return the identity-cached plain-function Homset on these endpoints."""
     key = (id(domain), id(codomain))
     cached = _underlying_set_homsets.get(key)
@@ -65,7 +65,7 @@ def underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHoms
     return result
 
 
-def has_category_packet_surface(category) -> bool:
+def _has_category_packet_surface(category) -> bool:
     r"""Return whether ``category`` carries the coordinated Hom packet surface.
 
     Owned category objects receive these operations through ``Cat.ParentMethods``

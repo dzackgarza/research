@@ -57,7 +57,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
-    membership_by_definition,
+    _membership_by_definition,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import (
@@ -2198,7 +2198,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         # question.  Every owned category over a ring reaches membership
         # through this method, so the statement is read here as well as in
         # ``OwnedCategory.__contains__``.
-        return membership_by_definition(self, candidate)
+        return _membership_by_definition(self, candidate)
 
 
 def _cross_engine_ring_value(value):
