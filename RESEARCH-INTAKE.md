@@ -204,3 +204,42 @@ transforms coded in `misc/apery.m`. One computation replaces 6 examples.
 * No cycle choice — `L` annihilates *all* horizontal `γ`; to get *specific* `p_γ` need initial conditions `InitialConditionsOfCoordinate(gm,i,order)` which is only evaluation of `M` at `t=0` via `HomReduce`
 
 In preamble terms: `f: U → S` as family (`f.as_family`), `H = R^n f_* Ω^•_{U/S}` object of `QCoh(S)`, `∇_{GM}: H → H ⊗ Ω^1_S` flat connection, `L = Ann(w)` in `D_S-Mod` where `w = ∫_γ Ω` section of `H`. `periods` package is private adapter computing `∇_{GM}` via `Dwork` reduction + `Storjohann` + `RatInterp`, and `L` via cyclic vector.
+
+## Fundamental semantic language for periods generalization — verbatim — 2026-09-15
+
+For `Periods: Rat(S×A^n) → D_S-Mod` to be statable, these must exist as categories/functors — not data:
+
+**Base**
+* `Sets`, `NN` — `n, r, deg` are ` : NN`
+* `CommRings`, `CommAlgebras(C)`, `Fields` — `C`, `Q(t)`, `C(t,x) = Frac C[t,x]`
+* `FctField(C)` — rational function `f = p/q : S×A^n ⇢ A^1` is morphism in `Rat(S×A^n)` (object of function field), `q` defines divisor
+
+**Geometry / families**
+* `Sch/C`, `Smooth(C)`, `Aff_n = A^n_C : Sch/C`
+* `Div(X)` — hypersurface `V(q_t) ⊂ A^n` is `div(q) : Div`
+* Open immersion `j: U = (S×A^n) \ V(q) ↪ S×A^n`, complement of divisor — object of `Open(S×A^n)`
+* Morphism `f: U → S` via projection `Hom(Sch/C)`; family structure `f.as_family` requires flatness object in `Fam(S)` where `Fam(S) ⊂ Hom(Sch/C)_{/S}` defined by `flat + (proper/smooth where needed)`
+
+**Sheaf / de Rham**
+* `QCoh(X)`, `Sh(X_{Zar})`, `Ω^1_{X/S} : QCoh` — Kähler differentials
+* De Rham complex `Ω^•_{U/S} : Ch(QCoh(U))` and its cohomology sheaf `H^n_{dR}(U/S) = R^n f_* Ω^•_{U/S} : QCoh(S)` — object carrying periods
+* Rham-Koszul/Jacobian presentation: `Jac(f) = (∂_{x_i} f) : QCoh`, syzygy module `Syz(Jac)` — subobjects used to present `H^n_{dR}`; `W_r, U_r` filtration by pole order is filtration of this `QCoh(S)`-module
+* `Ω^•(log S)` — not new; `H` with its Hodge filtration is object of `Filt(QCoh)`
+
+**Connection / D-module**
+* `Conn(S) = (E,∇)`, `E:H`, `∇: H → H ⊗ Ω^1_S` — Gauss-Manin connection `∇_{GM}` is object of `Conn(S)`
+* `FlatConn(S) ⊂ Conn(S)` by `∇^2=0`
+* `D_S-Mod` — `D_S = DiffOps(O_S)` sheaf of rings; flat connection ↔ left `D_S`-module via `∇ ↔ D_S`-action
+* Cyclic presentation: for `w ∈ H`, `Ann_{D_S}(w) = {P : P·w=0} ⊂ D_S` — left ideal; Picard-Fuchs operator `L = generator of Ann(w)` is element `L : D_S`, `D_S/(L)` is quotient object. `CyclicEquation` is functor `FlatConn → D_S-Mod` via cyclic vector.
+
+**Betti / pairing (to define `w`)**
+* Analytification `(-)^{an}: Sch/C → An` and `H_n(U_t, C) = H_n^{sing}(U_t^{an}, C)` — fiber of local system `R^n f^{an}_* C : LocSys(S^{an})`
+* Pairing `∫: H_n ⊗ H^n_{dR} → O^{an}_S` — morphism `w = ∫_{γ} Ω : S^{an} → C` section of `H^∨`; `γ` section of `R_n f_* C` is horizontal (local system section)
+
+**Functor being generalised**
+* `Periods: Rat(S×A^n) → FlatConn(S) → D_S-Mod`, `f ↦ (H,∇_{GM}) ↦ L`
+* Source varies only as element `f : Rat`; target category `D_S-Mod` is fixed. `S=A^1` hard-coded → general `S=A^k` gives `∇_{GM} ∈ Mat_m(Ω^1_S)` Pfaffian system, not one `mat/den`. Reduction data `EchelonForm`, `Storjohann(A,b)` are linear-algebra adapters for `Modules(Q(t))`, not new categories.
+
+**Not fundamental**
+* `f1..f6`, `t= A.1`, `n=3`, `r=2`, `ipoint=100`, `p` prime, `den`, `mat` coefficients — elements/morphisms in above
+* `Diagonal, LaurentSequence` — composites `Rat → Rat` via `F ↦ 1/(1-t xyz)F` then `Periods`; no new functor
