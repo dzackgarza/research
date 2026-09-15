@@ -11,7 +11,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
-    row_normal_form,
+    _row_normal_form,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
@@ -209,7 +209,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             for row, order in enumerate(orders)
         )
         relations = engine_matrix(SageZZ, relation_rows)
-        reduced = row_normal_form(relations, include_zero_rows=True)
+        reduced = _row_normal_form(relations, include_zero_rows=True)
         full_rank_rows = reduced.matrix_from_rows(tuple(range(len(generators))))
         return _torsion_module_presented_by_matrix(
             full_rank_rows,

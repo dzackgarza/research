@@ -11,14 +11,14 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
-    matrix_group,
-    row_normal_form,
+    _matrix_group,
+    _row_normal_form,
 )
 
 
 def test_row_normal_form_over_a_field_preserves_the_row_space_and_drops_zero_rows() -> None:
     entries = matrix(QQ, [[1, 2, 3], [2, 4, 6], [0, 1, 1]])
-    reduced = row_normal_form(entries)
+    reduced = _row_normal_form(entries)
 
     assert reduced.nrows() == 2
     assert reduced.row_space() == entries.row_space()
@@ -28,8 +28,8 @@ def test_row_normal_form_over_a_field_preserves_the_row_space_and_drops_zero_row
 def test_row_normal_form_over_the_integers_is_the_exact_row_lattice_hermite_form() -> None:
     entries = matrix(ZZ, [[2, 4], [4, 10], [0, 0]])
 
-    assert row_normal_form(entries) == entries.hermite_form(include_zero_rows=False)
-    assert row_normal_form(entries, include_zero_rows=True) == entries.hermite_form(
+    assert _row_normal_form(entries) == entries.hermite_form(include_zero_rows=False)
+    assert _row_normal_form(entries, include_zero_rows=True) == entries.hermite_form(
         include_zero_rows=True
     )
 
@@ -37,7 +37,7 @@ def test_row_normal_form_over_the_integers_is_the_exact_row_lattice_hermite_form
 def test_generated_matrix_group_retains_the_selected_matrix_action() -> None:
     rotation = matrix(ZZ, [[0, -1], [1, 0]])
     negation = -identity_matrix(ZZ, 2)
-    group = matrix_group((rotation, negation))
+    group = _matrix_group((rotation, negation))
 
     assert rotation in group
     assert negation in group
