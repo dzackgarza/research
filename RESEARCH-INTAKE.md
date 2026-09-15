@@ -562,3 +562,63 @@ For `EffHom / loop / Postnikov` to be statable, these must exist as categories/f
 * `Moore(Z/2,4)`, `S^3∪_2 D^3`, `P∞R/P2R`, `rank EC5=23`, `shift`, `n=4`, `2 minutes/20 hours`, matrices in `C_*(X)` — elements/morphisms in above
 * `φ_α: S^{n-1}→K^{n-1}` CW attaching (already intaken) is special case of `sSet` cell attachment `Δ^n/∂Δ^n→X`; effective homology reduces to that when `C_*(X)` already effective
 
+## Fundamental semantic language for stable/characteristic/chromatic machinery — verbatim — 2026-09-15
+
+For Kenzo's `π_*, Adams, BP` to be statable without coding by fiat, these must exist as categories/functors — not numbers `ΣS^n=S^{n+1}` or a bare `steenrod_square(n)` function:
+
+**Homology theories**
+* `HomologyTheory: HoTop_* → GrAb` as functor satisfying Eilenberg-Steenrod axioms (homotopy, excision, exactness, dimension) for singular/simplicial models `H^{sing}_*(X;R)=H_*(C^{sing}_*(X)⊗R)` via `C^{sing}_*: sSet→Ch(R)` normalized / Moore complex, vs. extraordinary theories `E_*: HoTop_*→GrAb` (stable, wedge, suspension isomorphism `E_n(X)≅E_{n+1}(ΣX)` without dimension axiom); cohomology `E^*: HoTop_*^{op}→GrAb`. Reduced vs. unreduced as `Ẽ_*(X)=ker(E_*(X)→E_*(pt))`. Object `E_*` is the theory, not its value on a space.
+
+**Moore, Eilenberg-MacLane, classifying**
+* `Moore(G,n): Ab→HoTop_*`, `H̃_i(Moore(G,n))=G` if `i=n` else `0` (via `M(G,n)= cone` on Moore presentation `F1→F0→G`); `K(π,n): Groups/Ab→HoTop_*` with `π_n=K(π,n)=π` else `0` and `EC(K(π,n))` effective as already intaken via `B^n K(π,0)` bar iteration; `BG = B G = W̄(N G)` classifying space `G : Groups→HoTop` with universal bundle `EG→BG` `EG` contractible and `Ω BG ≃ G` as `H-group`, functor `B: sGrp→sSet_*` already in Kenzo layer, now as `B: Grp(Top)→HoTop`. Distinguish `K(π,n)=B^n π`.
+
+**Model categories**
+* `ModelCat : Cat` with classes `W` (weak equivalences, 2-of-3), `Cof`, `Fib` satisfying lifting `Cof ⋔ Fib∩W`, `Cof∩W ⋔ Fib` and factorization `f = p∘i` with `i∈Cof∩W, p∈Fib` etc. Examples: `sSet` (Kan-Quillen: `W`=weak homotopy equivalences on realization, `Cof`=monomorphisms, `Fib`=Kan fibrations), `Top` (Serre/Quillen), `Ch(R)` (projective: `W`=quasi-isomorphisms `qis`, `Cof`=degreewise split monos with projective cokernel, `Fib`=degreewise epis). Homotopy category `Ho(M)=M[W^{-1}]` localization as `∞-categorical` localization; derived category `D(R)=Ho(Ch(R))`. Quillen adjunction `F: M⇄N:U` with `F(Cof)⊂Cof, U(Fib)⊂Fib` and derived adjunction `LF ⊣ RU` on `Ho`.
+
+**Derived / homotopy categories already intaken but made explicit**
+* `D(R-Mod)=Ch(R-Mod)[qis^{-1}]` and `D(R)=Ho(Ch(R))` triangulated (`shift [1]`, cones, distinguished triangles `X→Y→Cone→X[1]`); `HoTop_* = Top_*[WHE^{-1}]`, `Ho(sSet)=sSet[W^{-1}]` via `|-| ⊣ Sing`. Interface `L f^*, R f_*, ⊗^L, RHom` already intaken in derived `Ext/Tor` lead — now as left/right derived of Quillen functors on model categories, not ad-hoc free resolutions.
+
+**Loop / suspension / smash (pointed)**
+* `Σ: HoTop_*→HoTop_*` via `ΣX = S^1∧X = (I∧X)/(0∧X ∪1∧X)` as homotopy pushout `*←X→CX` (cone), `Ω: HoTop_*→HoTop_*` via `ΩX = Map_*(S^1,X)` as homotopy pullback `*→X←X^I` (path space). Adjunction `Σ ⊣ Ω` as homotopy adjunction `[ΣX,Y]≅[X,ΩY]` graded. Smash `∧: HoTop_*×HoTop_*→HoTop_*` monoidal with unit `S^0`, associator, braiding; internal hom `Map_*`. Computable is not fiat `ΣS^n = S^{n+1}` — must exhibit `sSet` model `ΣΔ^n/∂Δ^n ≅ S^{n+1}` via simplicial suspension `ΣX = (X×Δ^1)/(X×∂Δ^1 ∪ *×Δ^1)` with `EC(ΣX)` via `EC(X)` shift `C_*(ΣX)≅C_*(X)[1]` effective, not a table entry.
+* `sSet_*` models: `Σ = S^1∧-`, `Ω = G ⊣ W̄` Kan loop group equivalence already in Kenzo section, now as pointed simplicial `Σ ⊣ Ω` Quillen.
+
+**Bar / cobar**
+* `Bar B: dgAlg→dgCoalg` `B A = T^c(s\bar A)` with coproduct deconcatenation and differential `d_B = d_A + product`, `Cobar Ω: dgCoalg→dgAlg` `Ω C = T(s^{-1}\bar C)` with differential `d_Ω = d_C + coproduct`; adjunction `Ω ⊣ B` and `C_*(G X) ≃ Ω C_*(X)` (Adams) and `C_*(B G) ≃ B C_*(G)`, both as `EffHom` reductions perturbed via BPL — loop effective homology 4 already, now as `Ho(dgAlg)≃Ho(dgCoalg)` equivalence behind spectra.
+
+**Towers**
+* `PostnikovTower(X) = (X^{(n)}, p_n: X^{(n)}→X^{(n-1)})` inverse tower with `X^{(n)}` n-truncated (`π_{>n}=0`, `π_{≤n}=π_{≤n}(X)`), fiber `K(π_{n+1}, n+1)` classified by k-invariant `κ_n∈H^{n+2}(X^{(n)};π_{n+1})`; `X ≃ holim X^{(n)}`. Dually `WhiteheadTower(X)` `⋯→X⟨n+1⟩→X⟨n⟩→⋯→X` with `X⟨n⟩` (n-1)-connected cover, `π_{≥n}=π_{≥n}(X)`, `π_{<n}=0`. More generally infinite fibration tower `⋯→E_{n+1}→E_n→⋯` and cofibration tower `X_0→X_1→⋯` as objects `Tower(Fib)=Fun(N^{op}, M)` / `Tower(Cof)=Fun(N,M)` with `holim/hocolim`. Killing homotopy `X→X'` with `π_{>n}(X')=π_{>n}(X)`, `π_{≤n}=0` via cell attachment `X' = X ∪_{representative of π_n} D^{n+1}` iteratively.
+
+**Homotopy fibers/cofibers, skeleta, maps**
+* `Skeleta` `sk_n X`, `cosk_n X` in `sSet/CW` as `n`-truncation via `Δ_{≤n}` left Kan extension; `CW_n ⊂ CW_{n+1}` via pushout `∐_α S^{n-1}→K^{n-1}` already intaken, now with `CWMaps: CW→CW` whose cellular approximation is functor. `SimplicialMaps` similarly. Homotopy fiber `hofib(f)= X×^h_Y * = X×_Y Y^I` and cofiber `hocofib(f)= Y ∪^h_X * = Y ∪_X X∧I`; fiber sequence `F→E→B` vs cofiber `X→Y→C_f` as distinguished triangles in `Ho(M)`.
+
+**Graded structures**
+* `GrAb_{ZZ^n}, GrRings, GrMod, GrAlg` with bigraded `E^{p,q}_r`, `π_{p+q}(X)` bigraded, `Ext^{p,q}, Tor_{p,q}` as usual. More generally `G-GrMod` for `G: AbGroups` (e.g. `ZZ`, `ZZ/2`, `ZZ^n`, `RO(G)`) as functor `Gr: Ab→Cat` `M=⊕_{g∈G} M_g` with `G`-graded tensor `M⊗N` in degree `g+h`. Needed for `E_2^{p,q}=H^p(B;H^q(F))` etc.
+
+**π_* as graded Lie**
+* `π_*(X)=⊕_{n≥1}π_n(X)` as graded Lie algebra under Whitehead product `[α,β]∈π_{p+q-1}` with Jacobi and graded antisymmetry, and Toda brackets `⟨α,β,γ⟩⊂π_{p+q+r+1}` secondary operation where `αβ=0, βγ=0` as coset of indeterminacy; higher Toda operations. Structure maps `[-,-]: π_p⊗π_q→π_{p+q-1}` as `HoTop_*(S^p∧S^q→S^{p+q-1})` via universal Whitehead.
+
+**Sullivan minimal models**
+* `DGA_{Q}^{≥0}` Sullivan algebras `(Λ V,d)` with `V=⊕_{n≥1}V^n` graded vector space, `Λ` free graded-commutative, `d` decomposable and nilpotent filtration; minimal `d(V)⊂Λ^{≥2}V` and `V` well-ordered so `d(v_i)∈Λ(V_{<i})`. Functor `A_{PL}: sSet→DGA_Q` (PL forms) and minimal model `M_X → A_{PL}(X)` quasi-isomorphism with `M_X = (ΛV,d)` minimal and `V^n ≅ Hom(π_n(X),Q)` for nilpotent finite-type `X`; model category `DGA_Q` with `W=qis`. Not a free `minimal_model(X)` returning matrices — object of `Ho(DGA)` with `π_*⊗Q` read off `V`.
+
+**Stabilization / spectra**
+* `Stab(C)` stabilization of pointed `∞-category` C with finite limits/colimits as `Sp(C)=lim(⋯→C →Ω C →Ω C)` or `Exc_*(S^{fin}_*, C)` excisive functors; universal property `Fun^{lex}(Sp(C),D)≃Fun^{lex}(C,D)` stable. For `C=Top_*`, `Sp = Sp(Top_*)` is category `Spectra` stable, with `Σ^∞: Top_* ⇄ Sp: Ω^∞` stabilization adjunction `Σ^∞ ⊣ Ω^∞` and `Σ^∞ X = (Σ^n X)_n` sequential spectrum. Models: sequential spectra `E=(E_n, σ_n: ΣE_n→E_{n+1})` vs `Ω`-spectra `σ^♭: E_n→ΩE_{n+1}` weak equivalence, symmetric spectra with `Σ_n` action. Sphere spectrum `S = Σ^∞ S^0`, `S^n = Σ^∞ S^n` as `S` shift `S[n]`. Suspension spectrum `Σ^∞_+: Top→Sp` as `Σ^∞(X_+)` unreduced (`X_+=X⊔*`), left adjoint to `Ω^∞` on unpointed. Smash `∧: Sp×Sp→Sp` symmetric monoidal with unit `S`, internal hom `F(-,-)`.
+* `Ho(Spectra)` triangulated with shift `Σ = S^1∧-`.
+
+**E_∞ / ring spectra, modules, mod p reduction**
+* `CAlg(Sp)=E_∞-Alg` as commutative algebra objects in `Sp` via `E_∞` operad `Comm_{E_∞}`; `Mod_R` for `R: E_∞` as `Sp^{R-mod}` stable symmetric monoidal `⊗_R`. Examples: `S, HZ, HF_p, MU, MO, MSO, K, BP, E_n`. Mod p reduction: at module level first `M/p = M⊗^L_Z F_p : D(Z-mod)` via two-term `Z→^p Z`, then `A/p = A⊗^L_{E_∞} HF_p : CAlg_{HF_p}` for `A: CAlg_{HZ}` or `A: CAlg_S`; more generally `R`-algebra `A` at prime `𝔭∈Spec R` via `κ(𝔭)=Frac(R/𝔭)` or `R_𝔭` completion `A_{𝔭}=A⊗^L_R R_𝔭` and cofiber `A→A_{𝔭}→A/𝔭^∞`. Need `⊗^L` already intaken as `D(R-Mod)` monoidal.
+
+**Steenrod / Adams / characteristic**
+* `Steenrod algebra A = A_2, A_p : GrAlg_{F_p}` with `A = End_{Sp}(HF_p⊗HF_p)` ≅ `H^*(HF_p;F_p)` and basis `Sq^i` (`p=2`) / `P^i, β` (`p>2`) with Adem relations and Cartan `Sq^k(xy)=Σ_{i+j=k}Sq^i(x)Sq^j(y)`; action `A ⊗ H^*(X;F_p)→H^*(X;F_p)` as `Dyer-Lashof` unstable module over `A`. `CohomologyOperations: HoTop^{op}→GrSets` `H^n(-;F_p)→H^{n+k}(-;F_p)` represented by `K(F_p,n)`.
+* `Adams spectral sequence` `E_2^{s,t}=Ext^{s,t}_{A}(H^*(X),F_p) ⇒ π_{t-s}(X)^{∧}_p` (stable for `X: Sp`, unstable via `Ext` over Lambda algebra); `Adams resolution` `X→I^•` with `I_s = HF_p∧\bar{HF_p}^{∧s}∧X` tower `⋯→X_{s+1}→X_s` whose `E_1 = π_*(I_s/I_{s+1})`. Next layers: `Adams-Novikov SS` `E_2^{s,t}=Ext^{s,t}_{MU_*MU}(MU_*,MU_*(X))⇒π_{t-s}(X)` with `MU_*MU` Hopf algebroid, `BP` Brown-Peterson `BP_*=Z_{(p)}[v1,…]` (`|v_n|=2(p^n-1)`) as summand of `MU_{(p)}` via Quillen idempotent, `BP_*BP` and `Adams-Novikov` for `BP`. Division algebras over `Q` via Brauer `Br(k)=H^2(Gal, \bar k^×)`, central simple.
+
+**Cobordism / characteristic classes**
+* `Cobordism rings` `MO_* = π_*(MO)` unoriented (`MO = Thom(O)` with `π_*(MO)=F_2[x_i]`), `MU_*` complex (`MU = Thom(U)`, `π_*(MU)=Z[x_1,x_2,…]` `|x_i|=2i`, Lazard), `MSO_*`, `MSpin`, `MSp`. Thom spectrum `M(G)=Thom(EG×_G R^n)` and Pontryagin-Thom `Ω^{fr}_* = π_*(S)`, `Ω^{un}_*=π_*(MO)` etc.
+* `Characteristic classes` as natural transformations `H^*(BO)→H^*(-)` etc.: Stiefel-Whitney `w_i∈H^i(BO;F_2)` via `BO = colim Gr(k,∞)`, `w = Σw_i = ∏(1+x_i)` total, Whitney sum `w(ξ⊕η)=w(ξ)∪w(η)`, Pontryagin `p_i∈H^{4i}(BSO;Z[1/2])` via Chern `p_i(ξ)=(-1)^i c_{2i}(ξ⊗C)`, Chern `c_i∈H^{2i}(BU;Z)`, Euler `e∈H^n(BSO(n))`. Numbers `⟨∏w_{i_k}^{e_k} ∪ μ_X, [X]⟩∈F_2` and `⟨∏p_j^{e_j}, [X]⟩∈Z` as `CharNumbers: Bordism→F_2/Z` detecting bordism class (Thom). More general `E^*(BG)` characteristic maps for `G=T, U(n), O(n), etc.` via `H^*(BG;R)` / `E^*(BG)` as `Cohomology of classifying`.
+
+**What else needs general + bigraded**
+* `E∞` pages `E_r^{p,q}` as objects of `GrMod_{ZZ^2}(R)` already intaken bigraded, now with differentials `d_r: E_r^{p,q}→E_r^{p+r, q-r+1}` and convergence `E_∞^{p,q}=F^pH^{p+q}/F^{p+1}` for filtered `H^*`. Used in Serre, Atiyah-Hirzebruch `E_2^{p,q}=H^p(X; E^q(pt))⇒E^{p+q}(X)`, Adams `E_2^{s,t}`, Adams-Novikov `E_2^{s,t}`.
+
+**Not fundamental**
+* Specific `Sq^1(x)=βx`, `MU_*=Z[x1,..]` generator `x1=CP^1`, `π_*(S)=Z/24` etc. — elements `x_i: π_{2i}(MU)` and classes `w_i: H^i(BO)` as morphisms `BO→K(F_2,i)`, not new categories
+* `ΣS^n≃S^{n+1}` must be proven as `|ΣΔ^n/∂|≅S^{n+1}` via `EC` shift, not table — instance of `Σ ⊣ Ω` on `sSet`
+
