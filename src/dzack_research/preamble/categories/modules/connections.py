@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -574,8 +574,7 @@ class ConnectionMorphism(Element):
         omega = domain_connection.one_forms()
         identity_omega = omega.module_category().Mor(omega, omega).identity()
 
-        induced = tensor_product_morphism(
-            self,
+        induced = self.underlying_linear_morphism().tensor_product_map(
             identity_omega,
             source=domain_connection.target_module(),
             target=codomain_connection.target_module(),

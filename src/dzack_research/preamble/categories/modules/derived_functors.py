@@ -21,9 +21,9 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
-from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
+
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -75,11 +75,14 @@ def _ext(module, other, degree=0):
     dualized = CochainComplexes(ring)(
         {term: resolution.term(term).module_category().Mor(resolution.term(term), other) for term in range(length + 1)},
         {
-            term - 1: internal_hom_morphism(
-                resolution.term(term - 1).module_category().Mor(resolution.term(term - 1), other),
-                resolution.term(term).module_category().Mor(resolution.term(term), other),
-                resolution.differential(term),
+            term - 1: resolution.differential(term).internal_hom_map(
                 identity,
+                source_internal_hom=resolution.term(term - 1).module_category().Mor(
+                    resolution.term(term - 1), other
+                ),
+                target_internal_hom=resolution.term(term).module_category().Mor(
+                    resolution.term(term), other
+                ),
             )
             for term in range(1, length + 1)
         },
@@ -130,12 +133,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             modules = Modules(term.base_ring())
             source_tensor = modules.tensor_product((term, morphism.domain()))
             target_tensor = modules.tensor_product((term, morphism.codomain()))
-            component = tensor_product_morphism(
-                identity,
-                morphism,
-                source=source_tensor,
-                target=target_tensor,
-            )
+            component = identity.tensor_product_map(morphism, source=source_tensor, target=target_tensor)
             source = other.tor(morphism.domain(), degree=degree)
             target = other.tor(morphism.codomain(), degree=degree)
         case _:
@@ -174,11 +172,10 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             identity = other.module_category().Mor(other, other).identity()
             source_internal = target_resolution.term(degree).module_category().Mor(target_resolution.term(degree), other)
             target_internal = source_resolution.term(degree).module_category().Mor(source_resolution.term(degree), other)
-            component = internal_hom_morphism(
-                source_internal,
-                target_internal,
-                lifted.component(degree),
+            component = lifted.component(degree).internal_hom_map(
                 identity,
+                source_internal_hom=source_internal,
+                target_internal_hom=target_internal,
             )
             source = morphism.codomain().ext(other, degree=degree)
             target = morphism.domain().ext(other, degree=degree)
@@ -191,11 +188,10 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             identity = term.module_category().Mor(term, term).identity()
             source_internal = term.module_category().Mor(term, morphism.domain())
             target_internal = term.module_category().Mor(term, morphism.codomain())
-            component = internal_hom_morphism(
-                source_internal,
-                target_internal,
-                identity,
+            component = identity.internal_hom_map(
                 morphism,
+                source_internal_hom=source_internal,
+                target_internal_hom=target_internal,
             )
             source = other.ext(morphism.domain(), degree=degree)
             target = other.ext(morphism.codomain(), degree=degree)

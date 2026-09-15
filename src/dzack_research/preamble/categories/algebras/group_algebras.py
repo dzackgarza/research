@@ -34,9 +34,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
-from dzack_research.preamble.categories.modules.tensor_products import (
-    tensor_product_morphism,
-)
+
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -243,8 +241,7 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
         source_multiplication = source.multiplication_morphism()
         target_multiplication = target.multiplication_morphism()
         self._underlying_morphism = linear
-        self._tensor_square_morphism = tensor_product_morphism(
-            linear,
+        self._tensor_square_morphism = linear.tensor_product_map(
             linear,
             source=source_multiplication.domain(),
             target=target_multiplication.domain(),

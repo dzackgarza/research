@@ -4,8 +4,6 @@ from importlib import import_module as _import_module
 
 _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pure.modules',
                       'BiproductModules'),
- 'biproduct_morphism': ('dzack_research.preamble.categories.modules.pure.modules',
-                        'biproduct_morphism'),
  'FractionalIdeal': ('dzack_research.preamble.categories.modules.fractional_ideals',
                      'FractionalIdeal'),
  'FractionalIdeals': ('dzack_research.preamble.categories.modules.fractional_ideals',
@@ -131,8 +129,6 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
                        'GroupModuleHomset'),
  'GroupModuleMorphism': ('dzack_research.preamble.categories.modules.group_modules',
                          'GroupModuleMorphism'),
- 'internal_hom_morphism': ('dzack_research.preamble.categories.modules.internal_hom',
-                           'internal_hom_morphism'),
  'GeneralModule': ('dzack_research.preamble.categories.modules.general_modules', 'GeneralModule'),
  'GeneralModules': ('dzack_research.preamble.categories.modules.general_modules',
                     'GeneralModules'),
@@ -186,8 +182,7 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
  'BilinearMap': ('dzack_research.preamble.categories.modules.pure.modules', 'BilinearMap'),
  'TensorProductModules': ('dzack_research.preamble.categories.modules.pure.modules',
                           'TensorProductModules'),
- 'tensor_product_morphism': ('dzack_research.preamble.categories.modules.tensor_products',
-                             'tensor_product_morphism')}
+}
 
 __all__ = ['BasedFreeModule',
  'BilinearForm',
@@ -285,10 +280,7 @@ __all__ = ['BasedFreeModule',
  'SubFramingMorphism',
  'smooth_functions',
  'square_integrable_functions',
- 'biproduct_morphism',
  'framing_morphism',
- 'internal_hom_morphism',
- 'tensor_product_morphism',
  'AlternatingPowerModules',
  'DividedPowerModules',
  'SymmetricPowerModules',

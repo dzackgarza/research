@@ -682,7 +682,7 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pair,
     signature_pairs,
 )
-from dzack_research.preamble.categories.modules import (  # noqa: F401
+from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     BilinearFormModules,
     BilinearMap,
@@ -764,9 +764,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
-    biproduct_morphism,
-    internal_hom_morphism,
-    tensor_product_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,

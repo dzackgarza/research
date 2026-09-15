@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     Functor,
     Modules,
     QQ,
-    tensor_product_morphism,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     _unit_morphism_from_element,
@@ -40,8 +39,7 @@ class _TensorSquareFunctor(Functor):
         return Modules(QQ).tensor_product((module, module))
 
     def _apply_morphism(self, morphism):
-        return tensor_product_morphism(
-            morphism,
+        return morphism.tensor_product_map(
             morphism,
             source=self(morphism.domain()),
             target=self(morphism.codomain()),

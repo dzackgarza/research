@@ -9,7 +9,10 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules, FinitelyPresentedModules, biproduct_morphism
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    FinitelyPresentedModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -64,8 +67,7 @@ class BiproductBifunctor(Bifunctor):
         return self.codomain().biproduct((left, right))
 
     def _apply_pair_morphism(self, left_morphism, right_morphism):
-        return biproduct_morphism(
-            left_morphism,
+        return left_morphism.biproduct_map(
             right_morphism,
             source=self(left_morphism.domain(), right_morphism.domain()),
             target=self(left_morphism.codomain(), right_morphism.codomain()),

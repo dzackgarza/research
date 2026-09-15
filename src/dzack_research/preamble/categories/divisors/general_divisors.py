@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import Finit
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
-from dzack_research.preamble.categories.modules.pure.modules import Modules, biproduct_morphism
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
     _owned_ideal,
@@ -306,8 +306,7 @@ def projective_space_divisor_class_theory(
     hyperplane_map = picard_hyperplane.module_category().Mor(picard_hyperplane, class_hyperplane)(
         {picard_hyperplane_label: class_hyperplane.module_generator(class_hyperplane_label)}
     )
-    raw_comparison = biproduct_morphism(
-        base_picard_to_class,
+    raw_comparison = base_picard_to_class.biproduct_map(
         hyperplane_map,
         source=picard_biproduct,
         target=class_biproduct,

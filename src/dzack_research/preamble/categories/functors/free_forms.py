@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, FinitelyPresentedModules, Modules
-from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -116,8 +116,7 @@ class FreeBilinearFormFunctor(Functor):
             * morphism
             * source.forget_form_morphism()
         )
-        value_map = tensor_product_morphism(
-            morphism,
+        value_map = morphism.tensor_product_map(
             morphism,
             source=source.value_module(),
             target=target.value_module(),

@@ -651,7 +651,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return relations.inclusion().cokernel()
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
-            return biproduct_morphism(left_morphism, right_morphism, source=source, target=target)
+            return left_morphism.biproduct_map(right_morphism, source=source, target=target)
 
         _categorical_coproduct_morphism = _categorical_product_morphism
 
@@ -3380,7 +3380,7 @@ def _module_biproduct_with_data(
     return result
 
 
-def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
+def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if source is None:
         source = Modules(left_morphism.domain().base_ring()).biproduct(
             (left_morphism.domain(), right_morphism.domain())

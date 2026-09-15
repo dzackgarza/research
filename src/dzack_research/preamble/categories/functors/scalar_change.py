@@ -13,7 +13,7 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
-from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
+
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -207,8 +207,10 @@ class CoextensionOfScalarsFunctor(Functor):
         identity = module.module_category().Mor(module, module).identity()
         endomorphisms = Modules(self._source_ring).End(hom)
         action = self._target_ring.Mor(endomorphisms)(
-            lambda scalar: internal_hom_morphism(
-                hom, hom, self._right_multiplication(scalar), identity
+            lambda scalar: self._right_multiplication(scalar).internal_hom_map(
+                identity,
+                source_internal_hom=hom,
+                target_internal_hom=hom,
             ),
         )
         return Modules(self._target_ring)(hom, action)
@@ -217,11 +219,15 @@ class CoextensionOfScalarsFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         scalars = self.scalars_as_module()
-        postcomposition = internal_hom_morphism(
-            scalars.module_category().Mor(scalars, morphism.domain()),
-            scalars.module_category().Mor(scalars, morphism.codomain()),
-            scalars.module_category().Mor(scalars, scalars).identity(),
+        identity = scalars.module_category().Mor(scalars, scalars).identity()
+        postcomposition = identity.internal_hom_map(
             morphism,
+            source_internal_hom=scalars.module_category().Mor(
+                scalars, morphism.domain()
+            ),
+            target_internal_hom=scalars.module_category().Mor(
+                scalars, morphism.codomain()
+            ),
         )
         return self._linear_map(
             source,

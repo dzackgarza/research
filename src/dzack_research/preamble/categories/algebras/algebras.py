@@ -40,9 +40,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     TensorProductModules,
 )
-from dzack_research.preamble.categories.modules.tensor_products import (
-    tensor_product_morphism,
-)
+
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -165,12 +163,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
                 _extra_categories=(TensorProductModules(self.base_ring()),),
                 _extra_construction_data={"tensor_factors": tensor_factors},
             )
-            transported = tensor_product_morphism(
-                forget,
-                forget,
-                source=transported_tensor,
-                target=source_tensor,
-            )
+            transported = forget.tensor_product_map(forget, source=transported_tensor, target=source_tensor)
             return equip * source_multiplication * transported
 
         def multiplication_morphism(self):
@@ -248,8 +241,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
         if source_exact and target_exact:
             source_multiplication = self.domain().multiplication_morphism()
             target_multiplication = self.codomain().multiplication_morphism()
-            tensor_square = tensor_product_morphism(
-                underlying_morphism,
+            tensor_square = underlying_morphism.tensor_product_map(
                 underlying_morphism,
                 source=source_multiplication.domain(),
                 target=target_multiplication.domain(),
@@ -590,8 +582,7 @@ class _AlgebraTensorSquareFunctor(Functor):
         return Modules(self.base_ring()).tensor_product((module, module))
 
     def _apply_morphism(self, morphism):
-        return tensor_product_morphism(
-            morphism,
+        return morphism.tensor_product_map(
             morphism,
             source=self(morphism.domain()),
             target=self(morphism.codomain()),

@@ -51,7 +51,7 @@ def _flatten_tensor_label(label, degree):
 
 
 
-def tensor_product_morphism(left_morphism, right_morphism, source=None, target=None):
+def _tensor_product_morphism(left_morphism, right_morphism, source=None, target=None):
     r"""Return ``f tensor g`` on the chosen tensor products."""
     if left_morphism.domain().base_ring() != right_morphism.domain().base_ring():
         raise ValueError("tensoring morphisms requires one common base ring")
@@ -90,5 +90,4 @@ def tensor_product_morphism(left_morphism, right_morphism, source=None, target=N
 __all__ = [
     "_flatten_tensor_label",
     "_nested_tensor_label",
-    "tensor_product_morphism",
 ]

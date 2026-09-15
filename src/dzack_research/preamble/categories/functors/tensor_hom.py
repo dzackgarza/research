@@ -1,9 +1,9 @@
 r"""The tensor--internal-Hom adjunction on modules with chosen finite presentations."""
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
+
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, ModulesWithChosenFinitePresentation
-from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -29,12 +29,7 @@ class TensorByFunctor(Functor):
         target = self(morphism.codomain())
         fixed = self.fixed_module()
         identity = fixed.module_category().Mor(fixed, fixed).identity()
-        return tensor_product_morphism(
-            morphism,
-            identity,
-            source=source,
-            target=target,
-        )
+        return morphism.tensor_product_map(identity, source=source, target=target)
 
     def _repr_(self):
         return f"- tensor {self.fixed_module()}"
@@ -63,12 +58,7 @@ class InternalHomFromFunctor(Functor):
         target = self(morphism.codomain())
         fixed = self.fixed_source()
         identity = fixed.module_category().Mor(fixed, fixed).identity()
-        return internal_hom_morphism(
-            source,
-            target,
-            identity,
-            morphism,
-        )
+        return identity.internal_hom_map(morphism, source_internal_hom=source, target_internal_hom=target)
 
     def _repr_(self):
         return f"Internal Hom({self.fixed_source()}, -)"

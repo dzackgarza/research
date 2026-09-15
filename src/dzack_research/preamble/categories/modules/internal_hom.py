@@ -210,13 +210,26 @@ def _internal_hom_model_data(homset):
     return model, inclusion, relation_matrix, presentation
 
 
-def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, target_map):
-    r"""Return the map on internal Homs induced by pre- and postcomposition.
-
-    ``source_map`` runs from the new source to the old source and
-    ``target_map`` from the old target to the new target, so the result is
-    ``h |-> target_map * h * source_map``.
-    """
+def _internal_hom_morphism(
+    source_map,
+    target_map,
+    *,
+    source_internal_hom=None,
+    target_internal_hom=None,
+):
+    r"""Return the internal-Hom map induced by pre- and postcomposition."""
+    if source_internal_hom is None:
+        source = source_map.codomain()
+        source_internal_hom = source.module_category().Mor(
+            source,
+            target_map.domain(),
+        )
+    if target_internal_hom is None:
+        source = source_map.domain()
+        target_internal_hom = source.module_category().Mor(
+            source,
+            target_map.codomain(),
+        )
     if source_map.codomain() is not source_internal_hom.source_module():
         raise ValueError("precomposition has the wrong codomain")
     if target_map.domain() is not source_internal_hom.target_module():
@@ -226,14 +239,13 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
     if target_internal_hom.target_module() is not target_map.codomain():
         raise ValueError("the target internal Hom has the wrong target")
 
-
-    return source_internal_hom.module_category().Mor(source_internal_hom, target_internal_hom).elementwise(
-        lambda morphism: target_map * morphism * source_map
-    )
+    return source_internal_hom.module_category().Mor(
+        source_internal_hom,
+        target_internal_hom,
+    ).elementwise(lambda morphism: target_map * morphism * source_map)
 
 
 __all__ = [
     "InternalHomConstruction",
     "InternalHomModules",
-    "internal_hom_morphism",
 ]

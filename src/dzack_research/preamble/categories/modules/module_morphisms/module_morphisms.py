@@ -691,6 +691,51 @@ class ModuleMorphism(Morphism):
             )
         )
 
+    def tensor_product_map(self, other, *, source=None, target=None):
+        r"""Return the induced map ``self tensor other`` on selected tensor products."""
+        from dzack_research.preamble.categories.modules.tensor_products import (
+            _tensor_product_morphism,
+        )
+
+        return _tensor_product_morphism(
+            self,
+            other,
+            source=source,
+            target=target,
+        )
+
+    def biproduct_map(self, other, *, source=None, target=None):
+        r"""Return the induced map ``self direct-sum other`` on selected biproducts."""
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            _biproduct_morphism,
+        )
+
+        return _biproduct_morphism(
+            self,
+            other,
+            source=source,
+            target=target,
+        )
+
+    def internal_hom_map(
+        self,
+        target_map,
+        *,
+        source_internal_hom=None,
+        target_internal_hom=None,
+    ):
+        r"""Return the internal-Hom map induced by pre- and postcomposition."""
+        from dzack_research.preamble.categories.modules.internal_hom import (
+            _internal_hom_morphism,
+        )
+
+        return _internal_hom_morphism(
+            self,
+            target_map,
+            source_internal_hom=source_internal_hom,
+            target_internal_hom=target_internal_hom,
+        )
+
     def stack(self, other):
         r"""Return ``(self,other)`` into the biproduct of the codomains."""
         if not isinstance(other, ModuleMorphism) or other.domain() is not self.domain():
