@@ -331,10 +331,10 @@ class Modules(OwnedCategoryOverBaseRing):
             domain and codomain, where the dual basis frames ``M^*``.
             """
             from dzack_research.preamble.categories.functors.linear_constructions import (
-                dualization_functor,
+                _dualization_functor,
             )
 
-            return dualization_functor(self.base_ring())
+            return _dualization_functor(self.base_ring())
 
         def symmetric_algebra(self):
             r"""``Sym_R : Mod_R -> CAlg_R``, the symmetric-algebra functor.

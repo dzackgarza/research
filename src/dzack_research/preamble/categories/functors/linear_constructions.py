@@ -191,7 +191,7 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
 
 
 @cached_function
-def dualization_functor(base_ring) -> DualizationFunctor:
+def _dualization_functor(base_ring) -> DualizationFunctor:
     return DualizationFunctor(base_ring)
 
 
@@ -201,5 +201,4 @@ __all__ = [
     "DualizationFunctor",
     "KernelArrowFunctor",
     "OrthogonalDirectSumBifunctor",
-    "dualization_functor",
 ]
