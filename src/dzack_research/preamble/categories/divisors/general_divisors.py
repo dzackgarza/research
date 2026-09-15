@@ -97,7 +97,7 @@ def _effective_principal_coefficients(group, function):
     return coefficients
 
 
-def principal_weil_divisor(group, rational_function):
+def _principal_weil_divisor(group, rational_function):
     r"""Return ``div(f)`` in a represented affine-normal Weil divisor group."""
     ring = group.affine_divisor_coordinate_ring()
     field = ring.fraction_field()
@@ -463,6 +463,5 @@ __all__ = [
     "DivisorClassTheory",
     "DivisorClassComparison",
     "FiniteAtlasCartierDivisor",
-    "principal_weil_divisor",
     "projective_space_divisor_class_theory",
 ]

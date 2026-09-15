@@ -85,9 +85,9 @@ class WeilDivisorGroups(Category):
             return module_coefficients(divisor, self).get(point, self.base_ring().zero())
 
         def principal_divisor(self, rational_function):
-            from dzack_research.preamble.categories.divisors.general_divisors import principal_weil_divisor
+            from dzack_research.preamble.categories.divisors.general_divisors import _principal_weil_divisor
 
-            return principal_weil_divisor(self, rational_function)
+            return _principal_weil_divisor(self, rational_function)
 
 
 def WeilDivisorGroup(module, scheme=None):
