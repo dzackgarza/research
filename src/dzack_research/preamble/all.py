@@ -189,7 +189,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     HomogeneousPolynomialSectionSpaces,
     ImposedMultiplicityLinearSystems,
     InvertibleSheaf,
-    LineBundleCohomologySpace,
     LineBundleCohomologySpaces,
     PicardGroup,
     PicardGroups,

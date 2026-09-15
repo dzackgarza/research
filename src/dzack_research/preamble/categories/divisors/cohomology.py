@@ -20,6 +20,27 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [VectorSpaces(self.base_ring())]
 
+    def _call_(self, scheme, divisor, degree, dimension):
+        r"""Construct one represented ``H^degree(scheme, O(divisor))``."""
+        degree = int(degree)
+        dimension = int(dimension)
+        if degree < 0:
+            raise ValueError("cohomological degree is nonnegative")
+        if dimension < 0:
+            raise ValueError("a cohomology dimension is nonnegative")
+        if scheme.scheme_base_ring() is not self.base_ring():
+            raise ValueError("line-bundle cohomology is placed over this category's base ring")
+        return FreshFreeModuleOn(
+            self.base_ring(),
+            finite_ordinal_set(dimension),
+            _extra_categories=(self,),
+            _extra_construction_data=(
+                ("_preamble_cohomology_scheme", scheme),
+                ("_preamble_cohomology_divisor", divisor),
+                ("_preamble_cohomological_degree", degree),
+            ),
+        )
+
     class ParentMethods:
         def cohomology_scheme(self):
             return self._preamble_cohomology_scheme
@@ -31,25 +52,4 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
             return self._preamble_cohomological_degree
 
 
-def LineBundleCohomologySpace(scheme, divisor, degree, dimension):
-    r"""Return one finite-dimensional represented ``H^degree(X,O(D))``."""
-    degree = int(degree)
-    dimension = int(dimension)
-    if degree < 0:
-        raise ValueError("cohomological degree is nonnegative")
-    if dimension < 0:
-        raise ValueError("a cohomology dimension is nonnegative")
-    base = scheme.scheme_base_ring()
-    return FreshFreeModuleOn(
-        base,
-        finite_ordinal_set(dimension),
-        _extra_categories=(LineBundleCohomologySpaces(base),),
-        _extra_construction_data=(
-            ("_preamble_cohomology_scheme", scheme),
-            ("_preamble_cohomology_divisor", divisor),
-            ("_preamble_cohomological_degree", degree),
-        ),
-    )
-
-
-__all__ = ["LineBundleCohomologySpace", "LineBundleCohomologySpaces"]
+__all__ = ["LineBundleCohomologySpaces"]

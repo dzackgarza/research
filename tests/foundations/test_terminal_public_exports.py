@@ -255,6 +255,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "ToricVariety",
         "TrivialInvertibleSheaf",
         "ProjectiveO",
+        "LineBundleCohomologySpace",
         "continuous_group_homset",
         "algebra_from_multiplication",
         "own_algebra",
