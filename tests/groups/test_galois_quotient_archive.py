@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     exact_embeddings,
-    field_generators,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     extensions_along,
@@ -52,7 +51,7 @@ def test_restrict_along_and_extensions_along_solve_the_same_commuting_square() -
     restriction_two = group.restriction_map(degree_two)
     restriction_four = group.restriction_map(degree_four)
 
-    smaller_generator = field_generators(degree_two.field())[0]
+    smaller_generator = degree_two.field().field_generators()[0]
     compatible = tuple(
         embedding
         for embedding in exact_embeddings(degree_two.field(), degree_four.field())

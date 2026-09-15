@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     exact_embeddings,
     exact_field_homset,
-    field_generators,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
@@ -73,8 +72,8 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
 
     frobenius = group.frobenius()
     degree_four = group.finite_extension(4)
-    alpha = degree_four.embedding()(field_generators(degree_four.field())[0])
-    base_generator = field_generators(field)[0]
+    alpha = degree_four.embedding()(degree_four.field().field_generators()[0])
+    base_generator = field.field_generators()[0]
     square = group.slice_automorphism(frobenius)
 
     assert frobenius.parent() is group
@@ -173,7 +172,7 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
         restriction_four(frobenius**3) * restriction_four(frobenius**2)
     )
 
-    smaller_generator = field_generators(degree_two.field())[0]
+    smaller_generator = degree_two.field().field_generators()[0]
     compatible_embeddings = [
         embedding
         for embedding in exact_embeddings(degree_two.field(), degree_four.field())
@@ -246,7 +245,7 @@ def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
     assert all(
         stage.embedding()(stage.base_embedding()(generator))
         == chosen_base_embedding(generator)
-        for generator in field_generators(base_field)
+        for generator in base_field.field_generators()
     )
 
     foreign_group = AbsoluteGaloisGroup(
@@ -376,4 +375,4 @@ def test_quadratic_kummer_character_does_not_install_a_false_characteristic_two_
 ):
     group = AbsoluteGaloisGroup(GF(4, "u"))
     with pytest.raises(ValueError, match="characteristic different from two"):
-        group.quadratic_character(field_generators(group.base_field())[0])
+        group.quadratic_character(group.base_field().field_generators()[0])

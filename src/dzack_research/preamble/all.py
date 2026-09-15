@@ -655,7 +655,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     exact_embeddings,
     exact_field_homset,
     extensions_along,
-    field_generators,
     finite_decomposition_group,
     finite_frobenius_class,
     finite_inertia_group,

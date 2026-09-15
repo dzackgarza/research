@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     _exact_field_morphism_from_engine,
     exact_embeddings,
     exact_field_homset,
-    field_generators,
     first_exact_embedding,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
@@ -168,7 +167,7 @@ class AbsoluteGaloisGroupElement(Element):
         try:
             return all(
                 self(embedding(generator)) == embedding(generator)
-                for generator in field_generators(parent.base_field())
+                for generator in parent.base_field().field_generators()
             )
         except NotImplementedError:
             return False
@@ -388,7 +387,7 @@ class AbsoluteGaloisCategoryConstruction(RestrictedHomCategoryOf):
             return all(
                 arrow(self._base_embedding(generator))
                 == self._base_embedding(generator)
-                for generator in field_generators(self._base_field)
+                for generator in self._base_field.field_generators()
             )
         except (TypeError, ValueError, NotImplementedError):
             return False
@@ -695,7 +694,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         for candidate in exact_embeddings(self._field, extension_field):
             if all(
                 closure_embedding(candidate(generator)) == self._embedding(generator)
-                for generator in field_generators(self._field)
+                for generator in self._field.field_generators()
             ):
                 compatible.append(candidate)
         if len(compatible) != 1:
@@ -795,7 +794,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         quotient = finite_automorphism.parent()
         stage = self.extension_data(quotient.extension_data())
         if self._is_finite_field():
-            generator = field_generators(stage.field())[0]
+            generator = stage.field().field_generators()[0]
             q = self.base_field_order()
             for exponent in range(int(stage.degree())):
                 if finite_automorphism(generator) == generator ** (q**exponent):
@@ -935,7 +934,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         try:
             return all(
                 element(embedding(generator)) == embedding(generator)
-                for generator in field_generators(self.fixed_field())
+                for generator in self.fixed_field().field_generators()
             )
         except NotImplementedError:
             return False
@@ -992,7 +991,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             if not all(
                 fixed_to_normal(self._fixed_extension.base_embedding()(generator))
                 == base_embedding(generator)
-                for generator in field_generators(self._supergroup.base_field())
+                for generator in self._supergroup.base_field().field_generators()
             ):
                 continue
             for normal_to_closure in exact_embeddings(
@@ -1001,7 +1000,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
                 if all(
                     normal_to_closure(fixed_to_normal(generator))
                     == self.embedding()(generator)
-                    for generator in field_generators(self.fixed_field())
+                    for generator in self.fixed_field().field_generators()
                 ):
                     compatible_closure_embeddings.append(normal_to_closure)
         if not compatible_closure_embeddings:
@@ -1034,7 +1033,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         for embedding in exact_embeddings(other.fixed_field(), self.fixed_field()):
             if all(
                 self.embedding()(embedding(generator)) == other.embedding()(generator)
-                for generator in field_generators(other.fixed_field())
+                for generator in other.fixed_field().field_generators()
             ):
                 return True
         return False
@@ -1111,7 +1110,7 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
                 if all(
                     candidate(self._base_embedding(generator))
                     == self._supergroup.base_embedding()(generator)
-                    for generator in field_generators(self._supergroup.base_field())
+                    for generator in self._supergroup.base_field().field_generators()
                 )
             ]
             if not candidates:
@@ -1135,7 +1134,7 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
             all(
                 isomorphism(self._base_embedding(generator))
                 == other._base_embedding(generator)
-                for generator in field_generators(self._supergroup.base_field())
+                for generator in self._supergroup.base_field().field_generators()
             )
             for isomorphism in exact_embeddings(
                 self._extension_field, other._extension_field

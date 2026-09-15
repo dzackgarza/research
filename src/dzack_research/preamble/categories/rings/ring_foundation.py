@@ -1842,6 +1842,14 @@ class OwnedFields(OwnedCategory):
         ]
 
     class ParentMethods:
+        def field_generators(self):
+            r"""Return exact elements which determine a unital map out of this field."""
+            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                _field_generators,
+            )
+
+            return _field_generators(self)
+
         def maximal_ideal(self):
             r"""Return the zero ideal, the unique maximal ideal of a field."""
             return self.ideal(self.zero())

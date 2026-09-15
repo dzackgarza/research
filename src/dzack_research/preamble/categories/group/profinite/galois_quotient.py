@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     exact_embeddings,
-    field_generators,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -97,7 +96,7 @@ class FiniteGaloisExtension(SageObject):
             if all(
                 candidate(self._base_embedding(generator))
                 == self._closure_embedding(self._base_embedding(generator))
-                for generator in field_generators(self._base_field)
+                for generator in self._base_field.field_generators()
             )
         ]
         if len(compatible_embeddings) != self.degree():
@@ -127,7 +126,7 @@ class FiniteGaloisExtension(SageObject):
     def automorphisms(self):
         if self._automorphisms is None:
             automorphisms = []
-            base_generators = field_generators(self.base_field())
+            base_generators = self.base_field().field_generators()
             for candidate in exact_embeddings(self.field(), self.field()):
                 if all(
                     candidate(self.base_embedding()(generator))
@@ -156,7 +155,7 @@ class FiniteGaloisExtension(SageObject):
 
 def _morphism_signature(morphism: ExactFieldMorphism) -> tuple:
     return tuple(
-        morphism(generator) for generator in field_generators(morphism.domain())
+        morphism(generator) for generator in morphism.domain().field_generators()
     )
 
 
@@ -246,7 +245,7 @@ class FiniteGaloisQuotient(Parent):
             _morphism_signature(automorphism): index
             for index, automorphism in enumerate(self._automorphisms)
         }
-        identity_signature = tuple(field_generators(extension.field()))
+        identity_signature = tuple(extension.field().field_generators())
         try:
             self._identity_index = self._signatures[identity_signature]
         except KeyError as error:
@@ -307,7 +306,7 @@ class FiniteGaloisQuotient(Parent):
 
     def compose(self, left, right):
         images = tuple(
-            left(right(generator)) for generator in field_generators(self.top_field())
+            left(right(generator)) for generator in self.top_field().field_generators()
         )
         try:
             return self.element_class(self, self._signatures[images])
@@ -365,7 +364,7 @@ class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
                 "a finite extension automorphism group requires represented extension data"
             )
         self._extension = extension
-        base_generators = field_generators(extension.base_field())
+        base_generators = extension.base_field().field_generators()
         self._automorphisms = finite_ordered_set(
             tuple(
                 candidate
@@ -381,7 +380,7 @@ class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
             _morphism_signature(automorphism): index
             for index, automorphism in enumerate(self._automorphisms)
         }
-        identity_signature = tuple(field_generators(extension.field()))
+        identity_signature = tuple(extension.field().field_generators())
         try:
             self._identity_index = self._signatures[identity_signature]
         except KeyError as error:
@@ -423,7 +422,7 @@ class GaloisRestrictionMap(Morphism):
         if coordinate is not None:
             return self.codomain()(coordinate)
         embedding = self.extension().embedding()
-        generators = field_generators(self.extension().field())
+        generators = self.extension().field().field_generators()
         images = tuple(element(embedding(generator)) for generator in generators)
         for candidate in self.codomain():
             if all(
@@ -503,7 +502,7 @@ def restrict_along(
 ) -> ExactFieldMorphism:
     r"""Solve (j\tau=\sigma j) for the exact restriction ``tau``."""
     candidates = exact_embeddings(embedding.domain(), embedding.domain())
-    generators = field_generators(embedding.domain())
+    generators = embedding.domain().field_generators()
     restrictions = [
         candidate
         for candidate in candidates
@@ -521,7 +520,7 @@ def restrict_along(
 
 def extensions_along(automorphism, embedding, candidates):
     r"""Return exactly the candidate automorphisms satisfying (\sigma j=j\tau)."""
-    generators = field_generators(embedding.domain())
+    generators = embedding.domain().field_generators()
     matches = [
         candidate
         for candidate in candidates

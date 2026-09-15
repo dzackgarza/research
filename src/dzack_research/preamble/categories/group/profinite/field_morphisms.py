@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-def field_generators(field):
+def _field_generators(field):
     r"""Return exact elements which determine a unital map out of ``field``."""
     engine = _engine_ring(field)
     if isinstance(engine, AlgebraicField_common):
@@ -106,7 +106,7 @@ class ExactFieldMorphism(Morphism):
         except (NotImplementedError, TypeError, ValueError):
             pass
         try:
-            generators = field_generators(self.domain())
+            generators = self.domain().field_generators()
         except TypeError:
             return False
         return all(self(generator) == other(generator) for generator in generators)
@@ -120,7 +120,7 @@ class ExactFieldMorphism(Morphism):
     def __hash__(self) -> int:
         try:
             signature = tuple(
-                self(generator) for generator in field_generators(self.domain())
+                self(generator) for generator in self.domain().field_generators()
             )
         except TypeError:
             # Exact backend equality is available even when the source has no
@@ -147,7 +147,7 @@ class ExactFieldMorphism(Morphism):
 
     def _repr_(self) -> str:
         try:
-            generators = field_generators(self.domain())
+            generators = self.domain().field_generators()
         except TypeError:
             return f"Exact field morphism {self.domain()} -> {self.codomain()}"
         images = ", ".join(
@@ -227,6 +227,5 @@ __all__ = [
     "ExactFieldMorphism",
     "exact_embeddings",
     "exact_field_homset",
-    "field_generators",
     "first_exact_embedding",
 ]
