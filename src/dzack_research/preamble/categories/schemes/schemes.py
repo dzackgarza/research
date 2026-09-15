@@ -2325,15 +2325,38 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _projective_point_blowup(self, point)
 
         @cached_method
-        def divisor_class_theory(self):
-            r"""Return ``Pic(P^n_k)=Cl(P^n_k)=ZZ`` with the hyperplane comparison."""
+        def divisor_class_theory(
+            self,
+            base_picard_group=None,
+            base_class_group=None,
+            base_picard_to_class=None,
+        ):
+            r"""Return the projective-bundle comparison ``Pic(P^n_S) -> Cl(P^n_S)``."""
+            from dzack_research.preamble.categories.divisors.general_divisors import (
+                _projective_space_divisor_class_theory,
+            )
+
+            supplied = (base_picard_group, base_class_group, base_picard_to_class)
+            if any(value is not None for value in supplied):
+                if any(value is None for value in supplied):
+                    raise ValueError(
+                        "projective divisor-class theory requires the base Picard group, "
+                        "base class group, and their comparison together"
+                    )
+                return _projective_space_divisor_class_theory(
+                    self,
+                    base_picard_group,
+                    base_class_group,
+                    base_picard_to_class,
+                )
+
             base = self.scheme_base_ring()
             if base not in OwnedFields():
                 raise NotImplementedError(
-                    "the represented projective-space divisor class groups currently require a field base"
+                    "the represented projective-space divisor class groups over a nonfield base "
+                    "require the base Picard group, base class group, and their comparison"
                 )
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-            from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -2343,7 +2366,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             base_picard = PicardGroups().trivial(base_scheme)
             base_class = ClassGroups()(zero_module, scheme=base_scheme)
             comparison = base_picard.module_category().Mor(base_picard, base_class)({})
-            return projective_space_divisor_class_theory(
+            return _projective_space_divisor_class_theory(
                 self, base_picard, base_class, comparison
             )
 

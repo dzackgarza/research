@@ -250,7 +250,7 @@ class DivisorClassTheory(SageObject):
         return f"Divisor-class theory of {self.scheme()}"
 
 
-def projective_space_divisor_class_theory(
+def _projective_space_divisor_class_theory(
     projective_space,
     base_picard_group,
     base_class_group,
@@ -463,5 +463,4 @@ __all__ = [
     "DivisorClassTheory",
     "DivisorClassComparison",
     "FiniteAtlasCartierDivisor",
-    "projective_space_divisor_class_theory",
 ]

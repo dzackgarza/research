@@ -9,9 +9,6 @@ from dzack_research.preamble.all import (
     Spec,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.general_divisors import (
-    projective_space_divisor_class_theory,
-)
 from dzack_research.preamble.categories.divisors.picard_groups import (
     PicardGroups,
 )
@@ -38,8 +35,7 @@ def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
     base_class = _zero_class_group(base)
     base_comparison = base_picard.module_category().Mor(base_picard, base_class)({})
 
-    theory = projective_space_divisor_class_theory(
-        projective,
+    theory = projective.divisor_class_theory(
         base_picard,
         base_class,
         base_comparison,
@@ -61,8 +57,7 @@ def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> 
         {0: base_class.module_generator(0)}
     )
 
-    theory = projective_space_divisor_class_theory(
-        projective,
+    theory = projective.divisor_class_theory(
         base_picard,
         base_class,
         base_comparison,
