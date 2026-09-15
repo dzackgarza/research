@@ -127,7 +127,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             if codomain in dgas and (
                 category is None or category.is_subcategory(dgas)
             ):
-                return dga_homset(self, codomain)
+                return dgas.Mor(self, codomain)
             return super()._Hom_(codomain, category=category)
 
         def differential(self):
@@ -295,7 +295,8 @@ class DGAMorphism(Morphism):
     def __mul__(self, other):
         if not isinstance(other, DGAMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return dga_homset(other.domain(), self.codomain())(
+        source = other.domain()
+        return DifferentialGradedAlgebras(source.base_ring()).Mor(source, self.codomain())(
             lambda element: self(other(element))
         )
 
@@ -330,16 +331,6 @@ class DGAHomCategoryConstruction(HomCategoryConstruction):
 DifferentialGradedAlgebras._HomCategory = DGAHomCategoryConstruction
 
 
-def dga_homset(domain, codomain):
-    ring = domain.base_ring()
-    if codomain.base_ring() is not ring:
-        raise ValueError("DGA morphisms require one common differential base ring")
-    category = DifferentialGradedAlgebras(ring)
-    if domain not in category or codomain not in category:
-        raise TypeError("DGA Hom endpoints must lie in one differential graded algebra category")
-    return category.Mor(domain, codomain)
-
-
 __all__ = [
     "CommutativeDifferentialGradedAlgebras",
     "DGAHomset",
@@ -350,5 +341,4 @@ __all__ = [
     "DifferentialComponentMorphism",
     "DifferentialGradedAlgebras",
     "StrictlyCommutativeDifferentialGradedAlgebras",
-    "dga_homset",
 ]

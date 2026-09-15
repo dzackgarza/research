@@ -7,8 +7,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    DifferentialGradedAlgebras,
     StrictlyCommutativeDifferentialGradedAlgebras,
-    dga_homset,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -64,7 +64,10 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                 result += term
         return result
 
-    return dga_homset(source_dga, target_dga)(image)
+    return DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
+        source_dga,
+        target_dga,
+    )(image)
 
 
 class DeRhamFunctor(Functor):

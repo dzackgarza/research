@@ -94,7 +94,7 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     GradedAlgebras = session["GradedAlgebras"]
     GradedModules = session["GradedModules"]
     SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
-    graded_algebra_homset = session["graded_algebra_homset"]
+    assert "graded_algebra_homset" not in session
 
     source = SymmetricAlgebraOn(QQ, ["x"])
     target = SymmetricAlgebraOn(QQ, ["t"])
@@ -104,7 +104,6 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     ordinary_homset = source.Mor(target)
     assert ordinary_homset is Algebras(QQ).Mor(source, target)
     homset = GradedAlgebras(QQ).Mor(source, target)
-    assert homset is graded_algebra_homset(source, target)
     assert Algebras(QQ).Mor(source, target) in homset.super_categories()
     assert GradedModules(QQ).Mor(source, target) in homset.super_categories()
     graded = homset({"x": t})
@@ -114,7 +113,7 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
 
     # x and t share a degree, so x |-> t preserves it and x |-> t^2 does not.
     with pytest.raises(ValueError):
-        graded_algebra_homset(source, target)({"x": t**2})
+        GradedAlgebras(QQ).Mor(source, target)({"x": t**2})
 
     augmentation = source.Mor(QQ)({"x": QQ.zero()})
     assert augmentation in Algebras(QQ).Mor(source, QQ)

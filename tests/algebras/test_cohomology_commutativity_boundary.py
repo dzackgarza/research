@@ -4,13 +4,11 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
-    cohomology_algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     CommutativeDifferentialGradedAlgebras,
     Differential,
     DifferentialGradedAlgebras,
-    dga_homset,
 )
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     SymmetricAlgebraOn,
@@ -112,14 +110,14 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     x = dga.algebra_generator("x")
     y = dga.algebra_generator("y")
     swap_algebra = Algebras(dga.base_ring()).Associative().Unital().Mor(dga, dga)({"x": y, "y": x})
-    swap = dga_homset(dga, dga)(swap_algebra)
+    swap = DifferentialGradedAlgebras(dga.base_ring()).Mor(dga, dga)(swap_algebra)
 
     cohomology = CohomologyAlgebra(dga)
     functor = cohomology_algebra_functor(ZZ)
     assert functor.domain() is DifferentialGradedAlgebras(ZZ)
     assert functor(dga) is cohomology
     induced = functor(swap)
-    direct = cohomology_algebra_homset(cohomology, cohomology)(swap)
+    direct = CohomologyAlgebras(ZZ).Mor(cohomology, cohomology)(swap)
     x_class = cohomology.from_component(
         1,
         cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),

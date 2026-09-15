@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     CommutativeDifferentialGradedAlgebras,
     DifferentialGradedAlgebras,
     StrictlyCommutativeDifferentialGradedAlgebras,
-    dga_homset,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
@@ -204,7 +203,8 @@ class CohomologyAlgebraMorphism(Morphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return cohomology_algebra_homset(other.domain(), self.codomain())(
+        source = other.domain()
+        return CohomologyAlgebras(source.base_ring()).Mor(source, self.codomain())(
             self.underlying_dga_morphism() * other.underlying_dga_morphism()
         )
 
@@ -223,11 +223,11 @@ class CohomologyAlgebraHomset(CategoricalHomset):
             raise ValueError("identity belongs to a cohomology-algebra endomorphism homset")
 
         source_dga = self.domain().source_dga()
-        return self(dga_homset(source_dga, source_dga).identity())
-
-
-def cohomology_algebra_homset(domain, codomain):
-    return CohomologyAlgebras(domain.base_ring()).Mor(domain, codomain)
+        return self(
+            DifferentialGradedAlgebras(source_dga.base_ring())
+            .Mor(source_dga, source_dga)
+            .identity()
+        )
 
 
 _COHOMOLOGY_ALGEBRA_CACHE = {}
@@ -244,5 +244,4 @@ __all__ = [
     "CohomologyAlgebraHomset",
     "CohomologyAlgebraMorphism",
     "CohomologyAlgebras",
-    "cohomology_algebra_homset",
 ]

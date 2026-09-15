@@ -100,7 +100,11 @@ class GradedAlgebraMorphism(Morphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        homset = graded_algebra_homset(other.domain(), self.codomain())
+        source = other.domain()
+        homset = GradedAlgebras(
+            source.base_ring(),
+            require_grading_monoid(source.grading_monoid()),
+        ).Mor(source, self.codomain())
         return homset._from_degree_preserving_generator_map(
             lambda label: self(
                 other(other.domain().algebra_generator(label))
@@ -147,19 +151,6 @@ class GradedAlgebraHomset(CategoricalHomset):
 class GradedAlgebraHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return GradedAlgebraHomset
-
-
-def graded_algebra_homset(domain, codomain) -> GradedAlgebraHomset:
-    ring = domain.base_ring()
-    if codomain.base_ring() is not ring:
-        raise ValueError("graded algebra morphisms require one common base ring")
-    source_monoid = require_grading_monoid(domain.grading_monoid())
-    if require_grading_monoid(codomain.grading_monoid()) != source_monoid:
-        raise ValueError("graded algebra morphisms require one common grading monoid")
-    graded = GradedAlgebras(ring, source_monoid)
-    if domain not in graded or codomain not in graded:
-        raise TypeError("both endpoints must be objects of the same graded algebra category")
-    return graded.Mor(domain, codomain)
 
 
 class GradedAlgebras(OwnedCategoryOverBaseRing):
@@ -359,7 +350,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         def _Hom_(self, codomain, category=None):
             # Object-level Hom defaults to the underlying algebra category.
             # Degree-preserving maps are selected explicitly through
-            # ``GradedAlgebras(...).Hom`` / ``graded_algebra_homset``.
+            # ``GradedAlgebras(...).Mor``.
             return super()._Hom_(codomain, category=category)
 
     class ElementMethods:
@@ -376,7 +367,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a graded-algebra Hom requires two objects of this category")
-        return graded_algebra_homset(domain, codomain)
+        if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
+            raise ValueError("graded algebra morphisms require one common base ring")
+        if require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
+            raise ValueError("the source has the wrong grading monoid")
+        if require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
+            raise ValueError("the target has the wrong grading monoid")
+        return self.HomCategory().Of(domain, codomain)
 
     _HomCategory = GradedAlgebraHomCategoryConstruction
 
@@ -407,5 +404,4 @@ __all__ = [
     "GradedAlgebraHomset",
     "GradedAlgebraMorphism",
     "GradedAlgebras",
-    "graded_algebra_homset",
 ]

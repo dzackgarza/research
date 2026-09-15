@@ -5,7 +5,6 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
-    cohomology_algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
@@ -115,10 +114,9 @@ class CohomologyAlgebraFunctor(Functor):
 
     def _apply_morphism(self, morphism):
 
-        return cohomology_algebra_homset(
-            self(morphism.domain()),
-            self(morphism.codomain()),
-        )(morphism)
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return self.codomain().Mor(source, target)(morphism)
 
     def _repr_(self):
         return f"graded cohomology algebra over {self.base_ring()}"

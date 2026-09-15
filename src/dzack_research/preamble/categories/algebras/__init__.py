@@ -41,8 +41,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
  'LieAlgebraMorphism': ('dzack_research.preamble.categories.algebras.lie_algebras',
                         'LieAlgebraMorphism'),
  'LieAlgebras': ('dzack_research.preamble.categories.algebras.lie_algebras', 'LieAlgebras'),
- 'lie_algebra_homset': ('dzack_research.preamble.categories.algebras.lie_algebras',
-                        'lie_algebra_homset'),
  'AlternatingAlgebras': ('dzack_research.preamble.categories.algebras.free_algebras',
                          'AlternatingAlgebras'),
  'DividedPowerAlgebras': ('dzack_research.preamble.categories.algebras.free_algebras',
@@ -116,8 +114,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                            'GradedAlgebraMorphism'),
  'GradedAlgebras': ('dzack_research.preamble.categories.algebras.graded_algebras',
                     'GradedAlgebras'),
- 'graded_algebra_homset': ('dzack_research.preamble.categories.algebras.graded_algebras',
-                           'graded_algebra_homset'),
  'GradedCommutativeAlgebras': ('dzack_research.preamble.categories.algebras.graded_commutative_algebras',
                                'GradedCommutativeAlgebras'),
  'StrictlyGradedCommutativeAlgebras': ('dzack_research.preamble.categories.algebras.graded_commutative_algebras',
@@ -159,8 +155,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                                 'DifferentialGradedAlgebras'),
  'StrictlyCommutativeDifferentialGradedAlgebras': ('dzack_research.preamble.categories.algebras.differential_graded_algebras',
                                                    'StrictlyCommutativeDifferentialGradedAlgebras'),
- 'dga_homset': ('dzack_research.preamble.categories.algebras.differential_graded_algebras',
-                'dga_homset'),
  'DeRhamAlgebras': ('dzack_research.preamble.categories.algebras.de_rham_algebras',
                     'DeRhamAlgebras'),
  'GradedCommutator': ('dzack_research.preamble.categories.algebras.cartan_calculus',
@@ -179,9 +173,7 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
  'CohomologyAlgebraMorphism': ('dzack_research.preamble.categories.algebras.cohomology_algebras',
                                'CohomologyAlgebraMorphism'),
  'CohomologyAlgebras': ('dzack_research.preamble.categories.algebras.cohomology_algebras',
-                        'CohomologyAlgebras'),
- 'cohomology_algebra_homset': ('dzack_research.preamble.categories.algebras.cohomology_algebras',
-                               'cohomology_algebra_homset')}
+                        'CohomologyAlgebras')}
 
 __all__ = ['AugmentedAlgebras',
  'AffineSemigroupAlgebra',
@@ -223,7 +215,6 @@ __all__ = ['AugmentedAlgebras',
  'LieAlgebraHomset',
  'LieAlgebraMorphism',
  'LieAlgebras',
- 'lie_algebra_homset',
  'VectorFields',
  'DeRhamAlgebras',
  'DGAHomset',
@@ -278,9 +269,7 @@ __all__ = ['AugmentedAlgebras',
  'refine_algebra',
  'restrict_algebra_scalars',
  'restrict_graded_algebra_scalars',
- 'dga_homset',
- 'cohomology_algebra_homset',
- 'graded_algebra_homset']
+]
 
 def __getattr__(name):
     try:

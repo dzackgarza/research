@@ -164,21 +164,9 @@ class CommutatorLieAlgebras(LieAlgebras):
         return [LieAlgebras(ring)]
 
 
-def lie_algebra_homset(domain, codomain):
-    r"""``Hom_{R-Lie}(domain, codomain)`` for ``R`` the base of ``domain``.
-
-    This is the ordinary general-algebra Hom for the Lie multiplication: a
-    linear map is a Lie morphism exactly when it preserves that selected
-    multiplication.  The legacy dedicated Hom classes remain importable while
-    callers migrate, but they are no longer the construction owner.
-    """
-    return Algebras(domain.base_ring()).Lie().Mor(domain, codomain)
-
-
 __all__ = [
     "CommutatorLieAlgebras",
     "LieAlgebraHomset",
     "LieAlgebraMorphism",
     "LieAlgebras",
-    "lie_algebra_homset",
 ]
