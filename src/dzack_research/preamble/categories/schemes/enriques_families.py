@@ -232,14 +232,14 @@ class HorikawaEnriquesSurface(SageObject):
         return self.integral_cohomology().discriminant_gluing_map()
 
     def base_change(self, ring_map):
-        return HorikawaEnriquesBaseChangeComparison(self, ring_map)
+        return _HorikawaEnriquesBaseChangeComparison(self, ring_map)
 
     def _repr_(self) -> str:
         return f"Horikawa Enriques surface {self.scheme()} from {self.k3_member()}"
 
 
 
-class HorikawaEnriquesBaseChangeComparison(SageObject):
+class _HorikawaEnriquesBaseChangeComparison(SageObject):
     r"""Compatible scalar change of the K3 and Enriques quotient maps."""
 
     def __init__(self, source, ring_map) -> None:
@@ -348,6 +348,5 @@ class HorikawaEnriquesBaseChangeComparison(SageObject):
 
 __all__ = [
     "EnriquesMarkedIntegralCohomology",
-    "HorikawaEnriquesBaseChangeComparison",
     "HorikawaEnriquesSurface",
 ]

@@ -43,7 +43,7 @@ def _complete_intersection_base_supported(base) -> bool:
     )
 
 
-class CompleteIntersectionAdjunctionComparison(SageObject):
+class _CompleteIntersectionAdjunctionComparison(SageObject):
     r"""The adjunction comparison ``omega_X ~= (omega_P tensor det N)_X``.
 
     Every line bundle in the comparison is an actual pullback ``O_X(d)``.
@@ -309,7 +309,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         @cached_method
         def adjunction_comparison(self):
-            return CompleteIntersectionAdjunctionComparison(self)
+            return _CompleteIntersectionAdjunctionComparison(self)
 
         def adjunction_isomorphism(self):
             return self.adjunction_comparison().isomorphism()
@@ -370,6 +370,5 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
 
 __all__ = [
-    "CompleteIntersectionAdjunctionComparison",
     "ProjectiveCompleteIntersections",
 ]

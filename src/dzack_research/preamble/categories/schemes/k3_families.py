@@ -340,14 +340,14 @@ class HorikawaK3DoubleCover(SageObject):
         )
 
     def base_change(self, ring_map):
-        return HorikawaK3BaseChangeComparison(self, ring_map)
+        return _HorikawaK3BaseChangeComparison(self, ring_map)
 
     def _repr_(self) -> str:
         return f"Horikawa K3 double cover {self.scheme()} -> {self.base_surface()}"
 
 
 
-class HorikawaK3BaseChangeComparison(SageObject):
+class _HorikawaK3BaseChangeComparison(SageObject):
     r"""Base change of one Horikawa cover with commuting lifted involutions."""
 
     def __init__(self, source, ring_map) -> None:
@@ -442,7 +442,6 @@ def horikawa_k3_family(base_ring=None):
 
 
 __all__ = [
-    "HorikawaK3BaseChangeComparison",
     "HorikawaK3DoubleCover",
     "HorikawaK3Family",
     "horikawa_k3_family",
