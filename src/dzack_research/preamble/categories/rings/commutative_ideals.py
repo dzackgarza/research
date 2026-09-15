@@ -12,9 +12,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.localizations import (
     _localized_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
@@ -55,7 +52,7 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
         source_image = source_ideal.inclusion()(
             source_ideal.module_generator(label)
         )
-        coefficient = module_coefficients(source_image, source_regular_module).get(
+        coefficient = source_regular_module.framing_coefficients(source_image).get(
             source_regular_label,
             source_ideal.ring().zero(),
         )

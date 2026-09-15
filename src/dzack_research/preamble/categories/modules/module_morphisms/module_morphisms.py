@@ -116,7 +116,7 @@ def _integral_left_solver(system, ring):
             raise ValueError("the target has the wrong length for this linear system")
         target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
         shifted_vector = left(target_vector)
-        shifted_coefficients = module_coefficients(shifted_vector, left.codomain())
+        shifted_coefficients = left.codomain().framing_coefficients(shifted_vector)
 
         solution = [ring.zero()] * width
         for index, shifted_label in enumerate(shifted_labels):
@@ -148,7 +148,7 @@ def _solve_left_integrally_element(system, target, ring):
 def _solve_left_integrally(system, target, ring):
     r"""Return positional coefficients ``a`` with ``a*system = target`` over a PID."""
     original_solution = _solve_left_integrally_element(system, target, ring)
-    coefficients = module_coefficients(original_solution, original_solution.parent())
+    coefficients = original_solution.parent().framing_coefficients(original_solution)
     return tuple(coefficients.get(label, ring.zero()) for label in original_solution.parent().module_generating_set())
 
 
@@ -643,7 +643,7 @@ class ModuleMorphism(Morphism):
         if self._element_function is not None:
             image = self._element_function(element)
             return image if image.parent() is self.codomain() else self.codomain()(image)
-        coefficients = module_coefficients(element, self.domain())
+        coefficients = self.domain().framing_coefficients(element)
         return self._linear_combination_of_generator_images(coefficients)
 
     def matrix(self):
@@ -664,10 +664,7 @@ class ModuleMorphism(Morphism):
         if self.parent() is coordinate_parent:
             return self
         columns = {
-            domain_label: module_coefficients(
-                self(self.domain().module_generator(domain_label)),
-                self.codomain(),
-            )
+            domain_label: self.codomain().framing_coefficients(self(self.domain().module_generator(domain_label)))
             for domain_label in domain_labels
         }
         zero = self.codomain().base_ring().zero()
@@ -880,7 +877,7 @@ class ModuleMorphism(Morphism):
 
         image = self.image()
         image_element = image.inclusion().lift(element)
-        coefficients = module_coefficients(image_element, image)
+        coefficients = image.framing_coefficients(image_element)
         domain_labels = domain.module_generating_set()
         if any(label not in domain_labels for label in coefficients):
             raise ArithmeticError("the represented image framing no longer records the source-generator labels")
@@ -953,7 +950,7 @@ class ModuleMorphism(Morphism):
         if element.parent() is not self.codomain():
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
-        coefficients = module_coefficients(element, self.codomain())
+        coefficients = self.codomain().framing_coefficients(element)
         target = [coefficients[label] if label in coefficients else self.codomain().base_ring().zero() for label in codomain_labels]
         solution = _solve_left_integrally(
             self.matrix().transpose(),
@@ -1073,13 +1070,10 @@ class ModuleMorphism(Morphism):
             element = codomain(element)
 
         image_coordinates = {
-            label: module_coefficients(
-                self(domain.module_generator(label)).underlying_element(),
-                extension,
-            )
+            label: extension.framing_coefficients(self(domain.module_generator(label)).underlying_element())
             for label in domain.module_generating_set()
         }
-        target_coordinates = module_coefficients(element.underlying_element(), extension)
+        target_coordinates = extension.framing_coefficients(element.underlying_element())
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
             tuple(coefficient for coordinates in (*image_coordinates.values(), target_coordinates) for coefficient in coordinates.values()),
@@ -1208,10 +1202,7 @@ class ModuleMorphism(Morphism):
                 label: target.linear_combination(
                     {
                         target_label: ring_map(coefficient)
-                        for target_label, coefficient in module_coefficients(
-                            self(self.domain().module_generator(label)),
-                            self.codomain(),
-                        ).items()
+                        for target_label, coefficient in self.codomain().framing_coefficients(self(self.domain().module_generator(label))).items()
                         if coefficient
                     }
                 )
@@ -1896,10 +1887,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
             model = self.internal_hom_model()
         except NotImplementedError:
             return None
-        return module_coefficients(
-            self._internal_model_from_morphism(self(morphism)),
-            model,
-        )
+        return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
 
     def internal_hom_model(self):
         model = self.__dict__.get("_preamble_internal_hom_model")
@@ -1922,7 +1910,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     def _morphism_from_internal_model(self, model_element):
         assignment_space = self.inclusion_into_generator_maps().codomain()
         assignment = self.inclusion_into_generator_maps()(model_element)
-        coefficients = module_coefficients(assignment, assignment_space)
+        coefficients = assignment_space.framing_coefficients(assignment)
         assignment_labels = assignment_space.module_generating_set()
         return self(
             {
@@ -1944,10 +1932,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         coefficients = {}
         for source_label in self.domain().module_generating_set():
             image = morphism(self.domain().module_generator(source_label))
-            for target_label, coefficient in module_coefficients(
-                image,
-                self.codomain(),
-            ).items():
+            for target_label, coefficient in self.codomain().framing_coefficients(image).items():
                 coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
         assignment = power.linear_combination(coefficients)
         inclusion = self.inclusion_into_generator_maps()
@@ -1991,12 +1976,12 @@ class SubFramingMorphism(ModuleEmbedding):
         if element.parent() is not self.codomain():
             return False
         source_labels = self.domain().module_generating_set()
-        return all(label in source_labels for label in module_coefficients(element, self.codomain()))
+        return all(label in source_labels for label in self.codomain().framing_coefficients(element))
 
     def lift(self, element):
         r"""Return the unique element of the smaller free module mapping here."""
         assert self.is_in_image(element), f"{element} is not in the image of {self}"
-        return self.domain().linear_combination(module_coefficients(element, self.codomain()))
+        return self.domain().linear_combination(self.codomain().framing_coefficients(element))
 
 
 def _framing_morphism(domain, codomain, images) -> FramingMorphism:

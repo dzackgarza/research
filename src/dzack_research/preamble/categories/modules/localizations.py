@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_rows,
     _SelectedFinitePresentationModules,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FinitelyPresentedModules,
@@ -153,10 +150,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             r"""Return coefficients of a localization fraction in the source framing."""
 
             element = self(element)
-            source_coefficients = module_coefficients(
-                element.numerator(),
-                self.localization_source_module(),
-            )
+            source_coefficients = self.localization_source_module().framing_coefficients(element.numerator())
             localization_map = self.localization_ring().localization_map()
             denominator = localization_map(element.denominator())
             denominator_inverse = denominator.inverse_of_unit()

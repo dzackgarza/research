@@ -8,7 +8,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -80,7 +79,7 @@ class RationalPolyhedralCones(OwnedCategory):
             labels = tuple(dual.module_generating_set())
 
             def engine_row(covector):
-                coefficients = module_coefficients(covector, dual)
+                coefficients = dual.framing_coefficients(covector)
                 return [SageQQ.zero()] + [
                     SageQQ(int(coefficients.get(label, 0))) for label in labels
                 ]
@@ -195,8 +194,8 @@ class RationalPolyhedralCones(OwnedCategory):
             dual = lattice.dual_module()
             covector = dual(covector)
             vector = lattice(vector)
-            covector_coefficients = module_coefficients(covector, dual)
-            vector_coefficients = module_coefficients(vector, lattice)
+            covector_coefficients = dual.framing_coefficients(covector)
+            vector_coefficients = lattice.framing_coefficients(vector)
             return sum(
                 (
                     covector_coefficients.get(label, lattice.base_ring().zero())
