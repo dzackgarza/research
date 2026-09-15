@@ -156,12 +156,12 @@ class AbelianizationAdjunction(Adjunction):
 
 
 @cached_function
-def abelianization_functor() -> AbelianizationFunctor:
+def _abelianization_functor() -> AbelianizationFunctor:
     return AbelianizationFunctor()
 
 
 @cached_function
-def abelianization_adjunction() -> AbelianizationAdjunction:
+def _abelianization_adjunction() -> AbelianizationAdjunction:
     return AbelianizationAdjunction()
 
 
@@ -169,6 +169,4 @@ __all__ = [
     "AbelianGroupInclusionFunctor",
     "AbelianizationAdjunction",
     "AbelianizationFunctor",
-    "abelianization_adjunction",
-    "abelianization_functor",
 ]

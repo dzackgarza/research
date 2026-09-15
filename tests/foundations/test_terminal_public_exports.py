@@ -172,6 +172,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "free_module_functor",
         "free_group_underlying_set_adjunction",
         "free_forgetful_adjunction",
+        "abelianization_functor",
+        "abelianization_adjunction",
         "exponential_functor",
         "finite_power_set_functor",
         "fixed_cardinality_subset_functor",

@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     Modules,
     QuadraticField,
     Sets,
-    abelianization_adjunction,
     order_number_field_adjunction,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -365,7 +364,7 @@ def test_fraction_field_is_left_adjoint_to_ring_of_integers_with_embedding_natur
 def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> None:
     group = Groups.S(3)
     target = Groups.C(6)
-    adjunction = abelianization_adjunction()
+    adjunction = Groups().abelianization_adjunction()
     abelianization = adjunction.left_adjoint()(group)
 
     assert abelianization.order() == 2

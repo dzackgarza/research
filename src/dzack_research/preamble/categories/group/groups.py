@@ -2057,10 +2057,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             groups; the adjunction is ``abelianization_adjunction``.
             """
             from dzack_research.preamble.categories.functors.abelianization import (
-                abelianization_functor,
+                _abelianization_functor,
             )
 
-            return abelianization_functor()
+            return _abelianization_functor()
 
         def abelianization_adjunction(self):
             r"""``(-)^ab -| i`` between ``Grp`` and ``Ab``.
@@ -2071,10 +2071,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             abelian group with its own abelianization.
             """
             from dzack_research.preamble.categories.functors.abelianization import (
-                abelianization_adjunction,
+                _abelianization_adjunction,
             )
 
-            return abelianization_adjunction()
+            return _abelianization_adjunction()
 
         def underlying_set(self):
             r"""``U : Grp -> Set``, the underlying-set functor.
