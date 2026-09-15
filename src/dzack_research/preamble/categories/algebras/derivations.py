@@ -233,6 +233,30 @@ class Derivation(ModuleElement):
     def _call_(self, element):
         return self.__call__(element)
 
+    def lie_bracket(self, other):
+        r"""Return the Lie bracket of two vector fields on one algebra."""
+        from dzack_research.preamble.categories.algebras.cartan_calculus import (
+            _lie_bracket,
+        )
+
+        return _lie_bracket(self, other)
+
+    def interior_product(self):
+        r"""Return contraction ``i_X`` on the algebraic de Rham complex."""
+        from dzack_research.preamble.categories.algebras.cartan_calculus import (
+            _interior_product,
+        )
+
+        return _interior_product(self)
+
+    def lie_derivative(self):
+        r"""Return the Lie derivative ``L_X=[d,i_X]`` on de Rham forms."""
+        from dzack_research.preamble.categories.algebras.cartan_calculus import (
+            _lie_derivative,
+        )
+
+        return _lie_derivative(self)
+
     def underlying_linear_morphism(self):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")
         if cached is not None:
@@ -560,6 +584,14 @@ class GradedDerivation(ModuleElement):
 
     def degree_shift(self):
         return self.parent().degree_shift()
+
+    def graded_commutator(self, other):
+        r"""Return the graded commutator with another endo-derivation."""
+        from dzack_research.preamble.categories.algebras.cartan_calculus import (
+            _graded_commutator,
+        )
+
+        return _graded_commutator(self, other)
 
     def underlying_linear_morphism(self):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")

@@ -71,20 +71,20 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     rendered(euler)
     assert d_dx(x) == algebra.one()
     assert euler(x * y) == 2 * x * y
-    assert LieBracket(d_dx, d_dy)(x * y) == algebra.zero()
-    assert LieBracket(d_dx, euler)(x) == algebra.one()
-    assert LieBracket(rotation, euler)(x) == algebra.zero()
+    assert d_dx.lie_bracket(d_dy)(x * y) == algebra.zero()
+    assert d_dx.lie_bracket(euler)(x) == algebra.one()
+    assert rotation.lie_bracket(euler)(x) == algebra.zero()
     assert algebra.derivations(values).module_rank() == dimension
-    assert InteriorProduct(d_dx)(dx) == de_rham.one()
-    assert InteriorProduct(rotation)(dx) == de_rham(-y)
-    assert InteriorProduct(euler)(dx * dy) == de_rham(x) * dy - de_rham(y) * dx
-    assert LieDerivative(euler)(dx) == dx
-    assert LieDerivative(euler)(dx * dy) == 2 * dx * dy
-    assert LieDerivative(rotation)(dx * dy) == de_rham.zero()
+    assert d_dx.interior_product()(dx) == de_rham.one()
+    assert rotation.interior_product()(dx) == de_rham(-y)
+    assert euler.interior_product()(dx * dy) == de_rham(x) * dy - de_rham(y) * dx
+    assert euler.lie_derivative()(dx) == dx
+    assert euler.lie_derivative()(dx * dy) == 2 * dx * dy
+    assert rotation.lie_derivative()(dx * dy) == de_rham.zero()
     one_form = de_rham(x) * dy
     for vector_field in (d_dx, euler, rotation):
-        cartan = d(InteriorProduct(vector_field)(one_form)) + InteriorProduct(vector_field)(d(one_form))
-        assert LieDerivative(vector_field)(one_form) == cartan
+        cartan = d(vector_field.interior_product()(one_form)) + vector_field.interior_product()(d(one_form))
+        assert vector_field.lie_derivative()(one_form) == cartan
 
     # A connection on a line bundle and its curvature.
     line_bundle = FreeModule(algebra, 1)

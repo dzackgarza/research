@@ -27,7 +27,7 @@ def _vector_field_scalar(vector_field, element):
     return vector_field.domain()(coefficients.get(label, target.base_ring().zero()))
 
 
-def LieBracket(left, right):
+def _lie_bracket(left, right):
     r"""Return the commutator ``[left,right]`` of two vector fields."""
     if not isinstance(left, Derivation) or not isinstance(right, Derivation):
         raise TypeError("the Lie bracket here is defined on represented vector fields")
@@ -46,7 +46,7 @@ def LieBracket(left, right):
     )
 
 
-def GradedCommutator(left, right):
+def _graded_commutator(left, right):
     r"""Return the graded commutator of endo-derivations.
 
     For homogeneous derivations of shifts ``p`` and ``q`` this is
@@ -88,7 +88,7 @@ def _exterior_label(word):
     return tuple(word)
 
 
-def InteriorProduct(vector_field):
+def _interior_product(vector_field):
     r"""Return contraction ``i_X`` as a degree ``-1`` derivation of ``DR(A)``."""
     if not isinstance(vector_field, Derivation):
         raise TypeError("contraction requires a represented vector field")
@@ -143,15 +143,7 @@ def InteriorProduct(vector_field):
     return de_rham.graded_derivations(de_rham, shift=-1)(contraction)
 
 
-def LieDerivative(vector_field):
+def _lie_derivative(vector_field):
     r"""Return ``L_X = [d,i_X]`` as a degree-zero derivation of ``DR(A)``."""
-    contraction = InteriorProduct(vector_field)
-    return GradedCommutator(contraction.algebra().differential(), contraction)
-
-
-__all__ = [
-    "GradedCommutator",
-    "InteriorProduct",
-    "LieBracket",
-    "LieDerivative",
-]
+    contraction = vector_field.interior_product()
+    return contraction.algebra().differential().graded_commutator(contraction)

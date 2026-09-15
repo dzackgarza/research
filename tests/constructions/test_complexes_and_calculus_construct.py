@@ -148,10 +148,10 @@ def test_vector_fields_and_lie_brackets(field) -> None:
     assert d_dx(x) == plane.one()
     assert d_dx(y) == plane.zero()
     assert d_dx(x * y) == y
-    assert LieBracket(d_dx, d_dy)(x * y) == plane.zero()
-    assert LieBracket(d_dx, x_d_dy)(y) == plane.one()
-    assert LieBracket(d_dx, x_d_dy)(x) == plane.zero()
-    euler = LieBracket(y_d_dx, x_d_dy)
+    assert d_dx.lie_bracket(d_dy)(x * y) == plane.zero()
+    assert d_dx.lie_bracket(x_d_dy)(y) == plane.one()
+    assert d_dx.lie_bracket(x_d_dy)(x) == plane.zero()
+    euler = y_d_dx.lie_bracket(x_d_dy)
     assert euler(x) == -x
     assert euler(y) == y
     assert plane.derivations(plane.regular_module()).module_rank() == 2
@@ -167,16 +167,16 @@ def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None
     d_dx = field_of(plane.one(), plane.zero())
     x_d_dy = field_of(plane.zero(), x)
 
-    assert InteriorProduct(d_dx)(dx) == de_rham.one()
-    assert InteriorProduct(d_dx)(dy) == de_rham.zero()
-    assert InteriorProduct(d_dx)(dx * dy) == dy
-    assert InteriorProduct(x_d_dy)(dy) == de_rham(x)
-    assert LieDerivative(d_dx)(de_rham(x)) == de_rham.one()
-    assert LieDerivative(d_dx)(dx) == de_rham.zero()
-    assert LieDerivative(x_d_dy)(dy) == dx
+    assert d_dx.interior_product()(dx) == de_rham.one()
+    assert d_dx.interior_product()(dy) == de_rham.zero()
+    assert d_dx.interior_product()(dx * dy) == dy
+    assert x_d_dy.interior_product()(dy) == de_rham(x)
+    assert d_dx.lie_derivative()(de_rham(x)) == de_rham.one()
+    assert d_dx.lie_derivative()(dx) == de_rham.zero()
+    assert x_d_dy.lie_derivative()(dy) == dx
     form = de_rham(y) * dx
-    assert LieDerivative(d_dx)(form) == d(InteriorProduct(d_dx)(form)) + InteriorProduct(d_dx)(d(form))
-    assert LieDerivative(x_d_dy)(form) == d(InteriorProduct(x_d_dy)(form)) + InteriorProduct(x_d_dy)(d(form))
+    assert d_dx.lie_derivative()(form) == d(d_dx.interior_product()(form)) + d_dx.interior_product()(d(form))
+    assert x_d_dy.lie_derivative()(form) == d(x_d_dy.interior_product()(form)) + x_d_dy.interior_product()(d(form))
     assert d(d(form)) == de_rham.zero()
     assert dx * dy == -(dy * dx)
 

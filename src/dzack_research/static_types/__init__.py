@@ -958,15 +958,11 @@ def d(form):
 
 
 def graded_commutator(left, right):
-    from dzack_research.preamble.categories.algebras import GradedCommutator
-
-    return GradedCommutator(left, right)
+    return left.graded_commutator(right)
 
 
 def interior_operator(vector_field):
-    from dzack_research.preamble.categories.algebras import InteriorProduct
-
-    return InteriorProduct(vector_field)
+    return vector_field.interior_product()
 
 
 def interior(vector_field, form):
@@ -974,9 +970,7 @@ def interior(vector_field, form):
 
 
 def lie_derivative_operator(vector_field):
-    from dzack_research.preamble.categories.algebras import LieDerivative
-
-    return LieDerivative(vector_field)
+    return vector_field.lie_derivative()
 
 
 def lie_derivative(vector_field, form):
@@ -984,9 +978,7 @@ def lie_derivative(vector_field, form):
 
 
 def lie_bracket(left, right):
-    from dzack_research.preamble.categories.algebras import LieBracket
-
-    return LieBracket(left, right)
+    return left.lie_bracket(right)
 
 
 def form_hodge_star(metric, volume, degree, form):

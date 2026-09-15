@@ -3,10 +3,6 @@ from sage.categories.homset import Homset
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
-    GradedCommutator,
-    InteriorProduct,
-    LieBracket,
-    LieDerivative,
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import Modules
@@ -44,7 +40,7 @@ def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> No
             "y": _scalar_module_element(values, x),
         }
     )
-    bracket = LieBracket(d_dx, x_d_dy)
+    bracket = d_dx.lie_bracket(x_d_dy)
     module_morphisms = Modules(QQ).Mor(
         vector_fields.domain_object(), vector_fields.codomain_object()
     )
@@ -76,8 +72,8 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
     dx = de_rham.d(X)
     dy = de_rham.d(Y)
 
-    contraction = InteriorProduct(vector)
-    lie = LieDerivative(vector)
+    contraction = vector.interior_product()
+    lie = vector.lie_derivative()
     graded_morphisms = Modules(QQ).Mor(de_rham, de_rham)
 
     assert not isinstance(contraction.parent(), Homset)
@@ -121,22 +117,22 @@ def test_cartan_commutator_identities_hold_on_the_de_rham_algebra() -> None:
             "y": _scalar_module_element(values, x),
         }
     )
-    bracket = LieBracket(Xfield, Yfield)
+    bracket = Xfield.lie_bracket(Yfield)
 
     de_rham = algebra.de_rham_algebra()
     X = de_rham.from_degree_zero(x)
     Y = de_rham.from_degree_zero(y)
     test_form = X * de_rham.d(Y) + de_rham.d(X) * de_rham.d(Y)
 
-    iX = InteriorProduct(Xfield)
-    iY = InteriorProduct(Yfield)
-    LX = LieDerivative(Xfield)
-    LY = LieDerivative(Yfield)
-    iBracket = InteriorProduct(bracket)
-    LBracket = LieDerivative(bracket)
+    iX = Xfield.interior_product()
+    iY = Yfield.interior_product()
+    LX = Xfield.lie_derivative()
+    LY = Yfield.lie_derivative()
+    iBracket = bracket.interior_product()
+    LBracket = bracket.lie_derivative()
     d = de_rham.differential()
 
-    assert GradedCommutator(d, iX)(test_form) == LX(test_form)
-    assert GradedCommutator(d, LX)(test_form) == de_rham.zero()
-    assert GradedCommutator(LX, iY)(test_form) == iBracket(test_form)
-    assert GradedCommutator(LX, LY)(test_form) == LBracket(test_form)
+    assert d.graded_commutator(iX)(test_form) == LX(test_form)
+    assert d.graded_commutator(LX)(test_form) == de_rham.zero()
+    assert LX.graded_commutator(iY)(test_form) == iBracket(test_form)
+    assert LX.graded_commutator(LY)(test_form) == LBracket(test_form)
