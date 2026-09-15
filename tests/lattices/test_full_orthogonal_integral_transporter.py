@@ -4,7 +4,7 @@ from dzack_research.preamble.all import (
     FreeModule,
     Lattices,
     Modules,
-    integral_transporter,
+    IntegralStructureAction,
 )
 
 
@@ -31,7 +31,7 @@ def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> No
         },
     )
 
-    witness = integral_transporter(plane.Aut(), source, target)
+    witness = IntegralStructureAction(plane.Aut(), source).transporter(target)
     assert witness is not None
     assert witness in plane.Aut()
     for generator in source.domain().module_generators():
@@ -58,4 +58,4 @@ def test_nonisometric_commensurable_lattices_have_no_full_orthogonal_transporter
         },
     )
 
-    assert integral_transporter(plane.Aut(), source, target) is None
+    assert IntegralStructureAction(plane.Aut(), source).transporter(target) is None

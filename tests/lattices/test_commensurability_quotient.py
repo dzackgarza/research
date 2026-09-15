@@ -1,7 +1,5 @@
 from dzack_research.preamble.all import QQ, ZZ, FreeModule, Lattices, Modules
-from dzack_research.preamble.categories.rational_integral_stabilizers import (
-    finite_commensurability_quotient,
-)
+from dzack_research.preamble.categories.rational_integral_stabilizers import IntegralStructureAction
 
 
 def _standard_reference():
@@ -20,7 +18,7 @@ def _standard_reference():
 
 def test_stable_reference_lattice_produces_the_actual_finite_quotient_action() -> None:
     _line, _space, reference, negation, group = _standard_reference()
-    quotient_data = finite_commensurability_quotient(group, reference, ZZ(3))
+    quotient_data = IntegralStructureAction(group, reference).finite_quotient(ZZ(3))
     quotient = quotient_data.quotient_module()
     projection = quotient_data.quotient_projection()
 
@@ -47,7 +45,7 @@ def test_intermediate_lattice_maps_to_its_actual_subobject_modulo_dM() -> None:
     intermediate = intermediate_module.Mono(space)(
         {0: space.wrap(line.scalar_multiple(QQ(2), e0))}
     )
-    quotient_data = finite_commensurability_quotient(group, reference, ZZ(4))
+    quotient_data = IntegralStructureAction(group, reference).finite_quotient(ZZ(4))
     image = quotient_data.intermediate_image(intermediate)
 
     assert image.inclusion().codomain() is quotient_data.quotient_module()
@@ -57,7 +55,7 @@ def test_intermediate_lattice_maps_to_its_actual_subobject_modulo_dM() -> None:
 def test_commensurability_modulus_must_be_positive() -> None:
     _line, _space, reference, _negation, group = _standard_reference()
     try:
-        finite_commensurability_quotient(group, reference, ZZ(0))
+        IntegralStructureAction(group, reference).finite_quotient(ZZ(0))
     except ValueError as error:
         assert "positive" in str(error)
     else:
@@ -81,11 +79,7 @@ def test_only_the_reference_stabilizer_acts_on_the_finite_quotient() -> None:
             1: plane.scalar_multiple(QQ(1) / 2, e1),
         }
     )
-    quotient_data = finite_commensurability_quotient(
-        plane.Aut(),
-        reference,
-        ZZ(2),
-    )
+    quotient_data = IntegralStructureAction(plane.Aut(), reference).finite_quotient(ZZ(2))
 
     assert scaling not in quotient_data.reference_stabilizer()
     try:

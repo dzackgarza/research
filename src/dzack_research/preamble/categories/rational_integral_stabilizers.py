@@ -7,7 +7,7 @@ finitely generated subgroup of ``GL(V)``.  Two lattices ``L`` and ``M`` in
 
 ``G_L = G ∩ GL(L) = {g in G : g(L) = L}``,
 
-which is the definition, and it is what :func:`integral_stabilizer` returns: a
+which is the definition, and it is what :meth:`IntegralStructureAction.stabilizer` returns: a
 predicate subgroup cut out by that condition, with nothing enumerated and no
 engine called.
 
@@ -130,6 +130,135 @@ def _ported_integral_structure(rational_group, lattice_inclusion):
 
 
 
+class IntegralStructureAction(SageObject):
+    r"""The action of a rational isometry group on one selected integral lattice.
+
+    The defining datum is the pair ``(G, i: L -> Res(V))``.  Stabilizers,
+    transporters, and the associated coset decompositions are operations of
+    that action; the finite quotient ``L/dL`` is a further construction from
+    the same selected lattice.
+    """
+
+    def __init__(self, rational_group, lattice_inclusion) -> None:
+        self._rational_group = rational_group
+        self._lattice_inclusion = lattice_inclusion
+
+    def rational_group(self):
+        return self._rational_group
+
+    def lattice_inclusion(self):
+        return self._lattice_inclusion
+
+    def stabilizer(self):
+        r"""Return ``{g in G : g(L)=L}`` for the selected lattice ``L``."""
+        rational_group = self.rational_group()
+        lattice_inclusion = self.lattice_inclusion()
+        match _ported_rational_group(rational_group):
+            case None:
+                pass
+            case _:
+                return _ported_integral_structure(
+                    rational_group,
+                    lattice_inclusion,
+                ).lattice_stabilizer()
+
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            RestrictedScalarsModules,
+        )
+
+        lattice = lattice_inclusion.domain()
+        space = lattice_inclusion.codomain()
+        ring = lattice.base_ring()
+        assert space in RestrictedScalarsModules(ring), (
+            f"a lattice in a rational space is a monomorphism into a restriction of "
+            f"scalars, and {space} is not one"
+        )
+        assert space.extension_ring() is ring.fraction_field(), (
+            f"the rational space is {ring} read along its fraction field, and "
+            f"{space} restricts {space.extension_ring()}"
+        )
+
+        rational_generators = tuple(
+            lattice_inclusion(generator).underlying_element()
+            for generator in lattice.module_generators()
+        )
+
+        def preserves_the_lattice(automorphism):
+            inverse = automorphism.inverse()
+            return all(
+                lattice_inclusion.is_in_image(space.wrap(automorphism(vector)))
+                and lattice_inclusion.is_in_image(space.wrap(inverse(vector)))
+                for vector in rational_generators
+            )
+
+        return rational_group.predicate_subgroup(
+            preserves_the_lattice,
+            f"g(L)=L for L={lattice}",
+        )
+
+    def transporter(self, target_inclusion):
+        r"""Return one ``g in G`` with ``g(L_1)=L_2``, or ``None``."""
+        rational_group = self.rational_group()
+        source_inclusion = self.lattice_inclusion()
+        if source_inclusion.codomain() is target_inclusion.codomain():
+            space = source_inclusion.codomain()
+            try:
+                ambient = space.module_over_extension()
+            except AttributeError:
+                ambient = None
+            if ambient is not None and rational_group is ambient.Aut():
+                return _full_orthogonal_integral_transporter(
+                    rational_group,
+                    source_inclusion,
+                    target_inclusion,
+                )
+        match _ported_rational_group(rational_group):
+            case None:
+                raise NotImplementedError(
+                    f"an integral transporter in {rational_group} from {source_inclusion} "
+                    f"to {target_inclusion} is not computed: {_ABSENCE}"
+                )
+            case _:
+                return _ported_integral_structure(
+                    rational_group,
+                    source_inclusion,
+                ).transporter(source_inclusion, target_inclusion)
+
+    def right_cosets(self):
+        r"""Return ``G/G_L`` with the selected lattice stabilizer on the right."""
+        return _ported_integral_structure(
+            self.rational_group(),
+            self.lattice_inclusion(),
+        ).right_cosets()
+
+    def double_cosets(self, subgroup):
+        r"""Return ``subgroup \\ G / G_L`` with all three sides retained."""
+        rational_group = self.rational_group()
+        action = _ported_integral_structure(
+            rational_group,
+            self.lattice_inclusion(),
+        )
+        try:
+            supergroup = subgroup.supergroup()
+        except AttributeError as error:
+            raise TypeError(
+                "the left double-coset factor must be a represented subgroup"
+            ) from error
+        if supergroup is not rational_group:
+            raise ValueError(
+                "the left subgroup must have the selected rational group as supergroup"
+            )
+        return action.double_cosets(subgroup)
+
+    def finite_quotient(self, modulus):
+        r"""Return the finite commensurability quotient ``L/modulus*L``."""
+        return FiniteCommensurabilityQuotient(
+            self.rational_group(),
+            self.lattice_inclusion(),
+            modulus,
+        )
+
+
 class FiniteCommensurabilityQuotient(SageObject):
     r"""The finite module ``F_M=M/dM`` controlling a commensurability class.
 
@@ -160,10 +289,10 @@ class FiniteCommensurabilityQuotient(SageObject):
     @cached_method
     def reference_stabilizer(self):
         r"""Return ``G_M={g in G:g(M)=M}``, the group acting on ``M/dM``."""
-        return integral_stabilizer(
+        return IntegralStructureAction(
             self.rational_group(),
             self.reference_inclusion(),
-        )
+        ).stabilizer()
 
     def reference_inclusion(self):
         return self._reference_inclusion
@@ -254,15 +383,6 @@ class FiniteCommensurabilityQuotient(SageObject):
         scaled_reference = self.reference_inclusion() * self.scaling_morphism()
         scaled_reference.factor_through(lattice_inclusion)
         return (self.quotient_projection() * into_reference).image()
-
-
-def finite_commensurability_quotient(rational_group, reference_inclusion, modulus):
-    r"""Return ``M/dM`` with the action of the actual reference stabilizer ``G_M``."""
-    return FiniteCommensurabilityQuotient(
-        rational_group,
-        reference_inclusion,
-        modulus,
-    )
 
 
 def _full_orthogonal_integral_transporter(
@@ -383,114 +503,7 @@ def _full_orthogonal_integral_transporter(
     return candidate
 
 
-def integral_stabilizer(rational_group, lattice_inclusion):
-    r"""Return ``{g in G : g(L) = L}`` for ``L -> Res(V)`` and a rational group ``G``.
-
-    ``g(L) <= L`` is decided on the module generators of ``L``, because ``g``
-    is additive and ``L`` is their ``R``-span, and each membership is the lift
-    along ``lattice_inclusion``.  That containment alone is not ``g(L) = L``:
-    on the hyperbolic plane over ``QQ`` the isometry ``diag(2, 1/2)`` carries
-    the line ``ZZ e_0`` onto ``2 ZZ e_0``, properly inside itself.  Asking the
-    same of ``g^{-1}`` gives ``L = g(g^{-1}(L)) <= g(L)``, so the two
-    containments together are the equality, and both are decided by the same
-    lift.  Nothing is enumerated, so the subgroup is constructed for an
-    infinite ``G`` as well.
-    """
-    match _ported_rational_group(rational_group):
-        case None:
-            pass
-        case _:
-            return _ported_integral_structure(
-                rational_group, lattice_inclusion
-            ).lattice_stabilizer()
-
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        RestrictedScalarsModules,
-    )
-
-    lattice = lattice_inclusion.domain()
-    space = lattice_inclusion.codomain()
-    ring = lattice.base_ring()
-    assert space in RestrictedScalarsModules(ring), (
-        f"a lattice in a rational space is a monomorphism into a restriction of "
-        f"scalars, and {space} is not one"
-    )
-    assert space.extension_ring() is ring.fraction_field(), (
-        f"the rational space is {ring} read along its fraction field, and "
-        f"{space} restricts {space.extension_ring()}"
-    )
-
-    # ``Res(g)`` is ``g``: restriction never changes the underlying map, so an
-    # element of ``Res(V)`` moves by applying ``g`` in ``V`` and reading the
-    # image back.  The generators are held in ``V`` for that reason.
-    rational_generators = tuple(
-        lattice_inclusion(generator).underlying_element()
-        for generator in lattice.module_generators()
-    )
-
-    def preserves_the_lattice(automorphism):
-        inverse = automorphism.inverse()
-        return all(
-            lattice_inclusion.is_in_image(space.wrap(automorphism(vector)))
-            and lattice_inclusion.is_in_image(space.wrap(inverse(vector)))
-            for vector in rational_generators
-        )
-
-    return rational_group.predicate_subgroup(preserves_the_lattice, f"g(L)=L for L={lattice}")
-
-
-def integral_transporter(rational_group, source_inclusion, target_inclusion):
-    r"""Return one ``g`` in ``G`` with ``g(L_1) = L_2``, or the empty transporter."""
-    if source_inclusion.codomain() is target_inclusion.codomain():
-        space = source_inclusion.codomain()
-        try:
-            ambient = space.module_over_extension()
-        except AttributeError:
-            ambient = None
-        if ambient is not None and rational_group is ambient.Aut():
-            return _full_orthogonal_integral_transporter(
-                rational_group,
-                source_inclusion,
-                target_inclusion,
-            )
-    match _ported_rational_group(rational_group):
-        case None:
-            raise NotImplementedError(
-                f"an integral transporter in {rational_group} from {source_inclusion} "
-                f"to {target_inclusion} is not computed: {_ABSENCE}"
-            )
-        case _:
-            return _ported_integral_structure(
-                rational_group, source_inclusion
-            ).transporter(source_inclusion, target_inclusion)
-
-
-def integral_right_cosets(rational_group, lattice_inclusion):
-    r"""Return ``G/G_L`` with the stabilizer explicitly on the right."""
-    return _ported_integral_structure(
-        rational_group, lattice_inclusion
-    ).right_cosets()
-
-
-def integral_double_cosets(subgroup, rational_group, lattice_inclusion):
-    r"""Return ``subgroup \\ G / G_L`` with all three sides retained."""
-    action = _ported_integral_structure(rational_group, lattice_inclusion)
-    try:
-        ambient = subgroup.supergroup()
-    except AttributeError as error:
-        raise TypeError("the left double-coset factor must be a represented subgroup") from error
-    match ambient is rational_group:
-        case False:
-            raise ValueError("the left subgroup must have the selected rational group as ambient")
-        case True:
-            return action.double_cosets(subgroup)
-
-
 __all__ = [
     "FiniteCommensurabilityQuotient",
-    "finite_commensurability_quotient",
-    "integral_double_cosets",
-    "integral_right_cosets",
-    "integral_stabilizer",
-    "integral_transporter",
+    "IntegralStructureAction",
 ]

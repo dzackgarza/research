@@ -15,11 +15,8 @@ from dzack_research.preamble.all import (
     ZZ,
     FreeModule,
     Lattices,
+    IntegralStructureAction,
     Modules,
-    integral_double_cosets,
-    integral_right_cosets,
-    integral_stabilizer,
-    integral_transporter,
 )
 
 
@@ -80,7 +77,7 @@ def test_ported_integral_stabilizer_retains_the_selected_rational_group() -> Non
         _proper_rational_group_and_lattices()
     )
 
-    stabilizer = integral_stabilizer(group, standard)
+    stabilizer = IntegralStructureAction(group, standard).stabilizer()
 
     assert stabilizer.supergroup() is group
     assert all(_carries(standard, standard, generator) for generator in stabilizer.generators())
@@ -92,7 +89,7 @@ def test_ported_transporter_is_an_actual_rational_isometry_of_the_lattices() -> 
         _proper_rational_group_and_lattices()
     )
 
-    witness = integral_transporter(group, standard, target)
+    witness = IntegralStructureAction(group, standard).transporter(target)
 
     assert witness is not None
     assert witness.parent() is group.rational_lattice().Aut()
@@ -104,7 +101,7 @@ def test_ported_cosets_retain_their_orientation_and_live_representatives() -> No
         _proper_rational_group_and_lattices()
     )
 
-    right_cosets = integral_right_cosets(group, standard)
+    right_cosets = IntegralStructureAction(group, standard).right_cosets()
 
     assert right_cosets.ambient_group() is group
     assert right_cosets.right_subgroup().supergroup() is group
@@ -115,7 +112,7 @@ def test_ported_cosets_retain_their_orientation_and_live_representatives() -> No
     )
 
     trivial = ArithmeticSubgroup(group, (plane.Aut().one(),))
-    double_cosets = integral_double_cosets(trivial, group, standard)
+    double_cosets = IntegralStructureAction(group, standard).double_cosets(trivial)
     assert double_cosets.left_subgroup() is trivial
     assert double_cosets.ambient_group() is group
     assert double_cosets.right_subgroup().supergroup() is group

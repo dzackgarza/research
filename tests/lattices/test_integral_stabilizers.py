@@ -16,7 +16,7 @@ from dzack_research.preamble.all import (
     FreeModule,
     Lattices,
     Modules,
-    integral_stabilizer,
+    IntegralStructureAction,
 )
 
 
@@ -40,7 +40,7 @@ def test_an_isometry_carrying_the_standard_lattice_onto_itself_stabilizes_it() -
     orthogonal_group = plane.Aut()
     swap = orthogonal_group({0: e1, 1: e0})
 
-    assert swap in integral_stabilizer(orthogonal_group, standard)
+    assert swap in IntegralStructureAction(orthogonal_group, standard).stabilizer()
 
 
 def test_an_isometry_moving_a_generator_off_the_lattice_leaves_the_stabilizer() -> None:
@@ -59,7 +59,7 @@ def test_an_isometry_moving_a_generator_off_the_lattice_leaves_the_stabilizer() 
         }
     )
 
-    assert scaling not in integral_stabilizer(orthogonal_group, standard)
+    assert scaling not in IntegralStructureAction(orthogonal_group, standard).stabilizer()
 
 
 def test_an_isometry_shrinking_an_isotropic_line_leaves_its_stabilizer() -> None:
@@ -82,7 +82,7 @@ def test_an_isometry_shrinking_an_isotropic_line_leaves_its_stabilizer() -> None
     )
     negation = orthogonal_group({0: -e0, 1: -e1})
 
-    stabilizer = integral_stabilizer(orthogonal_group, line)
+    stabilizer = IntegralStructureAction(orthogonal_group, line).stabilizer()
 
     assert line.is_in_image(space.wrap(scaling(e0)))
     assert scaling not in stabilizer
@@ -111,5 +111,5 @@ def test_commensurable_lattices_have_different_stabilizers_in_one_group() -> Non
 
     assert standard.factor_through(finer).codomain() is finer.domain()
     assert doubled.factor_through(standard).codomain() is standard.domain()
-    assert swap in integral_stabilizer(orthogonal_group, standard)
-    assert swap not in integral_stabilizer(orthogonal_group, finer)
+    assert swap in IntegralStructureAction(orthogonal_group, standard).stabilizer()
+    assert swap not in IntegralStructureAction(orthogonal_group, finer).stabilizer()

@@ -675,10 +675,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F
     MatrixSpaces,
 )
 from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
-    integral_double_cosets,
-    integral_right_cosets,
-    integral_stabilizer,
-    integral_transporter,
+    FiniteCommensurabilityQuotient,
+    IntegralStructureAction,
 )
 from dzack_research.preamble.categories.rational_lattices import (
     RationalLattices as RationalLattices,
