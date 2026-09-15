@@ -903,16 +903,11 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             completion flag records whether the Vinberg search established the
             full wall set or only a bounded exploration prefix.
             """
-            from dzack_research.preamble.categories.polyhedral_cones import (
-                rational_polyhedral_cone,
-            )
-
             complete, roots = self._vinberg_search(
                 controlling_vector, max_roots, max_decompositions
             )
             correlation = self.algebraic_correlation_morphism()
-            return rational_polyhedral_cone(
-                self,
+            return self.rational_polyhedral_cone(
                 tuple(correlation(root) for root in roots),
                 wall_roots=roots,
                 complete=complete,

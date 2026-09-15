@@ -4,7 +4,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
@@ -37,7 +36,7 @@ def test_projectivized_light_cone_has_ideal_vertices() -> None:
     timelike = lattice.module_generator(0)
     dual = lattice.dual_module()
     first, second = dual.module_generators()
-    cone = rational_polyhedral_cone(lattice, (first - second, first + second), complete=True)
+    cone = lattice.rational_polyhedral_cone((first - second, first + second), complete=True)
 
     polyhedron = lattice.hyperbolic_space(timelike).projectivize_cone(cone)
     assert polyhedron.ordinary_vertices().cardinality() == 0

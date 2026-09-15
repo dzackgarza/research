@@ -55,7 +55,7 @@ class RationalPolyhedralCones(OwnedCategory):
         integers = _own_ring(SageZZ)
         lattice = integers.free_module(2)
         dual = lattice.dual_module()
-        return rational_polyhedral_cone(lattice, tuple(dual.module_generators()))
+        return _rational_polyhedral_cone(lattice, tuple(dual.module_generators()))
 
     class ParentMethods:
         def __init__(
@@ -150,7 +150,7 @@ class RationalPolyhedralCones(OwnedCategory):
             roots = None
             if self._wall_roots is not None:
                 roots = tuple(isometry(root) for root in self._wall_roots)
-            return rational_polyhedral_cone(
+            return _rational_polyhedral_cone(
                 target,
                 tuple(
                     self._transport_covector(covector, isometry)
@@ -233,7 +233,7 @@ class RationalPolyhedralCones(OwnedCategory):
             r"""Intersect this cone with the homogeneous wall ``covector=0``."""
             dual = self.ambient_lattice().dual_module()
             covector = dual(covector)
-            return rational_polyhedral_cone(
+            return _rational_polyhedral_cone(
                 self.ambient_lattice(),
                 tuple(self._halfspace_covectors),
                 equation_covectors=tuple(self._equation_covectors) + (covector,),
@@ -256,7 +256,7 @@ class RationalPolyhedralCones(OwnedCategory):
                 self._covector_from_engine_hrepresentation(relation)
                 for relation in face.ambient_Hrepresentation()
             )
-            return rational_polyhedral_cone(
+            return _rational_polyhedral_cone(
                 self.ambient_lattice(),
                 tuple(self._halfspace_covectors),
                 equation_covectors=tuple(self._equation_covectors) + active,
@@ -364,7 +364,7 @@ class RationalPolyhedralCones(OwnedCategory):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
 
 
-def rational_polyhedral_cone(
+def _rational_polyhedral_cone(
     lattice,
     halfspace_covectors,
     *,
@@ -382,4 +382,4 @@ def rational_polyhedral_cone(
     )
 
 
-__all__ = ["RationalPolyhedralCones", "rational_polyhedral_cone"]
+__all__ = ["RationalPolyhedralCones"]

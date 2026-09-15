@@ -2473,6 +2473,27 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError("the lattice is not even and 2-elementary")
             return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
 
+        def rational_polyhedral_cone(
+            self,
+            halfspace_covectors,
+            *,
+            equation_covectors=(),
+            wall_roots=None,
+            complete=None,
+        ):
+            r"""Return the exact rational polyhedral cone cut out in this lattice."""
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                _rational_polyhedral_cone,
+            )
+
+            return _rational_polyhedral_cone(
+                self,
+                halfspace_covectors,
+                equation_covectors=equation_covectors,
+                wall_roots=wall_roots,
+                complete=complete,
+            )
+
         def number_field_vinberg(self, real_embedding):
             r"""Retain the selected real place for number-field Vinberg enumeration."""
             from dzack_research.preamble.categories.hyperbolic_lattices import (

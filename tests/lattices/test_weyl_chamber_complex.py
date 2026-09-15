@@ -4,7 +4,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
@@ -13,8 +12,7 @@ def _one_wall_chamber():
     lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
     root = lattice.module_generator(1)
     covector = lattice.algebraic_correlation_morphism()(root)
-    chamber = rational_polyhedral_cone(
-        lattice,
+    chamber = lattice.rational_polyhedral_cone(
         (covector,),
         wall_roots=(root,),
         complete=True,
