@@ -34,7 +34,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedQuadraticFormModules,
-    FormModule,
+    FormModules,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
@@ -1584,7 +1584,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         relations = _presentation_matrix(module)
         if not _bilinear_descends(relations, values, value_module):
             raise ValueError("the bilinear form does not descend through the selected relations")
-        formed = FormModule(
+        formed = FormModules(module.base_ring())(
             module.bilinear_forms(value_module)(values),
             _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
@@ -1911,7 +1911,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         relations = _presentation_matrix(module)
         if not _quadratic_descends(relations, values, value_module):
             raise ValueError("the quadratic form does not descend through the selected relations")
-        formed = FormModule(
+        formed = FormModules(module.base_ring())(
             module.quadratic_forms(value_module)(values),
             _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
@@ -2174,7 +2174,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             module = self.unformed_module()
 
             equip = self.equip_form_morphism()
-            associated = FormModule(
+            associated = FormModules(module.base_ring())(
                 module.bilinear_forms(bilinear_values)(
                     lambda left, right: bilinear_values(
                         value_module.lift(

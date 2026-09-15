@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedQuadraticFormModules,
     FormedModuleMorphism,
-    FormModule,
+    FormModules,
     _represented_value_module,
     _value_as_module_element,
 )
@@ -96,7 +96,7 @@ class FreeBilinearFormFunctor(Functor):
     def _apply_object(self, module):
 
         classifier = Modules(self.base_ring()).tensor_product((module, module))
-        formed = FormModule(
+        formed = FormModules(module.base_ring())(
             module.bilinear_forms(classifier)(
                 lambda left, right: classifier.pure_tensor(left, right)
             )
@@ -140,7 +140,7 @@ class FreeQuadraticFormFunctor(Functor):
     def _apply_object(self, module):
 
         classifier = module.divided_square()
-        formed = FormModule(
+        formed = FormModules(module.base_ring())(
             module.quadratic_map(classifier, classifier.quadratic)
         )
         formed._preamble_form_classifier = classifier

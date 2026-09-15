@@ -560,7 +560,6 @@ from dzack_research.preamble.categories.modules import (
     FormedModuleMorphism,
     FormedModules,
     FormEmbedding,
-    FormModule,
     FormModules,
     FractionalIdeals,
     FractionFieldQuotient,

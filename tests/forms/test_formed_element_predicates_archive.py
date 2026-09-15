@@ -1,11 +1,11 @@
 r"""Archive reconciliation for isotropy and left orthogonality of formed elements."""
 
-from dzack_research.preamble.all import ZZ, FormModule, FreeModule
+from dzack_research.preamble.all import ZZ, FormModules, FreeModule
 
 
 def test_isotropy_and_left_orthogonality_are_element_predicates() -> None:
     module = FreeModule(ZZ, 2)
-    formed = FormModule(module.bilinear_forms(ZZ)([[0, 1], [0, 0]]))
+    formed = FormModules(ZZ)(module.bilinear_forms(ZZ)([[0, 1], [0, 0]]))
     first, second = tuple(formed.module_generators())
 
     assert first.is_isotropic()
@@ -16,7 +16,7 @@ def test_isotropy_and_left_orthogonality_are_element_predicates() -> None:
 
 def test_nonisotropic_element_is_detected_from_its_actual_norm() -> None:
     module = FreeModule(ZZ, 1)
-    formed = FormModule(module.bilinear_forms(ZZ)([[2]]))
+    formed = FormModules(ZZ)(module.bilinear_forms(ZZ)([[2]]))
     generator = formed.module_generators()[0]
 
     assert not generator.is_isotropic()

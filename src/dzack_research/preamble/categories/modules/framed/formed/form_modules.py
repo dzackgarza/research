@@ -550,7 +550,7 @@ class FiberedFormedModuleMorphism(Morphism):
     ``value_morphism  : S2 tensor_S1 W1 -> W2``.
 
     The active scalar-extension backend currently materializes this for the
-    scalar-valued finite-free formed objects supported by ``FormModule``'s
+    scalar-valued finite-free formed objects supported by ``FormModules(R)``'s
     ``base_change`` method.  Unsupported scalar extensions fail at object
     construction rather than being represented by a semilinear fiction.
     """
@@ -866,6 +866,33 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         return [Modules(self.base_ring())]
 
+    def _call_(
+        self,
+        form,
+        *,
+        _extra_categories=(),
+        _extra_construction_data=None,
+        _subobject_ambient=None,
+        _subobject_generator_images=None,
+        _subobject_lift=None,
+        _subobject_inclusion_factory=None,
+        _subobject_verify_linearity=True,
+    ):
+        r"""Equip the module classified by ``form`` with that selected form."""
+        module = form.module()
+        if module.base_ring() is not self.base_ring():
+            raise ValueError("a formed module belongs to the scalar ring of its selected form")
+        return _form_module(
+            form,
+            _extra_categories=_extra_categories,
+            _extra_construction_data=_extra_construction_data,
+            _subobject_ambient=_subobject_ambient,
+            _subobject_generator_images=_subobject_generator_images,
+            _subobject_lift=_subobject_lift,
+            _subobject_inclusion_factory=_subobject_inclusion_factory,
+            _subobject_verify_linearity=_subobject_verify_linearity,
+        )
+
     _HomCategory = FormedModuleHomCategoryConstruction
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
@@ -1021,25 +1048,29 @@ class FormModules(OwnedCategoryOverBaseRing):
                         name="Twisted bilinear coordinate values",
                     )
                 except TypeError:
-                    return FormModule(
+                    return FormModules(self.base_ring())(
                         self.bilinear_forms(self.value_module())(
                             lambda left, right: scalar * form(left, right)
                         )
                     )
-                return FormModule(self.bilinear_forms(self.value_module())(values))
+                return FormModules(self.base_ring())(
+                    self.bilinear_forms(self.value_module())(values)
+                )
             try:
                 values = form.lift_coordinate_values().map(
                     lambda value: scalar * value,
                     name="Twisted quadratic-lift coordinate values",
                 )
             except TypeError:
-                return FormModule(
+                return FormModules(self.base_ring())(
                     self.quadratic_map(
                         self.value_module(),
                         lambda element: scalar * form(element),
                     )
                 )
-            return FormModule(self.quadratic_forms(self.value_module())(values))
+            return FormModules(self.base_ring())(
+                self.quadratic_forms(self.value_module())(values)
+            )
 
         def base_change(self, ring_map):
             r"""Base-change a scalar-valued finite free form along ``R -> S``."""
@@ -1060,7 +1091,9 @@ class FormModules(OwnedCategoryOverBaseRing):
                 except TypeError:
                     changed_values = None
                 if changed_values is not None:
-                    return FormModule(changed.bilinear_forms(target_ring)(changed_values))
+                    return FormModules(target_ring)(
+                        changed.bilinear_forms(target_ring)(changed_values)
+                    )
 
                 def changed_bilinear_value(left, right):
                     left_coefficients = module_coefficients(left, changed)
@@ -1080,7 +1113,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                             )
                     return result
 
-                return FormModule(
+                return FormModules(target_ring)(
                     changed.bilinear_forms(target_ring)(changed_bilinear_value)
                 )
 
@@ -1095,7 +1128,9 @@ class FormModules(OwnedCategoryOverBaseRing):
             except TypeError:
                 changed_lift_values = None
             if changed_lift_values is not None:
-                return FormModule(changed.quadratic_forms(target_ring)(changed_lift_values))
+                return FormModules(target_ring)(
+                    changed.quadratic_forms(target_ring)(changed_lift_values)
+                )
 
             def changed_quadratic_value(element):
                 coefficients = module_coefficients(element, changed)
@@ -1121,7 +1156,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         )
                 return target_ring(result)
 
-            return FormModule(
+            return FormModules(target_ring)(
                 changed.quadratic_map(target_ring, changed_quadratic_value)
             )
 
@@ -1517,7 +1552,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             value_module = self.value_module()
             value_identity = value_module.module_category().Mor(value_module, value_module).identity()
             descended = self._formed_form().descend_along(inclusion, value_identity)
-            return FormModule(descended)
+            return FormModules(descended.module().base_ring())(descended)
 
         def determinant(self):
             r"""Return the determinant of the selected scalar-valued form."""
@@ -1542,7 +1577,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             return _engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
 
 
-def FormModule(
+def _form_module(
     form,
     *,
     _extra_categories=(),
@@ -1632,7 +1667,7 @@ def _form_subobject_spanning(module, basis):
     def inclusion_factory(source):
         return source.Mono(module)(embedded)
 
-    return FormModule(
+    return FormModules(module.base_ring())(
         module._formed_form().pullback(preliminary),
         _subobject_ambient=module,
         _subobject_generator_images=embedded,
@@ -1644,7 +1679,9 @@ def _form_subobject_spanning(module, basis):
 def _bilinear_form(module, value_module, datum):
     r"""Return ``module`` equipped with the stated bilinear form."""
 
-    return FormModule(module.bilinear_forms(value_module)(datum))
+    return FormModules(module.base_ring())(
+        module.bilinear_forms(value_module)(datum)
+    )
 
 
 def _quadratic_form(module, value_module, datum):
@@ -1663,7 +1700,7 @@ def _quadratic_form(module, value_module, datum):
         if coordinate_datum
         else module.quadratic_map(value_module, datum)
     )
-    return FormModule(form)
+    return FormModules(module.base_ring())(form)
 
 
 def _formed_module_from_pairing(pairing):
@@ -1671,7 +1708,7 @@ def _formed_module_from_pairing(pairing):
 
     if not _is_bilinear_form(pairing):
         raise TypeError("the diagonal of PairedModules is a bilinear form")
-    return FormModule(pairing)
+    return FormModules(pairing.module().base_ring())(pairing)
 
 
 class _HeterogeneousPairing(Parent):
