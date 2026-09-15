@@ -681,6 +681,14 @@ class ModuleMorphism(Morphism):
             )
         )
 
+    def alternating_extension(self):
+        r"""Extend this linear map through the exterior-algebra universal property."""
+        from dzack_research.preamble.categories.algebras.power_algebras import (
+            _alternating_extension,
+        )
+
+        return _alternating_extension(self)
+
     def tensor_product_map(self, other, *, source=None, target=None):
         r"""Return the induced map ``self tensor other`` on selected tensor products."""
         from dzack_research.preamble.categories.modules.tensor_products import (

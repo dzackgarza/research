@@ -3,9 +3,6 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ, Algebras, BilinearMap, Modules
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    alternating_extension,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -36,7 +33,7 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
     epsilon = target.module_generator("e")
     linear = source_module.module_category().Mor(source_module, target)({"x": epsilon})
 
-    extension = alternating_extension(linear)
+    extension = linear.alternating_extension()
     exterior = source_module.exterior_algebra()
     x = exterior.algebra_generator("x")
 
@@ -53,4 +50,4 @@ def test_exterior_extension_rejects_nonalternating_generator_images() -> None:
     linear = source_module.module_category().Mor(source_module, target)({"x": target.one()})
 
     with pytest.raises(ValueError, match="square to zero"):
-        alternating_extension(linear)
+        linear.alternating_extension()

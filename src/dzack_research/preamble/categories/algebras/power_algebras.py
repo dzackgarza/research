@@ -319,7 +319,7 @@ def _divided_power_algebra_of(module):
     return _power_algebra_of(module, "divided")
 
 
-def alternating_extension(module_morphism):
+def _alternating_extension(module_morphism):
     r"""Extend an alternating linear map uniquely to ``Lambda(M) -> A``.
 
     The target is an arbitrary represented unital associative algebra over the
@@ -384,7 +384,6 @@ def alternating_extension(module_morphism):
 
 
 __all__ = [
-    "alternating_extension",
     "PowerAlgebra",
     "PowerAlgebraElement",
     "PowerAlgebraHomset",

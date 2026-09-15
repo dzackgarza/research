@@ -20,7 +20,7 @@ ARCHIVE_RECONCILIATION = {
         "tensor_to_alternating": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "symmetric_to_divided": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "divided_to_symmetric": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "alternating_extension": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
+        "ModuleMorphism.alternating_extension": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "divided_power_extension": "src/dzack_research/preamble/categories/algebras/power_algebras.py",
     },
     "disposition": "reconciled-live-owner",
