@@ -42,6 +42,17 @@ class RationalLattices(OwnedCategoryOverBaseRing):
             SymmetricBilinearFormModules(self.base_ring()),
         ]
 
+    def _call_(self, lattice):
+        r"""Refine a finite free nondegenerate ``Frac(R)``-valued form."""
+        fraction_field = self.base_ring().fraction_field()
+        if _engine_ring(lattice.value_module()) is not _engine_ring(fraction_field):
+            raise TypeError(
+                f"a rational lattice over {self.base_ring()} has values in {fraction_field}"
+            )
+        if _rational_lattice_determinant(lattice) == 0:
+            raise ValueError("a rational lattice has a nondegenerate form")
+        return refine(lattice, self)
+
     class ParentMethods:
         def fraction_field(self):
             return self.base_ring().fraction_field()
@@ -51,19 +62,4 @@ class RationalLattices(OwnedCategoryOverBaseRing):
 
         def is_nondegenerate(self) -> bool:
             return True
-
-
-def refine_rational_lattice(lattice):
-    r"""Adopt a finite free ``Frac(R)``-valued nondegenerate form as a rational lattice."""
-    base_ring = lattice.base_ring()
-    fraction_field = base_ring.fraction_field()
-    if _engine_ring(lattice.value_module()) is not _engine_ring(fraction_field):
-        raise TypeError(
-            f"a rational lattice over {base_ring} has values in {fraction_field}"
-        )
-    if _rational_lattice_determinant(lattice) == 0:
-        raise ValueError("a rational lattice has a nondegenerate form")
-    return refine(lattice, RationalLattices(base_ring))
-
-
-__all__ = ["RationalLattices", "refine_rational_lattice"]
+__all__ = ["RationalLattices"]

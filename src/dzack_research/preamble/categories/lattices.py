@@ -133,7 +133,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
 )
 from dzack_research.preamble.categories.modules.pure.torsion_modules import _torsion_module_presented_by_matrix
-from dzack_research.preamble.categories.rational_lattices import refine_rational_lattice
+from dzack_research.preamble.categories.rational_lattices import RationalLattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -1869,7 +1869,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     integral_dual_form,
                     module_generators=self.module_generating_set(),
                 )
-            return refine_rational_lattice(
+            return RationalLattices(self.base_ring())(
                 self.dual_module().equip_bilinear_form(fraction_field, inverse_components)
             )
 
