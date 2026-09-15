@@ -354,6 +354,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "ProjectiveLineBundleLinearization",
         "ProjectiveLineBundleLinearizationIsomorphism",
         "continuous_group_homset",
+        "c2_chartwise_glued_invariant_quotient",
+        "glued_invariant_quotient",
         "algebra_from_multiplication",
         "own_algebra",
         "augmented_algebra",

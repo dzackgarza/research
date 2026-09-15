@@ -152,8 +152,6 @@ _EXPORTS = {
      'ToricSchemes'),
     'FiniteGluedInvariantQuotient': ('dzack_research.preamble.categories.schemes.invariant_quotient_gluing',
      'FiniteGluedInvariantQuotient'),
-    'glued_invariant_quotient': ('dzack_research.preamble.categories.schemes.invariant_quotient_gluing',
-     'glued_invariant_quotient'),
     'ToricGeometricLineBundleCohomologySpaces': ('dzack_research.preamble.categories.schemes.geometric_cohomology',
      'ToricGeometricLineBundleCohomologySpaces'),
     'GeometricFundamentalGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'GeometricFundamentalGroups'),
@@ -289,7 +287,6 @@ __all__ = [
     'affine_equation_family',
     'Varieties',
     'FiniteGluedInvariantQuotient',
-    'glued_invariant_quotient',
 ]
 
 def __getattr__(name):

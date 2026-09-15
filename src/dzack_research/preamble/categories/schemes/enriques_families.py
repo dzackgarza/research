@@ -33,9 +33,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.gluing import SemilinearAlgebraMorphism
-from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import (
-    c2_chartwise_glued_invariant_quotient,
-)
 from dzack_research.preamble.categories.schemes.k3_families import (
     HorikawaK3DoubleCover,
     HorikawaK3Family,
@@ -176,8 +173,7 @@ class HorikawaEnriquesSurface(SageObject):
         if not k3_member.enriques_lift_is_fixed_point_free():
             raise ValueError("the selected K3 involution is not fixed-point-free")
         group = k3_member.family().acting_group()
-        quotient_data = c2_chartwise_glued_invariant_quotient(
-            k3_member.scheme(),
+        quotient_data = k3_member.scheme().c2_chartwise_invariant_quotient(
             group,
             k3_member.enriques_lift().local_automorphisms(),
         )
@@ -243,8 +239,7 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
         k3_comparison = source.k3_member().base_change(ring_map)
         changed_k3 = k3_comparison.changed_scheme()
         changed_lift = k3_comparison.changed_enriques_lift()
-        changed_quotient = c2_chartwise_glued_invariant_quotient(
-            changed_k3,
+        changed_quotient = changed_k3.c2_chartwise_invariant_quotient(
             source.acting_group(),
             changed_lift.local_automorphisms(),
         )

@@ -943,7 +943,7 @@ def _c2_quotient_overlap_transition(
     )
 
 
-def c2_chartwise_glued_invariant_quotient(
+def _c2_chartwise_glued_invariant_quotient(
     source_scheme: Scheme,
     acting_group: Parent,
     local_actions: IndexedFamily,
@@ -1021,28 +1021,7 @@ def c2_chartwise_glued_invariant_quotient(
     )
 
 
-def glued_invariant_quotient(
-    base_ring: Parent,
-    acting_group: Parent,
-    acted_charts: IndexedFamily,
-    source_transitions: IndexedFamily,
-    quotient_transitions: IndexedFamily,
-    source_scheme: Scheme | None = None,
-) -> FiniteGluedInvariantQuotient:
-    r"""Construct a verified finite glued invariant quotient."""
-
-    return FiniteGluedInvariantQuotient(
-        base_ring,
-        acting_group,
-        acted_charts,
-        source_transitions,
-        quotient_transitions,
-        source_scheme=source_scheme,
-    )
-
 
 __all__ = [
     "FiniteGluedInvariantQuotient",
-    "c2_chartwise_glued_invariant_quotient",
-    "glued_invariant_quotient",
 ]
