@@ -2443,10 +2443,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def O(self, degree):
             r"""Return the standard invertible sheaf ``O(d)`` on this projective space."""
             from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                ProjectiveO,
+                _projective_o,
             )
 
-            return ProjectiveO(self, degree)
+            return _projective_o(self, degree)
 
         def coordinate_hyperplane_section_restriction(self, degree, coordinate_index):
             r"""Restrict ``O(degree)`` sections to the selected coordinate hyperplane."""

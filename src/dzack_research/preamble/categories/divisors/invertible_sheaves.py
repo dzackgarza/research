@@ -909,7 +909,7 @@ class ProjectiveSubschemeLineBundleIsomorphism(SageObject):
     def _repr_(self):
         return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
 
-def ProjectiveO(projective_space, degree):
+def _projective_o(projective_space, degree):
     r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
     return ProjectiveSpaceLineBundle(projective_space, degree)
 
@@ -1256,19 +1256,13 @@ class ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
         return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
 
 
-def TrivialInvertibleSheaf(cover):
-    return InvertibleSheaf.trivial(cover)
-
-
 __all__ = [
     "FiniteAtlasInvertibleSheaf",
     "InvertibleSheaf",
     "ProductProjectiveLineBundle",
     "ProductProjectiveSubschemeLineBundle",
     "ProductProjectiveSubschemeLineBundleIsomorphism",
-    "ProjectiveO",
     "ProjectiveSubschemeLineBundle",
     "ProjectiveSubschemeLineBundleIsomorphism",
     "ProjectiveSpaceLineBundle",
-    "TrivialInvertibleSheaf",
 ]

@@ -34,7 +34,7 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
         FreeModule,
         InvertibleSheaf,
         Spec,
-        TrivialInvertibleSheaf,
+        InvertibleSheaf,
     )
     from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -70,7 +70,7 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     square = line.tensor_power(2)
     dual = line.dual()
     neutral = line.tensor_product(dual)
-    trivial = TrivialInvertibleSheaf(cover)
+    trivial = InvertibleSheaf.trivial(cover)
     assert square.transition_unit(0, 1) == overlap_x**2
     assert dual.transition_unit(0, 1) == overlap_x.inverse_of_unit()
     assert neutral.transition_unit(0, 1) == overlap_x.parent().one()

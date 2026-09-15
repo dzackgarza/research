@@ -206,7 +206,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     SectionRings,
     SerreIntersectionData,
     TorusInvariantCycleGroups,
-    TrivialInvertibleSheaf,
     WeilDivisorGroup,
     WeilDivisorGroups,
     projective_space_picard_group,
