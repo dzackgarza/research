@@ -443,13 +443,9 @@ class RelativeCyclicCoverLift(SageObject):
 
     def fixed_subscheme(self):
         if self._fixed_subscheme is None:
-            from dzack_research.preamble.categories.schemes.gluing import (
-                chartwise_fixed_subscheme,
-            )
-
             cover = self.cyclic_algebra().relative_spectrum().arrow().domain()
-            self._fixed_subscheme = chartwise_fixed_subscheme(
-                cover, self.local_automorphisms()
+            self._fixed_subscheme = cover.chartwise_fixed_subscheme(
+                self.local_automorphisms()
             )
         return self._fixed_subscheme
 

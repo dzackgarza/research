@@ -731,10 +731,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             gives the scheme-theoretic union of the selected components; the
             common chartwise closed-subscheme owner then glues the result.
             """
-            from dzack_research.preamble.categories.schemes.gluing import (
-                chartwise_closed_subscheme,
-            )
-
             group = self.torus_invariant_divisor_group()
             divisor = group(divisor)
             coefficients = module_coefficients(divisor, group)
@@ -770,8 +766,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 local_closed[cone] = chart.closed_subscheme(
                     tuple(ideal.ideal_generators())
                 )
-            support = chartwise_closed_subscheme(
-                self,
+            support = self.chartwise_closed_subscheme(
                 local_closed,
                 name="Support of a torus-invariant divisor",
             )
@@ -1156,10 +1151,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
         def zero_subscheme_of_divisor_section(self, divisor, section, *, line_bundle=None):
             r"""Return the effective Cartier zero scheme of a represented toric section."""
-            from dzack_research.preamble.categories.schemes.gluing import (
-                chartwise_closed_subscheme,
-            )
-
             divisor = self.torus_invariant_divisor_group()(divisor)
             selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
             compatible = self.compatible_divisor_section(
@@ -1176,8 +1167,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     module.base_ring().zero(),
                 )
                 local_closed[cone] = self.affine_chart(cone).closed_subscheme(coefficient)
-            closed = chartwise_closed_subscheme(
-                self,
+            closed = self.chartwise_closed_subscheme(
                 local_closed,
                 name="Zero scheme of a toric divisor section",
             )

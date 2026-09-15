@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasRefinement,
-    compare_finite_atlas_line_bundle_pullback,
     finite_atlas_module_pullback_functor,
 )
 
@@ -166,7 +165,7 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
         coarse.chart(0).coordinate_algebra().algebra_generator("x1_over_x0")
     )
     bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
-    comparison = compare_finite_atlas_line_bundle_pullback(refinement, bundle)
+    comparison = refinement.compare_line_bundle_pullback(bundle)
     generic = comparison.generic_pullback().gluing_datum()
     specialized = comparison.specialized_module_sheaf().gluing_datum()
 

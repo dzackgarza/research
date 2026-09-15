@@ -838,10 +838,6 @@ class AT21ADEDoubleCover(SageObject):
     """
 
     def __init__(self, base_pair, branch_section) -> None:
-        from dzack_research.preamble.categories.schemes.gluing import (
-            chartwise_closed_subscheme,
-            chartwise_fixed_subscheme,
-        )
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
@@ -955,7 +951,7 @@ class AT21ADEDoubleCover(SageObject):
         ):
             raise ArithmeticError("the pyramid deck map is not an involution")
 
-        ramification = chartwise_fixed_subscheme(cover, local_deck_family)
+        ramification = cover.chartwise_fixed_subscheme(local_deck_family)
         base_boundary = base_pair.scheme().torus_invariant_divisor_support_subscheme(
             base_pair.boundary_divisor()
         )
@@ -967,8 +963,7 @@ class AT21ADEDoubleCover(SageObject):
             pullback = local_cover_maps[cone].coordinate_algebra_morphism()
             equations = tuple(pullback(equation) for equation in local_boundary.defining_equations())
             pulled_boundary_local[cone] = local_closed[cone].closed_subscheme(equations)
-        pulled_boundary = chartwise_closed_subscheme(
-            cover,
+        pulled_boundary = cover.chartwise_closed_subscheme(
             pulled_boundary_local,
             name="Pulled-back AT21 boundary",
         )

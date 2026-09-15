@@ -605,6 +605,21 @@ class _OwnedTwoChartGluedScheme(SageGluedScheme):
     def overlap_transition(self):
         return self.gluing_datum().transition()
 
+    def chartwise_closed_subscheme(
+        self,
+        local_closed_subschemes,
+        *,
+        name="Chartwise closed subscheme",
+    ):
+        return _chartwise_closed_subscheme(
+            self,
+            local_closed_subschemes,
+            name=name,
+        )
+
+    def chartwise_fixed_subscheme(self, local_automorphisms):
+        return _chartwise_fixed_subscheme(self, local_automorphisms)
+
 
 class _TwoChartSchemeGluingDatum(SageObject):
     r"""Two affine schemes glued along an isomorphism of represented affine opens."""
@@ -780,6 +795,21 @@ class _OwnedFiniteGluedScheme(SageScheme):
 
     def chart_embedding(self, index):
         return self.gluing_datum().chart_embedding(index)
+
+    def chartwise_closed_subscheme(
+        self,
+        local_closed_subschemes,
+        *,
+        name="Chartwise closed subscheme",
+    ):
+        return _chartwise_closed_subscheme(
+            self,
+            local_closed_subschemes,
+            name=name,
+        )
+
+    def chartwise_fixed_subscheme(self, local_automorphisms):
+        return _chartwise_fixed_subscheme(self, local_automorphisms)
 
     def _repr_(self):
         return f"Scheme glued from affine atlas indexed by {self.chart_index_set()}"
@@ -1419,6 +1449,10 @@ class FiniteAtlasRefinement(SageObject):
                 )
         refined = FiniteAtlasInvertibleSheaf(fine, units)
         return FiniteAtlasInvertibleSheafRefinement(self, line_bundle, refined)
+
+    def compare_line_bundle_pullback(self, line_bundle):
+        r"""Compare generic and specialized line-bundle pullback along this refinement."""
+        return FiniteAtlasLineBundlePullbackComparison(self, line_bundle)
 
 
 class FiniteAtlasInvertibleSheafRefinement(SageObject):
@@ -4594,11 +4628,6 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
         return self._inverse
 
 
-def compare_finite_atlas_line_bundle_pullback(refinement, line_bundle):
-    r"""Return the comparison between generic and specialized pullback."""
-    return FiniteAtlasLineBundlePullbackComparison(refinement, line_bundle)
-
-
 class GluedAlgebraSheaf(SageObject):
     r"""The algebra sheaf represented by finite affine algebra descent data."""
 
@@ -4664,7 +4693,7 @@ class GluedAlgebraSheaf(SageObject):
 
 
 
-def chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="Chartwise closed subscheme"):
     r"""Glue compatible closed subschemes of one finite affine atlas.
 
     A closed immersion is local on the target.  Each supplied ``Z_i -> U_i``
@@ -4730,7 +4759,7 @@ def chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="C
     return _refine_scheme(glued, base, (ClosedSubschemes(base),))
 
 
-def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
+def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
     r"""Glue the fixed subschemes of a chart-preserving automorphism.
 
     Each local automorphism is an endomorphism of the corresponding affine
@@ -4837,7 +4866,4 @@ __all__ = [
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
     "finite_atlas_module_pullback_functor",
-    "chartwise_closed_subscheme",
-    "chartwise_fixed_subscheme",
-    "compare_finite_atlas_line_bundle_pullback",
 ]

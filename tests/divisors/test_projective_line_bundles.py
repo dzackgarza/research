@@ -95,7 +95,6 @@ def test_projective_line_bundle_base_change_retains_projection_and_section_compa
 def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
     from dzack_research.preamble.categories.schemes.gluing import (
         FiniteAtlasRefinement,
-        compare_finite_atlas_line_bundle_pullback,
     )
 
     line = ProjectiveSpace(1, QQ)
@@ -112,7 +111,7 @@ def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
             for index in indices
         },
     )
-    comparison = compare_finite_atlas_line_bundle_pullback(refinement, bundle)
+    comparison = refinement.compare_line_bundle_pullback(bundle)
     pulled = comparison.line_bundle_refinement().refined_bundle()
 
     assert refinement.comparison_morphism().domain() is fine.scheme()
