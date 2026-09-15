@@ -84,7 +84,7 @@ class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
         pass
 
 
-def AffineCycleGroup(scheme, cycle_dimension):
+def _affine_cycle_group(scheme, cycle_dimension):
     r"""Return ``Z_k(X)`` for a represented Noetherian affine scheme ``X``.
 
     The framing is the condition set of *all* prime points whose closures have
@@ -123,19 +123,15 @@ def AffineCycleGroup(scheme, cycle_dimension):
     )
 
 
-def AffineWeilCycleIsomorphism(scheme):
+def _affine_weil_cycle_isomorphism(scheme):
     r"""Identify Weil divisors with codimension-one cycles on normal affine ``scheme``.
 
     Both groups are free abelian on the height-one points of the same spectrum;
     the comparison changes only the mathematical role attached to that common
     sparse framing.
     """
-    from dzack_research.preamble.categories.divisors.general_divisors import (
-        affine_normal_weil_divisor_group,
-    )
-
-    weil = affine_normal_weil_divisor_group(scheme)
-    cycles = AffineCycleGroup(scheme, int(scheme.dimension()) - 1)
+    weil = scheme.full_weil_divisor_group()
+    cycles = scheme.cycle_group(int(scheme.dimension()) - 1)
     forward = weil.module_category().Mor(weil, cycles)(
         lambda point: cycles.prime_cycle(point)
     )
@@ -149,7 +145,7 @@ class AffineCodimensionOneChowComparison(SageObject):
     r"""The selected comparison ``Cl(X) ~= CH_{dim(X)-1}(X)``.
 
     A finite Weil-divisor presentation is embedded into the full Weil group.
-    Through :func:`AffineWeilCycleIsomorphism` it becomes a finite presentation
+    Through the scheme-owned Weil/cycle isomorphism it becomes a finite presentation
     inside the full codimension-one cycle group.  The *same* principal-divisor
     morphism then presents both the class group and the Chow quotient.
     """
@@ -167,7 +163,7 @@ class AffineCodimensionOneChowComparison(SageObject):
                 "the full Weil-divisor group belongs to a different scheme"
             )
 
-        divisor_cycle = AffineWeilCycleIsomorphism(scheme)
+        divisor_cycle = scheme.weil_cycle_isomorphism()
         into_full_cycles = divisor_cycle.forward() * presentation_into_full_weil
         cycle_presentation = into_full_cycles.image()
         cycle_inclusion = cycle_presentation.inclusion()
@@ -375,7 +371,7 @@ def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
     if source.cycle_scheme() is not closed_subscheme:
         raise ValueError("the cycle belongs to a different source scheme")
     ambient = closed_subscheme.inclusion().codomain()
-    target = AffineCycleGroup(ambient, source.cycle_dimension())
+    target = ambient.cycle_group(source.cycle_dimension())
     quotient_map = closed_subscheme.inclusion().coordinate_algebra_morphism()
     ambient_spectrum = ambient.underlying_space()
     coefficients = {}
@@ -405,7 +401,7 @@ def DistinguishedOpenCyclePullback(open_subscheme, cycle):
         raise NotImplementedError(
             "the represented flat cycle pullback currently uses a distinguished open immersion"
         )
-    target = AffineCycleGroup(open_subscheme, source.cycle_dimension())
+    target = open_subscheme.cycle_group(source.cycle_dimension())
     localization_map = open_subscheme.inclusion().coordinate_algebra_morphism()
     open_ring = open_subscheme.coordinate_algebra()
     open_spectrum = open_subscheme.underlying_space()
@@ -432,7 +428,7 @@ def FundamentalCycle(closed_subscheme):
     """
     ambient = closed_subscheme.inclusion().codomain()
     dimension = int(closed_subscheme.dimension())
-    cycles = AffineCycleGroup(ambient, dimension)
+    cycles = ambient.cycle_group(dimension)
     ideal = closed_subscheme.defining_ideal_owned()
     spectrum = ambient.underlying_space()
     coefficients = {}
@@ -469,9 +465,7 @@ def ChowGroup(module, scheme, cycle_dimension):
 
 
 __all__ = [
-    "AffineCycleGroup",
     "AffineCodimensionOneChowComparison",
-    "AffineWeilCycleIsomorphism",
     "AlgebraicCycleGroups",
     "ChowGroup",
     "ClosedImmersionCyclePushforward",

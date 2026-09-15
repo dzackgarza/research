@@ -38,7 +38,7 @@ def _integers():
     return _own_ring(SageZZ)
 
 
-def affine_normal_weil_divisor_group(scheme):
+def _affine_normal_weil_divisor_group(scheme):
     r"""Return ``WDiv(X)`` for a represented normal Noetherian affine integral scheme.
 
     The basis is the actual height-one locus of ``Spec(A)``.  It is generally
@@ -468,7 +468,6 @@ __all__ = [
     "DivisorClassTheory",
     "DivisorClassComparison",
     "FiniteAtlasCartierDivisor",
-    "affine_normal_weil_divisor_group",
     "principal_weil_divisor",
     "projective_space_divisor_class_theory",
     "projective_space_picard_group",

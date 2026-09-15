@@ -3,8 +3,6 @@
 from importlib import import_module as _import_module
 
 _EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCodimensionOneChowComparison'),
- 'AffineWeilCycleIsomorphism': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineWeilCycleIsomorphism'),
- 'AffineCycleGroup': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCycleGroup'),
  'AlgebraicCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'AlgebraicCycleGroups'),
  'FundamentalCycle': ('dzack_research.preamble.categories.divisors.chow_groups', 'FundamentalCycle'),
  'ClosedImmersionCyclePushforward': ('dzack_research.preamble.categories.divisors.chow_groups', 'ClosedImmersionCyclePushforward'),
@@ -51,8 +49,6 @@ _EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.cate
                            'DivisorClassComparison'),
  'FiniteAtlasCartierDivisor': ('dzack_research.preamble.categories.divisors.general_divisors',
                               'FiniteAtlasCartierDivisor'),
- 'affine_normal_weil_divisor_group': ('dzack_research.preamble.categories.divisors.general_divisors',
-                                      'affine_normal_weil_divisor_group'),
  'projective_space_picard_group': ('dzack_research.preamble.categories.divisors.general_divisors',
                                    'projective_space_picard_group'),
  'trivial_picard_group': ('dzack_research.preamble.categories.divisors.general_divisors',
@@ -104,8 +100,6 @@ _EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.cate
 
 __all__ = [
     'AffineCodimensionOneChowComparison',
-    'AffineWeilCycleIsomorphism',
-    'AffineCycleGroup',
     'AlgebraicCycleGroups',
     'FundamentalCycle',
     'ClosedImmersionCyclePushforward',
@@ -126,7 +120,6 @@ __all__ = [
     'DivisorGroups',
     'DivisorClassComparison',
     'FiniteAtlasCartierDivisor',
-    'affine_normal_weil_divisor_group',
     'projective_space_picard_group',
     'trivial_picard_group',
     'FiniteAtlasInvertibleSheaf',

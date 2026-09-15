@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineCodimensionOneChowComparison,
-    AffineWeilCycleIsomorphism,
     FreeModule,
     PolynomialRing,
     Spec,
@@ -14,7 +13,6 @@ from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
 )
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
-    affine_normal_weil_divisor_group,
 )
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroup,
@@ -25,7 +23,7 @@ def _affine_plane_divisor_presentation():
     ring = PolynomialRing(QQ, "x,y")
     x = ring.algebra_generator("x")
     scheme = Spec(ring, base_ring=QQ)
-    full_weil = affine_normal_weil_divisor_group(scheme)
+    full_weil = scheme.full_weil_divisor_group()
     prime = ring.spectrum()(ring.ideal(x))
     prime_divisor = full_weil.prime_divisor(prime)
 
@@ -61,7 +59,7 @@ def test_weil_divisor_cycle_isomorphism_preserves_prime_and_principal_multiplici
     scheme, _ring, x, prime, full_weil, _classes, _into_full, _principal = (
         _affine_plane_divisor_presentation()
     )
-    comparison = AffineWeilCycleIsomorphism(scheme)
+    comparison = scheme.weil_cycle_isomorphism()
     divisor = full_weil.principal_divisor(x)
     cycle = comparison.forward()(divisor)
 

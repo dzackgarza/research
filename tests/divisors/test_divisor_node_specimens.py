@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.general_divisors import (
-    affine_normal_weil_divisor_group,
     projective_space_divisor_class_theory,
     trivial_picard_group,
 )
@@ -87,7 +86,7 @@ def test_normal_singular_surface_has_a_noncartier_weil_class() -> None:
     scheme = Spec(ring, base_ring=QQ)
     prime = ring.spectrum()(ring.ideal(x, z))
     vertex = ring.spectrum()(ring.ideal(x, y, z))
-    weil = affine_normal_weil_divisor_group(scheme)
+    weil = scheme.full_weil_divisor_group()
 
     assert ring.is_normal()
     assert not weil.prime_is_cartier_at(prime, vertex)

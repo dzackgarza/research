@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
     FiniteAtlasCartierDivisor,
-    affine_normal_weil_divisor_group,
     projective_space_picard_group,
     trivial_picard_group,
 )
@@ -102,7 +101,7 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     vertex = ring.spectrum()(ring.ideal(x, y, z))
     assert prime.height() == 1
 
-    full_weil = affine_normal_weil_divisor_group(scheme)
+    full_weil = scheme.full_weil_divisor_group()
     prime_divisor = full_weil.prime_divisor(prime)
     assert not full_weil.prime_is_cartier_at(prime, vertex)
     assert full_weil.prime_is_cartier_at(prime, prime)

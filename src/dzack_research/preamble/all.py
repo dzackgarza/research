@@ -167,8 +167,6 @@ from dzack_research.preamble.categories.coxeter_diagrams import (
 )
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     AffineCodimensionOneChowComparison,
-    AffineCycleGroup,
-    AffineWeilCycleIsomorphism,
     AlgebraicCycleGroups,
     C2DiagonalProductProjectiveAction,
     C2ProductProjectiveLinearization,
@@ -229,7 +227,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     TrivialInvertibleSheaf,
     WeilDivisorGroup,
     WeilDivisorGroups,
-    affine_normal_weil_divisor_group,
     projective_space_picard_group,
     trivial_picard_group,
 )

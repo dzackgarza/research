@@ -1561,6 +1561,30 @@ class AffineSchemes(_SchemePropertyCategory):
         def is_affine(self):
             return True
 
+        def cycle_group(self, cycle_dimension):
+            r"""Return the algebraic cycle group ``Z_k(self)`` in dimension ``k``."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                _affine_cycle_group,
+            )
+
+            return _affine_cycle_group(self, cycle_dimension)
+
+        def full_weil_divisor_group(self):
+            r"""Return the full height-one Weil divisor group of this affine scheme."""
+            from dzack_research.preamble.categories.divisors.general_divisors import (
+                _affine_normal_weil_divisor_group,
+            )
+
+            return _affine_normal_weil_divisor_group(self)
+
+        def weil_cycle_isomorphism(self):
+            r"""Identify full Weil divisors with codimension-one cycles."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                _affine_weil_cycle_isomorphism,
+            )
+
+            return _affine_weil_cycle_isomorphism(self)
+
         def dimension(self):
             r"""The Krull dimension of ``Spec A``, which is that of ``A``."""
             return self.coordinate_algebra().krull_dimension()
