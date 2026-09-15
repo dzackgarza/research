@@ -78,6 +78,12 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             TorsionModules(self.base_ring()),
         ]
 
+    def _call_(self, presentation):
+        module = FinitelyPresentedModule(presentation)
+        if module.base_ring() is not self.base_ring():
+            raise ValueError("a torsion presentation belongs to its coefficient ring")
+        return refine_finitely_presented_torsion_module(module)
+
     class ParentMethods:
         def is_torsion(self) -> bool:
             return True
@@ -273,13 +279,8 @@ def _torsion_module_presented_by_matrix(
         source_label: relation_image(row_position)
         for row_position, source_label in enumerate(source.module_generating_set())
     }
-    return TorsionModule(source.module_category().Mor(source, target)(images))
-
-
-def TorsionModule(presentation):
-
-    return refine_finitely_presented_torsion_module(
-        FinitelyPresentedModule(presentation)
+    return FinitelyPresentedTorsionModules(ring)(
+        source.module_category().Mor(source, target)(images)
     )
 
 
@@ -298,7 +299,6 @@ def refine_finitely_presented_torsion_module(module):
 
 __all__ = [
     "FinitelyPresentedTorsionModules",
-    "TorsionModule",
     "TorsionModules",
     "refine_finitely_presented_torsion_module",
 ]

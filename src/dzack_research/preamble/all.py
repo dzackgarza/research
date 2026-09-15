@@ -596,7 +596,6 @@ from dzack_research.preamble.categories.modules import (
     TensorProductModules,
     TorsionBilinearFormModules,
     TorsionFormIsometry,
-    TorsionModule,
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
