@@ -1561,22 +1561,6 @@ def common_category_of(objects: IndexedFamily | Iterable[Parent]) -> Category:
     return Category.meet([obj.category() for obj in family])
 
 
-def Cone(
-    diagram: Functor,
-    apex: Parent,
-    components: Callable[[Parent], Morphism],
-) -> Parent:
-    return ConeCategory(diagram).cone(apex, components)
-
-
-def Cocone(
-    diagram: Functor,
-    apex: Parent,
-    components: Callable[[Parent], Morphism],
-) -> Parent:
-    return CoconeCategory(diagram).cocone(apex, components)
-
-
 def _discrete_diagram(factors, target_category=None):
     family = _finite_factor_family(factors)
     if family.cardinality() == cardinal(0):
@@ -1608,11 +1592,9 @@ def coproduct_cocone_category(
 
 __all__ = [
     "BiproductCategory",
-    "Cocone",
     "CoconeCategory",
     "CoconeMorphism",
     "ColimitsOfCategory",
-    "Cone",
     "ConeCategory",
     "ConeMorphism",
     "CoproductCoconeCategory",

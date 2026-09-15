@@ -1,8 +1,8 @@
 import pytest
 
 from dzack_research.preamble.all import (
-    Cocone,
-    Cone,
+    CoconeCategory,
+    ConeCategory,
     DiscreteCategory,
     DiscreteDiagram,
     Sets,
@@ -30,13 +30,11 @@ def test_cones_and_cocones_are_natural_transformations_with_commuting_apex_maps(
 
     point = Sets.Δ[0]
     two_points = Sets.Δ[1]
-    cone_point = Cone(
-        diagram,
+    cone_point = ConeCategory(diagram).cone(
         point,
         lambda index_object: Sets().Mor(point, diagram(index_object))(lambda _value: diagram(index_object)(0 if index_object.value() == 0 else 1)),
     )
-    cone_two = Cone(
-        diagram,
+    cone_two = ConeCategory(diagram).cone(
         two_points,
         lambda index_object: Sets().Mor(two_points, diagram(index_object))(lambda _value: diagram(index_object)(0 if index_object.value() == 0 else 1)),
     )
@@ -46,8 +44,7 @@ def test_cones_and_cocones_are_natural_transformations_with_commuting_apex_maps(
 
     with pytest.raises(ValueError):
         noncommuting = Sets().Mor(two_points, point)(lambda _value: point(0))
-        bad_cone = Cone(
-            diagram,
+        bad_cone = ConeCategory(diagram).cone(
             two_points,
             lambda index_object: Sets().Mor(two_points, diagram(index_object))(lambda value: diagram(index_object)(
                     value if index_object.value() == 0 else value + 1
@@ -55,13 +52,11 @@ def test_cones_and_cocones_are_natural_transformations_with_commuting_apex_maps(
         )
         bad_cone.cone_category().Mor(bad_cone, cone_point)(noncommuting)
 
-    cocone_point = Cocone(
-        diagram,
+    cocone_point = CoconeCategory(diagram).cocone(
         point,
         lambda index_object: Sets().Mor(diagram(index_object), point)(lambda _value: point(0)),
     )
-    cocone_two = Cocone(
-        diagram,
+    cocone_two = CoconeCategory(diagram).cocone(
         two_points,
         lambda index_object: Sets().Mor(diagram(index_object), two_points)(lambda _value: two_points(0)),
     )

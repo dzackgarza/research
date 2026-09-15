@@ -275,6 +275,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "ChowGroup",
         "Submonoids",
         "GSets",
+        "Cone",
+        "Cocone",
         "ContinuousGroupHomset",
         "ExactFieldHomset",
         "CompositeFunctor",
