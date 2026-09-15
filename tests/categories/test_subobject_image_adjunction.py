@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     FreeModuleOn,
     ModuleSubobjects,
     module_homset,
-    subobject_image_adjunction,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -58,7 +57,7 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     not_a = source.subobject_on((e1,))
     b = target.subobject_on((4 * u, v))
 
-    adjunction = subobject_image_adjunction(morphism)
+    adjunction = morphism.subobject_image_adjunction()
     direct = adjunction.left_adjoint()
     inverse = adjunction.right_adjoint()
     image_a = direct(a)

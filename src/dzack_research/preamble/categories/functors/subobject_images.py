@@ -83,13 +83,8 @@ class SubobjectImageAdjunction(Adjunction):
         return self.left_adjoint().codomain().Mor(source, subobject).canonical_morphism()
 
 
-def subobject_image_adjunction(morphism) -> SubobjectImageAdjunction:
-    return SubobjectImageAdjunction(morphism)
-
-
 __all__ = [
     "DirectImageSubobjectFunctor",
     "InverseImageSubobjectFunctor",
     "SubobjectImageAdjunction",
-    "subobject_image_adjunction",
 ]

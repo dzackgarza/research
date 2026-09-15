@@ -582,9 +582,6 @@ from dzack_research.preamble.categories.functors.subobject_images import (
 from dzack_research.preamble.categories.functors.subobject_images import (
     SubobjectImageAdjunction as SubobjectImageAdjunction,
 )
-from dzack_research.preamble.categories.functors.subobject_images import (
-    subobject_image_adjunction as subobject_image_adjunction,
-)
 from dzack_research.preamble.categories.functors.tensor_hom import (
     InternalHomFromFunctor as InternalHomFromFunctor,
 )

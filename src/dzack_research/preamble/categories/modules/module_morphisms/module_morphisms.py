@@ -786,6 +786,14 @@ class ModuleMorphism(Morphism):
                 return represented
         raise NotImplementedError("this kernel has no represented finite-free or general polynomial-presentation backend")
 
+    def subobject_image_adjunction(self):
+        r"""Return ``f_* ⊣ f^{-1}`` on fixed-ambient module subobjects."""
+        from dzack_research.preamble.categories.functors.subobject_images import (
+            SubobjectImageAdjunction,
+        )
+
+        return SubobjectImageAdjunction(self)
+
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
         labels = self.domain().module_generating_set()

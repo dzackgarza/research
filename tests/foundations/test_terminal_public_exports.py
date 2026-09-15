@@ -112,6 +112,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "primitive_isotropic",
         "primitive_isotropic_vectors",
         "splits_two_hyperbolic_planes",
+        "subobject_image_adjunction",
         "transport_isotropic_object",
         "vector_configuration",
         "commutative_algebra_coproduct",
