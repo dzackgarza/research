@@ -26,38 +26,6 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-# The session no longer publishes a global for an operation whose owner is in
-# argument position (`ARC-12`).  Each entry below is the owned spelling, and
-# reading the table is how a test written against the old global learns what
-# to say instead.  Nothing here adds capability: every value is one call on the
-# object the old global took as its first argument.
-_OWNED_SPELLINGS = {
-    "Ideal": lambda ring, module_generating_set: ring.ideal(*module_generating_set),
-    # A construction on a category is reached from that category; one whose
-    # inputs are several categories is a construction in Cat.
-    "OppositeCategory": lambda category: category.opposite(),
-    "SliceOver": lambda category, base_object: category.SliceOver(base_object),
-    "CosliceUnder": lambda category, base_object: category.CosliceUnder(base_object),
-    "SubobjectsOf": lambda category, base_object: category.SubobjectCategory(base_object),
-    "SuperobjectsOf": lambda category, base_object: category.SuperobjectCategory(base_object),
-    "ProductCategory": lambda left, right: Cat().product([left, right]),
-}
-
-
-def _common_owned_category(*objects):
-    r"""The category a test names implicitly by handing over its objects."""
-    return common_category(*objects)
-
-def pytest_collection_modifyitems(session, config, items) -> None:
-    r"""Give each test module the owned spelling under the old global's name."""
-    for item in items:
-        module = getattr(item, "module", None)
-        if module is None:
-            continue
-        for name, owned in _OWNED_SPELLINGS.items():
-            module.__dict__.setdefault(name, owned)
-
-
 def _polynomial_ring(ring, *names):
     return PolynomialRing(ring, names if len(names) > 1 else names[0])
 

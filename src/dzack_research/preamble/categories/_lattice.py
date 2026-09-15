@@ -37,9 +37,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    ProductCategory,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreeModule,
@@ -1240,7 +1237,7 @@ def signature_pairs():
     cardinal and the pair is an object of the product category.
     """
 
-    return ProductCategory(Cardinalities(), Cardinalities())
+    return Cat().product((Cardinalities(), Cardinalities()))
 
 
 def signature_pair(positive, negative):

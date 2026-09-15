@@ -15,9 +15,6 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
@@ -72,7 +69,7 @@ class InverseSystem(DiagramCategory):
 
     def __init__(self, index_category: Category, target_category: Category) -> None:
         self._base_index_category = index_category
-        super().__init__(OppositeCategory(index_category), target_category)
+        super().__init__(index_category.opposite(), target_category)
 
     def base_index_category(self) -> Category:
         r"""Return ``J`` when this inverse system category is ``[J^op,C]``."""

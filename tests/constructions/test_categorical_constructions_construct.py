@@ -71,7 +71,7 @@ def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
     subobjects = Sets().Subobjects(three)
     assert subobjects in Cat()
     assert subobjects.cardinality() == 8
-    assert SubobjectsOf(Sets(), three).cardinality() == 8
+    assert Sets().Subobjects(three).cardinality() == 8
 
 
 # ---------------------------------------------------------------------------
@@ -133,7 +133,7 @@ def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
     line = module.subobject_on([module.module_generator(0)])
     assert subobjects in Cat()
     assert line in subobjects
-    assert line in SubobjectsOf(Modules(ring), module)
+    assert line in Modules(ring).Subobjects(module)
     assert subobjects.Mor(line, line).identity()(line.module_generator(0)) == line.module_generator(0)
 
 
@@ -183,10 +183,10 @@ def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
 def test_slices_coslices_opposites_products_and_functor_categories() -> None:
     module = FreeModule(ZZ, 2)
     for category in (
-        SliceOver(Modules(ZZ), module),
-        CosliceUnder(OwnedRings(), ZZ),
-        OppositeCategory(Sets()),
-        ProductCategory(Sets(), Groups()),
+        Modules(ZZ).SliceOver(module),
+        OwnedRings().CosliceUnder(ZZ),
+        Sets().opposite(),
+        Cat().product((Sets(), Groups())),
         FunctorCategory(Sets(), Sets()),
         Sets().Core(),
         Modules(ZZ),
@@ -194,8 +194,8 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         Groups(),
     ):
         assert category in Cat()
-    assert module.subobject_on([module.module_generator(0)]) in SliceOver(Modules(ZZ), module)
-    assert Sets.Δ[2] in OppositeCategory(Sets())
+    assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
+    assert Sets.Δ[2] in Sets().opposite()
     assert Sets().identity_functor() in FunctorCategory(Sets(), Sets())
     assert Fields() in Cat()
     assert Cat() in Cat()

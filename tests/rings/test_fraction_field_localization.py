@@ -4,10 +4,10 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    aleph0,
     BasedFreeModule,
     NumberField,
     PolynomialRing,
+    aleph0,
 )
 from dzack_research.preamble.categories.functors.module_localization import (
     module_localization_functor,

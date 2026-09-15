@@ -7,11 +7,11 @@ stated in, which over an integral domain is the fraction field.
 """
 
 from dzack_research.preamble.all import (
-    Fields,
     GF,
-    PolynomialRing,
     QQ,
     ZZ,
+    Fields,
+    PolynomialRing,
 )
 
 

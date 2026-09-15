@@ -1,8 +1,7 @@
-import pytest
-
 from dzack_research.preamble.all import (
     AffineSpace,
     ArtinianRings,
+    CommutativeAlgebras,
     CompleteLocalRings,
     DualNumbers,
     GF,
@@ -161,12 +160,11 @@ def test_nonfinite_base_rejects_arithmetic_zeta_interface() -> None:
 
 
 def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() -> None:
-    from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
     from dzack_research.preamble.categories.group.magmas import Monoids
     from dzack_research.preamble.all import generated_submonoid
 
     powers_of_two = generated_submonoid(ZZ, (ZZ(2),))
-    subobjects = SubobjectsOf(Monoids(), ZZ)
+    subobjects = Monoids().Subobjects(ZZ)
 
     assert powers_of_two in subobjects
     assert powers_of_two.inclusion().domain() is powers_of_two
@@ -199,8 +197,9 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     origin = spectrum(ring.ideal(x))
 
     from dzack_research.preamble.categories.modules import Modules, ring_as_module
-    from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
-    assert origin.ideal() in SubobjectsOf(Modules(spectrum.ring()), ring_as_module(spectrum.ring()))
+    assert origin.ideal() in Modules(spectrum.ring()).Subobjects(
+        ring_as_module(spectrum.ring())
+    )
     assert origin.ideal().inclusion().codomain() is ring_as_module(spectrum.ring())
 
     assert generic.specializes_to(origin)
@@ -208,8 +207,8 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     assert spectrum.generic_point() == generic
 
     closed_origin = spectrum.V(x)
-    assert closed_origin.defining_ideal() in SubobjectsOf(
-        Modules(spectrum.ring()), ring_as_module(spectrum.ring())
+    assert closed_origin.defining_ideal() in Modules(spectrum.ring()).Subobjects(
+        ring_as_module(spectrum.ring())
     )
     punctured_line = spectrum.D(x)
     assert generic not in closed_origin
@@ -229,7 +228,6 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
 
 
 def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> None:
-    from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
     from dzack_research.preamble.categories.modules import Modules, ring_as_module
 
     ring = PolynomialRing(QQ, ("x", "y"))
@@ -237,7 +235,7 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     ideal = ring.ideal(x**2, x * y)
     other = ring.ideal(y)
 
-    subobjects = SubobjectsOf(Modules(ring), ring_as_module(ring))
+    subobjects = Modules(ring).Subobjects(ring_as_module(ring))
     assert ideal in subobjects
     assert ideal.inclusion().codomain() is ring_as_module(ring)
     assert ideal.inclusion().is_injective()

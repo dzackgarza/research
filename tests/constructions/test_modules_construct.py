@@ -304,7 +304,7 @@ def test_free_resolution_over_a_principal_ideal_domain(pid) -> None:
 
 def test_a_principal_ideal_as_a_module(dedekind_domain) -> None:
     ring = dedekind_domain
-    ideal = Ideal(ring, [ring(3)])
+    ideal = ring.ideal(ring(3))
     assert ideal in Modules(ring)
     assert ideal in ModuleSubobjects(ring)
     assert ideal.inclusion().codomain() is ring.regular_module()

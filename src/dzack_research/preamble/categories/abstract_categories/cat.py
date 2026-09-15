@@ -444,6 +444,76 @@ class Cat(CategoryPacketMethods, Category):
             )
             return construction(left_morphism, right_morphism)
 
+        def equalizer(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented equalizer of a parallel pair."""
+            assert left_morphism.domain() is right_morphism.domain(), (
+                "equalizer arrows have one common domain"
+            )
+            assert left_morphism.codomain() is right_morphism.codomain(), (
+                "equalizer arrows have one common codomain"
+            )
+            construction = self._categorical_equalizer
+            assert construction is not NotImplemented, (
+                f"{self} does not represent equalizers of this parallel pair"
+            )
+            return construction(left_morphism, right_morphism)
+
+        def coequalizer(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented coequalizer of a parallel pair."""
+            assert left_morphism.domain() is right_morphism.domain(), (
+                "coequalizer arrows have one common domain"
+            )
+            assert left_morphism.codomain() is right_morphism.codomain(), (
+                "coequalizer arrows have one common codomain"
+            )
+            construction = self._categorical_coequalizer
+            assert construction is not NotImplemented, (
+                f"{self} does not represent coequalizers of this parallel pair"
+            )
+            return construction(left_morphism, right_morphism)
+
+        def equalizer_of_family(self, morphisms) -> Parent:
+            r"""Return this category's represented wide equalizer."""
+            match morphisms:
+                case IndexedFamily():
+                    family = morphisms
+                case _:
+                    from dzack_research.preamble.categories.sets.finite_families import (
+                        finite_family,
+                    )
+
+                    family = finite_family(tuple(morphisms))
+            construction = self._categorical_equalizer_family
+            assert construction is not NotImplemented, (
+                f"{self} does not represent wide equalizers of this family"
+            )
+            return construction(family)
+
+        def coequalizer_of_family(self, morphisms) -> Parent:
+            r"""Return this category's represented wide coequalizer."""
+            match morphisms:
+                case IndexedFamily():
+                    family = morphisms
+                case _:
+                    from dzack_research.preamble.categories.sets.finite_families import (
+                        finite_family,
+                    )
+
+                    family = finite_family(tuple(morphisms))
+            construction = self._categorical_coequalizer_family
+            assert construction is not NotImplemented, (
+                f"{self} does not represent wide coequalizers of this family"
+            )
+            return construction(family)
+
         @abstract_method(optional=True)
         def _categorical_product_morphism(
             self,
@@ -515,10 +585,10 @@ class Cat(CategoryPacketMethods, Category):
         def opposite(self) -> Category:
             r"""Return \(C^{op}\)."""
             from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-                OppositeCategory,
+                _OppositeCategory,
             )
 
-            return OppositeCategory(self)
+            return _OppositeCategory(self)
         def Core(self) -> Category:
             r"""Return the maximal groupoid inside this category."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -660,7 +730,7 @@ class Cat(CategoryPacketMethods, Category):
         with products, and its objects happen to be categories.  ``C * D`` is
         the operator notation that delegates here.
 
-        The represented product category is ``ProductCategory``, whose objects
+        The represented product category has objects
         are pairs ``(X, Y)`` addressed as ``first()`` and ``second()`` and over
         which the bifunctors are defined, so only the two-element index set is
         represented.  A larger index set is not folded into nested pairs: that
@@ -676,10 +746,10 @@ class Cat(CategoryPacketMethods, Category):
 
     def _categorical_product(self, left, right):
         from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-            ProductCategory,
+            _ProductCategory,
         )
 
-        return ProductCategory(left, right)
+        return _ProductCategory(left, right)
 
     def _repr_(self) -> str:
         return "Category of categories"

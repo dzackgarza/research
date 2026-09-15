@@ -12,9 +12,9 @@ do.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
     ZZ,
+    PolynomialRing,
 )
 
 

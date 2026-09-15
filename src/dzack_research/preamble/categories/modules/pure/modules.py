@@ -492,14 +492,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
-        def equalizer(self, left_arrow, right_arrow):
-            r"""Return the equalizer of a parallel pair."""
-            return self._categorical_equalizer(left_arrow, right_arrow)
-
-        def coequalizer(self, left_arrow, right_arrow):
-            r"""Return the coequalizer of a parallel pair."""
-            return self._categorical_coequalizer(left_arrow, right_arrow)
-
         def _categorical_equalizer(self, left_morphism, right_morphism):
             r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
             return self._categorical_equalizer_construction(
@@ -614,14 +606,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 return raw_factor * coequalizer_transport.inverse()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
-
-        def equalizer_of_family(self, arrows):
-            r"""Return the wide equalizer of a family of parallel arrows."""
-            return self._categorical_equalizer_family(arrows)
-
-        def coequalizer_of_family(self, arrows):
-            r"""Return the wide coequalizer of a family of parallel arrows."""
-            return self._categorical_coequalizer_family(arrows)
 
         def _categorical_equalizer_family(self, morphisms):
             r"""Realize a finite wide equalizer through kernels/intersections."""

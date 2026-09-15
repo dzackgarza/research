@@ -17,11 +17,9 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
+from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
     OppositeMorphism,
-    ProductCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -50,7 +48,7 @@ class ContravariantFunctor(Functor):
     def __init__(self, domain: Category, codomain: Category) -> None:
 
         self._base_domain = domain
-        super().__init__(OppositeCategory(domain), codomain)
+        super().__init__(domain.opposite(), codomain)
 
     def base_domain(self) -> Category:
         return self._base_domain
@@ -103,7 +101,7 @@ class Bifunctor(Functor):
         codomain: Category,
     ) -> None:
 
-        super().__init__(ProductCategory(left_domain, right_domain), codomain)
+        super().__init__(Cat().product((left_domain, right_domain)), codomain)
 
     def left_domain(self) -> Category:
         return self.domain().first_category()
@@ -542,10 +540,10 @@ class DiagonalFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(category, self._product_category)
 
-    def product_category(self) -> ProductCategory:
+    def product_category(self) -> Category:
         return self._product_category
 
     def _apply_object(self, obj: Parent) -> Parent:
@@ -562,7 +560,7 @@ class ProductFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair: Parent) -> Parent:
@@ -582,7 +580,7 @@ class CoproductFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair: Parent) -> Parent:

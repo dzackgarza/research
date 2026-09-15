@@ -8,8 +8,8 @@ kernel is the contraction of zero, which is the defining ideal again.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
+    PolynomialRing,
 )
 
 

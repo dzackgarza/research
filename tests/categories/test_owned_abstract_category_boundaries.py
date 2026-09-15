@@ -8,10 +8,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     SubobjectCategory,
     WideSubcategory,
 )
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
-    ProductCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategories,
@@ -54,8 +50,8 @@ ARCHIVE_RECONCILIATION = {
         "Cat.ParentMethods.Colimits": "src/dzack_research/preamble/categories/abstract_categories/products.py",
         "Cat.ParentMethods.Products": "src/dzack_research/preamble/categories/abstract_categories/products.py",
         "Cat.ParentMethods.Coproducts": "src/dzack_research/preamble/categories/abstract_categories/products.py",
-        "Cat.ParentMethods.OppositeCategory": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
-        "Cat.ParentMethods.ProductCategory": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
+        "Cat.ParentMethods.opposite": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
+        "Cat.product": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
         "Cat.ParentMethods.ImageOf": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
         "Cat.ParentMethods.SliceOver": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.CosliceUnder": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
@@ -105,8 +101,8 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
 
     assert sets.ArrowCategory() is ArrowCategory(sets)
     assert sets.Core().base_category() is sets
-    assert sets.opposite() is OppositeCategory(sets)
-    product = ProductCategory(sets, sets)
+    assert sets.opposite() is sets.opposite()
+    product = Cat().product((sets, sets))
     pair = product(points, points)
     assert pair.first() is points
     assert pair.second() is points

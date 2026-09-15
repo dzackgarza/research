@@ -1255,42 +1255,6 @@ class CoreCategory(OwnedCategoryBase):
         return f"Core of {self.base_category()}"
 
 
-def SliceOver(base_category: Category, base_object: Parent) -> SliceCategory:
-    return SliceCategory(base_category, base_object)
-
-
-def CosliceUnder(base_category: Category, base_object: Parent) -> CosliceCategory:
-    return CosliceCategory(base_category, base_object)
-
-
-def SubobjectsOf(
-    base_category: Category,
-    base_object: Parent,
-) -> SubobjectCategory:
-    return SubobjectCategory(base_category, base_object)
-
-
-def SuperobjectsOf(
-    base_category: Category,
-    base_object: Parent,
-) -> SuperobjectCategory:
-    return SuperobjectCategory(base_category, base_object)
-
-
-def CoveringObjectsOf(
-    base_category: Category,
-    base_object: Parent,
-) -> CoveringObjectCategory:
-    return CoveringObjectCategory(base_category, base_object)
-
-
-def CoveredObjectsOf(
-    base_category: Category,
-    base_object: Parent,
-) -> CoveredObjectCategory:
-    return CoveredObjectCategory(base_category, base_object)
-
-
 def core_mor(
     domain: Parent,
     codomain: Parent,
@@ -1366,20 +1330,14 @@ __all__ = [
     "CoreCategory",
     "CoreHomset",
     "CosliceCategory",
-    "CosliceUnder",
     "CoveredObjectCategory",
-    "CoveredObjectsOf",
     "CoveringObjectCategory",
-    "CoveringObjectsOf",
     "EpimorphismArrowCategory",
     "MonomorphismArrowCategory",
     "SliceCategory",
-    "SliceOver",
     "SubobjectCategory",
     "SubobjectHomset",
     "SubobjectMorphism",
-    "SubobjectsOf",
     "SuperobjectCategory",
-    "SuperobjectsOf",
     "WideSubcategory",
 ]

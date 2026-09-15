@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
     FractionalIdeal,
-    Ideal,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
@@ -600,8 +599,11 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             return order_homset(self, codomain)
 
         def ideal(self, *module_generators):
+            from dzack_research.preamble.categories.modules.fractional_ideals import (
+                _integral_ideal,
+            )
 
-            return Ideal(self, module_generators)
+            return _integral_ideal(self, tuple(module_generators))
 
         def fractional_ideal(self, *module_generators):
 

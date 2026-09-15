@@ -62,6 +62,15 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "QuotientRing",
         "ResidueField",
         "AdicCompletion",
+        "Ideal",
+        "OppositeCategory",
+        "ProductCategory",
+        "SliceOver",
+        "CosliceUnder",
+        "SubobjectsOf",
+        "SuperobjectsOf",
+        "CoveringObjectsOf",
+        "CoveredObjectsOf",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)

@@ -21,10 +21,6 @@ from sage.schemes.projective.projective_space import (
 )
 from sage.structure.category_object import CategoryObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    CosliceUnder,
-    SliceOver,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -1026,7 +1022,7 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     @cached_method
     def slice_category(self):
-        return SliceOver(self, self.base_scheme())
+        return self.SliceOver(self.base_scheme())
 
     def as_slice_object(self, scheme):
         if scheme not in self:
@@ -1042,7 +1038,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         point of ``X`` is an object of the coslice; the two constructions are
         opposite and neither stands in for the other.
         """
-        return CosliceUnder(self, self.base_scheme())
+        return self.CosliceUnder(self.base_scheme())
 
     def as_coslice_object(self, point):
         r"""Read a morphism ``Spec R -> X`` as a pointed ``R``-scheme."""
