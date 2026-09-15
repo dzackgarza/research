@@ -446,7 +446,7 @@ def _gluing_route_discriminant_classes(lattice, left, right):
     return tuple(classes.values())
 
 
-def stable_complement_root_reflections(lattice, element):
+def _stable_complement_root_reflections(lattice, element):
     r"""Return root reflections of ``element^perp`` that lie in ``ker(rho_L)``.
 
     For an indefinite complement, one representative of each ``O(element^perp)``
@@ -480,5 +480,4 @@ def stable_complement_root_reflections(lattice, element):
 
 __all__ = [
     "VectorPrimitiveExtension",
-    "stable_complement_root_reflections",
 ]

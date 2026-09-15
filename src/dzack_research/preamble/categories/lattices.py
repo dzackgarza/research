@@ -165,7 +165,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     VectorPrimitiveExtension,
     _definite_complement_extensions,
     _gluing_route_discriminant_classes,
-    stable_complement_root_reflections,
+    _stable_complement_root_reflections,
 )
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import Tensor, _engine_component_matrix, tensor
@@ -2647,7 +2647,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def stable_complement_root_reflections(self, element):
             r"""Return stable reflections in root-orbit representatives of ``element^perp``."""
 
-            return stable_complement_root_reflections(self, element)
+            return _stable_complement_root_reflections(self, element)
 
         def primitive_isotropic_subobject(self, *basis):
             r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
