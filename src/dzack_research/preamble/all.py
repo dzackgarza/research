@@ -768,7 +768,6 @@ from dzack_research.preamble.categories.schemes import (
     ToricIntegralSingularCohomologyGroups,
     ToricLogPairs,
     ToricSchemes,
-    ToricVariety,
     ToricWeightCohomologyComplexes,
     Varieties,
     affine_equation_family,

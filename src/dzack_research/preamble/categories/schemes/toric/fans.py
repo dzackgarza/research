@@ -359,13 +359,21 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 return False
             return True
 
-        def toric_variety(self, base_ring):
-            r"""The toric variety ``X_Sigma`` over the stated base."""
+        def toric_variety(self, base_ring, *, polarizing_polytope=None):
+            r"""Return ``X_Sigma`` over the stated base.
+
+            ``polarizing_polytope`` is selected construction data when this fan
+            was obtained as the normal fan of a lattice polytope.
+            """
             from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-                ToricVariety,
+                _toric_variety,
             )
 
-            return ToricVariety(self, base_ring)
+            return _toric_variety(
+                self,
+                base_ring,
+                polarizing_polytope=polarizing_polytope,
+            )
 
         def _repr_(self) -> str:
             return (

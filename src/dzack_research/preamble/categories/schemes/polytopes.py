@@ -350,15 +350,10 @@ class ConvexPolytopes(OwnedCategory):
             the polytope of the ample divisor that the construction produced,
             and it is not recoverable from the fan alone.
             """
-            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-                ToricVariety,
-            )
-
             assert self.is_lattice_polytope(), (
                 "the toric variety of a polytope is defined for lattice polytopes"
             )
-            return ToricVariety(
-                self.normal_fan(),
+            return self.normal_fan().toric_variety(
                 base_ring,
                 polarizing_polytope=self,
             )

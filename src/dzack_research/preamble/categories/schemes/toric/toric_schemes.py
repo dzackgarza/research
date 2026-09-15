@@ -1834,7 +1834,7 @@ def _engine_fan_morphism(lattice_morphism, domain_fan, codomain_fan):
     return FanMorphism(rows, domain_fan._engine_fan(), codomain_fan._engine_fan())
 
 
-def ToricVariety(fan, base_ring, polarizing_polytope=None):
+def _toric_variety(fan, base_ring, polarizing_polytope=None):
     r"""The toric variety ``X_Sigma`` of a fan over a field.
 
     ``X_Sigma`` is the scheme glued from the affine charts of the maximal cones
@@ -1867,4 +1867,4 @@ def ToricVariety(fan, base_ring, polarizing_polytope=None):
     return refine_scheme(scheme, base, placements)
 
 
-__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes", "ToricVariety"]
+__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes"]

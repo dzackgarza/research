@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
     ToricSchemes,
-    ToricVariety,
 )
 
 __all__ = [
@@ -17,5 +16,4 @@ __all__ = [
     "ToricFixedPointBlowup",
     "ToricFixedPointBlowups",
     "ToricSchemes",
-    "ToricVariety",
 ]
