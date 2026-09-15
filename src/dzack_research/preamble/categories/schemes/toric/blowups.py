@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.schemes.schemes import refine_scheme
+from dzack_research.preamble.categories.schemes.schemes import _refine_scheme
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
 
@@ -190,7 +190,7 @@ def _toric_fixed_point_blowup(surface, center_cone):
     blowup._preamble_blowup_morphism = blowdown
     blowup._preamble_blowup_center_cone = center_cone
     blowup._preamble_exceptional_ray = exceptional
-    return refine_scheme(blowup, base, [ToricFixedPointBlowups(base)])
+    return _refine_scheme(blowup, base, [ToricFixedPointBlowups(base)])
 
 
 __all__ = ["ToricFixedPointBlowups"]

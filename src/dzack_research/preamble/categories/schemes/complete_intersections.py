@@ -18,8 +18,8 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
-    categorical_scheme_morphism,
-    refine_scheme,
+    _categorical_scheme_morphism,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
@@ -137,7 +137,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         subscheme._preamble_complete_intersection_degrees = tuple(
             int(equation.degree()) for equation in equations
         )
-        return refine_scheme(subscheme, base, [self])
+        return _refine_scheme(subscheme, base, [self])
 
     def _repr_object_names(self):
         return f"projective complete intersections over {self.base_ring()}"
@@ -240,7 +240,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             )
             ambient_projection = changed_ambient.left_projection()
             into_source_ambient = ambient_projection * changed.inclusion()
-            projection = categorical_scheme_morphism(
+            projection = _categorical_scheme_morphism(
                 into_source_ambient.native_morphism(),
                 domain=changed,
                 codomain=self,

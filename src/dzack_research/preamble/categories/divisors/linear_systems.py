@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
     ProjectiveSpace,
     Schemes,
-    refine_scheme,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -793,7 +793,7 @@ def _projective_linear_system(line_bundle, sections):
     system._preamble_selected_section_space = selected
     system._preamble_section_embedding = embedding
     system._preamble_base_locus = base_locus
-    return refine_scheme(system, base, [ProjectiveLinearSystems(base)])
+    return _refine_scheme(system, base, [ProjectiveLinearSystems(base)])
 
 
 def _centered_jet_basis(base, dimension, jet_order):
@@ -968,7 +968,7 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
     parameter_space._preamble_ambient_section_space = evaluation.domain()
     parameter_space._preamble_constrained_section_space = constrained
     parameter_space._preamble_imposed_jet_evaluation = evaluation
-    return refine_scheme(
+    return _refine_scheme(
         parameter_space,
         base,
         [ImposedMultiplicityLinearSystems(base)],
@@ -1017,7 +1017,7 @@ def _complete_linear_system(scheme, divisor, section_space):
     system._preamble_linear_system_scheme = scheme
     system._preamble_linear_system_divisor = divisor
     system._preamble_linear_system_section_space = section_space
-    return refine_scheme(system, base, [CompleteLinearSystems(base)])
+    return _refine_scheme(system, base, [CompleteLinearSystems(base)])
 
 
 __all__ = [

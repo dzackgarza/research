@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.schemes.k3_families import (
     HorikawaK3DoubleCover,
     HorikawaK3Family,
 )
-from dzack_research.preamble.categories.schemes.schemes import affine_spec_morphism
+from dzack_research.preamble.categories.schemes.schemes import _affine_spec_morphism
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
@@ -277,7 +277,7 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
             quotient_ring_map = source_invariants.Mor(changed_invariants)(
                 semilinear,
             )
-            local_projection = affine_spec_morphism(quotient_ring_map)
+            local_projection = _affine_spec_morphism(quotient_ring_map)
             local_quotient_projections[index] = local_projection
             local_maps_to_source_quotient[index] = (
                 source_quotient.quotient_scheme().chart_embedding(index)

@@ -1,6 +1,6 @@
 from dzack_research.preamble.all import QQ, Spec
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
-from dzack_research.preamble.categories.schemes.schemes import affine_spec_morphism
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 
 
 def _polynomial_algebra_descent(variable):
@@ -32,9 +32,10 @@ def test_noncyclic_polynomial_algebra_descent_has_one_general_relative_spectrum(
     assert datum.sheaf().relative_spectrum() is relative
     for index in cover.atlas():
         assert glued.chart(index).coordinate_algebra() is datum.local_algebra(index)
-        expected = cover.open(index).inclusion() * affine_spec_morphism(
-            datum.local_algebra(index).algebra_structure_morphism()
-        )
+        algebra_map = datum.local_algebra(index).algebra_structure_morphism()
+        expected = cover.open(index).inclusion() * CommutativeAlgebras(
+            algebra_map.domain().base_ring()
+        ).spectrum()(algebra_map)
         assert relative.arrow() * glued.chart_embedding(index) == expected
 
 
@@ -78,7 +79,9 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     for index in source_cover.atlas():
         expected = (
             source_relative.arrow().domain().chart_embedding(index)
-            * affine_spec_morphism(algebra_map.local_map(index))
+            * CommutativeAlgebras(
+                algebra_map.local_map(index).domain().base_ring()
+            ).spectrum()(algebra_map.local_map(index))
         )
         assert induced * target_relative.arrow().domain().chart_embedding(index) == expected
 

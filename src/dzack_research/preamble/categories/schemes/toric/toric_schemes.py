@@ -83,8 +83,8 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SmoothSchemes,
     Spec,
     _has_scheme_placement,
-    categorical_scheme_morphism,
-    refine_scheme,
+    _categorical_scheme_morphism,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
@@ -1316,7 +1316,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             system = self.complete_linear_system(divisor)
             sections = self._engine_toric_divisor(divisor).sections_monomials()
             native = self._toric_engine_variety().Hom(system)(list(sections))
-            result = categorical_scheme_morphism(
+            result = _categorical_scheme_morphism(
                 native,
                 domain=self,
                 codomain=system,
@@ -1866,7 +1866,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None):
         placements.append(Curves(base))
     if dimension == 2:
         placements.append(Surfaces(base))
-    return refine_scheme(scheme, base, placements)
+    return _refine_scheme(scheme, base, placements)
 
 
 __all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes"]

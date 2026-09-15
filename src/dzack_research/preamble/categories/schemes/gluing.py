@@ -53,7 +53,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Spec,
     _affine_structure_morphism_to_base,
     _fresh_affine_spectrum,
-    refine_scheme,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -506,7 +506,7 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
 
     datum._scheme = scheme
     scheme._preamble_scheme_homset_class = _GluedSchemeMorCategory
-    refine_scheme(scheme, datum.base_ring())
+    _refine_scheme(scheme, datum.base_ring())
 
     chart_images = []
     chart_isomorphisms = []
@@ -4676,7 +4676,7 @@ def chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="C
     from dzack_research.preamble.categories.schemes.schemes import (
         ClosedSubschemes,
         Schemes,
-        refine_scheme,
+        _refine_scheme,
     )
 
     datum = glued_scheme.gluing_datum()
@@ -4727,7 +4727,7 @@ def chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="C
     )
     glued._preamble_inclusion = inclusion
     glued._preamble_local_closed_subschemes = local_closed
-    return refine_scheme(glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(glued, base, (ClosedSubschemes(base),))
 
 
 def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
@@ -4743,7 +4743,7 @@ def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
     from dzack_research.preamble.categories.schemes.schemes import (
         ClosedSubschemes,
         Schemes,
-        refine_scheme,
+        _refine_scheme,
     )
 
     datum = glued_scheme.gluing_datum()
@@ -4802,7 +4802,7 @@ def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
         lambda index: local_fixed[index],
         name="Affine charts of the glued fixed subscheme",
     )
-    return refine_scheme(fixed_glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(fixed_glued, base, (ClosedSubschemes(base),))
 
 
 __all__ = [

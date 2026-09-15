@@ -297,7 +297,7 @@ class SchemeMorphism(Morphism):
                     labels = tuple(factors.index_set())
                     for position, label in enumerate(labels):
                         if label == factor_label:
-                            return categorical_scheme_morphism(
+                            return _categorical_scheme_morphism(
                                 stored_points[position],
                                 domain=point.domain(),
                                 codomain=factors[label],
@@ -693,7 +693,7 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
     __hash__ = None
 
 
-def categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
+def _categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
     if isinstance(native_morphism, SchemeMorphism):
         if domain is None and codomain is None:
             return native_morphism
@@ -875,7 +875,7 @@ def _native_scheme_homset(domain, codomain):
     return _SageScheme._Hom_(domain, codomain)
 
 
-def refine_scheme_morphism(
+def _refine_scheme_morphism(
     morphism,
     base_ring,
     *,
@@ -890,14 +890,14 @@ def refine_scheme_morphism(
         schemes = Schemes(base)
         if domain not in schemes or codomain not in schemes:
             raise TypeError("scheme-morphism endpoints must be schemes over the stated base")
-    return categorical_scheme_morphism(
+    return _categorical_scheme_morphism(
         morphism,
         domain=domain,
         codomain=codomain,
     )
 
 
-def refine_scheme(scheme, base_ring=None, categories=()):
+def _refine_scheme(scheme, base_ring=None, categories=()):
     r"""Adopt a native Sage scheme at the scheme-constructor boundary.
 
     This is structural placement, not property refinement: the native scheme
@@ -1210,7 +1210,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 morphism = _native_scheme_homset(self, base)(engine_map, check=False)
             if morphism.codomain() is not base:
                 raise ArithmeticError("the native structure morphism does not land in the represented base scheme")
-            wrapped = refine_scheme_morphism(
+            wrapped = _refine_scheme_morphism(
                 morphism,
                 self.scheme_base_ring(),
                 domain=self,
@@ -1320,8 +1320,8 @@ class Schemes(OwnedCategoryOverBaseRing):
                 ]
                 if _integral_placement(base):
                     categories.append(IntegralSchemes(base))
-                refine_scheme(point_domain, base, categories)
-            wrapped = refine_scheme_morphism(
+                _refine_scheme(point_domain, base, categories)
+            wrapped = _refine_scheme_morphism(
                 point,
                 base,
                 domain=point_domain,
@@ -1375,7 +1375,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             selected = getattr(self, "_preamble_identity_morphism", None)
             if selected is not None:
                 return selected
-            return refine_scheme_morphism(
+            return _refine_scheme_morphism(
                 self.identity_morphism(),
                 self.scheme_base_ring(),
                 domain=self,
@@ -1637,15 +1637,15 @@ class AffineSchemes(_SchemePropertyCategory):
                 raise NotImplementedError("a closed affine subscheme requires a represented polynomial presentation of its coordinate algebra")
             quotient, quotient_map = quotient_operation(equations)
             subscheme = Spec(quotient, base_ring=self.scheme_base_ring())
-            spec_inclusion = affine_spec_morphism(quotient_map)
-            inclusion = categorical_scheme_morphism(
+            spec_inclusion = _affine_spec_morphism(quotient_map)
+            inclusion = _categorical_scheme_morphism(
                 spec_inclusion.native_morphism(),
                 domain=subscheme,
                 codomain=self,
             )
             inclusion._preamble_coordinate_algebra_morphism = quotient_map
             subscheme._preamble_inclusion = inclusion
-            return refine_closed_subscheme(
+            return _refine_closed_subscheme(
                 subscheme,
                 self,
                 defining_equations=equations,
@@ -1749,7 +1749,7 @@ class AffineSchemes(_SchemePropertyCategory):
             base = self.scheme_base_ring()
             canonical_ambient = Spec(algebra, base_ring=base)
             if self is canonical_ambient:
-                open_subscheme = refine_scheme(
+                open_subscheme = _refine_scheme(
                     Spec(localized, base_ring=base),
                     base,
                     (OpenImmersions(self),),
@@ -1801,7 +1801,7 @@ class AffineSchemes(_SchemePropertyCategory):
             which is the fibre product ``Spec_X(B) x_X X'``.
             """
             assert algebra_structure.domain() is self.coordinate_algebra(), "a quasi-coherent algebra on Spec A is stated by an algebra map out of A"
-            structure_morphism = affine_spec_morphism(algebra_structure)
+            structure_morphism = _affine_spec_morphism(algebra_structure)
             return self.scheme_category().SliceOver(self)(structure_morphism)
 
 
@@ -2186,7 +2186,7 @@ class ProjectiveSchemes(_SchemePropertyCategory):
                         ambient_variables,
                     )
                 )
-            return refine_closed_subscheme(
+            return _refine_closed_subscheme(
                 self.subscheme(tuple(engine_equations)),
                 self,
                 defining_equations=equations if retain_owned_equations else None,
@@ -2716,7 +2716,7 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                     coordinates,
                     check=False,
                 )
-                cone = categorical_scheme_morphism(
+                cone = _categorical_scheme_morphism(
                     native,
                     domain=source,
                     codomain=self,
@@ -2815,7 +2815,7 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                             )
                         )
                         engine_coordinates.append(_engine_element(chart_algebra, value))
-                embeddings[choice] = categorical_scheme_morphism(
+                embeddings[choice] = _categorical_scheme_morphism(
                     _native_scheme_homset(chart, self)(engine_coordinates, check=False),
                     domain=chart,
                     codomain=self,
@@ -2996,7 +2996,7 @@ def _initialize_owned_affine_spectrum(
         categories.append(IntegralSchemes(base))
     categories.extend(extra_categories)
 
-    refine_scheme(scheme, base, categories)
+    _refine_scheme(scheme, base, categories)
     scheme._preamble_engine_coordinate_ring = _engine_ring(algebra)
     scheme._preamble_coordinate_algebra = algebra
 
@@ -3428,7 +3428,7 @@ def _affine_linear_invariant_algebra_data(
     return invariant_algebra, inclusion, engine_invariants
 
 
-def affine_spec_morphism(algebra_morphism):
+def _affine_spec_morphism(algebra_morphism):
     r"""Return the affine scheme morphism contravariantly induced by an algebra map."""
 
     source_algebra = algebra_morphism.domain()
@@ -3486,7 +3486,7 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
         categories.append(IntegralSchemes(base))
     if _normal_placement(base):
         categories.append(NormalSchemes(base))
-    refine_scheme(scheme, base, categories)
+    _refine_scheme(scheme, base, categories)
 
     labels = tuple(engine_coordinate_ring.variable_names())
     scheme._preamble_engine_coordinate_ring = engine_coordinate_ring
@@ -3498,7 +3498,7 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
     )
-    scheme._preamble_identity_morphism = refine_scheme_morphism(
+    scheme._preamble_identity_morphism = _refine_scheme_morphism(
         _native_scheme_homset(scheme, scheme)(
             list(engine_coordinate_ring.gens()),
             check=False,
@@ -3512,7 +3512,7 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
     engine_map = engine_coordinate_ring.coerce_map_from(_engine_ring(base))
     if engine_map is None:
         raise NotImplementedError("the affine-space structure morphism requires the scalar base injection")
-    scheme._preamble_structure_morphism = refine_scheme_morphism(
+    scheme._preamble_structure_morphism = _refine_scheme_morphism(
         _native_scheme_homset(scheme, base_scheme)(engine_map, check=False),
         base,
         domain=scheme,
@@ -3558,7 +3558,7 @@ def _fresh_projective_space_from_owned_data(base, engine_dimension, names):
         categories.append(IntegralSchemes(base))
     if _normal_placement(base):
         categories.append(NormalSchemes(base))
-    return refine_scheme(scheme, base, categories)
+    return _refine_scheme(scheme, base, categories)
 
 
 @cached_function
@@ -3574,7 +3574,7 @@ def ProjectiveSpace(dimension, base_ring, names=None):
 
 def _product_projection(product, factor, coordinates):
     native = _native_scheme_homset(product, factor)(list(coordinates), check=False)
-    projection = categorical_scheme_morphism(
+    projection = _categorical_scheme_morphism(
         native,
         domain=product,
         codomain=factor,
@@ -3780,7 +3780,7 @@ def _mixed_affine_projective_product(factors, base):
         categories.append(IntegralSchemes(base))
     if standard_spaces and _normal_placement(base):
         categories.append(NormalSchemes(base))
-    refine_scheme(product, base, categories)
+    _refine_scheme(product, base, categories)
     product._preamble_relative_dimension = sum(int(factor.relative_dimension()) for factor in schemes)
     _install_scheme_product_data(product, factors, projections)
     product._preamble_mixed_product_gluing_datum = datum
@@ -3829,7 +3829,7 @@ def _scheme_product(*schemes):
             sum(dimensions),
             _normalized_space_names(names),
         )
-        refine_scheme(product, base, [ProductSchemes(base)])
+        _refine_scheme(product, base, [ProductSchemes(base)])
         coordinates = tuple(product._preamble_engine_coordinate_ring.gens())
         projections = []
         offset = 0
@@ -3858,7 +3858,7 @@ def _scheme_product(*schemes):
             categories.append(IntegralSchemes(base))
         if _normal_placement(base):
             categories.append(NormalSchemes(base))
-        refine_scheme(product, base, categories)
+        _refine_scheme(product, base, categories)
         coordinates = tuple(product.coordinate_ring().gens())
         projections = []
         offset = 0
@@ -4124,7 +4124,7 @@ def _projective_base_change_factorization(changed, projective_map):
         list(defining_polynomials()),
         check=False,
     )
-    return categorical_scheme_morphism(
+    return _categorical_scheme_morphism(
         lifted_native,
         domain=source,
         codomain=changed,
@@ -4169,7 +4169,7 @@ def _projective_space_scalar_base_change(left_map, right_map):
             list(engine_coordinates),
             check=False,
         )
-        projective_projection = categorical_scheme_morphism(
+        projective_projection = _categorical_scheme_morphism(
             projection_native,
             domain=changed,
             codomain=projective,
@@ -4214,7 +4214,7 @@ def _projective_space_scalar_base_change(left_map, right_map):
             )
 
         changed._preamble_fiber_product_scheme_factorization = factor
-        return refine_scheme(
+        return _refine_scheme(
             changed,
             target_base,
             [FiberProductSchemes(target_base)],
@@ -4660,7 +4660,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             base = codomain.scheme_base_ring()
             if codomain in ProjectiveSchemes(base):
                 native = _SageAlgebraicSchemeSubscheme.complement(self, codomain)
-                opened = refine_scheme(
+                opened = _refine_scheme(
                     native,
                     base,
                     [OpenImmersions(codomain), QuasiProjectiveSchemes(base)],
@@ -4693,7 +4693,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                 },
             )
             glued._preamble_inclusion = glued.Mor(codomain)({index: chart.inclusion() for index, chart in charts.items()})
-            return refine_scheme(glued, base, [OpenImmersions(codomain)])
+            return _refine_scheme(glued, base, [OpenImmersions(codomain)])
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
@@ -4829,7 +4829,7 @@ class SchemeMonomorphisms(MonoCategoryOf):
         return open_image in OpenImmersions(codomain) and open_image_isomorphism.forward().domain() is source and open_image_isomorphism.forward().codomain() is open_image
 
 
-def refine_closed_subscheme(
+def _refine_closed_subscheme(
     subscheme,
     codomain=None,
     *,
@@ -4849,16 +4849,16 @@ def refine_closed_subscheme(
         # before asking the owned scheme Hom to construct the arrow.  Capture
         # Sage's native embedding first: refining the endpoint changes its Hom
         # category, but not the underlying closed immersion being retained.
-        refine_scheme(subscheme, base)
+        _refine_scheme(subscheme, base)
     if getattr(subscheme, "_preamble_inclusion", None) is None:
         # The subobject is the arrow, so a route that did not build one takes
         # the native embedding, retargeted at the stated codomain.
-        subscheme._preamble_inclusion = categorical_scheme_morphism(
+        subscheme._preamble_inclusion = _categorical_scheme_morphism(
             native_inclusion,
             domain=subscheme,
             codomain=codomain,
         )
-    return refine_scheme(
+    return _refine_scheme(
         subscheme,
         base,
         [ClosedEmbeddings(codomain), ClosedSubschemes(base)],
@@ -4889,11 +4889,6 @@ __all__ = [
     "SeparatedSchemes",
     "SmoothSchemes",
     "Spec",
-    "refine_scheme",
-    "refine_scheme_morphism",
-    "categorical_scheme_morphism",
-    "affine_spec_morphism",
-    "refine_closed_subscheme",
 ]
 
 Schemes._MonoCategory = SchemeMonomorphisms

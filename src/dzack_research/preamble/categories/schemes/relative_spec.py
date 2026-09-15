@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Spec,
     _affine_morphism_from_pullback,
     _fresh_affine_spectrum,
-    affine_spec_morphism,
+    _affine_spec_morphism,
 )
 
 

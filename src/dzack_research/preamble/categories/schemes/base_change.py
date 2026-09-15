@@ -51,8 +51,8 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _fresh_affine_spectrum,
     _native_scheme_homset,
     _normalized_space_names,
-    categorical_scheme_morphism,
-    refine_scheme,
+    _categorical_scheme_morphism,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
@@ -174,7 +174,7 @@ class SchemeBaseChangeFunctor(Functor):
                     name="Base-changed projective factors",
                 )
                 changed = Schemes(target).product(changed_factors)
-                projection = categorical_scheme_morphism(
+                projection = _categorical_scheme_morphism(
                     _native_scheme_homset(changed, scheme)(
                         list(changed.coordinate_ring().gens()),
                         check=False,
@@ -212,7 +212,7 @@ class SchemeBaseChangeFunctor(Functor):
                     return induced
 
                 changed._preamble_fiber_product_scheme_factorization = factor
-                return refine_scheme(
+                return _refine_scheme(
                     changed,
                     target,
                     [FiberProductSchemes(target)],
@@ -252,7 +252,7 @@ class SchemeBaseChangeFunctor(Functor):
         changed._preamble_fiber_product_cospan = (scheme.structure_morphism(), self.base_morphism())
         changed._preamble_fiber_product_projections = (projection, changed.structure_morphism())
         changed._preamble_fiber_product_cocone_factorization = factor
-        return refine_scheme(changed, target, [FiberProductSchemes(target)])
+        return _refine_scheme(changed, target, [FiberProductSchemes(target)])
 
     def _apply_morphism(self, morphism):
         source_scheme = self(morphism.domain())

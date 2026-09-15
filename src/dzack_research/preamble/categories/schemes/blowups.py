@@ -33,9 +33,9 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpace,
     ProjectiveSpaces,
     SmoothSchemes,
-    categorical_scheme_morphism,
-    refine_closed_subscheme,
-    refine_scheme,
+    _categorical_scheme_morphism,
+    _refine_closed_subscheme,
+    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -156,12 +156,12 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             ambient = self.graph_ambient_product()
             combined = (self.graph_relation(), *equations)
             nested = ambient.closed_subscheme(combined)
-            nested._preamble_inclusion = categorical_scheme_morphism(
+            nested._preamble_inclusion = _categorical_scheme_morphism(
                 nested.embedding_morphism(),
                 domain=nested,
                 codomain=self,
             )
-            nested = refine_closed_subscheme(
+            nested = _refine_closed_subscheme(
                 nested,
                 self,
                 defining_equations=equations,
@@ -408,7 +408,7 @@ def _projective_point_blowup(projective_plane, point):
     blowup._preamble_blowup_center_equations_in_graph_ring = tuple(
         source_embedding(equation) for equation in center_equations
     )
-    return refine_scheme(
+    return _refine_scheme(
         blowup,
         base,
         [ProjectivePointBlowups(base)],

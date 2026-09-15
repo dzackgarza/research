@@ -76,7 +76,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     Spec,
     _affine_morphism_from_pullback,
-    affine_spec_morphism,
+    _affine_spec_morphism,
 )
 from dzack_research.preamble.refine import refine
 
@@ -282,7 +282,7 @@ class CyclicCoverBaseChangeComparison(SageObject):
                 return result
 
             algebra_map = source_local.Mor(changed_local)(image)
-            local_projection = affine_spec_morphism(algebra_map)
+            local_projection = _affine_spec_morphism(algebra_map)
             local_projections[source_index] = local_projection
             local_maps_to_cover[source_index] = (
                 source_cover.chart_embedding(source_index) * local_projection
