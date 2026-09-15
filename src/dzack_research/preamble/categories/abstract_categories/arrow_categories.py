@@ -1237,7 +1237,7 @@ class CoreCategory(OwnedCategoryBase):
         return f"Core of {self.base_category()}"
 
 
-def core_mor(
+def _core_mor(
     domain: Parent,
     codomain: Parent,
     *,
@@ -1282,7 +1282,7 @@ def _represented_morphism_category(forward: Morphism, inverse: Morphism) -> Cate
 def _isomorphism_from_known_inverse_pair(forward, inverse):
     r"""Transport a previously proved inverse pair without re-solving equality."""
     base_category = _represented_morphism_category(forward, inverse)
-    return core_mor(
+    return _core_mor(
         forward.domain(),
         forward.codomain(),
         base_category=base_category,
@@ -1295,7 +1295,7 @@ def Isomorphism(
 ) -> CategoricalIsomorphism:
     r"""Return the isomorphism represented by mutually inverse arrows."""
     base_category = _represented_morphism_category(forward, inverse)
-    return core_mor(
+    return _core_mor(
         forward.domain(),
         forward.codomain(),
         base_category=base_category,
@@ -1303,7 +1303,6 @@ def Isomorphism(
 
 
 __all__ = [
-    "core_mor",
     "Isomorphism",
     "IsoArrowCategory",
     "EndArrowCategory",
