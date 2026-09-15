@@ -2,7 +2,6 @@ from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
     FinitelyPresentedModule,
-    free_resolution,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -45,7 +44,7 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
         }
     )
     module = FinitelyPresentedModule(presentation)
-    resolution = free_resolution(module)
+    resolution = module.free_resolution()
 
     assert not presentation.is_injective()
     assert resolution.term(1).module_rank() == 1

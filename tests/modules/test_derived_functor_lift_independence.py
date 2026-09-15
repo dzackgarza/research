@@ -4,7 +4,6 @@ from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, FreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import (
     FreeResolutionMorphism,
-    free_resolution,
 )
 
 
@@ -25,7 +24,7 @@ def _multiplication(module, scalar):
 def test_two_resolution_lifts_of_the_identity_are_chain_homotopic() -> None:
     module = _cyclic_two()
     identity = module_homset(module, module).identity()
-    resolution = free_resolution(module, 2)
+    resolution = module.free_resolution(2)
     canonical = resolution.lift_morphism(identity, resolution)
     triple_zero = _multiplication(resolution.term(0), ZZ(3))
     triple_one = _multiplication(resolution.term(1), ZZ(3))
@@ -44,7 +43,7 @@ def test_two_resolution_lifts_of_the_identity_are_chain_homotopic() -> None:
 def test_tor_and_ext_maps_do_not_depend_on_the_selected_chain_lift() -> None:
     module = _cyclic_two()
     identity = module_homset(module, module).identity()
-    resolution = free_resolution(module, 2)
+    resolution = module.free_resolution(2)
     canonical = resolution.lift_morphism(identity, resolution)
     alternative = FreeResolutionMorphism(
         resolution,

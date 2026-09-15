@@ -1742,7 +1742,7 @@ class FreeResolution:
         if morphism.domain() is not self.module():
             raise ValueError("a resolution morphism must start at the resolved source module")
         if target_resolution is None:
-            target_resolution = free_resolution(morphism.codomain(), self.length() + 1)
+            target_resolution = morphism.codomain().free_resolution(self.length() + 1)
         if target_resolution.module() is not morphism.codomain():
             raise ValueError("the target resolution resolves the wrong module")
 
@@ -1902,10 +1902,6 @@ class FreeResolutionHomotopy:
             self.source().domain().term(degree),
             self.source().codomain().term(degree + 1),
         ).zero()
-
-
-def free_resolution(module, steps=None):
-    return module.free_resolution(steps)
 
 
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):

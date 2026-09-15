@@ -814,7 +814,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     fibered_formed_module_homset,
     form_embedding,
     formed_module_homset,
-    free_resolution,
     internal_hom_morphism,
     module_embedding,
     module_from_action,

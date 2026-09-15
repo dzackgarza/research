@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.modules.internal_hom import internal_hom
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules, free_resolution
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -42,7 +42,7 @@ def _common_base_ring(module, other):
 def _tensored_resolution(module, other, shift, steps):
     r"""``F_• ⊗ other`` as a cochain complex with ``F_i ⊗ other`` in degree ``shift - i``."""
     ring = _common_base_ring(module, other)
-    resolution = free_resolution(module, steps)
+    resolution = module.free_resolution(steps)
     length = resolution.length()
     tensor = TensorByFunctor(other)
     return CochainComplexes(ring)(
@@ -62,7 +62,7 @@ def _tor(module, other, degree=0):
     # Homology in degree n reads the map out of F_n and the map into it, so
     # the resolution must reach one term past the degree asked for.
     steps = degree + 1
-    length = free_resolution(module, steps).length()
+    length = module.free_resolution(steps).length()
     shift = max(length, degree)
     return _tensored_resolution(module, other, shift, steps).cohomology(shift - degree)
 
@@ -72,7 +72,7 @@ def _ext(module, other, degree=0):
     degree = int(degree)
     assert degree >= 0, "a cohomological degree is nonnegative"
     ring = _common_base_ring(module, other)
-    resolution = free_resolution(module, degree + 1)
+    resolution = module.free_resolution(degree + 1)
     length = resolution.length()
     identity = module_homset(other, other).identity()
     dualized = CochainComplexes(ring)(
@@ -108,8 +108,8 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
     match int(argument):
         case 1:
             steps = degree + 1
-            source_resolution = free_resolution(morphism.domain(), steps)
-            target_resolution = free_resolution(morphism.codomain(), steps)
+            source_resolution = morphism.domain().free_resolution(steps)
+            target_resolution = morphism.codomain().free_resolution(steps)
             lifted = (
                 source_resolution.lift_morphism(morphism, target_resolution)
                 if lift is None
@@ -127,7 +127,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             if lift is not None:
                 raise ValueError("an explicit resolution lift applies only to Tor's first argument")
             steps = degree + 1
-            resolution = free_resolution(other, steps)
+            resolution = other.free_resolution(steps)
             term = resolution.term(degree)
             identity = module_homset(term, term).identity()
             modules = Modules(term.base_ring())
@@ -163,8 +163,8 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
     match int(argument):
         case 1:
             steps = degree + 1
-            source_resolution = free_resolution(morphism.domain(), steps)
-            target_resolution = free_resolution(morphism.codomain(), steps)
+            source_resolution = morphism.domain().free_resolution(steps)
+            target_resolution = morphism.codomain().free_resolution(steps)
             lifted = (
                 source_resolution.lift_morphism(morphism, target_resolution)
                 if lift is None
@@ -189,7 +189,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             if lift is not None:
                 raise ValueError("an explicit resolution lift applies only to Ext's first argument")
             steps = degree + 1
-            resolution = free_resolution(other, steps)
+            resolution = other.free_resolution(steps)
             term = resolution.term(degree)
             identity = module_homset(term, term).identity()
             source_internal = term.module_category().Mor(term, morphism.domain())
