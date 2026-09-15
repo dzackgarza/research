@@ -809,6 +809,14 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the divided-power algebra ``Gamma_R(self)``."""
             return self.module_category().divided_power_algebra()(self)
 
+        def connections(self):
+            r"""Return the space of algebraic connections on this module."""
+            from dzack_research.preamble.categories.modules.connections import (
+                _connections,
+            )
+
+            return _connections(self)
+
         def divided_square(self):
             r"""Return ``Gamma^2_R(self)``, the universal target for quadratic maps."""
             from dzack_research.preamble.categories.modules.powers import _divided_square

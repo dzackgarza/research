@@ -6,9 +6,7 @@ from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import SymmetricAlgebraOn
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    Connections,
     DifferentialGradedModules,
-    ModuleWithConnection,
     Modules,
     ModulesWithFlatConnection,
     ModulesWithConnection,
@@ -25,7 +23,8 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
     algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = algebra.algebra_generator("x")
     module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
-    space = Connections(module)
+    space = module.connections()
+    assert space is module.connections()
     omega = space.one_forms()
     e = module.module_generator("e")
     dx = omega.differential_generator("x")
@@ -58,12 +57,13 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
 def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
     module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
-    zero_space = Connections(module)
+    zero_space = module.connections()
     zero_connection = zero_space({"e": zero_space.target_module().zero()})
-    structured = ModuleWithConnection(zero_connection)
+    structured = ModulesWithConnection(algebra)(zero_connection)
 
     assert structured is not module
     assert structured in ModulesWithConnection(algebra)
+    assert structured.connection().parent() is structured.connections()
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()
     horizontal_maps = structured.Mor(structured)
@@ -77,7 +77,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert identity(structured.module_generator("e")) == structured.module_generator("e")
 
     nonzero_source = BasedFreeModule(algebra, finite_ordered_set(("e",)))
-    nonzero_space = Connections(nonzero_source)
+    nonzero_space = nonzero_source.connections()
     dx = nonzero_space.one_forms().differential_generator("x")
     nonzero = nonzero_space(
         {
@@ -87,7 +87,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
             )
         }
     )
-    other = ModuleWithConnection(nonzero)
+    other = ModulesWithConnection(algebra)(nonzero)
     with pytest.raises(ValueError, match="not horizontal"):
         structured.Mor(other)(
             {"e": other.module_generator("e")}
@@ -98,7 +98,7 @@ def test_flat_connection_builds_the_de_rham_dg_module() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
     x = algebra.algebra_generator("x")
     module = BasedFreeModule(algebra, finite_ordered_set(("e",)))
-    space = Connections(module)
+    space = module.connections()
     dx = space.one_forms().differential_generator("x")
     connection = space(
         {
@@ -133,7 +133,7 @@ def test_connection_on_countable_free_module_keeps_callable_generator_family_laz
 
     algebra = SymmetricAlgebraOn(QQ, ("t",))
     module = FreeModuleOn(algebra, NN)
-    connection_space = Connections(module)
+    connection_space = module.connections()
     connection = connection_space(
         lambda _label: connection_space.target_module().zero()
     )

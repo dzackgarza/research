@@ -76,8 +76,8 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
-        connections = Connections(module)
-        return ModuleWithConnection(
+        connections = module.connections()
+        return self(
             connections(lambda _label: connections.target_module().zero())
         )
 
@@ -104,6 +104,28 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             codomain,
         )
 
+    def _call_(self, connection):
+        r"""Equip the source module with the selected connection."""
+        if not isinstance(connection, Connection):
+            raise TypeError("a module with connection is specified by a Connection")
+        source = connection.module()
+        algebra = connection.algebra()
+        if algebra is not self.algebra():
+            raise ValueError("the connection belongs to a different coefficient algebra")
+        if source not in FinitelyGeneratedFreeModules(algebra):
+            raise NotImplementedError(
+                "the live structured connection is currently materialized for finite free modules"
+            )
+        categories = [self]
+        if connection.is_flat():
+            categories.append(ModulesWithFlatConnection(algebra))
+        return FreshFreeModuleOn(
+            algebra,
+            source.module_generating_set(),
+            _extra_categories=tuple(categories),
+            _extra_construction_data={"source_connection": connection},
+        )
+
     class ParentMethods:
         def __init__(self, source_connection, **rest) -> None:
             self._preamble_source_connection = source_connection
@@ -112,7 +134,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         @cached_method
         def connection(self):
             source_connection = self._preamble_source_connection
-            transported_target = Connections(self).target_module()
+            transported_target = self.connections().target_module()
             omega = source_connection.one_forms()
 
             def transported_image(label):
@@ -130,7 +152,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
                     )
                 return image
 
-            return Connections(self)(transported_image)
+            return self.connections()(transported_image)
 
         def Mor(self, codomain, category=None):
             connections = ModulesWithConnection(self.base_ring())
@@ -159,8 +181,8 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
-        connections = Connections(module)
-        return ModuleWithConnection(
+        connections = module.connections()
+        return ModulesWithConnection(self.algebra())(
             connections(lambda _label: connections.target_module().zero())
         )
 
@@ -416,7 +438,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
                 restricted_source,
                 restricted_target,
             )
-        return Connections(family_or_module)
+        return family_or_module.connections()
 
     def __init__(self, family, restricted_source, restricted_target) -> None:
         module = restricted_source.module_over_extension()
@@ -506,7 +528,7 @@ class ConnectionCategoryConstruction(RestrictedHomCategoryOf):
 
 
 @cached_function(key=lambda module: id(module))
-def Connections(module) -> ConnectionSpace:
+def _connections(module) -> ConnectionSpace:
     algebra = module.base_ring()
     if algebra not in CommutativeAlgebras(algebra.base_ring()):
         raise TypeError(
@@ -633,25 +655,6 @@ class ConnectionMorphismCategoryConstruction(RestrictedHomCategoryOf):
     def accepts(self, arrow) -> bool:
         return getattr(arrow, "_preamble_connection_morphism", None) is not None
 
-
-def ModuleWithConnection(connection):
-    r"""Return a fresh finite-free module carrying the selected connection."""
-
-    source = connection.module()
-    algebra = connection.algebra()
-    if source not in FinitelyGeneratedFreeModules(algebra):
-        raise NotImplementedError(
-            "the live structured connection is currently materialized for finite free modules"
-        )
-    categories = [ModulesWithConnection(algebra)]
-    if connection.is_flat():
-        categories.append(ModulesWithFlatConnection(algebra))
-    return FreshFreeModuleOn(
-        algebra,
-        source.module_generating_set(),
-        _extra_categories=tuple(categories),
-        _extra_construction_data={"source_connection": connection},
-    )
 
 
 class ConnectionDeRhamDifferential:
@@ -868,8 +871,6 @@ __all__ = [
     "ConnectionHomset",
     "ConnectionMorphism",
     "ConnectionSpace",
-    "Connections",
-    "ModuleWithConnection",
     "ModulesWithConnection",
     "ModulesWithFlatConnection",
 ]

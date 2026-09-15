@@ -338,13 +338,13 @@ def _graded_derivation_space():
 def _connection_space():
     algebra = _derivation_algebra()
     module = BasedFreeModule(algebra, Sets.Δ[0])
-    return Connections(module)
+    return module.connections()
 
 
 def _horizontal_connection_maps():
     connection_space = _connection_space()
     connection = connection_space(lambda _label: connection_space.target_module().zero())
-    structured_module = ModuleWithConnection(connection)
+    structured_module = ModulesWithConnection(connection.algebra())(connection)
     return structured_module.Mor(structured_module)
 
 
