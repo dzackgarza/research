@@ -49,6 +49,9 @@ from dzack_research.preamble.categories._lattice import (
     tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
+from dzack_research.preamble.categories._lattice import (
+    signature_pairs as signature_pairs,
+)
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
