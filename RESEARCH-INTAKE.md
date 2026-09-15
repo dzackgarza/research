@@ -37,6 +37,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 | Derived Hom / tensor — Ext, Tor, D(R-Mod) | User note 2026-09-15 | `RHom`, `Ext^n = R^n Hom`, `⊗^L`, `Tor_n = L_n(⊗)` in `D(R-Mod)`; derived tensor products `A⊗^L_R B` | `categories/derived/derived_category.py` + `categories/homological/ext_tor.py` / `categories/derived/tensor_product.py` | Proposed — see note below |
 | Constructive topology — Kenzo effective homology | https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/kenzo-demo.html | Constructive homology of iterated loop spaces and higher homotopy: effective homology for C_*(Ω^n X), fibrations, Whitehead/Postnikov towers, H_*(K(π,n)), π_n(X) with k-invariants | `categories/topology/simplicial_sets.py` + `categories/topology/effective_homology.py` + `categories/homotopy/whitehead_tower.py` + `categories/algebras/bar_cobar.py` | Proposed — see intake below |
+| Eilenberg-Moore sseq — effective | User note 2026-09-15 + Kenzo | Operationalized Eilenberg-Moore spectral sequence for fibrations/pullbacks via effective homology: E_2 = Tor^{H_*(ΩB)} / Cotor^{H_*(B)} ⇒ H_*(F ×_B E) with constructive differentials and convergence, not table lookup | `categories/homotopy/eilenberg_moore.py` + `categories/topology/effective_homology.py` + `categories/derived/tensor_product.py` (Tor) + `categories/algebras/bar_cobar.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -621,4 +622,27 @@ For Kenzo's `π_*, Adams, BP` to be statable without coding by fiat, these must 
 **Not fundamental**
 * Specific `Sq^1(x)=βx`, `MU_*=Z[x1,..]` generator `x1=CP^1`, `π_*(S)=Z/24` etc. — elements `x_i: π_{2i}(MU)` and classes `w_i: H^i(BO)` as morphisms `BO→K(F_2,i)`, not new categories
 * `ΣS^n≃S^{n+1}` must be proven as `|ΣΔ^n/∂|≅S^{n+1}` via `EC` shift, not table — instance of `Σ ⊣ Ω` on `sSet`
+
+## Desired capability: Eilenberg-Moore sseq operationalized for effective computations — note 2026-09-15
+
+Note the Eilenberg-Moore spectral sequence should be operationalized for effective computations — not a table of `E_2=E_∞` coincidences.
+
+* EM is not a formal `E_2^{p,q}=Tor` display. For a (homotopy) pullback `E = X ×_B Y` of spaces over `B` with `B` 1-connected (more generally path-connected, nilpotent), and for a fibration `F ↪ E → B` as `E = F ×_B *`, the Eilenberg-Moore sseq is the spectral sequence of the two-sided bar construction `B(C_*(X), C_*(ΩB), C_*(Y))`:
+  ```
+  E_2^{p,q} = Tor^{H_*(ΩB)}_{p,q}(H_*(X), H_*(Y)) ⇒ H_{p+q}(X ×_B Y)
+  Cotor^{H_*(B)}_{p,q}(H_*(X), H_*(Y)) ⇒ H_{p+q}(X ×_B Y)   (coalgebra form when B coaugmented)
+  ```
+  and cohomology `E_2^{p,q}=Ext^{p,q}_{H^*(B)}(H^*(X),H^*(Y)) ⇒ H^{p+q}(X×_B Y)` / `E_2^{p,q}=Ext_{H_*(ΩB)}^{p,q}` dual. Specialization to a fibration is `Y=*`. Without derived `Tor` over `H_*(ΩB)` / `Cotor` over `H_*(B)` and bar/cobar, this is not statable.
+
+* Operationalized means: from `B,X,Y : sSet` with `B` effective (hence `C_*(B)` and `H_*(ΩB)` via cobar `ΩC_*(B)`), construct `B(C_*(X), C_*(ΩB), C_*(Y))` as effective chain complex via reductions, and compute `E_r^{p,q}` as objects of `GrMod_{ZZ^2}(R)` (`R=ZZ, F_p` via `smith` base-change) with explicit differentials `d_r: E_r^{p,q}→E_r^{p+r, q-r+1}` induced by bar filtration `F^pB = B^{≤p}` and perturbation `δ_τ`. Interface must be `(f: X→B, g: Y→B).eilenberg_moore(r) → E_r` and `E_r.differential(p,q)` and `E_r.next_page()` and convergence `E_∞^{p,q}=F^p H_{p+q}/F^{p+1}` as filtration quotient of `H_*(X×_B Y)` via `EC` of pullback `X×_B Y = X×_τ (ΩB) × Y` twisted product, not a bare list of groups.
+
+* Effective computation requires: loop space effective homology `C_*(ΩB) ≃ ΩC_*(B)` already intaken (Kenzo `Ω` cobar + BPL), bar construction `B(A,M,N)=M⊗T(s\bar A)⊗N` with differential `d_B = d_M⊗1⊗1 +1⊗d_A⊗1+1⊗1⊗d_N + twisting from product/coproduct`, two-sided bar `B(R, C_*(ΩB), H_*(X))` etc., and the reduction `B(C_*(X),C_*(ΩB),C_*(Y)) ⇔ B(H_*(X),H_*(ΩB),H_*(Y))` via Eilenberg-Moore comparison when `B` 1-connected; differentials must be computable from `EC` boundary matrices via `smith` over `ZZ` or over `F_p` after `⊗^L F_p`.
+
+* In easy cases when `H_*(B)` is free / `B` formal and `H_*(ΩB)` known, `E_2` already gives answer — but general case requires `d_r` for `r≥2` and must not declare `E_2=E_∞` by fiat. For concrete fibrations `K(Z/2,1)↪E→S^2`, `ΩS^n→PS^n→S^n` (path-loop), Postnikov fibrations `K(π,n+1)↪X^{(n+1)}→X^{(n)}`, the EM `E_2` via `Tor` must be returned as effective `GrMod` and `E_3, E_∞` via actual `d_2` from twisting cochain / Massey products, certifying the filtration on `H_*(E)` vs. direct `EC(E)` homology (agreement test).
+
+* Requires: derived tensor already intaken `⊗^L : D(R-Mod)×D(R-Mod)→D(R-Mod)` with `Tor_{p,q}=H_{p+q}( -⊗^L -)` in graded context; `C_*(ΩB)` as dg algebra (`H_*(ΩB)=Ext_{C_*(B)}(R,R)`) via cobar; `B` as Reedy / model fibrant `B` so `X×_B Y` is `h×`; effective homology `ε_B, ε_X, ε_Y` for base/fiber/pullback. Without model category fibrancy `F ↪ E→B` (`Kan fibration` in `sSet`, Serre in `Top`) the pullback is not homotopy pullback and EM does not apply.
+
+* Relation to prior leads: EM `E_2=Tor` is not a new `Tor`; it is the topological `Tor^{H_*(ΩB)}` instance of the same derived `Ext/Tor/D(R-Mod)` lead (`R=ZZ`) with `⊗^L_{H_*(ΩB)}`. Bar/cobar lead already provides `B/Ω`. Serre sseq lead already provides `E_r` interface; EM reuses that `SpectralSequence` object with `E_2^{p,q}=Tor` instead of `E_2^{p,q}=H^p(B;H^q(F))`, and with bar filtration instead of skeletal filtration. Do not build a second `SpectralSequenceEM` type duplicating `E_r`.
+
+Intended owners: `categories/homotopy/eilenberg_moore.py` (`EilenbergMooreSpectralSequence` with `E_2 = Tor^{H_*(ΩB)}(H_*(X),H_*(Y))` / `Cotor^{H_*(B)}` via `Bar`, `E_r.next_page()`, convergence to `H_*(X×_B Y)`), delegating to `categories/topology/effective_homology.py` (`BPL` for `B(A,M,N)`), `categories/derived/tensor_product.py` (`Tor` as `⊗^L`), `categories/algebras/bar_cobar.py` (`Bar`, `Cobar`, twisting cochain `τ`), `categories/homotopy/model_categories.py` (`Kan fibration`, `h-pullback`). Not a free `eilenberg_moore(X,Y,B)` returning lists — `(X→B←Y).eilenberg_moore()` on the cospan in `Ho(sSet)` with `E_r^{p,q}` as `GrMod_{ZZ^2}` objects and differentials as morphisms, converging to `EC(X×_B Y).homology()`.
 
