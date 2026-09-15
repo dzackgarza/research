@@ -254,7 +254,7 @@ class FormedModuleMorphism(Morphism):
         if (
             self.domain() is self.codomain()
             and self.module_morphism() is module_homset(self.domain(), self.domain()).identity()
-            and self.value_morphism() is module_homset(source_values, source_values).identity()
+            and self.value_morphism() is source_values.module_category().Mor(source_values, source_values).identity()
         ):
             return
         source_form = self.domain().form()
@@ -388,7 +388,7 @@ class FormEmbedding(FormedModuleMorphism):
                     )
                 }
             )
-        pairing = module_homset(target, dual)(images)
+        pairing = target.module_category().Mor(target, dual)(images)
         kernel = pairing.kernel()
         kernel_inclusion = kernel.inclusion()
         return target.subobject_on(
@@ -415,8 +415,8 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
         raise TypeError("a form embedding keeps the value module")
     embedding = FormEmbedding(
         FormModules(domain.base_ring()).Mor(domain, codomain),
-        module_homset(domain, codomain)(images),
-        module_homset(values, values).identity(),
+        domain.module_category().Mor(domain, codomain)(images),
+        values.module_category().Mor(values, values).identity(),
         quadratic=quadratic,
     )
     monos = category_packet(FormModules(domain.base_ring())).Monos().Of(domain, codomain)
@@ -468,7 +468,7 @@ class FormedModuleHomset(CategoricalHomset):
                     "a bare module morphism determines a formed morphism only "
                     "when the value module is unchanged"
                 )
-            datum = (datum, module_homset(source_values, target_values).identity())
+            datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
 
@@ -479,7 +479,7 @@ class FormedModuleHomset(CategoricalHomset):
         return self(
             (
                 module_homset(self.domain(), self.domain()).identity(),
-                module_homset(values, values).identity(),
+                values.module_category().Mor(values, values).identity(),
             )
         )
 
@@ -645,7 +645,7 @@ class FiberedFormedModuleMorphism(Morphism):
                 middle_value,
             )
             value_images[label] = self.value_morphism()(lifted_value)
-        value_map = module_homset(direct_values, target_values)(value_images)
+        value_map = direct_values.module_category().Mor(direct_values, target_values)(value_images)
         return homset((module_map, value_map))
 
 
@@ -693,7 +693,7 @@ class FiberedFormedModuleHomset(CategoricalHomset):
         )
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(self.domain())
-        value_map = module_homset(source_values, target_values)(
+        value_map = source_values.module_category().Mor(source_values, target_values)(
             {
                 label: target_values.module_generator(label)
                 for label in source_values.module_generating_set()
@@ -860,7 +860,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         def forget_form_morphism(self):
             r"""Return the canonical module identification from the formed copy."""
             module = self.unformed_module()
-            return module_homset(self, module)(
+            return self.module_category().Mor(self, module)(
                 {
                     label: module.module_generator(label)
                     for label in self.module_generating_set()
@@ -871,7 +871,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         def equip_form_morphism(self):
             r"""Return the inverse canonical module identification into the formed copy."""
             module = self.unformed_module()
-            return module_homset(module, self)(
+            return module.module_category().Mor(module, self)(
                 {
                     label: self.module_generator(label)
                     for label in self.module_generating_set()
@@ -917,7 +917,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             if codomain in formed and (category is None or category.is_subcategory(formed)):
                 return FormModules(ring).Mor(self, codomain)
 
-            return module_homset(self, codomain)
+            return self.module_category().Mor(self, codomain)
 
         def b(self, left, right):
             r"""Evaluate the (polar) bilinear form on two elements of this module."""
@@ -1451,7 +1451,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return module_homset(self, dual)(images)
+            return self.module_category().Mor(self, dual)(images)
 
         @cached_method
         def radical(self):
@@ -1479,7 +1479,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             radical = self.radical()
             inclusion = radical.inclusion()
             value_module = self.value_module()
-            value_identity = module_homset(value_module, value_module).identity()
+            value_identity = value_module.module_category().Mor(value_module, value_module).identity()
             descended = self._formed_form().descend_along(inclusion, value_identity)
             return FormModule(descended)
 
@@ -1680,4 +1680,4 @@ def is_form_morphism(morphism) -> bool:
     # not decidable without a chosen finite presentation of the source, and the
     # value module here is often Q/Z, which has no finite generating set.
 
-    return value_morphism is module_homset(values, values).identity()
+    return value_morphism is values.module_category().Mor(values, values).identity()

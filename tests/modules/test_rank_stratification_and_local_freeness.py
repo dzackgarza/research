@@ -27,7 +27,7 @@ def _torsion_plus_free():
     free = BasedFreeModule(ring, finite_ordered_set(("g", "h")))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x, free.module_generator("g"))}
         )
     )
@@ -96,7 +96,7 @@ def test_the_annihilator_of_a_sum_of_cyclic_modules_over_a_non_pid() -> None:
     free = BasedFreeModule(ring, finite_ordered_set(("g", "h")))
     relations = BasedFreeModule(ring, finite_ordered_set(("r", "s")))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {
                 "r": free.scalar_multiple(x, free.module_generator("g")),
                 "s": free.scalar_multiple(y, free.module_generator("h")),

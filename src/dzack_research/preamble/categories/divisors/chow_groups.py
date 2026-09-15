@@ -140,10 +140,10 @@ def AffineWeilCycleIsomorphism(scheme):
 
     weil = affine_normal_weil_divisor_group(scheme)
     cycles = AffineCycleGroup(scheme, int(scheme.dimension()) - 1)
-    forward = module_homset(weil, cycles)(
+    forward = weil.module_category().Mor(weil, cycles)(
         lambda point: cycles.prime_cycle(point)
     )
-    inverse = module_homset(cycles, weil)(
+    inverse = cycles.module_category().Mor(cycles, weil)(
         lambda point: weil.prime_divisor(point)
     )
     return _isomorphism_from_known_inverse_pair(forward, inverse)
@@ -175,7 +175,7 @@ class AffineCodimensionOneChowComparison(SageObject):
         into_full_cycles = divisor_cycle.forward() * presentation_into_full_weil
         cycle_presentation = into_full_cycles.image()
         cycle_inclusion = cycle_presentation.inclusion()
-        weil_to_cycles = module_homset(finite_weil, cycle_presentation)(
+        weil_to_cycles = finite_weil.module_category().Mor(finite_weil, cycle_presentation)(
             {
                 label: cycle_inclusion.lift(
                     into_full_cycles(finite_weil.module_generator(label))
@@ -192,7 +192,7 @@ class AffineCodimensionOneChowComparison(SageObject):
             scheme,
             int(scheme.dimension()) - 1,
         )
-        equip_chow = module_homset(chow_cokernel, chow)(
+        equip_chow = chow_cokernel.module_category().Mor(chow_cokernel, chow)(
             {
                 label: chow.module_generator(label)
                 for label in chow_cokernel.module_generating_set()
@@ -204,7 +204,7 @@ class AffineCodimensionOneChowComparison(SageObject):
 
         classes = divisor_classes.class_group()
         class_projection = divisor_classes.weil_class_projection()
-        class_to_chow = module_homset(classes, chow)(
+        class_to_chow = classes.module_category().Mor(classes, chow)(
             {
                 label: cycle_class_projection(
                     weil_to_cycles(finite_weil.module_generator(label))
@@ -213,7 +213,7 @@ class AffineCodimensionOneChowComparison(SageObject):
             }
         )
         cycles_to_weil = weil_to_cycles.inverse()
-        chow_to_class = module_homset(chow, classes)(
+        chow_to_class = chow.module_category().Mor(chow, classes)(
             {
                 label: class_projection(
                     cycles_to_weil(cycle_presentation.module_generator(label))

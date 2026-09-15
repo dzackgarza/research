@@ -44,7 +44,7 @@ def _group_algebra_of_the_cyclic_group_of_order_three():
 def test_a_scalar_multiple_is_linear_over_the_infinite_ring() -> None:
     _ring, quotient, module = _group_algebra_of_the_cyclic_group_of_order_three()
 
-    doubling = module_homset(module, module).elementwise(
+    doubling = module.module_category().Mor(module, module).elementwise(
         lambda element: module(quotient(2) * element.underlying_element())
     )
 
@@ -55,7 +55,7 @@ def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
     _ring, quotient, module = _group_algebra_of_the_cyclic_group_of_order_three()
 
     try:
-        module_homset(module, module).elementwise(
+        module.module_category().Mor(module, module).elementwise(
             lambda element: module(element.underlying_element() ** 3)
         )
     except ValueError as error:
@@ -68,7 +68,7 @@ def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
 
 def test_zero_module_over_a_non_enumerated_ring_has_one_verification_element() -> None:
     zero_module = BasedFreeModule(AA, finite_ordered_set(()))
-    identity = module_homset(zero_module, zero_module).elementwise(lambda element: element)
+    identity = zero_module.module_category().Mor(zero_module, zero_module).elementwise(lambda element: element)
 
     assert zero_module.cardinality() == 1
     assert identity(zero_module.zero()) == zero_module.zero()

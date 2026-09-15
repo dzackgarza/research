@@ -101,7 +101,7 @@ def test_restriction_is_left_adjoint_to_coextension() -> None:
     assert unit(i * generator) == unit.codomain().scalar_multiple(i, unit(generator))
 
     labels = restricted.module_generating_set()
-    weights = module_homset(restricted, target)(
+    weights = restricted.module_category().Mor(restricted, target)(
         {label: (1 + int(labels.ranking_map()(label))) * target.module_generator(0) for label in labels}
     )
     transposed = adjunction.hom_set_isomorphism_forward(weights)
@@ -142,7 +142,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     )
 
     target = FreeModule(ZZ, 1)
-    weights = module_homset(forgotten, target)(
+    weights = forgotten.module_category().Mor(forgotten, target)(
         {0: target.module_generator(0), 1: 3 * target.module_generator(0)}
     )
     transposed = adjunction.hom_set_isomorphism_forward(weights)

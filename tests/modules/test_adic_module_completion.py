@@ -16,7 +16,7 @@ def _torsion_module():
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x**2, free.module_generator("g"))}
         )
     )

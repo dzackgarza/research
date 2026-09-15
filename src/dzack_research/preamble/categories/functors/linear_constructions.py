@@ -41,12 +41,12 @@ class DualizationFunctor(ContravariantFunctor):
                 if coefficient:
                     coefficients[domain_label] = coefficient
             images[codomain_label] = target_dual.linear_combination(coefficients)
-        return module_homset(source_dual, target_dual)(images)
+        return source_dual.module_category().Mor(source_dual, target_dual)(images)
 
     def double_dual_morphism(self, module):
         r"""Return the canonical finite-free biduality map ``M -> M**``."""
         double_dual = self(self(module))
-        return module_homset(module, double_dual)(
+        return module.module_category().Mor(module, double_dual)(
             {
                 label: double_dual.module_generator(label)
                 for label in module.module_generating_set()
@@ -94,7 +94,7 @@ class KernelArrowFunctor(_ArrowConstructionFunctor):
     def _apply_morphism(self, square):
         source_kernel = self(square.domain())
         target_kernel = self(square.codomain())
-        return module_homset(source_kernel, target_kernel)(
+        return source_kernel.module_category().Mor(source_kernel, target_kernel)(
             {
                 label: target_kernel.inclusion().lift(
                     square.left()(
@@ -121,7 +121,7 @@ class CokernelArrowFunctor(_ArrowConstructionFunctor):
         source_cokernel = self(square.domain())
         target_cokernel = self(square.codomain())
         target_projection = target_cokernel.cokernel_projection()
-        return module_homset(source_cokernel, target_cokernel)(
+        return source_cokernel.module_category().Mor(source_cokernel, target_cokernel)(
             {
                 label: target_projection(
                     square.right()(

@@ -772,7 +772,7 @@ class ModuleMorphism(Morphism):
                             image.numerator(),
                         )
 
-                    source_morphism = module_homset(source_domain, source_codomain)(source_images)
+                    source_morphism = source_domain.module_category().Mor(source_domain, source_codomain)(source_images)
                     source_kernel = source_morphism.kernel()
                     localized_kernel = functor(source_kernel)
                     localized_inclusion = functor(source_kernel.inclusion())
@@ -973,7 +973,7 @@ class ModuleMorphism(Morphism):
             coordinates = target._framing_coordinates(element)
             return target_cover.linear_combination({label: coordinates[label] for label in target.module_generating_set() if coordinates[label]})
 
-        cover_map = module_homset(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
+        cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
         relation_map = module_homset(source_presentation.domain(), target_presentation.domain())(
             {
                 label: target_presentation.lift(cover_map(source_presentation(source_presentation.domain().module_generator(label))))
@@ -1044,7 +1044,7 @@ class ModuleMorphism(Morphism):
         def cleared(coordinates):
             return cleared_module.linear_combination({label: ring(scale * coefficient) for label, coefficient in coordinates.items()})
 
-        cleared_span = module_homset(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
+        cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
         return cleared_span.lift(cleared(target_coordinates))
 
     def is_in_image(self, element) -> bool:
@@ -1065,7 +1065,7 @@ class ModuleMorphism(Morphism):
         source_generators = tuple(self.domain().module_generators())
         labels = Sets.Δ[len(source_generators) - 1]
         target = codomain._fresh_free_module_on(labels)
-        pairing_map = module_homset(codomain, target)(
+        pairing_map = codomain.module_category().Mor(codomain, target)(
             {
                 label: target.linear_combination(
                     {
@@ -1124,7 +1124,7 @@ class ModuleMorphism(Morphism):
         except AttributeError as error:
             raise NotImplementedError("base change of this module morphism requires represented endpoint base changes") from error
 
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             {
                 label: target.linear_combination(
                     {
@@ -1196,10 +1196,10 @@ class ModuleMorphism(Morphism):
         if left_labels.cardinality() != right_labels.cardinality():
             raise ArithmeticError("completion changed the selected cokernel framing cardinality")
 
-        forward = module_homset(completed_cokernel, cokernel_after_completion)(
+        forward = completed_cokernel.module_category().Mor(completed_cokernel, cokernel_after_completion)(
             {label: cokernel_after_completion.module_generator(right_labels[int(left_labels.ranking_map()(label))]) for label in left_labels}
         )
-        inverse = module_homset(cokernel_after_completion, completed_cokernel)(
+        inverse = cokernel_after_completion.module_category().Mor(cokernel_after_completion, completed_cokernel)(
             {label: completed_cokernel.module_generator(left_labels[int(right_labels.ranking_map()(label))]) for label in right_labels}
         )
         return ModuleCokernelCompletionComparison(
@@ -1275,7 +1275,7 @@ class ModuleMorphism(Morphism):
         """
         quotient = self.cokernel()
         codomain = self.codomain()
-        return module_homset(codomain, quotient)(lambda label: quotient.module_generator(label))
+        return codomain.module_category().Mor(codomain, quotient)(lambda label: quotient.module_generator(label))
 
     def section(self):
         r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
@@ -1879,14 +1879,14 @@ def sub_framing_morphism(domain, codomain) -> SubFramingMorphism:
     """
 
     return SubFramingMorphism(
-        module_homset(domain, codomain),
+        domain.module_category().Mor(domain, codomain),
         codomain.module_generator,
         verify_linearity=False,
     )
 
 
 def framing_morphism(domain, codomain, images) -> FramingMorphism:
-    homset = module_homset(domain, codomain)
+    homset = domain.module_category().Mor(domain, codomain)
     framing = FramingMorphism(homset, images)
     return framing
 
@@ -1900,7 +1900,7 @@ def module_embedding(
 ) -> ModuleEmbedding:
     r"""Construct a declared module monomorphism on a chosen framing."""
     return ModuleEmbedding(
-        module_homset(domain, codomain),
+        domain.module_category().Mor(domain, codomain),
         images,
         verify_linearity=verify_linearity,
     )

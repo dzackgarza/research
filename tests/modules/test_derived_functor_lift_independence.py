@@ -16,14 +16,14 @@ def _cyclic_two():
 
 
 def _multiplication(module, scalar):
-    return module_homset(module, module)(
+    return module.module_category().Mor(module, module)(
         {label: scalar * module.module_generator(label) for label in module.module_generating_set()}
     )
 
 
 def test_two_resolution_lifts_of_the_identity_are_chain_homotopic() -> None:
     module = _cyclic_two()
-    identity = module_homset(module, module).identity()
+    identity = module.module_category().Mor(module, module).identity()
     resolution = module.free_resolution(2)
     canonical = resolution.lift_morphism(identity, resolution)
     triple_zero = _multiplication(resolution.term(0), ZZ(3))
@@ -42,7 +42,7 @@ def test_two_resolution_lifts_of_the_identity_are_chain_homotopic() -> None:
 
 def test_tor_and_ext_maps_do_not_depend_on_the_selected_chain_lift() -> None:
     module = _cyclic_two()
-    identity = module_homset(module, module).identity()
+    identity = module.module_category().Mor(module, module).identity()
     resolution = module.free_resolution(2)
     canonical = resolution.lift_morphism(identity, resolution)
     alternative = FreeResolutionMorphism(

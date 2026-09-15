@@ -92,7 +92,7 @@ class TensorHomAdjunction(Adjunction):
     def unit(self, module):
         tensor = self.left_adjoint()(module)
         internal_hom = self.right_adjoint()(tensor)
-        return module_homset(module, internal_hom)(
+        return module.module_category().Mor(module, internal_hom)(
             lambda module_label: module_homset(self.fixed_module(), tensor)(
                 lambda fixed_label: tensor.pure_tensor(
                     module.module_generator(module_label),

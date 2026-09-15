@@ -71,13 +71,13 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
     source = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((8, 8))
     middle = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
     target = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2, 2))
-    first = module_homset(source, middle)(
+    first = source.module_category().Mor(source, middle)(
         {
             0: middle.module_generator(0) + middle.module_generator(1),
             1: 2 * middle.module_generator(1),
         }
     )
-    second = module_homset(middle, target)(
+    second = middle.module_category().Mor(middle, target)(
         {0: target.module_generator(0), 1: target.module_generator(1)}
     )
 
@@ -99,11 +99,11 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
             )
         _assert_power_maps_agree(composite, stepwise, probes)
 
-        identity = functor(module_homset(source, source).identity())
+        identity = functor(source.module_category().Mor(source, source).identity())
         _assert_power_maps_agree(
             identity,
             functor(source).Mor(functor(source))(
-                module_homset(source, source).identity()
+                source.module_category().Mor(source, source).identity()
             ),
             probes,
         )

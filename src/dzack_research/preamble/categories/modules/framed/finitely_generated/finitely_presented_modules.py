@@ -112,7 +112,7 @@ def _matrix_space_like(module, nrows, ncols):
     source = owner._fresh_free_module_on(Sets.Δ[int(ncols) - 1])
     target = owner._fresh_free_module_on(Sets.Δ[int(nrows) - 1])
 
-    return module_homset(source, target)
+    return source.module_category().Mor(source, target)
 
 
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
@@ -474,7 +474,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     return generators[int(label)]
 
             source = _free_cover_owner(self)._fresh_free_module_on(labels)
-            spanning = module_homset(source, self)(lambda label: self(generator(label)))
+            spanning = source.module_category().Mor(source, self)(lambda label: self(generator(label)))
 
             if self.base_ring() in OwnedFields():
                 spans_all = spanning.is_surjective()
@@ -585,7 +585,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             coordinate = finite_ordered_set(("r",))
             line = self.presentation().codomain()._fresh_free_module_on(coordinate)
-            multiplication = module_homset(line, self)({"r": self(element)})
+            multiplication = line.module_category().Mor(line, self)({"r": self(element)})
             kernel = multiplication.kernel()
             inclusion = kernel.inclusion()
             scalars = tuple(
@@ -780,7 +780,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 name="Local free basis labels",
             )
             free = _free_cover_owner(localized)._fresh_free_module_on(labels)
-            forward = module_homset(free, localized)(
+            forward = free.module_category().Mor(free, localized)(
                 lambda label: localized.module_generator(label)
             )
             return Isomorphism(forward, forward.inverse())
@@ -1022,7 +1022,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized_target = free_owner._fresh_free_module_on(target_labels)
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
-                homset = _refine_matrix_hom(module_homset(domain, codomain))
+                homset = _refine_matrix_hom(domain.module_category().Mor(domain, codomain))
                 source_labels = tuple(domain.module_generating_set())
                 target_labels = tuple(codomain.module_generating_set())
                 if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):
@@ -1108,13 +1108,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 for row in range(int(backend.nrows()))
             )
             normalized = self._presented_module_from_relation_rows(labels, rows)
-            forward = module_homset(self, normalized)(
+            forward = self.module_category().Mor(self, normalized)(
                 {
                     label: normalized.module_generator(label)
                     for label in labels
                 }
             )
-            inverse = module_homset(normalized, self)(
+            inverse = normalized.module_category().Mor(normalized, self)(
                 {
                     label: self.module_generator(label)
                     for label in labels
@@ -1183,10 +1183,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized = normalization.codomain()
             labels = normalized.module_generating_set()
             free = _free_cover_owner(self)._fresh_free_module_on(labels)
-            normalized_to_free = module_homset(normalized, free)(
+            normalized_to_free = normalized.module_category().Mor(normalized, free)(
                 {label: free.module_generator(label) for label in labels}
             )
-            free_to_normalized = module_homset(free, normalized)(
+            free_to_normalized = free.module_category().Mor(free, normalized)(
                 {label: normalized.module_generator(label) for label in labels}
             )
             return Isomorphism(normalized_to_free, free_to_normalized) * normalization
@@ -1261,7 +1261,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             r"""Return the selected quotient map ``F_0 -> M``."""
 
             source = self.presentation().codomain()
-            return module_homset(source, self)({label: self.module_generator(label) for label in source.module_generating_set()})
+            return source.module_category().Mor(source, self)({label: self.module_generator(label) for label in source.module_generating_set()})
 
         def torsion_free_quotient_projection(self):
             r"""Return ``M -> M/Tor(M)`` from invariant-factor coordinates."""
@@ -1279,7 +1279,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
             )
             target = self.presentation().codomain()._fresh_free_module_on(free_positions)
-            normalized_projection = module_homset(normalized, target)(
+            normalized_projection = normalized.module_category().Mor(normalized, target)(
                 {
                     label: (
                         target.module_generator(retained_positions[int(label)])
@@ -1349,7 +1349,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 )
             }
             return FinitelyPresentedModule(
-                module_homset(source, target)(images),
+                source.module_category().Mor(source, target)(images),
                 _extra_construction_data=_extra_construction_data,
             )
 
@@ -1392,7 +1392,7 @@ def _module_invariant_factor_form(module):
         lambda reduced_position: invariants[int(retained_positions[int(reduced_position)])] != ring.zero(),
     )
     reduced_source = free_owner._fresh_free_module_on(relation_labels)
-    reduced_presentation = module_homset(reduced_source, reduced_target)(
+    reduced_presentation = reduced_source.module_category().Mor(reduced_source, reduced_target)(
         {
             reduced_position: reduced_target.scalar_multiple(
                 invariants[int(retained_positions[int(reduced_position)])],
@@ -1404,13 +1404,13 @@ def _module_invariant_factor_form(module):
     reduced = FinitelyPresentedModule(reduced_presentation)
 
     full_labels = full_normalized.module_generating_set()
-    full_to_reduced = module_homset(full_normalized, reduced)(
+    full_to_reduced = full_normalized.module_category().Mor(full_normalized, reduced)(
         {
             full_label: (reduced.module_generator(retained_positions.ranking_map()(retained_positions(position))) if position in retained_positions else reduced.zero())
             for position, full_label in enumerate(full_labels)
         }
     )
-    reduced_to_full = module_homset(reduced, full_normalized)(
+    reduced_to_full = reduced.module_category().Mor(reduced, full_normalized)(
         {
             reduced_label: full_normalized.module_generator(full_labels[int(retained_positions[int(reduced_label)])])
             for reduced_label in reduced.module_generating_set()
@@ -1422,10 +1422,10 @@ def _module_invariant_factor_form(module):
     target_inverse = presentation_iso.inverse().right()
     full_projection = full_normalized.presentation_projection()
     original_projection = module.presentation_projection()
-    original_to_full = module_homset(module, full_normalized)(
+    original_to_full = module.module_category().Mor(module, full_normalized)(
         {label: full_projection(target_forward(module.presentation().codomain().module_generator(label))) for label in module.module_generating_set()}
     )
-    full_to_original = module_homset(full_normalized, module)(
+    full_to_original = full_normalized.module_category().Mor(full_normalized, module)(
         {label: original_projection(target_inverse(diagonal_presentation.codomain().module_generator(label))) for label in full_normalized.module_generating_set()}
     )
     presentation_cokernel_iso = Isomorphism(
@@ -2426,7 +2426,7 @@ def _presentation_from_relation_rows(
     target = free_owner._fresh_free_module_on(labels)
     source = free_owner._fresh_free_module_on(relation_labels)
     images = {label: _relation_element(target, row) for label, row in zip(source.module_generating_set(), _matrix_coordinate_rows(relations), strict=True)}
-    return module_homset(source, target)(images)
+    return source.module_category().Mor(source, target)(images)
 
 
 def FinitelyPresentedModule(
@@ -2522,7 +2522,7 @@ def FinitelyPresentedModule(
         source_relation_labels = Sets.Δ[len(source_rows) - 1]
         source_relations = FreshFreeModuleOn(source_ring, source_relation_labels)
         source_generators = FreshFreeModuleOn(source_ring, labels)
-        source_presentation = module_homset(source_relations, source_generators)(
+        source_presentation = source_relations.module_category().Mor(source_relations, source_generators)(
             {
                 relation_label: source_generators.linear_combination(
                     {

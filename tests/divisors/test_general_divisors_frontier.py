@@ -127,13 +127,13 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     cartier_generator = cartier.module_generator(0)
     weil_generator = weil_presentation.module_generator(0)
 
-    principal_to_cartier = module_homset(principal, cartier)(
+    principal_to_cartier = principal.module_category().Mor(principal, cartier)(
         {0: cartier_generator}
     )
-    principal_to_weil = module_homset(principal, weil_presentation)(
+    principal_to_weil = principal.module_category().Mor(principal, weil_presentation)(
         {0: 2 * weil_generator}
     )
-    cartier_to_weil = module_homset(cartier, weil_presentation)(
+    cartier_to_weil = cartier.module_category().Mor(cartier, weil_presentation)(
         {0: 2 * weil_generator}
     )
     classes = DivisorClassComparison(
@@ -146,7 +146,7 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
         cartier_to_weil,
     )
 
-    presentation_into_full_weil = module_homset(weil_presentation, full_weil)(
+    presentation_into_full_weil = weil_presentation.module_category().Mor(weil_presentation, full_weil)(
         {0: prime_divisor}
     )
     assert presentation_into_full_weil(

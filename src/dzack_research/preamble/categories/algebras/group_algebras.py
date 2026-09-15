@@ -239,7 +239,7 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
 
         source_module = source.underlying_module()
         target_module = target.underlying_module()
-        linear = module_homset(source_module, target_module)(
+        linear = source_module.module_category().Mor(source_module, target_module)(
             lambda label: target_module.module_generator(group_morphism(label))
         )
         source_multiplication = source.multiplication_morphism()

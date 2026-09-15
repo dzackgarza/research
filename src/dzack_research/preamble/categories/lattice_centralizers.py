@@ -536,7 +536,7 @@ class CyclotomicDecomposition(SageObject):
         moved = module_homset(self.orthogonal_sum(), lattice)(tuple(moved_images))
 
         scalar = lattice.base_ring()(int(self.index().finite_value()))
-        scaling = module_homset(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
+        scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
         inclusion = self.orthogonal_sum_inclusion()
 
         def image(label):
@@ -884,7 +884,7 @@ class IsometryPrimitiveExtension:
             moved_twisted = target_inclusion(moved_target)
             moved_unformed = twisted_coinvariant_form.forget_form_morphism()(moved_twisted)
             images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
-        morphism = module_homset(coinvariant_form, coinvariant_form)(images)
+        morphism = coinvariant_form.module_category().Mor(coinvariant_form, coinvariant_form)(images)
         return coinvariant_form.O()(morphism)
 
     def lift_coinvariant_extension_element(self, coinvariant_part):
@@ -1096,11 +1096,11 @@ class IsometryPrimitiveExtension:
         scalar = ring(int(self.index().finite_value()))
         inclusion = self.orthogonal_sum_inclusion()
         summands = inclusion.domain()
-        moved = module_homset(summands, lattice)(
+        moved = summands.module_category().Mor(summands, lattice)(
             tuple(invariant_inclusion(invariant_part(generator)) for generator in invariant_summand.module_generators())
             + tuple(coinvariant_inclusion(coinvariant_part(generator)) for generator in coinvariant_summand.module_generators())
         )
-        scaling = module_homset(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
+        scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
 
         def image(label):
             scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))

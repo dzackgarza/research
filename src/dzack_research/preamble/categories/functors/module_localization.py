@@ -97,7 +97,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                     )
                     return target.scalar_multiple(denominator.inverse_of_unit(), target_element)
 
-            image = module_homset(source, target).elementwise(
+            image = source.module_category().Mor(source, target).elementwise(
                 on_fraction,
                 verify_linearity=False,
             )
@@ -107,7 +107,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 raise NotImplementedError(
                     "this mixed scalar-extension morphism has neither a fraction source nor a represented source framing"
                 )
-            image = module_homset(source, target)(
+            image = source.module_category().Mor(source, target)(
                 {
                     label: target.fraction(
                         morphism(
@@ -137,7 +137,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
             embedded._preamble_localization_functor = self
             return embedded
         embedded = ModuleEmbedding(
-            module_homset(source, target),
+            source.module_category().Mor(source, target),
             lambda element: image(element),
             elementwise=True,
             verify_linearity=False,
@@ -151,11 +151,11 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
         image = self(module) if localized is None else localized
         restricted = image.restrict_scalars(self.ring_map())
         if image in LocalizedModules(image.base_ring()):
-            return module_homset(module, restricted).elementwise(
+            return module.module_category().Mor(module, restricted).elementwise(
                 lambda element: restricted.wrap(image.fraction(element)),
                 verify_linearity=False,
             )
-        return module_homset(module, restricted)(
+        return module.module_category().Mor(module, restricted)(
             lambda label: restricted.wrap(image.module_generator(label))
         )
 

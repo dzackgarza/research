@@ -26,7 +26,7 @@ class FreeModuleFunctor(Functor):
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             lambda label: target.module_generator(set_morphism(label))
         )
 
@@ -85,7 +85,7 @@ class FreeForgetfulAdjunction(Adjunction):
 
     def counit(self, module):
         free = self.left_adjoint()(self.right_adjoint()(module))
-        return module_homset(free, module)(lambda element: element)
+        return free.module_category().Mor(free, module)(lambda element: element)
 
 
     def _repr_(self):

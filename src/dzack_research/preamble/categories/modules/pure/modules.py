@@ -527,7 +527,7 @@ class Modules(OwnedCategoryOverBaseRing):
             def factorizer(cone):
                 source_leg = cone.structure_morphism(shape.source())
                 source = cone.apex()
-                return module_homset(source, equalizer)(
+                return source.module_category().Mor(source, equalizer)(
                     lambda label: inclusion.lift(
                         source_leg(source.module_generator(label))
                     )
@@ -598,7 +598,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 target_leg = cocone.costructure_morphism(shape.target())
                 target = cocone.apex()
                 ambient = left_morphism.codomain()
-                raw_factor = module_homset(raw_coequalizer, target)(
+                raw_factor = raw_coequalizer.module_category().Mor(raw_coequalizer, target)(
                     lambda label: target_leg(ambient.module_generator(label))
                 )
                 if coequalizer_transport is None:
@@ -1616,7 +1616,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             target_labels = target.module_generating_set()
             if labels.cardinality() != target_labels.cardinality():
                 raise ArithmeticError("adic base change changed the selected module framing cardinality")
-            return module_homset(self, restricted)(
+            return self.module_category().Mor(self, restricted)(
                 {
                     label: restricted(
                         target.module_generator(
@@ -1643,7 +1643,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             lower_labels = lower.module_generating_set()
             if higher_labels.cardinality() != lower_labels.cardinality():
                 raise ArithmeticError("adic transition changed the selected module framing cardinality")
-            return module_homset(higher, restricted)(
+            return higher.module_category().Mor(higher, restricted)(
                 {
                     label: restricted(
                         lower.module_generator(
@@ -1863,7 +1863,7 @@ class FreeResolutionMorphism:
                     value -= previous_homotopy(source.differential(degree)(generator))
                 return value
 
-            components[degree] = module_homset(source_term, target_next)(
+            components[degree] = source_term.module_category().Mor(source_term, target_next)(
                 {
                     label: target_differential.preimage(
                         residual(source_term.module_generator(label))
@@ -2060,7 +2060,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                     lambda degree: None,
                     name="Free resolution differentials",
                 ),
-                module_homset(self, self).identity(),
+                self.module_category().Mor(self, self).identity(),
                 zero,
             )
 
@@ -2115,7 +2115,7 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
             localized = self.localize_at_prime(point)
             labels = localized.residue_module().basis_generator_labels()
             free = FreeModuleOn(localized.base_ring(), labels)
-            return module_homset(free, localized)(
+            return free.module_category().Mor(free, localized)(
                 lambda label: localized.module_generator(label)
             )
 
@@ -3043,7 +3043,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             """
             summand = self.biproduct_factor(index)
             labels = self.module_generating_set()
-            return module_homset(summand, self)(
+            return summand.module_category().Mor(summand, self)(
                 lambda label: self.module_generator(_biproduct_label(labels, index, label))
             )
 
@@ -3057,7 +3057,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                     return summand.module_generator(label.summand_element())
                 return summand.zero()
 
-            return module_homset(self, summand)(image)
+            return self.module_category().Mor(self, summand)(image)
 
         def left_inclusion(self):
             r"""Return \(\iota_0\), the injection at the first index."""
@@ -3101,7 +3101,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 for index in factors.index_set()
             ), "each leg of the cocone starts at its own factor"
 
-            return module_homset(self, target)(
+            return self.module_category().Mor(self, target)(
                 lambda label: legs.value(label.summand_index())(
                     factors.value(label.summand_index()).module_generator(
                         label.summand_element()
@@ -3141,7 +3141,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                         coefficients[_biproduct_label(labels, index, target_label)] = coefficient
                 return self.linear_combination(coefficients)
 
-            return module_homset(source, self)(image)
+            return source.module_category().Mor(source, self)(image)
 
         def from_summands(self, left_map, right_map):
             r"""Return the unique map ``self -> X`` extending both summand maps."""
@@ -3209,7 +3209,7 @@ def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if target.biproduct_factor(0) is not left_morphism.codomain() or target.biproduct_factor(1) is not right_morphism.codomain():
         raise ValueError("the target biproduct has different factors")
 
-    return module_homset(source, target)(
+    return source.module_category().Mor(source, target)(
         lambda label: (
             target.left_inclusion()(left_morphism(left_morphism.domain().module_generator(label.summand_element())))
             if int(label.summand_index()) == 0
@@ -3477,7 +3477,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
                 source_domain = FreshFreeModuleOn(source_ring, column_labels)
                 source_codomain = FreshFreeModuleOn(source_ring, row_labels)
-                source_map = module_homset(source_domain, source_codomain).from_rows(
+                source_map = source_domain.module_category().Mor(source_domain, source_codomain).from_rows(
                     tuple(cleared_rows)
                 )
                 source_kernel = source_map.kernel()

@@ -41,7 +41,7 @@ def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
     base = projective.base_scheme()
     base_picard = trivial_picard_group(base)
     base_class = _zero_class_group(base)
-    base_comparison = module_homset(base_picard, base_class)({})
+    base_comparison = base_picard.module_category().Mor(base_picard, base_class)({})
 
     theory = projective_space_divisor_class_theory(
         projective,
@@ -62,7 +62,7 @@ def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> 
     projective = ProjectiveSpace(2, order)
     base_picard = PicardGroup(_cyclic_module(2), scheme=base)
     base_class = ClassGroup(_cyclic_module(2), scheme=base)
-    base_comparison = module_homset(base_picard, base_class)(
+    base_comparison = base_picard.module_category().Mor(base_picard, base_class)(
         {0: base_class.module_generator(0)}
     )
 

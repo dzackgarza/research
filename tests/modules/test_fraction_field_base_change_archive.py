@@ -25,7 +25,7 @@ def _free_rank_two():
     integers = _own_ring(SageZZ)
     module = BasedFreeModule(integers, finite_ordered_set(("e", "f")))
     labels = tuple(module.module_generating_set())
-    morphism = module_homset(module, module)(
+    morphism = module.module_category().Mor(module, module)(
         {
             labels[0]: module.scalar_multiple(
                 integers(2), module.module_generator(labels[0])

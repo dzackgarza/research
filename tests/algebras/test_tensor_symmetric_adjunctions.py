@@ -52,7 +52,7 @@ def _dual_numbers_mod_four():
     algebra = Algebras(ZZ)(multiplication)
     one = algebra.module_generator(0)
     epsilon = algebra.module_generator(1)
-    sign_module_map = module_homset(algebra, algebra)({0: one, 1: -epsilon})
+    sign_module_map = algebra.module_category().Mor(algebra, algebra)({0: one, 1: -epsilon})
     sign_algebra_map = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(sign_module_map)
     return algebra, sign_algebra_map
 
@@ -64,11 +64,11 @@ def test_module_map_is_adopted_as_an_algebra_map_only_when_it_preserves_the_laws
     one = algebra.module_generator(0)
     epsilon = algebra.module_generator(1)
 
-    nonunital = module_homset(algebra, algebra)({0: algebra.zero(), 1: epsilon})
+    nonunital = algebra.module_category().Mor(algebra, algebra)({0: algebra.zero(), 1: epsilon})
     with pytest.raises(ValueError, match="preserve the unit"):
         Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonunital)
 
-    nonmultiplicative = module_homset(algebra, algebra)({0: one, 1: one})
+    nonmultiplicative = algebra.module_category().Mor(algebra, algebra)({0: one, 1: one})
     with pytest.raises(ValueError, match="not multiplicative"):
         Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonmultiplicative)
 
@@ -131,7 +131,7 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
 ):
     free = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    presentation = module_homset(relations, free)(
+    presentation = relations.module_category().Mor(relations, free)(
         {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
     )
     module = FinitelyPresentedModule(presentation)
@@ -157,8 +157,8 @@ def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve
     source = _cyclic(8)
     middle = _cyclic(4)
     target = _cyclic(2)
-    first = module_homset(source, middle)({0: middle.module_generator(0)})
-    second = module_homset(middle, target)({0: target.module_generator(0)})
+    first = source.module_category().Mor(source, middle)({0: middle.module_generator(0)})
+    second = middle.module_category().Mor(middle, target)({0: target.module_generator(0)})
     functor = functor_factory(ZZ)
 
     source_algebra = functor(source)
@@ -200,7 +200,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     target_underlying = underlying(target_algebra)
 
     # A genuinely torsion linear map M -> U(A) extends uniquely to F(M) -> A.
-    linear = module_homset(source, target_underlying)(
+    linear = source.module_category().Mor(source, target_underlying)(
         {0: target_underlying.from_realization(2 * target_generator)}
     )
     extension = adjunction.hom_set_isomorphism_inverse(linear)
@@ -238,7 +238,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     )
 
     # Naturality in the module variable is the unit square on a nonfree map.
-    quotient = module_homset(source, target_module)(
+    quotient = source.module_category().Mor(source, target_module)(
         {0: target_module.module_generator(0)}
     )
     left, right = adjunction.unit_transformation().naturality_square(quotient)
@@ -253,7 +253,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     # infinitely generated, by a false finite presentation.
     smaller_module = _cyclic(2)
     algebra_map = free(
-        module_homset(target_module, smaller_module)(
+        target_module.module_category().Mor(target_module, smaller_module)(
             {0: smaller_module.module_generator(0)}
         )
     )
@@ -374,7 +374,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         )
     )
     dual_numbers = Algebras(ZZ)(dual_multiplication)
-    module_map_to_sparse = module_homset(dual_numbers, iterated_free)(
+    module_map_to_sparse = dual_numbers.module_category().Mor(dual_numbers, iterated_free)(
         {"one": iterated_free.one(), "epsilon": iterated_free.zero()}
     )
     algebra_map_to_sparse = Algebras(dual_numbers.base_ring()).Associative().Unital().Mor(dual_numbers, iterated_free)(
@@ -419,7 +419,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     cover = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     nondiagonal = FinitelyPresentedModule(
-        module_homset(relations, cover)(
+        relations.module_category().Mor(relations, cover)(
             {"r": 2 * cover.module_generator("x") + 4 * cover.module_generator("y")}
         )
     )

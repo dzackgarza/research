@@ -10,7 +10,7 @@ def test_general_module_map_factors_through_embedding_by_lifting_generator_image
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
     doubled = module_embedding(line, line, {"e": 2 * e})
-    sixfold = module_homset(line, line)({"e": 6 * e})
+    sixfold = line.module_category().Mor(line, line)({"e": 6 * e})
 
     factor = sixfold.factor_through(doubled)
 
@@ -24,7 +24,7 @@ def test_factorization_refuses_an_image_outside_the_target_subobject() -> None:
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
     doubled = module_embedding(line, line, {"e": 2 * e})
-    identity = module_homset(line, line).identity()
+    identity = line.module_category().Mor(line, line).identity()
 
     with pytest.raises(ValueError, match="not contained"):
         identity.factor_through(doubled)

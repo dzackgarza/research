@@ -28,7 +28,7 @@ def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> Non
     cover = BasedFreeModule(ZZ, finite_ordered_set((0,)))
     generator = cover.module_generator(0)
     module = FinitelyPresentedModule(
-        module_homset(cover, cover)({0: 2 * generator})
+        cover.module_category().Mor(cover, cover)({0: 2 * generator})
     )
 
     assert module not in ModuleSubobjects(ZZ)
@@ -47,7 +47,7 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
     e1, e2 = source.module_generators()
     u, v = target.module_generators()
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {"e1": 2 * u, "e2": v}
     )
 

@@ -88,7 +88,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             r"""Return the quotient map ``L^# -> A_L`` on the selected dual basis."""
 
             dual_lattice = self.dual_lattice()
-            return module_homset(dual_lattice, self)({label: self.module_generator(label) for label in self.module_generating_set()})
+            return dual_lattice.module_category().Mor(dual_lattice, self)({label: self.module_generator(label) for label in self.module_generating_set()})
 
         def discriminant_class(self, dual_lattice_element):
             r"""Return the class of an element of ``L^#`` in ``A_L``."""
@@ -807,7 +807,7 @@ def _subquotient_module(subgroup, larger):
         raise ValueError("the smaller subgroup is not contained in the proposed larger subgroup")
 
     images = {label: lift_into_larger(subgroup_inclusion(subgroup.module_generator(label))) for label in subgroup.module_generating_set()}
-    return module_homset(subgroup, larger)(images).cokernel()
+    return subgroup.module_category().Mor(subgroup, larger)(images).cokernel()
 
 
 def _discriminant_subgroup(ambient, generators):
@@ -856,7 +856,7 @@ def _discriminant_subgroup(ambient, generators):
 
         free = BasedFreeModule(ambient.base_ring(), finite_ordered_set((0,)))
         source = FinitelyPresentedModule(
-            module_homset(free, free).identity(),
+            free.module_category().Mor(free, free).identity(),
             _subobject_ambient=ambient,
             _subobject_generator_images={0: ambient.zero()},
             _extra_categories=categories,

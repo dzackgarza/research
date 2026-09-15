@@ -63,7 +63,7 @@ def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
     source_module = source.underlying_module()
     target_module = matrices.underlying_module()
     source_label = next(iter(source_module.module_generating_set()))
-    underlying = module_homset(source_module, target_module)(
+    underlying = source_module.module_category().Mor(source_module, target_module)(
         {
             source_label: matrices._carrier_element(matrices.identity()),
         }

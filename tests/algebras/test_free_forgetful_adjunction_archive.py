@@ -44,7 +44,7 @@ def test_archive_free_algebra_claim_is_retained_only_for_tensor_and_symmetric() 
 def test_alternating_and_divided_power_functors_still_carry_nonidentity_maps() -> None:
     source = _rank_one("x")
     target = _rank_one("y")
-    linear = module_homset(source, target)(
+    linear = source.module_category().Mor(source, target)(
         {"x": 2 * target.module_generator("y")}
     )
 

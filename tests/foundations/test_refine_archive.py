@@ -110,7 +110,7 @@ def test_module_zero_and_unequal_rank_hom_survive_owned_refinement() -> None:
 
     source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {
             "x": target.module_generator("b"),
             "y": target.module_generator("a") + target.module_generator("c"),

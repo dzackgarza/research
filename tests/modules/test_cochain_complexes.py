@@ -19,7 +19,7 @@ def _rank_one(label):
 def test_cochain_complex_is_a_structured_graded_module_and_checks_d_squared() -> None:
     C0 = _rank_one("e")
     C1 = _rank_one("f")
-    d0 = module_homset(C0, C1)({"e": 2 * C1.module_generator("f")})
+    d0 = C0.module_category().Mor(C0, C1)({"e": 2 * C1.module_generator("f")})
     complex_ = CochainComplexes(ZZ)({0: C0, 1: C1}, {0: d0})
 
     assert complex_ in CochainComplexes(ZZ)
@@ -30,7 +30,7 @@ def test_cochain_complex_is_a_structured_graded_module_and_checks_d_squared() ->
     )
 
     C2 = _rank_one("g")
-    d1 = module_homset(C1, C2)({"f": C2.module_generator("g")})
+    d1 = C1.module_category().Mor(C1, C2)({"f": C2.module_generator("g")})
     with pytest.raises(ValueError, match=r"d\^2 is nonzero"):
         CochainComplexes(ZZ)({0: C0, 1: C1, 2: C2}, {0: d0, 1: d1})
 
@@ -38,7 +38,7 @@ def test_cochain_complex_is_a_structured_graded_module_and_checks_d_squared() ->
 def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
     C0 = _rank_one("e")
     C1 = _rank_one("f")
-    d0 = module_homset(C0, C1)({"e": 2 * C1.module_generator("f")})
+    d0 = C0.module_category().Mor(C0, C1)({"e": 2 * C1.module_generator("f")})
     complex_ = CochainComplexes(ZZ)({0: C0, 1: C1}, {0: d0})
 
     assert complex_.cohomology(0).is_zero()
@@ -56,18 +56,18 @@ def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> N
     source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
     source = FinitelyPresentedModule(
-        module_homset(source_relations, source_free)(
+        source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
         )
     )
     target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
     target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
     target = FinitelyPresentedModule(
-        module_homset(target_relations, target_free)(
+        target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}
         )
     )
-    differential = module_homset(source, target)(
+    differential = source.module_category().Mor(source, target)(
         {"x": target.module_generator("y")}
     )
     complex_ = CochainComplexes(ZZ)(
@@ -91,15 +91,15 @@ def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> N
 def test_cochain_morphisms_are_degree_zero_chain_maps() -> None:
     C0 = _rank_one("e")
     C1 = _rank_one("f")
-    d0 = module_homset(C0, C1)({"e": 2 * C1.module_generator("f")})
+    d0 = C0.module_category().Mor(C0, C1)({"e": 2 * C1.module_generator("f")})
     complex_ = CochainComplexes(ZZ)({0: C0, 1: C1}, {0: d0})
 
     identity = CochainComplexes(ZZ).Mor(complex_, complex_).identity()
     element = complex_.from_component(0, 3 * C0.module_generator("e"))
     assert identity(element) == element
 
-    bad_degree_zero = module_homset(C0, C0)({"e": C0.zero()})
-    degree_one_identity = module_homset(C1, C1).identity()
+    bad_degree_zero = C0.module_category().Mor(C0, C0)({"e": C0.zero()})
+    degree_one_identity = C1.module_category().Mor(C1, C1).identity()
     with pytest.raises(ValueError, match="cochain square"):
         CochainComplexes(ZZ).Mor(complex_, complex_)(
             {0: bad_degree_zero, 1: degree_one_identity}

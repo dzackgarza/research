@@ -19,7 +19,7 @@ def _cyclic_torsion_module(ring, scalar):
     free = _free_rank_one(ring)
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
         )
     )
@@ -27,7 +27,7 @@ def _cyclic_torsion_module(ring, scalar):
 
 def _multiplication(module, scalar):
     label = module.module_generating_set()[0]
-    return module_homset(module, module)(
+    return module.module_category().Mor(module, module)(
         {label: module.scalar_multiple(scalar, module.module_generator(label))}
     )
 

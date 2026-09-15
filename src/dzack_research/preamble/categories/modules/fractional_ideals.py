@@ -545,7 +545,7 @@ def _fractional_ideal_inclusion(ideal, integral):
                     extension_module.module_generator(labels[0]),
                 )
             )
-    return FractionalIdealInclusion(module_homset(ideal, target), images)
+    return FractionalIdealInclusion(ideal.module_category().Mor(ideal, target), images)
 
 
 def _fraction_field_backend_value(base_ring, value):

@@ -30,8 +30,8 @@ def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> 
     x, y = m.module_generators()
     u, v = n.module_generators()
     r, s = p.module_generators()
-    f = module_homset(m, n)({"x": u + 2 * v, "y": 3 * u - v})
-    g = module_homset(n, p)({"u": 2 * r + s, "v": r - 4 * s})
+    f = m.module_category().Mor(m, n)({"x": u + 2 * v, "y": 3 * u - v})
+    g = n.module_category().Mor(n, p)({"u": 2 * r + s, "v": r - 4 * s})
 
     dual = DualizationFunctor(ZZ)
     f_dual = dual(f)
@@ -57,8 +57,8 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
     biproduct = BiproductBifunctor(ZZ)
     direct_sum = biproduct(left, right)
 
-    left_identity = module_homset(left, left).identity()
-    right_identity = module_homset(right, right).identity()
+    left_identity = left.module_category().Mor(left, left).identity()
+    right_identity = right.module_category().Mor(right, right).identity()
     _assert_module_maps_agree(
         direct_sum.left_projection() * direct_sum.left_inclusion(),
         left_identity,
@@ -76,7 +76,7 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
         == left.zero()
     )
 
-    right_to_left = module_homset(right, left)({0: 2 * left_generator})
+    right_to_left = right.module_category().Mor(right, left)({0: 2 * left_generator})
     coproduct_map = direct_sum.from_summands(left_identity, right_to_left)
     assert coproduct_map(direct_sum.left_inclusion()(left_generator)) == left_generator
     assert (
@@ -84,13 +84,13 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
         == 2 * left_generator
     )
 
-    reduction = module_homset(left, right)({0: right_generator})
+    reduction = left.module_category().Mor(left, right)({0: right_generator})
     product_map = direct_sum.to_product(left_identity, reduction)
     assert direct_sum.left_projection()(product_map(left_generator)) == left_generator
     assert direct_sum.right_projection()(product_map(left_generator)) == right_generator
 
-    left_times_three = module_homset(left, left)({0: 3 * left_generator})
-    right_zero = module_homset(right, right)({0: right.zero()})
+    left_times_three = left.module_category().Mor(left, left)({0: 3 * left_generator})
+    right_zero = right.module_category().Mor(right, right)({0: right.zero()})
     _assert_module_maps_agree(
         biproduct(left_times_three * left_times_three, right_zero * right_zero),
         biproduct(left_times_three, right_zero)
@@ -98,7 +98,7 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
     )
     _assert_module_maps_agree(
         biproduct(left_identity, right_identity),
-        module_homset(direct_sum, direct_sum).identity(),
+        direct_sum.module_category().Mor(direct_sum, direct_sum).identity(),
     )
 
 
@@ -109,16 +109,16 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
     x, y = plane.module_generators()
     z = line.module_generator("z")
-    projection = module_homset(plane, line)({"x": z, "y": line.zero()})
+    projection = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
 
-    left_three = module_homset(plane, plane)({"x": 2 * x, "y": 3 * y})
-    right_two = module_homset(line, line)({"z": 2 * z})
+    left_three = plane.module_category().Mor(plane, plane)({"x": 2 * x, "y": 3 * y})
+    right_two = line.module_category().Mor(line, line)({"z": 2 * z})
     projection_arrow = finite_free_arrow_category(projection)
     first_square = finite_free_arrow_category.morphism(
         projection_arrow, projection_arrow, left_three, right_two
     )
-    left_seven = module_homset(plane, plane)({"x": 5 * x, "y": 7 * y})
-    right_five = module_homset(line, line)({"z": 5 * z})
+    left_seven = plane.module_category().Mor(plane, plane)({"x": 5 * x, "y": 7 * y})
+    right_five = line.module_category().Mor(line, line)({"z": 5 * z})
     second_square = finite_free_arrow_category.morphism(
         projection_arrow, projection_arrow, left_seven, right_five
     )
@@ -137,21 +137,21 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     )
     _assert_module_maps_agree(
         kernel(finite_free_arrow_category.identity(projection_arrow)),
-        module_homset(kernel_object, kernel_object).identity(),
+        kernel_object.module_category().Mor(kernel_object, kernel_object).identity(),
     )
 
     cyclic_source = BasedFreeModule(ZZ, finite_ordered_set(("a",)))
     cyclic_target = BasedFreeModule(ZZ, finite_ordered_set(("b",)))
     a = cyclic_source.module_generator("a")
     b = cyclic_target.module_generator("b")
-    twice = module_homset(cyclic_source, cyclic_target)({"a": 2 * b})
-    left3 = module_homset(cyclic_source, cyclic_source)({"a": 3 * a})
-    right3 = module_homset(cyclic_target, cyclic_target)({"b": 3 * b})
+    twice = cyclic_source.module_category().Mor(cyclic_source, cyclic_target)({"a": 2 * b})
+    left3 = cyclic_source.module_category().Mor(cyclic_source, cyclic_source)({"a": 3 * a})
+    right3 = cyclic_target.module_category().Mor(cyclic_target, cyclic_target)({"b": 3 * b})
     arrow_category = FinitelyPresentedModules(ZZ).ArrowCategory()
     twice_arrow = arrow_category(twice)
     square3 = arrow_category.morphism(twice_arrow, twice_arrow, left3, right3)
-    left5 = module_homset(cyclic_source, cyclic_source)({"a": 5 * a})
-    right5 = module_homset(cyclic_target, cyclic_target)({"b": 5 * b})
+    left5 = cyclic_source.module_category().Mor(cyclic_source, cyclic_source)({"a": 5 * a})
+    right5 = cyclic_target.module_category().Mor(cyclic_target, cyclic_target)({"b": 5 * b})
     square5 = arrow_category.morphism(twice_arrow, twice_arrow, left5, right5)
 
     cokernel = CokernelArrowFunctor(ZZ)
@@ -170,7 +170,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     )
     _assert_module_maps_agree(
         cokernel(arrow_category.identity(twice_arrow)),
-        module_homset(cokernel_object, cokernel_object).identity(),
+        cokernel_object.module_category().Mor(cokernel_object, cokernel_object).identity(),
     )
 
     # Cokernel functoriality is not restricted to free arrows: on the
@@ -178,10 +178,10 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     # three descends to its unique nonzero automorphism.
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
     torsion_generator = torsion.module_generator(0)
-    torsion_twice = module_homset(torsion, torsion)(
+    torsion_twice = torsion.module_category().Mor(torsion, torsion)(
         {0: 2 * torsion_generator}
     )
-    torsion_times_three = module_homset(torsion, torsion)(
+    torsion_times_three = torsion.module_category().Mor(torsion, torsion)(
         {0: 3 * torsion_generator}
     )
     torsion_twice_arrow = arrow_category(torsion_twice)
@@ -239,5 +239,5 @@ def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     )
     _assert_module_maps_agree(
         orthogonal_sum(left_identity, right_identity),
-        module_homset(summed, summed).identity(),
+        summed.module_category().Mor(summed, summed).identity(),
     )

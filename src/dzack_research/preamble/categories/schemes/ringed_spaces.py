@@ -487,7 +487,7 @@ class AffineModuleSheaf(SageObject):
             else self.sections_on_distinguished_open(source_open)
         )
         if target_open is ambient:
-            return module_homset(source_sections, source_sections).identity()
+            return source_sections.module_category().Mor(source_sections, source_sections).identity()
         target_sections = self.sections_on_distinguished_open(target_open)
 
         if source_open is ambient:
@@ -496,7 +496,7 @@ class AffineModuleSheaf(SageObject):
                 raise ArithmeticError("module and function restriction selected different localization maps")
             return localization.unit(self.module(), localized=target_sections)
         if source_open is target_open:
-            return module_homset(source_sections, source_sections).identity()
+            return source_sections.module_category().Mor(source_sections, source_sections).identity()
 
         restricted_target = target_sections.restrict_scalars(structure_restriction)
         source_ring = source_sections.base_ring()
@@ -513,7 +513,7 @@ class AffineModuleSheaf(SageObject):
             )
             return restricted_target.wrap(target_value)
 
-        return module_homset(source_sections, restricted_target).elementwise(
+        return source_sections.module_category().Mor(source_sections, restricted_target).elementwise(
             restrict,
             verify_linearity=False,
         )

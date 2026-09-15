@@ -40,7 +40,7 @@ def test_a_finite_abelian_group_is_torsion_with_itself_as_torsion_submodule() ->
     free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)({"r": 6 * free.module_generator("g")})
+        relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")})
     )
 
     assert module.is_torsion()
@@ -53,7 +53,7 @@ def test_the_generic_fibre_of_a_mixed_module_keeps_only_the_free_rank() -> None:
     free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)({"r": 6 * free.module_generator("g")})
+        relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")})
     )
 
     assert module.generic_rank() == 1

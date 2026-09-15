@@ -80,7 +80,7 @@ class EnriquesMarkedIntegralCohomology(SageObject):
         invariant_labels = tuple(invariant.module_generating_set())
         if len(quotient_labels) != len(invariant_labels):
             raise ArithmeticError("the Enriques free cohomology and K3 invariant lattice have different ranks")
-        pullback = module_homset(quotient_free, k3_lattice)(
+        pullback = quotient_free.module_category().Mor(quotient_free, k3_lattice)(
             {
                 quotient_label: invariant_inclusion(
                     invariant.module_generator(invariant_labels[position])
@@ -95,7 +95,7 @@ class EnriquesMarkedIntegralCohomology(SageObject):
         if any(involution(pullback(generator)) != pullback(generator) for generator in quotient_free.module_generators()):
             raise ArithmeticError("the marked quotient pullback does not land in the invariant K3 lattice")
         torsion = _cyclic_two_module()
-        torsion_pullback = module_homset(torsion, k3_lattice)(
+        torsion_pullback = torsion.module_category().Mor(torsion, k3_lattice)(
             {
                 label: k3_lattice.zero()
                 for label in torsion.module_generating_set()

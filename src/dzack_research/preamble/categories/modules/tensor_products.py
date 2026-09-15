@@ -76,7 +76,7 @@ def tensor_product_morphism(left_morphism, right_morphism, source=None, target=N
         raise ValueError("the target tensor product has different factors")
 
 
-    return module_homset(source, target)(
+    return source.module_category().Mor(source, target)(
         lambda pair: target.pure_tensor(
             left_morphism(
                 left_morphism.domain().module_generator(pair.component(0))

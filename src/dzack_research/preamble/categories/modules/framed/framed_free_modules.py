@@ -366,7 +366,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             if not hasattr(codomain, "module_generating_set"):
                 raise TypeError("the parent-level module Hom constructor requires a framed target")
 
-            return module_homset(self, codomain)
+            return self.module_category().Mor(self, codomain)
 
         def subobject_on(self, module_generating_set):
             r"""Return the submodule spanned by the specified elements."""
@@ -829,7 +829,7 @@ def MatrixSpace(base_ring, nrows, ncols=None):
     ncols = nrows if ncols is None else dimension(ncols)
     source = FreeModule(ring, ncols)
     target = FreeModule(ring, nrows)
-    return _refine_matrix_hom(module_homset(source, target))
+    return _refine_matrix_hom(source.module_category().Mor(source, target))
 
 
 def matrix_change_ring(matrix, ring):

@@ -28,7 +28,7 @@ def _plane():
 
 
 def _swap(plane):
-    return module_homset(plane, plane)(
+    return plane.module_category().Mor(plane, plane)(
         {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
     )
 
@@ -37,7 +37,7 @@ def test_the_automorphisms_of_a_free_module_are_the_units_of_its_endomorphism_ri
     plane = _plane()
     automorphisms = OwnedRings().unit_group()(plane.End())
 
-    doubling = module_homset(plane, plane)(
+    doubling = plane.module_category().Mor(plane, plane)(
         {
             "a": 2 * plane.module_generator("a"),
             "b": 2 * plane.module_generator("b"),

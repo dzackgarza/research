@@ -252,10 +252,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                     "with its chosen finite presentation"
                 )
 
-            forward = module_homset(classifiers, derivations)(
+            forward = classifiers.module_category().Mor(classifiers, derivations)(
                 derivations.module_generator
             )
-            inverse = module_homset(derivations, classifiers)(
+            inverse = derivations.module_category().Mor(derivations, classifiers)(
                 classifiers.module_generator
             )
             result = Isomorphism(forward, inverse)
@@ -338,18 +338,12 @@ def _construct_kahler_differentials(algebra):
                 }
             )
 
-        conormal_morphism = module_homset(
-            conormal_module,
-            ambient_differentials,
-        )(conormal_image)
+        conormal_morphism = conormal_module.module_category().Mor(conormal_module, ambient_differentials)(conormal_image)
         relation_module = FreshFreeModuleOn(
             algebra,
             conormal_module.module_generating_set(),
         )
-        relation_map = module_homset(
-            relation_module,
-            ambient_differentials,
-        )(conormal_morphism.module_generator_images().value)
+        relation_map = relation_module.module_category().Mor(relation_module, ambient_differentials)(conormal_morphism.module_generator_images().value)
         omega = FinitelyPresentedModule(
             relation_map,
             _cokernel_morphism=relation_map,

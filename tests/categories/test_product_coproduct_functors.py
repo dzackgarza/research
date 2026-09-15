@@ -51,8 +51,8 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
     coproduct_object = coproduct(pair)
     assert product_object is coproduct_object
 
-    left_map = module_homset(left, left)({"x": 2 * left.module_generator("x")})
-    right_map = module_homset(right, right)({"y": 3 * right.module_generator("y")})
+    left_map = left.module_category().Mor(left, left)({"x": 2 * left.module_generator("x")})
+    right_map = right.module_category().Mor(right, right)({"y": 3 * right.module_generator("y")})
     pair_map = product.domain().Mor(pair, pair)(left_map, right_map)
     carried = product(pair_map)
     assert product_object.left_projection()(

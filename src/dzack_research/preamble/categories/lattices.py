@@ -1127,7 +1127,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def forget_form_morphism(self):
             r"""Return the canonical module identification from the lattice to its free module."""
             module = self.unformed_module()
-            return module_homset(self, module)(
+            return self.module_category().Mor(self, module)(
                 {
                     label: module.module_generator(label)
                     for label in module.module_generating_set()
@@ -1138,7 +1138,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def equip_form_morphism(self):
             r"""Return the inverse canonical identification equipping the free module with the form."""
             module = self.unformed_module()
-            return module_homset(module, self)(
+            return module.module_category().Mor(module, self)(
                 {
                     label: self.module_generator(label)
                     for label in module.module_generating_set()
@@ -1870,7 +1870,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             assert self.is_nondegenerate()
             dual_lattice = self.dual_lattice()
-            return module_homset(self, dual_lattice)(lambda label: dual_lattice.linear_combination(generator_pairings(self, self.module_generator(label))))
+            return self.module_category().Mor(self, dual_lattice)(lambda label: dual_lattice.linear_combination(generator_pairings(self, self.module_generator(label))))
 
         def correlation(self):
             return self.correlation_morphism()
@@ -2351,8 +2351,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             if target_subgroup.cardinality() != extension_index:
                 raise ArithmeticError("the two primitive-extension glue subgroups have different orders")
 
-            forward = module_homset(source_form, target_form)({label: target_form.module_generator(label) for label in labels})
-            inverse = module_homset(target_form, source_form)({label: source_form.module_generator(label) for label in labels})
+            forward = source_form.module_category().Mor(source_form, target_form)({label: target_form.module_generator(label) for label in labels})
+            inverse = target_form.module_category().Mor(target_form, source_form)({label: source_form.module_generator(label) for label in labels})
             return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
         @cached_method
@@ -3330,7 +3330,7 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                 )
                 return self.module_generator(target_label)
 
-            return module_homset(summand, self)(image)
+            return summand.module_category().Mor(summand, self)(image)
 
         def projection(self, index):
             r"""Return the selected projection from this orthogonal sum."""
@@ -3352,7 +3352,7 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                     case False:
                         return summand.zero()
 
-            return module_homset(self, summand)(image)
+            return self.module_category().Mor(self, summand)(image)
 
         def from_coproduct_cocone(self, legs):
             r"""Return the unique map out of this biproduct with the stated legs."""
@@ -3385,7 +3385,7 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                 factor_label = factor.module_generating_set().ranking_map().inverse()(place)
                 return legs[factor_index](factor.module_generator(factor_label))
 
-            return module_homset(self, target)(image)
+            return self.module_category().Mor(self, target)(image)
 
         def from_product_cone(self, legs):
             r"""Return the unique map into this biproduct with the stated legs."""
@@ -3416,7 +3416,7 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
                     self.zero(),
                 )
 
-            return module_homset(source, self)(image)
+            return source.module_category().Mor(source, self)(image)
 
 
 class FiniteRankLattices(OwnedCategoryOverBaseRing):
@@ -3735,7 +3735,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return module_homset(perpendicular, self)(image)
+            return perpendicular.module_category().Mor(perpendicular, self)(image)
 
         @cached_method
         def parabolic_subgroup(self):
@@ -3962,7 +3962,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             )
             complement_inclusion = complement.inclusion()
             summand_inclusion = unimodular_summand.inclusion()
-            into_complement = module_homset(self, complement)(lambda label: complement_inclusion.lift(embedded_lifts(label)))
+            into_complement = self.module_category().Mor(self, complement)(lambda label: complement_inclusion.lift(embedded_lifts(label)))
             correlation = unimodular_summand.correlation_isomorphism()
             summand_dual = correlation.forward().codomain()
 

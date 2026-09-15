@@ -162,7 +162,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
                 "this isotropic subobject"
             )
             inclusion = self.inclusion()
-            return module_homset(self, self)(
+            return self.module_category().Mor(self, self)(
                 {
                     label: inclusion.lift(
                         automorphism(inclusion(self.module_generator(label)))
@@ -181,7 +181,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             perpendicular_inclusion = perpendicular.inclusion()
             projection = self.isotropic_quotient_projection()
             quotient = self.isotropic_quotient()
-            return module_homset(quotient, quotient)(
+            return quotient.module_category().Mor(quotient, quotient)(
                 {
                     label: projection(
                         perpendicular_inclusion.lift(

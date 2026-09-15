@@ -18,10 +18,10 @@ def _transition(source: Any, target: Any, unit: Any) -> Any:
     source_generator = _generator(source)
     target_generator = _generator(target)
     return Isomorphism(
-        module_homset(source, target)(
+        source.module_category().Mor(source, target)(
             lambda _label: target.scalar_multiple(unit, target_generator)
         ),
-        module_homset(target, source)(
+        target.module_category().Mor(target, source)(
             lambda _label: source.scalar_multiple(
                 unit.inverse_of_unit(),
                 source_generator,
@@ -128,7 +128,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
         )
     )
     local_maps = tuple(
-        module_homset(module, module)(
+        module.module_category().Mor(module, module)(
             lambda label, module=module: module.scalar_multiple(
                 module.base_ring()(2),
                 module.module_generator(label),
@@ -175,13 +175,13 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
         module_homset,
     )
 
-    forward = module_homset(left_overlap, right_overlap)(
+    forward = left_overlap.module_category().Mor(left_overlap, right_overlap)(
         {
             label: right_overlap.module_generator(label)
             for label in left_overlap.module_generating_set()
         }
     )
-    inverse = module_homset(right_overlap, left_overlap)(
+    inverse = right_overlap.module_category().Mor(right_overlap, left_overlap)(
         {
             label: left_overlap.module_generator(label)
             for label in right_overlap.module_generating_set()

@@ -190,7 +190,7 @@ def test_a_fan_compatible_lattice_map_induces_a_toric_morphism() -> None:
     fans = _plane_fans()
     fan = fans.projective_space_fan()
     cocharacters = fans.cocharacter_lattice()
-    identity = module_homset(cocharacters, cocharacters).identity()
+    identity = cocharacters.module_category().Mor(cocharacters, cocharacters).identity()
 
     assert fan.is_compatible_with(identity, fan)
 
@@ -208,7 +208,7 @@ def test_a_nonidentity_toric_morphism_retains_its_chart_pullback() -> None:
     fan = fans.projective_space_fan()
     cocharacters = fans.cocharacter_lattice()
     label = next(iter(cocharacters.module_generating_set()))
-    doubling = module_homset(cocharacters, cocharacters)(
+    doubling = cocharacters.module_category().Mor(cocharacters, cocharacters)(
         {
             label: ZZ(2) * cocharacters.module_generator(label),
         }
@@ -241,7 +241,7 @@ def test_an_incompatible_lattice_map_is_refused_rather_than_forced() -> None:
     projective_line = line_fans.projective_space_fan()
     affine_line = line_fans((((1,),),))
     cocharacters = line_fans.cocharacter_lattice()
-    identity = module_homset(cocharacters, cocharacters).identity()
+    identity = cocharacters.module_category().Mor(cocharacters, cocharacters).identity()
 
     assert not projective_line.is_compatible_with(identity, affine_line)
     assert affine_line.is_compatible_with(identity, projective_line)

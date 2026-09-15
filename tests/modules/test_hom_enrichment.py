@@ -24,7 +24,7 @@ def test_module_hom_is_the_internal_hom_module() -> None:
     target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
 
     categorical_hom = source.Mor(target)
-    direct_hom = module_homset(source, target)
+    direct_hom = source.module_category().Mor(source, target)
     internal_hom = source.module_category().Mor(source, target)
 
     assert categorical_hom is direct_hom
@@ -77,7 +77,7 @@ def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> No
 
     internal = source.module_category().Mor(source, target)
 
-    assert internal is module_homset(source, target)
+    assert internal is source.module_category().Mor(source, target)
     construction = internal.internal_hom_construction()
     assert construction.source_module() is source
     assert construction.target_module() is target
@@ -107,9 +107,9 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     zero = BasedFreeModule(algebra, finite_ordered_set(()))
     source_free = BasedFreeModule(algebra, finite_ordered_set(("u", "v")))
     target_free = BasedFreeModule(algebra, finite_ordered_set(("w",)))
-    source = FinitelyPresentedModule(module_homset(zero, source_free)({}))
-    target = FinitelyPresentedModule(module_homset(zero, target_free)({}))
-    morphism = module_homset(source, target)(
+    source = FinitelyPresentedModule(zero.module_category().Mor(zero, source_free)({}))
+    target = FinitelyPresentedModule(zero.module_category().Mor(zero, target_free)({}))
+    morphism = source.module_category().Mor(source, target)(
         {
             "u": target.scalar_multiple(ybar, target.module_generator("w")),
             "v": target.scalar_multiple(xbar, target.module_generator("w")),
@@ -138,18 +138,18 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
     source = FinitelyPresentedModule(
-        module_homset(source_relations, source_free)(
+        source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
         )
     )
     target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
     target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
     target = FinitelyPresentedModule(
-        module_homset(target_relations, target_free)(
+        target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}
         )
     )
-    hom = module_homset(source, target)
+    hom = source.module_category().Mor(source, target)
     construction = hom.internal_hom_construction()
     assert construction.source_module() is source
     assert construction.target_module() is target
@@ -173,7 +173,7 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
 def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
     source = FreeModule(ZZ, 2)
     target = FreeModule(ZZ, 3)
-    hom = module_homset(source, target)
+    hom = source.module_category().Mor(source, target)
 
     framing_source = hom.framing_source()
     assert framing_source.module_generating_set() is hom.module_generating_set()

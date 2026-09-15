@@ -32,9 +32,9 @@ def test_orthogonal_sum_has_the_biproduct_inclusion_projection_identities() -> N
         for target_index, target in enumerate((left, right)):
             composite = summed.projection(target_index) * summed.injection(source_index)
             if source_index == target_index:
-                assert composite == module_homset(source, target).identity()
+                assert composite == source.module_category().Mor(source, target).identity()
             else:
-                assert composite == module_homset(source, target).zero()
+                assert composite == source.module_category().Mor(source, target).zero()
 
 
 def test_orthogonal_sum_inclusions_preserve_each_form_and_cross_pairings_vanish() -> None:
@@ -111,7 +111,7 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
         ),
     )
     factored = tensor.from_bilinear(negated)
-    direct = module_homset(tensor, tensor)(
+    direct = tensor.module_category().Mor(tensor, tensor)(
         {
             label: -tensor.module_generator(label)
             for label in tensor.module_generating_set()

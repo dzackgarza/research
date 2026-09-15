@@ -260,7 +260,7 @@ class PowerAlgebraMorphism(Morphism):
                 raise ValueError("power-algebra generator images must lie in the target degree-one module")
             return target_module(image)
 
-        self._degree_one_map = module_homset(source_module, target_module)(target_component)
+        self._degree_one_map = source_module.module_category().Mor(source_module, target_module)(target_component)
 
     def degree_one_map(self):
         return self._degree_one_map
@@ -310,7 +310,7 @@ class PowerAlgebraHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
         module = self.domain().free_source_module()
-        identity = self(module_homset(module, module).identity())
+        identity = self(module.module_category().Mor(module, module).identity())
         identity._preamble_is_identity = True
         return identity
 

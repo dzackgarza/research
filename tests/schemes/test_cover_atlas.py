@@ -32,10 +32,10 @@ def _rank_one_transition(source, target, unit):
 
     source_generator = _rank_one_generator(source)
     target_generator = _rank_one_generator(target)
-    forward = module_homset(source, target)(
+    forward = source.module_category().Mor(source, target)(
         lambda _label: target.scalar_multiple(unit, target_generator)
     )
-    inverse = module_homset(target, source)(
+    inverse = target.module_category().Mor(target, source)(
         lambda _label: source.scalar_multiple(unit.inverse_of_unit(), source_generator)
     )
     return Isomorphism(forward, inverse)

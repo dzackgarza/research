@@ -306,7 +306,7 @@ def projective_space_divisor_class_theory(
     classes = ClassGroup(class_biproduct, scheme=projective_space)
     picard_hyperplane_label = picard_hyperplane.module_generating_set()[0]
     class_hyperplane_label = class_hyperplane.module_generating_set()[0]
-    hyperplane_map = module_homset(picard_hyperplane, class_hyperplane)(
+    hyperplane_map = picard_hyperplane.module_category().Mor(picard_hyperplane, class_hyperplane)(
         {picard_hyperplane_label: class_hyperplane.module_generator(class_hyperplane_label)}
     )
     raw_comparison = biproduct_morphism(
@@ -315,13 +315,13 @@ def projective_space_divisor_class_theory(
         source=picard_biproduct,
         target=class_biproduct,
     )
-    forget_picard_role = module_homset(picard, picard_biproduct)(
+    forget_picard_role = picard.module_category().Mor(picard, picard_biproduct)(
         {
             label: picard_biproduct.module_generator(label)
             for label in picard.module_generating_set()
         }
     )
-    equip_class_role = module_homset(class_biproduct, classes)(
+    equip_class_role = class_biproduct.module_category().Mor(class_biproduct, classes)(
         {
             label: classes.module_generator(label)
             for label in class_biproduct.module_generating_set()
@@ -428,7 +428,7 @@ class DivisorClassComparison(SageObject):
 
     @staticmethod
     def _projection_to_role(projection, cokernel, role):
-        copy = module_homset(cokernel, role)(
+        copy = cokernel.module_category().Mor(cokernel, role)(
             {label: role.module_generator(label) for label in cokernel.module_generating_set()}
         )
         return copy * projection

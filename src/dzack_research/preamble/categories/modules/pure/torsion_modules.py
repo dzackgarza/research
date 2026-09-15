@@ -274,7 +274,7 @@ def _torsion_module_presented_by_matrix(
         source_label: relation_image(row_position)
         for row_position, source_label in enumerate(source.module_generating_set())
     }
-    return TorsionModule(module_homset(source, target)(images))
+    return TorsionModule(source.module_category().Mor(source, target)(images))
 
 
 def TorsionModule(presentation):

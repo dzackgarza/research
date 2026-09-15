@@ -98,7 +98,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         tensor_square = Modules(self.base_ring()).tensor_product((line, line))
-        multiplication = module_homset(tensor_square, line)({(label, label): line.module_generator(label)})
+        multiplication = tensor_square.module_category().Mor(tensor_square, line)({(label, label): line.module_generator(label)})
         return Algebras(self.base_ring()).Associative()(line, multiplication)
 
     @classmethod
@@ -148,8 +148,8 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         def _multiplication_transport_maps(self):
             source = self.multiplication_source_module()
             labels = self.module_generating_set()
-            forget = module_homset(self, source)({label: source.module_generator(label) for label in labels})
-            equip = module_homset(source, self)({label: self.module_generator(label) for label in labels})
+            forget = self.module_category().Mor(self, source)({label: source.module_generator(label) for label in labels})
+            equip = source.module_category().Mor(source, self)({label: self.module_generator(label) for label in labels})
             return forget, equip
 
         @cached_method
@@ -246,7 +246,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
         if callable(selected):
             underlying_morphism = selected()
         if not (isinstance(underlying_morphism, ModuleMorphism) and underlying_morphism.domain() is source_module and underlying_morphism.codomain() is target_module):
-            underlying_morphism = module_homset(source_module, target_module)(underlying_morphism)
+            underlying_morphism = source_module.module_category().Mor(source_module, target_module)(underlying_morphism)
         tensor_square = None
         source_exact = _has_exact_algebra_carrier(self.domain())
         target_exact = _has_exact_algebra_carrier(self.codomain())
@@ -368,7 +368,7 @@ class MultiplicativeAlgebraHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         module = self.domain().underlying_module()
-        return self(module_homset(module, module).identity())
+        return self(module.module_category().Mor(module, module).identity())
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
@@ -427,7 +427,7 @@ def _unit_morphism_from_element(module, unit, ring):
         return realize(scalar) if callable(realize) else ring(scalar)
 
     return ModuleMorphism(
-        module_homset(scalar_module, module),
+        scalar_module.module_category().Mor(scalar_module, module),
         lambda scalar: module.scalar_multiple(
             scalar_value(scalar),
             unit,
@@ -910,7 +910,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             tensor = multiplication.domain()
             labels = module.module_generating_set()
             assert labels.cardinality().is_finite(), "the centre is computed here from a finite module generating set"
-            endomorphisms = module_homset(module, module)
+            endomorphisms = module.module_category().Mor(module, module)
 
             def commutation_equalizer(label):
                 element = module.module_generator(label)
@@ -1360,7 +1360,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         tensor_square = Modules(self.base_ring()).tensor_product((line, line))
-        multiplication = module_homset(tensor_square, line)({(label, label): line.module_generator(label)})
+        multiplication = tensor_square.module_category().Mor(tensor_square, line)({(label, label): line.module_generator(label)})
         return Algebras(self.base_ring())(line, multiplication)
 
     @classmethod
@@ -2360,7 +2360,7 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
         module = self.domain().underlying_module()
-        return self(module_homset(module, module).identity())
+        return self(module.module_category().Mor(module, module).identity())
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"

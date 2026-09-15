@@ -21,7 +21,7 @@ def _rank_one(label):
 def test_shifted_complex_retains_integer_grading_and_boundary_cohomology() -> None:
     degree_minus_one = _rank_one("e")
     degree_zero = _rank_one("f")
-    times_three = module_homset(degree_minus_one, degree_zero)(
+    times_three = degree_minus_one.module_category().Mor(degree_minus_one, degree_zero)(
         {"e": 3 * degree_zero.module_generator("f")}
     )
     complex_ = CochainComplexes(ZZ)(
@@ -48,7 +48,7 @@ def test_negative_degree_cohomology_is_functorial_on_shifted_complexes() -> None
     )
     times_two = CochainComplexes(ZZ).Mor(complex_, complex_)(
         {
-            -1: module_homset(degree_minus_one, degree_minus_one)(
+            -1: degree_minus_one.module_category().Mor(degree_minus_one, degree_minus_one)(
                 {"e": 2 * degree_minus_one.module_generator("e")}
             ),
         }
@@ -92,7 +92,7 @@ def test_lazy_integer_complex_does_not_turn_unrequested_degrees_into_zero() -> N
         degree = int(degree)
         source = pieces(degree)
         target = pieces(degree + 1)
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             {source.module_generating_set()[0]: target.zero()}
         )
 

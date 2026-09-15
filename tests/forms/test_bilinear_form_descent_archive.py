@@ -5,7 +5,7 @@ from dzack_research.preamble.categories.forms.forms import BilinearForms
 def _double_map(module):
     label = module.module_generating_set()[0]
     generator = module.module_generator(label)
-    return module_homset(module, module)({label: 2 * generator})
+    return module.module_category().Mor(module, module)({label: 2 * generator})
 
 
 def test_bilinear_form_descends_through_mod_two_with_projected_values() -> None:
@@ -29,7 +29,7 @@ def test_bilinear_form_descends_through_mod_two_with_projected_values() -> None:
 def test_bilinear_form_refuses_descent_when_a_relation_pairs_nontrivially() -> None:
     integers = ring_as_module(ZZ)
     relation = _double_map(integers)
-    identity_values = module_homset(integers, integers).identity()
+    identity_values = integers.module_category().Mor(integers, integers).identity()
     form = BilinearForms(integers, integers)([[ZZ.one()]])
 
     assert not form.descends_along(relation, identity_values)

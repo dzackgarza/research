@@ -28,7 +28,7 @@ ARCHIVE_RECONCILIATION = {
 def _line_and_negation():
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     generator = line.module_generator("e")
-    negation = module_homset(line, line)({"e": -generator})
+    negation = line.module_category().Mor(line, line)({"e": -generator})
     return line, negation
 
 

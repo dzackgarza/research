@@ -23,7 +23,7 @@ def test_archived_trivial_action_is_the_live_functor_on_a_nonidentity_lattice_ma
     group = Groups.C(2)
     lattice = Lattices(ZZ)("A2")
     labels = tuple(lattice.module_generating_set())
-    negation = module_homset(lattice, lattice)(
+    negation = lattice.module_category().Mor(lattice, lattice)(
         {label: -lattice.module_generator(label) for label in labels}
     )
 

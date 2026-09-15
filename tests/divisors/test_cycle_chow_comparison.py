@@ -38,13 +38,13 @@ def _affine_plane_divisor_presentation():
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = finite_weil.module_generator(0)
-    principal_to_cartier = module_homset(principal, cartier)(
+    principal_to_cartier = principal.module_category().Mor(principal, cartier)(
         {0: cartier_generator}
     )
-    principal_to_weil = module_homset(principal, finite_weil)(
+    principal_to_weil = principal.module_category().Mor(principal, finite_weil)(
         {0: weil_generator}
     )
-    cartier_to_weil = module_homset(cartier, finite_weil)(
+    cartier_to_weil = cartier.module_category().Mor(cartier, finite_weil)(
         {0: weil_generator}
     )
     classes = DivisorClassComparison(
@@ -56,7 +56,7 @@ def _affine_plane_divisor_presentation():
         principal_to_weil,
         cartier_to_weil,
     )
-    into_full = module_homset(finite_weil, full_weil)({0: prime_divisor})
+    into_full = finite_weil.module_category().Mor(finite_weil, full_weil)({0: prime_divisor})
     return scheme, ring, x, prime, full_weil, classes, into_full, principal_generator
 
 

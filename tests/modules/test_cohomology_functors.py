@@ -22,7 +22,7 @@ from dzack_research.static_types import cup, de_rham_class_view
 def test_cohomology_is_functorial_on_cochain_maps() -> None:
     degree_zero = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     degree_one = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
-    differential = module_homset(degree_zero, degree_one)(
+    differential = degree_zero.module_category().Mor(degree_zero, degree_one)(
         {"e": 2 * degree_one.module_generator("f")}
     )
     complex_ = CochainComplexes(ZZ)(
@@ -31,10 +31,10 @@ def test_cohomology_is_functorial_on_cochain_maps() -> None:
     )
     times_three = CochainComplexes(ZZ).Mor(complex_, complex_)(
         {
-            0: module_homset(degree_zero, degree_zero)(
+            0: degree_zero.module_category().Mor(degree_zero, degree_zero)(
                 {"e": 3 * degree_zero.module_generator("e")}
             ),
-            1: module_homset(degree_one, degree_one)(
+            1: degree_one.module_category().Mor(degree_one, degree_one)(
                 {"f": 3 * degree_one.module_generator("f")}
             ),
         }

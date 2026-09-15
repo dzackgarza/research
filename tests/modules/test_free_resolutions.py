@@ -16,7 +16,7 @@ ARCHIVE_RECONCILIATION = {
 def test_presented_pid_module_has_actual_short_free_resolution() -> None:
     f0 = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    presentation = module_homset(relations, f0)(
+    presentation = relations.module_category().Mor(relations, f0)(
         {"r": 6 * f0.module_generator("x")}
     )
     module = FinitelyPresentedModule(presentation)
@@ -37,7 +37,7 @@ def test_presented_pid_module_has_actual_short_free_resolution() -> None:
 def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() -> None:
     f0 = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r1", "r2")))
-    presentation = module_homset(relations, f0)(
+    presentation = relations.module_category().Mor(relations, f0)(
         {
             "r1": 2 * f0.module_generator("x"),
             "r2": 4 * f0.module_generator("x"),
@@ -73,7 +73,7 @@ def test_finite_framing_is_the_term_zero_data_of_the_pid_resolution() -> None:
     f0 = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, f0)(
+        relations.module_category().Mor(relations, f0)(
             {"r": 5 * f0.module_generator("b")}
         )
     )

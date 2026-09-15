@@ -52,7 +52,7 @@ class CohomologyFunctor(Functor):
             raise TypeError(
                 "a represented cochain morphism must expose its degreewise components"
             ) from error
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             {
                 label: target.class_of_cycle(
                     component(

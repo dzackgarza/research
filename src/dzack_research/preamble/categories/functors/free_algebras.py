@@ -178,7 +178,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
         r"""The degree-one inclusion \(M\to U(F(M))\)."""
         free_algebra = self.left_adjoint()(module)
         underlying = self.right_adjoint()(free_algebra)
-        return module_homset(module, underlying)(
+        return module.module_category().Mor(module, underlying)(
             lambda label: (
                 underlying.from_realization(free_algebra.algebra_generator(label))
                 if isinstance(underlying, GradedDirectSumModule)

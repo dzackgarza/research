@@ -41,7 +41,7 @@ def test_infinite_framing_is_not_enumerated_for_finite_ring_linearity_checks() -
 
     field = GF(2)
     module = FreeModule(field, NN)
-    identity = module_homset(module, module).elementwise(lambda element: element)
+    identity = module.module_category().Mor(module, module).elementwise(lambda element: element)
 
     generator = module.module_generator(NN(17))
     assert identity(generator) == generator
@@ -57,7 +57,7 @@ def test_infinite_generator_defined_morphism_keeps_its_image_family_lazy() -> No
         evaluated.append(label)
         return module.module_generator(label)
 
-    identity = module_homset(module, module)(generator_image)
+    identity = module.module_category().Mor(module, module)(generator_image)
 
     assert evaluated == []
     assert identity.module_generator_images().index_set() is module.module_generating_set()
@@ -66,4 +66,4 @@ def test_infinite_generator_defined_morphism_keeps_its_image_family_lazy() -> No
     assert evaluated == [NN(17)]
 
     with pytest.raises(TypeError, match="finite framing"):
-        module_homset(module, module)({NN(0): module.module_generator(NN(0))})
+        module.module_category().Mor(module, module)({NN(0): module.module_generator(NN(0))})

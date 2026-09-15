@@ -179,7 +179,7 @@ class SectionRings(OwnedCategoryOverBaseRing):
                 return value
 
             target_module = self.underlying_module()
-            return module_homset(piece, target_module)(
+            return piece.module_category().Mor(piece, target_module)(
                 {
                     label: target_module(basis_image(label))
                     for label in piece.module_generating_set()

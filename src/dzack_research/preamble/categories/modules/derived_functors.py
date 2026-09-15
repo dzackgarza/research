@@ -74,7 +74,7 @@ def _ext(module, other, degree=0):
     ring = _common_base_ring(module, other)
     resolution = module.free_resolution(degree + 1)
     length = resolution.length()
-    identity = module_homset(other, other).identity()
+    identity = other.module_category().Mor(other, other).identity()
     dualized = CochainComplexes(ring)(
         {term: resolution.term(term).module_category().Mor(resolution.term(term), other) for term in range(length + 1)},
         {
@@ -129,7 +129,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             steps = degree + 1
             resolution = other.free_resolution(steps)
             term = resolution.term(degree)
-            identity = module_homset(term, term).identity()
+            identity = term.module_category().Mor(term, term).identity()
             modules = Modules(term.base_ring())
             source_tensor = modules.tensor_product((term, morphism.domain()))
             target_tensor = modules.tensor_product((term, morphism.codomain()))
@@ -143,7 +143,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             target = other.tor(morphism.codomain(), degree=degree)
         case _:
             raise ValueError("the Tor argument must be 1 or 2")
-    return module_homset(source, target).elementwise(
+    return source.module_category().Mor(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
         )
@@ -174,7 +174,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
                 raise ValueError("the selected Ext lift uses different resolutions")
             if lifted.module_morphism() is not morphism:
                 raise ValueError("the selected Ext lift lies over a different module morphism")
-            identity = module_homset(other, other).identity()
+            identity = other.module_category().Mor(other, other).identity()
             source_internal = target_resolution.term(degree).module_category().Mor(target_resolution.term(degree), other)
             target_internal = source_resolution.term(degree).module_category().Mor(source_resolution.term(degree), other)
             component = internal_hom_morphism(
@@ -191,7 +191,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             steps = degree + 1
             resolution = other.free_resolution(steps)
             term = resolution.term(degree)
-            identity = module_homset(term, term).identity()
+            identity = term.module_category().Mor(term, term).identity()
             source_internal = term.module_category().Mor(term, morphism.domain())
             target_internal = term.module_category().Mor(term, morphism.codomain())
             component = internal_hom_morphism(
@@ -204,7 +204,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             target = other.ext(morphism.codomain(), degree=degree)
         case _:
             raise ValueError("the Ext argument must be 1 or 2")
-    return module_homset(source, target).elementwise(
+    return source.module_category().Mor(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
         )

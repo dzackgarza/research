@@ -76,7 +76,7 @@ def test_module_cokernel_completion_is_an_explicit_isomorphism() -> None:
     ring = PolynomialRing(QQ, ("x",))
     x = ring.algebra_generator("x")
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
-    multiplication = module_homset(free, free)(
+    multiplication = free.module_category().Mor(free, free)(
         {"g": free.scalar_multiple(x, free.module_generator("g"))}
     )
     comparison = multiplication.completion_cokernel_comparison(

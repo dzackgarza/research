@@ -184,7 +184,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                     blocks.append(selected if factor_label == label else (0,) * width)
                 return tuple(blocks)
 
-            return module_homset(self, target)(
+            return self.module_category().Mor(self, target)(
                 {
                     monomial: target.module_generator(
                         target_by_exponents[target_exponents(monomial)]
@@ -215,7 +215,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             substitution = ring.Mor(ring)(
                 {label: coordinate for label, coordinate in zip(labels, coordinates, strict=True)}
             )
-            return module_homset(self, self)(
+            return self.module_category().Mor(self, self)(
                 {
                     monomial: self.section_from_homogeneous_polynomial(
                         substitution(self.homogeneous_polynomial(self.module_generator(monomial)))
@@ -644,7 +644,7 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
         restricted = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
         return target.module_generator(target_by_exponents[restricted])
 
-    restriction = module_homset(source, target)(
+    restriction = source.module_category().Mor(source, target)(
         {
             monomial: image(monomial)
             for monomial in source.module_generating_set()
@@ -716,7 +716,7 @@ def _projective_section_restriction(
     complete = line_bundle.global_sections()
     source = complete if source is None else source
     if source is complete:
-        into_complete = module_homset(complete, complete).identity()
+        into_complete = complete.module_category().Mor(complete, complete).identity()
     elif into_complete is None:
         raise ValueError("a selected section source requires its embedding into the complete section space")
     if into_complete.domain() is not source or into_complete.codomain() is not complete:
@@ -744,7 +744,7 @@ def _projective_section_restriction(
         base,
         finite_ordered_set(tuple(monomials)),
     )
-    ambient_map = module_homset(source, ambient)(
+    ambient_map = source.module_category().Mor(source, ambient)(
         {
             label: ambient.linear_combination(normal_forms[label])
             for label in source.module_generating_set()
@@ -758,7 +758,7 @@ def _projective_section_restriction(
         for label in source.module_generating_set()
     }
     return ProjectiveSectionRestrictionMap(
-        module_homset(source, image),
+        source.module_category().Mor(source, image),
         restriction_images,
         line_bundle=line_bundle,
         closed_subscheme=closed_subscheme,
@@ -787,7 +787,7 @@ def ProjectiveLinearSystem(line_bundle, sections):
         label: sections[int(labels.ranking_map()(label))]
         for label in labels
     }
-    selected_map = module_homset(selected, ambient)(images)
+    selected_map = selected.module_category().Mor(selected, ambient)(images)
     if int(selected_map.kernel().dimension()) != 0:
         raise ValueError("the supplied sections must be a basis of their selected subspace")
     embedding = module_embedding(selected, ambient, images)
@@ -931,7 +931,7 @@ def ProjectivePointJetEvaluation(line_bundle, point, jet_order):
                 coefficients[local_by_exponents[tuple(centered_exponents)]] = coefficient
         return target.linear_combination(coefficients)
 
-    evaluation = module_homset(source, target)(
+    evaluation = source.module_category().Mor(source, target)(
         {
             monomial: image(monomial)
             for monomial in source.module_generating_set()

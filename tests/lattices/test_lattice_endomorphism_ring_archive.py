@@ -14,7 +14,7 @@ def test_lattice_end_is_the_underlying_module_endomorphism_ring() -> None:
     endomorphisms = lattice.End()
 
     assert endomorphisms is Modules(ZZ).End(lattice)
-    assert endomorphisms is module_homset(lattice, lattice)
+    assert endomorphisms is lattice.module_category().Mor(lattice, lattice)
 
 
 def test_lattice_endomorphism_ring_contains_nonisometric_module_maps() -> None:

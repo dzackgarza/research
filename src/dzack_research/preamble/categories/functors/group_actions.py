@@ -280,7 +280,7 @@ class InvariantsFunctor(CoextensionOfScalarsFunctor):
                 morphism(source),
             )
 
-        return module_homset(source_invariants, target_invariants)(image)
+        return source_invariants.module_category().Mor(source_invariants, target_invariants)(image)
 
     def _repr_(self):
         return f"{self.group()}-invariants functor"
@@ -311,7 +311,7 @@ class CoinvariantsFunctor(ScalarExtensionFunctor):
                 morphism(representative),
             )
 
-        return module_homset(source_coinvariants, target_coinvariants)(image)
+        return source_coinvariants.module_category().Mor(source_coinvariants, target_coinvariants)(image)
 
     def _repr_(self):
         return f"{self.group()}-coinvariants functor"
@@ -325,7 +325,7 @@ class TrivialInvariantsAdjunction(RestrictionCoextensionAdjunction):
 
     def unit(self, module):
         invariants = self.right_adjoint()(self.left_adjoint()(module))
-        return module_homset(module, invariants)(
+        return module.module_category().Mor(module, invariants)(
             lambda label: invariants.module_generator(label)
         )
 
@@ -376,7 +376,7 @@ class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
         coinvariants = self.left_adjoint()(self.right_adjoint()(module))
         if coinvariants is not module:
             raise ValueError("coinvariants of the trivial action must be the original module")
-        return module_homset(module, module).identity()
+        return module.module_category().Mor(module, module).identity()
 
     def _repr_(self):
         return f"Coinvariants/trivial-action adjunction for {self.left_adjoint().group()}"

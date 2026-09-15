@@ -136,7 +136,7 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
             ZZ.zero(),
         ),
     )
-    identity = module_homset(module, module)(module.module_generator)
+    identity = module.module_category().Mor(module, module)(module.module_generator)
     pulled_bilinear = bilinear.pullback(identity)
     pulled_quadratic = quadratic.pullback(identity)
     e1000 = module.module_generator(NN(1000))

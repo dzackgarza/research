@@ -32,7 +32,7 @@ def _residue_field_module():
     y = ring.algebra_generator("y")
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("rx", "ry")))
-    presentation = module_homset(relations, free)(
+    presentation = relations.module_category().Mor(relations, free)(
         {
             "rx": x * free.module_generator("g"),
             "ry": y * free.module_generator("g"),
@@ -119,7 +119,7 @@ def test_a_principal_ideal_domain_resolves_in_one_step_however_far_it_is_asked()
     free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)({"r": ZZ(6) * free.module_generator("g")})
+        relations.module_category().Mor(relations, free)({"r": ZZ(6) * free.module_generator("g")})
     )
 
     assert module.free_resolution(4) is module.free_resolution()

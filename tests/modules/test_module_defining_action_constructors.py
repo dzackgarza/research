@@ -45,7 +45,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 def _cyclic_six_from_presentation():
     target = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    presentation = module_homset(relations, target)(
+    presentation = relations.module_category().Mor(relations, target)(
         {"r": target.scalar_multiple(ZZ(6), target.module_generator("x"))}
     )
     return presentation.cokernel()
@@ -67,10 +67,10 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
     acted = _cyclic_six_from_action()
     generator = presented.module_generator("x")
 
-    forward = module_homset(presented, acted)(
+    forward = presented.module_category().Mor(presented, acted)(
         {"x": acted(1)}
     )
-    inverse = module_homset(acted, presented).elementwise(
+    inverse = acted.module_category().Mor(acted, presented).elementwise(
         lambda element: presented.scalar_multiple(
             ZZ(element.underlying_element()), generator
         ),
@@ -95,7 +95,7 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
 def test_free_plus_torsion_presentation_uses_its_exposed_scalar_action() -> None:
     target = BasedFreeModule(ZZ, finite_ordered_set(("free", "torsion")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    module = module_homset(relations, target)(
+    module = relations.module_category().Mor(relations, target)(
         {
             "r": target.scalar_multiple(
                 ZZ(6), target.module_generator("torsion")
@@ -151,7 +151,7 @@ def test_selected_presentations_are_arrow_objects_and_contractible_summands_rema
 
     target = BasedFreeModule(ZZ, finite_ordered_set(("x", "contractible")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r", "s")))
-    stabilized = module_homset(relations, target)(
+    stabilized = relations.module_category().Mor(relations, target)(
         {
             "r": target.scalar_multiple(ZZ(6), target.module_generator("x")),
             "s": target.module_generator("contractible"),
@@ -184,7 +184,7 @@ def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -
             "y": target_framing.arrow().domain().module_generator("v"),
         }
     )
-    target_change = module_homset(source, target)(
+    target_change = source.module_category().Mor(source, target)(
         {
             "x": target.module_generator("u"),
             "y": target.module_generator("v"),
@@ -204,17 +204,17 @@ def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -
 def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
     source_target = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    source = module_homset(source_relations, source_target)(
+    source = source_relations.module_category().Mor(source_relations, source_target)(
         {"r": source_target.scalar_multiple(ZZ(6), source_target.module_generator("y"))}
     ).cokernel()
 
     target_target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
     target_relations = BasedFreeModule(ZZ, finite_ordered_set(("s",)))
-    target = module_homset(target_relations, target_target)(
+    target = target_relations.module_category().Mor(target_relations, target_target)(
         {"s": target_target.scalar_multiple(ZZ(3), target_target.module_generator("v"))}
     ).cokernel()
 
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {
             "x": target.module_generator("u"),
             "y": target.module_generator("v"),
@@ -324,7 +324,7 @@ def test_localization_is_scalar_extension_of_the_selected_presentation_and_actio
     x = ring.algebra_generator("x")
     target = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
-    module = module_homset(relations, target)(
+    module = relations.module_category().Mor(relations, target)(
         {"r": target.scalar_multiple(x, target.module_generator("g"))}
     ).cokernel()
     localized = module.localize(x - ring.one())

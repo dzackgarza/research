@@ -446,7 +446,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             target = target_ring.localize_module(source_module)
             restriction = self.localization_ring().restriction_to(target_ring)
             restricted = target.restrict_scalars(restriction)
-            return module_homset(self, restricted)(
+            return self.module_category().Mor(self, restricted)(
                 lambda label: restricted(target.module_generator(label))
             )
 
@@ -585,5 +585,5 @@ def _transported_presentation(source_module, localization_ring):
     }
     return {
         "relation_matrix": relation_matrix,
-        "presentation": module_homset(free_relations, free_generators)(images),
+        "presentation": free_relations.module_category().Mor(free_relations, free_generators)(images),
     }

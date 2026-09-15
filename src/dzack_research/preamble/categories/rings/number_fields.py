@@ -453,7 +453,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             multiplier = algebra._from_engine_element(
                 _engine_element(field, self)
             )
-            return module_homset(algebra, algebra)(
+            return algebra.module_category().Mor(algebra, algebra)(
                 lambda label: multiplier * algebra.module_generator(label)
             )
 

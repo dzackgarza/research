@@ -20,7 +20,7 @@ def _generator(module):
 def _doubling(module):
     label = module.module_generating_set()[0]
     generator = module.module_generator(label)
-    return module_homset(module, module)({label: 2 * generator})
+    return module.module_category().Mor(module, module)({label: 2 * generator})
 
 
 def test_archived_bilinear_form_is_the_live_tensor_hom_with_gram_and_pullback() -> None:

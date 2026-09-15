@@ -887,7 +887,7 @@ class AT21ADEDoubleCover(SageObject):
         target_labels = tuple(target_lattice.module_generating_set())
         if len(source_labels) != 3 or len(target_labels) != 2:
             raise ArithmeticError("the ADE pyramid projection expects ranks three and two")
-        projection_lattice_map = module_homset(source_lattice, target_lattice)(
+        projection_lattice_map = source_lattice.module_category().Mor(source_lattice, target_lattice)(
             {
                 source_labels[0]: target_lattice.module_generator(target_labels[0]),
                 source_labels[1]: target_lattice.module_generator(target_labels[1]),

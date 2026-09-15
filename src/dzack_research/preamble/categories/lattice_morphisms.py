@@ -614,7 +614,7 @@ class LatticeIsometry(LatticeEmbedding):
             raise ValueError("invariants are defined here for a lattice automorphism")
         lattice = self.domain()
 
-        difference = module_homset(lattice, lattice)(tuple(self(generator) - generator for generator in lattice.module_generators()))
+        difference = lattice.module_category().Mor(lattice, lattice)(tuple(self(generator) - generator for generator in lattice.module_generators()))
         return difference.kernel()
 
     @cached_method
@@ -666,7 +666,7 @@ class LatticeIsometry(LatticeEmbedding):
                 iterate = self(iterate)
             return total
 
-        evaluated = module_homset(lattice, lattice)(
+        evaluated = lattice.module_category().Mor(lattice, lattice)(
             {label: image(label) for label in lattice.module_generating_set()}
         )
         return evaluated.kernel()
@@ -698,7 +698,7 @@ class LatticeIsometry(LatticeEmbedding):
             )
             images[label] = target.projection()(dual_image)
 
-        return module_homset(source, target)(images)
+        return source.module_category().Mor(source, target)(images)
 
     @cached_method
     def discriminant_isometry(self):
@@ -1500,7 +1500,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         if int(subgroup.cardinality()) == 1:
             form = target.domain()
-            identity = module_homset(form, form).identity()
+            identity = form.module_category().Mor(form, form).identity()
 
             def predicate(automorphism):
                 return automorphism._discriminant_forward_morphism() == identity

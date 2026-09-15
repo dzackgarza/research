@@ -47,7 +47,7 @@ def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property
     # the required value on the universal pure tensor agrees on the selected
     # generating set of the tensor product and hence on every element.
     tensor_label = tensor.module_generating_set()[0]
-    competing = module_homset(tensor, right)(
+    competing = tensor.module_category().Mor(tensor, right)(
         {tensor_label: beta(left_generator, right_generator)}
     )
     _assert_module_maps_agree(factorization, competing)
@@ -90,7 +90,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
 
     # Naturality of the unit under a nontrivial map of free modules.
     unit_target = BasedFreeModule(ZZ, finite_ordered_set(("c", "d", "e")))
-    source_map = module_homset(source, unit_target)(
+    source_map = source.module_category().Mor(source, unit_target)(
         {
             "a": unit_target.module_generator("c") + unit_target.module_generator("d"),
             "b": 2 * unit_target.module_generator("e"),
@@ -101,7 +101,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
 
     # Naturality of evaluation under the quotient Z/4 -> Z/2.
     smaller_target = _cyclic(2)
-    target_map = module_homset(target, smaller_target)(
+    target_map = target.module_category().Mor(target, smaller_target)(
         {0: smaller_target.module_generator(0)}
     )
     left, right = adjunction.counit_transformation().naturality_square(target_map)
@@ -109,7 +109,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
 
     # Functoriality is checked on an actual nonidentity composite.
     third = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
-    second_map = module_homset(unit_target, third)(
+    second_map = unit_target.module_category().Mor(unit_target, third)(
         {
             "c": third.module_generator("x"),
             "d": 2 * third.module_generator("x"),
@@ -121,7 +121,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     _assert_module_maps_agree(tensor_composite, tensor_stepwise)
 
     hom_composite = internal_hom_from(target_map)
-    hom_identity = internal_hom_from(module_homset(target, target).identity())
+    hom_identity = internal_hom_from(target.module_category().Mor(target, target).identity())
     _assert_module_maps_agree(
         hom_composite * hom_identity,
         hom_composite,
@@ -144,5 +144,5 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     )
     _assert_module_maps_agree(
         right_triangle,
-        module_homset(right_object, right_object).identity(),
+        right_object.module_category().Mor(right_object, right_object).identity(),
     )

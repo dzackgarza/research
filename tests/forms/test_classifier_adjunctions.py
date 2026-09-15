@@ -42,11 +42,11 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
     formed = BilinearForm(module, ZZ, [[2]])
     generator = formed.module_generator("e")
 
-    module_map = module_homset(formed, formed)(
+    module_map = formed.module_category().Mor(formed, formed)(
         {"e": 3 * generator}
     )
     values = ring_as_module(ZZ)
-    value_map = module_homset(values, values)(
+    value_map = values.module_category().Mor(values, values)(
         {0: 9 * values.module_generator(0)}
     )
     morphism = formed.Mor(formed)((module_map, value_map))
@@ -89,12 +89,12 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     first_homset = source.fibered_formed_homset(middle, zz_to_qq)
     source_over_qq = first_homset.base_changed_domain()
     middle_generator = middle.module_generator("e")
-    first_module_map = module_homset(source_over_qq, middle)(
+    first_module_map = source_over_qq.module_category().Mor(source_over_qq, middle)(
         {"e": middle.scalar_multiple(3, middle_generator)}
     )
     source_values = _represented_value_module(source_over_qq)
     middle_values = _represented_value_module(middle)
-    first_value_map = module_homset(source_values, middle_values)(
+    first_value_map = source_values.module_category().Mor(source_values, middle_values)(
         {0: middle_values.scalar_multiple(9, middle_values.module_generator(0))}
     )
     first = first_homset((first_module_map, first_value_map))
@@ -108,12 +108,12 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     )
     middle_over_field = second_homset.base_changed_domain()
     target_generator = target.module_generator("e")
-    second_module_map = module_homset(middle_over_field, target)(
+    second_module_map = middle_over_field.module_category().Mor(middle_over_field, target)(
         {"e": target.scalar_multiple(2, target_generator)}
     )
     middle_changed_values = _represented_value_module(middle_over_field)
     target_values = _represented_value_module(target)
-    second_value_map = module_homset(middle_changed_values, target_values)(
+    second_value_map = middle_changed_values.module_category().Mor(middle_changed_values, target_values)(
         {0: target_values.scalar_multiple(4, target_values.module_generator(0))}
     )
     second = second_homset((second_module_map, second_value_map))
@@ -152,7 +152,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     quotient = _cyclic(2)
     source_generator = source.module_generator(0)
     quotient_generator = quotient.module_generator(0)
-    projection = module_homset(source, quotient)({0: quotient_generator})
+    projection = source.module_category().Mor(source, quotient)({0: quotient_generator})
 
     adjunction = adjunction_factory(ZZ)
     free = adjunction.left_adjoint()
@@ -164,7 +164,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     assert classifier_invariants.cardinality() == 1
     assert classifier_invariants[0] == ZZ(expected_classifier_invariants)
 
-    doubling = module_homset(source, source)({0: 2 * source_generator})
+    doubling = source.module_category().Mor(source, source)({0: 2 * source_generator})
     module_map = free_source.equip_form_morphism() * doubling
     transpose_inverse = adjunction.hom_set_isomorphism_inverse(
         module_map,
@@ -199,7 +199,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     )
     _assert_module_maps_agree(
         right_triangle,
-        module_homset(right_object, right_object).identity(),
+        right_object.module_category().Mor(right_object, right_object).identity(),
     )
 
     # The nontrivial quotient is also genuinely acted on by the functors.

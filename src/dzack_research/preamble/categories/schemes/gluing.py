@@ -1449,7 +1449,7 @@ class FiniteAtlasInvertibleSheafRefinement(SageObject):
             refined_labels = tuple(refined.module_generating_set())
             if len(pulled_labels) != len(refined_labels):
                 raise ArithmeticError("line-bundle refinement changed the local rank")
-            forward = module_homset(pulled, refined)(
+            forward = pulled.module_category().Mor(pulled, refined)(
                 {
                     source_label: refined.module_generator(target_label)
                     for source_label, target_label in zip(
@@ -1457,7 +1457,7 @@ class FiniteAtlasInvertibleSheafRefinement(SageObject):
                     )
                 }
             )
-            inverse = module_homset(refined, pulled)(
+            inverse = refined.module_category().Mor(refined, pulled)(
                 {
                     target_label: pulled.module_generator(source_label)
                     for source_label, target_label in zip(
@@ -2205,7 +2205,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         target_pair = target_datum.pair_module(chart_index, other_index)
         overlap = self.gluing_datum().overlap(chart_index, other_index)
         ring_map = overlap.inclusion().coordinate_algebra_morphism()
-        return module_homset(source_pair, target_pair)(
+        return source_pair.module_category().Mor(source_pair, target_pair)(
             {
                 label: _change_coefficients(
                     local_map(self.local_module(chart_index).module_generator(label)),
@@ -2375,7 +2375,7 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
         r"""Transport ``local_map`` to already selected scalar-extension parents."""
         if source.base_ring() is not ring_map.codomain() or target.base_ring() is not ring_map.codomain():
             raise ValueError("the selected base-changed map endpoints have the wrong scalar ring")
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             {
                 label: target.linear_combination(
                     {
@@ -2983,14 +2983,14 @@ class ModuleGluingDatum(Parent):
         source = self.restricted_module(chart_index, *source_indices)
         target = self.restricted_module(chart_index, *target_indices)
         if target is source:
-            cached = module_homset(source, source).identity()
+            cached = source.module_category().Mor(source, source).identity()
             self._restriction_maps[key] = cached
             return cached
         source_open = self.cover().intersection(*source_indices)
         target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
         restricted_target = target.restrict_scalars(ring_map)
-        cached = module_homset(source, restricted_target)(
+        cached = source.module_category().Mor(source, restricted_target)(
             lambda label: restricted_target.wrap(target.module_generator(label))
         )
         self._restriction_maps[key] = cached
@@ -3060,7 +3060,7 @@ class ModuleGluingDatum(Parent):
             pair_image = transition(pair_source.module_generator(label))
             return _change_coefficients(pair_image, pair_target, target, ring_map)
 
-        cached = module_homset(source, target)(image)
+        cached = source.module_category().Mor(source, target)(image)
         self._transition_restrictions[key] = cached
         return cached
 
@@ -3172,7 +3172,7 @@ class ModuleGluingMorphism(Morphism):
             local_image = local_map(local_source.module_generator(label))
             return _change_coefficients(local_image, local_target, target, ring_map)
 
-        cached = module_homset(source, target)(image)
+        cached = source.module_category().Mor(source, target)(image)
         self._restricted_local_maps[key] = cached
         return cached
 
@@ -3216,10 +3216,7 @@ class ModuleGluingMorphism(Morphism):
                     )
                 )
 
-            self._global_sections_map = module_homset(
-                source_sections,
-                target_sections,
-            ).elementwise(
+            self._global_sections_map = source_sections.module_category().Mor(source_sections, target_sections).elementwise(
                 image,
                 verify_linearity=False,
             )
@@ -3275,7 +3272,7 @@ class ModuleGluingHomset(CategoricalHomset):
             raise ValueError("identity belongs to a descent endomorphism Hom")
         return self(
             tuple(
-                module_homset(module, module).identity()
+                module.module_category().Mor(module, module).identity()
                 for module in self.domain().local_modules()
             )
         )
@@ -4557,9 +4554,7 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
                 raise ArithmeticError(
                     "generic and specialized line-bundle pullbacks have different local ranks"
                 )
-            forward_maps[index] = module_homset(
-                generic_module, specialized_module
-            )(
+            forward_maps[index] = generic_module.module_category().Mor(generic_module, specialized_module)(
                 {
                     source_label: specialized_module.module_generator(target_label)
                     for source_label, target_label in zip(
@@ -4567,9 +4562,7 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
                     )
                 }
             )
-            inverse_maps[index] = module_homset(
-                specialized_module, generic_module
-            )(
+            inverse_maps[index] = specialized_module.module_category().Mor(specialized_module, generic_module)(
                 {
                     target_label: generic_module.module_generator(source_label)
                     for source_label, target_label in zip(

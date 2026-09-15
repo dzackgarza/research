@@ -440,7 +440,7 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     free_target = BasedFreeModule(ring, 1)
     free_relations = BasedFreeModule(ring, 1)
     module = FinitelyPresentedModule(
-        module_homset(free_relations, free_target)(
+        free_relations.module_category().Mor(free_relations, free_target)(
             {0: x * free_target.module_generator(0)}
         )
     )
@@ -506,7 +506,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     assert unit.domain() is free
     assert unit(generator).underlying_element() == localized_free.module_generator(0)
 
-    multiplication_by_three = module_homset(free, free)({0: 3 * generator})
+    multiplication_by_three = free.module_category().Mor(free, free)({0: 3 * generator})
     localized_map = localized_free.localization_functor()(multiplication_by_three)
     assert localized_map.domain() is localized_free
     assert localized_map(localized_free.module_generator(0)) == localized_free.scalar_multiple(
@@ -514,7 +514,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     )
 
     torsion = FinitelyPresentedModule(
-        module_homset(free, free)({0: 6 * generator})
+        free.module_category().Mor(free, free)({0: 6 * generator})
     )
     p5 = ZZ.spectrum()(5)
     torsion_at_two = torsion.localize_at_prime(p2)
@@ -534,7 +534,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     x = polynomial.algebra_generator("x")
     polynomial_free = FreeModule(polynomial, 1)
     quotient = FinitelyPresentedModule(
-        module_homset(polynomial_free, polynomial_free)(
+        polynomial_free.module_category().Mor(polynomial_free, polynomial_free)(
             {0: x * polynomial_free.module_generator(0)}
         )
     )
@@ -562,10 +562,10 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     localize = localization.localization_functor()
 
     killed = FinitelyPresentedModule(
-        module_homset(free, free)({0: (x**2) * generator})
+        free.module_category().Mor(free, free)({0: (x**2) * generator})
     )
     surviving = FinitelyPresentedModule(
-        module_homset(free, free)({0: (x + polynomial.one()) * generator})
+        free.module_category().Mor(free, free)({0: (x + polynomial.one()) * generator})
     )
     killed_local = localize(killed)
     surviving_local = localize(surviving)
@@ -587,10 +587,10 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     localize_at_x = point.local_ring().localization_functor()
 
     supported_at_x = FinitelyPresentedModule(
-        module_homset(plane_free, plane_free)({0: x_plane * plane_generator})
+        plane_free.module_category().Mor(plane_free, plane_free)({0: x_plane * plane_generator})
     )
     killed_away_from_x = FinitelyPresentedModule(
-        module_homset(plane_free, plane_free)({0: y_plane * plane_generator})
+        plane_free.module_category().Mor(plane_free, plane_free)({0: y_plane * plane_generator})
     )
     supported_local = localize_at_x(supported_at_x)
     killed_local = localize_at_x(killed_away_from_x)
@@ -603,7 +603,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     integer_free = FreeModule(ZZ, 1)
     integer_generator = integer_free.module_generator(0)
     torsion = FinitelyPresentedModule(
-        module_homset(integer_free, integer_free)({0: 6 * integer_generator})
+        integer_free.module_category().Mor(integer_free, integer_free)({0: 6 * integer_generator})
     )
     at_two = ZZ.spectrum()(2).local_ring().localization_functor()(torsion)
     at_five = ZZ.spectrum()(5).local_ring().localization_functor()(torsion)
@@ -621,7 +621,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 
     field = GF(3)
     finite = ring_as_module(field)
-    finite_hom = module_homset(finite, finite)
+    finite_hom = finite.module_category().Mor(finite, finite)
     linear = finite_hom.elementwise(
         lambda element: finite.scalar_multiple(field(2), element)
     )
@@ -646,7 +646,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
         logger="dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
     ):
         basis_label = infinite.module_generating_set()[0]
-        declared = module_homset(infinite, infinite).elementwise(
+        declared = infinite.module_category().Mor(infinite, infinite).elementwise(
             lambda vector: infinite(
                 (module_coefficients(vector, infinite).get(basis_label, ZZ.zero()) ** 2,)
             )
@@ -684,7 +684,7 @@ def test_general_module_localization_uses_fraction_model_and_detects_s_torsion()
     unit = localized.localization_unit()
     assert unit(module(1)).underlying_element() == localized.fraction(module(1))
 
-    doubling = module_homset(module, module).elementwise(
+    doubling = module.module_category().Mor(module, module).elementwise(
         lambda element: module((2 * element.underlying_element()) % 6)
     )
     localized_doubling = localized.localization_functor()(doubling)
@@ -812,7 +812,7 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
     source = FreeModule(ZZ, 2)
     target = FreeModule(ZZ, 1)
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {
             0: target.module_generator(0),
             1: target.zero(),
@@ -834,7 +834,7 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
     rank_one = FreeModule(ZZ, 1)
     generator = rank_one.module_generator(0)
-    multiplication_by_six = module_homset(rank_one, rank_one)(
+    multiplication_by_six = rank_one.module_category().Mor(rank_one, rank_one)(
         {0: 6 * generator}
     )
     cokernel_comparison = functor.cokernel_comparison(multiplication_by_six)
@@ -863,7 +863,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     free = FreeModule(local, 1)
     generator = free.module_generator(0)
     quotient = FinitelyPresentedModule(
-        module_homset(free, free)(
+        free.module_category().Mor(free, free)(
             {0: free.scalar_multiple(local(x), generator)}
         )
     )
@@ -872,7 +872,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     assert quotient.minimal_number_of_generators() == quotient.residue_module().dimension()
     assert quotient.submodule(quotient.minimal_module_generators()) == quotient
 
-    projection = module_homset(free, quotient)(
+    projection = free.module_category().Mor(free, quotient)(
         {0: quotient.module_generator(0)}
     )
     residue_projection = projection.residue_morphism()
@@ -881,7 +881,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     assert projection.is_surjective_mod_maximal_ideal()
     assert projection.is_surjective_by_nakayama()
 
-    multiplication_by_x = module_homset(free, free)(
+    multiplication_by_x = free.module_category().Mor(free, free)(
         {0: free.scalar_multiple(local(x), generator)}
     )
     assert not multiplication_by_x.is_surjective_mod_maximal_ideal()
@@ -907,13 +907,13 @@ def test_general_module_materializes_from_an_underlying_set_and_action() -> None
     assert module.scalar_multiple(field(2), module(2)) == module(1)
     assert module.scalar_action()(field(2))(module(2)) == module(1)
 
-    doubling = module_homset(module, module).elementwise(
+    doubling = module.module_category().Mor(module, module).elementwise(
         lambda element: module((2 * element.underlying_element()) % 3)
     )
     assert doubling(module(2)) == module(1)
 
     try:
-        module_homset(module, module).elementwise(
+        module.module_category().Mor(module, module).elementwise(
             lambda element: module((element.underlying_element() ** 2) % 3)
         )
     except ValueError as error:

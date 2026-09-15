@@ -27,7 +27,7 @@ def _specimen():
     a = source.module_generator("a")
     b = source.module_generator("b")
     c = target.module_generator("c")
-    differential = module_homset(source, target)(
+    differential = source.module_category().Mor(source, target)(
         {
             "a": target.scalar_multiple(ring(2), c),
             "b": target.scalar_multiple(x, c),
@@ -68,10 +68,10 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
     ring, _x, source, target, _a, _b, c, _differential, complex_ = _specimen()
     zero = CochainComplexes(ring).Mor(complex_, complex_)(
         {
-            0: module_homset(source, source)(
+            0: source.module_category().Mor(source, source)(
                 {label: source.zero() for label in source.module_generating_set()}
             ),
-            1: module_homset(target, target)(
+            1: target.module_category().Mor(target, target)(
                 {label: target.zero() for label in target.module_generating_set()}
             ),
         }
@@ -83,7 +83,7 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
 
     assert nonzero != h1.zero()
     assert induced(nonzero) == h1.zero()
-    assert induced != module_homset(h1, h1).identity()
+    assert induced != h1.module_category().Mor(h1, h1).identity()
 
 
 def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_modules() -> None:
@@ -92,18 +92,18 @@ def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_mo
     source_free = BasedFreeModule(ring, finite_ordered_set(("a",)))
     source_relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     source = FinitelyPresentedModule(
-        module_homset(source_relations, source_free)(
+        source_relations.module_category().Mor(source_relations, source_free)(
             {"r": ring(2) * x * source_free.module_generator("a")}
         )
     )
     target_free = BasedFreeModule(ring, finite_ordered_set(("c",)))
     target_relations = BasedFreeModule(ring, finite_ordered_set(("s",)))
     target = FinitelyPresentedModule(
-        module_homset(target_relations, target_free)(
+        target_relations.module_category().Mor(target_relations, target_free)(
             {"s": ring(2) * target_free.module_generator("c")}
         )
     )
-    reduction = module_homset(source, target)(
+    reduction = source.module_category().Mor(source, target)(
         {"a": target.module_generator("c")}
     )
 

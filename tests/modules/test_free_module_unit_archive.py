@@ -59,6 +59,6 @@ def test_archived_framed_free_module_surface_is_owned_by_the_live_free_module() 
     assert framing.codomain() is module
     assert module.is_torsion_free() is True
 
-    endomorphism = module_homset(module, module)({"alpha": beta, "beta": alpha})
+    endomorphism = module.module_category().Mor(module, module)({"alpha": beta, "beta": alpha})
     assert endomorphism(alpha) == beta
     assert endomorphism(beta) == alpha

@@ -224,7 +224,7 @@ def _kernel_subobject_of_matrix(module, matrix):
         )
         for source_index, source_label in enumerate(labels)
     }
-    return module_homset(coefficient_module, coefficient_module)(images).kernel()
+    return coefficient_module.module_category().Mor(coefficient_module, coefficient_module)(images).kernel()
 
 
 def isotypic_component(module, character):

@@ -519,7 +519,7 @@ class ModulesOverGroupAlgebra(Modules):
         def forget_action_morphism(self):
             unacted = self.unacted_module()
             if unacted is self:
-                return module_homset(self, self).identity()
+                return self.module_category().Mor(self, self).identity()
             return Sets().Mor(self, unacted)(
                 lambda element: unacted(self(element).underlying_element())
             )
@@ -528,7 +528,7 @@ class ModulesOverGroupAlgebra(Modules):
         def equip_action_morphism(self):
             unacted = self.unacted_module()
             if unacted is self:
-                return module_homset(self, self).identity()
+                return self.module_category().Mor(self, self).identity()
             return Sets().Mor(unacted, self)(
                 lambda element: self(unacted._underlying_additive_element(unacted(element)))
             )
@@ -647,7 +647,7 @@ class ModulesOverGroupAlgebra(Modules):
                 lambda side: Sets.Δ[0] if int(side) == 0 else generators,
             )
             coefficient_module = self.unacted_module()
-            identity = module_homset(coefficient_module, coefficient_module).identity()
+            identity = coefficient_module.module_category().Mor(coefficient_module, coefficient_module).identity()
             return finite_indexed_family(
                 indices,
                 lambda tagged: identity if int(tagged.summand_index()) == 0 else self.action_of(tagged.summand_element()),
@@ -933,7 +933,7 @@ def _coefficient_morphism_from_images(
     r"""Read equivariant-map data as a map of the retained coefficient modules."""
     source = parent.domain().unacted_module()
     target = parent.codomain().unacted_module()
-    homset = module_homset(source, target)
+    homset = source.module_category().Mor(source, target)
 
     if isinstance(images, GroupModuleMorphism):
         underlying = images.underlying_module_morphism()

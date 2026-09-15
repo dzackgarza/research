@@ -9,7 +9,7 @@ def _cyclic(modulus):
     free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(ZZ(modulus), free.module_generator("g"))}
         )
     )
@@ -18,7 +18,7 @@ def _cyclic(modulus):
 def test_nonidentity_module_map_lifts_to_a_commuting_resolution_map() -> None:
     source = _cyclic(6)
     target = _cyclic(3)
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {"g": target.module_generator("g")}
     )
     source_resolution = source.free_resolution()

@@ -45,7 +45,7 @@ def test_archived_generator_assignment_builds_the_actual_module_morphism() -> No
     u = target.module_generator("u")
     v = target.module_generator("v")
 
-    morphism = module_homset(source, target)({"e": u + v, "f": 2 * v})
+    morphism = source.module_category().Mor(source, target)({"e": u + v, "f": 2 * v})
     assert morphism(source.module_generator("e")) == u + v
     assert morphism(source.module_generator("f")) == 2 * v
     assert morphism(3 * source.module_generator("e") - source.module_generator("f")) == 3 * u + v

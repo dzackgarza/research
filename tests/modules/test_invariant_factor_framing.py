@@ -14,7 +14,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 def test_literal_cokernel_retains_generator_killed_by_the_relation() -> None:
     target = BasedFreeModule(ZZ, finite_ordered_set(("v", "w")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    quotient = module_homset(relations, target)(
+    quotient = relations.module_category().Mor(relations, target)(
         {"r": target.module_generator("w")}
     ).cokernel()
 
@@ -44,7 +44,7 @@ def test_literal_cokernel_retains_generator_killed_by_the_relation() -> None:
 def test_invariant_factor_form_drops_only_unit_factors_and_keeps_free_summands() -> None:
     target = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    quotient = module_homset(relations, target)(
+    quotient = relations.module_category().Mor(relations, target)(
         {"r": target.module_generator("x")}
     ).cokernel()
 
@@ -70,7 +70,7 @@ def test_torsion_free_pid_module_has_global_and_local_free_trivializations() -> 
 
     target = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    quotient = module_homset(relations, target)(
+    quotient = relations.module_category().Mor(relations, target)(
         {"r": target.module_generator("x")}
     ).cokernel()
 
@@ -103,7 +103,7 @@ def test_torsion_free_pid_module_has_global_and_local_free_trivializations() -> 
         generator = local_trivialization.domain().module_generator(label)
         assert local_trivialization.inverse()(local_trivialization(generator)) == generator
 
-    torsion = module_homset(relations, target)(
+    torsion = relations.module_category().Mor(relations, target)(
         {"r": 2 * target.module_generator("x")}
     ).cokernel()
     assert not torsion.is_projective()

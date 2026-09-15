@@ -62,7 +62,7 @@ def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
     labels = finite_ordered_set(("x", "y"))
     module = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
     free = adjunction.left_adjoint()(labels)
-    morphism = module_homset(free, module)(
+    morphism = free.module_category().Mor(free, module)(
         {
             "x": module.module_generator("a") + module.module_generator("b"),
             "y": 3 * module.module_generator("a"),

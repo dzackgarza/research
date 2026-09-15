@@ -31,7 +31,7 @@ def test_presented_module_keeps_owned_selected_presentation() -> None:
     integers = session_ring_objects()["ZZ"]
     target = FreeModuleOn(integers, finite_ordered_set(("x", "y")))
     relations = FreeModuleOn(integers, finite_ordered_set(("r",)))
-    presentation = module_homset(relations, target)(
+    presentation = relations.module_category().Mor(relations, target)(
         {"r": 2 * target.module_generator("x")}
     )
     module = FinitelyPresentedModule(presentation)

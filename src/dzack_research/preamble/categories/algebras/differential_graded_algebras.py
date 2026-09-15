@@ -69,7 +69,7 @@ class DegreewiseLinearMorphism(Morphism):
             raise NotImplementedError(
                 "this differential component has no finite framed-module backend"
             )
-        return module_homset(source, target)(
+        return source.module_category().Mor(source, target)(
             {label: self(source.module_generator(label)) for label in labels}
         )
 

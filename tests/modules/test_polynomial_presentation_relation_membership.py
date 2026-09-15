@@ -13,7 +13,7 @@ def _cyclic_quotient(ring, relation):
     free = FreeModule(ring, 1)
     generator = free.module_generator(0)
     return FinitelyPresentedModule(
-        module_homset(free, free)({0: relation * generator})
+        free.module_category().Mor(free, free)({0: relation * generator})
     )
 
 

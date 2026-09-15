@@ -81,7 +81,7 @@ def _scalar_morphism(source, target, scalar):
         codomain = target.sections_on_chart(index)
         source_label = domain.module_generating_set()[0]
         target_label = codomain.module_generating_set()[0]
-        local_maps[index] = module_homset(domain, codomain)(
+        local_maps[index] = domain.module_category().Mor(domain, codomain)(
             {
                 source_label: codomain.scalar_multiple(
                     codomain.base_ring()(scalar),
@@ -215,7 +215,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     target_module = FreeModule(plane.coordinate_algebra(), 1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     target_label = target_module.module_generating_set()[0]
-    times_two = module_homset(target_module, target_module)(
+    times_two = target_module.module_category().Mor(target_module, target_module)(
         {
             target_label: target_module.scalar_multiple(
                 plane.coordinate_algebra()(2),
@@ -223,7 +223,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    target_identity = module_homset(target_module, target_module).identity()
+    target_identity = target_module.module_category().Mor(target_module, target_module).identity()
 
     pulled = pullback.on_object(target_sheaf)
     assert morphism.module_pullback(target_sheaf) is pulled
@@ -235,7 +235,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     source_module = FreeModule(line.coordinate_algebra(), 1)
     source_sheaf = line.associated_module_sheaf(source_module)
     source_label = source_module.module_generating_set()[0]
-    times_three = module_homset(source_module, source_module)(
+    times_three = source_module.module_category().Mor(source_module, source_module)(
         {
             source_label: source_module.scalar_multiple(
                 line.coordinate_algebra()(3),
@@ -243,7 +243,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    source_identity = module_homset(source_module, source_module).identity()
+    source_identity = source_module.module_category().Mor(source_module, source_module).identity()
 
     pushed = direct.on_object(source_sheaf)
     assert morphism.direct_image(source_sheaf) is pushed

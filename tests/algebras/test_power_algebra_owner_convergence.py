@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 def test_power_algebra_public_constructor_and_nonidentity_functor_share_one_owner() -> None:
     source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {
             "x": 2 * target.module_generator("a"),
             "y": target.module_generator("b"),

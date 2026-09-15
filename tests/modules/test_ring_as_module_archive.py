@@ -38,7 +38,7 @@ def test_owned_ring_is_its_own_canonical_rank_one_module() -> None:
 
 def test_hom_endpoints_use_the_same_ring_module_parent() -> None:
     module = ring_as_module(ZZ)
-    endomorphisms = module_homset(module, module)
+    endomorphisms = module.module_category().Mor(module, module)
     identity = endomorphisms.identity()
     generator = module.module_generator(0)
 

@@ -185,7 +185,7 @@ class FiniteCommensurabilityQuotient(SageObject):
         r"""Return multiplication by ``d`` on ``M``."""
         lattice = self.reference_lattice()
         modulus = self.modulus()
-        return module_homset(lattice, lattice)(
+        return lattice.module_category().Mor(lattice, lattice)(
             {
                 label: lattice.scalar_multiple(
                     modulus,
@@ -344,19 +344,19 @@ def _full_orthogonal_integral_transporter(
     if len(witness_rows) != len(source_labels):
         raise ArithmeticError("the OSCAR transporter witness has the wrong source rank")
 
-    source_span = module_homset(source_rational, ambient)(
+    source_span = source_rational.module_category().Mor(source_rational, ambient)(
         {
             label: source_basis[position]
             for position, label in enumerate(source_labels)
         }
     )
-    target_span = module_homset(target_rational, ambient)(
+    target_span = target_rational.module_category().Mor(target_rational, ambient)(
         {
             label: target_basis[position]
             for position, label in enumerate(target_labels)
         }
     )
-    witness = module_homset(source_rational, target_rational)(
+    witness = source_rational.module_category().Mor(source_rational, target_rational)(
         {
             source_label: target_rational.linear_combination(
                 {

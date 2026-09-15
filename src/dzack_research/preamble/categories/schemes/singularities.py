@@ -312,7 +312,7 @@ class IsolatedHypersurfaceSingularity:
                 }
             )
 
-        return module_homset(tangent, ambient)(image)
+        return tangent.module_category().Mor(tangent, ambient)(image)
 
     def is_regular_at_origin(self) -> bool:
         r"""Return the hypersurface Jacobian criterion at the selected origin."""

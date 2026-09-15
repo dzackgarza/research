@@ -901,7 +901,7 @@ def _commutative_ideal(source, generators):
     relation_labels = finite_ordered_set(range(len(syzygy_rows)))
     free_generators = BasedFreeModule(source, labels)
     free_relations = BasedFreeModule(source, relation_labels)
-    presentation = module_homset(free_relations, free_generators)(
+    presentation = free_relations.module_category().Mor(free_relations, free_generators)(
         {
             label: _relation_element(
                 free_generators,

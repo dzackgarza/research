@@ -50,8 +50,8 @@ def _swap_group_module():
 def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = module.module_generator("e")
-    identity = module_homset(module, module).identity()
-    negative_identity = module_homset(module, module)({"e": -e})
+    identity = module.module_category().Mor(module, module).identity()
+    negative_identity = module.module_category().Mor(module, module)({"e": -e})
 
     equalizer = Modules(ZZ).equalizer(identity, negative_identity)
     coequalizer = Modules(ZZ).coequalizer(identity, negative_identity)
@@ -99,7 +99,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
     labels = finite_ordered_set(("x", "y"))
     module = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
     free_labels = free(labels)
-    phi = module_homset(free_labels, module)(
+    phi = free_labels.module_category().Mor(free_labels, module)(
         {
             "x": module.module_generator("a") + module.module_generator("b"),
             "y": 2 * module.module_generator("a"),
@@ -121,7 +121,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
     _assert_maps_agree(left, right, source_set)
 
     target_module = BasedFreeModule(ZZ, finite_ordered_set(("c",)))
-    module_map = module_homset(module, target_module)(
+    module_map = module.module_category().Mor(module, target_module)(
         {
             "a": target_module.module_generator("c"),
             "b": 2 * target_module.module_generator("c"),
@@ -168,7 +168,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
     restricted_target = restriction(target)
 
     assert restricted_target.module_generating_set().cardinality() == 2
-    phi = module_homset(extended_source, target)(
+    phi = extended_source.module_category().Mor(extended_source, target)(
         {
             "u": target.module_generator("p"),
             "v": order(2) * target.module_generator("p"),
@@ -182,7 +182,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
         )
 
     second_source = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
-    source_map = module_homset(source, second_source)(
+    source_map = source.module_category().Mor(source, second_source)(
         {
             "u": second_source.module_generator("r"),
             "v": 2 * second_source.module_generator("r"),
@@ -192,7 +192,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
     _assert_maps_agree(left, right, source.module_generators())
 
     second_target = BasedFreeModule(order, finite_ordered_set(("q",)))
-    target_map = module_homset(target, second_target)(
+    target_map = target.module_category().Mor(target, second_target)(
         {"p": order(3) * second_target.module_generator("q")}
     )
     left, right = adjunction.counit_transformation().naturality_square(target_map)
@@ -241,7 +241,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
         trivial_source.module_generator("n")
     )
 
-    source_endomorphism = module_homset(source, source)(
+    source_endomorphism = source.module_category().Mor(source, source)(
         {"n": 3 * source.module_generator("n")}
     )
     left, right = adjunction.unit_transformation().naturality_square(
@@ -282,7 +282,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     assert unit(e) == unit(f)
 
     target = BasedFreeModule(ZZ, finite_ordered_set(("n",)))
-    quotient_map = module_homset(coinvariants, target)(
+    quotient_map = coinvariants.module_category().Mor(coinvariants, target)(
         {
             "e": target.module_generator("n"),
             "f": target.module_generator("n"),
@@ -303,7 +303,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     )
     _assert_maps_agree(left, right, acted.module_generators())
 
-    target_endomorphism = module_homset(target, target)(
+    target_endomorphism = target.module_category().Mor(target, target)(
         {"n": 3 * target.module_generator("n")}
     )
     left, right = adjunction.counit_transformation().naturality_square(
@@ -549,19 +549,19 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
     source = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
     middle = BasedFreeModule(ZZ, finite_ordered_set(("c", "d")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
-    first_linear = module_homset(source, middle)(
+    first_linear = source.module_category().Mor(source, middle)(
         {
             "a": middle.module_generator("c") + middle.module_generator("d"),
             "b": 2 * middle.module_generator("d"),
         }
     )
-    second_linear = module_homset(middle, target)(
+    second_linear = middle.module_category().Mor(middle, target)(
         {
             "c": 3 * target.module_generator("e"),
             "d": target.module_generator("e"),
         }
     )
-    source_identity = module_homset(source, source).identity()
+    source_identity = source.module_category().Mor(source, source).identity()
     carried_identity = extension(source_identity)
     extended_source = extension(source)
     for generator in extended_source.module_generators():
@@ -577,13 +577,13 @@ def test_tensor_symmetric_and_alternating_algebras_are_functorial_on_finite_free
     source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     middle = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
-    first = module_homset(source, middle)(
+    first = source.module_category().Mor(source, middle)(
         {
             "x": middle.module_generator("u") + middle.module_generator("v"),
             "y": 2 * middle.module_generator("v"),
         }
     )
-    second = module_homset(middle, target)(
+    second = middle.module_category().Mor(middle, target)(
         {
             "u": 3 * target.module_generator("z"),
             "v": target.module_generator("z"),
@@ -611,7 +611,7 @@ def test_tensor_symmetric_and_alternating_algebras_are_functorial_on_finite_free
         assert carried_second(u) == 3 * z
         assert carried_second(v) == z
 
-        identity = module_homset(source, source).identity()
+        identity = source.module_category().Mor(source, source).identity()
         carried_identity = functor(identity)
         assert carried_identity(x) == x
         assert carried_identity(y) == y

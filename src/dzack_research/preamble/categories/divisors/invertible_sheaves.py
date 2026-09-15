@@ -38,11 +38,11 @@ def _rank_one_transition(source, target, unit):
         raise ValueError("an invertible-sheaf transition scalar must be a unit")
     source_generator = _rank_one_generator(source)
     target_generator = _rank_one_generator(target)
-    forward = module_homset(source, target)(
+    forward = source.module_category().Mor(source, target)(
         lambda _label: target.scalar_multiple(unit, target_generator)
     )
     inverse_unit = source.base_ring()(unit.inverse_of_unit())
-    inverse = module_homset(target, source)(
+    inverse = target.module_category().Mor(target, source)(
         lambda _label: source.scalar_multiple(inverse_unit, source_generator)
     )
     return Isomorphism(forward, inverse)
@@ -90,7 +90,7 @@ class InvertibleSheaf(SageObject):
         r"""Return the literal rank-one free chart module trivializing this sheaf."""
 
         module = self.local_module(index)
-        identity = module_homset(module, module).identity()
+        identity = module.module_category().Mor(module, module).identity()
         return Isomorphism(identity, identity)
 
     def _extract_transition_unit(self, source_index, target_index):
@@ -276,7 +276,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
     def local_trivialization(self, index):
         module = self.local_module(index)
-        identity = module_homset(module, module).identity()
+        identity = module.module_category().Mor(module, module).identity()
         return Isomorphism(identity, identity)
 
     def associated_divisor(self):
@@ -439,12 +439,12 @@ def _section_base_change_comparison(source_sections, target_sections, ring_map, 
     target_by_exponents = {
         exponents: label for label, exponents in target_exponents.items()
     }
-    forward = module_homset(changed_source, target_sections)(
+    forward = changed_source.module_category().Mor(changed_source, target_sections)(
         lambda label: target_sections.module_generator(
             target_by_exponents[source_exponents[label]]
         )
     )
-    inverse = module_homset(target_sections, changed_source)(
+    inverse = target_sections.module_category().Mor(target_sections, changed_source)(
         lambda label: changed_source.module_generator(
             source_by_exponents[target_exponents[label]]
         )
@@ -668,7 +668,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
-        identity = module_homset(sections, sections).identity()
+        identity = sections.module_category().Mor(sections, sections).identity()
         return Isomorphism(identity, identity)
 
     def compatible_section(self, section):
@@ -1067,7 +1067,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
-        identity = module_homset(sections, sections).identity()
+        identity = sections.module_category().Mor(sections, sections).identity()
         return Isomorphism(identity, identity)
 
     def section_multiplication(self, other):

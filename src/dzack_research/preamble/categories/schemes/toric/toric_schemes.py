@@ -689,7 +689,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""The inclusion ``CDiv_T(X) -> Div_T(X)`` on a smooth toric variety."""
             cartier = self.cartier_divisor_group()
             weil = self.weil_divisor_group()
-            return module_homset(cartier, weil)(
+            return cartier.module_category().Mor(cartier, weil)(
                 {
                     label: weil.module_generator(label)
                     for label in cartier.module_generating_set()
@@ -827,7 +827,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return module_homset(characters, group)(image)
+            return characters.module_category().Mor(characters, group)(image)
 
         def has_torus_factor(self) -> bool:
             r"""Whether ``X`` splits off a torus factor (CLS Prop. 3.3.9).
@@ -858,7 +858,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             group = self.torus_invariant_divisor_group()
             classes = self.class_group()
-            return module_homset(group, classes)(
+            return group.module_category().Mor(group, classes)(
                 {
                     label: classes.module_generator(label)
                     for label in group.module_generating_set()
@@ -891,7 +891,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     {ray: _pairing_on_ray(fan, character, ray) for ray in rays}
                 )
 
-            return module_homset(characters, local)(image)
+            return characters.module_category().Mor(characters, local)(image)
 
         def local_divisor_restriction(self, divisor, cone):
             r"""``sum_{rho in sigma(1)} -a_rho D_rho`` in ``Div_T(U_sigma)``.
@@ -1019,7 +1019,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""The quotient ``CDiv_T(X) ->> Pic(X)`` in the smooth toric regime."""
             cartier = self.cartier_divisor_group()
             picard = self.picard_group()
-            return module_homset(cartier, picard)(
+            return cartier.module_category().Mor(cartier, picard)(
                 {
                     label: picard.module_generator(label)
                     for label in cartier.module_generating_set()
@@ -1037,13 +1037,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             picard = self.picard_group()
             classes = self.class_group()
-            forward = module_homset(picard, classes)(
+            forward = picard.module_category().Mor(picard, classes)(
                 {
                     label: classes.module_generator(label)
                     for label in picard.module_generating_set()
                 }
             )
-            inverse = module_homset(classes, picard)(
+            inverse = classes.module_category().Mor(classes, picard)(
                 {
                     label: picard.module_generator(label)
                     for label in classes.module_generating_set()
@@ -1258,7 +1258,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             divisor = self.weil_divisor_group()(divisor)
             source = self.divisor_section_space(divisor)
             target = self.homogeneous_polynomial_section_space(divisor)
-            forward = module_homset(source, target)(
+            forward = source.module_category().Mor(source, target)(
                 {
                     character: target.module_generator(
                         self.cox_monomial_of_section(divisor, character)
@@ -1266,7 +1266,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     for character in source.module_generating_set()
                 }
             )
-            inverse = module_homset(target, source)(
+            inverse = target.module_category().Mor(target, source)(
                 {
                     monomial: source.module_generator(character)
                     for character, monomial in zip(
@@ -1567,7 +1567,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             rank = len(invariants)
             free = BasedFreeModule(integers, rank)
             relations = BasedFreeModule(integers, rank)
-            relation = module_homset(relations, free)(
+            relation = relations.module_category().Mor(relations, free)(
                 {
                     position: (
                         integers(invariant) * free.module_generator(position)
@@ -1628,7 +1628,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return module_homset(source, target)(image)
+            return source.module_category().Mor(source, target)(image)
 
         @cached_method
         def cox_ring(self):

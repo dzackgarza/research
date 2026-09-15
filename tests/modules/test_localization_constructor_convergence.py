@@ -31,7 +31,7 @@ def test_nonidentity_map_uses_the_same_localization_functor_and_endpoints() -> N
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
     e = module.module_generator("e")
     f = module.module_generator("f")
-    morphism = module_homset(module, module)(
+    morphism = module.module_category().Mor(module, module)(
         {"e": e + f, "f": 3 * f}
     )
 

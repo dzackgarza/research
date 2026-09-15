@@ -86,8 +86,8 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
-    shear = module_homset(module, module)({"x": x + y, "y": y})
-    scale = module_homset(module, module)({"x": 2 * x, "y": 3 * y})
+    shear = module.module_category().Mor(module, module)({"x": x + y, "y": y})
+    scale = module.module_category().Mor(module, module)({"x": 2 * x, "y": 3 * y})
 
     for degree, power_morphism in (
         (2, symmetric_power_morphism),
@@ -99,7 +99,7 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
         stepwise = power_morphism(scale, degree) * power_morphism(shear, degree)
         _assert_maps_agree(composite, stepwise)
 
-        identity = power_morphism(module_homset(module, module).identity(), degree)
+        identity = power_morphism(module.module_category().Mor(module, module).identity(), degree)
         _assert_maps_agree(identity, module_homset(identity.domain(), identity.codomain()).identity())
 
 

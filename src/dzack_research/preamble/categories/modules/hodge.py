@@ -104,10 +104,10 @@ def FramingVolumeTrivialization(module, unit=None):
     if not unit.is_unit():
         raise ValueError("a volume trivialization must send a determinant basis to a unit")
     inverse_unit = unit.inverse_of_unit()
-    forward = module_homset(determinant, scalars)(
+    forward = determinant.module_category().Mor(determinant, scalars)(
         {next(iter(determinant.module_generating_set())): scalars.scalar_multiple(unit, one)}
     )
-    inverse = module_homset(scalars, determinant)(
+    inverse = scalars.module_category().Mor(scalars, determinant)(
         {next(iter(scalars.module_generating_set())): determinant.scalar_multiple(inverse_unit, top)}
     )
     return VolumeTrivialization(module, forward, inverse)
@@ -190,8 +190,8 @@ def PoincareDuality(module, volume, degree):
             source.module_generator(source_label),
         )
 
-    forward = module_homset(source, target)(forward_images)
-    inverse = module_homset(target, source)(inverse_images)
+    forward = source.module_category().Mor(source, target)(forward_images)
+    inverse = target.module_category().Mor(target, source)(inverse_images)
     result = Isomorphism(forward, inverse)
     if result not in Modules(module.base_ring()).Iso(source, target):
         raise ArithmeticError("the represented Poincaré maps failed to define an isomorphism")
@@ -224,7 +224,7 @@ def AlgebraicCorrelationMorphism(metric):
                 != metric.base_ring().zero()
             }
         )
-    return module_homset(metric, dual)(images)
+    return metric.module_category().Mor(metric, dual)(images)
 
 
 def CorrelationIsomorphism(metric):
@@ -236,7 +236,7 @@ def CorrelationIsomorphism(metric):
         )
     forward = AlgebraicCorrelationMorphism(metric)
     dual = forward.codomain()
-    inverse = module_homset(dual, metric)(
+    inverse = dual.module_category().Mor(dual, metric)(
         {
             label: forward.lift(dual.module_generator(label))
             for label in dual.module_generating_set()

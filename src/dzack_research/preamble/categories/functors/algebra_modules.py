@@ -215,7 +215,7 @@ def _free_algebra_underlying_module(algebra, ring):
         if cached is not None:
             return cached
         homogeneous_piece = piece(degree)
-        realized = module_homset(homogeneous_piece, algebra)(
+        realized = homogeneous_piece.module_category().Mor(homogeneous_piece, algebra)(
             lambda label: generator_word(degree, label)
         )
         realization_maps[degree] = realized
@@ -445,7 +445,7 @@ class AlgebraUnderlyingModuleFunctor(Functor):
             if underlying.domain() is source and underlying.codomain() is target:
                 return underlying
         return UnderlyingAlgebraModuleMorphism(
-            module_homset(source, target),
+            source.module_category().Mor(source, target),
             morphism,
         )
 

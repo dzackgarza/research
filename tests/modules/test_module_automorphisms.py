@@ -58,7 +58,7 @@ def test_the_identity_automorphism_fixes_every_generator() -> None:
 
 def test_a_swap_is_its_own_inverse_and_is_an_element_of_the_automorphism_group() -> None:
     plane = _plane()
-    swap = module_homset(plane, plane)(
+    swap = plane.module_category().Mor(plane, plane)(
         {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
     )
 
@@ -78,7 +78,7 @@ def test_a_swap_is_its_own_inverse_and_is_an_element_of_the_automorphism_group()
 
 def test_a_non_invertible_endomorphism_has_no_inverse() -> None:
     plane = _plane()
-    doubling = module_homset(plane, plane)(
+    doubling = plane.module_category().Mor(plane, plane)(
         {
             "a": 2 * plane.module_generator("a"),
             "b": 2 * plane.module_generator("b"),
@@ -95,7 +95,7 @@ def test_a_non_invertible_endomorphism_has_no_inverse() -> None:
 
 def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup() -> None:
     plane = _plane()
-    swap = module_homset(plane, plane)(
+    swap = plane.module_category().Mor(plane, plane)(
         {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
     ).as_automorphism()
     generated = cyclic_subgroup(swap)
@@ -111,10 +111,10 @@ def test_a_finite_presented_module_automorphism_uses_actual_finite_preimages() -
     free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     quotient = FinitelyPresentedModule(
-        module_homset(relations, free)({"r": 3 * free.module_generator("g")})
+        relations.module_category().Mor(relations, free)({"r": 3 * free.module_generator("g")})
     )
     generator = quotient.module_generator("g")
-    negation = module_homset(quotient, quotient)({"g": -generator}).as_automorphism()
+    negation = quotient.module_category().Mor(quotient, quotient)({"g": -generator}).as_automorphism()
 
     assert negation.parent() is quotient.Aut()
     assert negation(generator) == -generator

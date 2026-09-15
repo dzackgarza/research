@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 def _two_term_data():
     source = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
-    differential = module_homset(source, target)(
+    differential = source.module_category().Mor(source, target)(
         {"e": 2 * target.module_generator("f")}
     )
     return source, target, differential
@@ -41,7 +41,7 @@ def test_lazy_complex_uses_the_category_family_constructor() -> None:
     pieces = indexed_family(degrees, lambda _degree: zero, name="Zero pieces")
     differentials = indexed_family(
         degrees,
-        lambda _degree: module_homset(zero, zero).zero(),
+        lambda _degree: zero.module_category().Mor(zero, zero).zero(),
         name="Zero differentials",
     )
 

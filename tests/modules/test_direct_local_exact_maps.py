@@ -18,7 +18,7 @@ def test_direct_map_over_a_prime_local_ring_has_exact_kernel_and_cokernel() -> N
     local = point.local_ring()
     source = BasedFreeModule(local, finite_ordered_set(("a", "b")))
     target = BasedFreeModule(local, finite_ordered_set(("c",)))
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {
             "a": target.module_generator("c"),
             "b": target.zero(),
@@ -38,7 +38,7 @@ def test_direct_local_map_detects_a_nonunit_cokernel() -> None:
     local = ring.spectrum()(ring.ideal(x)).local_ring()
     module = BasedFreeModule(local, finite_ordered_set(("g",)))
     generator = module.module_generator("g")
-    multiplication_by_x = module_homset(module, module)(
+    multiplication_by_x = module.module_category().Mor(module, module)(
         {"g": module.scalar_multiple(local(x), generator)}
     )
 

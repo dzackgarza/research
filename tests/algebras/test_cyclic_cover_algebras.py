@@ -36,13 +36,13 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         cover.overlap(0, 1),
     )(x)
     transition = Isomorphism(
-        module_homset(left_overlap, right_overlap)(
+        left_overlap.module_category().Mor(left_overlap, right_overlap)(
             lambda _label: right_overlap.scalar_multiple(
                 overlap_x,
                 _generator(right_overlap),
             )
         ),
-        module_homset(right_overlap, left_overlap)(
+        right_overlap.module_category().Mor(right_overlap, left_overlap)(
             lambda _label: left_overlap.scalar_multiple(
                 overlap_x.inverse_of_unit(),
                 _generator(left_overlap),

@@ -24,7 +24,7 @@ def _cyclic_module(ring, scalar):
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
         )
     )
@@ -72,7 +72,7 @@ def test_localizing_a_free_module_preserves_its_fraction_action_and_map() -> Non
         localized.base_ring()(x), localized.module_generator("g")
     ) == localized.fraction(free.scalar_multiple(x, generator))
 
-    doubling = module_homset(free, free)(
+    doubling = free.module_category().Mor(free, free)(
         {"g": free.scalar_multiple(ring(2), generator)}
     )
     localized_doubling = localized.localization_functor()(doubling)

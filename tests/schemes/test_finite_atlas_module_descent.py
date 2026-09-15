@@ -234,7 +234,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
     for label in labels:
         module = local_modules[label]
         generator = next(iter(module.module_generating_set()))
-        local_maps[label] = module_homset(module, module)(
+        local_maps[label] = module.module_category().Mor(module, module)(
             {generator: module.scalar_multiple(2, module.module_generator(generator))}
         )
 

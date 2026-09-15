@@ -22,7 +22,7 @@ def _swap_of_the_rational_plane():
     r"""``QQ^2`` and the endomorphism exchanging its two basis vectors."""
     plane = FreeModule(QQ, 2)
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
-    return plane, module_homset(plane, plane)({0: e1, 1: e0})
+    return plane, plane.module_category().Mor(plane, plane)({0: e1, 1: e0})
 
 
 def test_restricting_a_rational_endomorphism_to_the_integers_keeps_its_action() -> None:
@@ -78,7 +78,7 @@ def test_finite_scalar_restriction_retains_selected_presentation_for_kernels_and
     assert restricted in ModulesWithChosenFinitePresentation(prime)
     assert restricted.presentation().codomain().base_ring() is prime
 
-    identity = module_homset(restricted, restricted).identity()
+    identity = restricted.module_category().Mor(restricted, restricted).identity()
     kernel = identity.kernel()
     image = identity.image()
 

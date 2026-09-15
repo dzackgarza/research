@@ -182,7 +182,7 @@ class HigherDirectImageSheaf(SageObject):
         stalk = self.stalk(point)
         fiber = self.family_data().fiber_cohomology(point)
         forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
-            module_homset(stalk, fiber)(
+            stalk.module_category().Mor(stalk, fiber)(
                 {
                     label: fiber.module_generator(label)
                     for label in stalk.module_generating_set()
@@ -190,7 +190,7 @@ class HigherDirectImageSheaf(SageObject):
             )
         )
         inverse = fiber.Mor(stalk).identity() if stalk is fiber else fiber.Mor(stalk)(
-            module_homset(fiber, stalk)(
+            fiber.module_category().Mor(fiber, stalk)(
                 {
                     label: stalk.module_generator(label)
                     for label in fiber.module_generating_set()
@@ -262,13 +262,13 @@ class LegendreMonodromyFamily(SageObject):
         labels = tuple(cohomology.module_generating_set())
         alpha_dual = cohomology.module_generator(labels[0])
         beta_dual = cohomology.module_generator(labels[1])
-        forward_linear = module_homset(cohomology, cohomology)(
+        forward_linear = cohomology.module_category().Mor(cohomology, cohomology)(
             {
                 labels[0]: alpha_dual,
                 labels[1]: 2 * alpha_dual + beta_dual,
             }
         )
-        inverse_linear = module_homset(cohomology, cohomology)(
+        inverse_linear = cohomology.module_category().Mor(cohomology, cohomology)(
             {
                 labels[0]: alpha_dual,
                 labels[1]: -2 * alpha_dual + beta_dual,

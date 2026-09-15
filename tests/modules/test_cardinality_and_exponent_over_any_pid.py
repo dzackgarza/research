@@ -23,7 +23,7 @@ def _cyclic_module(ring, scalar):
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
         )
     )

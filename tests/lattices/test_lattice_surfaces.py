@@ -165,7 +165,7 @@ def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None
     source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     plane = Lattices(ZZ)("U")
     e, f = plane.module_generators()
-    morphism = module_homset(source, plane)({"x": e, "y": e})
+    morphism = source.module_category().Mor(source, plane)({"x": e, "y": e})
 
     perpendicular = morphism.orthogonal_complement()
 

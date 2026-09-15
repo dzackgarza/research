@@ -38,7 +38,7 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
     source_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     target = _dual_numbers()
     epsilon = target.module_generator("e")
-    linear = module_homset(source_module, target)({"x": epsilon})
+    linear = source_module.module_category().Mor(source_module, target)({"x": epsilon})
 
     extension = alternating_extension(linear)
     exterior = AlternatingAlgebraOf(source_module)
@@ -54,7 +54,7 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
 def test_exterior_extension_rejects_nonalternating_generator_images() -> None:
     source_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     target = _dual_numbers()
-    linear = module_homset(source_module, target)({"x": target.one()})
+    linear = source_module.module_category().Mor(source_module, target)({"x": target.one()})
 
     with pytest.raises(ValueError, match="square to zero"):
         alternating_extension(linear)

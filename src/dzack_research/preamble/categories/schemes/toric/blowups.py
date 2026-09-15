@@ -117,7 +117,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
                 coefficients = module_coefficients(pulled, target_weil)
                 return target_picard.linear_combination(coefficients)
 
-            return module_homset(source_picard, target_picard)(image)
+            return source_picard.module_category().Mor(source_picard, target_picard)(image)
 
         def exceptional_picard_class(self):
             return self.picard_group().module_generator(self.exceptional_ray())
@@ -175,7 +175,7 @@ def ToricFixedPointBlowup(surface, center_cone):
 
     blowup = refined_fan.toric_variety(base)
     lattice = fan.cocharacter_lattice()
-    identity = module_homset(lattice, lattice).identity()
+    identity = lattice.module_category().Mor(lattice, lattice).identity()
     blowdown = blowup.toric_morphism(identity, surface)
 
     exceptional = None

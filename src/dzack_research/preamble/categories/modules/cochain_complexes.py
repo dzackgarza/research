@@ -342,7 +342,7 @@ class CochainComplexObject(GradedDirectSumModule):
         if self._finite_support:
             selected = self._selected_differentials.get(degree)
             if selected is None:
-                return module_homset(source, target)(
+                return source.module_category().Mor(source, target)(
                     {label: target.zero() for label in source.module_generating_set()}
                 )
             return selected
@@ -538,7 +538,7 @@ class CochainHomset(CategoricalHomset):
                 chosen = selected.get(degree)
                 if chosen is not None:
                     return chosen
-                return module_homset(source, target)(
+                return source.module_category().Mor(source, target)(
                     {label: target.zero() for label in source.module_generating_set()}
                 )
 
@@ -572,7 +572,7 @@ class CochainHomset(CategoricalHomset):
                 image = self.codomain()(function(total))
                 return image.homogeneous_component(degree)
 
-            return module_homset(source, target).elementwise(on_piece)
+            return source.module_category().Mor(source, target).elementwise(on_piece)
 
         return self.element_class(
             self,

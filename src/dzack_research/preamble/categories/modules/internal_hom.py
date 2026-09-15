@@ -231,7 +231,7 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
         raise ValueError("the target internal Hom has the wrong target")
 
 
-    return module_homset(source_internal_hom, target_internal_hom).elementwise(
+    return source_internal_hom.module_category().Mor(source_internal_hom, target_internal_hom).elementwise(
         lambda morphism: target_map * morphism * source_map
     )
 

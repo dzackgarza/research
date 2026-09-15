@@ -171,7 +171,7 @@ def AffineGeometricCohomologyComplex(sheaf, cover=None):
         construction_data["geometric_cover"] = cover
     return CochainComplexes(base)(
         {0: module, 1: zero},
-        {0: module_homset(module, zero).zero()},
+        {0: module.module_category().Mor(module, zero).zero()},
         name=f"Affine Cech complex of {sheaf}",
         extra_categories=(AffineGeometricCohomologyComplexes(base),),
         extra_construction_data=construction_data,
@@ -443,7 +443,7 @@ def _matrix_morphism(base, source, target, matrix):
         column = source_labels.index(source_label)
         return target.linear_combination({target_label: base(int(matrix[row, column])) for row, target_label in enumerate(target_labels) if matrix[row, column]})
 
-    return module_homset(source, target)(image)
+    return source.module_category().Mor(source, target)(image)
 
 
 def _toric_weight_simplicial_complex(scheme, divisor, weight):
@@ -485,7 +485,7 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
         degree_one = BasedFreeModule(base, 0)
         complex_ = CochainComplexes(base)(
             {0: degree_zero, 1: degree_one},
-            {0: module_homset(degree_zero, degree_one)({0: degree_one.zero()})},
+            {0: degree_zero.module_category().Mor(degree_zero, degree_one)({0: degree_one.zero()})},
             name="Toric weight cohomology complex",
             extra_categories=(ToricWeightCohomologyComplexes(base),),
             extra_construction_data={
@@ -866,7 +866,7 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
     integers = _own_ring(SageZZ)
     source = FreeModule(integers, 1)
     target = FreeModule(integers, 1)
-    presentation = module_homset(source, target)({0: integers(2) * target.module_generator(0)})
+    presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
     return FinitelyPresentedModule(
         presentation,
         _extra_categories=(IntegralSingularCohomologyGroups(integers),),
@@ -1049,8 +1049,8 @@ class NodalCubicIntegralTopology(SageObject):
         source_labels = tuple(source.module_generating_set())
         target_labels = tuple(target.module_generating_set())
         if len(source_labels) == len(target_labels) == 1:
-            return module_homset(source, target)({source_labels[0]: target.module_generator(target_labels[0])})
-        return module_homset(source, target)({label: target.zero() for label in source_labels})
+            return source.module_category().Mor(source, target)({source_labels[0]: target.module_generator(target_labels[0])})
+        return source.module_category().Mor(source, target)({label: target.zero() for label in source_labels})
 
     def _repr_(self) -> str:
         return f"Integral topology of {self.scheme()} with normalization {self.normalization_scheme()}"
@@ -1216,8 +1216,8 @@ def ToricCycleClassIsomorphism(scheme, codimension):
         raise ValueError("cycle codimension lies between zero and the scheme dimension")
     chow = scheme.chow_group(dimension - codimension)
     cohomology = scheme.integral_singular_cohomology(2 * codimension)
-    forward = module_homset(chow, cohomology)({label: cohomology.module_generator(label) for label in chow.module_generating_set()})
-    inverse = module_homset(cohomology, chow)({label: chow.module_generator(label) for label in cohomology.module_generating_set()})
+    forward = chow.module_category().Mor(chow, cohomology)({label: cohomology.module_generator(label) for label in chow.module_generating_set()})
+    inverse = cohomology.module_category().Mor(cohomology, chow)({label: chow.module_generator(label) for label in cohomology.module_generating_set()})
     return Isomorphism(forward, inverse)
 
 
@@ -1230,7 +1230,7 @@ def ToricPicardToChowIsomorphism(scheme):
     chow = scheme.chow_group(1)
     cycles = scheme.torus_invariant_cycle_group(1)
     cycle_projection = scheme.torus_invariant_cycle_class_map(1)
-    forward = module_homset(picard, chow)({label: cycle_projection(cycles.module_generator(label)) for label in picard.module_generating_set()})
+    forward = picard.module_category().Mor(picard, chow)({label: cycle_projection(cycles.module_generator(label)) for label in picard.module_generating_set()})
     return Isomorphism(forward, forward.inverse())
 
 

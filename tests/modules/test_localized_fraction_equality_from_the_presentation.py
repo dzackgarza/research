@@ -28,7 +28,7 @@ def _coordinate_axes():
     free = BasedFreeModule(ring, finite_ordered_set(("g",)))
     relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
     module = FinitelyPresentedModule(
-        module_homset(relations, free)(
+        relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(x * y, free.module_generator("g"))}
         )
     )

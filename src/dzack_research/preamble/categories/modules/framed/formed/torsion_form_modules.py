@@ -608,7 +608,7 @@ def _torsion_form_subquotient(form, subobject, over, *, quadratic: bool):
         )
         for label in subobject.module_generating_set()
     }
-    quotient = module_homset(subobject, over)(images).cokernel()
+    quotient = subobject.module_category().Mor(subobject, over)(images).cokernel()
     generators = tuple(over.module_generators())
     return _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
         quotient,
@@ -650,7 +650,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         _value_module(form, quadratic=quadratic),
     )
 
-    inverse = module_homset(regenerated, form)(
+    inverse = regenerated.module_category().Mor(regenerated, form)(
         {label: generator for label, generator in zip(labels, generators, strict=True)}
     )
 
@@ -696,7 +696,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
             ),
             regenerated.zero(),
         )
-    forward = module_homset(form, regenerated)(forward_images)
+    forward = form.module_category().Mor(form, regenerated)(forward_images)
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 
@@ -892,7 +892,7 @@ def _twisted_module_morphism(module_morphism, twisted_source, twisted_target):
     """
     source = module_morphism.domain()
     target = module_morphism.codomain()
-    return module_homset(twisted_source, twisted_target)(
+    return twisted_source.module_category().Mor(twisted_source, twisted_target)(
         {
             label: twisted_target.equip_form_morphism()(
                 target.forget_form_morphism()(
@@ -1149,7 +1149,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         normalized_inverse = self._normalized_map(~engine_automorphism)
 
         original = normalization.domain()
-        forward = module_homset(original, original)(
+        forward = original.module_category().Mor(original, original)(
             {
                 label: normalization.inverse()(
                     normalized_forward(
@@ -1159,7 +1159,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
                 for label in original.module_generating_set()
             }
         )
-        inverse = module_homset(original, original)(
+        inverse = original.module_category().Mor(original, original)(
             {
                 label: normalization.inverse()(
                     normalized_inverse(
@@ -1488,7 +1488,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = form.forget_form_morphism()(source_generator)
         normalized_unformed = module_isomorphism(unformed)
         forward_images[label] = normalized.equip_form_morphism()(normalized_unformed)
-    forward = module_homset(form, normalized)(forward_images)
+    forward = form.module_category().Mor(form, normalized)(forward_images)
 
     inverse_images = {}
     for label in normalized.module_generating_set():
@@ -1496,7 +1496,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = normalized.forget_form_morphism()(normalized_generator)
         original_unformed = module_isomorphism.inverse()(unformed)
         inverse_images[label] = form.equip_form_morphism()(original_unformed)
-    inverse = module_homset(normalized, form)(inverse_images)
+    inverse = normalized.module_category().Mor(normalized, form)(inverse_images)
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 

@@ -444,7 +444,7 @@ def gluing_route_discriminant_classes(lattice, left, right):
                 )
                 for label in discriminant.module_generating_set()
             }
-            descended = module_homset(discriminant, discriminant)(descended_images)
+            descended = discriminant.module_category().Mor(discriminant, discriminant)(descended_images)
             automorphism = discriminant.O().from_morphism(descended)
             classes[automorphism] = automorphism
     return tuple(classes.values())

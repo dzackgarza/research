@@ -55,7 +55,7 @@ class PicardGroups(Category):
 
             base = self.projective_base_picard_group()
             injection = self.projective_picard_biproduct().injection(0)
-            return module_homset(base, self)(
+            return base.module_category().Mor(base, self)(
                 {
                     label: self._from_projective_biproduct(injection(base.module_generator(label)))
                     for label in base.module_generating_set()

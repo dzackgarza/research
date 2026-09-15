@@ -543,7 +543,7 @@ def Pairings(left_module, right_module, value_module):
         except NotImplementedError:
             pass
         else:
-            return module_homset(tensor_product, value_module)
+            return tensor_product.module_category().Mor(tensor_product, value_module)
     return _callable_form_space(left_module, right_module, value_module, "bilinear")
 
 
@@ -556,7 +556,7 @@ def BilinearForms(module, value_module):
         except NotImplementedError:
             pass
         else:
-            return module_homset(tensor_product, value_module)
+            return tensor_product.module_category().Mor(tensor_product, value_module)
     return _callable_form_space(module, module, value_module, "bilinear")
 
 
@@ -569,7 +569,7 @@ def QuadraticForms(module, value_module):
         except NotImplementedError:
             pass
         else:
-            return module_homset(square, value_module)
+            return square.module_category().Mor(square, value_module)
     return _callable_form_space(module, module, value_module, "quadratic")
 
 

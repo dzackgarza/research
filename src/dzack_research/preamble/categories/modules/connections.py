@@ -140,7 +140,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             ):
                 return connections.Mor(self, codomain)
             if category is None:
-                return module_homset(self, codomain)
+                return self.module_category().Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
@@ -557,7 +557,7 @@ class ConnectionMorphism(Element):
         if domain_connection.algebra() is not codomain_connection.algebra():
             raise ValueError("horizontal morphisms require one coefficient algebra")
         omega = domain_connection.one_forms()
-        identity_omega = module_homset(omega, omega).identity()
+        identity_omega = omega.module_category().Mor(omega, omega).identity()
 
         induced = tensor_product_morphism(
             self,

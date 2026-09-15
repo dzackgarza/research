@@ -115,7 +115,7 @@ def test_nonidentity_map_uses_its_forced_tensor_square() -> None:
     dual = structures.algebra(module, dual_numbers)
     split = structures.algebra(module, split_idempotent)
     one = module.module_generator("1")
-    projection = module_homset(module, module)(
+    projection = module.module_category().Mor(module, module)(
         {"1": one, "x": module.zero()}
     )
 
@@ -130,7 +130,7 @@ def test_nonidentity_map_uses_its_forced_tensor_square() -> None:
     assert structures.forgetful()(structured_projection) is projection
     assert projection * split_idempotent == dual_numbers * tensor_square(projection)
 
-    identity = module_homset(module, module).identity()
+    identity = module.module_category().Mor(module, module).identity()
     with pytest.raises(ValueError, match="does not commute"):
         structures.homomorphism(split, dual, identity)
 
@@ -159,7 +159,7 @@ def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
     assert split.product(x, x).underlying_element() == x
 
     one = module.module_generator("1")
-    projection = module_homset(module, module)(
+    projection = module.module_category().Mor(module, module)(
         {"1": one, "x": module.zero()}
     )
     structured_projection = algebras.Mor(split, dual)(projection)
@@ -172,7 +172,7 @@ def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
     )
     assert projection * split_idempotent == dual_numbers * structured_projection.left()
 
-    identity = module_homset(module, module).identity()
+    identity = module.module_category().Mor(module, module).identity()
     with pytest.raises(ValueError, match="does not commute"):
         algebras.Mor(split, dual)(identity)
 
@@ -231,7 +231,7 @@ def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
     assert unital.one() * x == x
     assert x * unital.one() == x
 
-    zero = module_homset(module, module)(
+    zero = module.module_category().Mor(module, module)(
         {"1": module.zero(), "x": module.zero()}
     )
     general = Algebras(QQ)(module, dual_numbers)

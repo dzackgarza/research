@@ -2306,7 +2306,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             base_scheme = self.base_scheme()
             base_picard = PicardGroup(zero_module, scheme=base_scheme)
             base_class = ClassGroup(zero_module, scheme=base_scheme)
-            comparison = module_homset(base_picard, base_class)({})
+            comparison = base_picard.module_category().Mor(base_picard, base_class)({})
             return projective_space_divisor_class_theory(
                 self, base_picard, base_class, comparison
             )

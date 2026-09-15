@@ -22,7 +22,7 @@ def _presented_by_multiple_of_a_generator(scalar):
     free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
     relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
     return FinitelyPresentedModule(
-        module_homset(relations, free)({"r": scalar * free.module_generator("g")})
+        relations.module_category().Mor(relations, free)({"r": scalar * free.module_generator("g")})
     )
 
 

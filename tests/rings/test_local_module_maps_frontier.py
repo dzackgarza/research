@@ -50,13 +50,13 @@ def test_nonreduced_local_map_kernel_agrees_before_and_after_transport() -> None
 
     free = BasedFreeModule(node, finite_ordered_set(("g",)))
     generator = free.module_generator("g")
-    multiply_x = module_homset(free, free)(
+    multiply_x = free.module_category().Mor(free, free)(
         {"g": free.scalar_multiple(x0, generator)}
     )
     local_free = free.localize_at_prime(point)
     transported = local_free.localization_functor()(multiply_x)
     local_generator = local_free.module_generator("g")
-    direct = module_homset(local_free, local_free)(
+    direct = local_free.module_category().Mor(local_free, local_free)(
         {
             "g": local_free.scalar_multiple(
                 point.local_ring().localization_map()(x0),

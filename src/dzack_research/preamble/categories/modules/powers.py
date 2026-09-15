@@ -496,7 +496,7 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
                 )
 
 
-            homset = module_homset(self, codomain)
+            homset = self.module_category().Mor(self, codomain)
             return homset.from_quadratic_map(quadratic)
 
 
@@ -874,7 +874,7 @@ def tensor_power_permutation(module, degree, positions):
     power = TensorPower(module, degree)
 
     if degree == 0:
-        return module_homset(power, power).identity()
+        return power.module_category().Mor(power, power).identity()
     def permuted_label(label):
         factors = _flatten_tensor_label(label, degree)
         word = indexed_family(
@@ -886,7 +886,7 @@ def tensor_power_permutation(module, degree, positions):
         )
         return power.module_generator(_nested_tensor_label(module, word))
 
-    return module_homset(power, power)(permuted_label)
+    return power.module_category().Mor(power, power)(permuted_label)
 
 
 def _power_morphism(morphism, degree: int, flavor: str):
@@ -900,7 +900,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
     source = constructors[flavor](morphism.domain(), degree)
     target = constructors[flavor](morphism.codomain(), degree)
     if degree == 0:
-        return module_homset(source, target).identity()
+        return source.module_category().Mor(source, target).identity()
     if degree == 1:
         return morphism
 
@@ -1017,7 +1017,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
                 accumulated_degree += 1
         return target.linear_combination(polynomial)
 
-    return module_homset(source, target)(image_of_source_label)
+    return source.module_category().Mor(source, target)(image_of_source_label)
 
 
 def symmetric_power_morphism(morphism, degree):
@@ -1235,7 +1235,7 @@ def divided_power_invariant_inclusion(module, degree):
             target.zero(),
         )
 
-    return module_homset(source, target)(invariant)
+    return source.module_category().Mor(source, target)(invariant)
 
 
 def tensor_power_polarization(module, degree):
@@ -1245,9 +1245,9 @@ def tensor_power_polarization(module, degree):
     source = TensorPower(module, degree)
     target = DividedPower(module, degree)
     if degree == 0:
-        return module_homset(source, target).identity()
+        return source.module_category().Mor(source, target).identity()
     if degree == 1:
-        return module_homset(source, target).identity()
+        return source.module_category().Mor(source, target).identity()
 
     def polarized(source_label):
         word = _flatten_tensor_label(source_label, degree)
@@ -1270,7 +1270,7 @@ def tensor_power_polarization(module, degree):
             current_degree += 1
         return result
 
-    return module_homset(source, target)(polarized)
+    return source.module_category().Mor(source, target)(polarized)
 
 
 def divided_square_invariant_inclusion(module):

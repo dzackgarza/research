@@ -116,7 +116,7 @@ def test_squaring_on_projective_line_pulls_back_a_boundary_point_with_multiplici
     fan = fans.projective_space_fan()
     cocharacters = fans.cocharacter_lattice()
     label = next(iter(cocharacters.module_generating_set()))
-    doubling = module_homset(cocharacters, cocharacters)(
+    doubling = cocharacters.module_category().Mor(cocharacters, cocharacters)(
         {label: ZZ(2) * cocharacters.module_generator(label)}
     )
     line = fan.toric_variety(QQ)
@@ -207,9 +207,7 @@ def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     assert to_class * cartier_to_weil == picard_to_class * to_picard
 
     comparison = plane.picard_to_class_group_morphism()
-    assert comparison.inverse() * comparison.forward() == module_homset(
-        picard, picard
-    ).identity()
+    assert comparison.inverse() * comparison.forward() == picard.module_category().Mor(picard, picard).identity()
 
 
 def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_forms() -> None:

@@ -33,8 +33,8 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
     z = line.module_generator("z")
     t = probe.module_generator("t")
 
-    left = module_homset(plane, line)({"x": z, "y": line.zero()})
-    right = module_homset(plane, line)({"x": line.zero(), "y": z})
+    left = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
+    right = plane.module_category().Mor(plane, line)({"x": line.zero(), "y": z})
     selected = Modules(ZZ).equalizer_construction(left, right)
     assert Modules(ZZ).equalizer(left, right) is selected.object()
 
@@ -47,7 +47,7 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
     assert selected.structure_morphism(shape.target()) == left * inclusion
     assert left * inclusion == right * inclusion
 
-    diagonal = module_homset(probe, plane)({"t": x + y})
+    diagonal = probe.module_category().Mor(probe, plane)({"t": x + y})
     cone = ConeCategory(diagram).cone(
         probe,
         lambda index: diagonal if index is shape.source() else left * diagonal,
@@ -67,8 +67,8 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
     x, y = plane.module_generators()
     z = target.module_generator("z")
 
-    left = module_homset(source, plane)({"t": x})
-    right = module_homset(source, plane)({"t": y})
+    left = source.module_category().Mor(source, plane)({"t": x})
+    right = source.module_category().Mor(source, plane)({"t": y})
     selected = Modules(ZZ).coequalizer_construction(left, right)
     assert Modules(ZZ).coequalizer(left, right) is selected.object()
 
@@ -79,7 +79,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
     assert selected.costructure_morphism(shape.source()) == projection * left
     assert projection * left == projection * right
 
-    summation = module_homset(plane, target)({"x": z, "y": z})
+    summation = plane.module_category().Mor(plane, target)({"x": z, "y": z})
     cocone = CoconeCategory(diagram).cocone(
         target,
         lambda index: summation * left if index is shape.source() else summation,
@@ -95,8 +95,8 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
 def test_zero_and_times_two_separate_equalizer_from_coequalizer() -> None:
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
-    zero = module_homset(line, line)({"e": line.zero()})
-    twice = module_homset(line, line)({"e": 2 * e})
+    zero = line.module_category().Mor(line, line)({"e": line.zero()})
+    twice = line.module_category().Mor(line, line)({"e": 2 * e})
 
     equalizer = Modules(ZZ).equalizer(zero, twice)
     assert equalizer.module_rank() == 0
@@ -112,14 +112,14 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
     line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
     x, y = plane.module_generators()
     z = line.module_generator("z")
-    left = module_homset(plane, line)({"x": z, "y": line.zero()})
-    right = module_homset(plane, line)({"x": line.zero(), "y": z})
+    left = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
+    right = plane.module_category().Mor(plane, line)({"x": line.zero(), "y": z})
 
     equalizer = Modules(ZZ).equalizer_construction(left, right)
     diagram = equalizer.diagram()
     shape = diagram.domain()
-    twice_plane = module_homset(plane, plane)({"x": 2 * x, "y": 2 * y})
-    twice_line = module_homset(line, line)({"z": 2 * z})
+    twice_plane = plane.module_category().Mor(plane, plane)({"x": 2 * x, "y": 2 * y})
+    twice_line = line.module_category().Mor(line, line)({"z": 2 * z})
     transformation = NaturalTransformation(
         diagram,
         diagram,
@@ -138,8 +138,8 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
 def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None:
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
-    zero = module_homset(line, line)({"e": line.zero()})
-    twice = module_homset(line, line)({"e": 2 * e})
+    zero = line.module_category().Mor(line, line)({"e": line.zero()})
+    twice = line.module_category().Mor(line, line)({"e": 2 * e})
     diagram = Modules(ZZ).equalizer_construction(zero, twice).diagram()
     shape = diagram.domain()
 
@@ -159,8 +159,8 @@ def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None
     assert restricted.indexing_functor() is indexing
     assert restricted(shape.source()) is line
     assert restricted(shape.target()) is line
-    assert restricted(shape.left()) == module_homset(line, line).identity()
-    assert restricted(shape.right()) == module_homset(line, line).identity()
+    assert restricted(shape.left()) == line.module_category().Mor(line, line).identity()
+    assert restricted(shape.right()) == line.module_category().Mor(line, line).identity()
 
     identity = IdentityFunctor(shape)
     twice_restricted = restricted.restrict(identity)
@@ -191,8 +191,8 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     product = Modules(ZZ).product_construction((left, right))
     assert Modules(ZZ).product((left, right)) is product.object()
     product_shape = product.diagram().domain()
-    to_left = module_homset(probe, left)({"t": 2 * x})
-    to_right = module_homset(probe, right)({"t": 3 * y})
+    to_left = probe.module_category().Mor(probe, left)({"t": 2 * x})
+    to_right = probe.module_category().Mor(probe, right)({"t": 3 * y})
     cone = ConeCategory(product.diagram()).cone(
         probe,
         lambda index: to_left if int(index.value()) == 0 else to_right,
@@ -204,8 +204,8 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     coproduct = Modules(ZZ).coproduct_construction((left, right))
     assert Modules(ZZ).coproduct((left, right)) is coproduct.object()
     coproduct_shape = coproduct.diagram().domain()
-    from_left = module_homset(left, probe)({"x": 5 * t})
-    from_right = module_homset(right, probe)({"y": 7 * t})
+    from_left = left.module_category().Mor(left, probe)({"x": 5 * t})
+    from_right = right.module_category().Mor(right, probe)({"y": 7 * t})
     cocone = CoconeCategory(coproduct.diagram()).cocone(
         probe,
         lambda index: from_left if int(index.value()) == 0 else from_right,
@@ -253,8 +253,8 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
     e = line.module_generator("e")
     t = probe.module_generator("t")
-    twice = module_homset(line, line)({"e": 2 * e})
-    thrice = module_homset(line, line)({"e": 3 * e})
+    twice = line.module_category().Mor(line, line)({"e": 2 * e})
+    thrice = line.module_category().Mor(line, line)({"e": 3 * e})
     diagram = FiniteSequenceDiagram((line, line, line), (twice, thrice), line.category())
 
     limit = LimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
@@ -263,7 +263,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     assert twice * limit.structure_morphism(shape(0)) == limit.structure_morphism(shape(1))
     assert thrice * limit.structure_morphism(shape(1)) == limit.structure_morphism(shape(2))
 
-    to_zero = module_homset(probe, line)({"t": e})
+    to_zero = probe.module_category().Mor(probe, line)({"t": e})
     to_one = twice * to_zero
     to_two = thrice * to_one
     cone = ConeCategory(diagram).cone(
@@ -277,9 +277,9 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
     assert colimit.object() in line.category()
     assert colimit.object().module_rank() == 1
-    from_zero = module_homset(line, probe)({"e": 6 * t})
-    from_one = module_homset(line, probe)({"e": 3 * t})
-    from_two = module_homset(line, probe)({"e": t})
+    from_zero = line.module_category().Mor(line, probe)({"e": 6 * t})
+    from_one = line.module_category().Mor(line, probe)({"e": 3 * t})
+    from_two = line.module_category().Mor(line, probe)({"e": t})
     assert colimit.costructure_morphism(shape(1)) * twice == colimit.costructure_morphism(shape(0))
     assert colimit.costructure_morphism(shape(2)) * thrice == colimit.costructure_morphism(shape(1))
     cocone = CoconeCategory(diagram).cocone(
@@ -295,10 +295,10 @@ def test_limit_functor_maps_nonidentity_stagewise_transformation_through_project
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
 
-    source_twice = module_homset(line, line)({"e": 2 * e})
-    source_thrice = module_homset(line, line)({"e": 3 * e})
-    target_fourfold = module_homset(line, line)({"e": 4 * e})
-    target_ninefold = module_homset(line, line)({"e": 9 * e})
+    source_twice = line.module_category().Mor(line, line)({"e": 2 * e})
+    source_thrice = line.module_category().Mor(line, line)({"e": 3 * e})
+    target_fourfold = line.module_category().Mor(line, line)({"e": 4 * e})
+    target_ninefold = line.module_category().Mor(line, line)({"e": 9 * e})
     source = FiniteSequenceDiagram(
         (line, line, line),
         (source_twice, source_thrice),
@@ -311,9 +311,9 @@ def test_limit_functor_maps_nonidentity_stagewise_transformation_through_project
     )
     shape = source.domain()
     stage_maps = (
-        module_homset(line, line)({"e": e}),
-        module_homset(line, line)({"e": 2 * e}),
-        module_homset(line, line)({"e": 6 * e}),
+        line.module_category().Mor(line, line)({"e": e}),
+        line.module_category().Mor(line, line)({"e": 2 * e}),
+        line.module_category().Mor(line, line)({"e": 6 * e}),
     )
     transformation = NaturalTransformation(
         source,
@@ -346,10 +346,10 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     e = line.module_generator("e")
 
-    source_twice = module_homset(line, line)({"e": 2 * e})
-    source_thrice = module_homset(line, line)({"e": 3 * e})
-    target_fourfold = module_homset(line, line)({"e": 4 * e})
-    target_ninefold = module_homset(line, line)({"e": 9 * e})
+    source_twice = line.module_category().Mor(line, line)({"e": 2 * e})
+    source_thrice = line.module_category().Mor(line, line)({"e": 3 * e})
+    target_fourfold = line.module_category().Mor(line, line)({"e": 4 * e})
+    target_ninefold = line.module_category().Mor(line, line)({"e": 9 * e})
     source = FiniteSequenceDiagram(
         (line, line, line),
         (source_twice, source_thrice),
@@ -364,9 +364,9 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
     assert target.domain() is shape
 
     stage_maps = (
-        module_homset(line, line)({"e": e}),
-        module_homset(line, line)({"e": 2 * e}),
-        module_homset(line, line)({"e": 6 * e}),
+        line.module_category().Mor(line, line)({"e": e}),
+        line.module_category().Mor(line, line)({"e": 2 * e}),
+        line.module_category().Mor(line, line)({"e": 6 * e}),
     )
     transformation = NaturalTransformation(
         source,
@@ -422,7 +422,7 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
                 int(target[0]) - int(source[0])
                 + int(target[1]) - int(source[1])
             )
-            return module_homset(line, line)({"e": (2**exponent) * e})
+            return line.module_category().Mor(line, line)({"e": (2**exponent) * e})
 
     system = GridSystem()
     systems = DirectedSystem(index, line.category())
@@ -476,7 +476,7 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
             underlying = morphism.underlying_arrow()
             source = int(underlying.domain().value())
             target = int(underlying.codomain().value())
-            return module_homset(line, line)({"e": (2 ** (target - source)) * e})
+            return line.module_category().Mor(line, line)({"e": (2 ** (target - source)) * e})
 
     tower = DoublingTower()
     base_arrow = base_index.Mor(base_index(0), base_index(2)).unique()
@@ -491,7 +491,7 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
 def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     zero = BasedFreeModule(ZZ, finite_ordered_set(()))
-    collapse = module_homset(line, zero).zero()
+    collapse = line.module_category().Mor(line, zero).zero()
     diagram = FiniteSequenceDiagram((line, zero), (collapse,), line.category())
     colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
     shape = diagram.domain()
