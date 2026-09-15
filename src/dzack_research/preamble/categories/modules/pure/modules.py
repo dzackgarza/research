@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     SubFramingMorphism,
     TensorProductModuleHomset,
-    framing_morphism,
+    _framing_morphism,
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -2512,7 +2512,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
             r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""
             morphism = self.__dict__.get("_preamble_framing_morphism")
             if morphism is None:
-                morphism = framing_morphism(
+                morphism = _framing_morphism(
                     self.framing_source(),
                     self,
                     self.module_generator,

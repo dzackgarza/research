@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    framing_morphism,
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (

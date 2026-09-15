@@ -1999,7 +1999,7 @@ class SubFramingMorphism(ModuleEmbedding):
         return self.domain().linear_combination(module_coefficients(element, self.codomain()))
 
 
-def framing_morphism(domain, codomain, images) -> FramingMorphism:
+def _framing_morphism(domain, codomain, images) -> FramingMorphism:
     homset = domain.module_category().Mor(domain, codomain)
     framing = FramingMorphism(homset, images)
     return framing

@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
-    framing_morphism,
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
