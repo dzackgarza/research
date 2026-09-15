@@ -1,6 +1,6 @@
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import ZZ, Lattices, MatrixSpace
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_isometry_to_returns_a_live_lattice_isometry_for_an_identical_lattice() -> None:
@@ -24,7 +24,7 @@ def test_isometry_to_returns_none_only_when_the_exact_homset_is_proved_empty() -
 
 def test_is_isometric_to_refuses_when_only_the_three_valued_classifier_is_unknown() -> None:
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
 
     assert source.is_isometric(target) is Unknown

@@ -1,10 +1,10 @@
 r"""The centre of an associative algebra is returned with its algebra structure."""
 
-from dzack_research.preamble.all import QQ, Algebras, MatrixSpace
+from dzack_research.preamble.all import QQ, Algebras
 
 
 def test_matrix_center_is_a_commutative_associative_algebra_on_the_central_submodule() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     center = matrices.center()
     module = center.underlying_module()
     inclusion = center._preamble_center_inclusion

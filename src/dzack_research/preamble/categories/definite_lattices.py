@@ -12,7 +12,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
@@ -219,7 +218,7 @@ def _reduction_from_backend_rows(lattice, backend_rows):
     rank = int(lattice.module_rank())
     # Definite-lattice engines return basis vectors as rows.  The live linear
     # map acts on coordinate columns, hence the transpose here.
-    basis_map = MatrixSpace(ring, rank, rank).from_rows(
+    basis_map = ring.matrix_space(rank, rank).from_rows(
         tuple(
             tuple(
                 ring._from_engine_element(backend_rows[column, row])
@@ -285,7 +284,7 @@ def _bkz_reduction(lattice, block_size=20):
     if rank <= 1:
 
         return _reduction_from_transformation(
-            lattice, MatrixSpace(lattice.base_ring(), rank, rank).identity_matrix()
+            lattice, lattice.base_ring().matrix_space(rank, rank).identity_matrix()
         )
     block_size = min(max(2, int(block_size)), rank)
     backend_gram = IntegerMatrix.from_matrix(_engine_component_matrix(positive_gram))

@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreshFreeModuleOn,
-    MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -678,11 +677,7 @@ def _presented_degree_power(
         raise ValueError(f"unknown power flavor {flavor!r}")
 
 
-    relation_matrix = MatrixSpace(
-        ring,
-        len(rows),
-        int(labels.cardinality()),
-    ).from_rows(tuple(tuple(row) for row in rows))
+    relation_matrix = ring.matrix_space(len(rows), int(labels.cardinality())).from_rows(tuple(tuple(row) for row in rows))
     relation_labels = Sets.Δ[len(rows) - 1]
     presentation = _presentation_from_relation_rows(
         ring,

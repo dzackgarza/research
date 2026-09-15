@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     AdditiveGroups,
     Algebras,
     BilinearMap,
-    MatrixSpace,
     Modules,
     finite_ordered_set,
 )
@@ -52,7 +51,7 @@ def test_two_multiplications_on_one_supplied_module_remain_distinct_structures()
 
 
 def test_noncommutative_regular_module_action_lands_in_additive_endomorphisms() -> None:
-    ring = MatrixSpace(QQ, 2)
+    ring = QQ.matrix_space(2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)
     action = ring.Mor(endomorphisms)(

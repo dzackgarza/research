@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_rows,
     _SelectedFinitePresentationModules,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -553,11 +550,7 @@ def _transported_presentation(source_module, localization_ring):
         tuple(localization_map(coefficient) for coefficient in row)
         for row in relation_rows
     )
-    relation_matrix = MatrixSpace(
-        localization_ring,
-        len(transported_rows),
-        int(generator_labels.cardinality()),
-    ).from_rows(transported_rows)
+    relation_matrix = localization_ring.matrix_space(len(transported_rows), int(generator_labels.cardinality())).from_rows(transported_rows)
     free_relations = localization_ring.free_module(relation_labels)
     free_generators = localization_ring.free_module(generator_labels)
     images = {

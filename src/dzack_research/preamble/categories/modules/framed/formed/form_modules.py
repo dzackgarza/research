@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.base_change import (
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    MatrixSpace,
     FreshFreeModuleOn,
     _module_subobject_constructor_data,
     _span_basis_elements,
@@ -1490,7 +1489,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             if any(vector.parent() is not self for vector in selected):
                 raise ValueError("a Gram matrix basis consists of vectors of this formed module")
             size = len(selected)
-            return MatrixSpace(self.value_module(), size, size).from_rows(
+            return self.value_module().matrix_space(size, size).from_rows(
                 tuple(tuple(self.b(left, right) for right in selected) for left in selected)
             )
 

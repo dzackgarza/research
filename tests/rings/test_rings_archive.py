@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     CommutativeRings,
-    MatrixSpace,
     Modules,
     OwnedRings,
     PrimeField,
@@ -41,7 +40,7 @@ def test_archived_ring_polynomial_and_module_constructions_are_live_operations()
 
 
 def test_archived_ring_center_and_centrality_are_live_subring_semantics() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     center = matrices.ring_center()
 
     assert center in OwnedRings()

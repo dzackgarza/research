@@ -16,28 +16,27 @@ take that placement.
 """
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.rings import MatrixSpace
 
 
 def _noncommutative_base():
     r"""Return \(M_2(\mathbf Q)\), an owned ring that does not commute."""
-    return MatrixSpace(QQ, 2)
+    return QQ.matrix_space(2)
 
 
 def test_a_square_endomorphism_ring_over_a_noncommutative_base_does_not_commute() -> None:
     base = _noncommutative_base()
 
     assert base.is_commutative() is False
-    assert MatrixSpace(base, 2).is_commutative() is False
+    assert base.matrix_space(2).is_commutative() is False
 
 
 def test_rank_one_over_a_noncommutative_base_does_not_commute() -> None:
     base = _noncommutative_base()
 
-    assert MatrixSpace(base, 1).is_commutative() is False
+    assert base.matrix_space(1).is_commutative() is False
 
 
 def test_the_endomorphisms_of_the_zero_module_commute_over_any_base() -> None:
     base = _noncommutative_base()
 
-    assert MatrixSpace(base, 0).is_commutative() is True
+    assert base.matrix_space(0).is_commutative() is True

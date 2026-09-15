@@ -3,10 +3,6 @@ r"""Exact vector-orbit data for owned lattices."""
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-    matrix_change_ring,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -242,8 +238,8 @@ def _definite_complement_extensions(lattice, left, right):
     ring = lattice.base_ring()
     rationals = ring.fraction_field()
 
-    source_inclusion = matrix_change_ring(source.inclusion.matrix(), rationals)
-    target_inclusion = matrix_change_ring(target.inclusion.matrix(), rationals)
+    source_inclusion = source.inclusion.matrix().change_ring(rationals)
+    target_inclusion = target.inclusion.matrix().change_ring(rationals)
     source_inverse = source_inclusion.inverse()
     ambient_generators = lattice.module_generators()
     source_line_vector = source.line.inclusion().lift(source.vector)
@@ -262,14 +258,14 @@ def _definite_complement_extensions(lattice, left, right):
     )
     if line_isometry(source_line_vector) != target_line_vector:
         raise ArithmeticError("the rank-one block does not carry the source vector to the target vector")
-    line_matrix = matrix_change_ring(line_isometry.matrix(), rationals)
+    line_matrix = line_isometry.matrix().change_ring(rationals)
     extensions = []
     for restriction in _isometries_between_definite_lattices(
         source_complement,
         target_complement,
     ):
-        restriction_matrix = matrix_change_ring(restriction.matrix(), rationals)
-        block = MatrixSpace(rationals, source_rank).from_rows(
+        restriction_matrix = restriction.matrix().change_ring(rationals)
+        block = rationals.matrix_space(source_rank).from_rows(
             (
                 line_matrix[0, 0]
                 if row == column == 0
@@ -282,7 +278,7 @@ def _definite_complement_extensions(lattice, left, right):
         )
         candidate = target_inclusion * block * source_inverse
         try:
-            integral = MatrixSpace(ring, source_rank).from_rows(
+            integral = ring.matrix_space(source_rank).from_rows(
                 (ring(candidate[row, column]) for column in range(source_rank))
                 for row in range(source_rank)
             )

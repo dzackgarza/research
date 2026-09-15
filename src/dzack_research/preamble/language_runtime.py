@@ -74,10 +74,7 @@ def matrix(rows):
             break
     if ring is None:
         ring = _own_ring(SageZZ)
-    matrix_space = __import__(
-        "dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
-        fromlist=["MatrixSpace"],
-    ).MatrixSpace(ring, len(rows), width)
+    matrix_space = ring.matrix_space(len(rows), width)
     return matrix_space.from_rows(rows)
 
 

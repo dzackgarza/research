@@ -10,7 +10,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
     _module_subobject_spanning_with_structure,
     _span_basis_elements,
 )
@@ -175,7 +174,7 @@ def _central_projector(module, character: IsotypicCharacter):
 
     computation_ring = _own_ring(SageQQ) if engine_ring is SageZZ else base_ring
     rank = int(coefficient_module.module_rank())
-    matrices = MatrixSpace(computation_ring, rank)
+    matrices = computation_ring.matrix_space(rank)
     projector = matrices.zero()
     order = computation_ring(int(group.order()))
     computation_engine = _engine_ring(computation_ring)
@@ -250,7 +249,7 @@ def _isotypic_component(module, character):
             denominator = denominator.lcm(entry.denominator())
         cleared = denominator * relation
 
-        relation = MatrixSpace(integers, int(coefficient_module.module_rank())).from_rows(
+        relation = integers.matrix_space(int(coefficient_module.module_rank())).from_rows(
             [
                 [
                     cleared[row, column].numerator()

@@ -2810,15 +2810,9 @@ class RestrictedScalarsModuleView(Parent):
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
             _presentation_from_relation_rows,
         )
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            MatrixSpace,
-        )
-
         rows = self._selected_presentation_rows()
         labels = self.module_generating_set()
-        relations = MatrixSpace(
-            self.base_ring(), len(rows), int(labels.cardinality())
-        ).from_rows(rows)
+        relations = self.base_ring().matrix_space(len(rows), int(labels.cardinality())).from_rows(rows)
         return _presentation_from_relation_rows(
             self.base_ring(),
             labels,
@@ -3639,6 +3633,17 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         def matrix_shape(self):
             return self.parent().matrix_shape()
+
+        def change_ring(self, ring):
+            r"""Return the same finite coordinate matrix over ``ring``."""
+            target = ring.matrix_space(self.parent().nrows(), self.parent().ncols())
+            return target.from_rows(
+                (
+                    ring(self.matrix_entry(row_label, column_label))
+                    for column_label in self.parent().column_index_set()
+                )
+                for row_label in self.parent().row_index_set()
+            )
 
         @cached_method
         def _matrix_column_coefficients(self, column_label):

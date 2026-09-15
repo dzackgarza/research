@@ -2,8 +2,6 @@ r"""Owned ring implementations and the public ring-construction surface."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletions,
     DistinguishedOpenSubobject,
@@ -137,11 +135,6 @@ def QuadraticField(*args, **kwargs):
     return _QuadraticField(*args, **kwargs)
 
 
-def MatrixSpace(base_ring, nrows, ncols=None):
-    r"""Return the public finite matrix Hom, with algebra structure when square."""
-    return refine_matrix_algebra(_MatrixSpace(base_ring, nrows, ncols))
-
-
 @cached_function
 def session_ring_objects() -> dict[str, object]:
     r"""Return the standard session scalar names under their owned parents."""
@@ -197,7 +190,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "ComplexField": ComplexField,
         "CyclotomicField": CyclotomicField,
         "QuadraticField": QuadraticField,
-        "MatrixSpace": MatrixSpace,
     }
 
 
@@ -235,7 +227,6 @@ __all__ = [
     "IntegralDomains",
     "LocalizationRings",
     "LocalRings",
-    "MatrixSpace",
     "NoetherianRings",
     "NonNegativeReals",
     "NumberFieldsWithChosenPrimitiveElement",

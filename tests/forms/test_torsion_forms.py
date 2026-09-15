@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     FiniteGroups,
     FractionFieldQuotients,
     Lattices,
-    MatrixSpace,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )
@@ -27,7 +26,7 @@ ARCHIVE_RECONCILIATION = {
 def _matrix(ring, rows):
     rows = tuple(tuple(row) for row in rows)
     columns = 0 if not rows else len(rows[0])
-    return MatrixSpace(ring, len(rows), columns).from_rows(rows)
+    return ring.matrix_space(len(rows), columns).from_rows(rows)
 
 
 

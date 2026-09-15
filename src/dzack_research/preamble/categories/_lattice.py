@@ -39,7 +39,6 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreshFreeModuleOn,
-    MatrixSpace,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -1254,7 +1253,7 @@ def discriminant_of_gram(gram: Tensor):
         unit = gram.base_ring().one()
         return -unit if negative_sign else unit
 
-    matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.components())
+    matrix = gram.base_ring().matrix_space(n).from_rows(gram.components())
     determinant = matrix.determinant()
     return -determinant if negative_sign else determinant
 

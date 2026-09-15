@@ -1480,6 +1480,17 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return FormalPowerSeriesRings(self)(*args, **kwargs)
 
+        def matrix_space(self, nrows, ncols=None):
+            r"""Return the finite matrix Hom over this ring, as an algebra when square."""
+            from dzack_research.preamble.categories.algebras.algebras import (
+                refine_matrix_algebra,
+            )
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                _matrix_space,
+            )
+
+            return refine_matrix_algebra(_matrix_space(self, nrows, ncols))
+
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 

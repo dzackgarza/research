@@ -10,9 +10,6 @@ from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
     row_normal_form,
 )
@@ -136,11 +133,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         orders = tuple(order for order in orders if not order.is_unit())
         size = len(orders)
 
-        relations = MatrixSpace(
-            ring,
-            size,
-            size,
-        ).from_rows(
+        relations = ring.matrix_space(size, size).from_rows(
             tuple(
                 tuple(
                     order if row == column else ring.zero()
@@ -246,7 +239,7 @@ def _torsion_module_presented_by_matrix(
         relation_count = len(rows)
         width = 0 if not rows else len(rows[0])
 
-        relations = MatrixSpace(ring, relation_count, width).from_rows(rows)
+        relations = ring.matrix_space(relation_count, width).from_rows(rows)
         represented_matrix = True
     labels = (
         finite_ordered_set(range(width))

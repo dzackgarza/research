@@ -2,7 +2,7 @@ r"""Archive reconciliation for the torsor cardinality of ``Isom(L,M)``."""
 
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import ZZ, Lattices, MatrixSpace
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
@@ -25,7 +25,7 @@ def test_nonempty_isometry_hom_has_orthogonal_group_cardinality() -> None:
 
 def test_unknown_isometry_hom_keeps_unknown_cardinality() -> None:
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     isometries = source.Isom(target)
 

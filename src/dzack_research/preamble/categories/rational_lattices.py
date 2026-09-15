@@ -4,7 +4,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyGeneratedFreeFormModules,
     SymmetricBilinearFormModules,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -17,7 +16,7 @@ def _rational_lattice_determinant(lattice):
 
     rank = int(lattice.module_generating_set().cardinality())
     gram = lattice.gram_tensor()
-    return MatrixSpace(lattice.value_module(), rank).from_rows(
+    return lattice.value_module().matrix_space(rank).from_rows(
         (gram[row, column] for column in range(rank))
         for row in range(rank)
     ).determinant()

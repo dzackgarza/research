@@ -24,9 +24,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_from_relation_rows,
     _presentation_matrix,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-)
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
 )
@@ -132,11 +129,7 @@ def _finite_coset_sum(module, representatives):
         return source_relations[relation_position, source_position]
 
 
-    relations = MatrixSpace(
-        ring,
-        row_count,
-        width,
-    ).from_rows(
+    relations = ring.matrix_space(row_count, width).from_rows(
         tuple(
             tuple(entry(row_position, column_position) for column_position in range(width))
             for row_position in range(row_count)

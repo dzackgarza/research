@@ -120,7 +120,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    MatrixSpace,
     _module_subobject_constructor_data,
     _span_basis_elements,
 )
@@ -1477,7 +1476,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     if vector.parent() is not self:
                         raise ValueError("a Gram matrix basis consists of vectors of this lattice")
                 size = len(selected)
-                return MatrixSpace(self.base_ring(), size, size).from_rows(tuple(tuple(self.b(left, right) for right in selected) for left in selected))
+                return self.base_ring().matrix_space(size, size).from_rows(tuple(tuple(self.b(left, right) for right in selected) for left in selected))
             return self.algebraic_correlation_morphism().matrix()
 
         def module_generating_set(self):
@@ -1623,7 +1622,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             rank = int(self.module_rank())
             gram = self.gram_tensor()
-            matrix = MatrixSpace(self.value_module(), rank).from_rows((gram[row, column] for column in range(rank)) for row in range(rank))
+            matrix = self.value_module().matrix_space(rank).from_rows((gram[row, column] for column in range(rank)) for row in range(rank))
             return matrix.determinant()
 
         def is_nondegenerate(self) -> bool:
@@ -2057,7 +2056,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 ),
             )
 
-            basis_map = MatrixSpace(rationals, rank, rank).from_rows(tuple(tuple(basis_rows[column, row] for column in range(rank)) for row in range(rank)))
+            basis_map = rationals.matrix_space(rank, rank).from_rows(tuple(tuple(basis_rows[column, row] for column in range(rank)) for row in range(rank)))
             gram = self.gram_tensor().change_ring(rationals).pullback(basis_map)
             try:
                 integral_entries = [[ring(gram[i, j]) for j in range(rank)] for i in range(rank)]
@@ -2077,7 +2076,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             # The system every generator is solved against: the basis of L'
             # in the coordinates of L, as the owned matrix the solver takes.
-            integral_basis = MatrixSpace(ring, rank, rank).from_rows(tuple(tuple(row) for row in integral_basis_rows))
+            integral_basis = ring.matrix_space(rank, rank).from_rows(tuple(tuple(row) for row in integral_basis_rows))
             images = {}
             for source_position, source_label in enumerate(self.module_generating_set()):
                 target = [denominator if index == source_position else ring.zero() for index in range(rank)]

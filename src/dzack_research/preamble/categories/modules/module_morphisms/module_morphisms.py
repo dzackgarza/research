@@ -658,17 +658,9 @@ class ModuleMorphism(Morphism):
 
         if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
             raise NotImplementedError("a coordinate matrix requires finitely generated framed free endpoints")
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            MatrixSpace,
-        )
-
         domain_labels = tuple(self.domain().module_generating_set())
         codomain_labels = tuple(self.codomain().module_generating_set())
-        coordinate_parent = MatrixSpace(
-            self.domain().base_ring(),
-            len(codomain_labels),
-            len(domain_labels),
-        )
+        coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
         if self.parent() is coordinate_parent:
             return self
         columns = {
@@ -1408,17 +1400,9 @@ class ModuleMorphism(Morphism):
         backend inverse's scalar ring (for example ``ZZ`` to ``QQ``).
         """
         if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                MatrixSpace,
-            )
-
             domain_labels = tuple(self.domain().module_generating_set())
             codomain_labels = tuple(self.codomain().module_generating_set())
-            coordinate_parent = MatrixSpace(
-                self.domain().base_ring(),
-                len(codomain_labels),
-                len(domain_labels),
-            )
+            coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
             if self.parent() is coordinate_parent:
                 if len(domain_labels) != len(codomain_labels):
                     raise ValueError("a matrix inverse requires a square matrix")
@@ -1431,7 +1415,7 @@ class ModuleMorphism(Morphism):
 
                 backend = _engine_matrix(self).inverse()
                 result_ring = _own_ring(backend.base_ring())
-                target = MatrixSpace(result_ring, backend.nrows(), backend.ncols())
+                target = result_ring.matrix_space(backend.nrows(), backend.ncols())
                 return target.from_rows(
                     tuple(
                         tuple(

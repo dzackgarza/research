@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     AdditiveGroups,
     FramedModules,
     GeneralModules,
-    MatrixSpace,
     Modules,
     ModulesWithChosenFinitePresentation,
     Set,
@@ -285,7 +284,7 @@ def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None
 
 
 def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
-    ring = MatrixSpace(QQ, 2)
+    ring = QQ.matrix_space(2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)
     action = ring.Mor(endomorphisms)(

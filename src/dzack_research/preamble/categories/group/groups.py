@@ -2522,14 +2522,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 ``irreducible_characters()`` and
                 ``conjugacy_classes_representatives()``.
                 """
-                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                    MatrixSpace,
-                )
-
                 characters = self.irreducible_characters()
                 size = int(characters.cardinality())
                 field = characters[0].codomain()
-                return MatrixSpace(field, size, size).from_rows(tuple(tuple(character.values()) for character in characters))
+                return field.matrix_space(size, size).from_rows(tuple(tuple(character.values()) for character in characters))
 
             def left_cosets(self, subgroup):
                 r"""Return the set of left cosets ``gH``, each an ordered set of elements."""

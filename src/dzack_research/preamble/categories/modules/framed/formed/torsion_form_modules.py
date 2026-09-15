@@ -37,7 +37,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormModules,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     _integral_left_solver,
@@ -298,9 +297,7 @@ def _coordinate_rows(form, generators):
                 for label in labels
             )
 
-    return MatrixSpace(
-        ring, len(generators), int(labels.cardinality())
-    ).from_rows(coordinate_rows())
+    return ring.matrix_space(len(generators), int(labels.cardinality())).from_rows(coordinate_rows())
 
 
 def _relations_among_generators(form, generators):
@@ -310,9 +307,7 @@ def _relations_among_generators(form, generators):
     ring = module.base_ring()
     lifts = _coordinate_rows(form, generators)
     selected_relations = _presentation_matrix(module)
-    known = MatrixSpace(
-        ring, selected_relations.nrows(), selected_relations.ncols()
-    ).from_rows(_matrix_coordinate_rows(selected_relations))
+    known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
     combined = lifts.stack(known)
     # Transpose the owned morphism, not its matrix presentation.  The codomain
     # of ``combined`` is the biproduct separating the selected-generator rows
@@ -650,9 +645,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
 
     lifts = _coordinate_rows(form, generators)
     selected_relations = _presentation_matrix(module)
-    known = MatrixSpace(
-        ring, selected_relations.nrows(), selected_relations.ncols()
-    ).from_rows(_matrix_coordinate_rows(selected_relations))
+    known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
     # Keep the actual biproduct codomain: the integral solver works on every
     # finite framed free Hom, and its solution therefore lands in the same
     # biproduct whose left projection selects the coefficients of the new
@@ -1658,9 +1651,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             r"""Return canonical rational representatives of the finite-form Gram values."""
             representative = _representative_gram(self, quadratic=False)
             rows, columns = map(int, representative.tensor_shape())
-            return MatrixSpace(
-                representative.base_ring(), rows, columns
-            ).from_rows(
+            return representative.base_ring().matrix_space(rows, columns).from_rows(
                 tuple(
                     tuple(representative[row, column] for column in range(columns))
                     for row in range(rows)
@@ -1985,9 +1976,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             r"""Return canonical rational representatives of the finite-form Gram values."""
             representative = _representative_gram(self, quadratic=True)
             rows, columns = map(int, representative.tensor_shape())
-            return MatrixSpace(
-                representative.base_ring(), rows, columns
-            ).from_rows(
+            return representative.base_ring().matrix_space(rows, columns).from_rows(
                 tuple(
                     tuple(representative[row, column] for column in range(columns))
                     for row in range(rows)

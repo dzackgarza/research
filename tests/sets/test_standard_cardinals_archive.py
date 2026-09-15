@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     RR,
     FramedAlgebras,
-    MatrixSpace,
     aleph0,
     continuum,
 )
@@ -17,8 +16,8 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_matrix_ring_cardinality_tracks_the_coefficient_ring() -> None:
-    rational_matrices = MatrixSpace(QQ, 2)
-    real_matrices = MatrixSpace(RR, 2)
+    rational_matrices = QQ.matrix_space(2)
+    real_matrices = RR.matrix_space(2)
 
     assert rational_matrices.cardinality() == aleph0
     assert real_matrices.cardinality() == continuum

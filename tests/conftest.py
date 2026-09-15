@@ -133,8 +133,8 @@ NON_DOMAINS = {
 }
 
 NONCOMMUTATIVE_RINGS = {
-    "M_2(QQ)": lambda: MatrixSpace(QQ, 2),
-    "M_2(ZZ)": lambda: MatrixSpace(ZZ, 2),
+    "M_2(QQ)": lambda: QQ.matrix_space(2),
+    "M_2(ZZ)": lambda: ZZ.matrix_space(2),
     "QQ<a,b>": lambda: QQ.free_module(("a", "b")).symmetric_algebra(),
 }
 

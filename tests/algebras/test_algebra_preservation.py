@@ -1,12 +1,12 @@
 r"""Preservation surfaces for shared center and algebra-cokernel constructions."""
 
-from dzack_research.preamble.all import QQ, Algebras, MatrixSpace, Modules
+from dzack_research.preamble.all import QQ, Algebras, Modules
 from dzack_research.preamble.categories.modules import BilinearMap
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_center_of_unital_associative_algebra_retains_its_unit() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     multiplication = matrices.multiplication_morphism()
     center = matrices.center()
     inclusion = center.center_inclusion()

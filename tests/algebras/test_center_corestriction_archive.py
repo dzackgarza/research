@@ -3,7 +3,6 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    MatrixSpace,
     OwnedRings,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -53,8 +52,8 @@ def test_archived_noncentral_free_algebra_map_refuses_corestriction() -> None:
 
 
 def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
-    source = MatrixSpace(QQ, 1)
-    matrices = MatrixSpace(QQ, 2)
+    source = QQ.matrix_space(1)
+    matrices = QQ.matrix_space(2)
     source_module = source.underlying_module()
     target_module = matrices.underlying_module()
     source_label = next(iter(source_module.module_generating_set()))
@@ -78,7 +77,7 @@ def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
 
 
 def test_noncentral_generator_image_refuses_center_corestriction() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     morphism = Algebras(matrices.base_ring()).Associative().Unital().Mor(matrices, matrices).identity()
 
     with pytest.raises(ValueError, match="not central"):

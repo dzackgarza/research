@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     Cardinalities,
     FiniteGroups,
     Lattices,
-    MatrixSpace,
     MatrixSpaces,
     Set,
     finite_ordered_set,
@@ -67,7 +66,7 @@ def test_square_lattice_minimum_theta_and_packing_radius() -> None:
 
 def test_definite_isometry_decision_returns_an_actual_odd_lattice_witness() -> None:
     lattice = Lattices(ZZ)([[3, 1], [1, 2]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 1], [0, 1]])
     reframed_gram = lattice.gram_tensor().pullback(change)
     reframed = Lattices(ZZ)(reframed_gram)
 
@@ -182,7 +181,7 @@ def test_nikulin_and_eichler_nonemptiness_do_not_invent_witnesses() -> None:
         nikulin_homset.an_element()
 
     source = Lattices(ZZ)([[0, 1, 0], [1, 0, 0], [0, 0, -6]])
-    change = MatrixSpace(ZZ, 3, 3).from_rows([[1, 1, 0], [0, 1, 0], [0, 0, 1]])
+    change = ZZ.matrix_space(3, 3).from_rows([[1, 1, 0], [0, 1, 0], [0, 0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     eichler_homset = source.Isom(target)
 
@@ -194,7 +193,7 @@ def test_nikulin_and_eichler_nonemptiness_do_not_invent_witnesses() -> None:
 
 def test_unresolved_odd_indefinite_binary_isometry_remains_unknown() -> None:
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
 
     assert source.gram_tensor().is_equal_tensor(target.gram_tensor()) is False
@@ -206,7 +205,7 @@ def test_indefinite_isometry_backend_supplies_exact_witness_when_available(monke
     from py_polyhedral import binaries as polyhedral
 
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     backend_rows = [[1, 0], [-2, 1]]
 
@@ -285,7 +284,7 @@ def test_explicit_even_unimodular_embedding_crosses_oscar_data_into_live_morphis
     source = Lattices(ZZ)("A1")
     target = Lattices(ZZ)("U")
     target_gram = target.gram_tensor()
-    embedding_matrix = MatrixSpace(ZZ, 2, 1).from_rows([[1], [-1]])
+    embedding_matrix = ZZ.matrix_space(2, 1).from_rows([[1], [-1]])
 
     monkeypatch.setattr(
         lattice_engines,
@@ -344,7 +343,7 @@ def test_discriminant_functor_and_representation_use_live_form_isometries() -> N
 
 def test_discriminant_functor_acts_on_isometries_between_distinct_lattices() -> None:
     source = Lattices(ZZ)([[3, 1], [1, 2]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 1], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     isometry = source.Isom(target).an_element()
     induced = isometry.discriminant_isometry()

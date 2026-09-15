@@ -9,9 +9,6 @@ from sage.structure.element import ModuleElement
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     module_coefficients,
@@ -687,7 +684,7 @@ def _principal_generator_from_integer_module(ideal):
 
     rationals = _own_ring(SageQQ)
     rank = int(order.module_rank())
-    order_basis = MatrixSpace(rationals, rank, rank).from_rows(
+    order_basis = rationals.matrix_space(rank, rank).from_rows(
         (
             rationals._from_engine_element(SageQQ(coefficient))
             for coefficient in field(basis_element).vector()

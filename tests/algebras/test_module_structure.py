@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     BilinearMap,
     GradedAlgebras,
     GradedModules,
-    MatrixSpace,
     Modules,
     OwnedRings,
     QuadraticField,
@@ -45,7 +44,7 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert eta(ZZ(2)) * imag == imag * eta(ZZ(2))
     assert eta(ZZ(2)) * eta(ZZ(3)) == eta(ZZ(6))
 
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     matrix_eta = matrices.algebra_structure_morphism()
     assert matrix_eta.domain() is QQ
     assert matrix_eta.codomain() is matrices.ring_center()

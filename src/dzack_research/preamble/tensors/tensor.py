@@ -995,7 +995,7 @@ class _TensorMatrixConstructor:
     r"""Construct finite type-``(1,1)`` coordinate tensors.
 
     This is component data, not a module morphism.  Actual linear maps are
-    elements of ``MatrixSpace(R,m,n) = Hom_R(R^n,R^m)``.  Sage matrix storage
+    elements of ``R.matrix_space(m,n) = Hom_R(R^n,R^m)``.  Sage matrix storage
     options and named constructor namespaces are deliberately not reproduced.
     """
 

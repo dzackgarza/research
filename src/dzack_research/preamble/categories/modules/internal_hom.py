@@ -10,9 +10,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_matrix,
     _SelectedFinitePresentationModules,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    MatrixSpace,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     InternalHomModules,
@@ -149,11 +146,7 @@ def _internal_hom_model_data(homset):
         kernel = _native_fgp_morphism(relation_evaluation).kernel()
         engine_ring = _engine_ring(ring)
         engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
-        kernel_relations = MatrixSpace(
-            ring,
-            engine_kernel_relations.nrows(),
-            engine_kernel_relations.ncols(),
-        ).from_rows(
+        kernel_relations = ring.matrix_space(engine_kernel_relations.nrows(), engine_kernel_relations.ncols()).from_rows(
             tuple(
                 tuple(ring._from_engine_element(engine_ring(entry)) for entry in row)
                 for row in engine_kernel_relations.rows()

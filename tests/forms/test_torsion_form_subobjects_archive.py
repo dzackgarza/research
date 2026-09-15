@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FractionFieldQuotients,
-    MatrixSpace,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )
@@ -13,7 +12,7 @@ from dzack_research.preamble.all import (
 def _matrix(ring, rows):
     rows = tuple(tuple(row) for row in rows)
     columns = 0 if not rows else len(rows[0])
-    return MatrixSpace(ring, len(rows), columns).from_rows(rows)
+    return ring.matrix_space(len(rows), columns).from_rows(rows)
 
 
 def test_archive_primary_part_is_a_form_bearing_subobject_of_a_generic_form() -> None:

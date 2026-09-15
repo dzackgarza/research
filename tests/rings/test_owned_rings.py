@@ -53,10 +53,9 @@ def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> 
     session = _session()
     QQ = session["QQ"]
     OwnedRings = session["OwnedRings"]
-    MatrixSpace = session["MatrixSpace"]
 
     polynomials = QQ.polynomial_ring("x")
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
 
     assert polynomials in OwnedRings()
     assert matrices in OwnedRings()
@@ -111,9 +110,8 @@ def test_commutative_ring_is_its_own_center() -> None:
 def test_noncommutative_center_is_a_predicate_subring() -> None:
     session = _session()
     QQ = session["QQ"]
-    MatrixSpace = session["MatrixSpace"]
 
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     center = matrices.ring_center()
 
     assert center in session["OwnedRings"]()

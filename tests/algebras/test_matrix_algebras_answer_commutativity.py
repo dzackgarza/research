@@ -10,11 +10,10 @@ answer it cannot take that placement.
 """
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.rings import MatrixSpace
 
 
 def test_the_two_by_two_matrix_algebra_does_not_commute() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     rows = matrices.row_index_set()
     first = matrices.matrix_unit(rows[0], rows[1])
     second = matrices.matrix_unit(rows[1], rows[0])
@@ -24,7 +23,7 @@ def test_the_two_by_two_matrix_algebra_does_not_commute() -> None:
 
 
 def test_the_one_by_one_matrix_algebra_commutes() -> None:
-    line = MatrixSpace(QQ, 1)
+    line = QQ.matrix_space(1)
 
     assert line.is_commutative() is True
     assert line.identity_matrix() * line.identity_matrix() == line.identity_matrix()

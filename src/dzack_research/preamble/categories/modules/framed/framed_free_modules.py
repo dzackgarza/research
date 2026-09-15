@@ -735,11 +735,7 @@ def _module_subobject_constructor_data(module, basis):
     source_rank = int(basis.cardinality())
     support_rank_count = int(support_labels.cardinality())
     if source_rank:
-        coordinate_matrix = MatrixSpace(
-            ring,
-            source_rank,
-            support_rank_count,
-        ).from_rows(
+        coordinate_matrix = ring.matrix_space(source_rank, support_rank_count).from_rows(
             tuple(
                 tuple(
                     module_coefficients(basis[i], module).get(
@@ -803,7 +799,7 @@ def _owned_free_module_on(ring, module_generating_set):
     return _new_sparse_free_module(ring, module_generating_set)
 
 
-def MatrixSpace(base_ring, nrows, ncols=None):
+def _matrix_space(base_ring, nrows, ncols=None):
     r"""Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``."""
     ring = _owned_ring(base_ring)
     from sage.rings.integer_ring import ZZ as SageZZ
@@ -826,20 +822,6 @@ def MatrixSpace(base_ring, nrows, ncols=None):
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
     return _refine_matrix_hom(source.module_category().Mor(source, target))
-
-
-def matrix_change_ring(matrix, ring):
-    r"""Return the same finite coordinate matrix over ``ring``."""
-    target = MatrixSpace(ring, matrix.parent().nrows(), matrix.parent().ncols())
-    return target.from_rows(
-        (
-            ring(matrix.matrix_entry(row_label, column_label))
-            for column_label in matrix.parent().column_index_set()
-        )
-        for row_label in matrix.parent().row_index_set()
-    )
-
-
 def FreshFreeModuleOn(
     base_ring,
     module_generating_set,

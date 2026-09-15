@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     DualizationFunctor,
-    MatrixSpace,
     QuadraticField,
     Sets,
 )
@@ -54,7 +53,7 @@ def test_vector_and_covector_constructors_accept_only_ring_and_components() -> N
 
 def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     components = tensor.matrix(ZZ, [[1, 2], [3, 4]])
-    morphism = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [3, 4]])
+    morphism = ZZ.matrix_space(2, 2).from_rows([[1, 2], [3, 4]])
 
     assert components.tensor_valence() == (NN**2)((1, 1))
     _shape = components.tensor_shape()
@@ -70,7 +69,7 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
 
     The free-module functor takes a *set*, not an integer: there is no
     canonical set of cardinality n, so "R^n" names no particular object.  What
-    MatrixSpace(R, m, n) does is choose one -- the standard finite ordinal
+    R.matrix_space(m, n) does is choose one -- the standard finite ordinal
     Delta[n-1] = {0, ..., n-1} -- and route it through the same ``R.free_module``
     owner.  The integer is sugar for that choice, and the choice is
     what the matrix entries are indexed by.
@@ -83,7 +82,7 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
         tensor.matrix(ZZ, row_keys=("a", "b"), entries=[1, 2])
 
     components = tensor.matrix(ZZ, [[1, 2], [3, 4]])
-    maps = MatrixSpace(ZZ, 2, 2)
+    maps = ZZ.matrix_space(2, 2)
     f = maps.from_tensor(components)
 
     # The integer arity resolves to the free module on a named set.
@@ -226,7 +225,7 @@ def test_covector_type_one_one_adjacent_contraction() -> None:
 
 def test_type_one_one_dualization_belongs_to_module_duality() -> None:
     linear_components = tensor(ZZ, (2,), (3,), [[1, 2, 3], [4, 5, 6]])
-    linear_map = MatrixSpace(ZZ, 2, 3).from_tensor(linear_components)
+    linear_map = ZZ.matrix_space(2, 3).from_tensor(linear_components)
     dual = tensor.from_morphism(DualizationFunctor(ZZ)(linear_map))
 
     assert dual.tensor_valence() == (NN**2)((1, 1))
@@ -248,7 +247,7 @@ def test_dual_tensor_preserves_pairing_variance_information() -> None:
 
 def test_matrix_inverse_belongs_to_the_linear_map_parent_not_tensor_data() -> None:
     linear_components = tensor(QQ, (2,), (2,), [[2, 1], [1, 1]])
-    matrix = MatrixSpace(QQ, 2).from_tensor(linear_components)
+    matrix = QQ.matrix_space(2).from_tensor(linear_components)
     inverse = matrix.inverse()
 
     assert inverse * matrix == matrix.parent().identity()
@@ -270,7 +269,7 @@ def test_dual_pairing_raises_an_index() -> None:
 
 def test_tensor_pullback_requires_an_actual_linear_morphism() -> None:
     form = tensor(ZZ, (), (2, 2), [[2, 1], [1, 3]])
-    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
+    change = ZZ.matrix_space(2, 2).from_rows([[1, 1], [0, 1]])
     pulled = form.pullback(change)
 
     assert pulled == tensor(ZZ, (), (2, 2), [[2, 3], [3, 7]])
@@ -279,7 +278,7 @@ def test_tensor_pullback_requires_an_actual_linear_morphism() -> None:
 
 
 def test_matrix_space_is_the_actual_linear_map_parent() -> None:
-    hom = MatrixSpace(ZZ, 2, 3)
+    hom = ZZ.matrix_space(2, 3)
     morphism = hom.from_rows([[1, 0, 2], [0, 1, 3]])
     vector = tensor.vector(ZZ, [1, 1, 1])
 

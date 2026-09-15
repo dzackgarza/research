@@ -12,7 +12,6 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import (
@@ -345,11 +344,7 @@ class _OscarLatticeAdapter:
 
         # OSCAR emits source basis images as rows.  The live Hom matrix acts on
         # coordinate columns, so transpose those rows into target-by-source shape.
-        embedding = MatrixSpace(
-            ring,
-            embedding_engine.ncols(),
-            embedding_engine.nrows(),
-        ).from_rows(
+        embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
                 tuple(
                     ring._from_engine_element(embedding_engine[source, target])
@@ -400,11 +395,7 @@ class _OscarLatticeAdapter:
 
         target_prime_gram = owned_gram(target_engine)
         source_prime_gram = owned_gram(source_engine)
-        embedding = MatrixSpace(
-            ring,
-            embedding_engine.ncols(),
-            embedding_engine.nrows(),
-        ).from_rows(
+        embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
                 tuple(
                     ring._from_engine_element(embedding_engine[source, target])
@@ -459,11 +450,7 @@ class _OscarLatticeAdapter:
 
             target_prime_gram = owned_gram(target_engine)
             source_prime_gram = owned_gram(source_engine)
-            embedding = MatrixSpace(
-                ring,
-                embedding_engine.ncols(),
-                embedding_engine.nrows(),
-            ).from_rows(
+            embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
                 tuple(
                     tuple(
                         ring._from_engine_element(embedding_engine[source, target])

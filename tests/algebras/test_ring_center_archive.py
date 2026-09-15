@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import QQ, CommutativeRings, MatrixSpace, OwnedRings
+from dzack_research.preamble.all import QQ, CommutativeRings, OwnedRings
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -19,7 +19,7 @@ ARCHIVE_RECONCILIATIONS = (
 
 
 def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     conjugator = matrices([[0, 1], [1, 0]])
     conjugation = matrices.Mor(matrices)(
         lambda element: conjugator * element * conjugator,
@@ -39,7 +39,7 @@ def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
 
 
 def test_ring_center_functor_has_the_same_objects_only_after_taking_centers() -> None:
-    matrices = MatrixSpace(QQ, 2)
+    matrices = QQ.matrix_space(2)
     center_functor = OwnedRings().center_functor()
 
     assert matrices in center_functor.domain()
