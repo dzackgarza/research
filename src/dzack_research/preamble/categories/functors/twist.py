@@ -11,7 +11,6 @@ morphism action required by the archived contract.
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -51,7 +50,7 @@ class TwistFunctor(Functor):
                 module_coefficients(original_image, original_target)
             )
 
-        return lattice_homset(source, target)(image)
+        return source.Mor(target)(image)
 
     def _repr_(self):
         return f"Twist by {self.scale()}"

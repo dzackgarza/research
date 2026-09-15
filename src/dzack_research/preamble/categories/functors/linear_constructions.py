@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -187,7 +186,7 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
                 left_target_rank,
             )
 
-        return lattice_homset(source, target)(image)
+        return source.Mor(target)(image)
 
 
 @cached_function

@@ -303,7 +303,7 @@ class LatticeMorphism(ModuleMorphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        return lattice_homset(source, self.codomain())(
+        return source.Mor(self.codomain())(
             lambda label: self(other(source.module_generator(label)))
         )
 
@@ -346,7 +346,7 @@ class LatticeEmbedding(LatticeMorphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        return lattice_embedding_homset(source, self.codomain())(
+        return source.Emb(self.codomain())(
             lambda label: self(other(source.module_generator(label)))
         )
 
@@ -577,7 +577,7 @@ class LatticeIsometry(LatticeEmbedding):
             if self.domain() is self.codomain() and other.parent() is self.parent():
                 return self.parent().compose(self, other)
             source = other.domain()
-            return lattice_isometry_homset(source, self.codomain())(
+            return source.Isom(self.codomain())(
                 lambda label: self(other(source.module_generator(label)))
             )
         return super().__mul__(other)
@@ -1948,7 +1948,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return ``second ∘ first`` as an isometry."""
         if first.codomain() is not second.domain():
             raise ValueError("isometry composition requires matching middle objects")
-        return lattice_isometry_homset(first.domain(), second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
+        return first.domain().Isom(second.codomain())(lambda label: second(first(first.domain().module_generator(label))))
 
     def is_empty(self):
         r"""Decide emptiness through exact obstructions and proved classifiers.
@@ -2148,7 +2148,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def lattice_homset(domain, codomain) -> LatticeHomset:
+def _lattice_homset(domain, codomain) -> LatticeHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice morphisms require one common base ring")
@@ -2156,7 +2156,7 @@ def lattice_homset(domain, codomain) -> LatticeHomset:
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
+def _lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice embeddings require one common base ring")
@@ -2164,7 +2164,7 @@ def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
+def _lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice isometries require one common base ring")
@@ -2179,7 +2179,4 @@ __all__ = [
     "LatticeIsometry",
     "LatticeIsometryHomset",
     "LatticeMorphism",
-    "lattice_embedding_homset",
-    "lattice_homset",
-    "lattice_isometry_homset",
 ]

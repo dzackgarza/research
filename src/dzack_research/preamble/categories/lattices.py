@@ -102,9 +102,9 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeEmbeddingHomset,
     LatticeHomset,
     LatticeIsometryHomset,
-    lattice_embedding_homset,
-    lattice_homset,
-    lattice_isometry_homset,
+    _lattice_embedding_homset,
+    _lattice_homset,
+    _lattice_isometry_homset,
 )
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
@@ -1158,7 +1158,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
             if category is None or category.is_subcategory(lattices):
-                return lattice_homset(self, codomain)
+                return _lattice_homset(self, codomain)
             from sage.categories.homset import Hom as SageHom
 
             return SageHom(self, codomain, category)
@@ -1167,18 +1167,18 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             lattices = Lattices(self.base_ring())
             if codomain in lattices and (category is None or category.is_subcategory(lattices)):
-                return lattice_homset(self, codomain)
+                return _lattice_homset(self, codomain)
             return super()._Hom_(codomain, category)
 
         def Emb(self, codomain):
             r"""Return the set of form-preserving embeddings into ``codomain``."""
 
-            return lattice_embedding_homset(self, codomain)
+            return _lattice_embedding_homset(self, codomain)
 
         def Isom(self, codomain):
             r"""Return the set of isometries to ``codomain``."""
 
-            return lattice_isometry_homset(self, codomain)
+            return _lattice_isometry_homset(self, codomain)
 
         def Aut(self):
             r"""Return ``Isom(L,L)``, the orthogonal automorphism homset."""
