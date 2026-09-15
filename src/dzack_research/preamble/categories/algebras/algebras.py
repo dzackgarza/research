@@ -2668,7 +2668,8 @@ def _multiplication_is_commutative(multiplication) -> bool:
     return True
 
 
-def algebra_from_multiplication(
+def _algebra_from_multiplication(
+    module,
     multiplication,
     base_ring=None,
     unital=True,
@@ -2678,33 +2679,24 @@ def algebra_from_multiplication(
     unit=None,
     commutative=None,
 ):
-    r"""Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\).
-
-    ``unit`` and ``commutative`` state what the caller already knows about
-    the multiplication.  When ``unit`` is ``None`` the two-sided unit is
-    solved for on the module generating set; when ``commutative`` is
-    ``None`` commutativity is decided there.
-    """
-    from sage.categories.map import Map
-
-    module = multiplication.codomain()
+    r"""Equip ``module`` with the represented multiplication ``A tensor_R A -> A``."""
     ring = _owned_ring(module.base_ring() if base_ring is None else base_ring)
-    if not isinstance(multiplication, Map):
-        specialized = getattr(module, "algebra_from_multiplication", None)
-        if specialized is None:
-            raise TypeError("a non-module-morphism multiplication requires its module to own the algebra construction")
-        return specialized(multiplication, unital=unital)
-
-    module = _require_endomorphism_multiplication(multiplication, ring)
+    represented_module = _require_endomorphism_multiplication(multiplication, ring)
+    if represented_module is not module:
+        raise ValueError("the multiplication morphism has the wrong codomain module")
     if multiplication.domain() not in TensorProductModules(ring):
-        specialized = getattr(module, "algebra_from_multiplication", None)
-        if specialized is None:
-            raise TypeError("a multiplication outside the represented tensor-product category requires its module to own the algebra construction")
-        return specialized(multiplication, unital=unital)
+        raise TypeError(
+            "a multiplication outside the represented tensor-product category requires "
+            "a specialized module owner"
+        )
     placement = []
     if unital:
         if unit is None:
-            unit = module.one() if module in Algebras(ring).Associative().Unital() else _unit_from_multiplication(multiplication)
+            unit = (
+                module.one()
+                if module in Algebras(ring).Associative().Unital()
+                else _unit_from_multiplication(multiplication)
+            )
         placement.append(Algebras(ring).Associative().Unital())
     placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
     if commutative is None:
@@ -2902,7 +2894,6 @@ __all__ = [
     "FinitelyPresentedAlgebras",
     "FramedAlgebras",
     "OwnedAlgebras",
-    "algebra_from_multiplication",
     "algebra_structure_view",
     "finite_algebra_generators",
     "own_algebra",

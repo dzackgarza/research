@@ -171,7 +171,7 @@ def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
         },
     )
 
-    algebra = Algebras(ZZ)(multiplication)
+    algebra = module.algebra_from_multiplication(multiplication)
     unit = algebra.module_generator(0)
     generator = algebra.module_generator(1)
     eta = algebra.algebra_structure_morphism()
