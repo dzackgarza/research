@@ -38,12 +38,12 @@ from dzack_research.preamble.categories._lattice import (
     _PairingGram,
     _ScaledGram,
     _colimit_lattice,
-    discriminant_of_gram,
+    _discriminant_of_gram,
     lattice,
     _lattice_latex,
     _orthogonal_sum,
     signature_pair,
-    signature_pair_of_gram,
+    _signature_pair_of_gram,
     _tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import (
@@ -1591,7 +1591,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 (+Infinity, 0)
             """
 
-            return signature_pair_of_gram(self.gram_tensor())
+            return _signature_pair_of_gram(self.gram_tensor())
 
         def signature(self):
             r"""Return the inertia pair ``(p,q)`` of the lattice form."""
@@ -1613,7 +1613,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 -1
             """
 
-            return discriminant_of_gram(self.gram_tensor())
+            return _discriminant_of_gram(self.gram_tensor())
 
         def determinant(self):
             r"""Return the determinant of a finite-rank lattice form."""

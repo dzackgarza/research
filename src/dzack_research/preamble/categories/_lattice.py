@@ -1235,14 +1235,14 @@ def _sylvester(gram: Tensor):
     return signature_pair(int(positive), int(negative))
 
 
-def signature_pair_of_gram(gram: Tensor):
+def _signature_pair_of_gram(gram: Tensor):
     r"""Return $(p,q)$ for a Gram tensor, by Sylvester over $\mathbb Q$."""
     if isinstance(gram, _PairingGram):
         return gram.signature_pair()
     return _sylvester(gram)
 
 
-def discriminant_of_gram(gram: Tensor):
+def _discriminant_of_gram(gram: Tensor):
     r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$."""
     rank = gram.tensor_shape()[0]
     assert rank != Infinity
