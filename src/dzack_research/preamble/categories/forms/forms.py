@@ -15,7 +15,6 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleHomset,
     TensorProductModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import (
     QuadraticModuleHomset,
@@ -189,7 +188,7 @@ def _descended_bilinear_form(form, morphism, value_projection):
         )
 
     def selected_lift(element):
-        coefficients = module_coefficients(element, quotient)
+        coefficients = quotient.framing_coefficients(element)
         return module.linear_combination(
             {
                 label: coefficient
@@ -234,8 +233,8 @@ class _CallableForm(Element):
 
             def bilinear(left, right):
 
-                left_coefficients = module_coefficients(left, parent.left_module())
-                right_coefficients = module_coefficients(right, parent.right_module())
+                left_coefficients = parent.left_module().framing_coefficients(left)
+                right_coefficients = parent.right_module().framing_coefficients(right)
                 result = parent.codomain().zero()
                 for left_label, left_coefficient in left_coefficients.items():
                     for right_label, right_coefficient in right_coefficients.items():

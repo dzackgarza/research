@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -109,7 +108,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         def homogeneous_polynomial(self, section):
             r"""Return the homogeneous polynomial represented by ``section``."""
             section = self(section)
-            coefficients = module_coefficients(section, self)
+            coefficients = self.framing_coefficients(section)
             ring = self.homogeneous_coordinate_ring()
             scalar_map = ring.algebra_structure_morphism()
             return sum(

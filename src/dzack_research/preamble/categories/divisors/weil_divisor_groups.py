@@ -89,12 +89,10 @@ class WeilDivisorGroups(Category):
             return int(prime_ideal.local_number_of_generators(point)) == 1
 
         def multiplicity(self, divisor, point):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
-
             spectrum = self.affine_divisor_coordinate_ring().spectrum()
             if getattr(point, "parent", lambda: None)() is not spectrum:
                 point = spectrum(point)
-            return module_coefficients(divisor, self).get(point, self.base_ring().zero())
+            return self.framing_coefficients(divisor).get(point, self.base_ring().zero())
 
         def principal_divisor(self, rational_function):
             from dzack_research.preamble.categories.divisors.general_divisors import _principal_weil_divisor

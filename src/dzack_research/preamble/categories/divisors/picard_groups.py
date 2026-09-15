@@ -76,10 +76,8 @@ class PicardGroups(Category):
             return decomposition
 
         def _from_projective_biproduct(self, element):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
-
             decomposition = self.projective_picard_biproduct()
-            return self.linear_combination(module_coefficients(element, decomposition))
+            return self.linear_combination(decomposition.framing_coefficients(element))
 
         def base_picard_inclusion(self):
 

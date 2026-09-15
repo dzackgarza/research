@@ -7,9 +7,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -96,7 +93,7 @@ class InvertibleSheaf(SageObject):
         source_generator = _rank_one_generator(source)
         target_labels = target.module_generating_set()
         target_label = next(iter(target_labels))
-        coefficients = module_coefficients(transition(source_generator), target)
+        coefficients = target.framing_coefficients(transition(source_generator))
         unit = (
             coefficients[target_label]
             if target_label in coefficients
@@ -702,7 +699,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         """
         sections = self.global_sections()
         section = sections(section)
-        coefficients = module_coefficients(section, sections)
+        coefficients = sections.framing_coefficients(section)
         exponent_data = sections._preamble_multihomogeneous_exponents
         atlas = self.gluing_datum()
         product = self.projective_product()
