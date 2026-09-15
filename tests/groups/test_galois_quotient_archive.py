@@ -4,10 +4,6 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    extensions_along,
-    restrict_along,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/galois_quotient.sage",
@@ -60,10 +56,9 @@ def test_restrict_along_and_extensions_along_solve_the_same_commuting_square() -
 
     sigma = restriction_four(frobenius)
     tau = restriction_two(frobenius)
-    assert restrict_along(sigma.action(), inclusion) == tau.action()
+    assert sigma.action().restrict_along(inclusion) == tau.action()
 
-    extensions = extensions_along(
-        tau.action(),
+    extensions = tau.action().extensions_along(
         inclusion,
         tuple(candidate.action() for candidate in quotient_four),
     )
@@ -124,8 +119,8 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
 
     for exponent, (moves_i, moves_root_three) in expected.items():
         automorphism = by_exponent[exponent]
-        on_gaussian = restrict_along(automorphism.action(), gaussian_embedding)
-        on_real = restrict_along(automorphism.action(), real_embedding)
+        on_gaussian = automorphism.action().restrict_along(gaussian_embedding)
+        on_real = automorphism.action().restrict_along(real_embedding)
         assert (
             on_gaussian(gaussian.primitive_element()) == -gaussian.primitive_element()
         ) is moves_i
@@ -154,7 +149,7 @@ def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift(
 
     for sigma in quotient:
         for tau in quotient:
-            product = restrict_along((sigma * tau).action(), embedding)
-            left = restrict_along(sigma.action(), embedding)
-            right = restrict_along(tau.action(), embedding)
+            product = (sigma * tau).action().restrict_along(embedding)
+            left = sigma.action().restrict_along(embedding)
+            right = tau.action().restrict_along(embedding)
             assert product(generator) == left(right(generator))

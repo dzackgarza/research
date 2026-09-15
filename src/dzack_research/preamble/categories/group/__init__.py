@@ -122,8 +122,7 @@ _EXPORTS = {'EquivariantMorphism': ('dzack_research.preamble.categories.group.g_
  'continuous_group_homset': ('dzack_research.preamble.categories.group.profinite',
                              'continuous_group_homset'),
  'exact_field_homset': ('dzack_research.preamble.categories.group.profinite', 'exact_field_homset'),
- 'extensions_along': ('dzack_research.preamble.categories.group.profinite', 'extensions_along'),
- 'restrict_along': ('dzack_research.preamble.categories.group.profinite', 'restrict_along')}
+}
 
 __all__ = ['AbsoluteDecompositionGroup',
  'AbsoluteGaloisGroup',
@@ -198,9 +197,7 @@ __all__ = ['AbsoluteDecompositionGroup',
  'absolute_galois_group_category',
  'continuous_group_homset',
  'exact_field_homset',
- 'extensions_along',
  'groups',
- 'restrict_along',
 ]
 
 def __getattr__(name):

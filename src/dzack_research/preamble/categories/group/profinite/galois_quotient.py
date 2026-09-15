@@ -520,40 +520,6 @@ class LiftCoset(SageObject):
         return f"Lift coset of {self._element} in {self.supergroup()}"
 
 
-def restrict_along(
-    automorphism: ExactFieldMorphism, embedding: ExactFieldMorphism
-) -> ExactFieldMorphism:
-    r"""Solve (j\tau=\sigma j) for the exact restriction ``tau``."""
-    candidates = embedding.domain().exact_embeddings(embedding.domain())
-    generators = embedding.domain().field_generators()
-    restrictions = [
-        candidate
-        for candidate in candidates
-        if all(
-            embedding(candidate(generator)) == automorphism(embedding(generator))
-            for generator in generators
-        )
-    ]
-    if len(restrictions) != 1:
-        raise ValueError(
-            "the automorphism does not have a unique restriction along this embedding"
-        )
-    return restrictions[0]
-
-
-def extensions_along(automorphism, embedding, candidates):
-    r"""Return exactly the candidate automorphisms satisfying (\sigma j=j\tau)."""
-    generators = embedding.domain().field_generators()
-    matches = [
-        candidate
-        for candidate in candidates
-        if all(
-            candidate(embedding(generator)) == embedding(automorphism(generator))
-            for generator in generators
-        )
-    ]
-    return finite_ordered_set(matches)
-
 
 __all__ = [
     "ContinuousGroupHomset",
@@ -564,6 +530,4 @@ __all__ = [
     "GaloisRestrictionMap",
     "LiftCoset",
     "continuous_group_homset",
-    "extensions_along",
-    "restrict_along",
 ]

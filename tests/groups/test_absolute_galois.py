@@ -24,8 +24,6 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     GaloisRestrictionMap,
-    extensions_along,
-    restrict_along,
 )
 from dzack_research.preamble.categories.sets import Sets
 
@@ -183,9 +181,8 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
     sigma = restriction_four(frobenius)
     tau = restriction_two(frobenius)
 
-    assert restrict_along(sigma.action(), inclusion) == tau.action()
-    extensions = extensions_along(
-        tau.action(),
+    assert sigma.action().restrict_along(inclusion) == tau.action()
+    extensions = tau.action().extensions_along(
         inclusion,
         [candidate.action() for candidate in quotient_four],
     )

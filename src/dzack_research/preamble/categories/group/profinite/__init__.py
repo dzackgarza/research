@@ -69,10 +69,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
  'LiftCoset': ('dzack_research.preamble.categories.group.profinite.galois_quotient', 'LiftCoset'),
  'continuous_group_homset': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
                              'continuous_group_homset'),
- 'extensions_along': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                      'extensions_along'),
- 'restrict_along': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                    'restrict_along'),
  'ProfiniteGroups': ('dzack_research.preamble.categories.group.profinite.profinite_groups',
                      'ProfiniteGroups')}
 
@@ -111,8 +107,7 @@ __all__ = ['AbsoluteDecompositionGroup',
  'absolute_galois_group_category',
  'continuous_group_homset',
  'exact_field_homset',
- 'extensions_along',
- 'restrict_along']
+]
 
 def __getattr__(name):
     try:

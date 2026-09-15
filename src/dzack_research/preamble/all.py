@@ -647,9 +647,7 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     absolute_galois_group_category,
     continuous_group_homset,
     exact_field_homset,
-    extensions_along,
     groups,
-    restrict_along,
 )
 from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401
     HyperbolicLattices,

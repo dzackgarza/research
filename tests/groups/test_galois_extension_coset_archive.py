@@ -2,9 +2,6 @@ from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, Quadrat
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    extensions_along,
-)
 
 
 def test_extensions_of_gaussian_conjugation_form_the_expected_finite_coset() -> None:
@@ -28,8 +25,7 @@ def test_extensions_of_gaussian_conjugation_form_the_expected_finite_coset() -> 
 
     group = AbsoluteGaloisGroup(QQ)
     quotient = group.finite_quotient(group.extension_data(cyclotomic))
-    extensions = extensions_along(
-        conjugation,
+    extensions = conjugation.extensions_along(
         embedding,
         tuple(automorphism.action() for automorphism in quotient),
     )

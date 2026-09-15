@@ -150,6 +150,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "ring_homset",
         "ring_morphism",
         "absolute_galois_group",
+        "extensions_along",
+        "restrict_along",
         "cyclic_subgroup",
         "generated_submonoid",
         "predicate_submonoid",

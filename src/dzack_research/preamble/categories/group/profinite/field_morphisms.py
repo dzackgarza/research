@@ -145,6 +145,37 @@ class ExactFieldMorphism(Morphism):
         backend = self._engine_morphism_crossing() * other._engine_morphism_crossing()
         return exact_field_homset(other.domain(), self.codomain())(backend)
 
+    def restrict_along(self, embedding):
+        r"""Solve ``j tau = self j`` for the exact restriction ``tau``."""
+        candidates = embedding.domain().exact_embeddings(embedding.domain())
+        generators = embedding.domain().field_generators()
+        restrictions = [
+            candidate
+            for candidate in candidates
+            if all(
+                embedding(candidate(generator)) == self(embedding(generator))
+                for generator in generators
+            )
+        ]
+        if len(restrictions) != 1:
+            raise ValueError(
+                "the automorphism does not have a unique restriction along this embedding"
+            )
+        return restrictions[0]
+
+    def extensions_along(self, embedding, candidates):
+        r"""Return the candidate extensions ``sigma`` satisfying ``sigma j = j self``."""
+        generators = embedding.domain().field_generators()
+        matches = [
+            candidate
+            for candidate in candidates
+            if all(
+                candidate(embedding(generator)) == embedding(self(generator))
+                for generator in generators
+            )
+        ]
+        return finite_ordered_set(matches)
+
     def _repr_(self) -> str:
         try:
             generators = self.domain().field_generators()
