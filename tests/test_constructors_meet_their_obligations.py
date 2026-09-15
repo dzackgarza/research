@@ -265,7 +265,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
             QQ, Sets.Δ[1]
         ).exterior_algebra(),
         # ---- modules ----
-        "fractional ideal": lambda: FractionalIdeal(ZZ, [2]),
+        "fractional ideal": lambda: ZZ.fractional_ideal(2),
         # An S-module from its scalar action, and the coextension of scalars
         # that produces one: both along ZZ -> ZZ[C2].
         "module from a scalar action": lambda: _module_from_scalar_action(),

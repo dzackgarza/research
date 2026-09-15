@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedAlgebra,
-    FractionalIdeal,
     FreeAlgebraOn,
     PolynomialRing,
     QuadraticField,
@@ -56,8 +55,8 @@ def test_presented_algebra_retains_relation_and_explicit_scalar_change() -> None
 
 
 def test_fractional_ideal_membership_uses_the_module_span_not_the_input_tuple() -> None:
-    ideal = FractionalIdeal(ZZ, (ZZ(2), ZZ(3)))
-    half = FractionalIdeal(ZZ, (QQ(1) / 2,))
+    ideal = ZZ.fractional_ideal(ZZ(2), ZZ(3))
+    half = ZZ.fractional_ideal(QQ(1) / 2)
 
     assert ZZ(1) in ideal
     assert QQ(1) / 2 not in ideal

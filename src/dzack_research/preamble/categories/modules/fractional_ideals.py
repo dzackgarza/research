@@ -281,7 +281,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                 value = self.principal_generator()
                 if value == 0:
                     raise ZeroDivisionError("the zero fractional ideal is not invertible")
-                return FractionalIdeal(self.base_ring(), (value**-1,))
+                return self.base_ring().fractional_ideal(value**-1)
             if not self._preamble_module_generator_values or all(
                 value == 0 for value in self._preamble_module_generator_values
             ):
@@ -311,7 +311,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             return (
                 _integral_ideal(self.base_ring(), tuple(values))
                 if integral
-                else FractionalIdeal(self.base_ring(), values)
+                else self.base_ring().fractional_ideal(*values)
             )
 
         def __add__(self, other):
@@ -337,7 +337,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                     return (
                         _integral_ideal(self.base_ring(), tuple(values))
                         if integral
-                        else FractionalIdeal(self.base_ring(), values)
+                        else self.base_ring().fractional_ideal(*values)
                     )
                 ratio = _engine_element(field, left / right)
                 numerator = field._from_engine_element(abs(ratio.numerator()))
@@ -346,7 +346,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                 return (
                     _integral_ideal(self.base_ring(), tuple(values))
                     if integral
-                    else FractionalIdeal(self.base_ring(), values)
+                    else self.base_ring().fractional_ideal(*values)
                 )
             integer_submodule = _integer_coordinate_submodule(self).intersection(
                 _integer_coordinate_submodule(other)
@@ -373,7 +373,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                 return (
                     _integral_ideal(self.base_ring(), tuple(values))
                     if integral
-                    else FractionalIdeal(self.base_ring(), values)
+                    else self.base_ring().fractional_ideal(*values)
                 )
             values = tuple(
                 left * right
@@ -740,11 +740,11 @@ def _inverse_order_fractional_ideal(ideal):
         raise ZeroDivisionError("the zero fractional ideal is not invertible")
 
     inverse_integer_submodule = _integer_coordinate_submodule(
-        FractionalIdeal(ring, (nonzero_values[0] ** -1,))
+        ring.fractional_ideal(nonzero_values[0] ** -1)
     )
     for value in nonzero_values[1:]:
         inverse_integer_submodule = inverse_integer_submodule.intersection(
-            _integer_coordinate_submodule(FractionalIdeal(ring, (value**-1,)))
+            _integer_coordinate_submodule(ring.fractional_ideal(value**-1))
         )
     values = _order_integer_submodule_values(ring, inverse_integer_submodule)
     return _fractional_ideal_from_order_values(
@@ -767,11 +767,6 @@ def _fractional_ideal_from_backend(base_ring, backend, *, integral=False):
 
     refine(ideal, ProjectiveModules(ring))
     return ideal
-
-
-def FractionalIdeal(base_ring, module_generating_set):
-    r"""Return the fractional ideal of ``R`` spanned by the stated elements of ``Frac(R)``."""
-    return _fractional_ideal(_owned_ring(base_ring), tuple(module_generating_set))
 
 
 @cached_function
@@ -844,7 +839,6 @@ def _integral_ideal(ring, module_generators):
 
 
 __all__ = [
-    "FractionalIdeal",
     "FractionalIdeals",
     "Ideals",
 ]

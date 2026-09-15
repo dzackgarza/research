@@ -1645,6 +1645,18 @@ class OwnedIntegralDomains(OwnedCategory):
         def is_integral_domain(self, *args, **kwargs):
             return True
 
+        def fractional_ideal(self, *module_generators):
+            r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
+            from dzack_research.preamble.categories.modules.fractional_ideals import (
+                _fractional_ideal,
+            )
+
+            if len(module_generators) == 1 and isinstance(
+                module_generators[0], (tuple, list)
+            ):
+                module_generators = tuple(module_generators[0])
+            return _fractional_ideal(self, tuple(module_generators))
+
         @cached_method
         def nonzero_multiplicative_submonoid(self):
             r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""

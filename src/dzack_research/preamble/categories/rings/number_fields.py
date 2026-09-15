@@ -22,9 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import _own_group
-from dzack_research.preamble.categories.modules.fractional_ideals import (
-    FractionalIdeal,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -596,10 +593,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             )
 
             return _integral_ideal(self, tuple(module_generators))
-
-        def fractional_ideal(self, *module_generators):
-
-            return FractionalIdeal(self, module_generators)
 
         def localization(self, *elements):
             from dzack_research.preamble.categories.rings.commutative_algebra import _localization
