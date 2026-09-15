@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, TotallyOrderedSets, ranking_isomorphism
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, TotallyOrderedSets
 
 PointT = TypeVar("PointT")
 
@@ -308,8 +308,8 @@ class FixedSizeSelections(Parent):
             # the source.
             return self.element_class(self, position)
 
-        return ranking_isomorphism(
-            self, lambda selection: self(selection).combinatorial_rank(), selection_at
+        return self._ranking_isomorphism(
+            lambda selection: self(selection).combinatorial_rank(), selection_at
         )
 
     def _finite_size(self):

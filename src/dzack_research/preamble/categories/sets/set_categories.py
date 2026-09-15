@@ -161,6 +161,22 @@ class EnumeratedSets(OwnedCategory):
             r"""Return the point at ``position``, the ranking map run backwards."""
             return self.ranking_map().inverse()(position)
 
+        def _ranking_isomorphism(self, position_of, point_at):
+            r"""Build the represented enumeration from its mutually inverse directions."""
+            ordinal = self.counting_ordinal()
+            forward = Sets().Mor(self, ordinal)(
+                lambda element: NN(position_of(element))
+            )
+            backward = Sets().Mor(ordinal, self)(
+                lambda position: point_at(int(position))
+            )
+            return CategoricalIsomorphism(
+                _set_core().Mor(self, ordinal),
+                forward,
+                backward,
+                verify=False,
+            )
+
         def fixed_size_selections(self, selection_size, *, repetition):
             r"""Return the ordered selections of the stated size from this ranked set."""
             from dzack_research.preamble.categories.sets.fixed_size_selections import (
@@ -247,7 +263,7 @@ class FiniteOrdinalSets(OwnedCategory):
                     raise ValueError(element)
                 return position
 
-            return ranking_isomorphism(self, position_of, point_at)
+            return self._ranking_isomorphism(position_of, point_at)
 
         def __contains__(self, element) -> bool:
             try:
@@ -296,46 +312,6 @@ def finite_ordinal_set(size: int) -> Parent:
     or their enumerations do not compose.
     """
     return FiniteOrdinalSets()(size)
-
-
-def counting_ordinal(source: Parent) -> Parent:
-    r"""Return the ordinal that counts ``source``.
-
-    That is $\{0,\dots,n-1\}$ when $|X| = n$ and $\omega$ when $X$ is
-    countably infinite.  An uncountable set has no such ordinal here, and
-    a set whose cardinality is undecided cannot name one either: both
-    refuse rather than guess.
-    """
-    size = cardinal(source.cardinality())
-    if size.is_finite():
-        return finite_ordinal_set(size.finite_value())
-    assert size.is_countably_infinite(), f"{source} is not countable, so no ordinal represented here counts it"
-    return NN
-
-
-def ranking_isomorphism[SourcePointT](
-    source: Parent,
-    position_of: Callable[[SourcePointT], SupportsInt],
-    point_at: Callable[[int], SourcePointT],
-) -> CategoricalIsomorphism:
-    r"""Return the enumeration of ``source`` as one isomorphism onto its ordinal.
-
-    An enumeration is a bijection $X \xrightarrow{\ \sim\ }
-    \operatorname{Ord}(|X|)$; ranking and unranking are that arrow and its
-    inverse, not two operations a convention has to keep agreeing.  The two
-    directions are handed over together here and are mutually inverse by the
-    construction that supplied them, so the pair is transported rather than
-    re-derived point by point -- which for an infinite source is not a
-    decidable question at all.
-
-    It is an isomorphism of *sets* and of nothing further: a $G$-set's
-    enumeration is not equivariant and a lattice's is not linear.  So it lives
-    in the core of $\mathbf{Set}$, where the isomorphisms are the bijections.
-    """
-    ordinal = counting_ordinal(source)
-    forward = Sets().Mor(source, ordinal)(lambda element: NN(position_of(element)))
-    backward = Sets().Mor(ordinal, source)(lambda position: point_at(int(position)))
-    return CategoricalIsomorphism(_set_core().Mor(source, ordinal), forward, backward, verify=False)
 
 
 @cached_function
@@ -686,6 +662,17 @@ class Sets(OwnedCategory):
         if domain not in self or codomain not in self:
             raise TypeError("a set morphism requires two set objects")
         return _set_mor_category(domain, codomain)
+
+    class ParentMethods:
+        def counting_ordinal(self):
+            r"""Return the represented ordinal that counts this set when it is countable."""
+            size = cardinal(self.cardinality())
+            if size.is_finite():
+                return finite_ordinal_set(size.finite_value())
+            assert size.is_countably_infinite(), (
+                f"{self} is not countable, so no ordinal represented here counts it"
+            )
+            return NN
 
     class SubcategoryMethods:
         def Finite(self) -> Category:
@@ -2235,7 +2222,7 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
             position = position * radix + digit
         return position
 
-    return ranking_isomorphism(product, position_of, point_at)
+    return product._ranking_isomorphism(position_of, point_at)
 
 
 class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
@@ -2479,7 +2466,7 @@ class CoproductsOfSets(OwnedCategory):
                         return position
                 raise ValueError(element)
 
-            return ranking_isomorphism(self, position_of, point_at)
+            return self._ranking_isomorphism(position_of, point_at)
 
         def __contains__(self, element) -> bool:
             return element.parent() is self
@@ -2759,7 +2746,7 @@ class NaturalNumberSets(OwnedCategory):
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
-            return ranking_isomorphism(self, lambda value: int(self(value)), self)
+            return self._ranking_isomorphism(lambda value: int(self(value)), self)
 
         def cardinality(self) -> Parent:
             return aleph0
@@ -2938,9 +2925,7 @@ __all__ = [
     "Sets",
     "TotallyOrderedSets",
     "UncountableSets",
-    "counting_ordinal",
     "placement_of",
     "finite_ordinal_set",
-    "ranking_isomorphism",
     "register_set_axioms",
 ]

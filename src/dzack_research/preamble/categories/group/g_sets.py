@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
-    ranking_isomorphism,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.refine import refine
@@ -317,7 +316,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             to one of another position.
             """
             points = self.point_set().ranking_map()
-            return ranking_isomorphism(self, points, points.inverse())
+            return self._ranking_isomorphism(points, points.inverse())
 
         def _repr_(self):
             return f"{self.point_set()} with {self.acting_group()}-action"
@@ -500,8 +499,8 @@ class OrbitSets(OwnedCategory):
                 assert orbit in self, f"{orbit} is not an orbit of {self}"
                 return int(orbit._index)
 
-            return ranking_isomorphism(
-                self, position_of, self._orbit_classes.ranking_map().inverse()
+            return self._ranking_isomorphism(
+                position_of, self._orbit_classes.ranking_map().inverse()
             )
 
         def orbit_points(self, orbit):

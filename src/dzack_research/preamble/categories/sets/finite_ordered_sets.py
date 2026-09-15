@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
     TotallyOrderedSets,
     finite_ordinal_set,
-    ranking_isomorphism,
 )
 from dzack_research.preamble.owned_category import object_of
 
@@ -301,7 +300,7 @@ class OrderedEnumeratedSets(OwnedCategory):
                     raise ValueError(f"{element!r} is not in {self}")
                 return int(index_ranking(index))
 
-            return ranking_isomorphism(self, position_of, point_at)
+            return self._ranking_isomorphism(position_of, point_at)
 
         def __iter__(self):
             return (self._element_at_function(index) for index in self.index_set())
@@ -571,7 +570,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
                         return position
                 raise ValueError(f"{element!r} is not in {self}")
 
-            return ranking_isomorphism(self, position_of, point_at)
+            return self._ranking_isomorphism(position_of, point_at)
 
         def __contains__(self, element) -> bool:
             return element in self.source() and bool(self.predicate()(element))

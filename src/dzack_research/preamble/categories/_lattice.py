@@ -58,7 +58,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     InfiniteEnumeratedSets,
     Sets,
-    ranking_isomorphism,
 )
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -108,7 +107,7 @@ class _FormalSymbols(UniqueRepresentation, Parent):
     @cached_method
     def ranking_map(self):
         r"""The enumeration $e_i \mapsto i$, which is a bijection onto $\omega$."""
-        return ranking_isomorphism(self, _formal_symbol_index, _formal_symbol)
+        return self._ranking_isomorphism(_formal_symbol_index, _formal_symbol)
 
     def __contains__(self, elt):
         try:

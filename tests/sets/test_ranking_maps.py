@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
-    counting_ordinal,
     finite_ordinal_set,
 )
 
@@ -34,8 +33,8 @@ def test_a_ranking_map_lands_in_the_ordinal_that_counts_its_set() -> None:
     # One ordinal per cardinality, not one per set: two enumerations of
     # equinumerous sets have to be composable, which they are not if each set
     # builds a private copy of {0,1,2}.
-    assert counting_ordinal(letters) is counting_ordinal(finite_ordinal_set(3))
-    assert counting_ordinal(letters) is Sets.Δ[2]
+    assert letters.counting_ordinal() is finite_ordinal_set(3).counting_ordinal()
+    assert letters.counting_ordinal() is Sets.Δ[2]
 
     # A countably infinite set is counted by omega, which is N itself.
     assert NN.ranking_map().codomain() is NN

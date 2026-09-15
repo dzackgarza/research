@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
     EnumeratedSets,
     InfiniteEnumeratedSets,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -213,8 +213,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
     @cached_method
     def ranking_map(self) -> CategoricalIsomorphism:
         r"""The enumeration by index, read through this set's own indexing."""
-        return ranking_isomorphism(
-            self,
+        return self._ranking_isomorphism(
             lambda element: self._rank_from_index(self._index_of_element(element)),
             lambda position: self._symbol_at_index(self._index_from_rank(position)),
         )

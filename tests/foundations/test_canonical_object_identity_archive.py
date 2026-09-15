@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
-    counting_ordinal,
     finite_ordinal_set,
 )
 
@@ -23,5 +22,5 @@ def test_three_point_counting_ordinal_is_one_canonical_object() -> None:
     ordinal = Sets.Δ[2]
 
     assert finite_ordinal_set(3) is ordinal
-    assert counting_ordinal(letters) is ordinal
-    assert counting_ordinal(primes) is ordinal
+    assert letters.counting_ordinal() is ordinal
+    assert primes.counting_ordinal() is ordinal
