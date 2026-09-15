@@ -1736,4 +1736,3 @@ class _HeterogeneousPairing(Parent):
 
 def _heterogeneous_pairing(pairing):
     return _HeterogeneousPairing(pairing)
-
