@@ -32,7 +32,6 @@ from dzack_research.preamble.all import (
     Sterk,
     nikulin_invariants,
     primitive_isotropic,
-    transport_isotropic_object,
 )
 
 # cusp name: (named reduction lattice, Nikulin invariants of the reduction)
@@ -142,7 +141,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     assert witness.domain() is lattice
     assert witness.codomain() is lattice
 
-    image = transport_isotropic_object(witness, line)
+    image = witness.transport_isotropic_object(line)
     representative = cusp.representative()
     inclusion = representative.inclusion()
     embedded = image.embedded_module_generators()

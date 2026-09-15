@@ -602,12 +602,12 @@ class ArithmeticCuspIncidence(SageObject):
         if line_transporter not in subgroup or plane_transporter not in subgroup:
             raise ValueError("cusp transporters must lie in the selected arithmetic subgroup")
         if not _same_subobject(
-            _image_subobject(line_transporter, line),
+            line_transporter.transport_isotropic_object(line),
             line_cusp.representative(),
         ):
             raise ValueError("the retained line transporter has the wrong target cusp")
         if not _same_subobject(
-            _image_subobject(plane_transporter, plane),
+            plane_transporter.transport_isotropic_object(plane),
             plane_cusp.representative(),
         ):
             raise ValueError("the retained plane transporter has the wrong target cusp")
@@ -692,18 +692,6 @@ def _same_subobject(left, right) -> bool:
     return True
 
 
-def _image_subobject(isometry, subobject):
-    return (isometry * subobject.inclusion()).image()
-
-
-def transport_isotropic_object(isometry, obj):
-    r"""Transport a primitive isotropic subobject or flag along a lattice isometry."""
-    lattice = isometry.codomain()
-    if isinstance(obj, IsotropicFlag):
-        return IsotropicFlag(lattice, tuple(isometry(element) for element in obj.basis()))
-    return _image_subobject(isometry, obj)
-
-
 def _gram_rows(lattice):
     rank = int(lattice.module_rank())
     return [
@@ -783,7 +771,7 @@ def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     checked_left = left_terms if flag else left_terms[-1:]
     checked_right = right_terms if flag else right_terms[-1:]
     if any(
-        not _same_subobject(_image_subobject(isometry, source), target)
+        not _same_subobject(isometry.transport_isotropic_object(source), target)
         for source, target in zip(checked_left, checked_right, strict=True)
     ):
         raise ArithmeticError("the isotropic-equivalence backend returned a witness with the wrong subobject action")
@@ -808,7 +796,7 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     terms = _terms(obj)
     checked = terms if flag else terms[-1:]
     if any(
-        not _same_subobject(_image_subobject(isometry, term), term)
+        not _same_subobject(isometry.transport_isotropic_object(term), term)
         for isometry in isometries
         for term in checked
     ):
@@ -833,5 +821,4 @@ __all__ = [
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",
-    "transport_isotropic_object",
 ]

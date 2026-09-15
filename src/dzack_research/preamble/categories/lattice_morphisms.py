@@ -596,6 +596,17 @@ class LatticeIsometry(LatticeEmbedding):
             )
         return super().__mul__(other)
 
+    def transport_isotropic_object(self, obj):
+        r"""Transport a primitive isotropic subobject or flag along this isometry."""
+        from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag
+
+        if isinstance(obj, IsotropicFlag):
+            return IsotropicFlag(
+                self.codomain(),
+                tuple(self(element) for element in obj.basis()),
+            )
+        return (self * obj.inclusion()).image()
+
     @cached_method
     def invariant_lattice(self):
         r"""Return ``ker(self-id)`` as a formed subobject of the lattice."""

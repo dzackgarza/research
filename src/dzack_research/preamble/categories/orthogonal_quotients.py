@@ -1,7 +1,6 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
 from sage.libs.gap.libgap import libgap
 
-from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Set
 
@@ -451,7 +450,7 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
             representative, flag=flag
         )
         representatives.extend(
-            transport_isotropic_object(splitting, representative)
+            splitting.transport_isotropic_object(representative)
             for splitting in quotient.splitting_isometries(stabilizer)
         )
     return finite_ordered_set(tuple(representatives))

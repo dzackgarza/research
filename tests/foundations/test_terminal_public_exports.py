@@ -111,6 +111,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "module_localization_functor",
         "primitive_isotropic_vectors",
         "splits_two_hyperbolic_planes",
+        "transport_isotropic_object",
         "commutative_algebra_coproduct",
         "commutative_algebra_pushout",
         "centralizer",
