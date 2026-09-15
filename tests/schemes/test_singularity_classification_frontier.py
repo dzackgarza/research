@@ -3,7 +3,6 @@ r"""Supported singularity equivalences and the regular/smooth boundary."""
 from dzack_research.preamble.all import (
     GF,
     QQ,
-    PolynomialRing,
     Spec,
 )
 from dzack_research.preamble.categories.schemes.singularities import (
@@ -12,7 +11,7 @@ from dzack_research.preamble.categories.schemes.singularities import (
 
 
 def test_a_sheared_A2_is_classified_by_its_actual_coordinate_change() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = tuple(plane.algebra_generators())
     sheared = IsolatedHypersurfaceSingularity(
         plane,
@@ -33,7 +32,7 @@ def test_a_sheared_A2_is_classified_by_its_actual_coordinate_change() -> None:
 
 
 def test_equal_milnor_and_tjurina_numbers_do_not_classify_plane_curve_germs() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = tuple(plane.algebra_generators())
     a4 = IsolatedHypersurfaceSingularity(plane, x**2 + y**5)
     triple = IsolatedHypersurfaceSingularity(plane, x * y * (x - y))
@@ -46,11 +45,11 @@ def test_equal_milnor_and_tjurina_numbers_do_not_classify_plane_curve_germs() ->
 
 def test_regular_purely_inseparable_field_extension_is_not_smooth_over_its_base() -> None:
     prime_field = GF(2)
-    parameters = PolynomialRing(prime_field, ("a",))
+    parameters = prime_field.polynomial_ring(("a",))
     a = parameters.algebra_generator("a")
     base = parameters.fraction_field()
     a_in_base = parameters.fraction_field_map()(a)
-    line = PolynomialRing(base, ("x",))
+    line = base.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     extension = (line).quotient_by_relations((x**2 - a_in_base,))
 

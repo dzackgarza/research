@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     FinitelyPresentedModule,
     Modules,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -31,7 +30,7 @@ def _multiplication(module, scalar):
 
 
 def test_multiplication_by_x_on_a_free_module_stays_injective_after_completion() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     free = _free_rank_one(ring)
     multiplication = _multiplication(free, x)
@@ -47,7 +46,7 @@ def test_multiplication_by_x_on_a_free_module_stays_injective_after_completion()
 
 
 def test_completed_free_exact_sequence_has_residue_field_cokernel() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     free = _free_rank_one(ring)
     completed = _multiplication(free, x).adic_completion(ring.ideal(x), precision=6)
@@ -61,7 +60,7 @@ def test_completed_free_exact_sequence_has_residue_field_cokernel() -> None:
 
 
 def test_torsion_kernel_remains_nonzero_after_completion() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     torsion = _cyclic_torsion_module(ring, x**3)
     multiplication = _multiplication(torsion, x)
@@ -75,7 +74,7 @@ def test_torsion_kernel_remains_nonzero_after_completion() -> None:
 
 
 def test_multivariable_free_completion_uses_the_same_module_projection() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     free = _free_rank_one(ring)
@@ -92,7 +91,7 @@ def test_multivariable_free_completion_uses_the_same_module_projection() -> None
 
 
 def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     free = _free_rank_one(ring)
     torsion = _cyclic_torsion_module(ring, x**2)
@@ -105,7 +104,7 @@ def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> 
 
 
 def test_completion_unit_and_projection_form_the_expected_finite_stage_triangle() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     module = _cyclic_torsion_module(ring, x**4)
     completed = module.adic_completion(ring.ideal(x), precision=6)

@@ -16,7 +16,6 @@ from dzack_research.preamble.all import (
     AA,
     GF,
     GeneralModules,
-    PolynomialRing,
     Set,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -24,7 +23,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _group_algebra_of_the_cyclic_group_of_order_three():
     r"""Return ``GF(3)[x]`` and ``GF(3)[x]/(x^3-1)`` as a module over it."""
-    ring = PolynomialRing(GF(3), "x")
+    ring = GF(3).polynomial_ring("x")
     x = ring.algebra_generator("x")
     quotient = ring.quotient_ring(ring.ideal(x**3 - ring.one()))
     project = quotient.quotient_map()

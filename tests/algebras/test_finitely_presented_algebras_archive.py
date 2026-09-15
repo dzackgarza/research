@@ -4,9 +4,6 @@ from dzack_research.preamble.all import QQ, Sets
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/algebras/finitely_presented_algebras.sage",
@@ -19,7 +16,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_finite_presentation_retains_ring_relations_and_generators() -> None:
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     algebra = (presentation).quotient_by_relations((x * y,))
@@ -41,7 +38,7 @@ def test_archived_finite_presentation_retains_ring_relations_and_generators() ->
 
 
 def test_archived_presented_algebra_morphism_is_determined_by_generator_images() -> None:
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     algebra = (presentation).quotient_by_relations((x * y,))
@@ -55,11 +52,8 @@ def test_archived_presented_algebra_morphism_is_determined_by_generator_images()
 
 
 def test_selected_finite_presentation_constructor_is_owned_by_its_presentation() -> None:
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        PolynomialRing,
-    )
 
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     declared = AlgebrasWithChosenFinitePresentation(QQ)(
         presentation,

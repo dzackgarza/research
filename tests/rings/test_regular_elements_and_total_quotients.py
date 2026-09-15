@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     Fields,
-    PolynomialRing,
 )
 
 
@@ -19,14 +18,14 @@ def test_regularity_over_a_domain_is_being_nonzero() -> None:
     assert ZZ(6).is_regular()
     assert not ZZ.zero().is_regular()
 
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
 
     assert (x**2 - 1).is_regular()
 
 
 def test_a_zero_divisor_in_a_nonreduced_quotient_is_not_regular() -> None:
-    polynomial = PolynomialRing(GF(5), "x,y")
+    polynomial = GF(5).polynomial_ring("x,y")
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     quotient = polynomial.quotient_ring(polynomial.ideal(x * y))
@@ -43,7 +42,7 @@ def test_the_total_quotient_ring_of_a_domain_inverts_every_regular_scalar() -> N
     assert total in Fields()
     assert total(ZZ(6)).is_unit()
 
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     rational_functions = polynomial.total_quotient_ring()
 

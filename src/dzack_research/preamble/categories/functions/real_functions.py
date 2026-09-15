@@ -1131,7 +1131,7 @@ class _SequenceSpaces(SageObject):
         1/8
         sage: ell(2).b(geometric, geometric)
         4/3
-        sage: t = PolynomialRing(QQ, "t").gen()
+        sage: t = QQ.polynomial_ring("t").gen()
         sage: truncated = ell(2)(1 + t + t**2)
         sage: truncated(3)
         0

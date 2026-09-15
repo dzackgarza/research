@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     AffineGSchemes,
     FiniteGluedInvariantQuotient,
     Groups,
-    PolynomialRing,
     Schemes,
     Spec,
     CommutativeAlgebras,
@@ -39,7 +38,7 @@ class _SwapChart:
 
     def __init__(self) -> None:
         self.group = Groups.C(2)
-        self.algebra = PolynomialRing(QQ, ("x", "y"))
+        self.algebra = QQ.polynomial_ring(("x", "y"))
         self.x = self.algebra.algebra_generator("x")
         self.y = self.algebra.algebra_generator("y")
         self.chart = Spec(self.algebra)
@@ -260,7 +259,7 @@ def test_glued_quotient_has_the_affine_target_universal_factorization(
     data = glued_swap_quotient.chart_data
     source = glued_swap_quotient.source
     quotient = glued_swap_quotient.quotient
-    target_algebra = PolynomialRing(QQ, "t")
+    target_algebra = QQ.polynomial_ring("t")
     target = Spec(target_algebra)
     coefficients = {0: 6, 1: 3, 2: 1}
     local_maps: IndexedFamily = finite_indexed_family(
@@ -291,7 +290,7 @@ def test_glued_quotient_rejects_a_noninvariant_global_map(
     data = glued_swap_quotient.chart_data
     source = glued_swap_quotient.source
     quotient = glued_swap_quotient.quotient
-    target_algebra = PolynomialRing(QQ, "t")
+    target_algebra = QQ.polynomial_ring("t")
     target = Spec(target_algebra)
     coefficients = {0: 6, 1: 3, 2: 1}
     local_maps: IndexedFamily = finite_indexed_family(
@@ -391,7 +390,7 @@ def test_glued_swap_action_detects_nonfree_stabilizers_chartwise(
 def test_one_chart_artin_schreier_glued_quotient_is_free() -> None:
     field = GF(2)
     group = Groups.C(2)
-    algebra = PolynomialRing(field, "x")
+    algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     chart = Spec(algebra)
     translation = CommutativeAlgebras(field).spectrum()(

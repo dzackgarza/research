@@ -11,9 +11,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
     InvertibleSheaf,
@@ -71,7 +68,7 @@ def cyclic_cover_presentation(
     globally trivialized cyclic cover of an affine scheme builds it once.
     """
 
-    presentation = PolynomialRing(algebra, CYCLIC_COVER_VARIABLE)
+    presentation = algebra.polynomial_ring(CYCLIC_COVER_VARIABLE)
     variable = presentation.algebra_generator(CYCLIC_COVER_VARIABLE)
     return (presentation).quotient_by_relations((variable ** Integer(degree) - presentation(branch_coefficient),),
     )

@@ -1,6 +1,6 @@
 r"""Completion is the represented inverse limit, not a selected finite stage."""
 
-from dzack_research.preamble.all import QQ, AdicallyCompleteRings, PolynomialRing, PowerSeriesRing
+from dzack_research.preamble.all import QQ, AdicallyCompleteRings, PowerSeriesRing
 
 
 def test_power_series_constructor_retains_the_same_adic_completion_data() -> None:
@@ -16,7 +16,7 @@ def test_power_series_constructor_retains_the_same_adic_completion_data() -> Non
 
 
 def test_adic_transition_maps_compose_on_the_same_inverse_system() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y))

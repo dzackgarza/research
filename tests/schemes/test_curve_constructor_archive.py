@@ -7,14 +7,13 @@ from dzack_research.preamble.all import (
     AffineSpace,
     ClosedSubschemes,
     Curves,
-    PolynomialRing,
     ProjectiveSpace,
 )
 from dzack_research.preamble.categories.schemes import Curve
 
 
 def test_curve_without_ambient_uses_the_polynomial_framing() -> None:
-    polynomial_ring = PolynomialRing(QQ, ("x", "y"))
+    polynomial_ring = QQ.polynomial_ring(("x", "y"))
     x, y = polynomial_ring.algebra_generators()
     curve = Curve(y - x**2)
 

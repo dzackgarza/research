@@ -6,14 +6,13 @@ from dzack_research.preamble.all import (
     AdicCompletions,
     Cat,
     FormalPowerSeriesRings,
-    PolynomialRing,
     PowerSeriesRing,
     Zp,
 )
 
 
 def test_adic_completion_routes_share_one_owned_parent_and_maps() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     ideal = ring.ideal(x, y)
@@ -35,7 +34,7 @@ def test_adic_completion_routes_share_one_owned_parent_and_maps() -> None:
 
 
 def test_completion_precision_is_part_of_the_computational_constructor_key() -> None:
-    ring = PolynomialRing(QQ, "t")
+    ring = QQ.polynomial_ring("t")
     t = ring.algebra_generator("t")
     ideal = ring.ideal(t)
 
@@ -50,7 +49,7 @@ def test_completion_precision_is_part_of_the_computational_constructor_key() -> 
 
 
 def test_power_series_notation_is_the_same_selected_completion() -> None:
-    polynomial = PolynomialRing(QQ, "t")
+    polynomial = QQ.polynomial_ring("t")
     t = polynomial.algebra_generator("t")
     defining = polynomial.ideal(t)
 

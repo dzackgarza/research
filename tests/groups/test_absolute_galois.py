@@ -4,7 +4,7 @@ from sage.misc.unknown import Unknown
 from sage.categories.homset import Homset
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
-from dzack_research.preamble.all import GF, NumberField, PolynomialRing, QQ, QuadraticField
+from dzack_research.preamble.all import GF, NumberField, QQ, QuadraticField
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
@@ -41,7 +41,7 @@ def test_absolute_galois_surface_is_publicly_exported() -> None:
 
 
 def _cubic_number_field(radicand, name="a"):
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     return NumberField(x**3 - QQ(radicand), name)
 
@@ -231,7 +231,7 @@ def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
         closure=closure,
         embedding=chosen_base_embedding,
     )
-    polynomial_ring = PolynomialRing(base_field, "y")
+    polynomial_ring = base_field.polynomial_ring("y")
     y = polynomial_ring.algebra_generator("y")
     extension_field = base_field.extension(y**2 - base_field(3), "b")
     stage = group.extension_data(extension_field)

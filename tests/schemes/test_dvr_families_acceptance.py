@@ -1,10 +1,9 @@
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.schemes.families import affine_equation_family
 
 
 def _nodal_dvr_family():
-    polynomial = PolynomialRing(QQ, ("t",))
+    polynomial = QQ.polynomial_ring(("t",))
     t = polynomial.algebra_generator("t")
     local = polynomial.localize_at_prime(polynomial.ideal(t))
 
@@ -54,7 +53,7 @@ def test_completion_precision_does_not_enter_the_exact_special_parameter_map() -
 
 
 def test_scalar_killed_family_detects_nonflatness_over_the_same_dvr() -> None:
-    polynomial = PolynomialRing(QQ, ("t",))
+    polynomial = QQ.polynomial_ring(("t",))
     t = polynomial.algebra_generator("t")
     local = polynomial.localize_at_prime(polynomial.ideal(t))
 

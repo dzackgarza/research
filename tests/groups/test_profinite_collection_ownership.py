@@ -2,13 +2,12 @@ from dzack_research.preamble.all import (
     QQ,
     AbsoluteGaloisGroup,
     NumberField,
-    PolynomialRing,
     QuadraticField,
 )
 
 
 def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:
-    x = PolynomialRing(QQ, "x").algebra_generator("x")
+    x = QQ.polynomial_ring("x").algebra_generator("x")
     quadratic = QuadraticField(2, "s")
     quartic = NumberField(x**4 - 2, "t")
     embeddings = quadratic.exact_embeddings(quartic)

@@ -3,13 +3,12 @@
 from dzack_research.preamble.all import (
     QQ,
     FinitelyPresentedModule,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _torsion_module():
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     free = ring.free_module(finite_ordered_set(("g",)))
     relations = ring.free_module(finite_ordered_set(("r",)))

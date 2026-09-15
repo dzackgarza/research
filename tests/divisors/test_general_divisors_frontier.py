@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
     Spec,
@@ -86,7 +85,7 @@ def test_cartier_local_equations_produce_units_and_the_associated_line_bundle() 
 
 
 def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
-    polynomial = PolynomialRing(QQ, "x,y,z")
+    polynomial = QQ.polynomial_ring("x,y,z")
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     z = polynomial.algebra_generator("z")

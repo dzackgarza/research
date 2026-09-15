@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
-    PolynomialRing,
     SymmetricAlgebras,
     _symmetric_algebra_on,
     _tensor_algebra_on,
@@ -86,11 +85,7 @@ def _symmetric_algebra_of(module):
     # such as ``2*x`` is instead represented by Sage's one-variable
     # *multivariate* polynomial parent, whose ideal reduction is exact over ZZ.
     if len(labels) == 1:
-        presentation_engine = PolynomialRing(
-            base,
-            1,
-            names=_variable_names(labels),
-        )
+        presentation_engine = base.polynomial_ring(1, names=_variable_names(labels))
 
         presentation_ring = refine_algebra(
             presentation_engine,

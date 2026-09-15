@@ -9,7 +9,7 @@ keeps the public mathematical consumer and does not recreate the synthetic-impor
 cache.
 """
 
-from dzack_research.preamble.all import QQ, PolynomialRing, matrix
+from dzack_research.preamble.all import QQ, matrix
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/symbols.py",
@@ -19,7 +19,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_public_session_names_need_no_synthetic_import_block() -> None:
-    ring = PolynomialRing(QQ, "u")
+    ring = QQ.polynomial_ring("u")
     u = ring.gen()
     operator = matrix([[u, ring.one()], [ring.zero(), u + 1]])
 

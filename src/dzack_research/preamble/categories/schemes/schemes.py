@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
-    PolynomialRing,
     SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -2264,7 +2263,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = PolynomialRing(rationals, "T")
+            polynomial = rationals.polynomial_ring("T")
             rational_functions = refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
             T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())
@@ -2567,7 +2566,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = PolynomialRing(rationals, "T")
+            polynomial = rationals.polynomial_ring("T")
             rational_functions = refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
             T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())

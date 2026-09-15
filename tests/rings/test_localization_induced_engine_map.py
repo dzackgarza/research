@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import PolynomialRing, QQ, CommutativeAlgebras
+from dzack_research.preamble.all import QQ, CommutativeAlgebras
 
 
 def test_localization_induced_map_retains_a_native_realization() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     localized_x = ring.localization(x)

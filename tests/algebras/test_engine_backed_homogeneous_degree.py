@@ -1,10 +1,10 @@
 import pytest
 
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import QQ
 
 
 def test_engine_backed_polynomial_degree_survives_unrepresented_module_coordinates() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
 

@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     AffineSchemes,
     GObjects,
     Groups,
-    PolynomialRing,
     ProjectiveSpace,
     Schemes,
     Spec,
@@ -24,7 +23,7 @@ ARCHIVE_RECONCILIATION = {
 
 def _coordinate_swap_action() -> tuple:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -60,7 +59,7 @@ def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -
 
 def test_generic_gobjects_constructor_does_not_construct_affine_actions() -> None:
     group = Groups.C(2)
-    scheme = Spec(PolynomialRing(QQ, "x"))
+    scheme = Spec(QQ.polynomial_ring("x"))
     identity = scheme.categorical_identity_morphism()
 
     with pytest.raises(TypeError):
@@ -86,7 +85,7 @@ def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
 
 def test_affine_scheme_action_rejects_generator_images_that_violate_relators() -> None:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     dilation = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(algebra)({"x": x + x}))

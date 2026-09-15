@@ -1050,9 +1050,8 @@ class AT21ADEDoubleCover(SageObject):
 
     @cached_method
     def log_boundary_coefficient_ring(self):
-        from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
-        return PolynomialRing(_rationals(), "epsilon")
+        return _rationals().polynomial_ring("epsilon")
 
     def log_boundary_divisor(self):
         r"""Return the equipped cover boundary ``D + epsilon R`` of AT21 Section 2."""
@@ -1084,14 +1083,13 @@ class AT21ADEDoubleCover(SageObject):
         local object is provided only for that selected source specialization;
         the global Dynkin label remains independent classification data.
         """
-        from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
         from dzack_research.preamble.categories.schemes.singularities import (
             IsolatedHypersurfaceSingularity,
         )
 
         if self.base_pair().dynkin_letter() != "E" or int(self.base_pair().dynkin_rank()) != 8:
             raise NotImplementedError("the represented AT21 local/global singularity specimen is E8")
-        ring = PolynomialRing(self.base_scheme().scheme_base_ring(), ("x", "y", "z"))
+        ring = self.base_scheme().scheme_base_ring().polynomial_ring(("x", "y", "z"))
         x, y, z = tuple(ring.algebra_generators())
         return IsolatedHypersurfaceSingularity(
             ring,

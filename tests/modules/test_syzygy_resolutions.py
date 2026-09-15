@@ -16,7 +16,6 @@ resolution truncated at the relations would report the wrong module there.
 
 from dzack_research.preamble.all import (
     FinitelyPresentedModule,
-    PolynomialRing,
     QQ,
     ZZ,
 )
@@ -25,7 +24,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _residue_field_module():
     r"""Return ``QQ[x,y]/(x,y)`` presented on one generator by ``x`` and ``y``."""
-    ring = PolynomialRing(QQ, "x,y")
+    ring = QQ.polynomial_ring("x,y")
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     free = ring.free_module(finite_ordered_set(("g",)))

@@ -9,7 +9,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -492,7 +491,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     )
     if len(names) != width:
         raise ValueError("projective homogeneous coordinates have dimension plus one names")
-    ring = PolynomialRing(base, names)
+    ring = base.polynomial_ring(names)
     labels = tuple(ring.algebra_generating_set())
     monomials = []
     exponent_data = {}
@@ -562,7 +561,7 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         for factor_position, width in enumerate(widths)
         for coordinate in range(width)
     )
-    ring = PolynomialRing(base, coordinate_names)
+    ring = base.polynomial_ring(coordinate_names)
     ring_labels = tuple(ring.algebra_generating_set())
     block_offsets = []
     offset = 0
@@ -799,7 +798,7 @@ def _projective_linear_system(line_bundle, sections):
 
 def _centered_jet_basis(base, dimension, jet_order):
     names = tuple(f"v{index}" for index in range(dimension))
-    ring = PolynomialRing(base, names)
+    ring = base.polynomial_ring(names)
     labels = tuple(ring.algebra_generating_set())
     monomials = []
     by_exponents = {}

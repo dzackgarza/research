@@ -2,7 +2,7 @@ r"""Affine-cover descent categories are owned and parameterized by actual covers
 
 import pytest
 
-from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+from dzack_research.preamble.all import QQ, Spec
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 
 
 def _two_chart_cover():
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     return scheme, scheme.distinguished_open_cover(x, algebra.one() - x)

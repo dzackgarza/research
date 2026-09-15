@@ -1644,11 +1644,7 @@ class _GeneralPresentedModule:
             return NotImplemented
 
         if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
-            singular_ring = PolynomialRing(
-                coefficient_field,
-                1,
-                engine.variable_names(),
-            )
+            singular_ring = coefficient_field.polynomial_ring(1, engine.variable_names())
             to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
@@ -2268,11 +2264,7 @@ def _singular_presentation_kernel(morphism):
     # Singular's syz entry point requires a multivariate polynomial parent,
     # even in one variable.  Cross only this backend representation.
     if presentation_ring.ngens() == 1 and "multi_polynomial" not in type(presentation_ring).__module__:
-        singular_ring = PolynomialRing(
-            coefficient_field,
-            1,
-            presentation_ring.variable_names(),
-        )
+        singular_ring = coefficient_field.polynomial_ring(1, presentation_ring.variable_names())
     else:
         singular_ring = presentation_ring
 

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for exact algebra through the public session symbols."""
 
-from dzack_research.preamble.all import QQ, PolynomialRing, matrix
+from dzack_research.preamble.all import QQ, matrix
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_sage_symbols.py",
@@ -10,7 +10,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_public_session_symbols_support_the_archived_polynomial_matrix_identity() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.gen()
     square = matrix([[x, ring.one()], [ring.zero(), x]])
 

@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     CommutativeAlgebras,
     QQ,
     ZZ,
-    PolynomialRing,
 )
 
 
@@ -71,7 +70,7 @@ def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None
 
 
 def test_scalar_restriction_retains_the_selected_ring_map_identity() -> None:
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     first_map = QQ.Mor(QQ).identity()
     second_map = QQ.Mor(QQ).identity()
 

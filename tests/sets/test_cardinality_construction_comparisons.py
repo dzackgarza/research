@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     RR,
     ZZ,
-    PolynomialRing,
     QQbar,
     Sets,
     aleph0,
@@ -45,7 +44,7 @@ def test_cardinality_compares_a_countable_power_set_with_two_to_aleph_zero() -> 
 
 
 def test_cardinality_comparisons_retain_countable_and_continuum_factor_arithmetic() -> None:
-    polynomial = PolynomialRing(QQ, "y")
+    polynomial = QQ.polynomial_ring("y")
     countable_product = ZZ.product_with(polynomial)
     continuum_product = ZZ.product_with(RR)
     continuum_coproduct = QQbar.coproduct_with(CC)

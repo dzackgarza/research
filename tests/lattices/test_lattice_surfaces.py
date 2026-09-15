@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
     OwnedOrders,
-    PolynomialRing,
     ProjectiveModules,
     QQ,
     QuadraticField,
@@ -150,7 +149,7 @@ def test_number_field_properties_selected_primitive_element_and_order_are_distin
 
 
 def test_galois_group_does_not_mean_the_normal_closure_group() -> None:
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     field = NumberField(x**3 - 2, "a")
 

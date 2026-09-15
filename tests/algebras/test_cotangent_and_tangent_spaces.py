@@ -9,13 +9,12 @@ dimension one, which is what makes the origin singular.
 
 from dzack_research.preamble.all import (
     KahlerDifferentials,
-    PolynomialRing,
     QQ,
 )
 
 
 def test_the_affine_plane_has_a_two_dimensional_cotangent_space() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     differentials = plane.kahler_differentials()
@@ -26,7 +25,7 @@ def test_the_affine_plane_has_a_two_dimensional_cotangent_space() -> None:
 
 
 def test_the_node_has_a_two_dimensional_cotangent_space_at_its_singular_point() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     node = (plane).quotient_by_relations([y**2 - x**3 - x**2])

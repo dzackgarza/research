@@ -9,7 +9,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as engine_parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -451,7 +450,7 @@ class ConvexPolytopes(OwnedCategory):
 
             rationals = _own_ring(SageQQ)
             integers = _own_ring(SageZZ)
-            polynomial_ring = PolynomialRing(rationals, variable)
+            polynomial_ring = rationals.polynomial_ring(variable)
             t = polynomial_ring.algebra_generator(variable)
             d = int(self.dimension())
             values = [

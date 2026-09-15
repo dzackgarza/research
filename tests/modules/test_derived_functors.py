@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    PolynomialRing,
 )
 
 
@@ -55,7 +54,7 @@ def test_tor_remembers_the_tensored_resolution() -> None:
 
 
 def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     square, line = _cyclic(ring, x**2), _cyclic(ring, x)
     assert tuple(square.tor(line, degree=1).invariant_factors()) == (x,)

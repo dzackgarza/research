@@ -4,12 +4,11 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    PolynomialRing,
 )
 
 
 def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     cusp = (plane).quotient_by_relations((y**2 - x**3,))
@@ -21,7 +20,7 @@ def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
 
 
 def test_multivariable_origin_completion_is_not_truncated_by_computation_precision() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y), precision=4)
@@ -38,7 +37,7 @@ def test_multivariable_origin_completion_is_not_truncated_by_computation_precisi
 
 
 def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y), precision=5)
@@ -64,7 +63,7 @@ def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> Non
 
 
 def test_completion_map_and_projection_form_the_canonical_source_cone() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y), precision=3)

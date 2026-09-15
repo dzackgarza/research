@@ -10,7 +10,6 @@ says the module is zero away from its support.
 from dzack_research.preamble.all import (
     AdditiveGroups,
     FinitelyPresentedModule,
-    PolynomialRing,
     QQ,
     ZZ,
 )
@@ -29,7 +28,7 @@ def _cyclic_module(ring, scalar):
 
 
 def test_inverting_the_annihilator_kills_a_cyclic_module() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     module = _cyclic_module(ring, x)
 
@@ -42,7 +41,7 @@ def test_inverting_the_annihilator_kills_a_cyclic_module() -> None:
 
 
 def test_inverting_a_scalar_outside_the_annihilator_keeps_the_module() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     module = _cyclic_module(ring, x)
 
@@ -57,7 +56,7 @@ def test_a_torsion_module_vanishes_at_a_prime_outside_its_support() -> None:
 
 
 def test_localizing_a_free_module_preserves_its_fraction_action_and_map() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     free = ring.free_module(finite_ordered_set(("g",)))
     generator = free.module_generator("g")

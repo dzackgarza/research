@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, PolynomialRing
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
 )
@@ -11,7 +11,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_cusp_milnor_tjurina_and_completion_share_the_hypersurface_equation() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     cusp = IsolatedHypersurfaceSingularity(plane, y**2 - x**3)
 
@@ -25,7 +25,7 @@ def test_cusp_milnor_tjurina_and_completion_share_the_hypersurface_equation() ->
 
 
 def test_a_two_node_has_one_dimensional_milnor_and_tjurina_algebras() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     node = IsolatedHypersurfaceSingularity(plane, x**2 + y**2)
 
@@ -36,7 +36,7 @@ def test_a_two_node_has_one_dimensional_milnor_and_tjurina_algebras() -> None:
 
 
 def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     smooth = IsolatedHypersurfaceSingularity(plane, x + y**2)
 
@@ -51,7 +51,7 @@ def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> N
 
 
 def test_cusp_delta_branch_and_conductor_are_local_normalization_invariants() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     cusp = IsolatedHypersurfaceSingularity(plane, y**2 - x**3)
 
@@ -83,7 +83,7 @@ def test_selected_ade_plane_curve_normal_forms_retain_their_exact_type() -> None
 
 
 def test_ade_recognizer_does_not_claim_coordinate_equivalence() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     rescaled_a2 = IsolatedHypersurfaceSingularity(plane, 2 * x**2 + y**3)
 

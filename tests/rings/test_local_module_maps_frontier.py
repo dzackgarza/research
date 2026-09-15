@@ -2,13 +2,12 @@ r"""Comparison maps at the supported local-module boundary."""
 
 from dzack_research.preamble.all import (
     QQ,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_generated_localization_extension_and_contraction_are_the_same_ideal() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     ideal = ring.ideal(y)
@@ -23,7 +22,7 @@ def test_generated_localization_extension_and_contraction_are_the_same_ideal() -
 
 
 def test_prime_local_units_and_residue_map_use_the_selected_local_ring() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     point = ring.spectrum()(ring.ideal(x))
     local = point.local_ring()
@@ -37,7 +36,7 @@ def test_prime_local_units_and_residue_map_use_the_selected_local_ring() -> None
 
 
 def test_nonreduced_local_map_kernel_agrees_before_and_after_transport() -> None:
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     node = (presentation).quotient_by_relations((x * y,))

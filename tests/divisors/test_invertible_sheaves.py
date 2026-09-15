@@ -33,14 +33,12 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     from dzack_research.preamble.all import (
         InvertibleSheaf,
         Spec,
-        InvertibleSheaf,
     )
-    from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -84,12 +82,11 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
         InvertibleSheaf,
         Spec,
     )
-    from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -144,12 +141,11 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
         InvertibleSheaf,
         Spec,
     )
-    from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)

@@ -2,7 +2,7 @@ r"""Cox-ring categories are owned and parameterized by represented toric schemes
 
 import pytest
 
-from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+from dzack_research.preamble.all import QQ, Spec
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
@@ -28,7 +28,7 @@ def test_cox_ring_category_uses_the_actual_toric_scheme_parameter() -> None:
 
 
 def test_cox_ring_category_rejects_a_nontoric_scheme_parameter() -> None:
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     affine_line = Spec(algebra)
 
     assert affine_line not in RepresentedToricSchemes()

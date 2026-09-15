@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     RR,
     FramedAlgebras,
     MatrixSpace,
-    PolynomialRing,
     PowerSeriesRing,
     aleph0,
     continuum,
@@ -35,6 +34,6 @@ def test_rational_power_series_have_continuum_cardinality() -> None:
 
 
 def test_rational_polynomial_ring_is_countable() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
 
     assert polynomial.cardinality() == aleph0

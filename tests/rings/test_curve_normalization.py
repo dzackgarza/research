@@ -1,10 +1,10 @@
 r"""Normalization, conductor, and delta for represented affine curve domains."""
 
-from dzack_research.preamble.all import QQ, PolynomialRing
+from dzack_research.preamble.all import QQ
 
 
 def _cusp_ring():
-    polynomial = PolynomialRing(QQ, "x", "y")
+    polynomial = QQ.polynomial_ring("x", "y")
     x, y = (polynomial.algebra_generator(name) for name in ("x", "y"))
     return polynomial.quotient_ring(polynomial.ideal(y**2 - x**3))
 
@@ -31,7 +31,7 @@ def test_cusp_conductor_is_a_proper_ideal_of_the_original_curve_ring() -> None:
 
 
 def test_a_smooth_affine_line_is_its_own_normalization() -> None:
-    polynomial = PolynomialRing(QQ, "x", "y")
+    polynomial = QQ.polynomial_ring("x", "y")
     x, y = (polynomial.algebra_generator(name) for name in ("x", "y"))
     line = polynomial.quotient_ring(polynomial.ideal(y - x))
 

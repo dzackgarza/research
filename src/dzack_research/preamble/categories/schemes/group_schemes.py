@@ -19,9 +19,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -416,7 +413,7 @@ def _roots_of_unity_group_scheme(base_ring, degree: int):
     if degree < 1:
         raise ValueError("mu_n requires n >= 1")
     base = _own_ring(base_ring)
-    presentation = PolynomialRing(base, "u")
+    presentation = base.polynomial_ring("u")
     u_presentation = presentation.algebra_generator("u")
     algebra = (presentation).quotient_by_relations((u_presentation**degree - presentation.one(),),
     )

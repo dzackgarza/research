@@ -1,10 +1,10 @@
 r"""The theorem-backed localization/completion comparisons and their boundary."""
 
-from dzack_research.preamble.all import QQ, PolynomialRing
+from dzack_research.preamble.all import QQ
 
 
 def test_maximal_adic_completion_agrees_before_and_after_localization() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     maximal = ring.ideal(x, y)
@@ -28,7 +28,7 @@ def test_maximal_adic_completion_agrees_before_and_after_localization() -> None:
 
 
 def test_inverting_the_adic_generator_before_completion_collapses_the_topology() -> None:
-    ring = PolynomialRing(QQ, ("t",))
+    ring = QQ.polynomial_ring(("t",))
     t = ring.algebra_generator("t")
     completion = ring.adic_completion(ring.ideal(t), precision=6)
     punctured = ring.localization(t)
@@ -42,7 +42,7 @@ def test_inverting_the_adic_generator_before_completion_collapses_the_topology()
 
 
 def test_nonmaximal_completion_does_not_claim_the_maximal_localization_isomorphism() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     completion = ring.adic_completion(ring.ideal(x), precision=5)
 

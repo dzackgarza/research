@@ -30,9 +30,9 @@ def _rank_one_map(source, target, scalar):
 
 
 def test_two_chart_module_descent_builds_the_actual_compatible_section_module() -> None:
-    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, Spec
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -88,11 +88,10 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
     from dzack_research.preamble.all import (
         QQ,
         Modules,
-        PolynomialRing,
         Spec,
     )
 
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, y, algebra.one() - x - y)
@@ -166,9 +165,9 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
 
 
 def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections() -> None:
-    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, Spec
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -225,9 +224,9 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
 
 
 def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> None:
-    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, Spec
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -266,9 +265,9 @@ def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> Non
 
 
 def test_module_descent_morphisms_have_identities_and_compose_chartwise() -> None:
-    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, Spec
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
@@ -323,12 +322,11 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
         QQ,
         FinitelyPresentedModule,
         FinitelyPresentedModules,
-        PolynomialRing,
         Spec,
     )
     from dzack_research.preamble.categories.sets import finite_ordered_set
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)

@@ -1,10 +1,10 @@
 r"""Finite-length presented modules use their selected relation module."""
 
-from dzack_research.preamble.all import QQ, ZZ, PolynomialRing
+from dzack_research.preamble.all import QQ, ZZ
 
 
 def test_square_of_rational_origin_has_length_three() -> None:
-    ring = PolynomialRing(QQ, "x,y")
+    ring = QQ.polynomial_ring("x,y")
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     maximal = ring.ideal(x, y)
@@ -15,7 +15,7 @@ def test_square_of_rational_origin_has_length_three() -> None:
 
 
 def test_nonrational_closed_point_divides_base_dimension_by_residue_degree() -> None:
-    ring = PolynomialRing(QQ, "x,y")
+    ring = QQ.polynomial_ring("x,y")
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     maximal = ring.ideal(x**2 + 1, y)

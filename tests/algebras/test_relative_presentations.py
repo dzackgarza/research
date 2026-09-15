@@ -4,15 +4,12 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 
 
 def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family = (presentation).quotient_by_relations((x * y - t,))
@@ -49,7 +46,7 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
 
 
 def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
-    presentation = PolynomialRing(QQ, "x")
+    presentation = QQ.polynomial_ring("x")
     x = presentation.algebra_generator("x")
     algebra = (presentation).quotient_by_relations(())
     xbar = algebra.algebra_generator("x")
@@ -60,12 +57,12 @@ def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
 
 
 def test_pushout_accepts_maps_from_a_presented_source() -> None:
-    source_presentation = PolynomialRing(QQ, "t")
+    source_presentation = QQ.polynomial_ring("t")
     t = source_presentation.algebra_generator("t")
     source = (source_presentation).quotient_by_relations((t**2,))
     tbar = source.algebra_generator("t")
 
-    target_presentation = PolynomialRing(QQ, "x")
+    target_presentation = QQ.polynomial_ring("x")
     x = target_presentation.algebra_generator("x")
     target = (target_presentation).quotient_by_relations((x**2,))
     xbar = target.algebra_generator("x")
@@ -116,7 +113,7 @@ def test_relative_number_field_algebra_uses_an_absolute_primitive_presentation()
     )
 
     base = QuadraticField(2, "a")
-    relative_polynomials = PolynomialRing(base, "u")
+    relative_polynomials = base.polynomial_ring("u")
     u = relative_polynomials.algebra_generator("u")
     field = NumberField(u**2 - base.primitive_element(), "b")
     algebra = field.as_algebra()

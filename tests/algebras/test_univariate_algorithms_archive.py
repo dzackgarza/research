@@ -1,10 +1,10 @@
 r"""Archive reconciliation for univariate polynomial-ring algorithms."""
 
-from dzack_research.preamble.all import QQ, PolynomialRing, QQbar
+from dzack_research.preamble.all import QQ, QQbar
 
 
 def test_archive_euclidean_algorithms_return_owned_polynomial_elements() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     cubic = x**3 - 6 * x**2 + 11 * x - 6
     quadratic = x**2 - 3 * x + 2
@@ -24,7 +24,7 @@ def test_archive_euclidean_algorithms_return_owned_polynomial_elements() -> None
 
 
 def test_archive_factorization_retains_owned_factors_multiplicities_and_unit() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     cubic = (x - 1) * (x - 2) * (x - 3)
     factorization = cubic.factor()
@@ -42,7 +42,7 @@ def test_archive_factorization_retains_owned_factors_multiplicities_and_unit() -
 
 
 def test_archive_discriminant_resultant_roots_and_splitting_field_cross_back_owned() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     quadratic = x**2 - 3 * x + 2
     cubic = (x - 1) * (x - 2) * (x - 3)

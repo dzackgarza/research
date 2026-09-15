@@ -13,14 +13,13 @@ the nilpotent.
 
 from dzack_research.preamble.all import (
     Modules,
-    PolynomialRing,
     QQ,
 )
 
 
 def _fat_point_projection():
     r"""Return the fat point, the reduced point, and the projection between them."""
-    line = PolynomialRing(QQ, "x")
+    line = QQ.polynomial_ring("x")
     x = line.algebra_generator("x")
     fat_point = (line).quotient_by_relations([x**2])
     point, projection = fat_point._quotient_by_algebra_elements([fat_point(x)])

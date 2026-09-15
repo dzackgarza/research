@@ -16,7 +16,6 @@ from dzack_research.preamble.all import (
     MatrixSpace,
     Modules,
     ModulesWithChosenFinitePresentation,
-    PolynomialRing,
     Set,
 )
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -307,7 +306,7 @@ def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
 
 
 def test_localization_is_scalar_extension_of_the_selected_presentation_and_action() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     target = ring.free_module(finite_ordered_set(("g",)))
     relations = ring.free_module(finite_ordered_set(("r",)))

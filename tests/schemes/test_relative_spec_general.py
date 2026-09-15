@@ -1,15 +1,15 @@
-from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+from dzack_research.preamble.all import QQ, Spec
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.schemes.schemes import affine_spec_morphism
 
 
 def _polynomial_algebra_descent(variable):
-    ambient = PolynomialRing(QQ, "x")
+    ambient = QQ.polynomial_ring("x")
     x = ambient.algebra_generator("x")
     scheme = Spec(ambient)
     cover = scheme.distinguished_open_cover(x, ambient.one() - x)
     local_algebras = tuple(
-        PolynomialRing(cover.open(index).coordinate_algebra(), variable)
+        cover.open(index).coordinate_algebra().polynomial_ring(variable)
         for index in cover.atlas()
     )
     left = cover.restrict_algebra(local_algebras[0], 0, 1)
@@ -46,7 +46,7 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     # Rebuild the target datum on the source cover so the algebra-descent Hom
     # has one literal cover owner, while retaining a genuinely different local algebra.
     target_local = tuple(
-        PolynomialRing(source_cover.open(index).coordinate_algebra(), "w")
+        source_cover.open(index).coordinate_algebra().polynomial_ring("w")
         for index in source_cover.atlas()
     )
     target_left = source_cover.restrict_algebra(target_local[0], 0, 1)

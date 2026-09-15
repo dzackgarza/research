@@ -5,9 +5,9 @@ from itertools import combinations
 
 def _three_chart_cover():
     r"""``A^1_Q`` covered by ``D(x)``, ``D(1-x)`` and ``D(2-x)``."""
-    from dzack_research.preamble.all import QQ, PolynomialRing, Spec
+    from dzack_research.preamble.all import QQ, Spec
 
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(

@@ -14,7 +14,6 @@ import pytest
 from dzack_research.preamble.all import (
     GF,
     QQ,
-    PolynomialRing,
     Schemes,
     Spec,
 )
@@ -32,7 +31,7 @@ ARCHIVE_RECONCILIATION = {
 
 def _hyperelliptic_double_cover():
     r"""``z^2 = x^4 - 1`` over ``QQ``: a genus-one curve branched at four points."""
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 2)
     return algebra, x, covers, covers(x**4 - algebra.one())
@@ -97,7 +96,7 @@ def test_double_cover_ramification_is_the_differential_fitting_scheme_over_the_b
 
 
 def test_degree_three_ramification_retains_the_square_different() -> None:
-    finite_line = PolynomialRing(GF(7), "x")
+    finite_line = GF(7).polynomial_ring("x")
     cover = CyclicCovers(finite_line, 3)(finite_line.algebra_generator("x"))
     z = cover.cover_variable()
     ramification_ideal = cover.ramification_subscheme().defining_ideal_owned()
@@ -147,7 +146,7 @@ def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base()
 
 
 def test_the_trivial_cover_is_the_unramified_torsor_with_a_free_deck_action() -> None:
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     cover = CyclicCovers(algebra, 2)(algebra.one())
     acted = cover.constant_deck_action()
     z = cover.cover_variable()
@@ -175,7 +174,7 @@ def test_a_scalar_change_of_the_base_carries_the_cover_presentation() -> None:
 
 
 def test_a_degree_three_cover_over_QQ_still_has_its_mu_three_action() -> None:
-    rational_line = PolynomialRing(QQ, "x")
+    rational_line = QQ.polynomial_ring("x")
     covers_over_QQ = CyclicCovers(rational_line, 3)
     cover_over_QQ = covers_over_QQ(rational_line.algebra_generator("x"))
 
@@ -193,7 +192,7 @@ def test_a_degree_three_cover_over_QQ_still_has_its_mu_three_action() -> None:
     )
 
     # 7 = 1 mod 3, so GF(7) holds a primitive cube root of unity.
-    finite_line = PolynomialRing(GF(7), "x")
+    finite_line = GF(7).polynomial_ring("x")
     covers = CyclicCovers(finite_line, 3)
     root = covers.deck_root_of_unity()
     cover = covers(finite_line.algebra_generator("x"))

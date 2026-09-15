@@ -1,10 +1,10 @@
 r"""Archive reconciliation for multiplication endomorphisms of number fields."""
 
-from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
+from dzack_research.preamble.all import QQ, NumberField
 
 
 def _quadratic_field():
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     return NumberField(x**2 - 2, "a")
 

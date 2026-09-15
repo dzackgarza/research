@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     NumberField,
-    PolynomialRing,
     aleph0,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -35,8 +34,8 @@ def test_fraction_field_is_the_nonzero_localization_with_canonical_realization()
 
 def test_fraction_fields_of_countable_polynomial_domains_remain_countable() -> None:
     domains = (
-        PolynomialRing(GF(5), "t"),
-        PolynomialRing(QQ, "x"),
+        GF(5).polynomial_ring("t"),
+        QQ.polynomial_ring("x"),
     )
 
     for domain in domains:
@@ -101,7 +100,7 @@ def test_zero_divisor_ring_does_not_use_the_fraction_field_specialization() -> N
 
 
 def test_number_field_order_keeps_its_canonical_fraction_field() -> None:
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     field = NumberField(x**2 - 5, "a")
     order = field.ring_of_integers()

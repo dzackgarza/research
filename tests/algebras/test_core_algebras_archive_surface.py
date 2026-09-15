@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     OwnedAlgebras,
     finite_algebra_generators,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
 
 ARCHIVE_RECONCILIATION = {
@@ -40,7 +39,7 @@ def test_archived_owned_algebra_retains_the_scalar_structure_map() -> None:
 
 
 def test_archived_framed_algebra_generators_are_the_selected_finite_family() -> None:
-    polynomial = PolynomialRing(QQ, ("x", "y"))
+    polynomial = QQ.polynomial_ring(("x", "y"))
     generators = finite_algebra_generators(polynomial)
 
     assert polynomial in FramedAlgebras(QQ)

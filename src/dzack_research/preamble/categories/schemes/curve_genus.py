@@ -26,7 +26,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
@@ -230,7 +229,7 @@ def rational_quintic_with_two_nodes_normalization():
         ),
     )
 
-    local = PolynomialRing(_RATIONALS, ("u", "v"))
+    local = _RATIONALS.polynomial_ring(("u", "v"))
     u, v = tuple(local.algebra_generators())
     first = _origin_contribution(
         v**2 - (u + 1) * u**2 * (u - 3) ** 2,
@@ -277,7 +276,7 @@ def rational_quintic_with_nonrational_node_normalization():
         ),
     )
 
-    affine = PolynomialRing(_RATIONALS, ("x", "y"))
+    affine = _RATIONALS.polynomial_ring(("x", "y"))
     x, y = tuple(affine.algebra_generators())
     affine_singularity = IsolatedHypersurfaceSingularity(
         affine,
@@ -290,7 +289,7 @@ def rational_quintic_with_nonrational_node_normalization():
         projective_support="V(X^2+Z^2,Y) on Z != 0",
     )
 
-    infinity_ring = PolynomialRing(_RATIONALS, ("x", "z"))
+    infinity_ring = _RATIONALS.polynomial_ring(("x", "z"))
     x_inf, z_inf = tuple(infinity_ring.algebra_generators())
     infinity = _origin_contribution(
         z_inf**3 - x_inf * (x_inf**2 + z_inf**2) ** 2,

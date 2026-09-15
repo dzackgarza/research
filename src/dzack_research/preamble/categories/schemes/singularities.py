@@ -8,7 +8,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
     SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -149,7 +148,7 @@ class IsolatedHypersurfaceSingularity:
             raise NotImplementedError(
                 "the represented ADE plane-curve normal forms currently require characteristic zero"
             )
-        ring = PolynomialRing(base_ring, tuple(names))
+        ring = base_ring.polynomial_ring(tuple(names))
         return cls(ring, _ade_normal_form_equation(ring, ade_type))
 
     def polynomial_ring(self):

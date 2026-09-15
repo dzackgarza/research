@@ -1,6 +1,6 @@
 r"""Algebra descent across affine atlases with genuinely distinct overlap rings."""
 
-from dzack_research.preamble.all import QQ, AffineSpace, PolynomialRing
+from dzack_research.preamble.all import QQ, AffineSpace
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
@@ -85,7 +85,7 @@ def _three_chart_datum():
 
 def _rank_one_polynomial_algebras(labels, datum):
     return {
-        label: PolynomialRing(datum.chart(label).coordinate_algebra(), "t")
+        label: datum.chart(label).coordinate_algebra().polynomial_ring("t")
         for label in labels
     }
 

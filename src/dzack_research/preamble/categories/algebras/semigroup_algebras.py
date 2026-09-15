@@ -8,9 +8,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -67,7 +64,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             raise ValueError("an affine semigroup presentation needs one variable per generator")
 
         base = self.base_ring()
-        presentation = PolynomialRing(base, names)
+        presentation = base.polynomial_ring(names)
         engine_presentation = _engine_ring(presentation)
         columns = _engine_matrix(SageZZ, coordinates).transpose()
         engine_ideal = _SageToricIdeal(

@@ -1,13 +1,13 @@
 r"""Archive reconciliation for normalizers of open absolute-Galois subgroups."""
 
-from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
+from dzack_research.preamble.all import QQ, NumberField
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
 
 
 def test_nongalois_cubic_has_trivial_open_subgroup_normalizer_quotient() -> None:
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.gen()
     cubic = NumberField(x**3 - QQ(2), "a")
     absolute = AbsoluteGaloisGroup(QQ)
@@ -22,7 +22,7 @@ def test_nongalois_cubic_has_trivial_open_subgroup_normalizer_quotient() -> None
 
 
 def test_quadratic_open_subgroup_normalizer_quotient_is_its_galois_group() -> None:
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.gen()
     quadratic = NumberField(x**2 - QQ(5), "a")
     absolute = AbsoluteGaloisGroup(QQ)

@@ -187,13 +187,13 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
 
 
 def _cusp_parametrization():
-    from dzack_research.preamble.all import AffineSpace, PolynomialRing, CommutativeAlgebras
+    from dzack_research.preamble.all import AffineSpace, CommutativeAlgebras
 
     plane = AffineSpace(2, QQ, names=("x", "y"))
     algebra = plane.coordinate_ring()
     algebra.algebra_generator("x")
     algebra.algebra_generator("y")
-    line_ring = PolynomialRing(QQ, "t")
+    line_ring = QQ.polynomial_ring("t")
     t = line_ring.algebra_generator("t")
     morphism = CommutativeAlgebras(QQ).spectrum()(
         algebra.Mor(line_ring)({"x": t**2, "y": t**3})

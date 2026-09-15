@@ -21,7 +21,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
@@ -34,7 +33,7 @@ class HesseBertiniFamily(SageObject):
 
     def __init__(self) -> None:
         base = _own_ring(SageQQ)
-        parameter = PolynomialRing(base, "t")
+        parameter = base.polynomial_ring("t")
         t = parameter.algebra_generator("t")
         plane = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
         relative_sections = plane.O(3).global_sections()

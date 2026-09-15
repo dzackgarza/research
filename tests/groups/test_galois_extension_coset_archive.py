@@ -1,11 +1,11 @@
-from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
+from dzack_research.preamble.all import QQ, NumberField, QuadraticField
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
 
 
 def test_extensions_of_gaussian_conjugation_form_the_expected_finite_coset() -> None:
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     cyclotomic = NumberField(x**4 - x**2 + QQ.one(), "z")
     zeta = cyclotomic.primitive_element()

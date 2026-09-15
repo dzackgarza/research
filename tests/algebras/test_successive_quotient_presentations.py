@@ -8,13 +8,12 @@ as a second quotient object.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
 )
 
 
 def test_a_second_cut_stays_on_the_first_presentation() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     axes = (plane).quotient_by_relations([x * y])
@@ -26,7 +25,7 @@ def test_a_second_cut_stays_on_the_first_presentation() -> None:
 
 
 def test_the_second_cut_imposes_both_relations() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     axes = (plane).quotient_by_relations([x * y])
@@ -40,7 +39,7 @@ def test_the_second_cut_imposes_both_relations() -> None:
 
 def test_one_quotient_operation_serves_a_free_and_a_presented_algebra() -> None:
     r"""The free polynomial algebra is the case with no relations yet."""
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
 

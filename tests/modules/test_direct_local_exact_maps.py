@@ -7,12 +7,12 @@ presented kernel/cokernel machinery rather than requiring provenance from a
 map over the unlocalized source ring.
 """
 
-from dzack_research.preamble.all import QQ, PolynomialRing
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def test_direct_map_over_a_prime_local_ring_has_exact_kernel_and_cokernel() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     point = ring.spectrum()(ring.ideal(x))
     local = point.local_ring()
@@ -33,7 +33,7 @@ def test_direct_map_over_a_prime_local_ring_has_exact_kernel_and_cokernel() -> N
 
 
 def test_direct_local_map_detects_a_nonunit_cokernel() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     local = ring.spectrum()(ring.ideal(x)).local_ring()
     module = local.free_module(finite_ordered_set(("g",)))

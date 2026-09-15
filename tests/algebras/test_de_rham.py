@@ -86,11 +86,10 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
 
 
 def test_relative_conormal_and_tangent_comparison_for_xy_equals_t() -> None:
-    from dzack_research.preamble.all import PolynomialRing
 
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     algebra = (presentation).quotient_by_relations((x * y - t,))

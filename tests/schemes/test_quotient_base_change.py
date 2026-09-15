@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     AffineGSchemes,
     Groups,
-    PolynomialRing,
     QuadraticField,
     Spec,
     CommutativeAlgebras,
@@ -14,7 +13,7 @@ from dzack_research.preamble.all import (
 
 def _swap_action():
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -53,7 +52,7 @@ def test_reynolds_base_change_hypothesis_refuses_modular_characteristic() -> Non
 
 def test_affine_invariant_family_map_descends_through_same_universal_quotient() -> None:
     _group, acted = _swap_action()
-    target_algebra = PolynomialRing(QQ, "t")
+    target_algebra = QQ.polynomial_ring("t")
     target = Spec(target_algebra)
     source_algebra = acted.coordinate_algebra()
     x = source_algebra.algebra_generator("x")

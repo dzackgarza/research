@@ -9,13 +9,12 @@ to the overlap map between their charts.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
 )
 
 
 def _projective_plane_coordinates():
-    ring = PolynomialRing(QQ, "x,y,z")
+    ring = QQ.polynomial_ring("x,y,z")
     return (
         ring,
         ring.algebra_generator("x"),

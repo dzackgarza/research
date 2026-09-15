@@ -12,7 +12,6 @@ because ``y`` annihilates it, while the generator does not.
 
 from dzack_research.preamble.all import (
     FinitelyPresentedModule,
-    PolynomialRing,
     QQ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _coordinate_axes():
     r"""Return ``QQ[x,y]``, its variables, and ``QQ[x,y]/(xy)`` on one generator."""
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     free = ring.free_module(finite_ordered_set(("g",)))

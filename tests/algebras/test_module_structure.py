@@ -13,9 +13,6 @@ from dzack_research.preamble.all import (
     OwnedRings,
     QuadraticField,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -94,9 +91,9 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
 
 
 def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family = (presentation).quotient_by_relations((x * y - t,))
@@ -106,7 +103,7 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
     assert family.is_torsion_free()
     assert family.is_flat()
 
-    killed_presentation = PolynomialRing(parameter, ("z", "w"))
+    killed_presentation = parameter.polynomial_ring(("z", "w"))
     killed = (killed_presentation).quotient_by_relations((t,))
     assert killed.is_integral_domain()
     assert not killed.is_torsion_free()
@@ -114,7 +111,7 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
 
 
 def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication() -> None:
-    presentation = PolynomialRing(QQ, "z")
+    presentation = QQ.polynomial_ring("z")
     z = presentation.algebra_generator("z")
     algebra = (presentation).quotient_by_relations((z**2 - QQ.one(),))
 

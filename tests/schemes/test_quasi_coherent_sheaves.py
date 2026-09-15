@@ -3,7 +3,6 @@ r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, d
 from dzack_research.preamble.all import (
     AffineSpace,
     LocalRings,
-    PolynomialRing,
     QQ,
     Spec,
     CommutativeAlgebras,
@@ -11,7 +10,7 @@ from dzack_research.preamble.all import (
 
 
 def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
     scheme = Spec(algebra)
     sheaf = scheme.structure_sheaf()
@@ -61,7 +60,7 @@ def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    line = PolynomialRing(QQ, "t")
+    line = QQ.polynomial_ring("t")
     t = line.algebra_generator("t")
     parametrization = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
     affine_line = parametrization.domain()
@@ -96,7 +95,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     line = AffineSpace(1, QQ, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
-    cover_presentation = PolynomialRing(QQ, ("x", "z"))
+    cover_presentation = QQ.polynomial_ring(("x", "z"))
     xc, z = cover_presentation.algebra_generators()
     cover_algebra = (cover_presentation).quotient_by_relations((z**2 - xc,))
     structure = algebra.Mor(cover_algebra)({"x": cover_algebra.algebra_generator("x")})
@@ -108,7 +107,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     assert relative in line.scheme_category().SliceOver(line)
 
     # Base change along the closed point x = 1 gives Spec of QQ[z]/(z^2 - 1), two points.
-    point_algebra = PolynomialRing(QQ, "u")
+    point_algebra = QQ.polynomial_ring("u")
     u = point_algebra.algebra_generator("u")
     point_map = CommutativeAlgebras(QQ).spectrum()(algebra.Mor(point_algebra)({"x": point_algebra.one()}))
     fibre = point_map.codomain().scheme_category().fiber_product(relative.arrow(), point_map)

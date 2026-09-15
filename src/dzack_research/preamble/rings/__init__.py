@@ -3,12 +3,6 @@ r"""Owned ring implementations and the public ring-construction surface."""
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    LaurentPolynomialRing as _LaurentPolynomialRing,
-)
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing as _PolynomialRing,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletions,
@@ -151,14 +145,6 @@ def NumberField(polynomial, *args, **kwargs):
     return _NumberField(polynomial, *args, **kwargs)
 
 
-def PolynomialRing(base_ring, *args, **kwargs):
-    return _PolynomialRing(base_ring, *args, **kwargs)
-
-
-def LaurentPolynomialRing(base_ring, *args, **kwargs):
-    return _LaurentPolynomialRing(base_ring, *args, **kwargs)
-
-
 def MatrixSpace(base_ring, nrows, ncols=None):
     r"""Return the public finite matrix Hom, with algebra structure when square."""
     return refine_matrix_algebra(_MatrixSpace(base_ring, nrows, ncols))
@@ -220,8 +206,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "CyclotomicField": CyclotomicField,
         "QuadraticField": QuadraticField,
         "NumberField": NumberField,
-        "PolynomialRing": PolynomialRing,
-        "LaurentPolynomialRing": LaurentPolynomialRing,
         "PowerSeriesRing": PowerSeriesRing,
         "MatrixSpace": MatrixSpace,
     }
@@ -259,7 +243,6 @@ __all__ = [
     "IntegerModRing",
     "Integers",
     "IntegralDomains",
-    "LaurentPolynomialRing",
     "LocalizationRings",
     "LocalRings",
     "MatrixSpace",
@@ -284,7 +267,6 @@ __all__ = [
     "OwnedRings",
     "OwnedRngs",
     "OwnedSemirings",
-    "PolynomialRing",
     "PowerSeriesRing",
     "PredicateSubrings",
     "PrimeField",

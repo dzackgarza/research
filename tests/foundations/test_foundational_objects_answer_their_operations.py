@@ -99,9 +99,8 @@ def test_an_abelian_group_has_the_canonical_integer_action() -> None:
 def test_a_polynomial_algebra_answers_its_algebra_operations() -> None:
     session = _session()
     ZZ = session["ZZ"]
-    PolynomialRing = session["PolynomialRing"]
 
-    A = PolynomialRing(ZZ, "x")
+    A = ZZ.polynomial_ring("x")
     x, = A.algebra_generators()
     assert A.base_ring() is ZZ
     assert A.one() * x == x

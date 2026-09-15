@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the group-ring and underlying-module functors."""
 
-from dzack_research.preamble.all import GF, ZZ, Groups, PolynomialRing
+from dzack_research.preamble.all import GF, ZZ, Groups
 from dzack_research.preamble.categories.algebras import (
     FreeModuleOnGroupFunctor,
     GroupAlgebraFunctor,
@@ -90,7 +90,7 @@ def test_group_algebra_functor_carries_a_nonidentity_map_between_infinite_free_g
 def test_group_algebra_keeps_nontrivial_coefficient_rings() -> None:
     cyclic = Groups.C(3)
     finite_field = GF(5)
-    polynomial_ring = PolynomialRing(ZZ, "u")
+    polynomial_ring = ZZ.polynomial_ring("u")
 
     for ring in (finite_field, polynomial_ring):
         algebra = GroupAlgebraFunctor(ring)(cyclic)

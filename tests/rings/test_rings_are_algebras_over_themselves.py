@@ -29,7 +29,6 @@ _CONSTRUCTORS = ring_constructor_surface()
 QQ = cast(Any, _RINGS["QQ"])
 ZZ = cast(Any, _RINGS["ZZ"])
 GF = cast(Any, _CONSTRUCTORS["GF"])
-PolynomialRing = cast(Any, _CONSTRUCTORS["PolynomialRing"])
 QuadraticField = cast(Any, _CONSTRUCTORS["QuadraticField"])
 Zmod = cast(Any, _CONSTRUCTORS["Zmod"])
 
@@ -40,7 +39,7 @@ def _commutative_rings() -> dict[str, Any]:
         "QQ(i)": QuadraticField(-1, "i"),
         "GF(5)": GF(5),
         "ZZ_(5)": ZZ.localize_at_prime(5),
-        "QQ[x]": PolynomialRing(QQ, "x"),
+        "QQ[x]": QQ.polynomial_ring("x"),
         "Z/12": Zmod(12),
         "ZZ[C2]": ZZ[Groups.C(2)],
     }

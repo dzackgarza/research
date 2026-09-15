@@ -2,13 +2,12 @@ r"""Noetherian quotient/completion comparison through the canonical maps."""
 
 from dzack_research.preamble.all import (
     QQ,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _nodal_plane_comparison(precision=6):
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     node = plane.quotient_ring(plane.ideal(x * y))
@@ -71,7 +70,7 @@ def test_finite_stages_match_through_the_explicit_comparison() -> None:
 
 
 def test_module_cokernel_completion_is_an_explicit_isomorphism() -> None:
-    ring = PolynomialRing(QQ, ("x",))
+    ring = QQ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")
     free = ring.free_module(finite_ordered_set(("g",)))
     multiplication = free.module_category().Mor(free, free)(

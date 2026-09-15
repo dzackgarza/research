@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     AffineGSchemes,
     GObjects,
     Groups,
-    PolynomialRing,
     Schemes,
     Spec,
     CommutativeAlgebras,
@@ -21,7 +20,7 @@ from dzack_research.preamble.all import (
 
 def _swapped_plane():
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)

@@ -15,14 +15,13 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FiberProductSchemes,
-    PolynomialRing,
     Spec,
 )
 
 
 def _line_over(ring):
     r"""``A^1_R`` built as a spectrum, so its coordinate algebra names it back."""
-    line = Spec(PolynomialRing(ring, "x"), base_ring=ring)
+    line = Spec(ring.polynomial_ring("x"), base_ring=ring)
     structure = line.structure_morphism()
     return line, line.scheme_category().fiber_product(structure, structure)
 

@@ -1,9 +1,9 @@
-from dzack_research.preamble.all import QQ, PolynomialRing
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.schemes.families import affine_equation_family
 
 
 def test_xy_equals_t_family_retains_morphism_special_fiber_and_nonsmooth_locus() -> None:
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
     family = affine_equation_family(
         parameter,

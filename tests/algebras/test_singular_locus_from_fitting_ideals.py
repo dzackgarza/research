@@ -9,13 +9,12 @@ d is one, and its singular locus is the origin alone.
 
 from dzack_research.preamble.all import (
     KahlerDifferentials,
-    PolynomialRing,
     QQ,
 )
 
 
 def test_the_node_is_singular_at_the_origin_and_nowhere_else() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     node = (plane).quotient_by_relations([y**2 - x**3 - x**2])
@@ -33,7 +32,7 @@ def test_the_node_is_singular_at_the_origin_and_nowhere_else() -> None:
 
 
 def test_the_affine_line_is_smooth_everywhere() -> None:
-    line = PolynomialRing(QQ, "t")
+    line = QQ.polynomial_ring("t")
     t = line.algebra_generator("t")
     differentials = line.kahler_differentials()
 

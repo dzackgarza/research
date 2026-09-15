@@ -80,9 +80,9 @@ def test_lift_fiber_is_a_coset_of_the_restriction_kernel() -> None:
 
 
 def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmetic() -> None:
-    from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
+    from dzack_research.preamble.all import QQ, NumberField, QuadraticField
 
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     cyclotomic = NumberField(x**4 - x**2 + QQ.one(), "z")
     zeta = cyclotomic.primitive_element()
@@ -131,9 +131,9 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
 
 
 def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift() -> None:
-    from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
+    from dzack_research.preamble.all import QQ, NumberField, QuadraticField
 
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     cyclotomic = NumberField(x**4 - x**2 + QQ.one(), "z")
     zeta = cyclotomic.primitive_element()

@@ -10,7 +10,6 @@ than by the name it was built under.
 
 from dzack_research.preamble.all import (
     CommutativeIdeals,
-    PolynomialRing,
     PrincipalIdealDomains,
     QQ,
     ZZ,
@@ -46,7 +45,7 @@ def test_the_maximal_ideal_is_the_non_units() -> None:
 
 def test_prime_local_ideals_of_a_nonreduced_quotient_need_no_fraction_field() -> None:
     r"""``QQ[x,y]/(xy)`` at the origin: a local ring of a ring with zero divisors."""
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     node = (presentation).quotient_by_relations((x * y,))
@@ -62,7 +61,7 @@ def test_prime_local_ideals_of_a_nonreduced_quotient_need_no_fraction_field() ->
 
 
 def test_localization_of_a_polynomial_pid_remains_a_pid() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     local = polynomial.localize_at_prime(polynomial.ideal(x))
 

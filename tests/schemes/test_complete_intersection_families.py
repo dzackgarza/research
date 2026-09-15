@@ -2,14 +2,13 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    PolynomialRing,
     ProjectiveCompleteIntersections,
     ProjectiveSpace,
 )
 
 
 def _hesse_cubic_family():
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
     plane = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
     sections = plane.O(3).global_sections()

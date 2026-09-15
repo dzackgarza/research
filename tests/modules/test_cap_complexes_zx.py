@@ -5,7 +5,7 @@ ordinary owned modules, subobjects and cohomology quotients; no CAP object is
 part of the assertions.
 """
 
-from dzack_research.preamble.all import ZZ, PolynomialRing
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
     FinitelyPresentedModule,
@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _specimen():
-    ring = PolynomialRing(ZZ, "x")
+    ring = ZZ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     source = ring.free_module(finite_ordered_set(("a", "b")))
     target = ring.free_module(finite_ordered_set(("c",)))
@@ -84,7 +84,7 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
 
 
 def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_modules() -> None:
-    ring = PolynomialRing(ZZ, "x")
+    ring = ZZ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     source_free = ring.free_module(finite_ordered_set(("a",)))
     source_relations = ring.free_module(finite_ordered_set(("r",)))

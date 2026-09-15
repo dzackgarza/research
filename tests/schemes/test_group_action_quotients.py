@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     Spec,
     CommutativeAlgebras,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
 )
@@ -22,7 +21,7 @@ QQ = cast(Any, session_ring_objects()["QQ"])
 
 def _coordinate_swap_action() -> tuple:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -37,7 +36,7 @@ def _coordinate_swap_action() -> tuple:
 
 def _central_sign_action() -> tuple:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -51,7 +50,7 @@ def _central_sign_action() -> tuple:
 
 
 def _affine_map_from_polynomial(acted: Any, polynomial: Any) -> tuple:
-    target_algebra = PolynomialRing(QQ, "t")
+    target_algebra = QQ.polynomial_ring("t")
     t = target_algebra.algebra_generator("t")
     target = Spec(target_algebra)
     morphism = _affine_morphism_from_pullback(
@@ -140,7 +139,7 @@ def test_sign_involution_invariant_ring_keeps_its_quadratic_relation() -> None:
 def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() -> None:
     group = Groups.C(3)
     generator = group.group_generators()[0]
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -180,7 +179,7 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
 
 def test_zero_dimensional_polynomial_space_is_its_own_invariant_quotient() -> None:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ())
+    algebra = QQ.polynomial_ring(())
     scheme = Spec(algebra)
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(scheme, lambda _element: identity)
@@ -203,7 +202,7 @@ def test_zero_dimensional_polynomial_space_is_its_own_invariant_quotient() -> No
 
 def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend() -> None:
     group = Groups.C(2)
-    algebra = PolynomialRing(QQ, ("x", "y"))
+    algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)

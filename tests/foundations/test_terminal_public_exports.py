@@ -290,6 +290,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "FractionFieldQuotient",
         "FinitelyPresentedAlgebraOn",
         "FinitelyPresentedAlgebra",
+        "PolynomialRing",
+        "LaurentPolynomialRing",
         "roots_of_unity_group_scheme",
         "FormalDivisor",
         "FormalDivisorGroup",

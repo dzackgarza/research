@@ -14,11 +14,10 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )
-    from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)

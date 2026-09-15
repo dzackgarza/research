@@ -3,9 +3,6 @@ r"""Cox rings of represented toric schemes, with their divisor-class grading."""
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
@@ -94,7 +91,7 @@ def _cox_ring(scheme):
     r"""Return ``k[x_rho | rho in Sigma(1)]`` with ``deg(x_rho)=[D_rho]``."""
     rays = scheme.fan().cones(1)
     names = tuple(f"x{position}" for position in range(int(rays.cardinality())))
-    presentation = PolynomialRing(scheme.scheme_base_ring(), names)
+    presentation = scheme.scheme_base_ring().polynomial_ring(names)
     ring = (presentation).quotient_by_relations((),
         _extra_categories=(CoxRings(scheme),),
         _extra_construction_data=(

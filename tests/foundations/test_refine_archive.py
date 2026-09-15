@@ -79,9 +79,9 @@ def test_successful_property_refinement_keeps_existing_elements_and_operations()
 
 
 def test_archived_owned_polynomial_real_roots_keep_exact_multiplicities() -> None:
-    from dzack_research.preamble.all import AA, QQ, PolynomialRing
+    from dzack_research.preamble.all import AA, QQ
 
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
 
     # The archive named Sage's AA directly.  The public boundary now exposes

@@ -13,14 +13,13 @@ from the origin and has a two-dimensional fibre there.
 from dzack_research.preamble.all import (
     QQ,
     FinitelyPresentedModule,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _torsion_plus_free():
     r"""Return ``QQ[x]``, its variable, and ``R/(x) + R`` presented on two generators."""
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     free = ring.free_module(finite_ordered_set(("g", "h")))
     relations = ring.free_module(finite_ordered_set(("r",)))
@@ -88,7 +87,7 @@ def test_the_free_locus_supplies_its_actual_local_trivialization() -> None:
 
 def test_the_annihilator_of_a_sum_of_cyclic_modules_over_a_non_pid() -> None:
     r"""``Ann(R/(x) + R/(y))`` is ``(x) cap (y) = (xy)``, computed generator by generator."""
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     free = ring.free_module(finite_ordered_set(("g", "h")))

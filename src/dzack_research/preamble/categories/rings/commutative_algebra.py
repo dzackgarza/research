@@ -37,7 +37,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
     refine_algebra,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing, SymmetricAlgebras
+from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -3313,7 +3313,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         """
         parser = _SagePowerSeriesRing(_engine_ring(self.base_ring()), *args, **kwargs)
         labels = tuple(parser.variable_names())
-        polynomial = PolynomialRing(self.base_ring(), labels)
+        polynomial = self.base_ring().polynomial_ring(labels)
         defining = polynomial.ideal(
             *(polynomial.algebra_generator(label) for label in labels)
         )

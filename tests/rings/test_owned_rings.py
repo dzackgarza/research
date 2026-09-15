@@ -53,10 +53,9 @@ def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> 
     session = _session()
     QQ = session["QQ"]
     OwnedRings = session["OwnedRings"]
-    PolynomialRing = session["PolynomialRing"]
     MatrixSpace = session["MatrixSpace"]
 
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     matrices = MatrixSpace(QQ, 2)
 
     assert polynomials in OwnedRings()
@@ -217,13 +216,12 @@ def test_owned_ring_display_comes_from_mathematical_presentation() -> None:
     QQ = session["QQ"]
     GF = session["GF"]
     Zmod = session["Zmod"]
-    PolynomialRing = session["PolynomialRing"]
 
     assert repr(ZZ) == "Integer Ring"
     assert repr(QQ) == "Rational Field"
     assert repr(GF(5)) == "GF(5)"
     assert repr(Zmod(6)) == "ZZ/6ZZ"
-    polynomial = PolynomialRing(ZZ, "x")
+    polynomial = ZZ.polynomial_ring("x")
     assert repr(polynomial) == "Integer Ring[x]"
     assert repr(polynomial.algebra_generator("x")) == "x"
     assert "object at 0x" not in repr(polynomial)

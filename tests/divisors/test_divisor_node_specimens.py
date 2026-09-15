@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedModule,
-    PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
     Spec,
@@ -77,7 +76,7 @@ def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> 
 
 
 def test_normal_singular_surface_has_a_noncartier_weil_class() -> None:
-    polynomial = PolynomialRing(QQ, "x,y,z")
+    polynomial = QQ.polynomial_ring("x,y,z")
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     z = polynomial.algebra_generator("z")

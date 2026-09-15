@@ -5,13 +5,12 @@ from dzack_research.preamble.all import (
     QQ,
     ArtinianRings,
     CompleteLocalRings,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
 def test_zero_adic_completion_has_identity_kernel_and_zero_extended_ideal() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     zero = line.ideal(line.zero())
     completion = line.adic_completion(zero)
 
@@ -57,7 +56,7 @@ def test_idempotent_adic_completion_is_nonseparated_and_kills_the_stable_ideal()
 
 
 def test_nonmaximal_adic_completion_is_complete_but_not_declared_local() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     completion = plane.adic_completion(plane.ideal(x))
 
@@ -68,7 +67,7 @@ def test_nonmaximal_adic_completion_is_complete_but_not_declared_local() -> None
 
 
 def test_truncation_ideal_images_retain_their_extension_maps() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     completion = line.adic_completion(line.ideal(x))
     extension = completion.truncation_ideal_extension(3)
@@ -81,12 +80,12 @@ def test_truncation_ideal_images_retain_their_extension_maps() -> None:
 
 
 def test_artin_name_requires_finite_length() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     line_completion = line.adic_completion(line.ideal(x))
     assert line_completion.adic_artin_truncation(3) in ArtinianRings()
 
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     nonmaximal = plane.adic_completion(plane.ideal(x))
     with pytest.raises(ValueError, match="finite length"):
@@ -94,7 +93,7 @@ def test_artin_name_requires_finite_length() -> None:
 
 
 def test_maximal_completion_residue_map_is_the_first_adic_projection() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     completion = line.adic_completion(line.ideal(x))
     residue = completion.residue_field()
@@ -107,7 +106,7 @@ def test_maximal_completion_residue_map_is_the_first_adic_projection() -> None:
 
 
 def test_compatible_ring_map_induces_a_continuous_map_of_completions() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     completion = line.adic_completion(line.ideal(x))
     square = Algebras(line.base_ring()).Associative().Unital().Mor(line, line)({"x": x**2})

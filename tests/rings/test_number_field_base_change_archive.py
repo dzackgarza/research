@@ -1,10 +1,10 @@
 r"""Archive reconciliation for the selected integral form of a number field."""
 
-from dzack_research.preamble.all import QQ, ZZ, NumberField, PolynomialRing
+from dzack_research.preamble.all import QQ, ZZ, NumberField
 
 
 def _quadratic_field():
-    polynomial_ring = PolynomialRing(QQ, "x")
+    polynomial_ring = QQ.polynomial_ring("x")
     x = polynomial_ring.algebra_generator("x")
     return NumberField(x**2 - 5, "a")
 

@@ -2,9 +2,7 @@ from sage.all import (
     QQ,
     SR,
     Integer,
-    LaurentPolynomialRing,
     LaurentSeriesRing,
-    PolynomialRing,
     PowerSeriesRing,
     exp,
     factorial,
@@ -95,11 +93,11 @@ def test_integral_formula_is_the_indefinite_integral_from_a_basepoint() -> None:
 
 def test_series_and_laurent_polynomials_are_formulas() -> None:
     maps = C(Infinity, RR)
-    polynomials = PolynomialRing(QQ, "t")
+    polynomials = QQ.polynomial_ring("t")
     t = polynomials.algebra_generator("t")
     series_ring = PowerSeriesRing(QQ, "u")
     u = series_ring.algebra_generator("u")
-    laurent_ring = LaurentPolynomialRing(QQ, "w")
+    laurent_ring = QQ.laurent_polynomial_ring("w")
     w = laurent_ring.algebra_generator("w")
     laurent_series = LaurentSeriesRing(QQ, "z")
     z = laurent_series.algebra_generator("z")
@@ -114,7 +112,7 @@ def test_ratios_and_rational_functions_evaluate() -> None:
     maps = C(Infinity, RR)
     x = maps.coordinate()
     rational = maps((1 + x) / (1 + x * x))
-    polynomials = PolynomialRing(QQ, "t")
+    polynomials = QQ.polynomial_ring("t")
     t = polynomials.algebra_generator("t")
     field = polynomials.fraction_field()
 
@@ -326,11 +324,11 @@ def test_smooth_maps_are_set_morphisms() -> None:
 
 def test_a_formal_power_series_is_its_coefficient_sequence_in_ell_p() -> None:
     maps = C(Infinity, RR)
-    polynomials = PolynomialRing(QQ, "t")
+    polynomials = QQ.polynomial_ring("t")
     t = polynomials.algebra_generator("t")
     series_ring = PowerSeriesRing(QQ, "u")
     u = series_ring.algebra_generator("u")
-    laurent_ring = LaurentPolynomialRing(QQ, "w")
+    laurent_ring = QQ.laurent_polynomial_ring("w")
     w = laurent_ring.algebra_generator("w")
     quadratic = ell(2)(t**2 + 1)
     truncated = ell(2)(1 + u + u**2)

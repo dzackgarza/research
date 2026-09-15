@@ -19,12 +19,12 @@ element on sections is pullback along its inverse and scales ``z`` by
 construction that composed pullbacks the wrong way round is visible here.
 """
 
-from dzack_research.preamble.all import GF, QQ, AffineGSchemes, PolynomialRing
+from dzack_research.preamble.all import GF, QQ, AffineGSchemes
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
 
 
 def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 2)
     cover = covers(x**4 - algebra.one())
@@ -43,7 +43,7 @@ def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
 
 
 def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
-    algebra = PolynomialRing(GF(7), "x")
+    algebra = GF(7).polynomial_ring("x")
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 3)
     cover = covers(x)
@@ -72,7 +72,7 @@ def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
 
 
 def test_the_fibre_over_a_branch_point_carries_the_collided_sheets() -> None:
-    algebra = PolynomialRing(QQ, "x")
+    algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     cover = CyclicCovers(algebra, 2)(x**4 - algebra.one())
     cover_algebra = cover.coordinate_algebra()

@@ -16,7 +16,6 @@ from dzack_research.preamble.all import (
     ClosedSubschemes,
     IntegralSchemes,
     NormalSchemes,
-    PolynomialRing,
     ProjectiveSpace,
     Schemes,
     SmoothSchemes,
@@ -43,7 +42,7 @@ def _plane():
 def _cusp_parametrization():
     r"""``t |-> (t^2, t^3)``, whose image is the cuspidal cubic ``y^2 = x^3``."""
     plane, algebra, x, y = _plane()
-    line = PolynomialRing(QQ, "t")
+    line = QQ.polynomial_ring("t")
     t = line.algebra_generator("t")
     return plane, x, y, line, t, CommutativeAlgebras(QQ).spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
 

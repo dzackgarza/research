@@ -1456,6 +1456,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 _module_generating_set(rank_or_index_set),
             )
 
+        def polynomial_ring(self, *args, **kwargs):
+            r"""Return the polynomial ring over this ring with the stated variables."""
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _polynomial_ring,
+            )
+
+            return _polynomial_ring(self, *args, **kwargs)
+
+        def laurent_polynomial_ring(self, *args, **kwargs):
+            r"""Return the Laurent polynomial ring over this ring with the stated variables."""
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _laurent_polynomial_ring,
+            )
+
+            return _laurent_polynomial_ring(self, *args, **kwargs)
+
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 
@@ -1486,9 +1502,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
-            from dzack_research.preamble.categories.algebras.free_algebras import (
-                PolynomialRing,
-            )
             from dzack_research.preamble.categories.algebras.group_algebras import _group_algebra
             from dzack_research.preamble.categories.group.groups import OwnedGroups
             from dzack_research.preamble.categories.rings.number_fields import (
@@ -1498,11 +1511,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             match names:
                 case str():
-                    return PolynomialRing(self, names)
+                    return self.polynomial_ring(names)
                 case _ if names in OwnedGroups():
                     return _group_algebra(self, names)
                 case tuple() if all(isinstance(part, str) for part in names):
-                    return PolynomialRing(self, names)
+                    return self.polynomial_ring(names)
                 case list():
                     result = _own_if_ring(_engine_ring(self)[names])
                 case _ if names in self:

@@ -8,12 +8,12 @@ retain stronger information when it is genuinely available.
 
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, PolynomialRing
+from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.rings import Zp
 
 
 def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y), precision=3)
@@ -27,7 +27,7 @@ def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:
 
 
 def test_exact_zero_and_exact_lazy_inverse_are_decided_in_the_completion() -> None:
-    line = PolynomialRing(QQ, ("x",))
+    line = QQ.polynomial_ring(("x",))
     x = line.algebra_generator("x")
     completion = line.adic_completion(line.ideal(x))
     x_hat = completion.completion_map()(x)

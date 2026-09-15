@@ -14,14 +14,13 @@ do.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    PolynomialRing,
 )
 
 
 def test_an_ideal_is_one_object() -> None:
     assert ZZ.ideal(6) is ZZ.ideal(6)
 
-    line = PolynomialRing(QQ, "x")
+    line = QQ.polynomial_ring("x")
     x = line.algebra_generator("x")
     assert line.ideal(x) is line.ideal(x)
 

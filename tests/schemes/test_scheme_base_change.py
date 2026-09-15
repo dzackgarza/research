@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     FiniteTypeSchemes,
     IntegralSchemes,
     NormalSchemes,
-    PolynomialRing,
     ProjectiveSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
@@ -119,9 +118,9 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
     fibre ``xy = 0`` over the point, and the counit of the adjunction is the
     projection of that fibre into the family.
     """
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family_algebra = (presentation).quotient_by_relations((x * y - t,))

@@ -27,7 +27,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
@@ -208,7 +207,7 @@ class LegendreMonodromyFamily(SageObject):
     def __init__(self) -> None:
         rationals = _own_ring(SageQQ)
         integers = _own_ring(SageZZ)
-        parameter = PolynomialRing(rationals, "t")
+        parameter = rationals.polynomial_ring("t")
         t = parameter.algebra_generator("t")
         ambient = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
         section_ring = ambient.O(3).global_sections().homogeneous_coordinate_ring()

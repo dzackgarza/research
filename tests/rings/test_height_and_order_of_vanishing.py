@@ -12,7 +12,6 @@ asked of the point rather than of the ring.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
     ZZ,
 )
@@ -26,7 +25,7 @@ def test_a_nonzero_prime_of_the_integers_has_height_one() -> None:
 
 
 def test_the_origin_of_the_plane_has_height_two_and_a_line_has_height_one() -> None:
-    plane = PolynomialRing(QQ, "x,y")
+    plane = QQ.polynomial_ring("x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     spectrum = plane.spectrum()
@@ -36,7 +35,7 @@ def test_the_origin_of_the_plane_has_height_two_and_a_line_has_height_one() -> N
 
 
 def test_the_order_of_vanishing_counts_the_uniformizer() -> None:
-    line = PolynomialRing(QQ, "x")
+    line = QQ.polynomial_ring("x")
     x = line.algebra_generator("x")
     origin = line.spectrum()(line.ideal(x))
     function = x**3 * (x - line.one())
@@ -45,7 +44,7 @@ def test_the_order_of_vanishing_counts_the_uniformizer() -> None:
 
 
 def test_a_function_that_is_a_unit_at_the_point_vanishes_to_order_zero() -> None:
-    line = PolynomialRing(QQ, "x")
+    line = QQ.polynomial_ring("x")
     x = line.algebra_generator("x")
     origin = line.spectrum()(line.ideal(x))
 

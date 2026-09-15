@@ -149,12 +149,11 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     from dzack_research.preamble.all import (
         CommutativeAlgebras,
-        PolynomialRing,
         Spec,
     )
 
-    left_free = PolynomialRing(QQ, "x")
-    right_free = PolynomialRing(QQ, "y")
+    left_free = QQ.polynomial_ring("x")
+    right_free = QQ.polynomial_ring("y")
     x = left_free.algebra_generator("x")
     y = right_free.algebra_generator("y")
     left_algebra = (left_free).quotient_by_relations((x**2,))
@@ -174,7 +173,7 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
 
 
 def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None:
-    from dzack_research.preamble.all import PolynomialRing, CommutativeAlgebras
+    from dzack_research.preamble.all import CommutativeAlgebras
 
     base = Spec(QQ)
     assert base.scheme_base_ring() is QQ
@@ -182,10 +181,10 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
     assert base.structure_morphism().codomain() is base
     assert Spec(QQ) is base
 
-    common = PolynomialRing(QQ, "s")
-    left_algebra = PolynomialRing(QQ, "x")
-    right_algebra = PolynomialRing(QQ, "y")
-    target_algebra = PolynomialRing(QQ, "t")
+    common = QQ.polynomial_ring("s")
+    left_algebra = QQ.polynomial_ring("x")
+    right_algebra = QQ.polynomial_ring("y")
+    target_algebra = QQ.polynomial_ring("t")
     s = common.algebra_generator("s")
     x = left_algebra.algebra_generator("x")
     y = right_algebra.algebra_generator("y")
@@ -230,12 +229,12 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
 
 
 def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() -> None:
-    from dzack_research.preamble.all import PolynomialRing, CommutativeAlgebras
+    from dzack_research.preamble.all import CommutativeAlgebras
 
-    common = PolynomialRing(QQ, "s")
-    left_algebra = PolynomialRing(QQ, "x")
-    right_algebra = PolynomialRing(QQ, "y")
-    target_algebra = PolynomialRing(QQ, "t")
+    common = QQ.polynomial_ring("s")
+    left_algebra = QQ.polynomial_ring("x")
+    right_algebra = QQ.polynomial_ring("y")
+    target_algebra = QQ.polynomial_ring("t")
     s = common.algebra_generator("s")
     x = left_algebra.algebra_generator("x")
     y = right_algebra.algebra_generator("y")
@@ -276,11 +275,11 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
 
 
 def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None:
-    from dzack_research.preamble.all import PolynomialRing, CommutativeAlgebras
+    from dzack_research.preamble.all import CommutativeAlgebras
 
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family_algebra = (presentation).quotient_by_relations((x * y - t,))
@@ -325,9 +324,8 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
 
 
 def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
-    from dzack_research.preamble.all import PolynomialRing
 
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     special_algebra = (presentation).quotient_by_relations((x * y,))
@@ -349,13 +347,10 @@ def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
 def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
     from pytest import raises
 
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        PolynomialRing,
-    )
 
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family_algebra = (presentation).quotient_by_relations((x * y - t,))
@@ -374,7 +369,7 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
     nonsmooth_algebra = nonsmooth.coordinate_algebra()
     assert nonsmooth_algebra.algebra_structure_morphism()(t) == nonsmooth_algebra.zero()
 
-    killed_presentation = PolynomialRing(parameter, ("z", "w"))
+    killed_presentation = parameter.polynomial_ring(("z", "w"))
     nonflat_algebra = (killed_presentation).quotient_by_relations((t,))
     nonflat = Spec(nonflat_algebra, base_ring=parameter)
     assert not nonflat.is_flat()

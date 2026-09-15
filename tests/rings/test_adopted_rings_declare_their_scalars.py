@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     QQ,
     Algebras,
     Modules,
-    PolynomialRing,
     QuadraticField,
 )
 
@@ -34,7 +33,7 @@ def test_an_adopted_number_field_declares_the_rationals_as_its_scalars() -> None
 
 
 def test_an_adopted_polynomial_ring_declares_its_coefficient_ring() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
 
     assert polynomials.base() is QQ
     assert polynomials.base_ring() is QQ

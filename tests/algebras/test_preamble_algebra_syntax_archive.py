@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     NN,
     QQ,
     ZZ,
-    PolynomialRing,
     QuadraticField,
 )
 
@@ -35,7 +34,7 @@ def test_countable_free_algebra_keeps_generator_labels_and_generator_determined_
 
 
 def test_presented_algebra_retains_relation_and_explicit_scalar_change() -> None:
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     quotient = (presentation).quotient_by_relations((x * y,))
@@ -63,7 +62,7 @@ def test_fractional_ideal_membership_uses_the_module_span_not_the_input_tuple() 
 
 
 def test_univariate_algorithms_and_number_field_arithmetic_return_owned_values() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     cubic = (x - 1) * (x - 2) * (x - 3)
     quotient, remainder = cubic.quo_rem((x - 1) * (x - 2))

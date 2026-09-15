@@ -1,6 +1,6 @@
 r"""The ring Hom family refines both multiplicative-additive operation spines."""
 
-from dzack_research.preamble.all import QQ, ZZ, PolynomialRing
+from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     OwnedRngs,
@@ -23,7 +23,7 @@ def test_ring_hom_is_owned_after_semiring_and_rng_hom_specialization() -> None:
 
 
 def test_framed_polynomial_ring_map_uses_owned_generator_images() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     translate = polynomials.Mor(polynomials)({"x": x + polynomials.one()})
 

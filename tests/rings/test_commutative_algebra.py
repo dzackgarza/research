@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     IntegralDomains,
     LocalRings,
     NoetherianRings,
-    PolynomialRing,
     PowerSeriesRing,
     ProjectiveSpace,
     Set,
@@ -19,7 +18,7 @@ from dzack_research.preamble.all import (
 
 def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
     field = GF(5)
-    polynomial = PolynomialRing(field, "t")
+    polynomial = field.polynomial_ring("t")
 
     assert ZZ in IntegralDomains()
     assert ZZ in NoetherianRings()
@@ -57,7 +56,7 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
 
 
 def test_localizing_a_polynomial_ring_at_one_keeps_an_exact_engine_realization() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     localized = polynomial.localization(polynomial.one())
 
     assert localized.localization_source() is polynomial
@@ -70,7 +69,7 @@ def test_localizing_a_polynomial_ring_at_one_keeps_an_exact_engine_realization()
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
     field = GF(5)
-    polynomial = PolynomialRing(field, "t")
+    polynomial = field.polynomial_ring("t")
     t = polynomial.algebra_generator("t")
     local = polynomial.localize_at_prime(polynomial.ideal(t))
     fraction = local.fraction_field()
@@ -82,7 +81,7 @@ def test_polynomial_prime_localization_has_expected_residue_field() -> None:
 
 def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
     field = GF(5)
-    polynomial = PolynomialRing(field, "t")
+    polynomial = field.polynomial_ring("t")
     t = polynomial.algebra_generator("t")
 
     quotient = polynomial.quotient_ring(t**2)
@@ -229,7 +228,7 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
 def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> None:
     from dzack_research.preamble.categories.modules import Modules
 
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x, y = ring.algebra_generators()
     ideal = ring.ideal(x**2, x * y)
     other = ring.ideal(y)
@@ -253,9 +252,9 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
 
 def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None:
 
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    presentation = PolynomialRing(parameter, ("x", "y"))
+    presentation = parameter.polynomial_ring(("x", "y"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family = (presentation).quotient_by_relations((x * y - t,))
@@ -311,9 +310,9 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     from dzack_research.preamble.all import CommutativeAlgebras, Spec
 
-    source = PolynomialRing(QQ, "x")
-    middle = PolynomialRing(QQ, "t")
-    target = PolynomialRing(QQ, "u")
+    source = QQ.polynomial_ring("x")
+    middle = QQ.polynomial_ring("t")
+    target = QQ.polynomial_ring("u")
     x = source.algebra_generator("x")
     t = middle.algebra_generator("t")
     u = target.algebra_generator("u")
@@ -361,8 +360,8 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
 
 
 def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -> None:
-    left = PolynomialRing(QQ, "x")
-    right = PolynomialRing(QQ, "y")
+    left = QQ.polynomial_ring("x")
+    right = QQ.polynomial_ring("y")
     coproduct = CommutativeAlgebras(QQ).coproduct((left, right))
     left_map, right_map = coproduct.coproduct_injections()
 
@@ -371,7 +370,7 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
     assert left_map.domain() is left and left_map.codomain() is coproduct
     assert right_map.domain() is right and right_map.codomain() is coproduct
 
-    target = PolynomialRing(QQ, "t")
+    target = QQ.polynomial_ring("t")
     t = target.algebra_generator("t")
     f = left.Mor(target)({"x": t})
     g = right.Mor(target)({"y": t**2})
@@ -382,8 +381,8 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
 def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
 
-    left_free = PolynomialRing(QQ, "x")
-    right_free = PolynomialRing(QQ, "y")
+    left_free = QQ.polynomial_ring("x")
+    right_free = QQ.polynomial_ring("y")
     x = left_free.algebra_generator("x")
     y = right_free.algebra_generator("y")
     left = (left_free).quotient_by_relations((x**2,))
@@ -398,9 +397,9 @@ def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
 
 
 def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
-    common = PolynomialRing(QQ, "s")
-    left = PolynomialRing(QQ, "x")
-    right = PolynomialRing(QQ, "y")
+    common = QQ.polynomial_ring("s")
+    left = QQ.polynomial_ring("x")
+    right = QQ.polynomial_ring("y")
     s = common.algebra_generator("s")
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
@@ -411,7 +410,7 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
     left_map, right_map = pushout.pushout_maps()
     assert left_map(x) ** 2 == right_map(y) ** 3
 
-    target = PolynomialRing(QQ, "t")
+    target = QQ.polynomial_ring("t")
     t = target.algebra_generator("t")
     left_cocone = left.Mor(target)({"x": t**3})
     right_cocone = right.Mor(target)({"y": t**2})
@@ -426,7 +425,7 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
         FinitelyPresentedModule,
     )
 
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     free_target = ring.free_module(1)
     free_relations = ring.free_module(1)
@@ -518,7 +517,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     assert torsion.rank_at(p2) == 1
     assert torsion.rank_at(p5) == 0
 
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     polynomial_free = polynomial.free_module(1)
     quotient = FinitelyPresentedModule(
@@ -538,7 +537,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
         FinitelyPresentedModule,
     )
 
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     free = polynomial.free_module(1)
     generator = free.module_generator(0)
@@ -562,7 +561,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     )
     assert surviving_local.is_zero() is False
 
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x_plane = plane.algebra_generator("x")
     y_plane = plane.algebra_generator("y")
     plane_free = plane.free_module(1)
@@ -684,7 +683,7 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert 1 not in extended_integer_ideal
     assert extended_integer_ideal.contraction() == ZZ.ideal(ZZ(3))
 
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x, y = ring.algebra_generators()
     ideal = ring.ideal(x * y, y**2)
     divisor = ring.ideal(x)
@@ -719,7 +718,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
     assert forward(inverse(right_half)) == right_half
     assert comparison.extended_ideal().contraction() == ZZ.ideal(ZZ(3))
 
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x, y = ring.algebra_generators()
     polynomial_quotient = ring.quotient_ring(ring.ideal(x * y, y**2))
     polynomial_localization = ring.localization(x)
@@ -742,7 +741,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
 
 def test_selected_presented_algebra_localization_has_exact_fraction_equality() -> None:
 
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x, y = presentation.algebra_generators()
     axes = (presentation).quotient_by_relations((x * y,))
     xbar = axes.algebra_generator("x")
@@ -770,7 +769,7 @@ def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
         KahlerDifferentials,
     )
 
-    presentation = PolynomialRing(QQ, ("x", "y"))
+    presentation = QQ.polynomial_ring(("x", "y"))
     x, y = presentation.algebra_generators()
     axes = (presentation).quotient_by_relations((x * y,))
     xbar = axes.algebra_generator("x")
@@ -835,7 +834,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
         FinitelyPresentedModule,
     )
 
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     origin = ring.spectrum()(ring.ideal(ring.algebra_generator("x")))
     local = origin.local_ring()
@@ -904,7 +903,7 @@ def test_general_module_materializes_from_an_underlying_set_and_action() -> None
 
 
 def test_map_induced_out_of_a_localization_is_independent_of_the_representative() -> None:
-    ring = PolynomialRing(QQ, "x")
+    ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     inverted = ring.localization(x)
     assert inverted.inverted_element() == x
@@ -925,7 +924,7 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     half = inverted(ring.one() / ring(2))
     assert induced(half) * to_fractions(ring(2)) == to_fractions(ring.one())
 
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x_plane, y_plane = plane.algebra_generators()
     inverted_plane = plane.localization(x_plane, y_plane)
     plane_to_fractions = plane.fraction_field_map()

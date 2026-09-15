@@ -85,7 +85,7 @@ def _variable_names(labels) -> tuple[str, ...]:
     return tuple(names)
 
 
-def PolynomialRing(base_ring, *args, **kwargs):
+def _polynomial_ring(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
     result = _own_ring(_SagePolynomialRing(_engine_ring(base), *args, **kwargs))
     labels = tuple(_engine_ring(result).variable_names())
@@ -103,7 +103,7 @@ def PolynomialRing(base_ring, *args, **kwargs):
     return algebra
 
 
-def LaurentPolynomialRing(base_ring, *args, **kwargs):
+def _laurent_polynomial_ring(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
     result = _own_ring(
         _SageLaurentPolynomialRing(_engine_ring(base), *args, **kwargs)
@@ -130,7 +130,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set):
             base.free_module(algebra_generating_set)
         )
     labels = _finite_labels(algebra_generating_set)
-    algebra = PolynomialRing(base, _variable_names(labels))
+    algebra = base.polynomial_ring(_variable_names(labels))
 
     return refine_algebra(
         algebra,

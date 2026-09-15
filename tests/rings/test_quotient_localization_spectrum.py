@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import PolynomialRing, QQ, Spec
+from dzack_research.preamble.all import QQ, Spec
 
 
 def test_localization_of_a_presented_domain_has_its_own_affine_spectrum() -> None:
-    presentation = PolynomialRing(QQ, ("x", "y", "z"))
+    presentation = QQ.polynomial_ring(("x", "y", "z"))
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     z = presentation.algebra_generator("z")

@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import PolynomialRing, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ
 
 
 def test_localization_units_use_ideal_saturation_over_multivariate_polynomials() -> None:
-    ring = PolynomialRing(QQ, ("x", "y"))
+    ring = QQ.polynomial_ring(("x", "y"))
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
     localized = ring.localization(x)
@@ -17,7 +17,7 @@ def test_localization_units_use_ideal_saturation_over_multivariate_polynomials()
 
 
 def test_localizing_at_a_product_makes_each_factor_a_unit() -> None:
-    ring = PolynomialRing(QQ, ("s0", "s1"))
+    ring = QQ.polynomial_ring(("s0", "s1"))
     s0 = ring.algebra_generator("s0")
     s1 = ring.algebra_generator("s1")
     localized = ring.localization(s0 * s1)

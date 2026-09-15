@@ -11,7 +11,6 @@ prime to its germ.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    PolynomialRing,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -43,7 +42,7 @@ def test_localization_restrictions_compose_along_a_chain_of_inverted_scalars() -
 
 
 def test_localization_source_map_determines_ring_morphism_equality() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     away_from_x = polynomial.localization(x)
 
@@ -53,7 +52,7 @@ def test_localization_source_map_determines_ring_morphism_equality() -> None:
 
 
 def test_a_localization_restricts_into_a_prime_localization_as_a_germ() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     away_from_x = polynomial.localization(x)
     at_x_minus_one = polynomial.localize_at_prime(polynomial.ideal(x - 1))

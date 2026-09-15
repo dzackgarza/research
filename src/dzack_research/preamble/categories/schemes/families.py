@@ -3,9 +3,6 @@ r"""Owned relative affine families assembled from equation presentations."""
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    PolynomialRing,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     Spec,
@@ -25,7 +22,7 @@ class RelativeAffineFamily(SageObject):
 
     def __init__(self, parameter_algebra, relative_variables, equations) -> None:
         self._parameter_algebra = parameter_algebra
-        self._presentation_ring = PolynomialRing(parameter_algebra, relative_variables)
+        self._presentation_ring = parameter_algebra.polynomial_ring(relative_variables)
         raw_equations = equations(self._presentation_ring) if callable(equations) else equations
         self._equations = tuple(
             self._presentation_ring(equation) for equation in raw_equations

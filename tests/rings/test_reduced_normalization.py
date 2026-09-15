@@ -1,10 +1,10 @@
 r"""Reduced normalization, total quotients, and finite local lengths."""
 
-from dzack_research.preamble.all import QQ, IsolatedHypersurfaceSingularity, PolynomialRing
+from dzack_research.preamble.all import QQ, IsolatedHypersurfaceSingularity
 
 
 def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
-    polynomial = PolynomialRing(QQ, "x", "y")
+    polynomial = QQ.polynomial_ring("x", "y")
     x, y = tuple(polynomial.algebra_generators())
     node = polynomial.quotient_ring(polynomial.ideal(x * y))
 
@@ -26,7 +26,7 @@ def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
 
 
 def test_total_quotient_ring_of_reduced_node_is_product_of_component_fields() -> None:
-    polynomial = PolynomialRing(QQ, "x", "y")
+    polynomial = QQ.polynomial_ring("x", "y")
     x, y = tuple(polynomial.algebra_generators())
     node = polynomial.quotient_ring(polynomial.ideal(x * y))
 
@@ -39,7 +39,7 @@ def test_total_quotient_ring_of_reduced_node_is_product_of_component_fields() ->
 
 
 def test_local_length_divides_out_nonrational_residue_degree() -> None:
-    polynomial = PolynomialRing(QQ, "x")
+    polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     prime = polynomial.ideal(x**2 + 1)
     point = polynomial.spectrum()(prime)
@@ -50,7 +50,7 @@ def test_local_length_divides_out_nonrational_residue_degree() -> None:
 
 
 def test_plane_curve_conductor_lives_in_the_curve_local_ring() -> None:
-    polynomial = PolynomialRing(QQ, "x", "y")
+    polynomial = QQ.polynomial_ring("x", "y")
     x, y = tuple(polynomial.algebra_generators())
     cusp = IsolatedHypersurfaceSingularity(polynomial, y**2 - x**3)
 

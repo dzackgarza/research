@@ -15,7 +15,6 @@ way.  The identity is the specimen that separates them.
 
 from dzack_research.preamble.all import (
     QQ,
-    PolynomialRing,
     QuadraticField,
 )
 
@@ -29,7 +28,7 @@ def test_a_rational_times_the_identity_of_the_gaussian_field_is_gaussian() -> No
 
 
 def test_a_rational_times_a_constant_polynomial_is_a_polynomial() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     product = QQ(3) * polynomials.one()
 
     assert product.parent() is polynomials

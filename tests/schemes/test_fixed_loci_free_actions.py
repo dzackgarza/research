@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     AffineGSchemes,
     GObjects,
     Groups,
-    PolynomialRing,
     Schemes,
     Spec,
     CommutativeAlgebras,
@@ -24,7 +23,7 @@ def _translation_of_the_affine_line():
     r"""``C_2`` acting on ``A^1_{GF(2)}`` by ``x -> x + 1``."""
     field = GF(2)
     group = Groups.C(2)
-    algebra = PolynomialRing(field, "x")
+    algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
     scheme = Spec(algebra)
     translation = CommutativeAlgebras(field).spectrum()(algebra.Mor(algebra)({"x": x + algebra.one()}))
@@ -58,7 +57,7 @@ def _klein_four_on_the_affine_plane():
     )
     group = symmetric.subgroup([first, second])
 
-    algebra = PolynomialRing(field, ("x", "y"))
+    algebra = field.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     scheme = Spec(algebra)
@@ -141,7 +140,7 @@ def test_scheme_theoretic_fixed_locus_retains_nonreduced_structure() -> None:
     r"""In characteristic two, ``x -> x+e^2`` fixes the double ``e=0`` thickening."""
     field = GF(2)
     group = Groups.C(2)
-    polynomial = PolynomialRing(field, ("x", "e"))
+    polynomial = field.polynomial_ring(("x", "e"))
     x = polynomial.algebra_generator("x")
     e = polynomial.algebra_generator("e")
     algebra = polynomial.quotient_ring(polynomial.ideal(e**3))
