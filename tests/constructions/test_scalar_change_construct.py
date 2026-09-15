@@ -74,7 +74,7 @@ def test_restriction_of_scalars(ring_map) -> None:
     source, target = phi.domain(), phi.codomain()
     module = FreeModule(target, 2)
     restricted = Modules(target).restriction_of_scalars(phi)(module)
-    also = restrict_scalars(module, phi)
+    also = module.restrict_scalars(phi)
 
     assert restricted in Modules(source)
     assert also in Modules(source)
@@ -86,11 +86,11 @@ def test_restriction_of_scalars(ring_map) -> None:
 def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> None:
     gaussian = QuadraticField(-1, "i").ring_of_integers()
     phi = ZZ.Mor(gaussian)(lambda element: gaussian(element))
-    restricted = restrict_scalars(FreeModule(gaussian, 1), phi)
+    restricted = FreeModule(gaussian, 1).restrict_scalars(phi)
     assert restricted in Modules(ZZ)
     assert restricted.module_rank() == 2
     assert restricted in FinitelyGeneratedModules(ZZ)
-    rationals = restrict_scalars(FreeModule(QQ, 1), ZZ.Mor(QQ)(lambda element: QQ(element)))
+    rationals = FreeModule(QQ, 1).restrict_scalars(ZZ.Mor(QQ)(lambda element: QQ(element)))
     assert rationals in Modules(ZZ)
     assert rationals not in FinitelyGeneratedModules(ZZ)
 

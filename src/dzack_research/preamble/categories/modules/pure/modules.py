@@ -996,7 +996,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
-            return restrict_scalars(self, ring_map)
+            return _restricted_scalars_view(self, ring_map)
 
         def twist_scalar_action(self, ring_endomorphism):
             r"""Twist this module's scalar action along a base-ring endomorphism."""
@@ -1598,7 +1598,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             r"""Return ``M_hat -> Res(M/I^exponent M)`` over ``R_hat``."""
             target = self.adic_module_truncation(exponent)
             ring_map = self.completion_ring().adic_projection(exponent)
-            restricted = restrict_scalars(target, ring_map)
+            restricted = target.restrict_scalars(ring_map)
             labels = self.module_generating_set()
             target_labels = target.module_generating_set()
             if labels.cardinality() != target_labels.cardinality():
@@ -1625,7 +1625,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 higher_exponent,
                 lower_exponent,
             )
-            restricted = restrict_scalars(lower, ring_map)
+            restricted = lower.restrict_scalars(ring_map)
             higher_labels = higher.module_generating_set()
             lower_labels = lower.module_generating_set()
             if higher_labels.cardinality() != lower_labels.cardinality():
@@ -2263,9 +2263,8 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         ring = self.base_ring()
-        return restrict_scalars(
-            BasedFreeModule(ring, finite_ordinal_set(2)),
-            ring_morphism(ring, ring, lambda element: element),
+        return BasedFreeModule(ring, finite_ordinal_set(2)).restrict_scalars(
+            ring_morphism(ring, ring, lambda element: element)
         )
 
     @classmethod
@@ -2626,7 +2625,7 @@ class RestrictedScalarsModuleView(Parent):
         return f"{self._preamble_extension_module} restricted to {self.base_ring()} along {self._preamble_ring_map}"
 
 
-def restrict_scalars(
+def _restricted_scalars_view(
     module,
     ring_map,
     *,
@@ -2660,7 +2659,7 @@ def twist_scalar_action(module, ring_endomorphism):
     ring = _engine_ring(module.base_ring())
     if _engine_ring(ring_endomorphism.domain()) is not ring or _engine_ring(ring_endomorphism.codomain()) is not ring:
         raise ValueError("a scalar-action twist is specified by an endomorphism of the module's base ring")
-    return restrict_scalars(module, ring_endomorphism)
+    return module.restrict_scalars(ring_endomorphism)
 
 
 def _tensor_label_set(factors):

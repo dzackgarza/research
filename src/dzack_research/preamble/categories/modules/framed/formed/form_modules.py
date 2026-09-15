@@ -59,7 +59,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,
@@ -138,7 +137,7 @@ def _represented_value_module(formed_module):
     if value in OwnedRings():
         try:
             scalar_map = OwnedRings().Mor(ring, value)(lambda scalar: value(scalar))
-            return restrict_scalars(ring_as_module(value), scalar_map)
+            return ring_as_module(value).restrict_scalars(scalar_map)
         except (TypeError, ValueError, NotImplementedError):
             pass
     raise TypeError(

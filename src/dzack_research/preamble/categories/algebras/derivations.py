@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
-    restrict_scalars,
+    _restricted_scalars_view,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -384,7 +384,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 verify_linearity=False,
             )
 
-        self._restricted_module = restrict_scalars(
+        self._restricted_module = _restricted_scalars_view(
             self,
             structure_map,
             _subobject_inclusion_factory=restricted_inclusion,
@@ -521,9 +521,8 @@ def Derivations(algebra, target_module) -> DerivationSpace:
     if target_module.base_ring() is not algebra:
         raise TypeError("an R-derivation A -> M requires M to be an A-module")
     base = algebra.base_ring()
-    restricted_target = restrict_scalars(
-        target_module,
-        algebra.algebra_structure_morphism(),
+    restricted_target = target_module.restrict_scalars(
+        algebra.algebra_structure_morphism()
     )
     return DerivationCategoryConstruction(Modules(base)).Of(
         algebra,

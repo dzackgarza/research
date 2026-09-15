@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
     ModulesWithChosenFinitePresentation,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -497,8 +496,8 @@ def Connections(module) -> ConnectionSpace:
     one_forms = algebra.kahler_differentials()
     target = Modules(module.base_ring()).tensor_product((module, one_forms))
     ring_map = algebra.algebra_structure_morphism()
-    restricted_source = restrict_scalars(module, ring_map)
-    restricted_target = restrict_scalars(target, ring_map)
+    restricted_source = module.restrict_scalars(ring_map)
+    restricted_target = target.restrict_scalars(ring_map)
     return ConnectionCategoryConstruction(Modules(algebra.base_ring())).Of(
         restricted_source,
         restricted_target,
@@ -689,12 +688,9 @@ class ConnectionDeRhamModule:
 
                 def piece(degree):
                     forms = AlternatingPower(omega, degree)
-                    return restrict_scalars(
-                        Modules(coefficient_module.base_ring()).tensor_product(
-                            (coefficient_module, forms)
-                        ),
-                        ring_map,
-                    )
+                    return Modules(coefficient_module.base_ring()).tensor_product(
+                        (coefficient_module, forms)
+                    ).restrict_scalars(ring_map)
 
                 GradedDirectSumModule.__init__(
                     self,

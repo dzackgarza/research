@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     ModuleSubobjects,
-    restrict_scalars,
 )
 
 
@@ -150,7 +149,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""
 
         image = self(module) if localized is None else localized
-        restricted = restrict_scalars(image, self.ring_map())
+        restricted = image.restrict_scalars(self.ring_map())
         if image in LocalizedModules(image.base_ring()):
             return module_homset(module, restricted).elementwise(
                 lambda element: restricted.wrap(image.fraction(element)),

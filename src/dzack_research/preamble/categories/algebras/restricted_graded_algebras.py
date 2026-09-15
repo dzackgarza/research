@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     ring_morphism,
@@ -88,7 +87,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             if cached is not None:
                 return cached
             extension_piece = extension_algebra.graded_piece(degree)
-            result = restrict_scalars(extension_piece, ring_map)
+            result = extension_piece.restrict_scalars(ring_map)
             self._restricted_pieces[degree] = result
             return result
 

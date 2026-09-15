@@ -23,7 +23,7 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
     _equip_action,
     group_module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import Modules, restrict_scalars
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -103,7 +103,7 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
 
     def _apply_object(self, group_module):
         unacted_extension = _unacted_module(group_module)
-        unacted_restricted = restrict_scalars(unacted_extension, self.ring_map())
+        unacted_restricted = unacted_extension.restrict_scalars(self.ring_map())
 
         def action(group_element, vector):
             acted_source = _equip_action_element(

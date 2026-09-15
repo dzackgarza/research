@@ -475,9 +475,6 @@ class AffineModuleSheaf(SageObject):
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
             module_homset,
         )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            restrict_scalars,
-        )
 
         ambient = self.scheme()
         structure_restriction = ambient.structure_sheaf().restriction_map(
@@ -501,7 +498,7 @@ class AffineModuleSheaf(SageObject):
         if source_open is target_open:
             return module_homset(source_sections, source_sections).identity()
 
-        restricted_target = restrict_scalars(target_sections, structure_restriction)
+        restricted_target = target_sections.restrict_scalars(structure_restriction)
         source_ring = source_sections.base_ring()
         original_ring = source_ring.localization_source()
 

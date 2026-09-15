@@ -114,6 +114,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "open_absolute_galois_subgroup",
         "primitive_isotropic",
         "primitive_isotropic_vectors",
+        "restrict_scalars",
         "splits_two_hyperbolic_planes",
         "subobject_image_adjunction",
         "tensor_hom_adjunction",

@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ProjectiveModules,
     RestrictedScalarsModules,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -522,7 +521,7 @@ def _fraction_field_as_module(base_ring):
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
     scalar_map = OwnedRings().Mor(ring, field)(lambda scalar: field(scalar))
-    return restrict_scalars(ring_as_module(field), scalar_map)
+    return ring_as_module(field).restrict_scalars(scalar_map)
 
 
 def _fractional_ideal_inclusion(ideal, integral):

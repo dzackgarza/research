@@ -43,7 +43,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -2990,7 +2989,7 @@ class ModuleGluingDatum(Parent):
         source_open = self.cover().intersection(*source_indices)
         target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
-        restricted_target = restrict_scalars(target, ring_map)
+        restricted_target = target.restrict_scalars(ring_map)
         cached = module_homset(source, restricted_target)(
             lambda label: restricted_target.wrap(target.module_generator(label))
         )

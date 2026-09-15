@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
     RestrictedScalarsModuleView,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
@@ -108,7 +107,7 @@ class RestrictionOfScalarsFunctor(Functor):
     def _apply_object(self, module):
         if self._restricts_group_modules():
             return module.unacted_module()
-        return restrict_scalars(module, self.ring_map())
+        return module.restrict_scalars(self.ring_map())
 
     def _restricted_element(self, restricted, element):
         r"""Read an element of the ``S``-module in its restriction ``restricted``."""

@@ -18,14 +18,13 @@ from dzack_research.preamble.all import (
     FreeModule,
     Modules,
     module_embedding,
-    restrict_scalars,
 )
 
 
 def _rational_plane():
     r"""``Res(QQ^2)`` over ``ZZ``, with the rational plane it restricts."""
     plane = FreeModule(QQ, 2)
-    space = restrict_scalars(plane, ZZ.Mor(QQ)(lambda element: QQ(element)))
+    space = plane.restrict_scalars(ZZ.Mor(QQ)(lambda element: QQ(element)))
     return space, plane
 
 
