@@ -10,9 +10,6 @@ from dzack_research.preamble.all import (
     ToricFundamentalGroups,
     ToricGeometricLineBundleCohomologySpaces,
     ToricIntegralSingularCohomologyGroups,
-    ToricLineBundleCohomology,
-    ToricWeightCohomology,
-    ToricWeightCohomologyComplex,
     ToricWeightCohomologyComplexes,
 )
 
@@ -26,8 +23,8 @@ def test_hyperplane_weight_zero_is_computed_by_an_actual_geometric_complex() -> 
     plane = _projective_plane()
     divisor = plane.hyperplane_divisor()
     weight = plane.character_lattice().zero()
-    complex_ = ToricWeightCohomologyComplex(plane, divisor, weight)
-    cohomology = ToricWeightCohomology(plane, divisor, weight, 0)
+    complex_ = plane.weight_cohomology_complex(divisor, weight)
+    cohomology = plane.weight_cohomology(divisor, weight, 0)
 
     assert complex_ in ToricWeightCohomologyComplexes(QQ)
     assert complex_.cohomology_scheme() is plane
@@ -44,13 +41,13 @@ def test_a_weight_outside_the_hyperplane_polytope_has_zero_degree_zero_cohomolog
     first = next(iter(characters.module_generating_set()))
     outside = ZZ(3) * characters.module_generator(first)
 
-    assert ToricWeightCohomology(plane, divisor, outside, 0).dimension() == 0
+    assert plane.weight_cohomology(divisor, outside, 0).dimension() == 0
 
 
 def test_total_hyperplane_cohomology_is_the_direct_sum_of_its_three_live_weight_pieces() -> None:
     plane = _projective_plane()
     divisor = plane.hyperplane_divisor()
-    cohomology = ToricLineBundleCohomology(plane, divisor, 0)
+    cohomology = plane.line_bundle_cohomology(divisor, 0)
 
     assert cohomology in ToricGeometricLineBundleCohomologySpaces(QQ)
     assert cohomology.dimension() == 3

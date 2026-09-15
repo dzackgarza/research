@@ -1,12 +1,6 @@
 r"""Owned toric weight complexes and their induced maps."""
 
 from dzack_research.preamble.all import QQ, ZZ, BasedFreeModule, RationalPolyhedralFans
-from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-    ToricLineBundleCohomology,
-    ToricWeightCohomology,
-    ToricWeightScalarCochainMap,
-    ToricWeightScalarCohomologyMap,
-)
 
 
 def _projective_plane():
@@ -18,7 +12,7 @@ def test_scalar_two_acts_on_the_actual_nonzero_weight_class() -> None:
     plane = _projective_plane()
     divisor = plane.canonical_divisor()
     weight = plane.character_lattice().zero()
-    cohomology = ToricWeightCohomology(plane, divisor, weight, 2)
+    cohomology = plane.weight_cohomology(divisor, weight, 2)
 
     assert cohomology.dimension() == 1
     cycle_module = cohomology.cochain_complex().graded_piece(2)
@@ -29,8 +23,8 @@ def test_scalar_two_acts_on_the_actual_nonzero_weight_class() -> None:
     assert cohomology.cycle_representative(class_).parent() is cycle_module
     assert class_ != cohomology.zero()
 
-    cochain_map = ToricWeightScalarCochainMap(plane, divisor, weight, QQ(2))
-    induced = ToricWeightScalarCohomologyMap(plane, divisor, weight, 2, QQ(2))
+    cochain_map = plane.weight_scalar_cochain_map(divisor, weight, QQ(2))
+    induced = plane.weight_scalar_cohomology_map(divisor, weight, 2, QQ(2))
 
     assert cochain_map.component(2)(cycle) == QQ(2) * cycle
     scaled = QQ(2) * class_
@@ -42,7 +36,7 @@ def test_scalar_two_acts_on_the_actual_nonzero_weight_class() -> None:
 def test_nonzero_weight_piece_includes_into_total_cohomology() -> None:
     plane = _projective_plane()
     divisor = plane.hyperplane_divisor()
-    total = ToricLineBundleCohomology(plane, divisor, 0)
+    total = plane.line_bundle_cohomology(divisor, 0)
     weight = next(iter(total.cohomology_weight_support()))
     piece = total.cohomology_weight_piece(weight)
     inclusion = total.cohomology_weight_inclusion(weight)
@@ -75,7 +69,7 @@ def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:
     characters = plane.character_lattice()
     first = next(iter(characters.module_generating_set()))
     outside = ZZ(4) * characters.module_generator(first)
-    zero_piece = ToricWeightCohomology(plane, divisor, outside, 0)
+    zero_piece = plane.weight_cohomology(divisor, outside, 0)
 
     assert zero_piece.dimension() == 0
     assert zero_piece.cochain_complex().cohomology_scheme() is plane

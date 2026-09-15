@@ -1323,14 +1323,48 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             result._preamble_linear_system_divisor = divisor
             return result
 
+        def weight_cohomology_complex(self, divisor, weight):
+            r"""Return the finite complex computing one toric line-bundle weight piece."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _toric_weight_cohomology_complex,
+            )
+
+            return _toric_weight_cohomology_complex(self, divisor, weight)
+
+        def weight_cohomology(self, divisor, weight, degree):
+            r"""Return one weight piece ``H^degree(X,O_X(D))_weight``."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _toric_weight_cohomology,
+            )
+
+            return _toric_weight_cohomology(self, divisor, weight, degree)
+
+        def weight_scalar_cochain_map(self, divisor, weight, scalar):
+            r"""Return scalar multiplication on the selected toric weight complex."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _toric_weight_scalar_cochain_map,
+            )
+
+            return _toric_weight_scalar_cochain_map(self, divisor, weight, scalar)
+
+        def weight_scalar_cohomology_map(self, divisor, weight, degree, scalar):
+            r"""Return the cohomology map induced by scalar multiplication on a weight complex."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _toric_weight_scalar_cohomology_map,
+            )
+
+            return _toric_weight_scalar_cohomology_map(
+                self, divisor, weight, degree, scalar
+            )
+
         @cached_method
         def line_bundle_cohomology(self, divisor, degree):
             r"""Return ``H^degree(X,O_X(D))`` from the represented toric weight complexes."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricLineBundleCohomology,
+                _toric_line_bundle_cohomology,
             )
 
-            return ToricLineBundleCohomology(self, divisor, degree)
+            return _toric_line_bundle_cohomology(self, divisor, degree)
 
         def line_bundle_cohomology_dimensions(self, divisor):
             r"""Return the degree-indexed dimensions of represented ``H^i(X,O_X(D))``."""
@@ -1349,46 +1383,55 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def integral_singular_cohomology(self, degree):
             r"""Return ``H^degree(X(CC),ZZ)`` in the supported smooth complete toric ``QQ`` regime."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricIntegralSingularCohomology,
+                _toric_integral_singular_cohomology,
             )
 
-            return ToricIntegralSingularCohomology(self, degree)
+            return _toric_integral_singular_cohomology(self, degree)
 
         @cached_method
         def cycle_class_isomorphism(self, codimension):
             r"""Return the integral cycle-class isomorphism in the supported toric complex realization."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricCycleClassIsomorphism,
+                _toric_cycle_class_isomorphism,
             )
 
-            return ToricCycleClassIsomorphism(self, codimension)
+            return _toric_cycle_class_isomorphism(self, codimension)
+
+        @cached_method
+        def picard_to_chow_isomorphism(self):
+            r"""Return ``Pic(X) -> CH^1(X)`` in the represented smooth complete surface regime."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _toric_picard_to_chow_isomorphism,
+            )
+
+            return _toric_picard_to_chow_isomorphism(self)
 
         @cached_method
         def middle_cohomology_form(self):
             r"""Return the cup-product form on ``H^2(X(CC),ZZ)`` for a smooth complete toric surface."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricMiddleCohomologyForm,
+                _toric_middle_cohomology_form,
             )
 
-            return ToricMiddleCohomologyForm(self)
+            return _toric_middle_cohomology_form(self)
 
         @cached_method
         def fundamental_group(self, base_point_cone=None):
             r"""Return the pointed fundamental group of the supported complex realization."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricFundamentalGroup,
+                _toric_fundamental_group,
             )
 
-            return ToricFundamentalGroup(self, base_point_cone)
+            return _toric_fundamental_group(self, base_point_cone)
 
         @cached_method
         def hodge_structure(self):
             r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                ToricHodgeStructure,
+                _toric_hodge_structure,
             )
 
-            return ToricHodgeStructure(self)
+            return _toric_hodge_structure(self)
 
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.

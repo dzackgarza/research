@@ -459,7 +459,7 @@ def _toric_weight_support_hull(scheme, divisor):
     return scheme._engine_toric_divisor(divisor)._sheaf_cohomology_support()
 
 
-def ToricWeightCohomologyComplex(scheme, divisor, weight):
+def _toric_weight_cohomology_complex(scheme, divisor, weight):
     r"""Return the finite complex computing ``H^*(X,O_X(D))_weight``.
 
     Sage's toric-divisor engine selects the simplicial complex ``V_{D,m}`` of
@@ -514,12 +514,12 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
     return complex_
 
 
-def ToricWeightCohomology(scheme, divisor, weight, degree):
+def _toric_weight_cohomology(scheme, divisor, weight, degree):
     r"""Return the owned weight piece ``H^degree(X,O_X(D))_weight`` from its complex."""
-    return ToricWeightCohomologyComplex(scheme, divisor, weight).cohomology(int(degree))
+    return scheme.weight_cohomology_complex(divisor, weight).cohomology(int(degree))
 
 
-def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
+def _toric_weight_scalar_cochain_map(scheme, divisor, weight, scalar):
     r"""Return multiplication by ``scalar`` on the selected toric weight complex.
 
     This is the cochain map induced by the scalar endomorphism of the line
@@ -528,23 +528,18 @@ def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
     shared cohomology functor rather than by scalar multiplication on a
     separately recomputed vector space.
     """
-    complex_ = ToricWeightCohomologyComplex(scheme, divisor, weight)
+    complex_ = scheme.weight_cohomology_complex(divisor, weight)
     scalar = complex_.base_ring()(scalar)
     return scalar * CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
 
 
-def ToricWeightScalarCohomologyMap(scheme, divisor, weight, degree, scalar):
+def _toric_weight_scalar_cohomology_map(scheme, divisor, weight, degree, scalar):
     r"""Return the map on one weight cohomology induced by scalar multiplication."""
-    cochain_map = ToricWeightScalarCochainMap(
-        scheme,
-        divisor,
-        weight,
-        scalar,
-    )
+    cochain_map = scheme.weight_scalar_cochain_map(divisor, weight, scalar)
     return CochainComplexes(scheme.scheme_base_ring()).cohomology(int(degree))(cochain_map)
 
 
-def ToricLineBundleCohomology(scheme, divisor, degree):
+def _toric_line_bundle_cohomology(scheme, divisor, degree):
     r"""Assemble ``H^degree(X,O_X(D))`` as the direct sum of its weight cohomologies."""
     from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -560,7 +555,10 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     support_hull = _toric_weight_support_hull(scheme, divisor)
     characters = scheme.character_lattice()
     candidate_weights = tuple(_owned_vector(characters, point) for point in support_hull.integral_points())
-    pieces = {weight: ToricWeightCohomology(scheme, divisor, weight, degree) for weight in candidate_weights}
+    pieces = {
+        weight: scheme.weight_cohomology(divisor, weight, degree)
+        for weight in candidate_weights
+    }
     pieces = {weight: piece for weight, piece in pieces.items() if int(piece.dimension()) != 0}
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
@@ -1159,7 +1157,7 @@ def _require_smooth_complete_rational_toric_realization(scheme):
         raise ValueError("the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety")
 
 
-def ToricIntegralSingularCohomology(scheme, degree):
+def _toric_integral_singular_cohomology(scheme, degree):
     r"""Return ``H^degree(X(CC),ZZ)`` through the integral toric cycle comparison.
 
     For a smooth complete complex toric variety, Danilov--Jurkiewicz identifies
@@ -1196,7 +1194,7 @@ def ToricIntegralSingularCohomology(scheme, degree):
     )
 
 
-def ToricCycleClassIsomorphism(scheme, codimension):
+def _toric_cycle_class_isomorphism(scheme, codimension):
     r"""Return ``CH^k(X) -> H^(2k)(X(CC),ZZ)`` for smooth complete toric ``X/QQ``."""
     _require_smooth_complete_rational_toric_realization(scheme)
     codimension = int(codimension)
@@ -1210,7 +1208,7 @@ def ToricCycleClassIsomorphism(scheme, codimension):
     return Isomorphism(forward, inverse)
 
 
-def ToricPicardToChowIsomorphism(scheme):
+def _toric_picard_to_chow_isomorphism(scheme):
     r"""Return ``Pic(X) -> CH^1(X)`` for a smooth complete toric surface."""
     _require_smooth_complete_rational_toric_realization(scheme)
     if int(scheme.dimension()) != 2:
@@ -1223,14 +1221,14 @@ def ToricPicardToChowIsomorphism(scheme):
     return Isomorphism(forward, forward.inverse())
 
 
-def ToricMiddleCohomologyForm(scheme):
+def _toric_middle_cohomology_form(scheme):
     r"""Return ``H^2(X(CC),ZZ)`` with its cup-product intersection form."""
     _require_smooth_complete_rational_toric_realization(scheme)
     if int(scheme.dimension()) != 2:
         raise ValueError("the represented middle-cohomology form is for surfaces")
     cohomology = scheme.integral_singular_cohomology(2)
     cycle_class = scheme.cycle_class_isomorphism(1)
-    picard_to_chow = ToricPicardToChowIsomorphism(scheme)
+    picard_to_chow = scheme.picard_to_chow_isomorphism()
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
     integers = _own_ring(SageZZ)
@@ -1244,7 +1242,7 @@ def ToricMiddleCohomologyForm(scheme):
     )
 
 
-def ToricFundamentalGroup(scheme, base_point_cone=None):
+def _toric_fundamental_group(scheme, base_point_cone=None):
     r"""Return the pointed ``pi_1`` of a smooth complete toric complex realization.
 
     For a normal toric variety ``X_Sigma``, the fundamental group is the
@@ -1264,7 +1262,7 @@ def ToricFundamentalGroup(scheme, base_point_cone=None):
     return refine(group, ToricFundamentalGroups())
 
 
-def ToricHodgeStructure(scheme):
+def _toric_hodge_structure(scheme):
     r"""Return the pure diagonal Hodge data of a smooth complete toric complex realization."""
     return ToricHodgeData(scheme)
 
@@ -1292,20 +1290,9 @@ __all__ = [
     "AffineGeometricScalarCohomologyMap",
     "AffineCoverRefinementCohomologyComparison",
     "AffineCoverRefinementCohomologyMap",
-    "ToricCycleClassIsomorphism",
     "ToricGeometricLineBundleCohomologySpaces",
-    "ToricIntegralSingularCohomology",
     "ToricIntegralSingularCohomologyGroups",
-    "ToricLineBundleCohomology",
-    "ToricMiddleCohomologyForm",
-    "ToricPicardToChowIsomorphism",
-    "ToricFundamentalGroup",
     "ToricFundamentalGroups",
     "ToricHodgeData",
-    "ToricHodgeStructure",
-    "ToricWeightCohomology",
-    "ToricWeightCohomologyComplex",
     "ToricWeightCohomologyComplexes",
-    "ToricWeightScalarCochainMap",
-    "ToricWeightScalarCohomologyMap",
 ]
