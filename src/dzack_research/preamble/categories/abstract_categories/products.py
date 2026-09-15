@@ -14,7 +14,7 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
+from dzack_research.preamble.categories.abstract_categories.cat import Cat, _FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
@@ -37,7 +37,7 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
-class DiagramCategory(FunctorCategory):
+class DiagramCategory(_FunctorCategory):
     r"""The functor category ``[J,C]`` of diagrams of one shape."""
 
     @staticmethod

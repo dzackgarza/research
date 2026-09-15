@@ -131,7 +131,7 @@ class CategoryFunctorHomset(CategoricalHomset):
     def category_of_categories(self) -> Cat:
         return self._category_of_categories
 
-    def functor_category(self) -> FunctorCategory:
+    def functor_category(self) -> _FunctorCategory:
         return self.category_of_categories().Mor(self.domain(), self.codomain())
 
     @property
@@ -170,14 +170,14 @@ class CategoryFunctorHomset(CategoricalHomset):
 class FunctorHomCategoryConstruction(HomCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
-    def fixed_category_class(self) -> type[FunctorCategory]:
-        return FunctorCategory
+    def fixed_category_class(self) -> type[_FunctorCategory]:
+        return _FunctorCategory
 
     def Of(
         self,
         domain: Category | CategoryObject,
         codomain: Category | CategoryObject,
-    ) -> FunctorCategory:
+    ) -> _FunctorCategory:
         category = self.base_category()
         source, target = category.object(domain), category.object(codomain)
         cached = self._cached_between(source, target)
@@ -186,7 +186,7 @@ class FunctorHomCategoryConstruction(HomCategoryConstruction):
         return self._remember_between(
             source, target,
             typecall(
-                FunctorCategory, category, source.represented_category(), target.represented_category()
+                _FunctorCategory, category, source.represented_category(), target.represented_category()
             ),
         )
 
@@ -257,7 +257,7 @@ class Cat(CategoryPacketMethods, Category):
         self._arrows[key] = result
         return result
 
-    def Mor(self, domain: Category, codomain: Category) -> FunctorCategory:
+    def Mor(self, domain: Category, codomain: Category) -> _FunctorCategory:
         return self.HomCategory().Of(domain, codomain)
 
     def identity(self, category: Category) -> CategoryFunctorMorphism:
@@ -859,7 +859,7 @@ class NaturalTransformationHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def functor_category(self) -> FunctorCategory:
+    def functor_category(self) -> _FunctorCategory:
         return self.base_category()
 
     def source(self) -> Functor:
@@ -901,7 +901,7 @@ class NaturalTransformationHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = NaturalTransformationHomset
 
 
-class FunctorCategory(FixedHomCategory):
+class _FunctorCategory(FixedHomCategory):
     r"""The category ``[C,D]`` of represented functors and natural transformations.
 
     Unverified construction specimens: all Cat Hom entrances select one
@@ -914,8 +914,6 @@ class FunctorCategory(FixedHomCategory):
         sage: cat = Cat()
         sage: hom = cat.Mor(category, category)
         sage: hom is cat.HomCategory().Of(category, category)
-        True
-        sage: hom is FunctorCategory(cat, category, category)
         True
         sage: hom is cat.EndCategory().Between(category, cat.object(category))
         True
@@ -953,7 +951,7 @@ class FunctorCategory(FixedHomCategory):
     def __classcall__(cls, category_of_categories: Cat, domain: Category, codomain: Category):
         if isinstance(cls, DynamicMetaclass):
             return cls.__base__(category_of_categories, domain, codomain)
-        if cls is FunctorCategory:
+        if cls is _FunctorCategory:
             return category_of_categories.HomCategory().Of(domain, codomain)
         return typecall(cls, category_of_categories, domain, codomain)
 
@@ -1056,7 +1054,6 @@ __all__ = [
     "CategoryFunctorHomset",
     "CategoryFunctorMorphism",
     "CategoryObject",
-    "FunctorCategory",
     "NaturalTransformationHomset",
     "NaturalTransformationMorphism",
 ]
