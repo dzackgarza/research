@@ -48,7 +48,6 @@ from dzack_research.preamble.categories._lattice import (
     signature_pair_of_gram,
     tensor_product_lattice,
 )
-from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories._lattice import (
     signature_pairs as signature_pairs,
 )
@@ -630,7 +629,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         category.  ``Lattices(ZZ)("U")`` is the hyperbolic plane over
         `\ZZ`.  ``Lattices(R)(R^n)`` is the standard Euclidean lattice
         of rank `n`; ``Lattices(R)(R^{\mathbb N})`` is its colimit.
-        A pairing Gram is a lattice: ``C(diagonal_gram(R^NN, {0: -1}))``.
+        A pairing Gram is a lattice: ``C((R^NN).diagonal_gram({0: -1}))``.
         ``module_generators=`` is the generating set of the underlying
         free module; when omitted, the generators are the formal symbols
         \(e_i\in\mathrm{SR}\).  The result is an owned lattice.
@@ -659,8 +658,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             Integral lattice of rank +Infinity and signature (+Infinity, 0)
             sage: Linf((1, 0, 0, 1))
             e_0 + e_3
-            sage: from dzack_research.preamble.categories.lattices import diagonal_gram
-            sage: Lattices(ZZ)(diagonal_gram(ZZ^NN, {0: -1}))
+            sage: Lattices(ZZ)((ZZ^NN).diagonal_gram({0: -1}))
             Integral lattice of rank +Infinity and signature (+Infinity, 1)
         """
 

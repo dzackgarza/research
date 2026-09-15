@@ -1066,17 +1066,17 @@ def _gram_name(gram) -> str:
             return name if name is not None else f"G_{gram.tensor_shape()[0]}"
 
 
-def diagonal_gram(module, exceptions, default=1):
+def _diagonal_gram(module, exceptions, default=1):
     r"""The diagonal type-$(0,2)$ tensor on ``module``.
 
     ``exceptions`` is the indexed family of diagonal values that differ
     from ``default``.  The Lorentz form on \(R^{\mathbb N}\) is
-    ``diagonal_gram(R^NN, {0: -1}, default=1)``.
+    ``R^NN.diagonal_gram({0: -1}, default=1)``.
 
     EXAMPLES::
 
-        sage: from dzack_research.preamble.categories.lattices import Lattices, diagonal_gram
-        sage: G = diagonal_gram(ZZ^NN, {0: -1})
+        sage: from dzack_research.preamble.categories.lattices import Lattices
+        sage: G = (ZZ^NN).diagonal_gram({0: -1})
         sage: G
         [-1] ⊕ I_∞ ∈ (ZZ^NN ⊗ ZZ^NN)*
         sage: latex(G)
@@ -1524,7 +1524,7 @@ def lattice(
     Gram tensor on \(R^n\).  ``Lattices(R)(R^{\mathbb N})`` is the colimit
     of those, with \(\langle x,y\rangle=\sum_i x_i y_i\) on finite
     supports.  A pairing Gram on a free module is itself a lattice:
-    ``Lattices(R)(diagonal_gram(R^NN, {0: -1}))``.  ``form=`` equips a
+    ``Lattices(R)((R^NN).diagonal_gram({0: -1}))``.  ``form=`` equips a
     given free module with such a Gram.  ``module_generators=`` is the
     generating set of that free module; when omitted, the generators
     are the formal symbols \(e_i\in\mathrm{SR}\).  A matrix (type

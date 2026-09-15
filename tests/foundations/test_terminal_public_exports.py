@@ -274,6 +274,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "CompositeAdjunction",
         "compose_adjunctions",
         "category_packet",
+        "diagonal_gram",
         "C2DiagonalProductProjectiveAction",
         "C2ProductProjectiveLinearization",
         "C2ProjectiveLineLinearization",

@@ -413,6 +413,12 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 inverse=lambda generator: self(generator).underlying_set_element(),
             )
 
+        def diagonal_gram(self, exceptions, default=1):
+            r"""Return the diagonal type-``(0,2)`` tensor in this selected basis."""
+            from dzack_research.preamble.categories._lattice import _diagonal_gram
+
+            return _diagonal_gram(self, exceptions, default)
+
         def _free_biproduct_over(
             self,
             labels,

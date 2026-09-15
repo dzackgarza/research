@@ -531,7 +531,6 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     NoncrystallographicRootLattices,
     NondegenerateLattices,
     RootLattices,  # noqa: F401
-    diagonal_gram,
     nikulin_invariants,
     signature_pair,
     signature_pairs,

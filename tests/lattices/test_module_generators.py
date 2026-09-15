@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     Cardinalities,
     Lattices,
     QuadraticField,
-    diagonal_gram,
     signature_pair,
     signature_pairs,
 )
@@ -181,7 +180,7 @@ def test_signature_pair_uses_the_fraction_field() -> None:
 
 def test_lorentz_correction_indexes_the_formal_symbol() -> None:
     category = Lattices(ZZ)
-    lattice = category(diagonal_gram(ZZ**NN, {0: -1}))
+    lattice = category((ZZ**NN).diagonal_gram({0: -1}))
     e0 = lattice.module_generator(0)
     e1 = lattice.module_generator(1)
 
@@ -216,7 +215,7 @@ def test_twist_rescales_the_form_at_every_rank() -> None:
     assert u0 * u0 == 0
     assert u0 * u1 == 2
 
-    lorentz = Lattices(ZZ)(diagonal_gram(ZZ**NN, {0: -1})).twist(2)
+    lorentz = Lattices(ZZ)((ZZ**NN).diagonal_gram({0: -1})).twist(2)
     n0, n1 = lorentz.module_generator(0), lorentz.module_generator(1)
     assert n0 * n0 == -2
     assert n1 * n1 == 2
