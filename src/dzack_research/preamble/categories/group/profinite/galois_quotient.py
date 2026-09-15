@@ -416,7 +416,7 @@ class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
         return f"Aut_{self.base_field()}({self.top_field()})"
 
 
-class ContinuousGroupHomset(Homset):
+class _ContinuousGroupHomset(Homset):
     def __init__(self, domain, codomain) -> None:
         Homset.__init__(self, domain, codomain, category=SageGroups())
 
@@ -424,7 +424,7 @@ class ContinuousGroupHomset(Homset):
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def _continuous_group_homset(domain, codomain):
     r"""Return the canonical continuous-group Hom for these exact endpoints."""
-    return ContinuousGroupHomset(domain, codomain)
+    return _ContinuousGroupHomset(domain, codomain)
 
 
 class GaloisRestrictionMap(Morphism):
@@ -522,7 +522,6 @@ class LiftCoset(SageObject):
 
 
 __all__ = [
-    "ContinuousGroupHomset",
     "FiniteGaloisAutomorphism",
     "FiniteGaloisExtension",
     "FiniteGaloisQuotient",

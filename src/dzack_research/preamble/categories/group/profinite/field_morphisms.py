@@ -188,7 +188,7 @@ class ExactFieldMorphism(Morphism):
         return f"Exact field morphism {self.domain()} -> {self.codomain()} ({images})"
 
 
-class ExactFieldHomset(CategoricalHomset):
+class _ExactFieldHomset(CategoricalHomset):
     Element = ExactFieldMorphism
 
     def __init__(self, domain, codomain) -> None:
@@ -214,8 +214,8 @@ class ExactFieldHomset(CategoricalHomset):
 
 
 @cached_function
-def _exact_field_homset(domain, codomain) -> ExactFieldHomset:
-    return ExactFieldHomset(domain, codomain)
+def _exact_field_homset(domain, codomain) -> _ExactFieldHomset:
+    return _ExactFieldHomset(domain, codomain)
 
 
 def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMorphism:
@@ -246,6 +246,5 @@ def _exact_embeddings(domain, codomain):
 
 
 __all__ = [
-    "ExactFieldHomset",
     "ExactFieldMorphism",
 ]
