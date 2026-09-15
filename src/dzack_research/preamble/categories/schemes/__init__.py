@@ -9,8 +9,6 @@ _EXPORTS = {
      'RingedCoveringFamily'),
     'RingedCoveringOverlap': ('dzack_research.preamble.categories.schemes.covering_families',
      'RingedCoveringOverlap'),
-    'ringed_covering_family': ('dzack_research.preamble.categories.schemes.covering_families',
-     'ringed_covering_family'),
     'AffineSpecFunctor': ('dzack_research.preamble.categories.schemes.affine_spec',
      'AffineSpecFunctor'),
     'AffineModuleSheaf': ('dzack_research.preamble.categories.schemes.ringed_spaces',
@@ -290,7 +288,6 @@ __all__ = [
     'RelativeAffineFamily',
     'affine_equation_family',
     'Varieties',
-    'ringed_covering_family',
     'FiniteGluedInvariantQuotient',
     'glued_invariant_quotient',
 ]

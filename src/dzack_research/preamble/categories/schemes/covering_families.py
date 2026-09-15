@@ -328,27 +328,8 @@ class AffineOverlapRefinement(SageObject):
         )
 
 
-def ringed_covering_family(
-    ambient_space,
-    charts,
-    embeddings,
-    overlaps,
-    *,
-    ambient_chart_index,
-):
-    r"""Construct the currently supported finite covering-family regime."""
-    return RingedCoveringFamily(
-        ambient_space,
-        charts,
-        embeddings,
-        overlaps,
-        ambient_chart_index=ambient_chart_index,
-    )
-
-
 __all__ = [
     "AffineOverlapRefinement",
     "RingedCoveringFamily",
     "RingedCoveringOverlap",
-    "ringed_covering_family",
 ]

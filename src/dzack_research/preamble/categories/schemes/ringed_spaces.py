@@ -725,10 +725,10 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
             they are never replaced by spectra of global sections.
             """
             from dzack_research.preamble.categories.schemes.covering_families import (
-                ringed_covering_family,
+                RingedCoveringFamily,
             )
 
-            return ringed_covering_family(
+            return RingedCoveringFamily(
                 self,
                 charts,
                 embeddings,
