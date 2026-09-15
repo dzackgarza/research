@@ -73,7 +73,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectMorphism,
     TensorProductCategory,
     WideSubcategory,
-    common_category,
     coproduct_cocone_category,
     product_cone_category,
 )

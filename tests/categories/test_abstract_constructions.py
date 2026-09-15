@@ -56,7 +56,6 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
         Isomorphism,
         Sets,
         WideSubcategory,
-        common_category,
     )
 
     x = Sets.Δ[2]
@@ -65,7 +64,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     arrows = Sets().ArrowCategory()
     inclusion_object = arrows(inclusion)
     assert inclusion_object in arrows
-    assert common_category(x, y).is_subcategory(Sets())
+    assert Cat().join((x.category(), y.category())).is_subcategory(Sets())
 
     end = Sets().Mor(x, x)(lambda value: x(2 - int(value)))
     end_object = EndArrowCategory(Sets())(end)

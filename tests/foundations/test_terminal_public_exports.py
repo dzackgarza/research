@@ -283,6 +283,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "FreeModule",
         "FreeModuleOn",
         "BasedFreeModule",
+        "common_category",
         "ContinuousGroupHomset",
         "ExactFieldHomset",
         "CompositeFunctor",

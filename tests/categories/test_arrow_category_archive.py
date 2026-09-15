@@ -2,6 +2,7 @@ r"""Archive reconciliation for arrow categories, restricted arrows, and cores.""
 
 from dzack_research.preamble.all import (
     AutomorphismArrowCategory,
+    Cat,
     EndArrowCategory,
     EpimorphismArrowCategory,
     IsoArrowCategory,
@@ -9,7 +10,6 @@ from dzack_research.preamble.all import (
     MonomorphismArrowCategory,
     Sets,
     WideSubcategory,
-    common_category,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -46,7 +46,7 @@ def test_archived_arrow_subcategories_retain_their_semantic_predicates() -> None
     swap = Sets().Mor(two, two)(lambda point: two[1 - int(point)])
     isomorphism = Isomorphism(swap, swap)
 
-    assert common_category(two, three).is_subcategory(Sets())
+    assert Cat().join((two.category(), three.category())).is_subcategory(Sets())
     assert MonomorphismArrowCategory(Sets())(inclusion).arrow() is inclusion
     assert EpimorphismArrowCategory(Sets())(quotient).arrow() is quotient
     assert EndArrowCategory(Sets())(swap).arrow() is swap

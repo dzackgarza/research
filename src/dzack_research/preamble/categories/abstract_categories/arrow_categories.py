@@ -639,21 +639,6 @@ class CosliceCategory(ArrowCategory):
         return f"Coslice category {self.base_object()}/{self.base_category()}"
 
 
-def common_category(*objects: Parent) -> Category:
-    r"""Return the smallest owned category containing all stated objects.
-
-    The owned category order is inclusion: a subcategory is below its
-    supercategories.  Hence the common ambient category is their join.  Keep
-    Sage's opposite backend order hidden behind :meth:`Cat.join` rather than
-    calling ``Category.meet`` directly here.
-    """
-    if not objects:
-        raise ValueError("a common category requires at least one object")
-    from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-    return Cat().join(tuple(obj.category() for obj in objects))
-
-
 class EndArrowCategory(ArrowCategory):
     r"""The full subcategory of ``Arr(C)`` on endomorphisms."""
 
@@ -1265,7 +1250,12 @@ def core_mor(
     already names its mathematical Hom owner, use that owner rather than
     reconstructing a Hom theory from the endpoints alone.
     """
-    category = common_category(domain, codomain) if base_category is None else base_category
+    if base_category is None:
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        category = Cat().join((domain.category(), codomain.category()))
+    else:
+        category = base_category
     return category.Core().Mor(domain, codomain)
 
 
@@ -1313,7 +1303,6 @@ def Isomorphism(
 
 
 __all__ = [
-    "common_category",
     "core_mor",
     "Isomorphism",
     "IsoArrowCategory",
