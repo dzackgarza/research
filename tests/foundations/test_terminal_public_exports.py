@@ -118,6 +118,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "splits_two_hyperbolic_planes",
         "subobject_image_adjunction",
         "tensor_hom_adjunction",
+        "twist_scalar_action",
         "transport_isotropic_object",
         "vector_configuration",
         "commutative_algebra_coproduct",

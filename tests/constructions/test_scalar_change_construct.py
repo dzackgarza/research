@@ -165,7 +165,7 @@ def test_twisting_a_module_by_frobenius() -> None:
     field = GF(4)
     frobenius = field.Mor(field)(lambda element: element**2)
     module = FreeModule(field, 2)
-    twisted = twist_scalar_action(module, frobenius)
+    twisted = module.twist_scalar_action(frobenius)
     generator = field.multiplicative_generator()
     assert twisted in Modules(field)
     assert twisted.module_rank() == 2

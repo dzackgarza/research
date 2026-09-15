@@ -999,8 +999,21 @@ class Modules(OwnedCategoryOverBaseRing):
             return _restricted_scalars_view(self, ring_map)
 
         def twist_scalar_action(self, ring_endomorphism):
-            r"""Twist this module's scalar action along a base-ring endomorphism."""
-            return twist_scalar_action(self, ring_endomorphism)
+            r"""Twist this module's scalar action along an endomorphism ``R -> R``.
+
+            This is restriction of scalars along an endomorphism of the scalar
+            ring; it is unrelated to ``L.twist(a)``, which rescales a lattice
+            form while leaving its scalar action unchanged.
+            """
+            ring = _engine_ring(self.base_ring())
+            if (
+                _engine_ring(ring_endomorphism.domain()) is not ring
+                or _engine_ring(ring_endomorphism.codomain()) is not ring
+            ):
+                raise ValueError(
+                    "a scalar-action twist is specified by an endomorphism of the module's base ring"
+                )
+            return self.restrict_scalars(ring_endomorphism)
 
         def localize(self, *datum):
             r"""Return ``S^{-1}M`` by scalar extension to ``S^{-1}R``.
@@ -2647,19 +2660,6 @@ def _restricted_scalars_view(
         subobject_inclusion_factory=_subobject_inclusion_factory,
         subobject_verify_linearity=_subobject_verify_linearity,
     )
-
-
-def twist_scalar_action(module, ring_endomorphism):
-    r"""Twist the scalar action of an ``R``-module along ``R -> R``.
-
-    This is restriction of scalars along an endomorphism of the scalar ring;
-    it is unrelated to ``L.twist(a)``, which rescales a lattice form while
-    leaving its scalar action unchanged.
-    """
-    ring = _engine_ring(module.base_ring())
-    if _engine_ring(ring_endomorphism.domain()) is not ring or _engine_ring(ring_endomorphism.codomain()) is not ring:
-        raise ValueError("a scalar-action twist is specified by an endomorphism of the module's base ring")
-    return module.restrict_scalars(ring_endomorphism)
 
 
 def _tensor_label_set(factors):
