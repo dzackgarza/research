@@ -304,7 +304,7 @@ class AlgebraBaseChangeAdjunction(Adjunction):
 
 
 @cached_function(key=lambda ring_map: id(ring_map))
-def algebra_base_change_adjunction(ring_map) -> AlgebraBaseChangeAdjunction:
+def _algebra_base_change_adjunction(ring_map) -> AlgebraBaseChangeAdjunction:
     return AlgebraBaseChangeAdjunction(ring_map)
 
 
@@ -312,5 +312,4 @@ __all__ = [
     "AlgebraBaseChangeAdjunction",
     "AlgebraRestrictionOfScalarsFunctor",
     "AlgebraScalarExtensionFunctor",
-    "algebra_base_change_adjunction",
 ]

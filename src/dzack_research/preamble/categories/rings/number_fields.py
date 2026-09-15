@@ -353,8 +353,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             existing algebra scalar-extension functor and reconstructs the
             selected ``QQ``-algebra presentation of the field.
             """
-            from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-                algebra_base_change_adjunction,
+            from dzack_research.preamble.categories.algebras.algebras import (
+                CommutativeAlgebras,
             )
 
             integers = _own_ring(SageZZ)
@@ -373,7 +373,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     raise NotImplementedError(
                         "number-field base change is currently represented from ZZ or QQ"
                     )
-            return algebra_base_change_adjunction(ring_map).left_adjoint()
+            return CommutativeAlgebras(base_ring).base_change_adjunction(ring_map).left_adjoint()
 
         def as_algebra(self):
             r"""Return this field with its selected finite ``QQ``-algebra presentation."""
