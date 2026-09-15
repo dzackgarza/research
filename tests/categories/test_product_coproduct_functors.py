@@ -9,6 +9,16 @@ from dzack_research.preamble.categories.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
+def test_product_and_coproduct_cone_categories_are_owned_by_the_target_category() -> None:
+    factors = (Sets.Δ[0], Sets.Δ[1])
+
+    product_cones = Sets().ProductCones(factors)
+    coproduct_cocones = Sets().CoproductCocones(factors)
+
+    assert product_cones.target_category() is Sets()
+    assert coproduct_cocones.target_category() is Sets()
+
+
 def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     x = Sets.Δ[1]
     y = Sets.Δ[2]

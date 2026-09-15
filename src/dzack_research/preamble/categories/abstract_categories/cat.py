@@ -581,6 +581,24 @@ class Cat(CategoryPacketMethods, Category):
                 lambda index: legs[int(index.value())],
             )
 
+        def ProductCones(self, factors) -> Category:
+            r"""Return the category of product cones on ``factors`` in this category."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                ProductConeCategory,
+                _discrete_diagram,
+            )
+
+            return ProductConeCategory(_discrete_diagram(factors, target_category=self))
+
+        def CoproductCocones(self, factors) -> Category:
+            r"""Return the category of coproduct cocones on ``factors`` in this category."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                CoproductCoconeCategory,
+                _discrete_diagram,
+            )
+
+            return CoproductCoconeCategory(_discrete_diagram(factors, target_category=self))
+
         def pushout(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
             r"""Return the pushout of the span these two legs form.
 

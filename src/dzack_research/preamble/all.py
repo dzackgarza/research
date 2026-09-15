@@ -72,8 +72,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectMorphism,
     TensorProductCategory,
     WideSubcategory,
-    coproduct_cocone_category,
-    product_cone_category,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     Bifunctor,

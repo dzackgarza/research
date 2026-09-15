@@ -1540,20 +1540,6 @@ def _discrete_diagram(factors, target_category=None):
     return DiscreteDiagram(index, target, family)
 
 
-def product_cone_category(
-    factors: IndexedFamily | Iterable[Parent],
-    target_category: Category | None = None,
-) -> ProductConeCategory:
-    return ProductConeCategory(_discrete_diagram(factors, target_category))
-
-
-def coproduct_cocone_category(
-    factors: IndexedFamily | Iterable[Parent],
-    target_category: Category | None = None,
-) -> CoproductCoconeCategory:
-    return CoproductCoconeCategory(_discrete_diagram(factors, target_category))
-
-
 __all__ = [
     "BiproductCategory",
     "CoconeCategory",
@@ -1580,6 +1566,4 @@ __all__ = [
     "SelectedLimitConstruction",
     "SpanCategory",
     "TensorProductCategory",
-    "coproduct_cocone_category",
-    "product_cone_category",
 ]
