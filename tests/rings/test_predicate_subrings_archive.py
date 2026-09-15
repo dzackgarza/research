@@ -7,7 +7,7 @@ refuses undecided predicate answers instead of coercing them to truth values.
 
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, PredicateSubrings, predicate_subring
+from dzack_research.preamble.all import QQ, ZZ, PredicateSubrings
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/rings/predicate_subrings.sage",
@@ -17,8 +17,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_predicate_subring_retains_ambient_ring_predicate_and_inclusion() -> None:
-    integers_in_rationals = predicate_subring(
-        QQ,
+    integers_in_rationals = QQ.predicate_subring(
         lambda value: value.denominator() == 1,
         "z is integral",
     )
@@ -37,8 +36,7 @@ def test_predicate_subring_retains_ambient_ring_predicate_and_inclusion() -> Non
 
 
 def test_predicate_subring_constructor_rejects_elements_outside_the_predicate() -> None:
-    integers_in_rationals = predicate_subring(
-        QQ,
+    integers_in_rationals = QQ.predicate_subring(
         lambda value: value.denominator() == 1,
         "z is integral",
     )
@@ -48,8 +46,7 @@ def test_predicate_subring_constructor_rejects_elements_outside_the_predicate() 
 
 
 def test_undecided_predicate_membership_is_not_guessed() -> None:
-    unresolved = predicate_subring(
-        QQ,
+    unresolved = QQ.predicate_subring(
         lambda value: True if value == 0 else None,
         "membership is only decided at zero",
     )

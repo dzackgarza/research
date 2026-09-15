@@ -13,7 +13,7 @@ from dzack_research.preamble.all import (
     FinitelyPresentedModule,
     Modules,
 )
-from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
+
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -24,7 +24,7 @@ ARCHIVE_RECONCILIATION = {
         "AutomorphismSubgroup": "src/dzack_research/preamble/categories/group/predicate_subgroups.py",
         "ModuleAutomorphismGroups": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
         "ModuleAutomorphismGroup": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
-        "ModuleAutomorphism.cyclic_subgroup": "src/dzack_research/preamble/categories/group/cyclic_subgroups.py",
+        "ModuleAutomorphism.cyclic_subgroup": "src/dzack_research/preamble/categories/group/groups.py",
         "GroupAction": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
         "GroupActionHomsets": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
         "GroupActionHomset": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
@@ -97,7 +97,7 @@ def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup
     swap = plane.module_category().Mor(plane, plane)(
         {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
     ).as_automorphism()
-    generated = cyclic_subgroup(swap)
+    generated = swap.cyclic_subgroup()
 
     assert generated.supergroup() is plane.Aut()
     assert generated.selected_generator() is swap

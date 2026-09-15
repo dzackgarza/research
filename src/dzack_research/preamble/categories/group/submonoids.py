@@ -135,7 +135,7 @@ def Submonoids(ambient_monoid):
     return Monoids().Subobjects(ambient_monoid)
 
 
-def generated_submonoid(ambient, generators, *, description=None, structure_data=None):
+def _generated_submonoid(ambient, generators, *, description=None, structure_data=None):
     normalized = tuple(ambient(generator) for generator in generators)
     return _SubmonoidParent(
         ambient,
@@ -145,7 +145,7 @@ def generated_submonoid(ambient, generators, *, description=None, structure_data
     )
 
 
-def predicate_submonoid(
+def _predicate_submonoid(
     ambient,
     predicate,
     description,
@@ -163,6 +163,4 @@ def predicate_submonoid(
 __all__ = [
     "SubmonoidInclusion",
     "Submonoids",
-    "generated_submonoid",
-    "predicate_submonoid",
 ]

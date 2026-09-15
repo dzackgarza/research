@@ -397,8 +397,7 @@ class PredicateSubrings(OwnedCategory):
     def an_object(self):
         r"""The integers inside the rationals, cut out by integrality."""
         rationals = _own_ring(SageQQ)
-        return predicate_subring(
-            rationals,
+        return rationals.predicate_subring(
             lambda element: element.denominator() == 1,
             "z is an integer",
         )
@@ -1169,7 +1168,7 @@ class _PredicateSubringParent(Parent):
         raise NotImplementedError(f"membership in {self} is not decided for {candidate}")
 
 
-def predicate_subring(ambient_ring, predicate, description, category=None):
+def _predicate_subring(ambient_ring, predicate, description, category=None):
     placement = PredicateSubrings()
     if category is not None:
         placement = Category.join((placement, category))
@@ -1493,6 +1492,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return _refine_number_field_view(result)
             return result
 
+        def predicate_subring(self, predicate, description, category=None):
+            r"""Return the represented subring of elements satisfying ``predicate``."""
+            return _predicate_subring(self, predicate, description, category)
+
         def Mor(self, codomain, category=None):
             rings = OwnedRings()
             if category is None or (isinstance(category, OwnedCategory) and category.is_subcategory(rings)):
@@ -1581,8 +1584,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return the centre ``Z(R)`` as a predicate-defined subring."""
             if self in OwnedRings().Commutative():
                 return self
-            return predicate_subring(
-                self,
+            return self.predicate_subring(
                 self.is_central,
                 "z commutes with every element",
                 OwnedRings().Commutative(),
@@ -1923,11 +1925,9 @@ def unit_group(ring):
     element interface rather than a second construction here.
     """
     from dzack_research.preamble.categories.group.groups import OwnedGroups
-    from dzack_research.preamble.categories.group.submonoids import predicate_submonoid
 
     assert ring in OwnedRings(), f"the unit group of {ring} requires an owned ring"
-    units = predicate_submonoid(
-        ring,
+    units = ring.predicate_submonoid(
         lambda element: element.is_unit(),
         f"{ring}^×",
     )

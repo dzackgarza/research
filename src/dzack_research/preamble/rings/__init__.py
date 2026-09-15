@@ -80,7 +80,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     RingMorphism,
     Rings,
     _own_ring,
-    predicate_subring,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     ComplexField as _ComplexField,
@@ -312,6 +311,5 @@ __all__ = [
     "ZariskiClosedSubobject",
     "Zmod",
     "Zp",
-    "predicate_subring",
     "ring_constructor_surface",
 ]

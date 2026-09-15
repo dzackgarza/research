@@ -5,15 +5,13 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.group.submonoids import (
     Submonoids,
-    predicate_submonoid,
 )
 from dzack_research.preamble.rings.unit_interval import UnitInterval
 
 
 def test_predicate_submonoid_retains_owned_ambient_and_inclusion() -> None:
     identity = UnitInterval.one()
-    submonoid = predicate_submonoid(
-        UnitInterval,
+    submonoid = UnitInterval.predicate_submonoid(
         lambda element: element == identity,
         "the identity submonoid",
     )
@@ -25,9 +23,5 @@ def test_predicate_submonoid_retains_owned_ambient_and_inclusion() -> None:
 
 
 def test_raw_sage_monoid_is_not_a_public_submonoid_ambient() -> None:
-    with pytest.raises(TypeError, match="owned monoid"):
-        predicate_submonoid(
-            SageZZ,
-            lambda _element: True,
-            "raw Sage ambient",
-        )
+    with pytest.raises(AttributeError):
+        SageZZ.predicate_submonoid(lambda _element: True, "raw Sage ambient")

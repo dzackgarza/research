@@ -14,7 +14,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     category_packet,
 )
-from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
+from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFinitePresentation,
     OwnedFiniteGroups,
@@ -728,7 +728,7 @@ class LatticeIsometry(LatticeEmbedding):
         if self.domain() is not self.codomain():
             raise ValueError("a cyclic isometry subgroup requires a lattice automorphism")
 
-        return cyclic_subgroup(self)
+        return CyclicGroups()(self)
 
     @cached_method
     def real_spinor_norm_sign(self):

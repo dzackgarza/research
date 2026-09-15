@@ -21,7 +21,6 @@ from dzack_research.preamble.all import (
     OwnedRings,
 )
 from dzack_research.preamble.rings import (
-    predicate_subring,
     ring_constructor_surface,
     session_ring_objects,
 )
@@ -123,8 +122,7 @@ def test_the_endomorphism_ring_contains_the_base_ring_as_scalar_endomorphisms() 
 
 
 def test_commutativity_and_localization_remain_coherent_on_non_engine_ring_parents() -> None:
-    subring = predicate_subring(
-        QQ,
+    subring = QQ.predicate_subring(
         lambda element: element.denominator() == 1,
         "the denominator is one",
     )

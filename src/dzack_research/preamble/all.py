@@ -647,12 +647,9 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     absolute_galois_group,
     absolute_galois_group_category,
     continuous_group_homset,
-    cyclic_subgroup,
     exact_field_homset,
     extensions_along,
-    generated_submonoid,
     groups,
-    predicate_submonoid,
     restrict_along,
 )
 from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401
@@ -1047,7 +1044,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     UnitInterval,
     ZariskiClosedSubobject,
     _restore_session_ring_bindings,  # noqa: F401
-    predicate_subring,
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401

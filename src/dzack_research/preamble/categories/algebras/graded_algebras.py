@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _own_ring,
-    predicate_subring,
 )
 from dzack_research.preamble.refine import refine
 
@@ -337,8 +336,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                 denominator = self(fraction.denominator())
                 return self.homogeneous_degree(numerator) == self.homogeneous_degree(denominator)
 
-            return predicate_subring(
-                localization,
+            return localization.predicate_subring(
                 is_degree_zero,
                 f"a/s is homogeneous of degree zero in {localization}",
                 OwnedRings().Commutative(),

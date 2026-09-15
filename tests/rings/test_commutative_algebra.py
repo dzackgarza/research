@@ -160,10 +160,10 @@ def test_nonfinite_base_rejects_arithmetic_zeta_interface() -> None:
 
 
 def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() -> None:
-    from dzack_research.preamble.all import generated_submonoid
+
     from dzack_research.preamble.categories.group.magmas import Monoids
 
-    powers_of_two = generated_submonoid(ZZ, (ZZ(2),))
+    powers_of_two = ZZ.generated_submonoid((ZZ(2),))
     subobjects = Monoids().Subobjects(ZZ)
 
     assert powers_of_two in subobjects

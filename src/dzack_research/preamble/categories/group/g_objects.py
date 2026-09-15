@@ -373,9 +373,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
         def _cyclic_restriction(self, group_element):
             r"""Return this object acted on by the cyclic subgroup ``<g> <= G``."""
-            from dzack_research.preamble.categories.group.cyclic_subgroups import (
-                cyclic_subgroup,
-            )
+
             from dzack_research.preamble.categories.schemes.schemes import Schemes
 
             match self.underlying_category():
@@ -385,7 +383,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                     assert False, (
                         f"the fixed locus of a single group element is constructed for schemes; {other} supplies no owned equalizer of an automorphism with the identity"
                     )
-            return self.restrict_action(cyclic_subgroup(group_element).inclusion())
+            return self.restrict_action(group_element.cyclic_subgroup().inclusion())
 
         def fixed_subobject_of(self, group_element):
             r"""Return ``X^g``, the equalizer of ``rho(g)`` and the identity of ``X``.

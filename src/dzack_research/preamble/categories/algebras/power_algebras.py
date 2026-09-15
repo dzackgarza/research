@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.modules.pure.modules import FinitelyGene
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _owned_ring,
-    predicate_subring,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring as _engine_ring,
@@ -219,8 +218,7 @@ class PowerAlgebra(GradedDirectSumModule):
             return self
         if self.is_commutative():
             return self
-        return predicate_subring(
-            self,
+        return self.predicate_subring(
             self.is_central,
             "z commutes with every element",
             OwnedRings().Commutative(),

@@ -910,9 +910,7 @@ def NodalCubicNormalization():
 
 def NodalCubicFundamentalGroup(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1`` of the rational nodal cubic, an infinite cyclic group."""
-    from dzack_research.preamble.categories.group.cyclic_subgroups import (
-        cyclic_subgroup,
-    )
+
 
     selected = NodalCubic() if scheme is None else scheme
     if selected is not NodalCubic():
@@ -920,7 +918,7 @@ def NodalCubicFundamentalGroup(scheme=None, base_point=None):
     point = selected.point_morphism((0, 1, 0)) if base_point is None else base_point
     ambient = OwnedGroups().Free(1)
     generator = next(iter(ambient.group_generators()))
-    group = cyclic_subgroup(generator)
+    group = generator.cyclic_subgroup()
     return _equip_geometric_fundamental_group(
         group,
         selected,
@@ -931,12 +929,10 @@ def NodalCubicFundamentalGroup(scheme=None, base_point=None):
 
 def ProjectiveLineFundamentalGroup(line, base_point):
     r"""Return the trivial pointed fundamental group of one represented projective line."""
-    from dzack_research.preamble.categories.group.cyclic_subgroups import (
-        cyclic_subgroup,
-    )
+
 
     trivial_ambient = OwnedGroups().C(1)
-    group = cyclic_subgroup(trivial_ambient.one())
+    group = trivial_ambient.one().cyclic_subgroup()
     return _equip_geometric_fundamental_group(
         group,
         line,
@@ -1076,9 +1072,7 @@ def ProjectiveGeneralLinearGroup2():
 
 def PGL2FundamentalGroup(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1(PGL_2(C)) ~= C_2``."""
-    from dzack_research.preamble.categories.group.cyclic_subgroups import (
-        cyclic_subgroup,
-    )
+
 
     selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
     if selected is not ProjectiveGeneralLinearGroup2():
@@ -1086,7 +1080,7 @@ def PGL2FundamentalGroup(scheme=None, base_point=None):
     point = selected.point_morphism((1, 0, 0, 1)) if base_point is None else base_point
     ambient = OwnedGroups().C(2)
     generator = next(iter(ambient.group_generators()))
-    group = cyclic_subgroup(generator)
+    group = generator.cyclic_subgroup()
     return _equip_geometric_fundamental_group(
         group,
         selected,
