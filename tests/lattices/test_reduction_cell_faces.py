@@ -1,12 +1,9 @@
 from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.categories.reduction_complexes import (
-    rational_reduction_cell,
-)
 
 
 def test_faces_are_owned_cells_with_exact_incidence() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    cell = lattice.reduction_cell(((1, 0), (0, 1)))
 
     rays = cell.faces(1)
     assert rays.cardinality() == 2
@@ -21,7 +18,7 @@ def test_faces_are_owned_cells_with_exact_incidence() -> None:
 
 def test_face_stabilizer_retains_the_cell_face_incidence() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    cell = lattice.reduction_cell(((1, 0), (0, 1)))
     face = cell.facet((1, 0))
     orthogonal = lattice.O()
     labels = lattice.module_generating_set()
@@ -39,7 +36,7 @@ def test_face_stabilizer_retains_the_cell_face_incidence() -> None:
 
 def test_face_incidence_retains_face_cell_and_pair_stabilizer() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    cell = lattice.reduction_cell(((1, 0), (0, 1)))
     orthogonal = lattice.O()
 
     incidences = cell.face_incidences(1, orthogonal)

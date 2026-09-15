@@ -1,14 +1,13 @@
 from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.reduction_complexes import (
     ReductionCellAdjacency,
-    rational_reduction_cell,
 )
 
 
 def test_adjacent_cell_record_retains_face_and_oriented_transporter() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    source = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
-    target = rational_reduction_cell(lattice, ((-1, 0), (0, 1)))
+    source = lattice.reduction_cell(((1, 0), (0, 1)))
+    target = lattice.reduction_cell(((-1, 0), (0, 1)))
 
     adjacency = source.adjacency_to(target, lattice.O())
     assert isinstance(adjacency, ReductionCellAdjacency)
@@ -27,8 +26,8 @@ def test_adjacent_cell_record_retains_face_and_oriented_transporter() -> None:
 
 def test_nonadjacent_cells_do_not_acquire_an_adjacency_record() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    first = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
-    opposite = rational_reduction_cell(lattice, ((-1, 0), (0, -1)))
+    first = lattice.reduction_cell(((1, 0), (0, 1)))
+    opposite = lattice.reduction_cell(((-1, 0), (0, -1)))
 
     assert not first.is_adjacent_to(opposite)
     assert first.adjacency_to(opposite, lattice.O()) is None

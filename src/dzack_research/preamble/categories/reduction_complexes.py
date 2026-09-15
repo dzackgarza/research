@@ -256,6 +256,10 @@ class RationalReductionCell(SageObject):
             equations=tuple(transported(wall) for wall in self.equations()),
         )
 
+    def with_marks(self, marked_vectors):
+        r"""Return this cell equipped with the selected labelled finite family of marks."""
+        return MarkedReductionCell(self, marked_vectors)
+
     def transporter_witness_to(self, other, group):
         r"""Return one element of a finite represented group carrying this cell to ``other``.
 
@@ -985,32 +989,6 @@ def _perfect_domain_traversal_from_records(lattice, records):
     )
 
 
-def rational_reduction_complex_exploration(
-    lattice,
-    cells,
-    adjacencies,
-    *,
-    complete=False,
-):
-    r"""Return the finite exact reduction-complex exploration on the selected data."""
-    return RationalReductionComplexExploration(
-        lattice,
-        cells,
-        adjacencies,
-        complete=complete,
-    )
-
-
-def rational_reduction_cell(lattice, inequalities, *, equations=()):
-    r"""Return the homogeneous rational cell cut out by the selected walls."""
-    return RationalReductionCell(lattice, inequalities, equations=equations)
-
-
-def marked_reduction_cell(cell, marked_vectors):
-    r"""Return ``cell`` equipped with the selected finite indexed family of marks."""
-    return MarkedReductionCell(cell, marked_vectors)
-
-
 def _lorentzian_reduction_complex(lattice, marked_vectors=None):
     r"""Return the completed Lorentzian perfect-domain traversal of ``lattice``.
 
@@ -1054,7 +1032,4 @@ __all__ = [
     "ReductionFaceIncidence",
     "ReductionCellAdjacency",
     "RationalReductionCell",
-    "marked_reduction_cell",
-    "rational_reduction_cell",
-    "rational_reduction_complex_exploration",
 ]

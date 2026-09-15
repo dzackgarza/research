@@ -1,13 +1,10 @@
 from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.categories.reduction_complexes import (
-    rational_reduction_cell,
-)
 
 
 def test_adjacent_rational_cells_retain_their_common_facet_and_transporter() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    first = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
-    second = rational_reduction_cell(lattice, ((-1, 0), (0, 1)))
+    first = lattice.reduction_cell(((1, 0), (0, 1)))
+    second = lattice.reduction_cell(((-1, 0), (0, 1)))
 
     assert first.is_adjacent_to(second)
     common = first.intersection(second)
@@ -34,7 +31,7 @@ def test_adjacent_rational_cells_retain_their_common_facet_and_transporter() -> 
 
 def test_cell_stabilizer_and_transporter_are_distinct_group_operations() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
-    quadrant = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    quadrant = lattice.reduction_cell(((1, 0), (0, 1)))
     stabilizer = quadrant.stabilizer(lattice.O())
 
     identity = lattice.O().one()

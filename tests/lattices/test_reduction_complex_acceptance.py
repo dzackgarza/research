@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.reduction_complexes import (
     _perfect_domain_traversal_from_records,
-    marked_reduction_cell,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
@@ -38,9 +37,8 @@ def test_reduction_complex_acceptance_keeps_faces_transporters_marks_and_complet
     cell = traversal.cells()[0]
     labels = finite_ordered_set(("v",))
     mark = lattice.module_generator(0)
-    marked = marked_reduction_cell(
-        cell,
-        finite_indexed_family(labels, lambda _label: mark, name="Acceptance mark"),
+    marked = cell.with_marks(
+        finite_indexed_family(labels, lambda _label: mark, name="Acceptance mark")
     )
     transported = marked.transported_by(transporter)
     assert transported.marked_vectors()["v"] == transporter(mark)
@@ -50,10 +48,6 @@ def test_reduction_complex_acceptance_keeps_faces_transporters_marks_and_complet
 def test_reduction_complex_acceptance_does_not_promote_a_prefix_to_complete() -> None:
     lattice, traversal = _completed_single_orbit_traversal()
     cell = traversal.cells()[0]
-    from dzack_research.preamble.categories.reduction_complexes import (
-        rational_reduction_complex_exploration,
-    )
-
-    prefix = rational_reduction_complex_exploration(lattice, (cell,), (), complete=False)
+    prefix = lattice.reduction_complex_exploration((cell,), (), complete=False)
     assert not prefix.is_complete()
     assert prefix.unpaired_facets().cardinality() > 0

@@ -1,8 +1,4 @@
 from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.categories.reduction_complexes import (
-    marked_reduction_cell,
-    rational_reduction_cell,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -15,7 +11,7 @@ def _marked_quadrant():
     lattice = Lattices(ZZ)(ZZ**2)
     e0 = lattice.module_generator(0)
     e1 = lattice.module_generator(1)
-    cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    cell = lattice.reduction_cell(((1, 0), (0, 1)))
     labels = finite_ordered_set(("first", "second"))
     selected = {"first": e0, "second": e1}
     marks = finite_indexed_family(
@@ -23,7 +19,7 @@ def _marked_quadrant():
         lambda label: selected[label],
         name="Coordinate marks",
     )
-    return lattice, marked_reduction_cell(cell, marks)
+    return lattice, cell.with_marks(marks)
 
 
 def test_marked_stabilizer_preserves_cell_and_labels() -> None:

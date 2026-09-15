@@ -2667,6 +2667,33 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _root_sublattice(self)
 
+        def reduction_cell(self, inequalities, *, equations=()):
+            r"""Return the homogeneous rational reduction cell cut out in this lattice."""
+            from dzack_research.preamble.categories.reduction_complexes import (
+                RationalReductionCell,
+            )
+
+            return RationalReductionCell(self, inequalities, equations=equations)
+
+        def reduction_complex_exploration(
+            self,
+            cells,
+            adjacencies,
+            *,
+            complete=False,
+        ):
+            r"""Return the selected finite exact reduction-complex exploration."""
+            from dzack_research.preamble.categories.reduction_complexes import (
+                RationalReductionComplexExploration,
+            )
+
+            return RationalReductionComplexExploration(
+                self,
+                cells,
+                adjacencies,
+                complete=complete,
+            )
+
         def lorentzian_reduction_complex(self, marked_vectors=None):
             r"""Return the completed Lorentzian perfect-domain traversal of this lattice."""
             from dzack_research.preamble.categories.reduction_complexes import (
