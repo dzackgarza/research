@@ -1253,6 +1253,10 @@ class ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
             return NotImplemented
         return type(self)(other.domain(), self.codomain())
 
+    def _repr_(self) -> str:
+        return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
+
+
 def TrivialInvertibleSheaf(cover):
     return InvertibleSheaf.trivial(cover)
 

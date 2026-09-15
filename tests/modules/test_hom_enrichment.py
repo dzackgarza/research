@@ -4,6 +4,7 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
+    FreeModule,
     FinitelyPresentedModules,
     InternalHom,
     InternalHomModules,
@@ -78,6 +79,9 @@ def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> No
     internal = InternalHom(source, target)
 
     assert internal is module_homset(source, target)
+    construction = internal.internal_hom_construction()
+    assert construction.source_module() is source
+    assert construction.target_module() is target
     assert internal.__dict__.get("_preamble_internal_hom_model") is None
 
     evaluated = []
@@ -146,9 +150,15 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
             {"r2": 2 * target_free.module_generator("y")}
         )
     )
-    morphism = module_homset(source, target)(
-        {"x": target.module_generator("y")}
-    )
+    hom = module_homset(source, target)
+    construction = hom.internal_hom_construction()
+    assert construction.source_module() is source
+    assert construction.target_module() is target
+    assert hom.__dict__.get("_preamble_internal_hom_model") is not None
+    assert hom.framing_source() is hom.internal_hom_model().framing_source()
+    assert hom.framing_morphism().domain() is hom.framing_source()
+    assert hom.framing_morphism().codomain() is hom
+    morphism = hom({"x": target.module_generator("y")})
 
     kernel = morphism.kernel()
     inclusion = kernel.inclusion()
@@ -159,3 +169,14 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))
     lifted = inclusion.lift(two_x)
     assert inclusion(lifted) == two_x
+
+
+def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
+    source = FreeModule(ZZ, 2)
+    target = FreeModule(ZZ, 3)
+    hom = module_homset(source, target)
+
+    framing_source = hom.framing_source()
+    assert framing_source.module_generating_set() is hom.module_generating_set()
+    assert hom.framing_morphism().domain() is framing_source
+    assert hom.framing_morphism().codomain() is hom

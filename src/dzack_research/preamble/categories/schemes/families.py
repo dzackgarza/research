@@ -100,6 +100,10 @@ class RelativeAffineFamily(SageObject):
         """
         return DVRRelativeAffineFamily(self)
 
+    def _repr_(self) -> str:
+        return f"Relative affine family {self.total_space()} -> {self.base_scheme()}"
+
+
 
 class DVRSpecialFiberComparison(SageObject):
     r"""The canonical comparison between direct and completion-first special fibres."""

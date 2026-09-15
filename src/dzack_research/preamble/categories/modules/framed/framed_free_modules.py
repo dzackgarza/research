@@ -1,7 +1,8 @@
 """Free modules with their canonical framing."""
 
-
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.latex import latex
+from sage.misc.repr import repr_lincomb
 from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -164,11 +165,18 @@ class _SparseFreeModuleElement(ModuleElement):
         return hash((id(self.parent()), frozenset(self._coefficients.items())))
 
     def _repr_(self):
-        if not self._coefficients:
-            return "0"
-        return " + ".join(
-            f"{coefficient}*B[{label!r}]"
-            for label, coefficient in self._coefficients.items()
+        return repr_lincomb(
+            self._coefficients.items(),
+            repr_monomial=lambda label: f"[{label}]",
+            strip_one=True,
+        )
+
+    def _latex_(self):
+        return repr_lincomb(
+            self._coefficients.items(),
+            repr_monomial=lambda label: rf"\left[{latex(label)}\right]",
+            is_latex=True,
+            strip_one=True,
         )
 
 
@@ -192,6 +200,7 @@ class _SparseFreeModuleParent:
             base_ring=ring,
             module_generating_set=labels,
             module_generator_function=self._basis_element,
+            framing_source=self,
             **rest,
         )
 
@@ -396,16 +405,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
+            r"""Return the image of the canonical free basis map as a set."""
 
-            return indexed_family(
+            return Sets().image_set(
+                self.module_generator_morphism(),
                 self.module_generating_set(),
-                self.module_generator,
-                name="Free-module generator family",
+                is_injective=True,
+                inverse=lambda generator: self(generator).underlying_set_element(),
             )
-
-        def framing_morphism(self):
-
-            return framing_morphism(self, self, self.module_generator)
 
         def _free_biproduct_over(
             self,
@@ -770,52 +777,6 @@ def _module_subobject_constructor_data(module, basis):
     return labels, embedded, lift_from_finite_support
 
 
-
-class FreeModuleGeneratorSet(Parent):
-    r"""The image of the canonical basis map of a free module."""
-
-    def __init__(self, module) -> None:
-        self._module = module
-        Parent.__init__(self, category=Sets())
-
-    def __iter__(self):
-        return (
-            self._module.module_generator(label)
-            for label in self._module.module_generating_set()
-        )
-
-    def _generator_label(self, element):
-        r"""Return the label of ``element`` when it is a canonical generator, else ``None``."""
-
-        if element not in self._module:
-            return None
-        coefficients = module_coefficients(self._module(element), self._module)
-        if len(coefficients) != 1:
-            return None
-        label, coefficient = next(iter(coefficients.items()))
-        return label if coefficient == self._module.base_ring().one() else None
-
-    def __contains__(self, element) -> bool:
-        return self._generator_label(element) is not None
-
-    def cardinality(self):
-        return self._module.module_generating_set().cardinality()
-
-    def __getitem__(self, index):
-        labels = self._module.module_generating_set()
-        return self._module.module_generator(labels[index])
-
-    def position(self, element) -> int:
-        label = self._generator_label(element)
-        if label is None:
-            raise ValueError(f"{element} is not a canonical module generator")
-        return self._module.module_generating_set().ranking_map()(label)
-
-    def _repr_(self):
-        size = self.cardinality()
-        if size in SageZZ and size > 12:
-            return f"Set of {size} module generators of {self._module}"
-        return "{" + ", ".join(repr(generator) for generator in self) + "}"
 
 
 def _module_generating_set(labels):

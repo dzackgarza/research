@@ -11,7 +11,6 @@ from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.misc.cachefunc import cached_function
-from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
@@ -114,10 +113,10 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self.parent().base_ring()._from_engine_element(order)
 
         def _repr_(self):
-            return repr(self._backend())
+            return f"[{self.lift()}] in {self.parent()}"
 
         def _latex_(self):
-            return str(latex(self._backend()))
+            return rf"[{self.lift()}]\in {self.parent()}"
 
     def an_object(self):
         r"""``Frac(R)/R``."""
@@ -207,10 +206,10 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self.module_generator(self.module_generating_set()(1))
 
         def _repr_(self):
-            return repr(self._engine)
+            return f"{self.fraction_field()} / ({self.modulus()}){self.base_ring()}"
 
         def _latex_(self):
-            return str(latex(self._engine))
+            return rf"{self.fraction_field()} / ({self.modulus()}){self.base_ring()}"
         def base_ring(self):
             return self.base()
 

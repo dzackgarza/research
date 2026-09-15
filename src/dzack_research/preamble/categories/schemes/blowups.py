@@ -94,6 +94,10 @@ class ProjectivePointBlowupCanonicalComparison(SageObject):
     def isomorphism(self):
         return self._isomorphism
 
+    def _repr_(self) -> str:
+        return f"Canonical-bundle comparison for {self.blowup()}: {self.canonical_line_bundle()} ~= {self.target_line_bundle()}"
+
+
 
 class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
     r"""Blowups of ``P^2`` at one represented rational point."""

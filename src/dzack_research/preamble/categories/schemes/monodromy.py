@@ -76,6 +76,10 @@ class PointedAnalyticFundamentalGroup(SageObject):
     def positive_loop_generator(self):
         return self._generator
 
+    def _repr_(self) -> str:
+        return f"pi_1({self.space()}, {self.base_point()}) = {self.group()}"
+
+
 
 class IntegralLocalSystem(SageObject):
     r"""A pointed integral local system represented by a ``pi_1`` action.
@@ -129,6 +133,10 @@ class IntegralLocalSystem(SageObject):
         classifying = self.monodromy_representation().domain()
         point = classifying.an_object()
         return self.monodromy_representation()(classifying.Mor(point, point)(loop))
+
+    def _repr_(self) -> str:
+        return f"Integral local system of rank {self.rank()} on {self.base_space()} with stalk {self.stalk()}"
+
 
 
 class HigherDirectImageSheaf(SageObject):
@@ -195,6 +203,10 @@ class HigherDirectImageSheaf(SageObject):
         raise NotImplementedError(
             "proper base change on the smooth stratum does not construct singular-fiber specialization or nearby/vanishing cycles"
         )
+
+    def _repr_(self) -> str:
+        return f"R^{self.cohomological_degree()} of {self.family_morphism()} on {self.smooth_stratum()}"
+
 
 
 class LegendreMonodromyFamily(SageObject):
@@ -378,6 +390,10 @@ class LegendreMonodromyFamily(SageObject):
         raise NotImplementedError(
             "the singular Legendre fiber requires a separately represented nearby/vanishing-cycle comparison"
         )
+
+    def _repr_(self) -> str:
+        return f"Legendre monodromy family over {self.parameter_algebra()} with smooth stratum {self.smooth_stratum()}"
+
 
 
 def legendre_monodromy_family():

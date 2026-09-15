@@ -161,3 +161,14 @@ def test_abelian_group_has_the_canonical_integer_action() -> None:
         for n in (-2, -1, 0, 1, 2, 7):
             assert action(n)(element) == element ** n
             assert group.scalar_multiple(n, element) == element ** n
+
+
+def test_owned_group_display_uses_catalogue_data_and_owned_elements() -> None:
+    cyclic = Groups.C(3)
+    symmetric = Groups.S(3)
+
+    assert repr(cyclic) == "Cyclic group C_3 of order 3"
+    assert repr(symmetric) == "Symmetric group S_3"
+    generator = cyclic.group_generators()[0]
+    assert repr(generator) == "(1 2 3)"
+    assert "object at 0x" not in repr(cyclic)

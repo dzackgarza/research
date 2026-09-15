@@ -232,6 +232,10 @@ class AnalyticDiscFamily(SageObject):
             "an analytic disc is not constructed from a formal completion; a formal comparison requires separately selected convergence/comparison data"
         )
 
+    def _repr_(self) -> str:
+        return f"Analytic family {self.analytic_total_space()} -> {self.analytic_base()}"
+
+
 
 def analytic_disc_family(radius=1):
     return AnalyticDiscFamily(radius)

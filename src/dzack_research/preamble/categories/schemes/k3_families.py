@@ -197,6 +197,10 @@ class HorikawaK3Family(SageObject):
             raise ValueError("a Horikawa double cover in this family requires a tau-invariant branch section")
         return HorikawaK3DoubleCover(self, section)
 
+    def _repr_(self) -> str:
+        return f"Horikawa K3 family over {self.base_ring()} on {self.base_surface()}"
+
+
 
 class HorikawaK3DoubleCover(SageObject):
     r"""One represented member of :class:`HorikawaK3Family`."""
@@ -351,6 +355,10 @@ class HorikawaK3DoubleCover(SageObject):
     def base_change(self, ring_map):
         return HorikawaK3BaseChangeComparison(self, ring_map)
 
+    def _repr_(self) -> str:
+        return f"Horikawa K3 double cover {self.scheme()} -> {self.base_surface()}"
+
+
 
 class HorikawaK3BaseChangeComparison(SageObject):
     r"""Base change of one Horikawa cover with commuting lifted involutions."""
@@ -444,6 +452,10 @@ class HorikawaK3BaseChangeComparison(SageObject):
             )
             and comparison.deck_commutes(-self.source().base_ring().one())
         )
+
+    def _repr_(self) -> str:
+        return f"Horikawa K3 base change along {self.ring_map()} from {self.source()}"
+
 
 
 def horikawa_k3_family(base_ring=None):

@@ -17,7 +17,6 @@ from math import prod as product_value
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
-from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
@@ -63,6 +62,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     EnumeratedSets,
+    InfiniteEnumeratedSets,
     Sets,
     ranking_isomorphism,
 )
@@ -457,6 +457,10 @@ class Lattice(Parent, IndexedGenerators):
 
         def __hash__(self):
             return hash(self._vector)
+
+        def underlying_set_element(self):
+            r"""Recover the source label when this is one canonical free generator."""
+            return self._vector.underlying_set_element()
 
         def _sorted_items_for_printing(self):
             print_options = self.parent().print_options()

@@ -232,6 +232,10 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
         )
         return Isomorphism(forward, inverse)
 
+    def _repr_(self) -> str:
+        return f"Invariant-quotient base change along {self.ring_map()} for {self.source_acted_scheme()}"
+
+
 
 class AffineQuotientFunctor(Functor):
     r"""``(-)/G: GObjects(G, Sch_R) -> AffSch_R`` on the affine actions it is defined for."""

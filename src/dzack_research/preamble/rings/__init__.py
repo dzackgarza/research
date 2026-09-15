@@ -194,15 +194,30 @@ def session_ring_objects() -> dict[str, object]:
 
     integers = _refine_order_view(_own_ring(SageZZ))
     rationals = _refine_number_field_view(_own_ring(SageQQ))
+    integers._preamble_ring_display = "Integer Ring"
+    rationals._preamble_ring_display = "Rational Field"
+    aa = _public_commutative_ring(_own_ring(SageAA))
+    aa._preamble_ring_display = "Real Algebraic Field"
+    qqbar = _public_commutative_ring(_own_ring(SageQQbar))
+    qqbar._preamble_ring_display = "Algebraic Closure of Rational Field"
+    rdf = _public_commutative_ring(_own_ring(SageRDF))
+    rdf._preamble_ring_display = "Real double field"
+    rdf._preamble_ring_display_kind = "real"
+    cdf = _public_commutative_ring(_own_ring(SageCDF))
+    cdf._preamble_ring_display = "Complex double field"
+    cdf._preamble_ring_display_kind = "complex"
+    cc = _public_commutative_ring(_own_ring(SageCC))
+    cc._preamble_ring_display = f"Complex field with {SageCC.precision()} bits precision"
+    cc._preamble_ring_display_kind = "complex"
     return {
         "ZZ": integers,
         "QQ": rationals,
-        "AA": _public_commutative_ring(_own_ring(SageAA)),
-        "QQbar": _public_commutative_ring(_own_ring(SageQQbar)),
+        "AA": aa,
+        "QQbar": qqbar,
         "RR": RR,
-        "RDF": _public_commutative_ring(_own_ring(SageRDF)),
-        "CDF": _public_commutative_ring(_own_ring(SageCDF)),
-        "CC": _public_commutative_ring(_own_ring(SageCC)),
+        "RDF": rdf,
+        "CDF": cdf,
+        "CC": cc,
     }
 
 

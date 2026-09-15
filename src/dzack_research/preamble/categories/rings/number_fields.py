@@ -66,15 +66,19 @@ def _own_number_field(engine):
 
 
 def CyclotomicField(order, *args, **kwargs):
-    return _own_number_field(
+    field = _own_number_field(
         _SageCyclotomicField(_engine_numeral(SageZZ, order), *args, **kwargs)
     )
+    field._preamble_ring_display = f"Cyclotomic field Q(zeta_{order})"
+    return field
 
 
 def QuadraticField(discriminant, *args, **kwargs):
-    return _own_number_field(
+    field = _own_number_field(
         _SageQuadraticField(_engine_numeral(SageQQ, discriminant), *args, **kwargs)
     )
+    field._preamble_ring_display = f"Quadratic field of discriminant {discriminant}"
+    return field
 
 
 def NumberField(polynomial, *args, **kwargs):
@@ -82,7 +86,9 @@ def NumberField(polynomial, *args, **kwargs):
     if parent not in OwnedRings():
         raise TypeError("NumberField expects a polynomial in a preamble polynomial ring")
     backend_polynomial = _engine_element(parent, polynomial)
-    return _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
+    field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
+    field._preamble_ring_display = f"Number field defined by {polynomial}"
+    return field
 
 
 class NumberFieldHomCategoryConstruction(HomCategoryConstruction):
@@ -665,7 +671,7 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             return indexed_family(
                 self.module_generating_set(),
                 self.module_generator,
-                name="Ring-module generator family",
+                
             )
 
         def module_rank(self):

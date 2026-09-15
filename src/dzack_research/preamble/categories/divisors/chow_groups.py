@@ -255,6 +255,10 @@ class AffineCodimensionOneChowComparison(SageObject):
     def class_to_chow_isomorphism(self):
         return self._class_to_chow
 
+    def _repr_(self) -> str:
+        return f"Codimension-one Chow comparison for {self.scheme()}"
+
+
 
 class SerreIntersectionData(SageObject):
     r"""A supported local intersection represented by its Tor modules and lengths.
@@ -352,6 +356,10 @@ class SerreIntersectionData(SageObject):
 
     def multiplicity(self):
         return self._multiplicity
+
+    def _repr_(self) -> str:
+        return f"Serre intersection of {self.left_subscheme()} and {self.right_subscheme()} at {self.point()}: {self.multiplicity()}"
+
 
 
 def SerreIntersection(left, right, point):

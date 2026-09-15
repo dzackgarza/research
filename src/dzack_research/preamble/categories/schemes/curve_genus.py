@@ -105,6 +105,10 @@ class CurveGenusComparison(SageObject):
     def holds(self) -> bool:
         return True
 
+    def _repr_(self) -> str:
+        return f"Genus comparison: p_a={self.arithmetic_genus()}, g={self.geometric_genus()}, delta={self.total_delta_contribution()}"
+
+
 
 class ProjectiveCurveNormalizationData(SageObject):
     r"""A selected projective normalization map and all of its local defects."""
@@ -171,6 +175,10 @@ class ProjectiveCurveNormalizationData(SageObject):
     @cached_method
     def genus_comparison(self):
         return CurveGenusComparison(self)
+
+    def _repr_(self) -> str:
+        return f"Normalization data for {self.curve()} via {self.normalization_morphism()}"
+
 
 
 def _projective_quintic_normalization(curve, coordinate_formula):

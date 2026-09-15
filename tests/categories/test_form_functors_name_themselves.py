@@ -17,22 +17,26 @@ from dzack_research.preamble.all import (
 )
 
 
-def test_each_form_functor_names_its_construction_and_its_ring() -> None:
-    assert repr(FreeBilinearFormFunctor(ZZ)) == f"Free bilinear-form functor on {ZZ}-modules"
-    assert repr(FreeQuadraticFormFunctor(ZZ)) == f"Free quadratic-form functor on {ZZ}-modules"
-    assert (
-        repr(BilinearUnderlyingModuleFunctor(ZZ))
-        == f"Underlying-module functor on bilinear formed {ZZ}-modules"
+def test_each_form_functor_names_its_construction_ring_and_endpoints() -> None:
+    functors = (
+        (FreeBilinearFormFunctor(ZZ), "Free bilinear-form functor"),
+        (FreeQuadraticFormFunctor(ZZ), "Free quadratic-form functor"),
+        (BilinearUnderlyingModuleFunctor(ZZ), "Underlying-module functor"),
+        (QuadraticUnderlyingModuleFunctor(ZZ), "Underlying-module functor"),
     )
-    assert (
-        repr(QuadraticUnderlyingModuleFunctor(ZZ))
-        == f"Underlying-module functor on quadratic formed {ZZ}-modules"
-    )
+    for functor, label in functors:
+        shown = repr(functor)
+        assert label in shown
+        assert str(ZZ) in shown
+        assert str(functor.domain()) in shown
+        assert str(functor.codomain()) in shown
+        assert " -> " in shown
 
 
-def test_each_free_form_adjunction_displays_both_of_its_adjoints() -> None:
+def test_each_free_form_adjunction_displays_its_categorical_endpoints() -> None:
     for adjunction in (BilinearFreeFormAdjunction(ZZ), QuadraticFreeFormAdjunction(ZZ)):
         shown = repr(adjunction)
-
-        assert repr(adjunction.left_adjoint()) in shown
-        assert repr(adjunction.right_adjoint()) in shown
+        left = adjunction.left_adjoint()
+        assert str(left.domain()) in shown
+        assert str(left.codomain()) in shown
+        assert " <-> " in shown

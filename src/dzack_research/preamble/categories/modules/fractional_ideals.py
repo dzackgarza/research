@@ -92,7 +92,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             return richcmp(self._value, other._value, op)
 
         def _repr_(self):
-            return repr(self._value)
+            return repr(self.parent().fraction_field()._from_engine_element(self._value))
 
     class ParentMethods:
         def __init__(
@@ -230,7 +230,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             return indexed_family(
                 self.module_generating_set(),
                 self.module_generator,
-                name="Fractional-ideal generator family",
+                
             )
 
         def gens(self):

@@ -210,3 +210,21 @@ def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
 
     assert AA.cardinality() == aleph0
     assert QQbar.cardinality() == aleph0
+
+
+def test_owned_ring_display_comes_from_mathematical_presentation() -> None:
+    session = _session()
+    ZZ = session["ZZ"]
+    QQ = session["QQ"]
+    GF = session["GF"]
+    Zmod = session["Zmod"]
+    PolynomialRing = session["PolynomialRing"]
+
+    assert repr(ZZ) == "Integer Ring"
+    assert repr(QQ) == "Rational Field"
+    assert repr(GF(5)) == "GF(5)"
+    assert repr(Zmod(6)) == "ZZ/6ZZ"
+    polynomial = PolynomialRing(ZZ, "x")
+    assert repr(polynomial) == "Integer Ring[x]"
+    assert repr(polynomial.algebra_generator("x")) == "x"
+    assert "object at 0x" not in repr(polynomial)

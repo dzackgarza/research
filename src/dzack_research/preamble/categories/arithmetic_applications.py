@@ -102,6 +102,10 @@ class LorentzianE10Application(SageObject):
         r"""Lift a represented reduction isometry through the retained splitting."""
         return self.reduction_lattice().lift_isometry(isometry)
 
+    def _repr_(self) -> str:
+        return f"Lorentzian E10 cusp application on {self.lattice()} at {self.cusp()}"
+
+
 
 class EnriquesHigherWittApplication(SageObject):
     r"""The line/plane boundary arithmetic of ``T_En`` with glue-compatible group."""

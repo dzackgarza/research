@@ -49,7 +49,10 @@ def test_archived_framed_free_module_surface_is_owned_by_the_live_free_module() 
 
     assert alpha.monomial_coefficients() == {"alpha": ZZ.one()}
     assert beta.monomial_coefficients() == {"beta": ZZ.one()}
-    assert tuple(module.module_generators()) == (alpha, beta)
+    generators = module.module_generators()
+    assert repr(generators) == "{[alpha], [beta]}"
+    assert generators[0] == alpha
+    assert tuple(generators) == (alpha, beta)
     assert generator_map.domain() is module.module_generating_set()
     assert generator_map.codomain() is module
     assert generator_map("alpha") == alpha

@@ -622,14 +622,19 @@ class _RealMap(ModuleElement):
             return repr(self._expression)
         if self._coefficients is not None:
             return repr(self.generating_series())
-        return "placed map"
+        return f"Map {self.parent().domain()} -> {self.parent().codomain()} defined pointwise"
 
     def _latex_(self) -> str:
         if self._expression is not None:
             return str(latex(self._expression))
         if self._coefficients is not None:
             return str(latex(self.generating_series()))
-        return r"\text{placed map}"
+        return (
+            r"\text{pointwise-defined map }"
+            + str(latex(self.parent().domain()))
+            + r"\to "
+            + str(latex(self.parent().codomain()))
+        )
 
 
 class _FunctionSpace(UniqueRepresentation, Parent):

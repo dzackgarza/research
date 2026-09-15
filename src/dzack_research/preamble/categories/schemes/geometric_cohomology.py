@@ -807,6 +807,10 @@ class QuarticK3IntegralTopology(SageObject):
         r"""K3 middle cohomology is already torsion-free."""
         return self.middle_cohomology_lattice()
 
+    def _repr_(self) -> str:
+        return f"Integral topology of {self.scheme()} ({self.realization_description()})"
+
+
 
 class QuarticK3HodgeData(SageObject):
     r"""Pure Hodge data of the selected smooth quartic K3 realization.
@@ -866,6 +870,10 @@ class QuarticK3HodgeData(SageObject):
 
     def polarization_class(self):
         return self.integral_topology().hyperplane_first_chern_class()
+
+    def _repr_(self) -> str:
+        return f"Hodge data of {self.scheme()}"
+
 
 
 def QuarticK3IntegralCohomology(scheme, degree):
@@ -1119,6 +1127,10 @@ class NodalCubicIntegralTopology(SageObject):
             {label: target.zero() for label in source_labels}
         )
 
+    def _repr_(self) -> str:
+        return f"Integral topology of {self.scheme()} with normalization {self.normalization_scheme()}"
+
+
 
 @cached_function
 def ProjectiveGeneralLinearGroup2():
@@ -1231,6 +1243,10 @@ class PGL2IntegralTopology(SageObject):
         return Modules(integers).base_change_adjunction(extension).unit(
             self.integral_cohomology(degree)
         )
+
+    def _repr_(self) -> str:
+        return f"Integral topology of {self.scheme()} ({self.realization_description()})"
+
 
 
 def PGL2IntegralCohomology(degree):

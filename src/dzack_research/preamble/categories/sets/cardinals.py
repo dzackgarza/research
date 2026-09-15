@@ -140,7 +140,7 @@ class Cardinalities(OwnedCategory):
         return [Objects()]
 
     def _repr_(self) -> str:
-        return "Category of cardinalities"
+        return "Card: cardinalities with a unique morphism kappa -> lambda exactly when kappa <= lambda"
 
     def Mor(
         self,

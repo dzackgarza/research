@@ -89,6 +89,10 @@ class CompleteIntersectionAdjunctionComparison(SageObject):
     def isomorphism(self):
         return self._isomorphism
 
+    def _repr_(self) -> str:
+        return f"Adjunction comparison for {self.scheme()}: {self.canonical_line_bundle()} ~= {self.adjunction_target()}"
+
+
 
 class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
     r"""Closed complete intersections over a field or polynomial parameter base.

@@ -347,6 +347,10 @@ class ProjectiveLineBundleLinearization(SageObject):
             * self.section_scheme().scheme_base_ring()(character(group_element)),
         )
 
+    def _repr_(self) -> str:
+        return f"Linearization of {self.line_bundle()} by {self.acting_group()}"
+
+
 
 class ProductProjectiveLineBundleLinearization(ProjectiveLineBundleLinearization):
     r"""A C2 coordinate linearization of ``O(d_1,...,d_r)`` on a projective product.

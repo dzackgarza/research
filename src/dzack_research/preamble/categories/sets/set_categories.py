@@ -16,7 +16,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.rings.integer import Integer as SageInteger
 from sage.sets.condition_set import ConditionSet as SageConditionSet
-from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.set import Set as SageSet
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
@@ -45,6 +44,94 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 IndexT = TypeVar("IndexT")
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
+
+
+class _OwnedImageSet(Parent):
+    r"""A represented image retaining its source map and available inverse data."""
+
+    def __init__(
+        self,
+        source,
+        map_,
+        *,
+        is_injective=False,
+        inverse=None,
+        category=None,
+    ) -> None:
+        self._source = source
+        self._map = map_
+        self._inverse = inverse
+        self._is_injective = bool(is_injective)
+        categories = [Sets()]
+        if source in FiniteSets():
+            categories.append(FiniteSets())
+        if category is not None:
+            categories.append(category)
+        Parent.__init__(self, facade=True, category=Category.join(tuple(categories)))
+
+    def source_set(self):
+        return self._source
+
+    def image_map(self):
+        return self._map
+
+    def inverse_on_image(self):
+        if self._inverse is None:
+            raise NotImplementedError("this image construction has no selected inverse on its image")
+        return self._inverse
+
+    def is_injective_image(self) -> bool:
+        return self._is_injective
+
+    def cardinality(self):
+        if self.is_injective_image():
+            return cardinal(self.source_set().cardinality())
+        if self.source_set() in FiniteSets():
+            return cardinal(len(tuple(self)))
+        raise NotImplementedError(
+            "cardinality of this noninjective infinite image is not determined by the represented data"
+        )
+
+    def _finite_values(self):
+        values = []
+        for source in self.source_set():
+            value = self.image_map()(source)
+            if not any(value == known for known in values):
+                values.append(value)
+        return tuple(values)
+
+    def __iter__(self):
+        if self.source_set() in FiniteSets():
+            return iter(self._finite_values())
+        if self.is_injective_image() and self.source_set() in EnumeratedSets():
+            return (self.image_map()(source) for source in self.source_set())
+        raise NotImplementedError(
+            "enumerating a noninjective infinite image requires additional decidable image data"
+        )
+
+    def __contains__(self, element) -> bool:
+        if self._inverse is not None:
+            try:
+                source = self._inverse(element)
+                source = self.source_set()(source)
+            except (TypeError, ValueError):
+                return False
+            return self.image_map()(source) == element
+        if self.source_set() in FiniteSets():
+            return any(element == value for value in self._finite_values())
+        raise NotImplementedError(
+            "membership in this infinite image is not decidable from the represented data"
+        )
+
+    def _element_constructor_(self, element):
+        if element not in self:
+            raise ValueError(f"{element!r} is not in {self}")
+        return element
+
+    def _repr_(self) -> str:
+        if self.source_set() in FiniteSets():
+            return "{" + ", ".join(repr(value) for value in self._finite_values()) + "}"
+        return f"Image of {self.source_set()} under {self.image_map()}"
 
 
 class EnumeratedSets(OwnedCategory):
@@ -532,23 +619,38 @@ class Sets(OwnedCategory):
         is_injective=None,
         inverse=None,
     ):
-        r"""Return the represented image of ``domain_subset`` under ``map_``."""
-        try:
-            domain_cardinality = domain_subset.cardinality()
-            if domain_cardinality.is_finite():
-                from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                    finite_ordered_set,
-                )
+        r"""Return the owned image construction of ``domain_subset`` under ``map_``."""
+        if is_injective is True and inverse is not None and domain_subset in EnumeratedSets():
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                finite_ordered_image,
+                ordered_enumerated_set,
+            )
 
-                return finite_ordered_set(tuple(map_(element) for element in domain_subset))
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        return SageImageSet(
-            map_,
+            def contains(element):
+                try:
+                    source = inverse(element)
+                    source = domain_subset(source)
+                except (TypeError, ValueError):
+                    return False
+                return map_(source) == element
+
+            constructor = finite_ordered_image if domain_subset in FiniteSets() else ordered_enumerated_set
+            return constructor(
+                domain_subset,
+                map_,
+                index_of=inverse,
+                contains=contains,
+                image_source=domain_subset,
+                image_map=map_,
+                image_inverse=inverse,
+            )
+
+        return _OwnedImageSet(
             domain_subset,
-            category=category,
-            is_injective=is_injective,
+            map_,
+            is_injective=is_injective is True,
             inverse=inverse,
+            category=category,
         )
 
     def __contains__(self, candidate) -> bool:
@@ -2493,7 +2595,10 @@ class NaturalNumberSets(OwnedCategory):
             return self(0)
 
         def _repr_(self):
-            return "Natural numbers"
+            return "NN = {0, 1, 2, ...}"
+
+        def _latex_(self):
+            return r"\mathbb{N}=\{0,1,2,\ldots\}"
 
 
 class Homsets(OwnedCategory):

@@ -146,7 +146,15 @@ class ExactFieldMorphism(Morphism):
         return exact_field_homset(other.domain(), self.codomain())(backend)
 
     def _repr_(self) -> str:
-        return repr(self._engine_morphism_crossing())
+        try:
+            generators = field_generators(self.domain())
+        except TypeError:
+            return f"Exact field morphism {self.domain()} -> {self.codomain()}"
+        images = ", ".join(
+            f"{generator} -> {self(generator)}"
+            for generator in generators
+        )
+        return f"Exact field morphism {self.domain()} -> {self.codomain()} ({images})"
 
 
 class ExactFieldHomset(CategoricalHomset):

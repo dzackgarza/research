@@ -97,6 +97,7 @@ digraph preamble {
     "CommutatorLieAlgebras" [label="CommutatorLieAlgebras(R)", fillcolor="#ffe4e6"];
     "DeRhamAlgebras" [label="DeRhamAlgebras(R)", fillcolor="#ffe4e6"];
     "DifferentialGradedAlgebras" [label="DifferentialGradedAlgebras(R)", fillcolor="#ffe4e6"];
+    "DividedPowerAlgebras" [label="DividedPowerAlgebras(R)", fillcolor="#ffe4e6"];
     "FinitelyPresentedAlgebras" [label="FinitelyPresentedAlgebras(R)", fillcolor="#ffe4e6"];
     "FramedAlgebras" [label="FramedAlgebras(R)", fillcolor="#ffe4e6"];
     "FreeAlgebras" [label="FreeAlgebras(R)", fillcolor="#ffe4e6"];
@@ -141,6 +142,7 @@ digraph preamble {
   }
   subgraph cluster_6 {
     label="Rings, Fields &amp; Commutative Algebra"; fontsize=13; color="#cbd5e1"; style=rounded;
+    "AdicCompletions" [label="AdicCompletions", fillcolor="#ccfbf1"];
     "AdicallyCompleteRings" [label="AdicallyCompleteRings", fillcolor="#ccfbf1"];
     "ArtinianRings" [label="ArtinianRings", fillcolor="#ccfbf1"];
     "CommutativeIdeals" [label="CommutativeIdeals(R)", fillcolor="#ccfbf1"];
@@ -282,6 +284,7 @@ digraph preamble {
   "AdditiveMagmas" -> "Sets";
   "AdditiveMonoids" -> "AdditiveSemigroups";
   "AdditiveSemigroups" -> "AdditiveMagmas";
+  "AdicCompletions" -> "OwnedAdicallyCompleteRings";
   "AdicallyCompleteRings" -> "OwnedRings.Commutative";
   "AffineGroupSchemes" -> "Objects";
   "AffineSchemes" -> "QuasiAffineSchemes";
@@ -324,7 +327,7 @@ digraph preamble {
   "CommutativeAlgebraCoproducts" -> "Algebras.Associative.Unital.Commutative";
   "CommutativeAlgebraPushouts" -> "Algebras.Associative.Unital.Commutative";
   "CommutativeDifferentialGradedAlgebras" -> "DifferentialGradedAlgebras";
-  "CommutativeIdeals" -> "Modules";
+  "CommutativeIdeals" -> "ModuleSubobjects";
   "CommutatorLieAlgebras" -> "LieAlgebras";
   "CompleteLinearSystems" -> "ProjectiveSchemes";
   "CompleteLocalRings" -> "OwnedAdicallyCompleteRings";
@@ -342,13 +345,14 @@ digraph preamble {
   "DeRhamAlgebras" -> "StrictlyCommutativeDifferentialGradedAlgebras";
   "DifferentialGradedAlgebras" -> "CochainComplexes";
   "DirectSumObjects" -> "Objects";
-  "DiscreteCategories" -> "Objects";
+  "DiscreteCategories" -> "Cat";
   "DiscriminantBilinearModules" -> "DiscriminantModules";
   "DiscriminantBilinearModules" -> "TorsionBilinearFormModules";
   "DiscriminantModules" -> "FinitelyPresentedTorsionModules";
   "DiscriminantQuadraticModules" -> "DiscriminantBilinearModules";
   "DiscriminantQuadraticModules" -> "TorsionQuadraticFormModules";
   "DisjointUnionsOfSets" -> "Sets";
+  "DividedPowerAlgebras" -> "Algebras.Associative.Unital.Commutative";
   "DividedPowerModules" -> "Modules";
   "DividedSquareModules" -> "DividedPowerModules";
   "DivisionRings" -> "OwnedRings";
@@ -370,7 +374,6 @@ digraph preamble {
   "FiniteTypeSchemes" -> "Schemes";
   "FinitelyGeneratedFormModules" -> "FinitelyGeneratedModules";
   "FinitelyGeneratedFormModules" -> "FormModules";
-  "FinitelyGeneratedFreeFormModules" -> "FinitelyGeneratedFormModules";
   "FinitelyGeneratedFreeFormModules" -> "FinitelyGeneratedFreeModules";
   "FinitelyGeneratedFreeFormModules" -> "FreeFormModules";
   "FinitelyGeneratedFreeModules" -> "FramedFreeModules";

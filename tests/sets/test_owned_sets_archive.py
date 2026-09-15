@@ -5,6 +5,7 @@ mathematical subcategories instead; this file reconciles the semantics rather
 than the old Sage-global axiom implementation.
 """
 
+
 from dzack_research.preamble.all import (
     NN,
     CountableSets,
@@ -44,6 +45,11 @@ def test_archived_finite_sets_are_countable_without_becoming_infinite() -> None:
     assert finite not in InfiniteSets()
     assert finite not in CountablyInfiniteSets()
     assert finite not in UncountableSets()
+
+
+def test_natural_numbers_display_their_mathematical_pattern() -> None:
+    assert repr(NN) == "NN = {0, 1, 2, ...}"
+    assert NN._latex_() == r"\mathbb{N}=\{0,1,2,\ldots\}"
 
 
 def test_archived_countably_infinite_is_the_countable_infinite_intersection() -> None:

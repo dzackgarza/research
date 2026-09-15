@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
+    FreeModuleOn,
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -151,6 +152,14 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
             super().__init__(base_ring=localization_ring, **rest)
+            if framed_source:
+                # The transported framing is part of the localized module's
+                # construction, not something framing_morphism() reconstructs.
+                self._preamble_framing_source = FreeModuleOn(
+                    localization_ring,
+                    self._preamble_module_generating_set,
+                )
+                self._preamble_framing_morphism = None
 
         def _framing_coefficients(self, element):
             r"""Return coefficients of a localization fraction in the source framing."""

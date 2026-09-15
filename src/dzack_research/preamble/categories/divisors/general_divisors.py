@@ -466,6 +466,10 @@ class DivisorClassComparison(SageObject):
     def picard_to_class_group_morphism(self):
         return self._picard_to_class
 
+    def _repr_(self) -> str:
+        return f"Divisor-class comparison on {self.scheme()}: {self.picard_group()} -> {self.class_group()}"
+
+
 
 __all__ = [
     "DivisorClassTheory",

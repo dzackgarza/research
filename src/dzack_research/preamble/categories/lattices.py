@@ -350,7 +350,7 @@ class LocalGenusSymbol:
         return not self == other
 
     def __repr__(self):
-        return repr(self._engine())
+        return f"Local genus at {self.prime()} with Jordan blocks {self.jordan_blocks()}"
 
 
 class Genus:
@@ -1112,17 +1112,39 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.base_ring()
 
         def unformed_module(self):
-            r"""Read this same parent at its weaker module level."""
-            return self
+            r"""Return the actual free module equipped with this lattice form."""
+            return self._module
+
+        def framing_source(self):
+            r"""Return the retained free module whose canonical framing equips this lattice."""
+            return self.unformed_module()
 
         @cached_method
         def forget_form_morphism(self):
-
-            return module_homset(self, self).identity()
+            r"""Return the canonical module identification from the lattice to its free module."""
+            module = self.unformed_module()
+            return module_homset(self, module)(
+                {
+                    label: module.module_generator(label)
+                    for label in module.module_generating_set()
+                }
+            )
 
         @cached_method
         def equip_form_morphism(self):
-            return self.forget_form_morphism()
+            r"""Return the inverse canonical identification equipping the free module with the form."""
+            module = self.unformed_module()
+            return module_homset(module, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in module.module_generating_set()
+                }
+            )
+
+        @cached_method
+        def framing_morphism(self):
+            r"""Return the canonical framing ``Free_R(S) -> L`` used by construction."""
+            return self.equip_form_morphism()
 
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
@@ -1469,7 +1491,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.algebraic_correlation_morphism().matrix()
 
         def module_generating_set(self):
-            r"""Return the labels of the distinguished free-module framing.
+            r"""Return the generating set of the actual underlying free module.
 
             EXAMPLES::
 
@@ -1479,16 +1501,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^NN).module_generating_set()
                 {e_i : i in NN} subset of SR
             """
-            return self._indices
-
-        @cached_method
-        def module_generators(self):
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                name="Lattice-generator family",
-            )
+            return self.unformed_module().module_generating_set()
 
         def module_generator(self, index):
             r"""Return the module generator indexed by ``index``.

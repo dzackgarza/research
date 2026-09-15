@@ -673,7 +673,7 @@ class SparseFreeAlgebraMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[source_indices(label)]),
-                name="Sparse free-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
@@ -684,13 +684,13 @@ class SparseFreeAlgebraMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[label]),
-                name="Sparse free-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif callable(images):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images(label)),
-                name="Sparse free-algebra morphism generator-image family",
+                name="Generator images",
             )
         else:
             raise TypeError("an algebra morphism is specified on its algebra generators")

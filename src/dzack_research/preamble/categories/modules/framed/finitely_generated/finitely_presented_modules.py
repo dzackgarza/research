@@ -10,6 +10,7 @@ and every Smith-form computation is an explicit crossing into it.
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
+from sage.misc.repr import repr_lincomb
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
@@ -815,21 +816,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 raise ValueError(f"{label!r} is not a module-generator label")
             return self._cover_generator(position)
 
-        @cached_method
-        def module_generators(self):
-            r"""Return the indexed family of selected framing images."""
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                name="Presented-module generator family",
-            )
-
-        def framing_morphism(self):
-
-            source = self.presentation().codomain()
-            return framing_morphism(source, self, self.module_generator)
-
         def _from_coordinates(self, coordinates):
             r"""Return the element with these coordinates in the chosen framing.
 
@@ -1514,7 +1500,20 @@ class _GeneralPresentedElement(ModuleElement):
         return parent.base_ring()._from_engine_element(SageZZ(order))
 
     def _repr_(self):
-        return repr(self._lift)
+        parent = self.parent()
+        coordinates = parent._cover_coordinates(self)
+        terms = [
+            (label, coefficient)
+            for label in parent.module_generating_set()
+            if (coefficient := coordinates.value(label)) != parent.base_ring().zero()
+        ]
+        if not terms:
+            return "0"
+        return repr_lincomb(
+            terms,
+            repr_monomial=lambda label: f"[{label}]",
+            strip_one=True,
+        )
 
 
 class _GeneralPresentedModule:
@@ -1546,6 +1545,7 @@ class _GeneralPresentedModule:
             base_ring=base_ring,
             module_generating_set=module_generating_set,
             module_generator_function=lambda label: self._cover_generator(int(module_generating_set.ranking_map()(label))),
+            framing_source=presentation.codomain(),
             relation_matrix=relation_matrix,
             presentation=presentation,
             cokernel_morphism=cokernel_morphism,
@@ -1577,14 +1577,14 @@ class _GeneralPresentedModule:
             return indexed_family(
                 labels,
                 lambda label: coefficients.get(label, zero),
-                name=f"Cover coordinates of {element}",
+                name="Cover coordinates",
             )
         native = self._free_module.coordinate_vector(lift)
         ring = self.base_ring()
         return indexed_family(
             labels,
             lambda label: ring._from_engine_element(native[int(labels.ranking_map()(label))]),
-            name=f"Cover coordinates of {element}",
+            name="Cover coordinates",
         )
 
     def _lifted_relation_backend(self):

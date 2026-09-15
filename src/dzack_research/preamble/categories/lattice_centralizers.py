@@ -84,6 +84,10 @@ class EquivariantVectorOrbit(SageObject):
     def __contains__(self, vector) -> bool:
         return self.transporter_from(vector) is not None
 
+    def _repr_(self) -> str:
+        return f"Orbit of {self.representative()} under {self.group()}"
+
+
 
 class EquivariantVectorOrbitDecomposition(SageObject):
     r"""The exact vector-orbit decomposition under ``O(L,f)`` when finite.
@@ -157,6 +161,10 @@ class EquivariantVectorOrbitDecomposition(SageObject):
             if automorphism(source) == target:
                 return automorphism
         raise ArithmeticError("one centralizer orbit has no transporter between two of its members")
+
+    def _repr_(self) -> str:
+        return f"Vector orbits of square {self.square()} under {self.group()}: {self.representatives()}"
+
 
 
 def _same_embedded_sublattice(left, right) -> bool:

@@ -556,7 +556,7 @@ class ModulesOverGroupAlgebra(Modules):
             return finite_indexed_family(
                 self.module_generating_set(),
                 self.module_generator,
-                name=f"Coefficient-module generators of {self}",
+                
             )
 
         def linear_combination(self, coefficients, factor_on_left=True):

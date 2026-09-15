@@ -100,6 +100,9 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
     labels = tuple(restricted.module_generating_set())
 
+    assert restricted.framing_source().module_generating_set() is restricted.module_generating_set()
+    assert restricted.framing_morphism().domain() is restricted.framing_source()
+    assert restricted.framing_morphism().codomain() is restricted
     assert len(labels) == 2
     total = restricted.module_generator(labels[0]) + restricted.module_generator(labels[1])
     coefficients = module_coefficients(total, restricted)

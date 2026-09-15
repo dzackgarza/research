@@ -63,6 +63,7 @@ def test_a_lattice_is_free_on_formal_symbols_in_sr_by_default() -> None:
     assert lattice.module_generator(e0) * lattice.module_generator(e1) == 0
     assert lattice.module_generator(e0) * lattice.module_generator(e0) == 1
     assert repr(lattice.module_generator(0)) == "e_0"
+    assert repr(lattice.module_generators()) == "{e_0, e_1}"
 
 
 def test_a_lattice_may_be_free_on_a_chosen_generating_set() -> None:

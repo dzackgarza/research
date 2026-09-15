@@ -1997,7 +1997,7 @@ class AlgebraMorphism(Morphism):
                 self._generator_images = indexed_family(
                     algebra_labels,
                     lambda label: codomain(images(domain.algebra_generator(label))),
-                    name="Algebra-morphism generator-image family",
+                    name="Generator images",
                 )
             else:
                 self._generator_images = None
@@ -2010,7 +2010,7 @@ class AlgebraMorphism(Morphism):
                     self._generator_images = indexed_family(
                         labels,
                         lambda label: codomain(images(domain.algebra_generator(label))),
-                        name="Algebra-morphism generator-image family",
+                        name="Generator images",
                     )
                 else:
                     self._generator_images = None
@@ -2023,7 +2023,7 @@ class AlgebraMorphism(Morphism):
                 self._generator_images = indexed_family(
                     labels,
                     lambda label: codomain(images(engine_domain(domain.algebra_generator(label)))),
-                    name="Algebra-morphism generator-image family",
+                    name="Generator images",
                 )
             else:
                 self._generator_images = None
@@ -2036,7 +2036,7 @@ class AlgebraMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: codomain(images[source_indices(label)]),
-                name="Algebra-morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
@@ -2047,7 +2047,7 @@ class AlgebraMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: codomain(images[label]),
-                name="Algebra-morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, (tuple, list)):
             size = labels.cardinality()
@@ -2061,13 +2061,13 @@ class AlgebraMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: codomain(values[int(labels.ranking_map()(label))]),
-                name="Algebra-morphism generator-image family",
+                name="Generator images",
             )
         elif callable(images):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: codomain(images(label)),
-                name="Algebra-morphism generator-image family",
+                name="Generator images",
             )
         else:
             raise TypeError("an algebra morphism is specified on the algebra generating set")
@@ -2185,7 +2185,7 @@ class PresentedAlgebraMorphism(Morphism):
             selected = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[source_indices(label)]),
-                name="Presented-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, dict):
             missing = [label for label in labels if label not in images]
@@ -2194,7 +2194,7 @@ class PresentedAlgebraMorphism(Morphism):
             selected = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[label]),
-                name="Presented-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, (tuple, list)):
             values = tuple(images)
@@ -2203,13 +2203,13 @@ class PresentedAlgebraMorphism(Morphism):
             selected = indexed_family(
                 labels,
                 lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
-                name="Presented-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif callable(images):
             selected = indexed_family(
                 labels,
                 lambda label: self.codomain()(images(label)),
-                name="Presented-algebra morphism generator-image family",
+                name="Generator images",
             )
         else:
             raise TypeError("a presented-algebra morphism is specified on its algebra generators")

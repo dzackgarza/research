@@ -226,6 +226,22 @@ class Functor(SageObject):
     def is_faithful(self) -> bool:
         return bool(self._faithful)
 
+    def _semantic_display_label(self) -> str:
+        r"""Return the subclass's mathematical label without treating it as the whole display."""
+        for cls in type(self).__mro__:
+            if cls is Functor:
+                break
+            method = cls.__dict__.get("_repr_")
+            if method is not None:
+                return str(method(self))
+        name = type(self).__name__
+        return name[:-7] if name.endswith("Functor") else name
+
+    def __repr__(self) -> str:
+        r"""Display the mathematical arrow together with any standard operation name."""
+        label = self._semantic_display_label()
+        endpoints = f"{self.domain()} -> {self.codomain()}"
+        return label if endpoints in label else f"{label}: {endpoints}"
 
 
 class IdentityFunctor(Functor):
@@ -417,6 +433,9 @@ class NaturalTransformation(SageObject):
         right = self.component(morphism.codomain()) * self.source()(morphism)
         return left, right
 
+    def _repr_(self) -> str:
+        return f"{self.source()} => {self.target()}"
+
 
 class Adjunction(SageObject):
     r"""An adjunction ``F ⊣ U`` with its unit, counit, and Hom-set bijection."""
@@ -434,6 +453,23 @@ class Adjunction(SageObject):
 
     def right_adjoint(self) -> Functor:
         return self._right_adjoint
+
+    def _semantic_display_label(self) -> str:
+        r"""Return a subclass operation label while the base owns the categorical endpoints."""
+        for cls in type(self).__mro__:
+            if cls is Adjunction:
+                break
+            method = cls.__dict__.get("_repr_")
+            if method is not None:
+                return str(method(self))
+        name = type(self).__name__
+        return name[:-10] if name.endswith("Adjunction") else name
+
+    def __repr__(self) -> str:
+        label = self._semantic_display_label()
+        left = self.left_adjoint()
+        endpoints = f"{left.domain()} <-> {left.codomain()}"
+        return label if endpoints in label else f"{label}: {endpoints}"
 
     @abstract_method
     def unit(self, obj: Parent) -> Morphism:

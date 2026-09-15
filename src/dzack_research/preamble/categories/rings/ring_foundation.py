@@ -36,6 +36,7 @@ from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
+from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
@@ -2022,6 +2023,82 @@ def _engine_multiplicative_generator(engine):
     return generator()
 
 
+
+def _owned_monomial_text(variable_names, exponent):
+    if isinstance(exponent, tuple):
+        powers = exponent
+    else:
+        powers = (exponent,)
+    factors = []
+    for variable, power in zip(variable_names, powers, strict=False):
+        power = int(power)
+        if power == 0:
+            continue
+        factors.append(variable if power == 1 else f"{variable}^{power}")
+    return "*".join(factors) or "1"
+
+
+def _owned_polynomial_text(parent, backend_value) -> str:
+    base = parent.base_ring()
+    variables = tuple(parent.variable_names())
+    terms = []
+    for exponent, coefficient in backend_value.dict().items():
+        owned_coefficient = base._from_engine_element(coefficient)
+        terms.append((exponent, owned_coefficient))
+    if not terms:
+        return "0"
+    return repr_lincomb(
+        terms,
+        repr_monomial=lambda exponent: _owned_monomial_text(variables, exponent),
+        strip_one=True,
+    )
+
+
+def _owned_ring_element_text(element) -> str:
+    parent = element.parent()
+    engine = parent._engine
+    value = element._backend()
+    if engine is SageZZ:
+        return str(int(value))
+    if engine is SageQQ:
+        numerator = int(value.numerator())
+        denominator = int(value.denominator())
+        return str(numerator) if denominator == 1 else f"{numerator}/{denominator}"
+    if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
+        return _owned_polynomial_text(parent, value)
+    kind = parent.__dict__.get("_preamble_ring_display_kind")
+    if kind == "modular":
+        return f"[{int(value.lift())}]"
+    if kind == "real":
+        return repr(float(value))
+    if kind == "complex":
+        return repr(complex(value))
+    if parent._preamble_is_number_field() or parent._preamble_is_number_field_order():
+        try:
+            polynomial = value.polynomial()
+            owned_parent = _own_ring(polynomial.parent())
+            return repr(owned_parent._from_engine_element(polynomial))
+        except (AttributeError, TypeError, ValueError):
+            try:
+                coefficients = tuple(value.list())
+                owned = tuple(_cross_engine_ring_value(coefficient) for coefficient in coefficients)
+                return f"coordinates {owned} in {parent}"
+            except (AttributeError, TypeError, ValueError):
+                pass
+    if kind == "padic":
+        try:
+            valuation = value.valuation()
+            precision = value.precision_absolute()
+            residue = value.residue()
+            return f"p-adic element with residue {int(residue)}, valuation {valuation}, precision {precision}"
+        except (AttributeError, TypeError, ValueError):
+            return f"p-adic element of {parent}"
+    try:
+        return f"element of {parent} of additive order {element.additive_order()}"
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        return f"element of {parent}"
+
+
 class _OwnedRingElement(RingElement):
     r"""An element of an owned ring with a private backend realization."""
 
@@ -2173,10 +2250,11 @@ class _OwnedRingElement(RingElement):
         return complex(self._backend())
 
     def _repr_(self):
-        return repr(self._backend())
+        return _owned_ring_element_text(self)
 
     def _latex_(self):
-        return str(latex(self._backend()))
+        text = _owned_ring_element_text(self).replace("_", r"\_")
+        return rf"\text{{{text}}}"
 
     def is_zero(self):
         return bool(self._backend() == self.parent()._engine.zero())
@@ -2568,10 +2646,43 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         )
 
     def _repr_(self):
-        return repr(self._engine)
+        display = self.__dict__.get("_preamble_ring_display")
+        if display is not None:
+            return display
+        if self._engine is SageZZ:
+            return "Integer Ring"
+        if self._engine is SageQQ:
+            return "Rational Field"
+        if isinstance(self._engine, (PolynomialRing_generic, MPolynomialRing_base)):
+            variables = ", ".join(self.variable_names())
+            return f"Polynomial ring {self.base_ring()}[{variables}]"
+        if self._preamble_is_number_field():
+            try:
+                return f"Number field over {self.base_ring()} with defining polynomial {self.defining_polynomial()}"
+            except (AttributeError, TypeError, ValueError):
+                return f"Number field over {self.base_ring()}"
+        if self._preamble_is_number_field_order():
+            try:
+                rank = self.module_rank()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                rank = None
+            names = tuple(self.variable_names())
+            generator_text = f" generated by {', '.join(names)}" if names else ""
+            rank_text = f" of rank {rank}" if rank is not None else ""
+            return f"Order{rank_text} over Integer Ring{generator_text}"
+        try:
+            size = self.cardinality()
+            if size.is_finite():
+                kind = "Field" if self in OwnedFields() else "Ring"
+                return f"Finite {kind.lower()} with {size} elements"
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        base = self.base_ring()
+        return f"Ring over {base}" if base is not self else f"Ring in {self.category()}"
 
     def _latex_(self):
-        return str(latex(self._engine))
+        text = self._repr_().replace("_", r"\_")
+        return rf"\text{{{text}}}"
 
 
 def _engine_scalar_ring(engine: Ring):
@@ -2806,6 +2917,8 @@ def _constructor_over_ring(constructor):
 def GF(*args, **kwargs):
     engine = _SageGF(*args, **kwargs)
     field = _own_ring(engine)
+    field._preamble_ring_display = f"GF({engine.order()})"
+    field._preamble_ring_display_kind = "finite_field"
     if engine.degree() == 1:
         refine(field, PrimeFields())
     return field
@@ -2824,8 +2937,10 @@ def Zmod(*args, **kwargs):
     ring = _own_ring(engine)
     if engine is SageZZ:
         return ring
-
     modulus = SageZZ(engine.characteristic())
+    ring._preamble_ring_display = f"ZZ/{modulus}ZZ"
+    ring._preamble_ring_display_kind = "modular"
+
     factors = tuple(modulus.factor())
     if bool(engine.is_field()):
         refine(ring, OwnedFields())
@@ -2857,15 +2972,27 @@ Integers = Zmod
 
 
 def Qp(*args, **kwargs):
-    return _own_ring(_SageQp(*args, **kwargs))
+    engine = _SageQp(*args, **kwargs)
+    ring = _own_ring(engine)
+    ring._preamble_ring_display = f"Q_{engine.prime()} with precision {engine.precision_cap()}"
+    ring._preamble_ring_display_kind = "padic"
+    return ring
 
 
 def RealField(*args, **kwargs):
-    return _own_ring(_SageRealField(*args, **kwargs))
+    engine = _SageRealField(*args, **kwargs)
+    ring = _own_ring(engine)
+    ring._preamble_ring_display = f"Real field with {engine.precision()} bits precision"
+    ring._preamble_ring_display_kind = "real"
+    return ring
 
 
 def ComplexField(*args, **kwargs):
-    return _own_ring(_SageComplexField(*args, **kwargs))
+    engine = _SageComplexField(*args, **kwargs)
+    ring = _own_ring(engine)
+    ring._preamble_ring_display = f"Complex field with {engine.precision()} bits precision"
+    ring._preamble_ring_display_kind = "complex"
+    return ring
 
 
 Rings = OwnedRings

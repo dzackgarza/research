@@ -175,6 +175,10 @@ class HesseBertiniFamily(SageObject):
             and not self.parameter_is_good(self.base_ring().one())
         )
 
+    def _repr_(self) -> str:
+        return f"Hesse-Bertini family over {self.parameter_ring()} with good locus {self.good_parameter_locus()}"
+
+
 
 def hesse_bertini_family():
     return HesseBertiniFamily()

@@ -630,7 +630,7 @@ class Cat(CategoryPacketMethods, Category):
         return ProductCategory(left, right)
 
     def _repr_(self) -> str:
-        return "Category of categories"
+        return "Cat: categories with functors as morphisms"
 
 
 class NaturalTransformationMorphism(Morphism):

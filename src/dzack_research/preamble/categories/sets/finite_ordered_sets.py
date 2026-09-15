@@ -36,11 +36,14 @@ class _IndexedFiniteOrderedPresentation:
     the specialized constructor instead.
     """
 
-    def __init__(self, index_set, element_at, index_of, contains) -> None:
+    def __init__(self, index_set, element_at, index_of, contains, *, image_source=None, image_map=None, image_inverse=None) -> None:
         self.index_set = index_set
         self.element_at = element_at
         self.index_of = index_of
         self.contains = contains
+        self.image_source = image_source
+        self.image_map = image_map
+        self.image_inverse = image_inverse
 
 
 def _finite_ordered_presentation(elements):
@@ -132,6 +135,9 @@ def ordered_enumerated_set[IndexT, PointT](
     index_of: Callable[[PointT], IndexT | None],
     contains: Callable[[PointT], bool] | None = None,
     name: str | None = None,
+    image_source: Parent | None = None,
+    image_map: Callable[[IndexT], PointT] | None = None,
+    image_inverse: Callable[[PointT], IndexT] | None = None,
 ) -> Parent:
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
     return OrderedEnumeratedSets()(
@@ -140,6 +146,9 @@ def ordered_enumerated_set[IndexT, PointT](
         index_of=index_of,
         contains=contains,
         name=name,
+        image_source=image_source,
+        image_map=image_map,
+        image_inverse=image_inverse,
     )
 
 
@@ -150,6 +159,9 @@ def finite_ordered_image[IndexT, PointT](
     index_of: Callable[[PointT], IndexT | None] | None = None,
     contains: Callable[[PointT], bool] | None = None,
     name: str | None = None,
+    image_source: Parent | None = None,
+    image_map: Callable[[IndexT], PointT] | None = None,
+    image_inverse: Callable[[PointT], IndexT] | None = None,
 ) -> Parent:
     r"""Return a finite ordered image without materializing its members."""
     return FiniteOrderedSets().from_indexed(
@@ -158,6 +170,9 @@ def finite_ordered_image[IndexT, PointT](
         index_of=index_of,
         contains=contains,
         name=name,
+        image_source=image_source,
+        image_map=image_map,
+        image_inverse=image_inverse,
     )
 
 
@@ -190,6 +205,9 @@ class OrderedEnumeratedSets(OwnedCategory):
         contains=None,
         name=None,
         finite=False,
+        image_source=None,
+        image_map=None,
+        image_inverse=None,
     ):
         r"""Construct an ordered enumerated set from its chosen enumeration."""
         return object_of(
@@ -200,6 +218,9 @@ class OrderedEnumeratedSets(OwnedCategory):
             contains=contains,
             name=name,
             finite=finite,
+            image_source=image_source,
+            image_map=image_map,
+            image_inverse=image_inverse,
         )
 
     class ParentMethods:
@@ -212,6 +233,9 @@ class OrderedEnumeratedSets(OwnedCategory):
             contains: Callable[[PointT], bool] | None = None,
             name: str | None = None,
             finite: bool = False,
+            image_source=None,
+            image_map=None,
+            image_inverse=None,
             **rest,
         ) -> None:
             assert callable(element_at), (
@@ -227,6 +251,9 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
+            self._preamble_image_source = image_source
+            self._preamble_image_map = image_map
+            self._preamble_image_inverse = image_inverse
             super().__init__(facade=True, **rest)
             if finite:
                 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
@@ -236,6 +263,21 @@ class OrderedEnumeratedSets(OwnedCategory):
 
         def index_set(self) -> Parent:
             return self._index_set
+
+        def source_set(self):
+            if self._preamble_image_source is None:
+                raise TypeError(f"{self} is not represented as an image construction")
+            return self._preamble_image_source
+
+        def image_map(self):
+            if self._preamble_image_map is None:
+                raise TypeError(f"{self} is not represented as an image construction")
+            return self._preamble_image_map
+
+        def inverse_on_image(self):
+            if self._preamble_image_inverse is None:
+                raise NotImplementedError("this image construction has no selected inverse")
+            return self._preamble_image_inverse
 
         def cardinality(self) -> Parent:
             return cardinal(self.index_set().cardinality())
@@ -304,7 +346,17 @@ class OrderedEnumeratedSets(OwnedCategory):
                 raise ValueError("the empty ordered enumerated set has no element") from error
 
         def _repr_(self) -> str:
-            return self._name or f"Ordered image of {self.index_set()}"
+            size = cardinal(self.cardinality())
+            prefix = f"{self._name} = " if self._name else ""
+            if size.is_finite():
+                count = int(size.finite_value())
+                shown = tuple(self) if count <= 12 else tuple(islice(self, 6))
+                suffix = "" if count <= 12 else ", ..."
+                data = "{" + ", ".join(repr(element) for element in shown) + suffix + "}"
+                return f"{prefix}{data}" if count <= 12 else f"{prefix}{data} ({count} elements)"
+            shown = tuple(islice(self, 6))
+            data = "{" + ", ".join(repr(element) for element in shown) + ", ...}"
+            return f"{prefix}{data} (cardinality {size})"
 
 class FiniteOrderedSets(OwnedCategory):
     r"""Finite ordered sets, without sequence-valued storage."""
@@ -335,6 +387,9 @@ class FiniteOrderedSets(OwnedCategory):
         index_of=None,
         contains=None,
         name=None,
+        image_source=None,
+        image_map=None,
+        image_inverse=None,
     ):
         r"""Construct a finite ordered image from its chosen indexed presentation."""
         assert cardinal(index_set.cardinality()).is_finite(), (
@@ -360,6 +415,9 @@ class FiniteOrderedSets(OwnedCategory):
                 element_at,
                 index_of,
                 contains,
+                image_source=image_source,
+                image_map=image_map,
+                image_inverse=image_inverse,
             ),
             name=name,
         )
@@ -374,6 +432,9 @@ class FiniteOrderedSets(OwnedCategory):
             elements: Parent | tuple[PointT, ...] | list[PointT] | range,
             **rest,
         ) -> None:
+            image_source = elements.image_source if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
+            image_map = elements.image_map if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
+            image_inverse = elements.image_inverse if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
             index_set, element_at, index_of, contains = _finite_ordered_presentation(elements)
             super().__init__(
                 index_set,
@@ -381,6 +442,9 @@ class FiniteOrderedSets(OwnedCategory):
                 index_of=index_of,
                 contains=contains,
                 finite=True,
+                image_source=image_source,
+                image_map=image_map,
+                image_inverse=image_inverse,
                 **rest,
             )
 

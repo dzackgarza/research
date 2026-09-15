@@ -91,3 +91,11 @@ def test_archived_a2_discriminant_scales_are_value_submodules() -> None:
     assert quadratic_scale.ambient_module() is quadratic.value_module()
     assert quadratic_scale.cardinality() == 3
     assert quadratic_generator == quadratic.value_module()(QQ(2) / 3)
+
+
+def test_fraction_field_quotient_display_uses_owned_quotient_data() -> None:
+    quotient = FractionFieldQuotient(ZZ, 2)
+    value = quotient(QQ(1) / 2)
+
+    assert repr(quotient) == "Rational Field / (2)Integer Ring"
+    assert repr(value) == f"[1/2] in {quotient}"

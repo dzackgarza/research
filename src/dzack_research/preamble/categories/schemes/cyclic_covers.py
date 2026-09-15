@@ -388,6 +388,10 @@ class CyclicCoverBaseChangeComparison(SageObject):
             for index in source.chart_index_set()
         )
 
+    def _repr_(self) -> str:
+        return f"Cyclic-cover base change along {self.ring_map()} for {self.source_cyclic_algebra()}"
+
+
 
 class RelativeCyclicCoverLift(SageObject):
     r"""One lift of a base automorphism through a represented relative cyclic cover."""
@@ -466,6 +470,10 @@ class RelativeCyclicCoverLift(SageObject):
             )
             for index in self.cyclic_algebra().chart_index_set()
         )
+
+    def _repr_(self) -> str:
+        return f"Lift of {self.group_element()} to {self.cyclic_algebra()} over {self.base_automorphism()}"
+
 
 
 def relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):

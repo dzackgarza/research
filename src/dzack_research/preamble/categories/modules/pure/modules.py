@@ -2170,18 +2170,34 @@ class FramedModules(OwnedCategoryOverBaseRing):
             self,
             module_generating_set=None,
             module_generator_function=None,
+            framing_source=None,
             **rest,
         ) -> None:
-            r"""Store a chosen framing.
+            r"""Install one selected framing as defining construction data.
 
-            A framing is a choice, so most modules are constructed with one.  A
-            module whose framing is *determined* -- the localization of a framed
-            module, a module read over a smaller ring -- receives none here and
-            says what its framing is by overriding the two accessors below.
+            The source free module and the epimorphism from it are retained here;
+            accessors below never reconstruct an isomorphic source from labels.
+            A specialization whose framing is derived outside this constructor
+            installs the same three data at its owning construction boundary.
             """
             self._preamble_module_generating_set = module_generating_set
             self._preamble_module_generator_function = module_generator_function
+            self._preamble_framing_source = framing_source
+            self._preamble_framing_morphism = None
             super().__init__(**rest)
+            if module_generating_set is not None and module_generator_function is not None:
+                source = framing_source
+                if source is None:
+                    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                        FreeModuleOn,
+                    )
+
+                    source = FreeModuleOn(self.base_ring(), module_generating_set)
+                # The mathematical framing is fixed here by its actual source and
+                # selected generator map.  The Hom wrapper is realized lazily only
+                # because some specialized parents finish their own initialization
+                # after this category method returns.
+                self._preamble_framing_source = source
 
         def module_generating_set(self):
             return self._preamble_module_generating_set
@@ -2196,11 +2212,11 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
+            r"""Return the selected framing as the indexed family ``s ↦ m_s``."""
 
             return indexed_family(
                 self.module_generating_set(),
                 self.module_generator,
-                name="Module-generator family",
             )
 
         def module_generator_morphism(self):
@@ -2209,22 +2225,23 @@ class FramedModules(OwnedCategoryOverBaseRing):
                 self.module_generator,
             )
 
+        def framing_source(self):
+            r"""Return the actual free module selected as the source of this framing."""
+            source = self.__dict__.get("_preamble_framing_source")
+            assert source is not None, f"{self} has no installed framing source"
+            return source
+
         def framing_morphism(self):
-            r"""Return the presentation \(F(S) \twoheadrightarrow M\) of the framing.
-
-            The framing datum is a set \(S\) and a generator function on it;
-            the free module on \(S\) is the domain of the epimorphism those two
-            determine, and that epimorphism is what "framed" means.
-            """
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreeModuleOn,
-            )
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                framing_morphism,
-            )
-
-            source = FreeModuleOn(self.base_ring(), self.module_generating_set())
-            return framing_morphism(source, self, self.module_generator)
+            r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""
+            morphism = self.__dict__.get("_preamble_framing_morphism")
+            if morphism is None:
+                morphism = framing_morphism(
+                    self.framing_source(),
+                    self,
+                    self.module_generator,
+                )
+                self._preamble_framing_morphism = morphism
+            return morphism
 
         @cached_method
         def framing_object(self):
@@ -2412,6 +2429,16 @@ class RestrictedScalarsModuleView(Parent):
             category=Category.join(tuple(categories)),
         )
         realize_owned_category(self)
+        if self._preamble_module_generating_set is not None:
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreshFreeModuleOn,
+            )
+
+            self._preamble_framing_source = FreshFreeModuleOn(
+                base_ring,
+                self._preamble_module_generating_set,
+            )
+            self._preamble_framing_morphism = None
 
 
     def __call__(self, value):
@@ -2493,16 +2520,8 @@ class RestrictedScalarsModuleView(Parent):
         return indexed_family(
             self.module_generating_set(),
             self.module_generator,
-            name="Restricted-scalar generator family",
+            
         )
-
-    def framing_morphism(self):
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
-
-        source = FreshFreeModuleOn(self.base_ring(), self.module_generating_set())
-        return framing_morphism(source, self, self.module_generator)
 
     @cached_method
     def presentation(self):
@@ -2728,7 +2747,7 @@ class BilinearMap(SageObject):
         self._generator_images = indexed_family(
             self._generator_indices,
             lambda pair: self.codomain()(raw_image(pair)),
-            name="Bilinear generator-image family",
+            name="Generator images",
         )
         self._check_relations()
 
@@ -2793,6 +2812,10 @@ class BilinearMap(SageObject):
             ),
             self.codomain().zero(),
         )
+
+    def _repr_(self) -> str:
+        return f"Bilinear map {self.left_factor()} x {self.right_factor()} -> {self.codomain()}"
+
 
 
 class TensorProductModules(OwnedCategoryOverBaseRing):

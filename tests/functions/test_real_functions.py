@@ -48,6 +48,13 @@ def test_c_is_parameterized_by_regularity_and_spaces() -> None:
     assert C(2, RR) in Algebras(RR)
 
 
+def test_callable_defined_map_display_exposes_endpoints() -> None:
+    pointwise = C(Infinity, RR)(lambda point: point)
+
+    assert repr(pointwise) == "Map Real Field -> Real Field defined pointwise"
+    assert pointwise._latex_() == r"\text{pointwise-defined map }\mathbb{R}\to \mathbb{R}"
+
+
 def test_polynomials_exponentials_and_coordinates_evaluate() -> None:
     maps = C(Infinity, RR)
     x = maps.coordinate()

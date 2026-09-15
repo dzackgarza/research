@@ -289,7 +289,7 @@ class ModuleMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 images,
-                name="Module-morphism generator-image family",
+                name="Generator images",
             )
             self._generator_image = self._generator_images.value
             self._generator_morphism = images
@@ -302,7 +302,7 @@ class ModuleMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 image_at,
-                name="Module-morphism generator-image family",
+                name="Generator images",
             )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
@@ -327,7 +327,7 @@ class ModuleMorphism(Morphism):
                 self._generator_images = indexed_family(
                     labels,
                     lambda label: normalized_values[int(ranking(label))],
-                    name="Module-morphism generator-image family",
+                    name="Generator images",
                 )
             else:
                 normalized_images = {}
@@ -340,7 +340,7 @@ class ModuleMorphism(Morphism):
                 self._generator_images = indexed_family(
                     labels,
                     normalized_images.__getitem__,
-                    name="Module-morphism generator-image family",
+                    name="Generator images",
                 )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
@@ -356,7 +356,7 @@ class ModuleMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 lambda label: values[int(labels.ranking_map()(label))],
-                name="Module-morphism generator-image family",
+                name="Generator images",
             )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
@@ -364,7 +364,7 @@ class ModuleMorphism(Morphism):
             self._generator_images = indexed_family(
                 labels,
                 images,
-                name="Module-morphism generator-image family",
+                name="Generator images",
             )
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_homset(self._generator_image)
@@ -1443,6 +1443,31 @@ def _initialize_module_hom_parent(
         category=placement,
     )
 
+    if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
+        parent._preamble_framing_source = FreshFreeModuleOn(ring, labels)
+        parent._preamble_framing_morphism = None
+
+    if ring in OwnedRings().Commutative() and full_internal_hom:
+        from dzack_research.preamble.categories.modules.internal_hom import (
+            InternalHomConstruction,
+        )
+
+        construction = InternalHomConstruction(domain, codomain, ring)
+        parent._preamble_internal_hom_construction = construction
+        if (
+            not placement.is_subcategory(MatrixSpaces(ring))
+            and _represented_finite_presentation(domain)
+            and _represented_finite_presentation(codomain)
+        ):
+            model, inclusion, relation_matrix, presentation = construction.model_data(parent)
+            parent._preamble_internal_hom_model = model
+            parent._preamble_internal_hom_inclusion = inclusion
+            parent._preamble_module_generating_set = model.module_generating_set()
+            parent._preamble_relation_matrix = relation_matrix
+            parent._preamble_presentation = presentation
+            parent._preamble_framing_source = model.framing_source()
+            parent._preamble_framing_morphism = None
+
 
 class _ModuleHomsetCommonMethods:
     r"""Python implementation shared by module-enriched Hom parents.
@@ -1574,6 +1599,36 @@ class _ModuleHomsetCommonMethods:
         return self.identity()
 
 
+class _AuxiliaryLinearModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
+    r"""Private linear-Hom parent used while realizing an internal Hom module.
+
+    This parent represents a linear arrow space needed by an algorithm.  It is
+    deliberately placed only in ``LinearHomModules(R)`` and therefore cannot
+    recursively demand another internal-Hom module presentation.
+    """
+
+    Element = ModuleMorphism
+
+    def __init__(self, domain, codomain) -> None:
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        modules = Modules(_owned_ring(domain.base_ring()))
+        _initialize_module_hom_parent(
+            self,
+            modules.HomCategory(),
+            domain,
+            codomain,
+            full_internal_hom=False,
+        )
+
+    def __call__(self, images):
+        return self._element_constructor_(images)
+
+
+def _auxiliary_linear_module_homset(domain, codomain):
+    return _AuxiliaryLinearModuleHomset(domain, codomain)
+
+
 class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = ModuleMorphism
 
@@ -1608,12 +1663,14 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
 
-    def _internal_hom_model_data(self):
-        from dzack_research.preamble.categories.modules.internal_hom import (
-            _internal_hom_model_data,
-        )
+    def internal_hom_construction(self):
+        r"""Return the endpoint-determined construction fixed when this Hom parent was created."""
+        construction = self.__dict__.get("_preamble_internal_hom_construction")
+        assert construction is not None, f"{self} has no internal-Hom construction datum"
+        return construction
 
-        return _internal_hom_model_data(self)
+    def _internal_hom_model_data(self):
+        return self.internal_hom_construction().model_data(self)
 
     def module_generating_set(self):
         selected = self.__dict__.get("_preamble_module_generating_set")
@@ -1671,12 +1728,22 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         )
 
     def internal_hom_model(self):
-        model, _inclusion, _relations, _presentation = self._internal_hom_model_data()
+        model = self.__dict__.get("_preamble_internal_hom_model")
+        if model is not None:
+            return model
+        model, inclusion, relation_matrix, presentation = self._internal_hom_model_data()
+        self._preamble_internal_hom_model = model
+        self._preamble_internal_hom_inclusion = inclusion
+        self._preamble_relation_matrix = relation_matrix
+        self._preamble_presentation = presentation
         return model
 
     def inclusion_into_generator_maps(self):
-        _model, inclusion, _relations, _presentation = self._internal_hom_model_data()
-        return inclusion
+        inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
+        if inclusion is not None:
+            return inclusion
+        self.internal_hom_model()
+        return self._preamble_internal_hom_inclusion
 
     def _morphism_from_internal_model(self, model_element):
         assignment_space = self.inclusion_into_generator_maps().codomain()

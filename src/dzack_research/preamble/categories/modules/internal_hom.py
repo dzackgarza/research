@@ -1,6 +1,7 @@
 r"""Internal Hom modules for the exact finitely presented module backend."""
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.structure.sage_object import SageObject
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
@@ -19,6 +20,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
     InternalHomModules,
     _represented_finite_presentation,
     _tensor_pair,
@@ -29,6 +31,41 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
+
+
+class InternalHomConstruction(SageObject):
+    r"""The fixed represented construction of ``Hom_R(M,N)`` from its endpoints.
+
+    The endpoints determine the mathematical internal Hom immediately.  A finite
+    presentation, when supported, is a realization of this retained construction;
+    asking for it later does not select a new model or change the Hom parent.
+    """
+
+    def __init__(self, source, target, base_ring) -> None:
+        self._source = source
+        self._target = target
+        self._base_ring = _owned_ring(base_ring)
+
+    def source_module(self):
+        return self._source
+
+    def target_module(self):
+        return self._target
+
+    def base_ring(self):
+        return self._base_ring
+
+    @cached_method(key=lambda self, homset: id(homset))
+    def model_data(self, homset):
+        if homset.domain() is not self.source_module() or homset.codomain() is not self.target_module():
+            raise ValueError("this internal-Hom construction belongs to different endpoints")
+        return _internal_hom_model_data(homset)
+
+    def _repr_(self) -> str:
+        return (
+            f"Internal Hom construction Hom_{self.base_ring()}("
+            f"{self.source_module()}, {self.target_module()})"
+        )
 
 def _native_fgp_morphism(morphism):
     r"""Cross one owned module map to Sage's exact FGP kernel engine.
@@ -78,8 +115,9 @@ def _internal_hom_model_data(homset):
     generator_free_module = BasedFreeModule(ring, source_labels)
     relation_free_module = BasedFreeModule(ring, relation_labels)
 
-    generator_assignments = TensorProduct(generator_free_module, target)
-    relation_assignments = TensorProduct(relation_free_module, target)
+    modules = Modules(ring)
+    generator_assignments = modules.tensor_product((generator_free_module, target))
+    relation_assignments = modules.tensor_product((relation_free_module, target))
     relation_assignment_labels = relation_assignments.module_generating_set()
 
     def relation_image(pair):
@@ -98,7 +136,12 @@ def _internal_hom_model_data(homset):
             }
         )
 
-    relation_evaluation = module_homset(
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        ModuleEmbedding,
+        _auxiliary_linear_module_homset,
+    )
+
+    relation_evaluation = _auxiliary_linear_module_homset(
         generator_assignments,
         relation_assignments,
     )(relation_image)
@@ -130,9 +173,8 @@ def _internal_hom_model_data(homset):
             kernel_relations,
         )
         model = FinitelyPresentedModule(kernel_presentation)
-        inclusion = module_embedding(
-            model,
-            generator_assignments,
+        inclusion = ModuleEmbedding(
+            _auxiliary_linear_module_homset(model, generator_assignments),
             {
                 label: generator_assignments(
                     kernel(kernel.V().gen(position)).lift()
@@ -142,7 +184,21 @@ def _internal_hom_model_data(homset):
         )
     else:
         model = relation_evaluation.kernel()
-        inclusion = model.inclusion()
+        ambient = model.__dict__.get("_preamble_subobject_ambient")
+        images = model.__dict__.get("_preamble_subobject_generator_images")
+        if ambient is None or images is None:
+            raise AssertionError("an internal-Hom kernel must retain its subobject inclusion data")
+        inclusion = ModuleEmbedding(
+            _auxiliary_linear_module_homset(model, ambient),
+            images,
+            verify_linearity=model.__dict__.get(
+                "_preamble_subobject_verify_linearity",
+                True,
+            ),
+        )
+        lift = model.__dict__.get("_preamble_subobject_lift")
+        if lift is not None:
+            inclusion._preamble_lift = lambda element: lift(model, element)
 
     relation_matrix = _presentation_matrix(model)
     presentation = (
@@ -190,6 +246,7 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
 
 __all__ = [
     "InternalHom",
+    "InternalHomConstruction",
     "InternalHomModules",
     "internal_hom_morphism",
 ]

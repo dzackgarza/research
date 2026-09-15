@@ -24,6 +24,9 @@ def test_localization_ring_owns_the_module_localization_functor_and_object() -> 
     assert through_functor.localization_ring() is localization
     assert through_functor.localization_source_module() is module
     assert through_functor.localization_functor() is functor
+    assert through_functor.framing_source().module_generating_set() is through_functor.module_generating_set()
+    assert through_functor.framing_morphism().domain() is through_functor.framing_source()
+    assert through_functor.framing_morphism().codomain() is through_functor
 
 
 def test_nonidentity_map_uses_the_same_localization_functor_and_endpoints() -> None:

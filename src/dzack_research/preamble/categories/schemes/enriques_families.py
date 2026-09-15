@@ -163,6 +163,10 @@ class EnriquesMarkedIntegralCohomology(SageObject):
             and self.topological_lefschetz_number() == 0
         )
 
+    def _repr_(self) -> str:
+        return f"Marked integral cohomology of {self.surface()}"
+
+
 
 class HorikawaEnriquesSurface(SageObject):
     r"""The quotient of a Horikawa K3 member by its fixed-point-free lift."""
@@ -233,6 +237,10 @@ class HorikawaEnriquesSurface(SageObject):
 
     def base_change(self, ring_map):
         return HorikawaEnriquesBaseChangeComparison(self, ring_map)
+
+    def _repr_(self) -> str:
+        return f"Horikawa Enriques surface {self.scheme()} from {self.k3_member()}"
+
 
 
 class HorikawaEnriquesBaseChangeComparison(SageObject):
@@ -336,6 +344,10 @@ class HorikawaEnriquesBaseChangeComparison(SageObject):
 
     def changed_action_is_free(self) -> bool:
         return self.changed_quotient_data().action_is_free()
+
+    def _repr_(self) -> str:
+        return f"Horikawa Enriques base change along {self.ring_map()} from {self.source()}"
+
 
 
 def horikawa_enriques_surface(k3_member=None):

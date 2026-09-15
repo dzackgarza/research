@@ -18,59 +18,6 @@ belong at their mathematical declarations or in CONTRIBUTING, not solely here.
 
 ## Foundational Mathematics
 
-### Image sets are not one reusable owned construction across finite and infinite sources
-
-- **Mathematics:** for a map \(f:S\to X\), the image \(f(S)\) is a set equipped with the canonical surjection from \(S\); when \(f\) is injective it carries the canonical bijection with \(S\).  Finiteness, enumeration/order, cardinality and positional access should be transported from the source when justified by that map, not reimplemented by each consumer.
-- **Expected architecture:** one owned image construction retains the exact source set, map, injectivity/inverse data and resulting set.  Finite and infinite cases are realizations of that same construction.  Consumers such as the canonical generator image \(S\to U(\operatorname{Free}_R(S))\) reuse it directly.
-- **Observed:** `Sets.image_set()` currently materializes a `finite_ordered_set(tuple(...))` for a finite source but returns Sage's `ImageSet` for the non-finite remainder.  The free-module layer separately grew `FreeModuleGeneratorSet`, another implementation of the image of its unit/basis map, with its own membership, cardinality, indexing and display logic.
-- **Why this matters:** the finite/infinite split and the bespoke free-generator image are symptoms of a missing uniform owned construction.  They create parallel sources for order/cardinality/display and make a generic functorial image look like module-specific machinery.
-- **Owner:** owned set image construction and the free/underlying-set adjunction.  Replace consumer-specific image-set classes with the common owned image object once that object carries the required transported structure.
-
-### A framing is stored as labels plus a function and reconstructs its free source later
-
-- **Mathematics:** a framing of an \(R\)-module \(M\) is the selected epimorphism \(\operatorname{Free}_R(S)\twoheadrightarrow M\).  The source free module and arrow are defining structure, not consequences to rediscover from a label set.
-- **Expected architecture:** constructing a framed module constructs/retains \(S\), the actual `Free_R(S)` source and the framing morphism (or an equivalent first-class construction object).  `module_generating_set()`, `module_generator_morphism()`, `module_generators()` and `framing_morphism()` are views of that one datum.
-- **Observed:** `FramedModules.ParentMethods.__init__` stores `_preamble_module_generating_set` and `_preamble_module_generator_function`; `framing_morphism()` later calls `FreeModuleOn(self.base_ring(), self.module_generating_set())` and constructs the framing arrow on demand.  The method is therefore acting as a second constructor.  The lattice defect that triggered this audit was a stronger instance of the same pattern: the real free module already existed but lattice accessors bypassed it.
-- **Why this matters:** later reconstruction can silently substitute an isomorphic source for the selected one, encourages descendants to manufacture their own generator-family wrappers, and makes category membership stand in for actual chosen structure.
-- **Owner:** `FramedModules` construction.  Make the selected free source/arrow first-class constructor data, while allowing subclasses whose framing is canonically derived to supply that actual construction through the same contract.
-
-### Internal Hom parents defer defining module structure to a lazy model
-
-- **Mathematics:** when an internal Hom is represented as a module, its underlying module object, selected generating set/presentation (when one is selected), and comparison with the internal-Hom construction are part of that represented object.  They are not optional information discovered only when a later method asks for coordinates.
-- **Expected architecture:** constructing the represented internal Hom selects and retains the actual module model/presentation or a first-class construction object whose identity and structural maps are fixed immediately.  Later accessors may lazily realize expensive computations inside that fixed model, but they do not decide which model/presentation the object has.
-- **Observed:** `ModuleHomset` defines `_preamble_module_generating_set`, `_preamble_relation_matrix`, and `_preamble_presentation` as `@lazy_attribute`s routed through `internal_hom_model()` / `_internal_hom_model_data()`.  `_initialize_module_hom_parent()` installs some generator hooks for presented endpoints but leaves the model/presentation itself to first use.  Matrix-space cases construct more of the free-module data eagerly; the general internal-Hom case does not.
-- **Why this matters:** the public Hom parent is already advertised as a module/presented module before the module object that witnesses those claims has been selected.  Generic framing, display, kernels and presentations can therefore become the operations that retroactively complete construction, exactly the failure prohibited by `OWN-15`–`OWN-20`.
-- **Owner:** internal-Hom/module-Hom construction.  Construct/retain the represented internal-Hom module (or an explicit fixed construction object) when the Hom parent is created; let lazy attributes cover only expensive realization inside that already selected mathematics.
-
-### Functor and adjunction displays do not have one endpoint-aware semantic owner
-
-- **Mathematics:** a functor is not determined for interactive purposes by a noun such as “abelianization” or “free-group”; its domain and codomain are part of the datum.  An adjunction is a specified pair \(F:C\rightleftarrows D:U\) together with unit/counit.
-- **Expected display:** default functor displays include at least the standard operation/symbol and `domain -> codomain`; adjunction displays expose both adjoints or the corresponding `C <-> D` relationship.  Subclasses may add meaningful parameters (ring map, acting group, fixed module) but should not each invent an unrelated prose label.
-- **Observed:** the common `Functor` stores `domain()` and `codomain()` but has no common semantic display.  Subclasses return constants such as `Free-group functor`, `Abelianization functor`, `Fraction-field functor`, `Ring-of-integers functor`, and `Unit group functor`; several adjunctions similarly return only a compound name.  Other subclasses independently include partial endpoint/parameter information, so the public view is inconsistent.
-- **Why this matters:** a type/name paraphrase can be correct yet tell the user nothing about the particular categorical arrow in hand, and duplicated display code drifts from actual endpoints.
-- **Owner:** common `Functor`/`Adjunction` display protocol.  Standard names/symbols should be optional semantic labels layered on endpoint data owned by the base construction.
-
-### Public group/ring/field displays delegate directly to private engines
-
-- **Expected architecture:** engine values may realize computation privately, but public display is owned mathematical syntax.  The public parent/element decides how its defining mathematical data are shown; backend `repr`/LaTeX is not part of the preamble API.
-- **Observed:** `_OwnedGroupElement._repr_()` returns `repr(self._backend())`; `OwnedGroup._repr_()` returns `repr(self._engine)`; owned ring elements and ring parents in `ring_foundation.py` do the same; fraction-field quotient elements/parents and `ExactFieldMorphism` likewise delegate their public display to backend/engine objects.
-- **Why this matters:** the output can change with Sage/GAP implementation, can expose engine-specific names/coordinates, and makes the backend representation look like the mathematical object.  A coincidentally good backend string is not an owned display contract.
-- **Owner:** the corresponding owned group/ring/quotient/morphism semantic objects.  Define mathematical rendering from retained owned data or one shared owned rendering protocol; use engine display only inside debugging/adapter surfaces.
-
-### Public mathematical data objects can fall back to Python memory-address representations
-
-- **Expected architecture:** every public preamble-owned mathematical object has an informative stable display derived from its defining data, even when there is no compact canonical symbol.
-- **Observed:** several public `SageObject` classes define neither `_repr_` nor `__repr__`.  Direct specimens include `LorentzianE10Application()` and `EquivariantVectorOrbit(...)`, which currently print `<dzack_research.... object at 0x...>`.  In contrast, `VoronoiFacet` already provides a mathematical display (`Voronoi facet of L normal to v`), demonstrating the expected pattern.
-- **Why this matters:** an address repr is maximally implementation-specific, nondeterministic across runs, and supplies no mathematical understanding of the object.  It also makes notebook inspection substantially worse exactly for high-level research data packages.
-- **Owner:** public `SageObject`/comparison/application data classes.  Audit classes without an owned repr and render their retained defining data; do not add generic class-name-only fallbacks, which would merely replace one tautology with another.
-
-### Generic family displays still receive refinement- and implementation-flavoured names from callers
-
-- **Mathematics:** an indexed family is the map \(I\to X\) (or the corresponding values with their index set).  A public operation such as `module_generators()` or morphism generator images is owned at its weakest semantic level; internal realization refinements do not change that result.
-- **Expected display:** the family shows its actual finite indexed values, or its index set/defining rule for lazy cases.  An optional label names genuine extra mathematics, never the private realization that supplied the family.
-- **Observed:** the common indexed-family display now exposes finite values and bounds large displays, but callers still pass labels including `Fractional-ideal generator family`, `Restricted-scalar generator family`, `Sparse free-algebra morphism generator-image family`, `Presented-algebra morphism generator-image family`, and `Ring-module generator family`.  Some labels may denote real stronger data (for example Smith framing or invariant factors); others merely expose the leaf implementation/refinement.
-- **Why this matters:** fixing `Lattice-generator family` at one call site would leave the same abstraction leak throughout the tower.  The audit must distinguish genuinely refined mathematical families from generic operations wearing implementation-specific names.
-- **Owner:** each semantic operation, reviewed against `OWN-18`, `OWN-21`, `STY-188` and `STY-189`.  Delete pure-renaming overrides/labels; retain specialized labels only where the returned object has genuinely stronger mathematical structure.
 
 ## Workflow Papercuts
 

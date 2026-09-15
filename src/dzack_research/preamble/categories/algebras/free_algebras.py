@@ -106,6 +106,8 @@ def PolynomialRing(base_ring, *args, **kwargs):
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
     )
+    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}]"
+    algebra._preamble_ring_display_kind = "polynomial"
 
     return algebra
 
@@ -117,6 +119,8 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
     )
     labels = tuple(_engine_ring(result).variable_names())
     algebra = refine_algebra(result, base, labels)
+    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}^±1]"
+    algebra._preamble_ring_display_kind = "laurent_polynomial"
 
     return algebra
 
@@ -1284,7 +1288,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             self._images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[source_indices(label)]),
-                name="Free-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
@@ -1298,7 +1302,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             self._images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[label]),
-                name="Free-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif isinstance(images, (tuple, list)):
             size = labels.cardinality()
@@ -1315,13 +1319,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             self._images = indexed_family(
                 labels,
                 lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
-                name="Free-algebra morphism generator-image family",
+                name="Generator images",
             )
         elif callable(images):
             self._images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images(label)),
-                name="Free-algebra morphism generator-image family",
+                name="Generator images",
             )
         else:
             raise TypeError(

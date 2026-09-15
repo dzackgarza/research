@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator
+from itertools import islice
 from typing import Any
 
 from sage.misc.unknown import Unknown
@@ -143,7 +144,26 @@ class IndexedFamily[IndexT, ValueT](SageObject):
         )
 
     def _repr_(self):
-        return self._name or f"Family indexed by {self.index_set()}"
+        from dzack_research.preamble.categories.sets.set_categories import (
+            EnumeratedSets,
+            FiniteSets,
+        )
+
+        index_set = self.index_set()
+        label = self._name or "Indexed family"
+        if index_set in FiniteSets() and index_set in EnumeratedSets():
+            size = int(index_set.cardinality().finite_value())
+            shown = tuple(index_set) if size <= 12 else tuple(islice(index_set, 6))
+            entries = ", ".join(
+                f"{index} ↦ {self.value(index)}" for index in shown
+            )
+            suffix = "" if size <= 12 else ", ..."
+            data = f"[{entries}{suffix}]"
+            prefix = f"{label}: " if self._name else ""
+            count = "" if size <= 12 else f" ({size} entries)"
+            return f"{prefix}{data}{count}"
+
+        return f"{label} over {index_set}"
 
 
 def indexed_family[IndexT, ValueT](
