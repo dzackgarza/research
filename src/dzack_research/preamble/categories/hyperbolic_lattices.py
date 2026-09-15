@@ -888,10 +888,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
         def positive_cone_component(self, timelike):
             r"""Return the chosen component of ``{x:q(x)>0}`` containing ``timelike``."""
             from dzack_research.preamble.categories.hyperbolic_geometry import (
-                positive_cone_component,
+                _positive_cone_component,
             )
 
-            return positive_cone_component(self, timelike)
+            return _positive_cone_component(self, timelike)
 
         @cached_method
         def hyperbolic_space(self, timelike):

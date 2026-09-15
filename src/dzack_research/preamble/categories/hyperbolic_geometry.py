@@ -62,11 +62,11 @@ class PositiveConeComponents(OwnedCategory):
             return lattice.q(vector) >= 0 and lattice.b(vector, self.timelike_vector()) >= 0
 
         def opposite(self):
-            return positive_cone_component(self.lattice(), -self.timelike_vector())
+            return _positive_cone_component(self.lattice(), -self.timelike_vector())
 
         @cached_method
         def projectivization(self):
-            return hyperbolic_space(self)
+            return _hyperbolic_space(self)
 
         def _repr_(self):
             return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
@@ -212,11 +212,11 @@ class HyperbolicPolyhedra(OwnedCategory):
             return f"Hyperbolic polyhedron from {self.cone()}"
 
 
-def positive_cone_component(lattice, timelike):
+def _positive_cone_component(lattice, timelike):
     return object_of(PositiveConeComponents(), lattice=lattice, timelike=timelike)
 
 
-def hyperbolic_space(component):
+def _hyperbolic_space(component):
     return object_of(HyperbolicSpaces(), component=component)
 
 
@@ -225,6 +225,4 @@ __all__ = [
     "HyperbolicRay",
     "HyperbolicSpaces",
     "PositiveConeComponents",
-    "hyperbolic_space",
-    "positive_cone_component",
 ]
