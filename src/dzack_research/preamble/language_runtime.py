@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     Set as owned_set,
-    Sets,
 )
 from dzack_research.preamble.rings.real import (
     RR,
@@ -83,16 +82,6 @@ def Set(iterable):
     return owned_set(iterable)
 
 
-def ImageSet(function, domain):
-
-    return Sets().image_set(function, domain)
-
-
-def ConditionSet(domain, predicate):
-
-    return Sets().condition_set(domain, predicate)
-
-
 def factorial(value):
     integer = Integer(value)
     from math import factorial as python_factorial
@@ -135,8 +124,6 @@ _RUNTIME = {
     "factorial": factorial,
     "matrix": matrix,
     "Set": Set,
-    "ImageSet": ImageSet,
-    "ConditionSet": ConditionSet,
 }
 _IMPORTS = {
     name: f"from dzack_research.preamble.language_runtime import {name}"

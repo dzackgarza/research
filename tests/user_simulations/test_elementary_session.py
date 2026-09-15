@@ -70,13 +70,13 @@ def test_an_elementary_session(n) -> None:
     assert (residues in IntegralDomains()) == is_prime
     assert (residues in LocalRings()) == is_prime_power
     assert (residues in PrincipalIdealDomains()) == is_prime
-    units = ConditionSet(residues, lambda a: a.is_unit())
+    units = residues.condition_set(lambda a: a.is_unit())
     rendered(units)
     assert units.cardinality() == _euler_phi(n)
     assert residues(n - 1) * residues(n - 1) == residues.one()
     assert ZZ.ideal(n).is_prime() == is_prime
     assert ZZ.quotient_ring(ZZ.ideal(n)).cardinality() == n
-    assert Spec(residues).underlying_space().cardinality() == len(factors)
+    assert (residues).affine_spectrum().underlying_space().cardinality() == len(factors)
     assert residues.spectrum().cardinality() == len(factors)
 
     # The cyclic group and the cyclic module.

@@ -56,7 +56,7 @@ def test_the_integers_modulo_n(n) -> None:
     assert (residues in Fields()) == is_prime(n)
     assert (residues in IntegralDomains()) == is_prime(n)
     assert (residues in LocalRings()) == (len(prime_factorization(n)) == 1)
-    assert ConditionSet(residues, lambda a: a.is_unit()).cardinality() == euler_phi(n)
+    assert residues.condition_set(lambda a: a.is_unit()).cardinality() == euler_phi(n)
     assert residues.spectrum().cardinality() == len(prime_factorization(n))
     assert ZZ.ideal(n).is_prime() == is_prime(n)
     assert ZZ(n).prime_divisors().cardinality() == len(prime_factorization(n))
@@ -175,7 +175,7 @@ def test_prime_fields_and_p_adics(p) -> None:
     assert Qp(p) in Fields()
     assert ZZ.localize_at_prime(p).residue_field().cardinality() == p
     assert ZZ.ideal(p).is_maximal()
-    assert Spec(ZZ).underlying_space()(ZZ.ideal(p)).residue_field().cardinality() == p
+    assert (ZZ).affine_spectrum().underlying_space()(ZZ.ideal(p)).residue_field().cardinality() == p
     assert Groups.C(p).Aut().order() == p - 1
     assert Groups.GL(2, field).order() == (p**2 - 1) * (p**2 - p)
     assert FreeModule(field, 2).Aut().order() == (p**2 - 1) * (p**2 - p)

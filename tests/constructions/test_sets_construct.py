@@ -54,8 +54,8 @@ def test_function_sets_between_finite_sets() -> None:
 
 def test_subsets_by_condition_and_by_image() -> None:
     three = _three()
-    large = ConditionSet(three, lambda n: n > 1)
-    squares = ImageSet(lambda n: n * n, three)
+    large = three.condition_set(lambda n: n > 1)
+    squares = three.image_set(lambda n: n * n)
 
     assert large.cardinality() == 2
     assert 3 in large
@@ -84,7 +84,7 @@ def test_infinite_sets_and_their_constructions() -> None:
     assert ExponentialOfSets(NN, _two()).cardinality() == aleph0
     assert ExponentialOfSets(_two(), NN).cardinality() == continuum
     assert Sets().Mor(NN, NN).cardinality() == continuum
-    assert ConditionSet(NN, lambda n: n % 2 == 0).cardinality() == aleph0
+    assert NN.condition_set(lambda n: n % 2 == 0).cardinality() == aleph0
     assert Sets.Δ[aleph0] is NN
 
 
