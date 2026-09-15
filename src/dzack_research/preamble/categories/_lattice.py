@@ -1091,7 +1091,7 @@ def _diagonal_gram(module, exceptions, default=1):
     return _DiagonalGram(resolved, stored, resolved.base_ring()(default))
 
 
-def orthogonal_sum(summands):
+def _orthogonal_sum(summands):
     r"""\(\bigoplus_{i\in I} L_i\), in the concatenated basis.
 
     The sum is taken over the family's index set, so three summands are
@@ -1134,7 +1134,7 @@ def orthogonal_sum(summands):
 
 
 
-def tensor_product_lattice(factors):
+def _tensor_product_lattice(factors):
     r"""Return the tensor product lattice with the product bilinear form."""
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
@@ -1280,7 +1280,7 @@ def _hyperbolic_plane_name(gram: Tensor) -> str | None:
     return None
 
 
-def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
+def _lattice_latex(lattice: Lattice, ring_tex: str) -> str:
     r"""The archived lattice display: $L$ with its invariants, then $G_L$.
 
     The Gram tensor is the form of $L$, not $L$; $G_L$ typesets its components.

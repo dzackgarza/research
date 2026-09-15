@@ -40,11 +40,11 @@ from dzack_research.preamble.categories._lattice import (
     _colimit_lattice,
     discriminant_of_gram,
     lattice,
-    lattice_latex,
-    orthogonal_sum,
+    _lattice_latex,
+    _orthogonal_sum,
     signature_pair,
     signature_pair_of_gram,
-    tensor_product_lattice,
+    _tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import (
     signature_pairs as signature_pairs,
@@ -843,7 +843,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         elif positive > negative:
             positive_e8 = category("E8").twist(-1)
             summands.extend(positive_e8 for _ in range((positive - negative) // 8))
-        return orthogonal_sum(tuple(summands))
+        return _orthogonal_sum(tuple(summands))
 
     @staticmethod
     def rank_one_negative(scale):
@@ -859,7 +859,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise ValueError("the polarized K3 degree parameter d is positive")
         integers = _own_ring(SageZZ)
         category = Lattices(integers)
-        return orthogonal_sum(
+        return _orthogonal_sum(
             (
                 Lattices.rank_one_negative(degree),
                 category("U"),
@@ -888,17 +888,17 @@ class Lattices(OwnedCategoryOverBaseRing):
         if deformation_type == "K3":
             if n < 2:
                 raise ValueError("the K3^[n] series here requires n >= 2")
-            return orthogonal_sum(
+            return _orthogonal_sum(
                 (*hyperbolic, category("E8"), category("E8"), category(1).twist(2 - 2 * n))
             )
         if deformation_type == "Kum":
             if n < 2:
                 raise ValueError("the generalized Kummer series here requires n >= 2")
-            return orthogonal_sum((*hyperbolic, category(1).twist(-2 - 2 * n)))
+            return _orthogonal_sum((*hyperbolic, category(1).twist(-2 - 2 * n)))
         if deformation_type == "OG6":
             minus_two = category(1).twist(-2)
-            return orthogonal_sum((*hyperbolic, minus_two, minus_two))
-        return orthogonal_sum(
+            return _orthogonal_sum((*hyperbolic, minus_two, minus_two))
+        return _orthogonal_sum(
             (*hyperbolic, category("E8"), category("E8"), category("A2"))
         )
 
@@ -957,7 +957,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     class SubcategoryMethods:
         def tensor_product(self, factors):
             r"""Return the tensor product lattice with the product pairing."""
-            return tensor_product_lattice(factors)
+            return _tensor_product_lattice(factors)
 
         def _categorical_tensor_product(self, left, right):
             return self.tensor_product((left, right))
@@ -974,7 +974,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``L + M`` is the two-index case, and ``L ** n`` the constant
             family over an $n$-element index set.
             """
-            return orthogonal_sum(summands)
+            return _orthogonal_sum(summands)
 
         def _categorical_biproduct(self, left, right):
             return self.biproduct((left, right))
@@ -3170,7 +3170,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
 
             _name, tex = _ring_notation(self.base_ring())
-            return lattice_latex(self, tex)
+            return _lattice_latex(self, tex)
 
     class ElementMethods:
         r"""Operations generic to every lattice element."""
