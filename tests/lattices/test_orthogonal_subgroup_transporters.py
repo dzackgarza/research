@@ -75,11 +75,7 @@ def test_special_orthogonal_isotropic_equivalence_returns_a_live_transporter(
 def test_mixed_predicate_intersection_does_not_claim_a_complete_character_quotient() -> None:
     lattice = Lattices(ZZ)("A2")
     special = lattice.SO()
-    identity_only = predicate_subgroup(
-        lattice.O(),
-        lambda isometry: isometry == lattice.O().one(),
-        "g=1",
-    )
+    identity_only = lattice.O().predicate_subgroup(lambda isometry: isometry == lattice.O().one(), "g=1")
     mixed = special.intersection(identity_only)
 
     assert not mixed.character_data_is_complete()

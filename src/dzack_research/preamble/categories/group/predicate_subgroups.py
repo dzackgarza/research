@@ -36,7 +36,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         cut out by a predicate, which is what membership here states.
         """
         group = self.base()
-        return centralizer(group, group.one())
+        return group.centralizer(group.one())
 
     def _repr_object_names(self):
         return "predicate subgroups"

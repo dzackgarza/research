@@ -1214,24 +1214,14 @@ class Lattices(OwnedCategoryOverBaseRing):
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.determinant() == 1,
-                "det(g)=1",
-                character_data={"determinant_kernel": True},
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.determinant() == 1, "det(g)=1", character_data={"determinant_kernel": True})
 
         SO = special_orthogonal_group
 
         def spinor_kernel_subgroup(self):
             r"""Return the kernel of the real spinor-norm sign on ``O(L)``."""
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.real_spinor_norm_sign() == 1,
-                "real spinor norm(g)=+1",
-                character_data={"spinor_kernel": True},
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.real_spinor_norm_sign() == 1, "real spinor norm(g)=+1", character_data={"spinor_kernel": True})
 
         @cached_method
         def component_character(self):
@@ -1264,11 +1254,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if positive != integers.one() or negative < integers.one():
                 raise ValueError(f"positive_cone_subgroup requires signature (1,n); got {(positive, negative)}")
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.preserves_positive_cone(),
-                "g preserves the positive cone",
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.preserves_positive_cone(), "g preserves the positive cone")
 
         def O_component(self):
             r"""Return the subgroup preserving the selected positive-cone component."""
@@ -3726,11 +3712,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             self.isotropic_embedding()
             levi = self.levi_action()
             identity = self.Aut().one()
-            return predicate_subgroup(
-                self.pointwise_parabolic_subgroup(),
-                lambda isometry: levi(isometry) == identity,
-                "g fixes I pointwise and acts trivially on I^perp/I",
-            )
+            return self.pointwise_parabolic_subgroup().predicate_subgroup(lambda isometry: levi(isometry) == identity, "g fixes I pointwise and acts trivially on I^perp/I")
 
         def lift_isometry(self, isometry):
             r"""Return \(g\in P_I\) with \(\bar g=\) ``isometry``, when \(L\) splits along the lifts.

@@ -55,11 +55,7 @@ def test_the_stabilizer_of_a_basis_element_is_a_subgroup_of_the_automorphisms() 
     a = plane.module_generator("a")
     automorphisms = OwnedRings().unit_group()(plane.End())
 
-    stabilizer = predicate_subgroup(
-        automorphisms,
-        lambda automorphism: automorphism(a) == a,
-        "f fixes a",
-    )
+    stabilizer = automorphisms.predicate_subgroup(lambda automorphism: automorphism(a) == a, "f fixes a")
 
     assert stabilizer in OwnedGroups()
     assert stabilizer.supergroup() is automorphisms

@@ -2115,6 +2115,34 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
 
+        def predicate_subgroup(
+            self,
+            predicate,
+            description,
+            *,
+            character_data=None,
+            character_data_complete=None,
+        ):
+            r"""Return the subgroup of elements satisfying ``predicate``."""
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                PredicateSubgroups,
+            )
+
+            return PredicateSubgroups(self)(
+                predicate,
+                description,
+                character_data=character_data,
+                character_data_complete=character_data_complete,
+            )
+
+        def centralizer(self, element):
+            r"""Return the subgroup of elements commuting with ``element``."""
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                CentralizerSubgroups,
+            )
+
+            return CentralizerSubgroups(self)(element)
+
         @cached_method
         def center(self):
             r"""Return the center as an owned subgroup in the represented finite case."""

@@ -794,7 +794,7 @@ class IsometryPrimitiveExtension:
             centralizer,
         )
 
-        return centralizer(self.lattice.Aut(), self.isometry)
+        return self.lattice.Aut().centralizer(self.isometry)
 
     def centralizer_discriminant_image(self):
         r"""Return ``rho_L(O(L,f)) <= O(A_L)``, the finite image of the centralizer."""

@@ -107,13 +107,9 @@ def test_milestone_three_the_polarized_enriques_group_is_a_proper_subgroup() -> 
     assert polarization.q() != 0
     assert involution(polarization) == polarization
 
-    equivariant = centralizer(lattice.Aut(), involution)
+    equivariant = lattice.Aut().centralizer(involution)
     polarized = equivariant.intersection(
-        predicate_subgroup(
-            lattice.Aut(),
-            lambda isometry: isometry(polarization) == polarization,
-            f"g fixes {polarization}",
-        )
+        lattice.Aut().predicate_subgroup(lambda isometry: isometry(polarization) == polarization, f"g fixes {polarization}")
     )
 
     negation = lattice.Aut()(

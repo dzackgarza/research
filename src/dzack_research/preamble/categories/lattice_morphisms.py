@@ -1512,7 +1512,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             centralizer,
         )
 
-        return centralizer(self, isometry)
+        return self.centralizer(isometry)
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""

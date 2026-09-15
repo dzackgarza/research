@@ -21,11 +21,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_predicate_subgroup_retains_supergroup_predicate_and_inclusion() -> None:
     group = Groups.S(3)
-    subgroup = predicate_subgroup(
-        group,
-        lambda element: element.determinant() == 1,
-        "det(g)=1",
-    )
+    subgroup = group.predicate_subgroup(lambda element: element.determinant() == 1, "det(g)=1")
 
     assert is_predicate_subgroup(subgroup)
     assert subgroup.supergroup() is group

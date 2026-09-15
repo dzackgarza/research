@@ -104,7 +104,7 @@ def test_subgroup_inclusion_is_a_real_morphism() -> None:
 def test_predicate_centralizer_does_not_require_generators() -> None:
     group = Groups.S(4)
     element = group.group_generators()[0]
-    subgroup = centralizer(group, element)
+    subgroup = group.centralizer(element)
 
     assert subgroup in OwnedGroups()
     assert subgroup.supergroup() is group
