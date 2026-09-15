@@ -797,7 +797,7 @@ def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
     axes = FinitelyPresentedAlgebra(presentation, (x * y,))
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
-    omega = KahlerDifferentials(axes)
+    omega = axes.kahler_differentials()
 
     assert omega.fitting_ideal(1) == axes.ideal(xbar, ybar)
 

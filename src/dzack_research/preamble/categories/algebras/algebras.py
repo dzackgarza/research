@@ -555,6 +555,22 @@ class _CommutativeUnitalAlgebraParentMethods:
     def is_commutative(self) -> bool:
         return True
 
+    def kahler_differentials(self):
+        r"""Return ``Omega^1_{A/R}`` for this commutative ``R``-algebra."""
+        from dzack_research.preamble.categories.algebras.kahler_differentials import (
+            KahlerDifferentialModules,
+        )
+
+        return KahlerDifferentialModules(self)(self)
+
+    def de_rham_algebra(self):
+        r"""Return the algebraic de Rham algebra ``Omega^*_{A/R}``."""
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import (
+            DeRhamAlgebras,
+        )
+
+        return DeRhamAlgebras(self.base_ring())(self)
+
     def _quotient_by_algebra_elements(self, elements):
         r"""Return ``A/(f_1,...,f_r)`` through the selected ring presentation."""
         from dzack_research.preamble.categories.algebras.free_algebras import (

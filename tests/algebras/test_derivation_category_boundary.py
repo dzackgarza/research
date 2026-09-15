@@ -34,6 +34,6 @@ def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> 
     assert inclusion.codomain() is derivations.arrow_set()
     assert inclusion(restricted(derivation))(xbar).underlying_element() == derivation(xbar)
 
-    omega = KahlerDifferentials(algebra)
+    omega = algebra.kahler_differentials()
     classifier = omega.from_derivation(derivation)
     assert classifier(omega.universal_derivation()(xbar + ybar)) == derivation(xbar + ybar)

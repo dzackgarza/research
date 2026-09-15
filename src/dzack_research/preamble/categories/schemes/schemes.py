@@ -1628,7 +1628,7 @@ class AffineSchemes(_SchemePropertyCategory):
                 KahlerDifferentials,
             )
 
-            return KahlerDifferentials(self.coordinate_algebra())
+            return self.coordinate_algebra().kahler_differentials()
 
         def is_flat(self) -> bool:
             r"""Return whether this represented affine scheme is flat over its base."""

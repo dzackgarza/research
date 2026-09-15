@@ -357,7 +357,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         )
         from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 
-        classifiers = InternalHom(KahlerDifferentials(algebra), target_module)
+        classifiers = InternalHom(algebra.kahler_differentials(), target_module)
         self._preamble_kahler_classifier_module = classifiers
         category = Modules(algebra)
         if classifiers in ModulesWithChosenFinitePresentation(algebra):

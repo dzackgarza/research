@@ -15,7 +15,7 @@ def test_dga_cohomology_is_a_graded_algebra_with_descended_product() -> None:
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
-    dga = DeRhamAlgebra(algebra)
+    dga = algebra.de_rham_algebra()
 
     cohomology = CohomologyAlgebra(dga)
     assert cohomology in CohomologyAlgebras(dga.base_ring())

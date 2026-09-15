@@ -330,7 +330,7 @@ def _derivation_space():
 
 
 def _graded_derivation_space():
-    de_rham = DeRhamAlgebra(_derivation_algebra())
+    de_rham = _derivation_algebra().de_rham_algebra()
     return GradedDerivations(de_rham, shift=-1)
 
 

@@ -409,7 +409,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
             )
         self._module = module
         self._algebra = algebra
-        self._one_forms = KahlerDifferentials(algebra)
+        self._one_forms = algebra.kahler_differentials()
 
         self._target_module = restricted_target.module_over_extension()
         expected_target = Modules(module.base_ring()).tensor_product(
@@ -494,7 +494,7 @@ def Connections(module) -> ConnectionSpace:
         raise TypeError(
             "an algebraic connection here requires a module over a commutative algebra"
         )
-    one_forms = KahlerDifferentials(algebra)
+    one_forms = algebra.kahler_differentials()
     target = Modules(module.base_ring()).tensor_product((module, one_forms))
     ring_map = algebra.algebra_structure_morphism()
     restricted_source = restrict_scalars(module, ring_map)
@@ -677,7 +677,7 @@ class ConnectionDeRhamModule:
         coefficient_module = connection.module()
         algebra = connection.algebra()
         omega = connection.one_forms()
-        dga = DeRhamAlgebra(algebra)
+        dga = algebra.de_rham_algebra()
         ring_map = algebra.algebra_structure_morphism()
 
         class _ConnectionDeRhamModule(GradedDirectSumModule):

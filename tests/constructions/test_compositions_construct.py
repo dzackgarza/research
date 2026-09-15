@@ -103,16 +103,16 @@ def test_spectra_with_infinitely_many_points(build) -> None:
 
 
 def test_kahler_differentials_of_localizations_and_quotients(build) -> None:
-    local = KahlerDifferentials(build("ZZ_(5)").as_algebra_over(ZZ))
-    dual = KahlerDifferentials(build("GF(2)[t]/(t^2)").as_algebra_over(GF(2)))
-    finite = KahlerDifferentials(Zmod(12).as_algebra_over(ZZ))
+    local = build("ZZ_(5)").as_algebra_over(ZZ).kahler_differentials()
+    dual = build("GF(2)[t]/(t^2)").as_algebra_over(GF(2)).kahler_differentials()
+    finite = Zmod(12).as_algebra_over(ZZ).kahler_differentials()
     assert local.cardinality() == 1
     assert dual.cardinality() == 4
     assert finite.cardinality() == 1
     integers = PolynomialRing(ZZ, "x")
     x = integers.algebra_generator("x")
     quotient = integers.quotient_ring(integers.ideal(x**2 + 1))
-    assert KahlerDifferentials(quotient.as_algebra_over(ZZ)).cardinality() == 4
+    assert quotient.as_algebra_over(ZZ).kahler_differentials().cardinality() == 4
 
 
 def test_tensor_products_and_pushouts_of_algebras() -> None:

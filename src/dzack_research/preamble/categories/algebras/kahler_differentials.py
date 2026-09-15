@@ -280,7 +280,7 @@ def _construct_kahler_differentials(algebra):
             raise ValueError(
                 "localization of differentials requires the localization to preserve the algebra base"
             )
-        source_omega = KahlerDifferentials(source)
+        source_omega = source.kahler_differentials()
         from dzack_research.preamble.categories.functors.module_localization import (
             module_localization_functor,
         )
@@ -317,7 +317,7 @@ def _construct_kahler_differentials(algebra):
         )
 
         presentation_ideal = presentation.ideal(*tuple(relations))
-        presentation_omega = KahlerDifferentials(presentation)
+        presentation_omega = presentation.kahler_differentials()
         presentation_derivation = presentation_omega.universal_derivation()
         ideal_generators = dict(
             zip(
@@ -375,9 +375,4 @@ def _construct_kahler_differentials(algebra):
     return omega
 
 
-def KahlerDifferentials(algebra):
-    r"""Notebook notation for ``KahlerDifferentialModules(A)(A)``."""
-    return KahlerDifferentialModules(algebra)(algebra)
-
-
-__all__ = ["KahlerDifferentialModules", "KahlerDifferentials"]
+__all__ = ["KahlerDifferentialModules"]

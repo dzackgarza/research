@@ -13,7 +13,7 @@ def test_kahler_notation_is_the_category_owned_object() -> None:
     category = KahlerDifferentialModules(algebra)
 
     declared = category(algebra)
-    notation = KahlerDifferentials(algebra)
+    notation = algebra.kahler_differentials()
 
     assert declared is notation
     assert declared in category

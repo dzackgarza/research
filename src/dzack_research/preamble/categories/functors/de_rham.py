@@ -81,7 +81,7 @@ class DeRhamFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, algebra):
-        return DeRhamAlgebra(algebra)
+        return algebra.de_rham_algebra()
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

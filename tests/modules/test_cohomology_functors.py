@@ -59,7 +59,7 @@ def test_algebraic_de_rham_cohomology_is_literal_functor_composition() -> None:
 
     functor = de_rham_cohomology_functor(field, 1)
     h1 = functor(algebra)
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     assert h1 is de_rham.cohomology(1)
 
     omega = de_rham.kahler_differentials()
@@ -81,7 +81,7 @@ def test_algebraic_de_rham_cohomology_ring_is_functorial() -> None:
 
     functor = de_rham_cohomology_algebra_functor(field)
     cohomology = functor(algebra)
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     assert cohomology.source_dga() is de_rham
 
     omega = de_rham.kahler_differentials()

@@ -160,7 +160,7 @@ def test_quadratic_fields(d) -> None:
         assert 1 <= primes_above.cardinality() <= 2
         assert (p in field.ramified_primes()) == (quadratic_field_discriminant(d) % p == 0)
         assert sum(P.ramification_index() * P.residue_degree() for P in primes_above) == 2
-    assert KahlerDifferentials(field.ring_of_integers().as_algebra_over(ZZ)).cardinality() == abs(quadratic_field_discriminant(d))
+    assert field.ring_of_integers().as_algebra_over(ZZ).kahler_differentials().cardinality() == abs(quadratic_field_discriminant(d))
 
 
 @survey

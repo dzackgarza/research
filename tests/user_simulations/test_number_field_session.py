@@ -120,7 +120,7 @@ def test_a_number_field_session(name) -> None:
         assert embedding(field.one()) == CC.one()
 
     # Kähler differentials of the integers over ZZ are finite of order |disc|.
-    omega = KahlerDifferentials(integers.as_algebra_over(ZZ))
+    omega = integers.as_algebra_over(ZZ).kahler_differentials()
     rendered(omega)
     assert omega.cardinality() == abs(discriminant)
 

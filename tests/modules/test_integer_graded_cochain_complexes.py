@@ -68,7 +68,7 @@ def test_nonnegative_dga_has_the_same_zero_incoming_complex_boundary() -> None:
     polynomial = SymmetricAlgebraOn(field, ("x",))
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
-    dga = DeRhamAlgebra(algebra)
+    dga = algebra.de_rham_algebra()
 
     incoming = dga.differential_component(-1)
     assert incoming.domain().is_zero()
