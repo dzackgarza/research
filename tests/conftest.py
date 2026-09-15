@@ -33,11 +33,6 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 # object the old global took as its first argument.
 _OWNED_SPELLINGS = {
     "Ideal": lambda ring, module_generating_set: ring.ideal(*module_generating_set),
-    "FractionField": lambda ring: ring.fraction_field(),
-    "Localization": lambda ring, *datum: ring.localization(*datum),
-    "PrimeLocalization": lambda ring, prime: ring.localize_at_prime(prime),
-    "QuotientRing": lambda ring, ideal: ring.quotient_ring(ideal),
-    "AdicCompletion": lambda ring, ideal, **options: ring.adic_completion(ideal, **options),
     # A construction on a category is reached from that category; one whose
     # inputs are several categories is a construction in Cat.
     "OppositeCategory": lambda category: category.opposite(),
@@ -52,9 +47,6 @@ _OWNED_SPELLINGS = {
 def _common_owned_category(*objects):
     r"""The category a test names implicitly by handing over its objects."""
     return common_category(*objects)
-
-FractionField = _OWNED_SPELLINGS["FractionField"]
-
 
 def pytest_collection_modifyitems(session, config, items) -> None:
     r"""Give each test module the owned spelling under the old global's name."""
@@ -119,8 +111,8 @@ FIELDS = {
     "QQ(sqrt-23)": lambda: QuadraticField(-23, "s"),
     "QQ(zeta5)": lambda: CyclotomicField(5, "z"),
     "QQ(cbrt2)": _rationals_cube_root_of_two,
-    "QQ(x)": lambda: FractionField(_polynomial_ring(QQ, "x")),
-    "GF(5)(t)": lambda: FractionField(_polynomial_ring(GF(5), "t")),
+    "QQ(x)": lambda: _polynomial_ring(QQ, "x").fraction_field(),
+    "GF(5)(t)": lambda: _polynomial_ring(GF(5), "t").fraction_field(),
     "QQ[x]/(x^2+1)": lambda: _quotient(
         _polynomial_ring(QQ, "x"), _polynomial_ring(QQ, "x").algebra_generator("x") ** 2 + 1
     ),

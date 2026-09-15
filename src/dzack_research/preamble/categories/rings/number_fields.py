@@ -608,20 +608,18 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             return FractionalIdeal(self, module_generators)
 
         def localization(self, *elements):
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                Localization,
-            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import _localization
 
-            return Localization(self, *elements)
+            return _localization(self, *elements)
 
         localize = localization
 
         def localize_at_prime(self, prime):
             from dzack_research.preamble.categories.rings.commutative_algebra import (
-                PrimeLocalization,
+                _prime_localization_from_input,
             )
 
-            return PrimeLocalization(self, prime)
+            return _prime_localization_from_input(self, prime)
 
         localization_at_prime = localize_at_prime
 

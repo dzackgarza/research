@@ -1711,15 +1711,13 @@ class AffineSchemes(_SchemePropertyCategory):
             \(D(f)=\operatorname{Spec}A[1/f]\), and the localization map
             \(A\to A[1/f]\) induces the open immersion.
             """
-            from dzack_research.preamble.categories.rings.commutative_algebra import Localization
-
             algebra = self.coordinate_algebra()
             element = algebra(element)
             cache = getattr(self, "_preamble_distinguished_open_cache", ())
             for cached_element, cached_open in cache:
                 if cached_element == element:
                     return cached_open
-            localized = Localization(algebra, element)
+            localized = algebra.localization(element)
             localization_map = localized.localization_map()
             base = self.scheme_base_ring()
             canonical_ambient = Spec(algebra, base_ring=base)

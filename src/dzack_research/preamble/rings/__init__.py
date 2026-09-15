@@ -11,20 +11,15 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.rings.commutative_algebra import (
-    AdicCompletion,
     AdicCompletions,
     DistinguishedOpenSubobject,
     DualNumbers,
     FormalPowerSeriesRings,
     GeneratedIdealView,
-    Localization,
     PowerSeriesRing,
-    PrimeLocalization,
     PrimeLocalizations,
     PrimeSpectra,
-    QuotientRing,
     QuotientRings,
-    ResidueField,
     ZariskiClosedSubobject,
     Zp,
 )
@@ -169,13 +164,6 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
     return _LaurentPolynomialRing(base_ring, *args, **kwargs)
 
 
-def FractionField(ring, *args, **kwargs):
-    r"""Return the owned fraction field of ``ring``."""
-    if args or kwargs:
-        raise TypeError("FractionField takes one owned ring")
-    return ring.fraction_field()
-
-
 def MatrixSpace(base_ring, nrows, ncols=None):
     r"""Return the public finite matrix Hom, with algebra structure when square."""
     return refine_matrix_algebra(_MatrixSpace(base_ring, nrows, ncols))
@@ -226,7 +214,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "PolynomialRing": PolynomialRing,
         "LaurentPolynomialRing": LaurentPolynomialRing,
         "PowerSeriesRing": PowerSeriesRing,
-        "ResidueField": ResidueField,
         "MatrixSpace": MatrixSpace,
     }
 
@@ -242,7 +229,6 @@ def _restore_session_ring_bindings(scope: dict) -> None:
 
 
 __all__ = [
-    "AdicCompletion",
     "AdicCompletions",
     "AdicallyCompleteRings",
     "ArtinianRings",
@@ -261,14 +247,12 @@ __all__ = [
     "Fields",
     "FiniteField",
     "FormalPowerSeriesRings",
-    "FractionField",
     "GF",
     "GeneratedIdealView",
     "IntegerModRing",
     "Integers",
     "IntegralDomains",
     "LaurentPolynomialRing",
-    "Localization",
     "LocalizationRings",
     "LocalRings",
     "MatrixSpace",
@@ -298,19 +282,16 @@ __all__ = [
     "PredicateSubrings",
     "PrimeField",
     "PrimeFields",
-    "PrimeLocalization",
     "PrimeLocalizations",
     "PrimeSpectra",
     "PrincipalIdealDomains",
     "Qp",
     "QuadraticField",
-    "QuotientRing",
     "QuotientRings",
     "RR",
     "RealApproximation",
     "RealField",
     "RealNumber",
-    "ResidueField",
     "RingHomset",
     "RingMorphism",
     "Rings",

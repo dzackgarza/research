@@ -157,7 +157,7 @@ class PrimeSpectra(OwnedCategory):
         def closure_dimension(self):
             r"""Return ``dim closure({p}) = dim R/p`` for this prime point."""
             return int(
-                QuotientRing(self.parent().ring(), self.ideal()).krull_dimension()
+                self.parent().ring().quotient_ring(self.ideal()).krull_dimension()
             )
 
         def generic_local_length(self, ideal):
@@ -292,7 +292,7 @@ class PrimeSpectra(OwnedCategory):
                 "a principal ideal domain or finitely generated over a field, which is "
                 "what makes it catenary and equidimensional"
             )
-            quotient = QuotientRing(ring, self.ideal())
+            quotient = ring.quotient_ring(self.ideal())
             return int(ring.krull_dimension()) - int(quotient.krull_dimension())
 
         @cached_method
@@ -993,7 +993,7 @@ class QuotientRings(OwnedCategory):
                 raise ValueError("irreducible components here require a reduced quotient ring")
             return finite_ordered_set(
                 tuple(
-                    QuotientRing(self.quotient_source(), prime)
+                    self.quotient_source().quotient_ring(prime)
                     for prime in self._presentation_minimal_primes()
                 )
             )
@@ -1098,7 +1098,8 @@ def _affine_reduced_quotient_normalization_data(quotient):
     generator images of every normalization map, the conductor, and ``delta``
     in one exact computation.
     The returned Singular ring is converted by Sage's own ``sage()`` crossing,
-    then reconstructed through :func:`QuotientRing` and :func:`ring_morphism`.
+    then reconstructed through the source ring's ``quotient_ring`` method and
+    :func:`ring_morphism`.
     """
     source = quotient.quotient_source()
     source_engine = _engine_ring(source)
@@ -1155,7 +1156,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
                     for generator in normal_ideal_engine.gens()
                 )
             )
-            component = QuotientRing(normal_cover, normal_ideal)
+            component = normal_cover.quotient_ring(normal_ideal)
             target_engine = _engine_ring(component)
             target_images = tuple(
                 target_engine(normal_cover_engine(generator))
@@ -1466,7 +1467,7 @@ class PrimeLocalizations(OwnedCategory):
             fraction field of its own, so a reducible or nonreduced ``R``,
             which has none, still has a residue field at every point.
             """
-            quotient = QuotientRing(self.localization_source(), self.localized_prime())
+            quotient = self.localization_source().quotient_ring(self.localized_prime())
             if quotient in OwnedFields():
                 return quotient
             return quotient.fraction_field()
@@ -1474,7 +1475,7 @@ class PrimeLocalizations(OwnedCategory):
         @cached_method
         def source_residue_map(self):
             r"""Return ``R -> kappa(p)``, the value of a function at this point."""
-            quotient = QuotientRing(self.localization_source(), self.localized_prime())
+            quotient = self.localization_source().quotient_ring(self.localized_prime())
             residue = self.residue_field()
             if residue is quotient:
                 return quotient.quotient_map()
@@ -2070,10 +2071,8 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
             raise AssertionError(
                 "precision refinement requires an exact retained source expression"
             )
-        refined = AdicCompletion(
-            self.parent().completion_source(),
-            self.parent().ideal_of_definition(),
-            precision=int(precision),
+        refined = self.parent().completion_source().adic_completion(
+            self.parent().ideal_of_definition(), precision=int(precision)
         )
         return refined.completion_map()(source_expression)
 
@@ -2217,7 +2216,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 self._preamble_maximal_ideal = self._preamble_completion_map.extension_of_ideal(
                     defining_ideal
                 )
-                self._preamble_residue_field = ResidueField(source, defining_ideal)
+                self._preamble_residue_field = source.residue_field_at(defining_ideal)
             case _:
                 pass
 
@@ -2321,12 +2320,6 @@ def _maximal_ideal_over_local_base(algebra, base, uniformizers):
         algebra,
         tuple(generator for generator in (*base_maximal, *uniformizers) if not generator.is_zero()),
     )
-
-
-def QuotientRing(ring, ideal):
-    r"""Return the commutative quotient ring ``R/I`` with its quotient map."""
-    source = _own_ring(ring)
-    return _quotient_ring(source, _owned_ideal(source, ideal))
 
 
 @cached_function
@@ -2752,14 +2745,13 @@ def _fraction_field_localization(source, submonoid):
     )
 
 
-def Localization(ring, *datum):
+def _localization(source, *datum):
     r"""Return ``S^{-1}R`` from a submonoid ``S -> (R,*)``.
 
     Passing ring elements is convenience syntax for the submonoid they generate.
     The mathematical localization datum stored on the result is always the
     represented subobject ``S -> (R,*)``.
     """
-    source = _own_ring(ring)
     if len(datum) == 1 and datum[0] in Submonoids(source):
         return _localization_at_submonoid(source, datum[0])
     return _localization_at_elements(
@@ -2856,9 +2848,8 @@ def quotient_localization_comparison(source_quotient, localization_ring):
             "image contains zero and both sides of the comparison are the zero ring, which "
             "is not constructed here"
         )
-        localized_quotient = PrimeLocalization(
-            source_quotient,
-            quotient_map.extension_of_ideal(prime),
+        localized_quotient = source_quotient.localize_at_prime(
+            quotient_map.extension_of_ideal(prime)
         )
     else:
         try:
@@ -2875,10 +2866,10 @@ def quotient_localization_comparison(source_quotient, localization_ring):
             description=f"Image of {source_submonoid} in {source_quotient}",
             structure_data={"kind": "quotient_image"},
         )
-        localized_quotient = Localization(source_quotient, quotient_submonoid)
+        localized_quotient = source_quotient.localization(quotient_submonoid)
 
     extended_ideal = defining_ideal.extension_to_localization(localization_ring)
-    quotient_after_localization = QuotientRing(localization_ring, extended_ideal)
+    quotient_after_localization = localization_ring.quotient_ring(extended_ideal)
 
     right_quotient_map = quotient_after_localization.quotient_map()
 
@@ -3015,17 +3006,12 @@ def quotient_completion_comparison(source_quotient, source_ideal, *, precision=2
     )
 
 
-def ResidueField(ring, ideal=None):
-    r"""Return ``R/m`` for a maximal ideal, or the represented local residue field."""
-    source = _own_ring(ring)
-    if ideal is None:
-        if source not in OwnedLocalRings():
-            raise TypeError("a residue field without an ideal requires a represented local ring")
-        return source.residue_field()
+def _residue_field_at(source, ideal):
+    r"""Return ``R/m`` for a represented maximal ideal ``m`` of ``R``."""
     defining = _owned_ideal(source, ideal)
     if not bool(defining.is_maximal()):
         raise ValueError("a residue field is the quotient by a maximal ideal")
-    quotient = QuotientRing(source, defining)
+    quotient = source.quotient_ring(defining)
     if quotient not in OwnedFields():
         raise ArithmeticError("the quotient by a maximal ideal was not returned as a field")
     return quotient
@@ -3080,9 +3066,8 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     )
 
 
-def PrimeLocalization(ring, prime):
+def _prime_localization_from_input(source, prime):
     r"""Return ``R_p`` using the submonoid ``R \ p -> (R,*)``."""
-    source = _own_ring(ring)
     if source not in OwnedRings().Commutative():
         raise TypeError("prime localization requires a commutative source ring")
     prime_ideal = _owned_ideal(source, prime)
@@ -3333,17 +3318,6 @@ def _adic_completion_from_owned_data(source, defining, precision):
     )
 
 
-def AdicCompletion(ring, ideal, *, precision=20):
-    r"""Return the category-owned adic completion ``R^``.
-
-    The mathematical parent records ``R``, the owned ideal of definition and
-    the inverse system ``R/I^n``.  ``precision`` is computational metadata; it
-    is never imposed as an additional relation in the completion.  This
-    notation is deliberately only a route to :class:`AdicCompletions`.
-    """
-    return AdicCompletions()(ring, ideal, precision=precision)
-
-
 class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
     r"""Formal power-series rings ``R[[t]]`` over the owned ring ``R``."""
 
@@ -3519,17 +3493,12 @@ def DualNumbers(base_ring, name="epsilon"):
 
 
 __all__ = [
-    "AdicCompletion",
     "AdicCompletions",
     "DualNumbers",
     "GeneratedIdealView",
-    "Localization",
     "LocalizationRings",
-    "PrimeLocalization",
     "PrimeLocalizations",
     "PowerSeriesRing",
-    "QuotientRing",
     "QuotientRings",
-    "ResidueField",
     "Zp",
 ]

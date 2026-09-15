@@ -1,6 +1,6 @@
 r"""Non-toric coherent cohomology from affine acyclicity."""
 
-from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, QuotientRing, Spec
+from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, Spec
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules.cochain_complexes import cochain_homset
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.schemes.geometric_cohomology import (
 def _dual_number_sheaf():
     polynomial = PolynomialRing(QQ, "e")
     e = polynomial.algebra_generator("e")
-    algebra = QuotientRing(polynomial, polynomial.ideal(e**2))
+    algebra = polynomial.quotient_ring(polynomial.ideal(e**2))
     scheme = Spec(algebra, base_ring=QQ)
     module = FreeModule(algebra, 1)
     return scheme.associated_module_sheaf(module)

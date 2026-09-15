@@ -1044,11 +1044,7 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the localized module ``M_p`` at a represented prime."""
             ring = self.base_ring()
             if self is ring:
-                from dzack_research.preamble.categories.rings.commutative_algebra import (
-                    PrimeLocalization,
-                )
-
-                return PrimeLocalization(ring, prime)
+                return ring.localize_at_prime(prime)
             localization_ring = ring.spectrum()(prime).local_ring()
             return self.localize(localization_ring)
 

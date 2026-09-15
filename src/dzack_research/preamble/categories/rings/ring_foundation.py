@@ -1307,24 +1307,41 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return CommutativeIdeal(self, *generators)
 
             def quotient_ring(self, ideal):
-                from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRing
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _owned_ideal,
+                    _quotient_ring,
+                )
 
-                return QuotientRing(self, ideal)
+                return _quotient_ring(self, _owned_ideal(self, ideal))
 
             def localization(self, *elements):
-                from dzack_research.preamble.categories.rings.commutative_algebra import Localization
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _localization,
+                )
 
-                return Localization(self, *elements)
+                return _localization(self, *elements)
 
             def localize_at_prime(self, prime):
-                from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _prime_localization_from_input,
+                )
 
-                return PrimeLocalization(self, prime)
+                return _prime_localization_from_input(self, prime)
+
+            def residue_field_at(self, ideal):
+                r"""Return the residue field ``R/m`` at a represented maximal ideal ``m``."""
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _residue_field_at,
+                )
+
+                return _residue_field_at(self, ideal)
 
             def adic_completion(self, ideal, precision=20):
-                from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    AdicCompletions,
+                )
 
-                return AdicCompletion(self, ideal, precision=precision)
+                return AdicCompletions()(self, ideal, precision=precision)
 
             @cached_method
             def spectrum(self):
@@ -1731,9 +1748,7 @@ class OwnedLocalRings(OwnedCategory):
 
     def an_object(self):
         r"""The integers localized at the prime (2)."""
-        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
-
-        return PrimeLocalization(_own_ring(SageZZ), 2)
+        return _own_ring(SageZZ).localize_at_prime(2)
 
     def super_categories(self):
         return [OwnedRings().Commutative()]
@@ -1771,9 +1786,7 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
 
     def an_object(self):
         r"""The 2-adic integers: complete, and local because (2) is maximal."""
-        from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
-
-        return AdicCompletion(_own_ring(SageZZ), 2)
+        return _own_ring(SageZZ).adic_completion(2)
 
     def super_categories(self):
         return [OwnedRings().Commutative()]
@@ -1791,9 +1804,7 @@ class OwnedCompleteLocalRings(OwnedCategory):
 
     def an_object(self):
         r"""The 2-adic integers: complete, and local because (2) is maximal."""
-        from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
-
-        return AdicCompletion(_own_ring(SageZZ), 2)
+        return _own_ring(SageZZ).adic_completion(2)
 
     def super_categories(self):
         return [OwnedLocalRings(), OwnedAdicallyCompleteRings()]

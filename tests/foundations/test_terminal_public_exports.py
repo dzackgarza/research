@@ -7,16 +7,13 @@ does not publish owner-in-argument operations as free functions.
 
 import dzack_research.preamble.all as session
 from dzack_research.preamble.all import (
-    AdicCompletion,
     AdicCompletions,
     CochainComplexFromFamily,
     DividedPowerAlgebraOf,
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
-    Localization,
     OwnedCategoryOverBaseRing,
     QuadraticMap,
-    QuotientRing,
     finite_ordered_set,
     ring_morphism,
 )
@@ -24,16 +21,13 @@ from dzack_research.preamble.all import (
 
 def test_terminal_collection_vocabulary_is_public() -> None:
     names = (
-        AdicCompletion,
         AdicCompletions,
         CochainComplexFromFamily,
         DividedPowerAlgebraOf,
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
-        Localization,
         OwnedCategoryOverBaseRing,
         QuadraticMap,
-        QuotientRing,
         finite_ordered_set,
         ring_morphism,
     )
@@ -62,6 +56,12 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "CoproductConstruction",
         "EqualizerConstruction",
         "CoequalizerConstruction",
+        "FractionField",
+        "Localization",
+        "PrimeLocalization",
+        "QuotientRing",
+        "ResidueField",
+        "AdicCompletion",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)

@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     GF,
     PolynomialRing,
     QQ,
-    QuotientRing,
     ZZ,
 )
 
@@ -30,7 +29,7 @@ def test_a_zero_divisor_in_a_nonreduced_quotient_is_not_regular() -> None:
     polynomial = PolynomialRing(GF(5), "x,y")
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
-    quotient = QuotientRing(polynomial, polynomial.ideal(x * y))
+    quotient = polynomial.quotient_ring(polynomial.ideal(x * y))
 
     assert not quotient(x).is_regular()
     assert not quotient(y).is_regular()

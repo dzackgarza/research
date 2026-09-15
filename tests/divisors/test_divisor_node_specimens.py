@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
-    QuotientRing,
     Spec,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
@@ -86,7 +85,7 @@ def test_normal_singular_surface_has_a_noncartier_weil_class() -> None:
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     z = polynomial.algebra_generator("z")
-    ring = QuotientRing(polynomial, polynomial.ideal(x * y - z**2))
+    ring = polynomial.quotient_ring(polynomial.ideal(x * y - z**2))
     x, y, z = ring(x), ring(y), ring(z)
     scheme = Spec(ring, base_ring=QQ)
     prime = ring.spectrum()(ring.ideal(x, z))
@@ -96,4 +95,3 @@ def test_normal_singular_surface_has_a_noncartier_weil_class() -> None:
     assert ring.is_normal()
     assert not weil.prime_is_cartier_at(prime, vertex)
     assert weil.principal_divisor(x) == 2 * weil.prime_divisor(prime)
-
