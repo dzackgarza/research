@@ -71,6 +71,20 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "SuperobjectsOf",
         "CoveringObjectsOf",
         "CoveredObjectsOf",
+        "ArrowCategory",
+        "FunctorCategory",
+        "HomCategoryOf",
+        "EndCategoryOf",
+        "MonoCategoryOf",
+        "EpiCategoryOf",
+        "IsoCategoryOf",
+        "AutCategoryOf",
+        "SliceCategory",
+        "CosliceCategory",
+        "SubobjectCategory",
+        "SuperobjectCategory",
+        "CoveringObjectCategory",
+        "CoveredObjectCategory",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)
