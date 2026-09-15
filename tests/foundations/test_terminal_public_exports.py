@@ -8,7 +8,6 @@ does not publish owner-in-argument operations as free functions.
 import dzack_research.preamble.all as session
 from dzack_research.preamble.all import (
     AdicCompletions,
-    CochainComplexFromFamily,
     DividedPowerAlgebraOf,
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
@@ -22,7 +21,6 @@ from dzack_research.preamble.all import (
 def test_terminal_collection_vocabulary_is_public() -> None:
     names = (
         AdicCompletions,
-        CochainComplexFromFamily,
         DividedPowerAlgebraOf,
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
@@ -85,6 +83,12 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "SuperobjectCategory",
         "CoveringObjectCategory",
         "CoveredObjectCategory",
+        "CochainComplex",
+        "CochainComplexFromFamily",
+        "Cycles",
+        "Boundaries",
+        "Cohomology",
+        "cochain_homset",
     )
 
     assert all(not hasattr(session, name) for name in forbidden)

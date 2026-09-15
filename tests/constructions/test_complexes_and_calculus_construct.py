@@ -48,7 +48,7 @@ def test_the_koszul_complex_over_the_integers() -> None:
 
 def test_cochain_morphisms_and_the_identity() -> None:
     _, koszul = _koszul_complex(QQ)
-    homset = cochain_homset(koszul, koszul)
+    homset = koszul.Mor(koszul)
     identity = homset.identity()
     assert identity * identity == identity
     assert identity.domain() is koszul

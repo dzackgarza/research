@@ -12,8 +12,7 @@ from dzack_research.preamble.categories.functors.cohomology import (
 )
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    CochainComplex,
-    cochain_homset,
+    CochainComplexes,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -26,12 +25,11 @@ def test_cohomology_is_functorial_on_cochain_maps() -> None:
     differential = module_homset(degree_zero, degree_one)(
         {"e": 2 * degree_one.module_generator("f")}
     )
-    complex_ = CochainComplex(
-        ZZ,
+    complex_ = CochainComplexes(ZZ)(
         {0: degree_zero, 1: degree_one},
         {0: differential},
     )
-    times_three = cochain_homset(complex_, complex_)(
+    times_three = CochainComplexes(ZZ).Mor(complex_, complex_)(
         {
             0: module_homset(degree_zero, degree_zero)(
                 {"e": 3 * degree_zero.module_generator("e")}

@@ -16,10 +16,7 @@ from dzack_research.preamble.categories.group.groups import (
     group_homset,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import (
-    CochainComplex,
     CochainComplexes,
-    Cohomology,
-    cochain_homset,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearForm,
@@ -174,8 +171,7 @@ def AffineGeometricCohomologyComplex(sheaf, cover=None):
     construction_data = {"geometric_sheaf": sheaf}
     if cover is not None:
         construction_data["geometric_cover"] = cover
-    return CochainComplex(
-        base,
+    return CochainComplexes(base)(
         {0: module, 1: zero},
         {0: module_homset(module, zero).zero()},
         name=f"Affine Cech complex of {sheaf}",
@@ -186,14 +182,16 @@ def AffineGeometricCohomologyComplex(sheaf, cover=None):
 
 def AffineGeometricCohomology(sheaf, degree):
     r"""Return ``H^degree(X,sheaf)`` from the represented affine complex."""
-    return Cohomology(AffineGeometricCohomologyComplex(sheaf), int(degree))
+    return AffineGeometricCohomologyComplex(sheaf).cohomology(int(degree))
 
 
 def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
     complex_ = AffineGeometricCohomologyComplex(sheaf, cover=cover)
     scalar = complex_.base_ring()(scalar)
-    cochain_map = scalar * cochain_homset(complex_, complex_).identity()
+    cochain_map = scalar * CochainComplexes(complex_.base_ring()).Mor(
+        complex_, complex_
+    ).identity()
     return cohomology_functor(complex_.base_ring(), int(degree))(cochain_map)
 
 
@@ -220,7 +218,9 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
         ).identity()
         self._source_complex = source
         self._target_complex = target
-        self._cochain_map = cochain_homset(source, target)({0: degree_zero})
+        self._cochain_map = CochainComplexes(source.base_ring()).Mor(source, target)(
+            {0: degree_zero}
+        )
         self._cohomology_map = cohomology_functor(
             source.base_ring(),
             self._degree,
@@ -509,8 +509,7 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
     if int(simplicial.dimension()) == -1:
         degree_zero = BasedFreeModule(base, 1)
         degree_one = BasedFreeModule(base, 0)
-        complex_ = CochainComplex(
-            base,
+        complex_ = CochainComplexes(base)(
             {0: degree_zero, 1: degree_one},
             {0: module_homset(degree_zero, degree_one)({0: degree_one.zero()})},
             name="Toric weight cohomology complex",
@@ -538,8 +537,7 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
             q + 1: _matrix_morphism(base, pieces[q + 1], pieces[q + 2], matrix)
             for q, matrix in matrices.items()
         }
-        complex_ = CochainComplex(
-            base,
+        complex_ = CochainComplexes(base)(
             pieces,
             differentials,
             name="Toric weight cohomology complex",
@@ -555,9 +553,8 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
 
 def ToricWeightCohomology(scheme, divisor, weight, degree):
     r"""Return the owned weight piece ``H^degree(X,O_X(D))_weight`` from its complex."""
-    return Cohomology(
-        ToricWeightCohomologyComplex(scheme, divisor, weight),
-        int(degree),
+    return ToricWeightCohomologyComplex(scheme, divisor, weight).cohomology(
+        int(degree)
     )
 
 
@@ -572,7 +569,9 @@ def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
     """
     complex_ = ToricWeightCohomologyComplex(scheme, divisor, weight)
     scalar = complex_.base_ring()(scalar)
-    return scalar * cochain_homset(complex_, complex_).identity()
+    return scalar * CochainComplexes(complex_.base_ring()).Mor(
+        complex_, complex_
+    ).identity()
 
 
 def ToricWeightScalarCohomologyMap(scheme, divisor, weight, degree, scalar):

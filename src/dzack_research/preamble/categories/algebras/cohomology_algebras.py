@@ -1,14 +1,14 @@
 r"""Graded cohomology algebras of represented differential graded algebras.
 
 The cohomology computation is deliberately the common owned cochain-complex
-construction: each homogeneous piece is literally ``Cohomology(dga, p)``, so
+construction: each homogeneous piece is literally ``dga.cohomology(p)``, so
 its cycle inclusion, boundary-in-cycles map, quotient projection and selected
 representatives remain available to multiplication and induced maps.  Sage's
 ``CommutativeDifferentialGradedAlgebra`` backend is not a replacement for this
 boundary: in its supported field regime ``cocycles`` and ``coboundaries`` are
 coordinate vector subspaces and ``cohomology`` is an abstract free module,
 which does not retain those comparison maps.  The maintained module backends
-used by ``Cohomology`` therefore remain the private computation authority for
+used by the cochain-complex owner therefore remain the private computation authority for
 both commutative and noncommutative source DGAs.
 """
 
@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
     GradedCommutativeAlgebras,
     StrictlyGradedCommutativeAlgebras,
 )
-from dzack_research.preamble.categories.modules.cochain_complexes import Cohomology
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -107,7 +106,7 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         GradedDirectSumModule.__init__(
             self,
             dga.base_ring(),
-            lambda degree: Cohomology(dga, degree),
+            lambda degree: dga.cohomology(degree),
             name=f"H^*({dga})",
             extra_categories=tuple(extra_categories),
         )

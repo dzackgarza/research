@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.functors.core import (
 from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
-    Cohomology,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
@@ -44,7 +43,7 @@ class CohomologyFunctor(Functor):
         return self._degree
 
     def _apply_object(self, complex_):
-        return Cohomology(complex_, self.degree())
+        return complex_.cohomology(self.degree())
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
