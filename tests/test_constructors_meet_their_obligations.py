@@ -419,14 +419,14 @@ def _affine_divisor():
 
 
 def _discriminant_quadratic_from_data() -> Parent:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     return TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
         [[2]], [[-QQ(1) / 2]], values
     )
 
 
 def _discriminant_bilinear_from_data() -> Parent:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     return TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         [[2]], [[QQ(1) / 2]], values
     )

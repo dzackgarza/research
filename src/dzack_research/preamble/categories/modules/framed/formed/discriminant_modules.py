@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _p_adic_jordan_module_generators,
     torsion_form_isometry,
 )
-from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
+from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -967,7 +967,7 @@ def _discriminant_module(lattice):
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
     if _engine_ring(ring) is SageZZ:
-        bilinear_values = FractionFieldQuotient(ring, 1)
+        bilinear_values = FractionFieldQuotients(ring)(1)
         construction_data["bilinear_value_module"] = bilinear_values
         categories.append(DiscriminantBilinearModules(ring))
         # The form level introduces the form and the module it was defined
@@ -977,7 +977,7 @@ def _discriminant_module(lattice):
         # when the lattice is even, because it determines ``b`` and ``b`` does
         # not determine it.
         if lattice.is_even():
-            quadratic_values = FractionFieldQuotient(ring, 2)
+            quadratic_values = FractionFieldQuotients(ring)(2)
             construction_data["quadratic_value_module"] = quadratic_values
             categories.append(DiscriminantQuadraticModules(ring))
             construction_data["source_form"] = prototype.quadratic_forms(

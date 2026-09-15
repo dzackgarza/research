@@ -3,7 +3,7 @@ r"""Archive reconciliation for generic finite torsion forms and their subobjects
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FractionFieldQuotient,
+    FractionFieldQuotients,
     MatrixSpace,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
@@ -17,7 +17,7 @@ def _matrix(ring, rows):
 
 
 def test_archive_primary_part_is_a_form_bearing_subobject_of_a_generic_form() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[6]]),
         _matrix(QQ, [[QQ(1) / 6]]),
@@ -36,7 +36,7 @@ def test_archive_primary_part_is_a_form_bearing_subobject_of_a_generic_form() ->
 
 
 def test_archive_bilinear_isotropic_subobjects_retain_form_and_inclusion() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 2]]),
         _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
@@ -54,7 +54,7 @@ def test_archive_bilinear_isotropic_subobjects_retain_form_and_inclusion() -> No
 
 
 def test_archive_quadratic_isotropic_subobjects_are_not_bare_subsets() -> None:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 2]]),
         _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),

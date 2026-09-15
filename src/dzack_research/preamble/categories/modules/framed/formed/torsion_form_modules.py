@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyPresentedQuadraticFormModules,
     FormModules,
 )
-from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
+from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -1607,7 +1607,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         if cover.base_ring() is not self.base_ring():
             raise ValueError("the cokernel form must stay over the selected base ring")
         module = morphism.cokernel()
-        values = FractionFieldQuotient(self.base_ring(), 1)
+        values = FractionFieldQuotients(self.base_ring())(1)
         generators = tuple(cover.module_generators())
         gram = tuple(
             tuple(values(cover.b(left, right)) for right in generators)
@@ -1934,7 +1934,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         if cover.base_ring() is not self.base_ring():
             raise ValueError("the cokernel form must stay over the selected base ring")
         module = morphism.cokernel()
-        values = FractionFieldQuotient(self.base_ring(), 2)
+        values = FractionFieldQuotients(self.base_ring())(2)
         generators = tuple(cover.module_generators())
         gram = tuple(
             tuple(values(cover.b(left, right)) for right in generators)
@@ -2169,7 +2169,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             if not hasattr(value_module, "modulus") or value_module.modulus() != 2:
                 raise TypeError("this polarization currently requires a QQ/2ZZ-valued quadratic form")
 
-            bilinear_values = FractionFieldQuotient(self.base_ring(), 1)
+            bilinear_values = FractionFieldQuotients(self.base_ring())(1)
             quadratic_form = self.form()
             module = self.unformed_module()
 

@@ -3,15 +3,12 @@
 from importlib import import_module as _import_module
 
 _EXPORTS = {'FramedModules': ('dzack_research.preamble.categories.modules.pure.modules', 'FramedModules'),
- 'FractionFieldQuotient': ('dzack_research.preamble.categories.modules.framed.fraction_field_quotients',
-                           'FractionFieldQuotient'),
  'FractionFieldQuotients': ('dzack_research.preamble.categories.modules.framed.fraction_field_quotients',
                             'FractionFieldQuotients'),
  'FramedFreeModules': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
                        'FramedFreeModules')}
 
-__all__ = ['FractionFieldQuotient',
- 'FractionFieldQuotients',
+__all__ = ['FractionFieldQuotients',
  'FramedFreeModules',
  'FramedModules']
 

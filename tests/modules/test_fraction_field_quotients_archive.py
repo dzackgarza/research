@@ -1,6 +1,6 @@
 r"""Archive reconciliation for ``QQ / n ZZ`` as an owned module quotient."""
 
-from dzack_research.preamble.all import QQ, ZZ, FractionFieldQuotient, Lattices
+from dzack_research.preamble.all import QQ, ZZ, FractionFieldQuotients, Lattices
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -21,7 +21,7 @@ ARCHIVE_RECONCILIATIONS = (
 
 
 def test_fraction_field_quotient_retains_projection_lift_and_factorial_framing() -> None:
-    quotient = FractionFieldQuotient(ZZ, 6)
+    quotient = FractionFieldQuotients(ZZ)(6)
     projection = quotient.projection_from_fraction_field()
 
     assert quotient.modulus() == QQ(6)
@@ -37,7 +37,7 @@ def test_fraction_field_quotient_retains_projection_lift_and_factorial_framing()
 
 
 def test_fraction_field_quotient_submodules_are_actual_cyclic_subobjects() -> None:
-    quotient = FractionFieldQuotient(ZZ, 6)
+    quotient = FractionFieldQuotients(ZZ)(6)
 
     order_two = quotient.subobject_on((quotient(3),))
     order_three = quotient.subobject_on((quotient(2),))
@@ -56,7 +56,7 @@ def test_fraction_field_quotient_submodules_are_actual_cyclic_subobjects() -> No
 
 
 def test_archived_fraction_field_quotient_submodule_generators_keep_exact_orders() -> None:
-    rationals_mod_one = FractionFieldQuotient(ZZ, 1)
+    rationals_mod_one = FractionFieldQuotients(ZZ)(1)
     order_twelve = rationals_mod_one.subobject_on(
         (rationals_mod_one(QQ(1) / 4), rationals_mod_one(QQ(1) / 6))
     )
@@ -67,7 +67,7 @@ def test_archived_fraction_field_quotient_submodule_generators_keep_exact_orders
     assert 3 * generator == rationals_mod_one(QQ(1) / 4)
     assert 2 * generator == rationals_mod_one(QQ(1) / 6)
 
-    rationals_mod_two = FractionFieldQuotient(ZZ, 2)
+    rationals_mod_two = FractionFieldQuotients(ZZ)(2)
     order_three = rationals_mod_two.subobject_on((rationals_mod_two(QQ(4) / 3),))
     generator_two = order_three.embedded_module_generators()[0]
     assert order_three.cardinality() == 3
@@ -94,7 +94,7 @@ def test_archived_a2_discriminant_scales_are_value_submodules() -> None:
 
 
 def test_fraction_field_quotient_display_uses_owned_quotient_data() -> None:
-    quotient = FractionFieldQuotient(ZZ, 2)
+    quotient = FractionFieldQuotients(ZZ)(2)
     value = quotient(QQ(1) / 2)
 
     assert repr(quotient) == "Rational Field / (2)Integer Ring"

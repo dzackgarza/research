@@ -551,7 +551,6 @@ from dzack_research.preamble.categories.modules import (
     FormEmbedding,
     FormModules,
     FractionalIdeals,
-    FractionFieldQuotient,
     FractionFieldQuotients,
     FramedFreeModules,
     FramedModules,

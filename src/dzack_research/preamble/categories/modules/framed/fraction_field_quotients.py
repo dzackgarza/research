@@ -120,7 +120,18 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``Frac(R)/R``."""
-        return FractionFieldQuotient(self.base_ring())
+        return self()
+
+    def _call_(self, modulus=1):
+        r"""Return ``Frac(R) / modulus*R`` when the selected engine supports it."""
+        base_ring = self.base_ring()
+        if _engine_ring(base_ring) is not SageZZ:
+            raise NotImplementedError(
+                "the active native fraction-field quotient engine currently implements QQ / n ZZ"
+            )
+        return _from_qmodnz_backend(
+            QmodnZ(_engine_element(base_ring, base_ring(modulus)))
+        )
 
     @classmethod
     def _repr_object_names(cls):
@@ -348,16 +359,6 @@ def _from_qmodnz_backend(quotient):
     return _owned_fraction_field_quotient(quotient)
 
 
-def FractionFieldQuotient(base_ring, modulus=1):
-    r"""Return ``Frac(base_ring) / modulus*base_ring`` when natively supported."""
-    if base_ring not in OwnedRings() or _engine_ring(base_ring) is not SageZZ:
-        raise NotImplementedError(
-            "the active native fraction-field quotient engine currently implements QQ / n ZZ"
-        )
-    return _from_qmodnz_backend(QmodnZ(_engine_element(base_ring, base_ring(modulus))))
-
-
 __all__ = [
-    "FractionFieldQuotient",
     "FractionFieldQuotients",
 ]

@@ -2,7 +2,7 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FiniteGroups,
-    FractionFieldQuotient,
+    FractionFieldQuotients,
     Lattices,
     MatrixSpace,
     TorsionBilinearFormModules,
@@ -32,7 +32,7 @@ def _matrix(ring, rows):
 
 
 def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), values)
     generator = form.module_generators()[0]
 
@@ -43,7 +43,7 @@ def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
 
 
 def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     try:
         TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
     except ValueError as error:
@@ -53,7 +53,7 @@ def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
 
 
 def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
-    quadratic_values = FractionFieldQuotient(ZZ, 2)
+    quadratic_values = FractionFieldQuotients(ZZ)(2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), quadratic_values)
     generator = form.module_generators()[0]
     bilinear = form.associated_bilinear_form()
@@ -66,7 +66,7 @@ def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
 
 
 def test_quadratic_torsion_form_rejects_relation_with_nonzero_norm() -> None:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     try:
         TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
     except ValueError as error:
@@ -76,7 +76,7 @@ def test_quadratic_torsion_form_rejects_relation_with_nonzero_norm() -> None:
 
 
 def test_bilinear_invariant_factor_form_is_a_form_preserving_isomorphism() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 1]]),
         _matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
@@ -98,7 +98,7 @@ def test_bilinear_invariant_factor_form_is_a_form_preserving_isomorphism() -> No
 
 
 def test_quadratic_invariant_factor_form_is_a_form_preserving_isomorphism() -> None:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 1]]),
         _matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
@@ -116,7 +116,7 @@ def test_quadratic_invariant_factor_form_is_a_form_preserving_isomorphism() -> N
 
 
 def test_owned_quadratic_orthogonal_group_uses_live_form_automorphisms() -> None:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[8]]),
         _matrix(QQ, [[QQ(1) / 8]]),
@@ -142,7 +142,7 @@ def test_owned_quadratic_orthogonal_group_uses_live_form_automorphisms() -> None
 
 
 def test_bilinear_and_quadratic_orthogonal_groups_are_not_conflated() -> None:
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
     quadratic = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[8]]),
         _matrix(QQ, [[QQ(1) / 8]]),
@@ -179,7 +179,7 @@ def test_mixed_prime_jordan_framing_is_distinct_and_has_an_explicit_isometry() -
 
 
 def test_bilinear_anti_isometry_is_isometry_to_the_negative_twist() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         [[3]],
         [[QQ(1) / 3]],
@@ -203,7 +203,7 @@ def test_bilinear_jordan_form_preserves_the_pairing() -> None:
 
 
 def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizers() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 2]]),
         _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
@@ -231,7 +231,7 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
 
 
 def test_generic_torsion_form_reframing_and_primary_components_are_live_objects() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
         _matrix(ZZ, [[2, 0], [0, 3]]),
         _matrix(QQ, [[QQ(1) / 2, 0], [0, QQ(1) / 3]]),

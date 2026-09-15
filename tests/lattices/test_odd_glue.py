@@ -19,7 +19,7 @@ why the glue of an odd lattice is read off the bilinear forms.
 """
 
 from dzack_research.preamble.all import (
-    FractionFieldQuotient,
+    FractionFieldQuotients,
     Lattices,
     QQ,
     TorsionBilinearFormModules,
@@ -44,7 +44,7 @@ def _cubic_lattice_split():
 
 def test_the_glue_of_an_odd_lattice_is_an_anti_isometry_of_bilinear_forms() -> None:
     lattice, diagonal, complement = _cubic_lattice_split()
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
 
     assert not lattice.is_even()
     assert diagonal.module_rank() + complement.module_rank() == lattice.module_rank()
@@ -92,7 +92,7 @@ def test_an_even_lattice_glues_through_its_quadratic_discriminant_forms() -> Non
     first, second = generators[0], generators[1]
     invariant = lattice.subobject_on((first + second,))
     coinvariant = lattice.subobject_on((first - second,))
-    values = FractionFieldQuotient(ZZ, 2)
+    values = FractionFieldQuotients(ZZ)(2)
 
     assert lattice.is_even()
     assert invariant.sum(coinvariant).index() == 2
@@ -132,8 +132,8 @@ def test_a_bilinear_isotropic_class_of_u2_gives_the_odd_overlattice() -> None:
     odd_class = generators[0] + generators[1]
 
     assert discriminant.cardinality() == 4
-    assert discriminant.b(odd_class, odd_class) == FractionFieldQuotient(ZZ, 1).zero()
-    assert discriminant.q(odd_class) == FractionFieldQuotient(ZZ, 2)(QQ(1))
+    assert discriminant.b(odd_class, odd_class) == FractionFieldQuotients(ZZ)(1).zero()
+    assert discriminant.q(odd_class) == FractionFieldQuotients(ZZ)(2)(QQ(1))
 
     inclusion = lattice.overlattice(odd_class)
     enlarged = inclusion.codomain()
@@ -156,7 +156,7 @@ def test_an_odd_orthogonal_sum_glues_up_to_a_unimodular_lattice() -> None:
     assert discriminant in TorsionBilinearFormModules(ZZ)
     assert discriminant not in TorsionQuadraticFormModules(ZZ)
     assert discriminant.cardinality() == 9
-    assert discriminant.b(glue_class, glue_class) == FractionFieldQuotient(ZZ, 1).zero()
+    assert discriminant.b(glue_class, glue_class) == FractionFieldQuotients(ZZ)(1).zero()
 
     inclusion = summands.overlattice(glue_class)
     enlarged = inclusion.codomain()
