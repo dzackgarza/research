@@ -679,9 +679,6 @@ class MonomorphismArrowCategory(ArrowCategory):
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         if not super()._accepts_arrow(arrow):
             return False
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-                )
-
         return self.base_category().category_packet().Monos().accepts(arrow)
 
 
@@ -697,9 +694,6 @@ class EpimorphismArrowCategory(ArrowCategory):
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         if not super()._accepts_arrow(arrow):
             return False
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-                )
-
         return self.base_category().category_packet().Epis().accepts(arrow)
 
 
