@@ -10,10 +10,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfFamily,
-    Sets,
-)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def finite_framing(module: Parent) -> Parent:
@@ -28,10 +25,7 @@ def finite_framing(module: Parent) -> Parent:
 def coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
     r"""Return the dependent two-factor index set for a rectangular family."""
 
-    return CartesianProductOfFamily(
-        Sets.Δ[1],
-        lambda index: left_labels if int(index) == 0 else right_labels,
-    )
+    return Sets().product(indexed_family(Sets.Δ[1], lambda index: left_labels if int(index) == 0 else right_labels))
 
 
 def coerce_family_value[CoordinateValueInputT](

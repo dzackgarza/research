@@ -6,13 +6,10 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
     abelianization_adjunction,
-    alternating_algebra_functor,
     base_change_adjunction,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
     order_number_field_adjunction,
-    symmetric_algebra_functor,
-    tensor_algebra_functor,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -589,10 +586,11 @@ def test_tensor_symmetric_and_alternating_algebras_are_functorial_on_finite_free
         }
     )
 
+    modules = Modules(ZZ)
     for functor in (
-        tensor_algebra_functor(ZZ),
-        symmetric_algebra_functor(ZZ),
-        alternating_algebra_functor(ZZ),
+        modules.tensor_algebra(),
+        modules.symmetric_algebra(),
+        modules.exterior_algebra(),
     ):
         source_algebra = functor(source)
         middle_algebra = functor(middle)

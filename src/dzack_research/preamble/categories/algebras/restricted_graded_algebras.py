@@ -19,10 +19,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import (
-    CoproductOfFamily,
-    Sets,
-)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _DegreeZeroAlgebraMultiplication(Action):
@@ -110,9 +107,13 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         except (AttributeError, TypeError):
             self._preamble_algebra_generating_set = None
         else:
-            framing = CoproductOfFamily(
-                Sets.Δ[1],
-                lambda index: degree_zero_labels if int(index) == 0 else degree_one_labels,
+            framing = Sets().coproduct(
+                indexed_family(
+                    Sets.Δ[1],
+                    lambda index: (
+                        degree_zero_labels if int(index) == 0 else degree_one_labels
+                    ),
+                )
             )
             self._preamble_algebra_generating_set = framing
 

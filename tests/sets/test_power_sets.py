@@ -1,12 +1,9 @@
 
 from dzack_research.preamble.all import (
     ZZ,
-    FiniteSubsets,
-    PowerSet,
     PowerSets,
     Set,
     Sets,
-    SubsetsOfSize,
     aleph0,
     cardinal,
 )
@@ -39,7 +36,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_power_set_elements_are_subobjects_with_characteristic_morphisms() -> None:
     finite_ordinal = Sets.Δ[5]
-    subsets = PowerSet(finite_ordinal)
+    subsets = finite_ordinal.power_set()
     selected = subsets({0, 2, 4})
 
     assert selected.inclusion() is selected
@@ -54,7 +51,7 @@ def test_power_set_elements_are_subobjects_with_characteristic_morphisms() -> No
 
 def test_power_set_boolean_algebra_and_lattice_laws_hold() -> None:
     finite_ordinal = Sets.Δ[5]
-    subsets = PowerSet(finite_ordinal)
+    subsets = finite_ordinal.power_set()
     left = subsets({0, 1, 2, 3})
     right = subsets({2, 3, 4})
 
@@ -73,8 +70,8 @@ def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> 
     source = Sets.Δ[5]
     target = Sets.Δ[2]
     residue = Sets().Mor(source, target)(lambda n: target(int(n) % 3))
-    source_subsets = PowerSet(source)
-    target_subsets = PowerSet(target)
+    source_subsets = source.power_set()
+    target_subsets = target.power_set()
     selected = source_subsets({0, 1, 3, 4})
     upper_bound = target_subsets({0, 1})
 
@@ -87,21 +84,21 @@ def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> 
 
 def test_predicate_subsets_and_power_set_cardinalities_include_countable_case() -> None:
     integers = ZZ
-    nonnegative = PowerSet(integers).from_predicate(lambda n: n >= 0)
+    nonnegative = integers.power_set().from_predicate(lambda n: n >= 0)
     assert 13 in nonnegative
     assert -1 not in nonnegative
 
     finite = Sets.Δ[4]
-    assert PowerSet(finite).cardinality() == cardinal(32)
+    assert finite.power_set().cardinality() == cardinal(32)
     naturals = Sets.Δ[aleph0]
     assert naturals.cardinality() == aleph0
-    assert PowerSet(naturals).cardinality() == cardinal(2) ** aleph0
+    assert naturals.power_set().cardinality() == cardinal(2) ** aleph0
 
 
 def test_fixed_and_finite_subsets_have_the_expected_universal_membership() -> None:
     source = Sets.Δ[4]
-    pairs = SubsetsOfSize(source, 2)
-    finite_subsets = FiniteSubsets(source)
+    pairs = source.subsets_of_size(2)
+    finite_subsets = source.finite_subsets()
     pair = pairs({1, 4})
 
     assert pair in pairs
@@ -110,7 +107,7 @@ def test_fixed_and_finite_subsets_have_the_expected_universal_membership() -> No
     assert pairs.cardinality() == cardinal(10)
     assert finite_subsets.cardinality() == cardinal(32)
     assert Set(pairs).cardinality() == pairs.cardinality()
-    assert Set((1, 4)) in PowerSet(source)
+    assert Set((1, 4)) in source.power_set()
 
 
 def test_set_collection_notation_routes_through_owning_categories() -> None:
@@ -128,9 +125,9 @@ def test_set_collection_notation_routes_through_owning_categories() -> None:
     assert declared_finite.source() is source
     assert declared_functions.base() is target
     assert declared_functions.exponent() is source
-    assert PowerSet(source).base_set() is source
-    assert SubsetsOfSize(source, 2).source() is source
-    assert FiniteSubsets(source).source() is source
+    assert source.power_set().base_set() is source
+    assert source.subsets_of_size(2).source() is source
+    assert source.finite_subsets().source() is source
 
 
 def test_power_set_functors_transport_a_nonidentity_injection_both_ways() -> None:
@@ -146,10 +143,10 @@ def test_power_set_functors_transport_a_nonidentity_injection_both_ways() -> Non
     )
 
     direct = finite_power_set_functor()(injection)
-    selected = FiniteSubsets(source)({source(0), source(1)})
-    assert direct(selected) == FiniteSubsets(target)({target(0), target(2)})
+    selected = source.finite_subsets()({source(0), source(1)})
+    assert direct(selected) == target.finite_subsets()({target(0), target(2)})
 
     inverse_functor = inverse_image_power_set_functor()
     opposite = inverse_functor.opposite_morphism(injection)
     inverse = inverse_functor(opposite)
-    assert inverse(PowerSet(target)({target(2)})) == PowerSet(source)({source(1)})
+    assert inverse(target.power_set()({target(2)})) == source.power_set()({source(1)})

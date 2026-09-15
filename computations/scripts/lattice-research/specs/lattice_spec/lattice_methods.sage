@@ -4,7 +4,7 @@ assert L.is_even()
 OU = L.O() # Orthogonal group
 assert OU in Modules(ZZ)
 assert OU.is_finite()
-assert OU == ConditionSet(GL(2,ZZ), lambda g: g.T() * L.gram_matrix() * g == L.gram_matrix())
+assert OU == Sets().condition_set(GL(2,ZZ), lambda g: g.T() * L.gram_matrix() * g == L.gram_matrix())
 m_id = -1 * identity_matrix(ZZ, 2)
 m_flip = matrix(ZZ, 2, [0,1,1,0])
 assert OU == MatrixGroup(m_id, m_flip)
@@ -144,7 +144,7 @@ assert r.span() in RootLattices # Category containment, automatic promotion
 assert r.span().coxeter_diagram() == CoxeterDiagram.A(1) # Weighted graph with self-loops of weights r^2 and edges of weights derived from r_i*r_j
 
 assert L.is_hyperbolic() and L in HyperbolicLattices # Category promotion
-assert L.positive_cone() == ConditionSet(L, lambda v: all(v*gi > 0 for gi in L.gens())) # v = ae+bf with a,b>0
+assert L.positive_cone() == L.condition_set(lambda v: all(v*gi > 0 for gi in L.gens())) # v = ae+bf with a,b>0
 assert L.positive_cone().End() == L.O_plus() # By definition for hyperbolic lattices
 assert L.coxeter_diagram() == r.span().coxeter_diagram() # Delegate
 assert L.coxeter_diagram().Aut() == Groups().zero_group() # May need to be patched in

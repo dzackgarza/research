@@ -33,7 +33,6 @@ import pytest
 from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
 from dzack_research.preamble.all import (
-    ConditionSet,
     ZZ,
     CoxeterDiagrams,
     Lattices,
@@ -449,7 +448,7 @@ def test_archived_root_counts_positive_roots_and_highest_root_heights_agree() ->
     for name, (root_count, positive_count, coxeter_number) in expected.items():
         lattice = getattr(Lattices, name)
         roots = lattice.roots()
-        positive = ConditionSet(roots, lambda root: root.is_positive_root())
+        positive = roots.condition_set(lambda root: root.is_positive_root())
 
         assert roots.cardinality() == root_count
         assert positive.cardinality() == positive_count

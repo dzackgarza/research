@@ -32,7 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 _RESTRICTED_SCALAR_ALGEBRAS = {}
 
@@ -205,9 +205,11 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     r"""Construct the selected polynomial presentation of ``Res(B)`` over ``R``."""
     extension_labels = extension_ring.algebra_generating_set()
     algebra_labels = algebra.algebra_generating_set()
-    tagged_labels = CoproductOfFamily(
-        Sets.Δ[1],
-        lambda index: extension_labels if int(index) == 0 else algebra_labels,
+    tagged_labels = Sets().coproduct(
+        indexed_family(
+            Sets.Δ[1],
+            lambda index: extension_labels if int(index) == 0 else algebra_labels,
+        )
     )
     presentation_ring = SymmetricAlgebraOn(base_ring, tagged_labels)
     combined_labels = presentation_ring.algebra_generating_set()
@@ -239,14 +241,11 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     extension_presentation_ring = extension_ring.presentation_ring()
     extension_relations = extension_ring.relations()
     algebra_relations = algebra.relations()
-    relation_indices = CoproductOfFamily(
-        Sets.Δ[1],
-        lambda index: (
+    relation_indices = Sets().coproduct(indexed_family(Sets.Δ[1], lambda index: (
             extension_relations.index_set()
             if int(index) == 0
             else algebra_relations.index_set()
-        ),
-    )
+        )))
 
     extension_engine = _engine_ring(extension_ring)
 

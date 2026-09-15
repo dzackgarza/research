@@ -1,10 +1,6 @@
 r"""Exterior and divided powers converge on module-owned constructions and functors."""
 
 from dzack_research.preamble.all import ZZ, BasedFreeModule
-from dzack_research.preamble.categories.functors.free_algebras import (
-    alternating_algebra_functor,
-    divided_power_algebra_functor,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -20,12 +16,13 @@ def test_power_algebra_module_owner_and_nonidentity_functor_share_one_constructi
         }
     )
 
+    modules = source.module_category()
     for source_algebra, target_algebra, functor in (
-        (source.exterior_algebra(), target.exterior_algebra(), alternating_algebra_functor(ZZ)),
+        (source.exterior_algebra(), target.exterior_algebra(), modules.exterior_algebra()),
         (
             source.divided_power_algebra(),
             target.divided_power_algebra(),
-            divided_power_algebra_functor(ZZ),
+            modules.divided_power_algebra(),
         ),
     ):
         assert functor(source) is source_algebra

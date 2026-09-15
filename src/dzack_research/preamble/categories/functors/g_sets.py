@@ -24,8 +24,8 @@ from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfFamily,
     FiniteSets,
     Sets,
 )
@@ -155,9 +155,11 @@ class FreeGSetFunctor(Functor):
 
     def _apply_object(self, set_object):
         group_points = finite_ordered_set(self.group())
-        point_set = CartesianProductOfFamily(
-            Sets.Δ[1],
-            lambda index: group_points if int(index) == 0 else set_object,
+        point_set = Sets().product(
+            indexed_family(
+                Sets.Δ[1],
+                lambda index: group_points if int(index) == 0 else set_object,
+            )
         )
 
         def action(group_element, point):
@@ -252,10 +254,7 @@ class CofreeGSetFunctor(Functor):
         return point_set(function)
 
     def _apply_object(self, set_object):
-        point_set = CartesianProductOfFamily(
-            self.group_points(),
-            lambda _group_element: set_object,
-        )
+        point_set = Sets().product(indexed_family(self.group_points(), lambda _group_element: set_object))
 
         def action(group_element, function_point):
             return self._function_point_in_point_set(

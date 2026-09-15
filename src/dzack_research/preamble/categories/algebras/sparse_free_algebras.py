@@ -52,11 +52,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    NN,
-    CartesianProductOfFamily,
-    CoproductOfFamily,
-)
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.categories.sets.set_categories import (
     Sets as OwnedSets,
 )
@@ -315,10 +311,7 @@ class SparseFreeAlgebra(Parent):
             return cached
         if self.flavor() == "tensor":
             indices = OwnedSets.Δ[degree - 1]
-            basis = CartesianProductOfFamily(
-                indices,
-                lambda _position: self.algebra_generating_set(),
-            )
+            basis = OwnedSets().product(indexed_family(indices, lambda _position: self.algebra_generating_set()))
         else:
             basis = multisets_of_size(self.algebra_generating_set(), degree)
         self._degree_basis_cache[degree] = basis
@@ -345,10 +338,7 @@ class SparseFreeAlgebra(Parent):
 
     def module_generating_set(self):
         if self._basis is None:
-            self._basis = CoproductOfFamily(
-                NN,
-                lambda degree: self.degree_basis(int(degree)),
-            )
+            self._basis = OwnedSets().coproduct(indexed_family(NN, lambda degree: self.degree_basis(int(degree))))
         return self._basis
 
     def module_generator(self, label):

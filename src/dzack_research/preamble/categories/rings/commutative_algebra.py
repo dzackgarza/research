@@ -582,13 +582,10 @@ class ZariskiClosedSubobject(SetInclusion):
         self._defining_ideal = ideal
         from sage.sets.condition_set import ConditionSet
 
-        domain = ConditionSet(
-            spectrum,
-            lambda point: bool(
+        domain = spectrum.condition_set(lambda point: bool(
                 _engine_ideal(spectrum.ring(), self.defining_ideal())
                 <= _engine_ideal(spectrum.ring(), point.ideal())
-            ),
-        )
+            ))
         SetInclusion.__init__(self, domain, spectrum)
 
     def defining_ideal(self):
@@ -616,11 +613,8 @@ class DistinguishedOpenSubobject(SetInclusion):
         self._function = spectrum.ring()(function)
         from sage.sets.condition_set import ConditionSet
 
-        domain = ConditionSet(
-            spectrum,
-            lambda point: _engine_element(spectrum.ring(), self.function())
-            not in _engine_ideal(spectrum.ring(), point.ideal()),
-        )
+        domain = spectrum.condition_set(lambda point: _engine_element(spectrum.ring(), self.function())
+            not in _engine_ideal(spectrum.ring(), point.ideal()))
         SetInclusion.__init__(self, domain, spectrum)
 
     def function(self):

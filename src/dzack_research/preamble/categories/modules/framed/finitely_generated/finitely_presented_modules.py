@@ -58,8 +58,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
-    ConditionSet,
-    CoproductOfFamily,
     SetInclusion,
     Sets,
 )
@@ -727,10 +725,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             at_least = self.fiber_dimension_at_least(rank)
             above = self.fiber_dimension_at_least(rank + 1)
             return SetInclusion(
-                ConditionSet(
-                    spectrum,
-                    lambda point: point in at_least and point not in above,
-                ),
+                spectrum.condition_set(lambda point: point in at_least and point not in above),
                 spectrum,
             )
 
@@ -753,7 +748,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
             spectrum = self.base_ring().spectrum()
             return SetInclusion(
-                ConditionSet(spectrum, self._is_free_at_point),
+                spectrum.condition_set(self._is_free_at_point),
                 spectrum,
             )
 
@@ -2487,9 +2482,11 @@ def FinitelyPresentedModule(
     else:
         existing_labels = codomain.presentation().domain().module_generating_set() if codomain in _SelectedFinitePresentationModules(base_ring) else Sets.Δ[existing_count - 1]
         added_labels = presentation.domain().module_generating_set()
-        relation_labels = CoproductOfFamily(
-            Sets.Δ[1],
-            lambda index: existing_labels if int(index) == 0 else added_labels,
+        relation_labels = Sets().coproduct(
+            indexed_family(
+                Sets.Δ[1],
+                lambda index: existing_labels if int(index) == 0 else added_labels,
+            )
         )
         selected_presentation = _presentation_from_relation_rows(
             base_ring,

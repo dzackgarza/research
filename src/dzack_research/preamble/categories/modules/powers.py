@@ -69,10 +69,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfFamily,
-    Sets,
-)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
 
 
@@ -1176,10 +1173,7 @@ def _divided_power_invariant_inclusion(module, degree):
         )
         support = selection.support()
         positions = Sets.Δ[degree - 1]
-        word_space = CartesianProductOfFamily(
-            positions,
-            lambda _position: support,
-        )
+        word_space = Sets().product(indexed_family(positions, lambda _position: support))
         words = finite_ordered_filter(
             finite_ordered_set(word_space),
             lambda word: all(

@@ -196,7 +196,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "connection space": lambda: _connection_space(),
         "horizontal connection maps": lambda: _horizontal_connection_maps(),
         "absolute Galois group": lambda: AbsoluteGaloisGroup(GF(5)),
-        "cartesian product of sets": lambda: CartesianProductOfSets(Sets.Δ[1], Sets.Δ[2]),
+        "cartesian product of sets": lambda: Sets.Δ[1].product_with(Sets.Δ[2]),
         "polynomial ring": lambda: QQ["x"],
         "prime field": lambda: PrimeField(3),
         "a ring as an algebra over itself": lambda: ZZ,
@@ -208,9 +208,9 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "discriminant quadratic form from data": lambda: _discriminant_quadratic_from_data(),
         "discriminant bilinear form from data": lambda: _discriminant_bilinear_from_data(),
         # ---- sets ----
-        "power set": lambda: PowerSet(Sets.Δ[2]),
-        "subsets of a fixed size": lambda: SubsetsOfSize(Sets.Δ[2], 2),
-        "finite subsets": lambda: FiniteSubsets(Sets.Δ[2]),
+        "power set": lambda: Sets.Δ[2].power_set(),
+        "subsets of a fixed size": lambda: Sets.Δ[2].subsets_of_size(2),
+        "finite subsets": lambda: Sets.Δ[2].finite_subsets(),
         "ordinals": lambda: Ordinals(),
         # A cardinal is built by ``object_of`` through the owned chain like
         # any other object here -- ``type(cardinal(3))`` is
@@ -220,10 +220,10 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # The image of the forgetful functor: what a lattice's cardinality,
         # finiteness and enumeration are actually asked of.
         "set from an iterable": lambda: Set([1, 2, 3]),
-        "condition set": lambda: ConditionSet(ZZ, lambda n: n > 0),
-        "image set": lambda: ImageSet(lambda n: n, Sets.Δ[2]),
+        "condition set": lambda: ZZ.condition_set(lambda n: n > 0),
+        "image set": lambda: Sets.Δ[2].image_set(lambda n: n),
         # ---- categorical constructions ----
-        "coproduct of sets": lambda: CoproductOfSets(Sets.Δ[1], Sets.Δ[2]),
+        "coproduct of sets": lambda: Sets.Δ[1].coproduct_with(Sets.Δ[2]),
         "isomorphism homset": lambda: Sets().Iso(Sets.Δ[1], Sets.Δ[1]),
         # The five limit constructors, on one-object diagrams.  Not the direct
         # sum row above: ``Lattices(ZZ)("A1") + Lattices(ZZ)("A2")`` goes through the

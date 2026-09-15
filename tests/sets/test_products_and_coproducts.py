@@ -1,9 +1,5 @@
 
 from dzack_research.preamble.all import (
-    CartesianProductMorphism,
-    CartesianProductOfSets,
-    CoproductMorphism,
-    CoproductOfSets,
     NN,
     Sets,
     cardinal,
@@ -20,8 +16,8 @@ from dzack_research.preamble.categories.sets.set_categories import (
 def test_set_product_has_projection_and_pairing_universal_property() -> None:
     x = Sets.Δ[1]
     y = Sets.Δ[2]
-    product = CartesianProductOfSets(x, y)
-    assert product is CartesianProductOfSets(x, y)
+    product = x.product_with(y)
+    assert product is x.product_with(y)
     assert product.cardinality() == cardinal(6)
 
     source = Sets.Δ[2]
@@ -48,8 +44,8 @@ def test_cartesian_product_of_additive_monoids_has_pointwise_addition() -> None:
 def test_set_coproduct_has_injection_and_copairing_universal_property() -> None:
     x = Sets.Δ[1]
     y = Sets.Δ[2]
-    coproduct = CoproductOfSets(x, y)
-    assert coproduct is CoproductOfSets(x, y)
+    coproduct = x.coproduct_with(y)
+    assert coproduct is x.coproduct_with(y)
     assert coproduct.cardinality() == cardinal(5)
 
     target = Sets.Δ[3]
@@ -65,20 +61,18 @@ def test_set_coproduct_has_injection_and_copairing_universal_property() -> None:
 def test_product_and_coproduct_morphisms_act_componentwise() -> None:
     x = Sets.Δ[1]
     y = Sets.Δ[2]
-    xx = CartesianProductOfSets(x, y)
-    yy = CartesianProductOfSets(y, y)
+    xx = x.product_with(y)
+    yy = y.product_with(y)
     left = Sets().Mor(x, y)(lambda value: y(value + 1))
     right = Sets().Mor(y, y)(lambda value: y(2 - value))
-    carried = CartesianProductMorphism(xx, yy, lambda index: left if index == 0 else right)
+    carried = yy.from_maps(xx, lambda index: left if index == 0 else right)
     element = xx((x(0), y(1)))
     assert carried(element)[0] == y(1)
     assert carried(element)[1] == y(1)
 
-    source_sum = CoproductOfSets(x, y)
-    target_sum = CoproductOfSets(y, y)
-    carried_sum = CoproductMorphism(
-        source_sum, target_sum, lambda index: left if index == 0 else right
-    )
+    source_sum = x.coproduct_with(y)
+    target_sum = y.coproduct_with(y)
+    carried_sum = source_sum.from_maps(target_sum, lambda index: left if index == 0 else right)
     image = carried_sum(source_sum.injection(0)(x(1)))
     assert image.summand_index() == 0
     assert image.summand_element() == y(2)
@@ -107,7 +101,7 @@ def test_dependent_product_and_coproduct_have_category_owned_constructors() -> N
 def test_finite_enumerated_product_exposes_its_mixed_radix_ranking_map() -> None:
     left = Sets.Δ[1]
     right = Sets.Δ[2]
-    product = CartesianProductOfSets(left, right)
+    product = left.product_with(right)
     ranking = product.ranking_map()
     expected = (
         (left(0), right(0)),
@@ -147,7 +141,7 @@ def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
         lambda index: left_value if int(index) == 0 else right_value,
         index_of=lambda value: labels[0] if value is left_value else labels[1] if value is right_value else None,
     )
-    product = CartesianProductOfSets(factor, factor)
+    product = factor.product_with(factor)
     first = product((left_value, right_value))
     same = product((left_value, right_value))
     different = product((right_value, left_value))
@@ -160,7 +154,7 @@ def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
 def test_equal_product_points_hash_identically_across_constructor_forms() -> None:
     left = Sets.Δ[1]
     right = Sets.Δ[2]
-    product = CartesianProductOfSets(left, right)
+    product = left.product_with(right)
     positional = product((left[1], right[2]))
     def component(index):
         match int(index):
@@ -191,7 +185,7 @@ def test_finite_product_equality_uses_component_equality_before_inverse_ranking(
         lambda index: int(index),
         index_of=inverse_lookup,
     )
-    product = CartesianProductOfSets(factor, factor)
+    product = factor.product_with(factor)
     left = product((factor[0], factor[1]))
     same = product((factor[0], factor[1]))
     different = product((factor[1], factor[0]))

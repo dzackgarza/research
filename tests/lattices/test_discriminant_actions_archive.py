@@ -6,7 +6,11 @@ full triality permutes the three nonzero classes.  The assertions below use the
 live owned discriminant-image subgroups.
 """
 
-from dzack_research.preamble.all import ConditionSet, Set, Lattices, finite_ordered_set
+from dzack_research.preamble.all import (
+    Set,
+    Lattices,
+    finite_ordered_set,
+)
 
 
 def test_a4_discriminant_image_is_negation_on_c5() -> None:
@@ -31,7 +35,7 @@ def test_d4_weyl_group_is_trivial_on_glue_but_triality_is_not() -> None:
     full_image = automorphisms.discriminant_image()
     form = lattice.discriminant_group()
     zero = form.zero()
-    nonzero = ConditionSet(form, lambda element: element != zero)
+    nonzero = form.condition_set(lambda element: element != zero)
     generator = form.module_generators()[0]
 
     assert automorphisms.cardinality() == 1152

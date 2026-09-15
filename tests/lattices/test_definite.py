@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     Cardinalities,
-    ConditionSet,
     FiniteGroups,
     Lattices,
     MatrixSpace,
@@ -261,12 +260,8 @@ def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
     inclusions = lattice.even_overlattice_inclusions()
 
     assert inclusions.cardinality() == 3
-    assert ConditionSet(
-        inclusions, lambda inclusion: inclusion.index() == ZZ(1)
-    ).cardinality() == 1
-    assert ConditionSet(
-        inclusions, lambda inclusion: inclusion.index() == ZZ(2)
-    ).cardinality() == 2
+    assert inclusions.condition_set(lambda inclusion: inclusion.index() == ZZ(1)).cardinality() == 1
+    assert inclusions.condition_set(lambda inclusion: inclusion.index() == ZZ(2)).cardinality() == 2
     assert all(inclusion.codomain().is_even() for inclusion in inclusions)
     assert sum(inclusion.codomain().is_unimodular() for inclusion in inclusions) == 2
 
@@ -338,10 +333,7 @@ def test_discriminant_functor_and_representation_use_live_form_isometries() -> N
     )
 
     special = lattice.SO()
-    determinant_one = ConditionSet(
-        automorphisms,
-        lambda automorphism: automorphism.determinant() == 1,
-    )
+    determinant_one = automorphisms.condition_set(lambda automorphism: automorphism.determinant() == 1)
     assert determinant_one.cardinality() == 6
     assert all(automorphism in special for automorphism in determinant_one)
     assert all(

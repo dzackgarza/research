@@ -19,8 +19,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
-    CartesianProductOfSets,
-    CoproductOfSets,
     Sets,
     counting_ordinal,
     finite_ordinal_set,
@@ -75,7 +73,7 @@ def test_a_finite_product_is_enumerated_in_mixed_radix_order() -> None:
     r"""Position $= d_0 r_1 + d_1$: the first factor is the leading digit."""
     left = finite_ordinal_set(2)
     right = finite_ordinal_set(3)
-    product = CartesianProductOfSets(left, right)
+    product = left.product_with(right)
     ranking = product.ranking_map()
     assert product.cardinality() == 6
 
@@ -95,7 +93,7 @@ def test_a_finite_coproduct_is_enumerated_by_rank_layer() -> None:
     """
     left = finite_ordinal_set(2)
     right = finite_ordinal_set(3)
-    coproduct = CoproductOfSets(left, right)
+    coproduct = left.coproduct_with(right)
     ranking = coproduct.ranking_map()
     assert coproduct.cardinality() == 5
 
@@ -129,7 +127,7 @@ def test_a_product_of_infinite_factors_refuses_the_arrow_it_cannot_represent() -
     them.
     """
     with pytest.raises(AssertionError):
-        CartesianProductOfSets(NN, NN).ranking_map()
+        NN.product_with(NN).ranking_map()
 
 
 def test_ordered_collection_notation_routes_through_category_constructors() -> None:

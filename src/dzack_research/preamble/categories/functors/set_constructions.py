@@ -9,13 +9,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets.set_categories import (
-    ExponentialOfSets,
-    FiniteSubsets,
-    PowerSet,
-    Sets,
-    SubsetsOfSize,
-)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 
 
@@ -34,7 +28,7 @@ class ExponentialFunctor(Functor):
         return self.domain()(self.opposite_sets()(exponent), codomain)
 
     def _apply_object(self, pair):
-        return ExponentialOfSets(pair.second(), pair.first().underlying_object())
+        return pair.second().exponential(pair.first().underlying_object())
 
     def _apply_morphism(self, pair_morphism):
         source = self(pair_morphism.domain())
@@ -67,7 +61,7 @@ class InverseImagePowerSetFunctor(Functor):
         return self._opposite_sets
 
     def _apply_object(self, opposite_set):
-        return PowerSet(opposite_set.underlying_object())
+        return opposite_set.underlying_object().power_set()
 
     def _apply_morphism(self, opposite_morphism):
         source = self(opposite_morphism.domain())
@@ -87,7 +81,7 @@ class FinitePowerSetFunctor(Functor):
         super().__init__(Sets(), Sets())
 
     def _apply_object(self, source):
-        return FiniteSubsets(source)
+        return source.finite_subsets()
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -114,7 +108,7 @@ class FixedCardinalitySubsetFunctor(Functor):
         return self._subset_cardinality
 
     def _apply_object(self, source):
-        return SubsetsOfSize(source, self.subset_cardinality())
+        return source.subsets_of_size(self.subset_cardinality())
 
     def _apply_morphism(self, morphism):
         if not self.domain().admits(morphism):

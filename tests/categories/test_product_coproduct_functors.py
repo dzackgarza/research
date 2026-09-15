@@ -61,10 +61,11 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
 
 
 def test_infinite_dependent_product_accepts_callable_sections_without_enumeration() -> None:
-    from dzack_research.preamble.categories.sets import CartesianProductOfFamily, NN
+    from dzack_research.preamble.categories.sets import NN
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     bit = Sets.Δ[1]
-    product = CartesianProductOfFamily(NN, lambda _index: bit)
+    product = Sets().product(indexed_family(NN, lambda _index: bit))
     section = product(lambda index: bit(int(index) % 2))
 
     assert section[NN(0)] == bit(0)

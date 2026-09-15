@@ -7,7 +7,11 @@ reflections, fundamental weights, root signs/heights, and coroots.  The
 mere root enumeration.
 """
 
-from dzack_research.preamble.all import ConditionSet, Set, ZZ, Lattices
+from dzack_research.preamble.all import (
+    Set,
+    ZZ,
+    Lattices,
+)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage",
@@ -71,8 +75,8 @@ def test_archived_fundamental_weights_and_coroots_live_in_the_metric_dual() -> N
 def test_archived_a2_root_sign_partition_is_exact() -> None:
     lattice = Lattices(ZZ)("A2")
     roots = lattice.roots()
-    positive = ConditionSet(roots, lambda root: root.is_positive_root())
-    negative = ConditionSet(roots, lambda root: root.is_negative_root())
+    positive = roots.condition_set(lambda root: root.is_positive_root())
+    negative = roots.condition_set(lambda root: root.is_negative_root())
 
     assert roots.cardinality() == 6
     assert positive.cardinality() == 3

@@ -15,9 +15,7 @@ from dzack_research.preamble.all import (
     SymmetricAlgebras,
     TensorAlgebras,
     symmetric_algebra_adjunction,
-    symmetric_algebra_functor,
     tensor_algebra_adjunction,
-    tensor_algebra_functor,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (
     power_algebra_homset,
@@ -90,8 +88,9 @@ def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_ever
 ):
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
 
-    tensor = tensor_algebra_functor(ZZ)(module)
-    symmetric = symmetric_algebra_functor(ZZ)(module)
+    modules = module.module_category()
+    tensor = modules.tensor_algebra()(module)
+    symmetric = modules.symmetric_algebra()(module)
     tx = tensor.algebra_generator(0)
     ty = tensor.algebra_generator(1)
     sx = symmetric.algebra_generator(0)
@@ -134,7 +133,8 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
     )
     module = FinitelyPresentedModule(presentation)
 
-    for constructor in (tensor_algebra_functor(ZZ), symmetric_algebra_functor(ZZ)):
+    modules = module.module_category()
+    for constructor in (modules.tensor_algebra(), modules.symmetric_algebra()):
         algebra = constructor(module)
         x = algebra.algebra_generator("x")
         y = algebra.algebra_generator("y")
@@ -145,19 +145,21 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
             assert algebra.algebra_presentation_morphism()(relation) == algebra.zero()
 
 
-@pytest.mark.parametrize(
-    "functor_factory",
-    (tensor_algebra_functor, symmetric_algebra_functor),
-)
+@pytest.mark.parametrize("flavor", ("tensor", "symmetric"))
 def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve_composition(
-    functor_factory,
+    flavor,
 ) -> None:
     source = _cyclic(8)
     middle = _cyclic(4)
     target = _cyclic(2)
     first = source.module_category().Mor(source, middle)({0: middle.module_generator(0)})
     second = middle.module_category().Mor(middle, target)({0: target.module_generator(0)})
-    functor = functor_factory(ZZ)
+    modules = source.module_category()
+    match flavor:
+        case "tensor":
+            functor = modules.tensor_algebra()
+        case "symmetric":
+            functor = modules.symmetric_algebra()
 
     source_algebra = functor(source)
     middle_algebra = functor(middle)

@@ -12,8 +12,6 @@ import pytest
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.functors.free_algebras import (
-    alternating_algebra_functor,
-    divided_power_algebra_functor,
     symmetric_algebra_adjunction,
     tensor_algebra_adjunction,
 )
@@ -33,8 +31,9 @@ def test_archive_free_algebra_claim_is_retained_only_for_tensor_and_symmetric() 
     assert tensor.unit(source).domain() is source
     assert symmetric.unit(source).domain() is source
 
-    alternating = alternating_algebra_functor(ZZ)
-    divided = divided_power_algebra_functor(ZZ)
+    modules = source.module_category()
+    alternating = modules.exterior_algebra()
+    divided = modules.divided_power_algebra()
     with pytest.raises(AttributeError):
         alternating.unit(source)
     with pytest.raises(AttributeError):
@@ -48,7 +47,8 @@ def test_alternating_and_divided_power_functors_still_carry_nonidentity_maps() -
         {"x": 2 * target.module_generator("y")}
     )
 
-    for functor in (alternating_algebra_functor(ZZ), divided_power_algebra_functor(ZZ)):
+    modules = source.module_category()
+    for functor in (modules.exterior_algebra(), modules.divided_power_algebra()):
         carried = functor(linear)
         source_algebra = functor(source)
         target_algebra = functor(target)

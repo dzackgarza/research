@@ -1,8 +1,4 @@
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.functors.free_algebras import (
-    alternating_algebra_functor,
-    divided_power_algebra_functor,
-)
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     FinitelyPresentedTorsionModules,
@@ -76,7 +72,8 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
         {0: target.module_generator(0), 1: target.module_generator(1)}
     )
 
-    for functor in (alternating_algebra_functor(ZZ), divided_power_algebra_functor(ZZ)):
+    modules = source.module_category()
+    for functor in (modules.exterior_algebra(), modules.divided_power_algebra()):
         source_algebra = functor(source)
         first_map = functor(first)
         second_map = functor(second)

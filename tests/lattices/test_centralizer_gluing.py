@@ -17,7 +17,6 @@ same criterion and the same assembly must answer there as in the even case.
 """
 
 from dzack_research.preamble.all import (
-    ConditionSet,
     Involutions,
     Lattices,
     NamedLattices,
@@ -257,10 +256,10 @@ def test_the_a2_centralizer_splits_the_single_root_orbit_in_two() -> None:
     representatives = extension.equivariant_vector_orbit_representatives(-2)
     assert representatives.cardinality() == 2
     assert all(representative in roots for representative in representatives)
-    assert ConditionSet(
-        representatives,
-        lambda representative: involution(representative) == representative,
-    ).cardinality() == 1
+    fixed = representatives.condition_set(
+        lambda representative: involution(representative) == representative
+    )
+    assert fixed.cardinality() == 1
 
 
 def test_the_a2_centralizer_separates_two_roots_that_o_a2_identifies() -> None:

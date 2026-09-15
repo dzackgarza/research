@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     FiniteSets,
     InfiniteSets,
     PartiallyOrderedSets,
-    PowerSet,
     Sets,
     TotallyOrderedSets,
     UncountableSets,
@@ -61,7 +60,7 @@ def test_archived_countably_infinite_is_the_countable_infinite_intersection() ->
 
 
 def test_archived_uncountable_sets_are_infinite_and_not_countable() -> None:
-    continuum_set = PowerSet(NN)
+    continuum_set = NN.power_set()
 
     assert continuum_set in UncountableSets()
     assert continuum_set in InfiniteSets()

@@ -359,7 +359,7 @@ class OwnedSetMorphism(SetMorphism):
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: labels = finite_ordered_set(("a", "b"))
         sage: swap = Sets().Mor(labels, labels)(lambda x: {"a": "b", "b": "a"}[x])
-        sage: inclusion = PowerSet(labels)(("a",))
+        sage: inclusion = labels.power_set()(("a",))
         sage: inclusion("a"), (swap * inclusion)("a")
         ('a', 'b')
         sage: (swap * swap).is_identity()
@@ -1074,6 +1074,17 @@ class Sets(OwnedCategory):
             factors = (self, other)
             return Sets().product(indexed_family(Sets.Δ[1], lambda index: factors[int(index)]))
 
+        def coproduct_with(self, other: Parent) -> Parent:
+            r"""Return $X \sqcup Y$, the coproduct asked of the objects."""
+            assert other in Sets(), "a coproduct is taken between two owned sets"
+            cofactors = (self, other)
+            return Sets().coproduct(
+                indexed_family(
+                    Sets.Δ[1],
+                    lambda index: cofactors[int(index)],
+                )
+            )
+
         def __pow__(self, exponent):
             r"""Return $X^n$, the product of the constant family over `Sets.Δ[n-1]`."""
             count = int(exponent)
@@ -1420,22 +1431,22 @@ class SetInclusion(OwnedSetMorphism):
 
     def union(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
-        return PowerSet(self.codomain()).from_predicate(lambda member: member in self or member in other)
+        return self.codomain().power_set().from_predicate(lambda member: member in self or member in other)
 
     def intersection(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
-        return PowerSet(self.codomain()).from_predicate(lambda member: member in self and member in other)
+        return self.codomain().power_set().from_predicate(lambda member: member in self and member in other)
 
     def difference(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
-        return PowerSet(self.codomain()).from_predicate(lambda member: member in self and member not in other)
+        return self.codomain().power_set().from_predicate(lambda member: member in self and member not in other)
 
     def symmetric_difference(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
-        return PowerSet(self.codomain()).from_predicate(lambda member: (member in self) != (member in other))
+        return self.codomain().power_set().from_predicate(lambda member: (member in self) != (member in other))
 
     def complement(self) -> SetInclusion:
-        return PowerSet(self.codomain()).from_predicate(lambda member: member not in self)
+        return self.codomain().power_set().from_predicate(lambda member: member not in self)
 
     def __or__(self, other):
         return self.union(other)
@@ -1443,7 +1454,7 @@ class SetInclusion(OwnedSetMorphism):
     def __eq__(self, other) -> bool:
         if self is other:
             return True
-        if other not in PowerSet(self.codomain()):
+        if other not in self.codomain().power_set():
             return False
         if self._finite_members is not None and other._finite_members is not None:
             return len(self._finite_members) == len(other._finite_members) and all(member in other for member in self._finite_members)
@@ -1463,7 +1474,7 @@ class PowerSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""One object of this category."""
-        return PowerSet(Sets.Δ[2])
+        return Sets.Δ[2].power_set()
 
     def super_categories(self):
         return [Sets()]
@@ -1496,7 +1507,7 @@ class PowerSets(OwnedCategory):
         def _subset_from_predicate(self, predicate: Callable):
             truth_values = self.truth_values()
             characteristic = self.characteristic_homset()(lambda member: truth_values(int(bool(predicate(member)))))
-            domain = ConditionSet(self.base_set(), predicate)
+            domain = self.base_set().condition_set(predicate)
             return SetInclusion(domain, self.base_set(), characteristic)
 
         def from_predicate(
@@ -1516,7 +1527,7 @@ class PowerSets(OwnedCategory):
             def predicate(member):
                 return characteristic_morphism(member) == truth
 
-            domain = ConditionSet(self.base_set(), predicate)
+            domain = self.base_set().condition_set(predicate)
             return SetInclusion(domain, self.base_set(), characteristic_morphism)
 
         def _from_finite_members(self, members):
@@ -1531,7 +1542,7 @@ class PowerSets(OwnedCategory):
             frozen = tuple(normalized)
             truth_values = self.truth_values()
             characteristic = self.characteristic_homset()(lambda member: truth_values(int(member in frozen)))
-            domain = ConditionSet(self.base_set(), lambda member: member in frozen)
+            domain = self.base_set().condition_set(lambda member: member in frozen)
             return SetInclusion(domain, self.base_set(), characteristic, frozen)
 
         def __call__(self, *args, **kwargs):
@@ -1571,18 +1582,18 @@ class PowerSets(OwnedCategory):
         def inverse_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.codomain() is not self.base_set():
                 raise ValueError("inverse image requires the morphism codomain to be the base set")
-            target = PowerSet(morphism.domain())
+            target = morphism.domain().power_set()
             return Sets().Mor(self, target)(lambda subset: target.from_predicate(lambda member: morphism(member) in subset))
 
         def direct_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.domain() is not self.base_set():
                 raise ValueError("direct image requires the morphism domain to be the base set")
-            target = PowerSet(morphism.codomain())
+            target = morphism.codomain().power_set()
 
             def direct_image(subset):
                 size = subset.cardinality()
                 if not size.is_finite():
-                    image_domain = ImageSet(morphism, subset.domain())
+                    image_domain = subset.domain().image_set(morphism)
                     return SetInclusion(image_domain, morphism.codomain())
                 return target(tuple(morphism(member) for member in subset))
 
@@ -2782,7 +2793,7 @@ class UncountableSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""The power set of the natural numbers, uncountable by Cantor's theorem."""
-        return PowerSet(NN)
+        return NN.power_set()
 
     def super_categories(self):
         return [InfiniteSets()]

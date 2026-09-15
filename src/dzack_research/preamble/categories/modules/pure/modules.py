@@ -69,8 +69,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
-    CartesianProductOfFamily,
-    CoproductOfFamily,
     Sets,
 )
 from dzack_research.preamble.refine import realize_owned_category
@@ -345,10 +343,10 @@ class Modules(OwnedCategoryOverBaseRing):
             ``R``-algebras; the adjunction is ``symmetric_algebra_adjunction``.
             """
             from dzack_research.preamble.categories.functors.free_algebras import (
-                symmetric_algebra_functor,
+                _symmetric_algebra_functor,
             )
 
-            return symmetric_algebra_functor(self.base_ring())
+            return _symmetric_algebra_functor(self.base_ring())
 
         def tensor_algebra(self):
             r"""``T_R : Mod_R -> Alg_R``, the tensor-algebra functor.
@@ -357,10 +355,10 @@ class Modules(OwnedCategoryOverBaseRing):
             ``R``-algebras; the adjunction is ``tensor_algebra_adjunction``.
             """
             from dzack_research.preamble.categories.functors.free_algebras import (
-                tensor_algebra_functor,
+                _tensor_algebra_functor,
             )
 
-            return tensor_algebra_functor(self.base_ring())
+            return _tensor_algebra_functor(self.base_ring())
 
         def exterior_algebra(self):
             r"""``Lambda_R : Mod_R -> AltAlg_R``, the exterior-algebra functor.
@@ -369,18 +367,18 @@ class Modules(OwnedCategoryOverBaseRing):
             exterior powers ``Lambda^n M``.
             """
             from dzack_research.preamble.categories.functors.free_algebras import (
-                alternating_algebra_functor,
+                _alternating_algebra_functor,
             )
 
-            return alternating_algebra_functor(self.base_ring())
+            return _alternating_algebra_functor(self.base_ring())
 
         def divided_power_algebra(self):
             r"""``Gamma_R : Mod_R -> DPAlg_R``, the divided-power algebra functor."""
             from dzack_research.preamble.categories.functors.free_algebras import (
-                divided_power_algebra_functor,
+                _divided_power_algebra_functor,
             )
 
-            return divided_power_algebra_functor(self.base_ring())
+            return _divided_power_algebra_functor(self.base_ring())
 
         # An adjunction is a method of its left adjoint's domain category.
         # ``Sym_R`` and ``T_R`` are left adjoints out of ``Mod_R``, so their
@@ -1403,9 +1401,15 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             if self.inclusion().codomain() is not other.inclusion().codomain():
                 raise ValueError("a subobject sum requires one common codomain")
             codomain = self.inclusion().codomain()
-            summands = CoproductOfFamily(
-                Sets.Δ[1],
-                lambda index: self.module_generating_set() if int(index) == 0 else other.module_generating_set(),
+            summands = Sets().coproduct(
+                indexed_family(
+                    Sets.Δ[1],
+                    lambda index: (
+                        self.module_generating_set()
+                        if int(index) == 0
+                        else other.module_generating_set()
+                    ),
+                )
             )
             generators = finite_indexed_family(
                 summands,
@@ -2586,9 +2590,11 @@ class RestrictedScalarsModuleView(Parent):
             scalar_labels = extension_ring.module_generating_set()
             module_labels = module.module_generating_set()
             if scalar_labels.cardinality().is_finite() and module_labels.cardinality().is_finite():
-                self._preamble_module_generating_set = CartesianProductOfFamily(
-                    Sets.Δ[1],
-                    lambda index: scalar_labels if int(index) == 0 else module_labels,
+                self._preamble_module_generating_set = Sets().product(
+                    indexed_family(
+                        Sets.Δ[1],
+                        lambda index: scalar_labels if int(index) == 0 else module_labels,
+                    )
                 )
                 categories.append(FramedModules(base_ring))
                 if extension_ring in FinitelyGeneratedModules(base_ring) and module in FinitelyGeneratedModules(extension_ring):
@@ -2876,9 +2882,11 @@ def _tensor_label_set(factors):
     A generator of the tensor product is one generator chosen in each factor,
     which is a section of the family of generating sets over the index set.
     """
-    return CartesianProductOfFamily(
-        factors.index_set(),
-        lambda index: factors.value(index).module_generating_set(),
+    return Sets().product(
+        indexed_family(
+            factors.index_set(),
+            lambda index: factors.value(index).module_generating_set(),
+        )
     )
 
 
@@ -3208,9 +3216,11 @@ def _biproduct_label_set(factors):
     remembering which; that is a point of the coproduct of the family of
     generating sets over the index set.
     """
-    return CoproductOfFamily(
-        factors.index_set(),
-        lambda index: factors.value(index).module_generating_set(),
+    return Sets().coproduct(
+        indexed_family(
+            factors.index_set(),
+            lambda index: factors.value(index).module_generating_set(),
+        )
     )
 
 

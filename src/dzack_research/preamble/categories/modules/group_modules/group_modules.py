@@ -69,11 +69,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
+    indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    CoproductOfFamily,
-    Sets,
-)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import object_of
 
 
@@ -636,9 +634,11 @@ class ModulesOverGroupAlgebra(Modules):
             if group.is_finitely_generated() is not True:
                 raise NotImplementedError("the represented action equalizer/coequalizer requires a chosen finite group generating set")
             generators = group.group_generators()
-            indices = CoproductOfFamily(
-                Sets.Δ[1],
-                lambda side: Sets.Δ[0] if int(side) == 0 else generators,
+            indices = Sets().coproduct(
+                indexed_family(
+                    Sets.Δ[1],
+                    lambda side: Sets.Δ[0] if int(side) == 0 else generators,
+                )
             )
             coefficient_module = self.unacted_module()
             identity = coefficient_module.module_category().Mor(coefficient_module, coefficient_module).identity()

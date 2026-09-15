@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedNoetherianRings,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
 
 
 class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
@@ -109,10 +109,7 @@ def AffineCycleGroup(scheme, cycle_dimension):
             "cycle dimension lies between zero and the scheme dimension"
         )
     spectrum = ring.spectrum()
-    locus = ConditionSet(
-        spectrum,
-        lambda point: point.closure_dimension() == cycle_dimension,
-    )
+    locus = spectrum.condition_set(lambda point: point.closure_dimension() == cycle_dimension)
     integers = _own_ring(SageZZ)
     return FreshFreeModuleOn(
         integers,

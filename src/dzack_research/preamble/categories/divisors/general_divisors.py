@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
 
 
 def _integers():
@@ -52,7 +52,7 @@ def affine_normal_weil_divisor_group(scheme):
     if not ring.is_normal():
         raise TypeError("Weil divisors in this construction require a normal coordinate ring")
     spectrum = ring.spectrum()
-    prime_locus = ConditionSet(spectrum, lambda point: point.height() == 1)
+    prime_locus = spectrum.condition_set(lambda point: point.height() == 1)
     return FreshFreeModuleOn(
         _integers(),
         prime_locus,

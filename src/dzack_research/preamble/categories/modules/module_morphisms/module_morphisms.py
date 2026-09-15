@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfSets,
     EnumeratedSets,
     Sets,
 )
@@ -1594,10 +1593,7 @@ def _initialize_module_hom_parent(
     )
 
     if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-        labels = CartesianProductOfSets(
-            codomain.module_generating_set(),
-            domain.module_generating_set(),
-        )
+        labels = codomain.module_generating_set().product_with(domain.module_generating_set())
         parent._preamble_module_generating_set = labels
         parent._preamble_module_generator_function = lambda label: _matrix_unit(parent, label)
         parent._preamble_module_coefficient_function = lambda morphism: _matrix_coefficients(

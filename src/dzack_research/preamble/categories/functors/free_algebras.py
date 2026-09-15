@@ -148,12 +148,12 @@ class DividedPowerAlgebraFunctor(Functor):
 
 
 @cached_function
-def tensor_algebra_functor(base_ring) -> TensorAlgebraFunctor:
+def _tensor_algebra_functor(base_ring) -> TensorAlgebraFunctor:
     return TensorAlgebraFunctor(base_ring)
 
 
 @cached_function
-def symmetric_algebra_functor(base_ring) -> SymmetricAlgebraFunctor:
+def _symmetric_algebra_functor(base_ring) -> SymmetricAlgebraFunctor:
     return SymmetricAlgebraFunctor(base_ring)
 
 
@@ -208,24 +208,24 @@ class _ModuleAlgebraAdjunction(Adjunction):
 class TensorAlgebraAdjunction(_ModuleAlgebraAdjunction):
     r"""The adjunction \(T_R\dashv U:\mathbf{Mod}_R\leftrightarrows\mathbf{Alg}_R\)."""
 
-    _left_functor_factory = staticmethod(tensor_algebra_functor)
+    _left_functor_factory = staticmethod(_tensor_algebra_functor)
     _name = "Tensor-algebra/underlying-module"
 
 
 class SymmetricAlgebraAdjunction(_ModuleAlgebraAdjunction):
     r"""The adjunction \(\operatorname{Sym}_R\dashv U\) for commutative algebras."""
 
-    _left_functor_factory = staticmethod(symmetric_algebra_functor)
+    _left_functor_factory = staticmethod(_symmetric_algebra_functor)
     _name = "Symmetric-algebra/underlying-module"
 
 
 @cached_function
-def alternating_algebra_functor(base_ring) -> AlternatingAlgebraFunctor:
+def _alternating_algebra_functor(base_ring) -> AlternatingAlgebraFunctor:
     return AlternatingAlgebraFunctor(base_ring)
 
 
 @cached_function
-def divided_power_algebra_functor(base_ring) -> DividedPowerAlgebraFunctor:
+def _divided_power_algebra_functor(base_ring) -> DividedPowerAlgebraFunctor:
     return DividedPowerAlgebraFunctor(base_ring)
 
 
@@ -246,10 +246,6 @@ __all__ = [
     "SymmetricAlgebraFunctor",
     "TensorAlgebraAdjunction",
     "TensorAlgebraFunctor",
-    "alternating_algebra_functor",
-    "divided_power_algebra_functor",
     "symmetric_algebra_adjunction",
-    "symmetric_algebra_functor",
     "tensor_algebra_adjunction",
-    "tensor_algebra_functor",
 ]

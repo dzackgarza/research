@@ -37,7 +37,8 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
-from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily, Sets
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:
@@ -87,9 +88,11 @@ def _equivariant_hom(domain, codomain, images):
 
 
 def _coset_sum_labels(representatives, source_labels):
-    return CartesianProductOfFamily(
-        Sets.Δ[1],
-        lambda index: representatives if int(index) == 0 else source_labels,
+    return Sets().product(
+        indexed_family(
+            Sets.Δ[1],
+            lambda index: representatives if int(index) == 0 else source_labels,
+        )
     )
 
 

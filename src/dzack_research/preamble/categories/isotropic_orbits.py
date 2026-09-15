@@ -11,7 +11,7 @@ provider arrives.
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
@@ -34,7 +34,7 @@ class PrimitiveIsotropicVectorLocus(SageObject):
                 return False
             return bool(lattice.subobject_on((vector,)).is_primitive())
 
-        self._condition_set = ConditionSet(lattice, is_primitive_isotropic)
+        self._condition_set = lattice.condition_set(is_primitive_isotropic)
 
     def lattice(self):
         return self._lattice

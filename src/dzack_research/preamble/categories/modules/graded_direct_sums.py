@@ -20,7 +20,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.sets.set_categories import NN, CoproductOfFamily
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -203,9 +204,11 @@ class GradedDirectSumModule(Parent):
 
     def module_generating_set(self):
         if self._indices is None:
-            self._indices = CoproductOfFamily(
-                self.degree_index_set(),
-                lambda degree: self.graded_piece(degree).module_generating_set(),
+            self._indices = Sets().coproduct(
+                indexed_family(
+                    self.degree_index_set(),
+                    lambda degree: self.graded_piece(degree).module_generating_set(),
+                )
             )
         return self._indices
 
