@@ -1690,13 +1690,22 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.weil_divisor_group()(divisor),
             )
 
-        def log_pair(self):
-            r"""The toric log pair ``(X, sum_rho D_rho)``."""
+        def log_pair(self, boundary_divisor=None):
+            r"""Return ``(X, Delta)`` for a torus-invariant boundary ``Delta``.
+
+            With no boundary supplied, ``Delta`` is the full toric boundary
+            ``sum_rho D_rho``.
+            """
             from dzack_research.preamble.categories.schemes.log_pairs import (
-                ToricLogPair,
+                _toric_log_pair,
             )
 
-            return ToricLogPair(self, self.toric_boundary_divisor())
+            selected = (
+                self.toric_boundary_divisor()
+                if boundary_divisor is None
+                else self.torus_invariant_divisor_group()(boundary_divisor)
+            )
+            return _toric_log_pair(self, selected)
 
         def is_polarized(self) -> bool:
             r"""Whether this variety was constructed from a polytope."""

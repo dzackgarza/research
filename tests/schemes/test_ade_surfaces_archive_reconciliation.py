@@ -15,7 +15,7 @@ ARCHIVE_RECONCILIATION = {
         "ToricLogPairs.ParentMethods": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
         "ToricLogPairs.ParentMethods.scheme": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
         "ToricLogPairs.ParentMethods.boundary_divisor": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
-        "ToricLogPair": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPair": "src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py",
     },
     "disposition": "reconciled-live-owner",
 }

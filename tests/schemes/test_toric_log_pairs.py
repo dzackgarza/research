@@ -69,7 +69,6 @@ def test_the_toric_log_pair_is_log_calabi_yau() -> None:
 def test_a_smaller_boundary_is_not_log_calabi_yau() -> None:
     r"""Dropping one of the three lines leaves ``K_X + Delta = -D_rho``, so the
     pair is no longer log Calabi--Yau and the predicate is not vacuous."""
-    from dzack_research.preamble.all import ToricLogPair
 
     plane = _projective_plane()
     rays = plane.fan().cones(1)
@@ -78,7 +77,7 @@ def test_a_smaller_boundary_is_not_log_calabi_yau() -> None:
     for ray in rays:
         if ray != rays[0]:
             partial = partial + plane.torus_invariant_prime_divisor(ray)
-    pair = ToricLogPair(plane, partial)
+    pair = plane.log_pair(partial)
 
     assert not pair.is_toric_boundary()
     assert not pair.is_log_calabi_yau()

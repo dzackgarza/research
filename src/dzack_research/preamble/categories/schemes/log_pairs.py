@@ -116,7 +116,7 @@ def LogPair(log_scheme, boundary_divisor):
     )
 
 
-def ToricLogPair(toric_variety, boundary_divisor):
+def _toric_log_pair(toric_variety, boundary_divisor):
     r"""The toric log pair of a toric variety and a torus-invariant boundary."""
     base = toric_variety.scheme_base_ring()
     assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
@@ -129,4 +129,4 @@ def ToricLogPair(toric_variety, boundary_divisor):
     )
 
 
-__all__ = ["LogPair", "LogPairs", "ToricLogPair", "ToricLogPairs"]
+__all__ = ["LogPair", "LogPairs", "ToricLogPairs"]

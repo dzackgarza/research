@@ -769,7 +769,6 @@ from dzack_research.preamble.categories.schemes import (
     ToricGeometricLineBundleCohomologySpaces,
     ToricHodgeData,
     ToricIntegralSingularCohomologyGroups,
-    ToricLogPair,
     ToricLogPairs,
     ToricSchemes,
     ToricVariety,
