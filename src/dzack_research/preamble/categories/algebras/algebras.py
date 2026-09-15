@@ -2142,7 +2142,12 @@ class AlgebraMorphism(Morphism):
             composed_engine = self._engine_morphism * other._engine_morphism
             return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(composed_engine)
         if other.domain() in FramedAlgebras(other.domain().base_ring()):
-            return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
+            return (
+                Algebras(other.domain().base_ring())
+                .Associative()
+                .Unital()
+                .Mor(other.domain(), self.codomain())
+            )(lambda label: self(other(other.domain().algebra_generator(label))))
 
         if other.domain() in FramedModules(other.domain().base_ring()):
             module_map = module_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().module_generator(label))))
@@ -2252,7 +2257,12 @@ class PresentedAlgebraMorphism(Morphism):
             return NotImplemented
         if other.domain() not in FramedAlgebras(other.domain().base_ring()):
             return NotImplemented
-        return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(lambda label: self(other(other.domain().algebra_generator(label))))
+        return (
+            Algebras(other.domain().base_ring())
+            .Associative()
+            .Unital()
+            .Mor(other.domain(), self.codomain())
+        )(lambda label: self(other(other.domain().algebra_generator(label))))
 
 
 class _AlgebraHomsetCommonMethods:

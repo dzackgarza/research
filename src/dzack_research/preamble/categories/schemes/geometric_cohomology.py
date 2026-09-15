@@ -720,8 +720,6 @@ class QuarticK3IntegralTopology(SageObject):
         left = self.integral_cohomology(left_degree)
         right = self.integral_cohomology(right_degree)
         target = self.integral_cohomology(left_degree + right_degree)
-        integers = _own_ring(SageZZ)
-
         if left_degree == 0:
             return BilinearMap(
                 left,

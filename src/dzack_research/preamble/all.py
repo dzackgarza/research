@@ -186,12 +186,8 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     restrict_algebra_scalars,
     restrict_graded_algebra_scalars,
 )
-from dzack_research.preamble.categories.algebras.algebras import (
-    MatrixAlgebras,  # noqa: F401
-)
-from dzack_research.preamble.categories.coxeter_diagrams import (
-    CoxeterDiagrams,  # noqa: F401
-)
+from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras as MatrixAlgebras
+from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams as CoxeterDiagrams
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     AffineCodimensionOneChowComparison,
     AffineCycleGroup,
@@ -900,9 +896,7 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
     integral_stabilizer,
     integral_transporter,
 )
-from dzack_research.preamble.categories.rational_lattices import (
-    RationalLattices,  # noqa: F401
-)
+from dzack_research.preamble.categories.rational_lattices import RationalLattices as RationalLattices
 from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
     lorentzian_reduction_complex,
 )
@@ -1172,11 +1166,11 @@ from dzack_research.preamble.rings import (  # noqa: F401
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
-from dzack_research.preamble.utilities import (  # noqa: F401
-    lmap,
-    lzip,
-    to_var_names,
-    zipsum,
+from dzack_research.preamble.utilities import (
+    lmap as lmap,
+    lzip as lzip,
+    to_var_names as to_var_names,
+    zipsum as zipsum,
 )
 
 _language_runtime.install()

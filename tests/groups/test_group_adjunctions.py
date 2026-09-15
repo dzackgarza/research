@@ -23,8 +23,6 @@ def _assert_maps_agree(left, right, elements) -> None:
 def _nontrivial_c2_set():
     group = Groups.C(2)
     points = finite_ordered_set((ZZ(0), ZZ(1), ZZ(2)))
-    generator = group.group_generators()[0]
-
     def action(group_element, point):
         if group_element == group.one():
             return point
