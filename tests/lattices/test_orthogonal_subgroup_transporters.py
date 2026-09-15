@@ -5,7 +5,6 @@ import pytest
 from dzack_research.preamble.all import (
     ZZ,
     Lattices,
-    primitive_isotropic,
 )
 
 
@@ -63,7 +62,7 @@ def test_special_orthogonal_isotropic_equivalence_returns_a_live_transporter(
         lambda _gram, _left, _right, choice="plane": [[1, 0], [0, 1]],
     )
 
-    line = primitive_isotropic(lattice, (lattice.module_generator(0),))
+    line = lattice.primitive_isotropic_subobject(lattice.module_generator(0))
     special = lattice.SO()
     witness = special.isotropic_equivalence_witness(line, line)
     assert witness is not None

@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     MatrixSpaces,
     Set,
     finite_ordered_set,
-    primitive_isotropic,
     signature_pair,
     tensor,
 )
@@ -686,8 +685,8 @@ def test_finite_character_quotient_splits_isotropic_line_orbit_under_so_u(monkey
     first, second = lattice.module_generators()
     expected_lines = finite_ordered_set(
         (
-            primitive_isotropic(lattice, (first,)),
-            primitive_isotropic(lattice, (second,)),
+            lattice.primitive_isotropic_subobject(first),
+            lattice.primitive_isotropic_subobject(second),
         )
     )
     assert all(

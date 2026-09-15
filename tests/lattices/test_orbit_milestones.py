@@ -28,7 +28,6 @@ is the group acting on the polarized period domain.
 from dzack_research.preamble.all import (
     Involutions,
     NamedLattices,
-    primitive_isotropic,
 )
 
 
@@ -82,7 +81,7 @@ def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> No
 
     # A basis vector of a saturated plane spans a saturated line, so the
     # incidence of the Tits building is a statement about two cusps.
-    line = primitive_isotropic(lattice, (first,))
+    line = lattice.primitive_isotropic_subobject(first)
     assert line.module_rank() == 1
     assert any(line in cusp for cusp in line_cusps)
 

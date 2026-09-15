@@ -2650,12 +2650,13 @@ class Lattices(OwnedCategoryOverBaseRing):
         def primitive_isotropic_subobject(self, *basis):
             r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
 
-            The returned subobject is admitted to ``PrimitiveIsotropicSubobjects``
-            and therefore retains the parabolic, Levi, and Eichler data of its
-            own cusp.  The stated family must be nonempty and independent.
+            Admission checks saturation and vanishing of the restricted form
+            before refining the represented subobject, so a refused span leaves
+            no wrongly placed object behind.  The stated family must also be
+            nonempty and independent.
             """
             from dzack_research.preamble.categories.isotropic_parabolics import (
-                primitive_isotropic,
+                PrimitiveIsotropicSubobjects,
             )
 
             elements = tuple(
@@ -2665,7 +2666,23 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for element in basis
             )
             assert elements, "an isotropic sublattice is spanned by a nonempty family"
-            subobject = primitive_isotropic(self, elements)
+            subobject = self.subobject_on(elements)
+            assert subobject.is_primitive(), (
+                "a primitive isotropic subobject has torsion-free cokernel; the stated "
+                "span is not saturated in its lattice"
+            )
+            zero = self.base_ring().zero()
+            embedded = subobject.embedded_module_generators()
+            labels = subobject.module_generating_set()
+            assert all(
+                self.b(embedded[left], embedded[right]) == zero
+                for left in labels
+                for right in labels
+            ), "the stated span is not totally isotropic for the lattice form"
+            subobject = refine(
+                subobject,
+                PrimitiveIsotropicSubobjects(self.base_ring()),
+            )
             assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
                 "the stated isotropic family is linearly dependent, so it does not "
                 "frame the sublattice it spans"

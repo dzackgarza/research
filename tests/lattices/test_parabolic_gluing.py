@@ -1,6 +1,6 @@
 r"""Non-unimodular cusp gluing can restrict the Levi image."""
 
-from dzack_research.preamble.all import ZZ, Lattices, finite_ordered_set, primitive_isotropic
+from dzack_research.preamble.all import ZZ, Lattices, finite_ordered_set
 
 
 def _glued_divisibility_two_cusp():
@@ -17,7 +17,7 @@ def _glued_divisibility_two_cusp():
     )
     g, _f, r1, r2, r3, r4 = lattice.module_generators()
     isotropic = 2 * g - r1 - r2 - r3 - r4
-    line = primitive_isotropic(lattice, (isotropic,))
+    line = lattice.primitive_isotropic_subobject(isotropic)
     return lattice, isotropic, line
 
 

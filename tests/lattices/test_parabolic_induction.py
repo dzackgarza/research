@@ -13,14 +13,13 @@ from dzack_research.preamble.all import (
     PrimitiveIsotropicSubobjects,
     QQ,
     ZZ,
-    primitive_isotropic,
 )
 
 
 def _lorentzian_line():
     lattice = NamedLattices.E10
     generators = lattice.module_generators()
-    return lattice, generators, primitive_isotropic(lattice, (generators[0],))
+    return lattice, generators, lattice.primitive_isotropic_subobject(generators[0])
 
 
 def _acts_as_identity(restriction, module) -> bool:
@@ -116,8 +115,8 @@ def test_the_levi_descent_of_a_transvection_is_the_identity_of_the_reduction() -
 def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> None:
     lattice = NamedLattices.U + NamedLattices.U
     generators = lattice.module_generators()
-    first = primitive_isotropic(lattice, (generators[0],))
-    second = primitive_isotropic(lattice, (generators[2],))
+    first = lattice.primitive_isotropic_subobject(generators[0])
+    second = lattice.primitive_isotropic_subobject(generators[2])
 
     assert first.isotropic_reduction().is_isometric(NamedLattices.U)
     assert second.isotropic_reduction().is_isometric(NamedLattices.U)
@@ -139,7 +138,7 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
     assert vector.parent() is lattice
     assert vector.q() == 0
 
-    line = primitive_isotropic(lattice, (vector,))
+    line = lattice.primitive_isotropic_subobject(vector)
     assert line.module_rank() == 1
     assert line.inclusion().codomain() is lattice
     assert line.is_primitive()
@@ -150,7 +149,7 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
     # as a torsion invariant of L/Z(2v) and not in any basis matrix.
     assert not doubled.is_primitive()
     with pytest.raises(AssertionError):
-        primitive_isotropic(lattice, (2 * vector,))
+        lattice.primitive_isotropic_subobject(2 * vector)
 
     saturated = doubled.saturation()
     assert saturated.module_rank() == 1

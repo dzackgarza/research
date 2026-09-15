@@ -31,7 +31,6 @@ from dzack_research.preamble.all import (
     NamedLattices,
     Sterk,
     nikulin_invariants,
-    primitive_isotropic,
 )
 
 # cusp name: (named reduction lattice, Nikulin invariants of the reduction)
@@ -51,7 +50,7 @@ def test_a_sterk_cusp_reduces_to_its_recorded_rank_ten_lattice(name) -> None:
     vector = Sterk.selected_isotropic_vectors()[name]
     assert vector.q() == 0
 
-    line = primitive_isotropic(period_lattice, (vector,))
+    line = period_lattice.primitive_isotropic_subobject(vector)
     assert line.module_rank() == 1
     assert line.isotropic_perpendicular().module_rank() == 11
 
@@ -69,7 +68,7 @@ def test_a_sterk_cusp_reduces_to_its_recorded_rank_ten_lattice(name) -> None:
 def test_the_five_sterk_cusps_split_into_two_reduction_classes() -> None:
     period_lattice = NamedLattices.TEn
     reductions = {
-        name: primitive_isotropic(period_lattice, (vector,)).isotropic_reduction()
+        name: period_lattice.primitive_isotropic_subobject(vector).isotropic_reduction()
         for name, vector in Sterk.selected_isotropic_vectors().items()
     }
     assert Set(reductions) == Set(STERK_CUSPS)
@@ -120,7 +119,7 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
 
     generators = lattice.module_generators()
     for index in (0, 1):
-        line = primitive_isotropic(lattice, (generators[index],))
+        line = lattice.primitive_isotropic_subobject(generators[index])
         assert line in cusp
 
 
@@ -132,7 +131,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     # coefficient one on e makes the vector primitive.
     vector = isotropic + partner + root
     assert vector.q() == 0
-    line = primitive_isotropic(lattice, (vector,))
+    line = lattice.primitive_isotropic_subobject(vector)
     assert line.module_rank() == 1
 
     cusp = lattice.cusps()[0]
@@ -159,8 +158,8 @@ def test_the_reduction_lattice_separates_two_sterk_cusps() -> None:
     # the same question independently.
     period_lattice = NamedLattices.TEn
     vectors = Sterk.selected_isotropic_vectors()
-    first = primitive_isotropic(period_lattice, (vectors["Sterk_1"],))
-    second = primitive_isotropic(period_lattice, (vectors["Sterk_2"],))
+    first = period_lattice.primitive_isotropic_subobject(vectors["Sterk_1"])
+    second = period_lattice.primitive_isotropic_subobject(vectors["Sterk_2"])
 
     assert not first.isotropic_reduction().is_isometric(second.isotropic_reduction())
     assert not first.is_equivalent_to(second)
@@ -171,7 +170,7 @@ def test_minus_one_and_the_cone_character_split_a_lorentzian_group() -> None:
     lattice = NamedLattices.E10
     assert lattice.signature_pair().first() == 1
     generators = lattice.module_generators()
-    line = primitive_isotropic(lattice, (generators[0],))
+    line = lattice.primitive_isotropic_subobject(generators[0])
     transvection = line.eichler_transvection(generators[2])
 
     minus_identity = lattice.Aut()(

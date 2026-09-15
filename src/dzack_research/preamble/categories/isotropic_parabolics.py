@@ -44,7 +44,6 @@ from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobj
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.refine import refine
 
 
 class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
@@ -52,7 +51,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
 
     Membership states two facts about the chosen monomorphism ``iota``: the
     form of the codomain restricts to zero along it, and its cokernel is
-    torsion free.  Both are checked at admission by ``primitive_isotropic``.
+    torsion free.  Both are checked by the ambient lattice's admission method.
     """
 
     @classmethod
@@ -64,7 +63,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         plane = Lattices(self.base_ring())("U")
-        return primitive_isotropic(plane, (plane.module_generators()[0],))
+        return plane.primitive_isotropic_subobject(plane.module_generators()[0])
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
@@ -339,27 +338,4 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             )
 
 
-def primitive_isotropic(lattice, module_generating_set):
-    r"""Return the primitive totally isotropic subobject spanned by the stated elements.
-
-    Both admission conditions are decided before the subobject is refined, so
-    a refused span leaves no wrongly placed object behind in the subobject
-    cache.
-    """
-    subobject = lattice.subobject_on(module_generating_set)
-    assert subobject.is_primitive(), (
-        "a primitive isotropic subobject has torsion-free cokernel; the stated "
-        "span is not saturated in its lattice"
-    )
-    zero = lattice.base_ring().zero()
-    embedded = subobject.embedded_module_generators()
-    labels = subobject.module_generating_set()
-    assert all(
-        lattice.b(embedded[left], embedded[right]) == zero
-        for left in labels
-        for right in labels
-    ), "the stated span is not totally isotropic for the lattice form"
-    return refine(subobject, PrimitiveIsotropicSubobjects(lattice.base_ring()))
-
-
-__all__ = ["PrimitiveIsotropicSubobjects", "primitive_isotropic"]
+__all__ = ["PrimitiveIsotropicSubobjects"]
