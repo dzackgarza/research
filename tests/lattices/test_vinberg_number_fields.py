@@ -3,9 +3,6 @@ r"""Number-field Vinberg roots retain their actual maximal-order coefficients.""
 from sage.rings.qqbar import AA as SageAA
 
 from dzack_research.preamble.all import Lattices, QuadraticField
-from dzack_research.preamble.categories.hyperbolic_lattices import (
-    number_field_vinberg_lattice,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 
@@ -26,7 +23,7 @@ def _belolipetsky_lattice():
     selected = None
     for embedding in field.embeddings(real_algebraics):
         try:
-            number_field_vinberg_lattice(lattice, embedding)
+            lattice.number_field_vinberg(embedding)
         except ValueError:
             continue
         assert selected is None, "the Vinberg signature conditions select one real place"
@@ -42,7 +39,7 @@ def test_belolipetsky_number_field_vinberg_roots_stay_over_the_maximal_order() -
     assert not providers[1:]
 
     lattice, selected = _belolipetsky_lattice()
-    vinberg = number_field_vinberg_lattice(lattice, selected)
+    vinberg = lattice.number_field_vinberg(selected)
 
     assert vinberg.lattice() is lattice
     assert vinberg.real_embedding() == selected

@@ -2473,6 +2473,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError("the lattice is not even and 2-elementary")
             return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
 
+        def number_field_vinberg(self, real_embedding):
+            r"""Retain the selected real place for number-field Vinberg enumeration."""
+            from dzack_research.preamble.categories.hyperbolic_lattices import (
+                NumberFieldVinbergLattice,
+            )
+
+            return NumberFieldVinbergLattice(self, real_embedding)
+
         def reflection(self, root):
             r"""Return the integral orthogonal reflection in ``root``.
 

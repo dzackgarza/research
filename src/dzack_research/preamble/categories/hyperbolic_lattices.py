@@ -398,11 +398,6 @@ class NumberFieldVinbergLattice(SageObject):
         return f"Number-field Vinberg lattice ({self.lattice()}, {self.real_embedding()})"
 
 
-def number_field_vinberg_lattice(lattice, real_embedding):
-    r"""Equip a maximal-order lattice with the real place used by Vinberg's algorithm."""
-    return NumberFieldVinbergLattice(lattice, real_embedding)
-
-
 def _vinal_is_available() -> bool:
     from importlib.util import find_spec
 
@@ -1112,5 +1107,4 @@ __all__ = [
     "AllcockFundamentalVertex",
     "HyperbolicLattices",
     "NumberFieldVinbergLattice",
-    "number_field_vinberg_lattice",
 ]
