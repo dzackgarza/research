@@ -107,6 +107,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "hyperbolic_plane_summand_count",
         "g_set_homset",
         "free_resolution",
+        "formed_module_homset",
         "lie_algebra_homset",
         "isometry_primitive_extension",
         "lorentzian_reduction_complex",

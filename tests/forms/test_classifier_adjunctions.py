@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     ZZ,
     bilinear_free_form_adjunction,
     fibered_formed_module_homset,
-    formed_module_homset,
     module_homset,
     quadratic_free_form_adjunction,
     ring_as_module,
@@ -51,7 +50,7 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
     value_map = module_homset(values, values)(
         {0: 9 * values.module_generator(0)}
     )
-    morphism = formed_module_homset(formed, formed)((module_map, value_map))
+    morphism = formed.Mor(formed)((module_map, value_map))
 
     assert morphism.map_value(formed.b(generator, generator)) == formed.b(
         morphism(generator), morphism(generator)
@@ -193,7 +192,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     left_triangle = adjunction.counit(free_source) * free(adjunction.unit(source))
     _assert_formed_maps_agree(
         left_triangle,
-        formed_module_homset(free_source, free_source).identity(),
+        free_source.Mor(free_source).identity(),
     )
 
     right_object = underlying(free_source)

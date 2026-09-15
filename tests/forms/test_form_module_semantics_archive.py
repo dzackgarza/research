@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormModules,
     QuadraticFormModules,
     SymmetricBilinearFormModules,
-    formed_module_homset,
     is_form_morphism,
 )
 
@@ -47,7 +46,7 @@ def test_quadratic_form_module_is_not_reclassified_as_a_bilinear_form_module() -
 def test_identity_in_the_formed_homset_is_an_exact_form_morphism() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
     formed = FormModule(BilinearForms(module, ZZ)([[0, 1], [1, 0]]))
-    identity = formed_module_homset(formed, formed).identity()
+    identity = formed.Mor(formed).identity()
 
     assert identity.domain() is formed
     assert identity.codomain() is formed

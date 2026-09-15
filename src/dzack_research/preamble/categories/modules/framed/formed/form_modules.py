@@ -319,7 +319,7 @@ class FormedModuleMorphism(Morphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             raise ValueError("formed morphisms are not composable")
-        return formed_module_homset(other.domain(), self.codomain())(
+        return FormModules(other.domain().base_ring()).Mor(other.domain(), self.codomain())(
             (
                 self.module_morphism() * other.module_morphism(),
                 self.value_morphism() * other.value_morphism(),
@@ -414,7 +414,7 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
     if _represented_value_module(codomain) is not values:
         raise TypeError("a form embedding keeps the value module")
     embedding = FormEmbedding(
-        formed_module_homset(domain, codomain),
+        FormModules(domain.base_ring()).Mor(domain, codomain),
         module_homset(domain, codomain)(images),
         module_homset(values, values).identity(),
         quadratic=quadratic,
@@ -486,16 +486,6 @@ class FormedModuleHomset(CategoricalHomset):
 class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return FormedModuleHomset
-
-
-def formed_module_homset(domain, codomain) -> FormedModuleHomset:
-    ring = domain.base_ring()
-    if codomain.base_ring() != ring:
-        raise ValueError("fixed-fiber formed morphisms require one base ring")
-    category = FormModules(ring)
-    if domain not in category or codomain not in category:
-        raise TypeError("formed Hom endpoints must lie in one formed-module category")
-    return category.Mor(domain, codomain)
 
 
 def _base_change_element(module, changed_module, ring_map, element):
@@ -907,12 +897,12 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
-                return formed_module_homset(self, codomain)
+                return FormModules(self.base_ring()).Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
         def formed_hom(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
-            return formed_module_homset(self, module_morphism.codomain())(
+            return self.Mor(module_morphism.codomain())(
                 (module_morphism, value_morphism)
             )
 
@@ -926,7 +916,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             formed = FormModules(ring)
             if codomain in formed and (category is None or category.is_subcategory(formed)):
-                return formed_module_homset(self, codomain)
+                return FormModules(ring).Mor(self, codomain)
 
             return module_homset(self, codomain)
 

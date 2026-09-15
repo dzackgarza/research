@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormModule,
     _represented_value_module,
     _value_as_module_element,
-    formed_module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -127,7 +126,7 @@ class FreeBilinearFormFunctor(Functor):
             source=source.value_module(),
             target=target.value_module(),
         )
-        return formed_module_homset(source, target)((module_map, value_map))
+        return source.Mor(target)((module_map, value_map))
 
 
 class FreeQuadraticFormFunctor(Functor):
@@ -169,7 +168,7 @@ class FreeQuadraticFormFunctor(Functor):
             source=source.value_module(),
             target=target.value_module(),
         )
-        return formed_module_homset(source, target)((module_map, value_map))
+        return source.Mor(target)((module_map, value_map))
 
 
 class TautologicalFormFunctor(Functor):
@@ -195,7 +194,7 @@ class _FreeFormAdjunction(Adjunction):
 
     def counit(self, formed):
         free_formed = self.left_adjoint()(self.right_adjoint()(formed))
-        return formed_module_homset(free_formed, formed)(
+        return free_formed.Mor(formed)(
             (
                 free_formed.forget_form_morphism(),
                 self._counit_value_map(free_formed, formed),
