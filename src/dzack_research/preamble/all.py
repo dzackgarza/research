@@ -1168,8 +1168,14 @@ from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 from dzack_research.preamble.utilities import (
     lmap as lmap,
+)
+from dzack_research.preamble.utilities import (
     lzip as lzip,
+)
+from dzack_research.preamble.utilities import (
     to_var_names as to_var_names,
+)
+from dzack_research.preamble.utilities import (
     zipsum as zipsum,
 )
 
@@ -1228,11 +1234,7 @@ def _realize_owned_categories_over(_ring) -> None:
     session = globals()
     for _name in sorted(session):
         _value = session[_name]
-        if (
-            isinstance(_value, type)
-            and _value is not OwnedCategoryOverBaseRing
-            and issubclass(_value, OwnedCategoryOverBaseRing)
-        ):
+        if isinstance(_value, type) and _value is not OwnedCategoryOverBaseRing and issubclass(_value, OwnedCategoryOverBaseRing):
             _value(_ring)._cmp_key
 
 

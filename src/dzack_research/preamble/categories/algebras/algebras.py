@@ -691,12 +691,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             base = self.algebra_base_ring()
             try:
                 scalar = base(element)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
             else:
-                selected_unit = self.__dict__.get(
-                    "_preamble_algebra_unit_morphism"
-                )
+                selected_unit = self.__dict__.get("_preamble_algebra_unit_morphism")
                 if selected_unit is not None:
                     from dzack_research.preamble.categories.functors.algebra_modules import (
                         algebra_underlying_module_functor,
@@ -1028,9 +1026,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             projection = ideal.inclusion().cokernel_projection()
             quotient_module = projection.codomain()
             labels = quotient_module.module_generating_set()
-            quotient_tensor = Modules(self.base_ring()).tensor_product(
-                (quotient_module, quotient_module)
-            )
+            quotient_tensor = Modules(self.base_ring()).tensor_product((quotient_module, quotient_module))
             multiplication = quotient_tensor.from_bilinear(
                 BilinearMap(
                     quotient_module,
@@ -1401,7 +1397,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             _ = self_on_left
             try:
                 scalar = self.parent().base_ring()(actor)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 return None
             return self.parent().scalar_multiple(scalar, self)
 
@@ -1837,9 +1833,7 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
         )
 
         ring = self.base_ring()
-        return CommutativeAlgebras(ring).coproduct(
-            (SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",)))
-        )
+        return CommutativeAlgebras(ring).coproduct((SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",))))
 
     def super_categories(self):
         return [CommutativeAlgebras(self.base_ring())]
@@ -2142,20 +2136,22 @@ class AlgebraMorphism(Morphism):
             composed_engine = self._engine_morphism * other._engine_morphism
             return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(composed_engine)
         if other.domain() in FramedAlgebras(other.domain().base_ring()):
-            return (
-                Algebras(other.domain().base_ring())
-                .Associative()
-                .Unital()
-                .Mor(other.domain(), self.codomain())
-            )(lambda label: self(other(other.domain().algebra_generator(label))))
+            return (Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain()))(
+                lambda label: self(other(other.domain().algebra_generator(label)))
+            )
 
         if other.domain() in FramedModules(other.domain().base_ring()):
             module_map = module_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().module_generator(label))))
             return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(module_map)
-        return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(
-            SetMorphism(
-                Sets().Mor(other.domain(), self.codomain()),
-                lambda element: self(other(element)),
+        return (
+            Algebras(other.domain().base_ring())
+            .Associative()
+            .Unital()
+            .Mor(other.domain(), self.codomain())(
+                SetMorphism(
+                    Sets().Mor(other.domain(), self.codomain()),
+                    lambda element: self(other(element)),
+                )
             )
         )
 
@@ -2257,12 +2253,9 @@ class PresentedAlgebraMorphism(Morphism):
             return NotImplemented
         if other.domain() not in FramedAlgebras(other.domain().base_ring()):
             return NotImplemented
-        return (
-            Algebras(other.domain().base_ring())
-            .Associative()
-            .Unital()
-            .Mor(other.domain(), self.codomain())
-        )(lambda label: self(other(other.domain().algebra_generator(label))))
+        return (Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain()))(
+            lambda label: self(other(other.domain().algebra_generator(label)))
+        )
 
 
 class _AlgebraHomsetCommonMethods:
@@ -2288,21 +2281,15 @@ def _corestrict_algebra_morphism_to_center(morphism):
     codomain = morphism.codomain()
     base = domain.base_ring()
     if domain not in FramedAlgebras(base):
-        raise NotImplementedError(
-            "corestriction to the centre requires a chosen algebra generating set of the source"
-        )
+        raise NotImplementedError("corestriction to the centre requires a chosen algebra generating set of the source")
     labels = domain.algebra_generating_set()
     if not labels.cardinality().is_finite():
-        raise NotImplementedError(
-            "corestriction to the centre requires finitely many selected algebra generators"
-        )
+        raise NotImplementedError("corestriction to the centre requires finitely many selected algebra generators")
     center = codomain.ring_center()
     for label in labels:
         image = morphism(domain.algebra_generator(label))
         if image not in center:
-            raise ValueError(
-                f"the image of algebra generator {label} is not central in {codomain}"
-            )
+            raise ValueError(f"the image of algebra generator {label} is not central in {codomain}")
     return ring_morphism(domain, center, lambda element: center(morphism(element)))
 
 
@@ -2557,7 +2544,6 @@ def refine_algebra(
     )
 
 
-
 @cached_function(key=lambda ring, structure_map: (id(ring), id(structure_map)))
 def algebra_structure_view(ring, structure_map):
     r"""Return ``ring`` read as an algebra through the explicit map ``R -> ring``.
@@ -2581,6 +2567,7 @@ def algebra_structure_view(ring, structure_map):
     )
     view._preamble_algebra_structure_ring = selected_ring
     return view
+
 
 def _require_endomorphism_multiplication(multiplication, ring):
     from sage.categories.map import Map
@@ -2786,11 +2773,8 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
                     engine_base.one(),
                     *tuple(engine_base.gens()),
                 )
-                native_matches_owned = all(
-                    native_base_map(scalar) == engine_base_image(scalar)
-                    for scalar in determining_scalars
-                )
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                native_matches_owned = all(native_base_map(scalar) == engine_base_image(scalar) for scalar in determining_scalars)
+            except AttributeError, NotImplementedError, TypeError, ValueError:
                 native_matches_owned = False
         else:
             native_matches_owned = False
@@ -2827,7 +2811,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         try:
             engine_labels = tuple(engine_domain.gens())
             selected_size = int(labels.cardinality().finite_value())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             engine_labels = ()
             selected_size = -1
         if engine_labels and len(engine_labels) != selected_size:
@@ -2850,11 +2834,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
             for engine_generator in engine_labels:
                 owned_generator = domain._from_engine_element(engine_generator)
                 selected_lift = domain.lift_to_presentation(owned_generator)
-                private_images.append(
-                    presentation_map(
-                        _engine_element(presentation, selected_lift)
-                    )
-                )
+                private_images.append(presentation_map(_engine_element(presentation, selected_lift)))
             return engine_domain.hom(
                 private_images,
                 engine_codomain,

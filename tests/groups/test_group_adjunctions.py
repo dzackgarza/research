@@ -1,4 +1,3 @@
-
 from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
@@ -23,6 +22,7 @@ def _assert_maps_agree(left, right, elements) -> None:
 def _nontrivial_c2_set():
     group = Groups.C(2)
     points = finite_ordered_set((ZZ(0), ZZ(1), ZZ(2)))
+
     def action(group_element, point):
         if group_element == group.one():
             return point
@@ -37,11 +37,7 @@ def _nontrivial_c2_set():
 
 def _s3_c2_sign_module():
     supergroup = Groups.S(3)
-    subgroup_generator = next(
-        group_generator
-        for group_generator in supergroup.group_generators()
-        if group_generator.order() == 2
-    )
+    subgroup_generator = next(group_generator for group_generator in supergroup.group_generators() if group_generator.order() == 2)
     subgroup = supergroup.subgroup([subgroup_generator])
     module = BasedFreeModule(ZZ, finite_ordered_set(("m",)))
 
@@ -53,11 +49,7 @@ def _s3_c2_sign_module():
 
 def _s3_c2_torsion_sign_module():
     supergroup = Groups.S(3)
-    subgroup_generator = next(
-        group_generator
-        for group_generator in supergroup.group_generators()
-        if group_generator.order() == 2
-    )
+    subgroup_generator = next(group_generator for group_generator in supergroup.group_generators() if group_generator.order() == 2)
     subgroup = supergroup.subgroup([subgroup_generator])
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
 
@@ -80,32 +72,22 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     recovered_orbit_map = orbit_adjunction.hom_set_isomorphism_inverse(equivariant)
     _assert_maps_agree(orbit_map, recovered_orbit_map, orbits)
 
-    acted_endomorphism = acted.Mor(acted)(
-        lambda point: acted.act(group_generator, point)
-    )
-    left, right = orbit_adjunction.unit_transformation().naturality_square(
-        acted_endomorphism
-    )
+    acted_endomorphism = acted.Mor(acted)(lambda point: acted.act(group_generator, point))
+    left, right = orbit_adjunction.unit_transformation().naturality_square(acted_endomorphism)
     _assert_maps_agree(left, right, acted)
 
     target_map = Sets().Mor(target, second_target)(lambda point: ZZ(30) if point == 10 else ZZ(40))
-    left, right = orbit_adjunction.counit_transformation().naturality_square(
-        target_map
-    )
+    left, right = orbit_adjunction.counit_transformation().naturality_square(target_map)
     _assert_maps_agree(left, right, tuple(left.domain()))
 
     trivial_target = orbit_adjunction.right_adjoint()(target)
-    first_triangle = orbit_adjunction.right_adjoint()(
-        orbit_adjunction.counit(target)
-    ) * orbit_adjunction.unit(trivial_target)
+    first_triangle = orbit_adjunction.right_adjoint()(orbit_adjunction.counit(target)) * orbit_adjunction.unit(trivial_target)
     _assert_maps_agree(
         first_triangle,
         trivial_target.Mor(trivial_target).identity(),
         trivial_target,
     )
-    second_triangle = orbit_adjunction.counit(orbits) * orbit_adjunction.left_adjoint()(
-        orbit_adjunction.unit(acted)
-    )
+    second_triangle = orbit_adjunction.counit(orbits) * orbit_adjunction.left_adjoint()(orbit_adjunction.unit(acted))
     for orbit in orbits:
         assert second_triangle(orbit) == orbit
 
@@ -119,25 +101,17 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     assert tuple(fixed_adjunction.right_adjoint()(acted)) == (ZZ(2),)
 
     source_endomorphism = Sets().Mor(source, source)(lambda point: ZZ(60) if point == 50 else ZZ(50))
-    left, right = fixed_adjunction.unit_transformation().naturality_square(
-        source_endomorphism
-    )
+    left, right = fixed_adjunction.unit_transformation().naturality_square(source_endomorphism)
     _assert_maps_agree(left, right, source)
 
-    left, right = fixed_adjunction.counit_transformation().naturality_square(
-        acted_endomorphism
-    )
+    left, right = fixed_adjunction.counit_transformation().naturality_square(acted_endomorphism)
     _assert_maps_agree(left, right, tuple(left.domain()))
 
     fixed_source = fixed_adjunction.right_adjoint()(trivial_source)
-    first_triangle = fixed_adjunction.right_adjoint()(
-        fixed_adjunction.counit(trivial_source)
-    ) * fixed_adjunction.unit(fixed_source)
+    first_triangle = fixed_adjunction.right_adjoint()(fixed_adjunction.counit(trivial_source)) * fixed_adjunction.unit(fixed_source)
     for point in fixed_source:
         assert first_triangle(point) == point
-    second_triangle = fixed_adjunction.counit(trivial_source) * fixed_adjunction.left_adjoint()(
-        fixed_adjunction.unit(source)
-    )
+    second_triangle = fixed_adjunction.counit(trivial_source) * fixed_adjunction.left_adjoint()(fixed_adjunction.unit(source))
     for point in trivial_source:
         assert second_triangle(point) == point
 
@@ -149,11 +123,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
 
     free_adjunction = FiniteSets().free_underlying_adjunction(group)
     free = free_adjunction.left_adjoint()(source)
-    equivariant = free.Mor(acted)(
-        lambda point: acted.act(
-            point[0], ZZ(0) if point[1] == 10 else ZZ(2)
-        )
-    )
+    equivariant = free.Mor(acted)(lambda point: acted.act(point[0], ZZ(0) if point[1] == 10 else ZZ(2)))
     transpose = free_adjunction.hom_set_isomorphism_forward(equivariant)
     recovered = free_adjunction.hom_set_isomorphism_inverse(transpose)
     _assert_maps_agree(equivariant, recovered, free)
@@ -163,53 +133,33 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     _assert_maps_agree(left, right, source)
 
     group_generator = group.group_generators()[0]
-    acted_endomorphism = acted.Mor(acted)(
-        lambda point: acted.act(group_generator, point)
-    )
-    left, right = free_adjunction.counit_transformation().naturality_square(
-        acted_endomorphism
-    )
+    acted_endomorphism = acted.Mor(acted)(lambda point: acted.act(group_generator, point))
+    left, right = free_adjunction.counit_transformation().naturality_square(acted_endomorphism)
     _assert_maps_agree(left, right, tuple(left.domain()))
 
-    first_triangle = free_adjunction.right_adjoint()(
-        free_adjunction.counit(acted)
-    ) * free_adjunction.unit(free_adjunction.right_adjoint()(acted))
+    first_triangle = free_adjunction.right_adjoint()(free_adjunction.counit(acted)) * free_adjunction.unit(free_adjunction.right_adjoint()(acted))
     for point in acted:
         assert first_triangle(point) == point
-    second_triangle = free_adjunction.counit(free) * free_adjunction.left_adjoint()(
-        free_adjunction.unit(source)
-    )
+    second_triangle = free_adjunction.counit(free) * free_adjunction.left_adjoint()(free_adjunction.unit(source))
     for point in free:
         assert second_triangle(point) == point
 
     cofree_adjunction = FiniteGSets(group).underlying_cofree_adjunction()
     arbitrary_set_map = Sets().Mor(acted, source)(lambda point: ZZ(10) if point in (0, 2) else ZZ(20))
-    cofree_transpose = cofree_adjunction.hom_set_isomorphism_forward(
-        arbitrary_set_map
-    )
-    recovered_set_map = cofree_adjunction.hom_set_isomorphism_inverse(
-        cofree_transpose
-    )
+    cofree_transpose = cofree_adjunction.hom_set_isomorphism_forward(arbitrary_set_map)
+    recovered_set_map = cofree_adjunction.hom_set_isomorphism_inverse(cofree_transpose)
     _assert_maps_agree(arbitrary_set_map, recovered_set_map, acted)
 
-    left, right = cofree_adjunction.unit_transformation().naturality_square(
-        acted_endomorphism
-    )
+    left, right = cofree_adjunction.unit_transformation().naturality_square(acted_endomorphism)
     _assert_maps_agree(left, right, acted)
-    left, right = cofree_adjunction.counit_transformation().naturality_square(
-        set_map
-    )
+    left, right = cofree_adjunction.counit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, tuple(left.domain()))
 
     cofree_source = cofree_adjunction.right_adjoint()(source)
-    first_triangle = cofree_adjunction.right_adjoint()(
-        cofree_adjunction.counit(source)
-    ) * cofree_adjunction.unit(cofree_source)
+    first_triangle = cofree_adjunction.right_adjoint()(cofree_adjunction.counit(source)) * cofree_adjunction.unit(cofree_source)
     for function_point in cofree_source:
         assert first_triangle(function_point) == function_point
-    second_triangle = cofree_adjunction.counit(
-        cofree_adjunction.left_adjoint()(acted)
-    ) * cofree_adjunction.left_adjoint()(cofree_adjunction.unit(acted))
+    second_triangle = cofree_adjunction.counit(cofree_adjunction.left_adjoint()(acted)) * cofree_adjunction.left_adjoint()(cofree_adjunction.unit(acted))
     for point in acted:
         assert second_triangle(point) == point
 
@@ -233,47 +183,29 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     left, right = adjunction.unit_transformation().naturality_square(source_map)
     _assert_maps_agree(left, right, source)
 
-    target_endomorphism = target.Mor(target)(
-        {target_generator: target_generator**2}
-    )
-    left, right = adjunction.counit_transformation().naturality_square(
-        target_endomorphism
-    )
+    target_endomorphism = target.Mor(target)({target_generator: target_generator**2})
+    left, right = adjunction.counit_transformation().naturality_square(target_endomorphism)
     for group_element in left.domain().free_basis():
         free_generator = left.domain().free_generator(group_element)
         assert left(free_generator) == right(free_generator)
 
-    first_triangle = adjunction.right_adjoint()(
-        adjunction.counit(target)
-    ) * adjunction.unit(adjunction.right_adjoint()(target))
+    first_triangle = adjunction.right_adjoint()(adjunction.counit(target)) * adjunction.unit(adjunction.right_adjoint()(target))
     for group_element in target:
         assert first_triangle(group_element) == group_element
 
-    second_triangle = adjunction.counit(free) * adjunction.left_adjoint()(
-        adjunction.unit(source)
-    )
+    second_triangle = adjunction.counit(free) * adjunction.left_adjoint()(adjunction.unit(source))
     for point in source:
         assert second_triangle(free.free_generator(point)) == free.free_generator(point)
 
     infinite_free = adjunction.left_adjoint()(ZZ)
     infinite_set_morphism = Sets().Mor(ZZ, target)(lambda integer: target_generator ** (integer % 3))
-    infinite_group_morphism = adjunction.hom_set_isomorphism_inverse(
-        infinite_set_morphism
-    )
-    infinite_recovered = adjunction.hom_set_isomorphism_forward(
-        infinite_group_morphism
-    )
+    infinite_group_morphism = adjunction.hom_set_isomorphism_inverse(infinite_set_morphism)
+    infinite_recovered = adjunction.hom_set_isomorphism_forward(infinite_group_morphism)
     for integer in (ZZ(-5), ZZ(-1), ZZ(0), ZZ(2), ZZ(7)):
         assert infinite_recovered(integer) == infinite_set_morphism(integer)
     word = infinite_free.free_generator(2) * infinite_free.free_generator(-1) ** -2 * infinite_free.free_generator(7)
-    assert infinite_group_morphism(word) == (
-        infinite_set_morphism(2)
-        * infinite_set_morphism(-1) ** -2
-        * infinite_set_morphism(7)
-    )
-    infinite_triangle = adjunction.counit(infinite_free) * adjunction.left_adjoint()(
-        adjunction.unit(ZZ)
-    )
+    assert infinite_group_morphism(word) == (infinite_set_morphism(2) * infinite_set_morphism(-1) ** -2 * infinite_set_morphism(7))
+    infinite_triangle = adjunction.counit(infinite_free) * adjunction.left_adjoint()(adjunction.unit(ZZ))
     for integer in (ZZ(-3), ZZ(0), ZZ(4)):
         assert infinite_triangle(infinite_free.free_generator(integer)) == infinite_free.free_generator(integer)
 
@@ -283,47 +215,27 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(supergroup)
     induced = adjunction.left_adjoint()(module)
 
-    doubled = induced.Mor(induced)(
-        {
-            label: 2 * induced.module_generator(label)
-            for label in induced.module_generating_set()
-        }
-    )
+    doubled = induced.Mor(induced)({label: 2 * induced.module_generator(label) for label in induced.module_generating_set()})
     transpose = adjunction.hom_set_isomorphism_forward(doubled)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose)
     _assert_maps_agree(recovered, doubled, induced.module_generators())
 
-    module_endomorphism = module.Mor(module)(
-        {"m": 3 * module.module_generator("m")}
-    )
-    left, right = adjunction.unit_transformation().naturality_square(
-        module_endomorphism
-    )
+    module_endomorphism = module.Mor(module)({"m": 3 * module.module_generator("m")})
+    left, right = adjunction.unit_transformation().naturality_square(module_endomorphism)
     _assert_maps_agree(left, right, module.module_generators())
 
-    induced_endomorphism = induced.Mor(induced)(
-        {
-            label: 5 * induced.module_generator(label)
-            for label in induced.module_generating_set()
-        }
-    )
-    left, right = adjunction.counit_transformation().naturality_square(
-        induced_endomorphism
-    )
+    induced_endomorphism = induced.Mor(induced)({label: 5 * induced.module_generator(label) for label in induced.module_generating_set()})
+    left, right = adjunction.counit_transformation().naturality_square(induced_endomorphism)
     _assert_maps_agree(left, right, left.domain().module_generators())
 
-    first_triangle = adjunction.right_adjoint()(
-        adjunction.counit(induced)
-    ) * adjunction.unit(adjunction.right_adjoint()(induced))
+    first_triangle = adjunction.right_adjoint()(adjunction.counit(induced)) * adjunction.unit(adjunction.right_adjoint()(induced))
     _assert_maps_agree(
         first_triangle,
         first_triangle.domain().Mor(first_triangle.domain()).identity(),
         first_triangle.domain().module_generators(),
     )
 
-    second_triangle = adjunction.counit(induced) * adjunction.left_adjoint()(
-        adjunction.unit(module)
-    )
+    second_triangle = adjunction.counit(induced) * adjunction.left_adjoint()(adjunction.unit(module))
     _assert_maps_agree(
         second_triangle,
         induced.Mor(induced).identity(),
@@ -336,38 +248,20 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     adjunction = Modules(ZZ[supergroup]).restriction_coinduction_adjunction(subgroup)
     coinduced = adjunction.right_adjoint()(module)
 
-    doubled = coinduced.Mor(coinduced)(
-        {
-            label: 2 * coinduced.module_generator(label)
-            for label in coinduced.module_generating_set()
-        }
-    )
+    doubled = coinduced.Mor(coinduced)({label: 2 * coinduced.module_generator(label) for label in coinduced.module_generating_set()})
     transpose = adjunction.hom_set_isomorphism_inverse(doubled)
     recovered = adjunction.hom_set_isomorphism_forward(transpose)
     _assert_maps_agree(recovered, doubled, coinduced.module_generators())
 
-    coinduced_endomorphism = coinduced.Mor(coinduced)(
-        {
-            label: 3 * coinduced.module_generator(label)
-            for label in coinduced.module_generating_set()
-        }
-    )
-    left, right = adjunction.unit_transformation().naturality_square(
-        coinduced_endomorphism
-    )
+    coinduced_endomorphism = coinduced.Mor(coinduced)({label: 3 * coinduced.module_generator(label) for label in coinduced.module_generating_set()})
+    left, right = adjunction.unit_transformation().naturality_square(coinduced_endomorphism)
     _assert_maps_agree(left, right, coinduced.module_generators())
 
-    module_endomorphism = module.Mor(module)(
-        {"m": 5 * module.module_generator("m")}
-    )
-    left, right = adjunction.counit_transformation().naturality_square(
-        module_endomorphism
-    )
+    module_endomorphism = module.Mor(module)({"m": 5 * module.module_generator("m")})
+    left, right = adjunction.counit_transformation().naturality_square(module_endomorphism)
     _assert_maps_agree(left, right, left.domain().module_generators())
 
-    first_triangle = adjunction.right_adjoint()(
-        adjunction.counit(module)
-    ) * adjunction.unit(coinduced)
+    first_triangle = adjunction.right_adjoint()(adjunction.counit(module)) * adjunction.unit(coinduced)
     _assert_maps_agree(
         first_triangle,
         coinduced.Mor(coinduced).identity(),
@@ -375,9 +269,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     )
 
     restricted = adjunction.left_adjoint()(coinduced)
-    second_triangle = adjunction.counit(restricted) * adjunction.left_adjoint()(
-        adjunction.unit(coinduced)
-    )
+    second_triangle = adjunction.counit(restricted) * adjunction.left_adjoint()(adjunction.unit(coinduced))
     _assert_maps_agree(
         second_triangle,
         restricted.Mor(restricted).identity(),
@@ -397,12 +289,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     assert all(induced_invariants[position] == ZZ(4) for position in range(3))
     assert all(generator.additive_order() == 4 for generator in induced.module_generators())
 
-    induced_doubling = induced.Mor(induced)(
-        {
-            label: 2 * induced.module_generator(label)
-            for label in induced.module_generating_set()
-        }
-    )
+    induced_doubling = induced.Mor(induced)({label: 2 * induced.module_generator(label) for label in induced.module_generating_set()})
     induction_transpose = induction.hom_set_isomorphism_forward(induced_doubling)
     induction_recovered = induction.hom_set_isomorphism_inverse(induction_transpose)
     _assert_maps_agree(
@@ -410,9 +297,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
         induced_doubling,
         induced.module_generators(),
     )
-    induction_triangle = induction.counit(induced) * induction.left_adjoint()(
-        induction.unit(module)
-    )
+    induction_triangle = induction.counit(induced) * induction.left_adjoint()(induction.unit(module))
     _assert_maps_agree(
         induction_triangle,
         induced.Mor(induced).identity(),
@@ -423,32 +308,18 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     coinduced = coinduction.right_adjoint()(module)
     coinduced_invariants = coinduced.invariant_factors()
     assert coinduced_invariants.cardinality() == 3
-    assert all(
-        coinduced_invariants[position] == ZZ(4)
-        for position in range(3)
-    )
+    assert all(coinduced_invariants[position] == ZZ(4) for position in range(3))
     assert all(generator.additive_order() == 4 for generator in coinduced.module_generators())
 
-    coinduced_doubling = coinduced.Mor(coinduced)(
-        {
-            label: 2 * coinduced.module_generator(label)
-            for label in coinduced.module_generating_set()
-        }
-    )
-    coinduction_transpose = coinduction.hom_set_isomorphism_inverse(
-        coinduced_doubling
-    )
-    coinduction_recovered = coinduction.hom_set_isomorphism_forward(
-        coinduction_transpose
-    )
+    coinduced_doubling = coinduced.Mor(coinduced)({label: 2 * coinduced.module_generator(label) for label in coinduced.module_generating_set()})
+    coinduction_transpose = coinduction.hom_set_isomorphism_inverse(coinduced_doubling)
+    coinduction_recovered = coinduction.hom_set_isomorphism_forward(coinduction_transpose)
     _assert_maps_agree(
         coinduction_recovered,
         coinduced_doubling,
         coinduced.module_generators(),
     )
-    coinduction_triangle = coinduction.right_adjoint()(
-        coinduction.counit(module)
-    ) * coinduction.unit(coinduced)
+    coinduction_triangle = coinduction.right_adjoint()(coinduction.counit(module)) * coinduction.unit(coinduced)
     _assert_maps_agree(
         coinduction_triangle,
         coinduced.Mor(coinduced).identity(),

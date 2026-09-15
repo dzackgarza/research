@@ -74,10 +74,7 @@ class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
             return self._preamble_geometric_cohomology_weight
 
         def comparison_description(self):
-            return (
-                "H^i(X,O_X(D))_m is identified with shifted reduced simplicial "
-                "cohomology H~^(i-1)(V_{D,m})"
-            )
+            return "H^i(X,O_X(D))_m is identified with shifted reduced simplicial cohomology H~^(i-1)(V_{D,m})"
 
 
 class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
@@ -136,10 +133,7 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             return getattr(self, "_preamble_geometric_cover", None)
 
         def acyclicity_reason(self):
-            return (
-                "quasi-coherent sheaves on an affine scheme have no higher "
-                "cohomology; this is the one-chart affine Cech resolution"
-            )
+            return "quasi-coherent sheaves on an affine scheme have no higher cohomology; this is the one-chart affine Cech resolution"
 
         def augmentation(self):
             r"""Return the identification of degree zero with global sections."""
@@ -168,9 +162,7 @@ def AffineGeometricCohomologyComplex(sheaf, cover=None):
             raise ValueError("the selected affine cover belongs to a different scheme")
         one = sheaf.scheme().coordinate_algebra().one()
         if any(cover.defining_element(index) != one for index in cover.atlas()):
-            raise NotImplementedError(
-                "the represented contracted Cech comparison currently requires unit charts D(1)"
-            )
+            raise NotImplementedError("the represented contracted Cech comparison currently requires unit charts D(1)")
     module = sheaf.global_sections()
     base = module.base_ring()
     zero = FreshFreeModuleOn(base, finite_ordered_set(()))
@@ -195,9 +187,7 @@ def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
     complex_ = AffineGeometricCohomologyComplex(sheaf, cover=cover)
     scalar = complex_.base_ring()(scalar)
-    cochain_map = scalar * CochainComplexes(complex_.base_ring()).Mor(
-        complex_, complex_
-    ).identity()
+    cochain_map = scalar * CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
     return cohomology_functor(complex_.base_ring(), int(degree))(cochain_map)
 
 
@@ -224,9 +214,7 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
         ).identity()
         self._source_complex = source
         self._target_complex = target
-        self._cochain_map = CochainComplexes(source.base_ring()).Mor(source, target)(
-            {0: degree_zero}
-        )
+        self._cochain_map = CochainComplexes(source.base_ring()).Mor(source, target)({0: degree_zero})
         self._cohomology_map = cohomology_functor(
             source.base_ring(),
             self._degree,
@@ -287,13 +275,9 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
             **rest,
         ) -> None:
             self._preamble_topological_scheme = topological_scheme
-            self._preamble_topological_cohomological_degree = int(
-                topological_cohomological_degree
-            )
+            self._preamble_topological_cohomological_degree = int(topological_cohomological_degree)
             self._preamble_topological_cohomology_theory = topological_cohomology_theory
-            self._preamble_topological_realization_description = (
-                topological_realization_description
-            )
+            self._preamble_topological_realization_description = topological_realization_description
             super().__init__(**rest)
 
         def topological_scheme(self):
@@ -405,18 +389,10 @@ def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
     mathematical set elements rather than Python tuple/integer payloads.
     """
     bidegrees = cartesian_product_of((NN, NN))
-    labels = finite_ordered_set(
-        tuple(
-            bidegrees((NN(p), NN(degree - p)))
-            for p in p_values
-            if 0 <= degree - p <= q_bound
-        )
-    )
+    labels = finite_ordered_set(tuple(bidegrees((NN(p), NN(degree - p))) for p in p_values if 0 <= degree - p <= q_bound))
     return finite_indexed_family(
         labels,
-        lambda bidegree: NN(
-            hodge_data.hodge_number(int(bidegree[0]), int(bidegree[1]))
-        ),
+        lambda bidegree: NN(hodge_data.hodge_number(int(bidegree[0]), int(bidegree[1]))),
         name=f"Hodge numbers in degree {degree}",
     )
 
@@ -465,13 +441,7 @@ def _matrix_morphism(base, source, target, matrix):
 
     def image(source_label):
         column = source_labels.index(source_label)
-        return target.linear_combination(
-            {
-                target_label: base(int(matrix[row, column]))
-                for row, target_label in enumerate(target_labels)
-                if matrix[row, column]
-            }
-        )
+        return target.linear_combination({target_label: base(int(matrix[row, column])) for row, target_label in enumerate(target_labels) if matrix[row, column]})
 
     return module_homset(source, target)(image)
 
@@ -486,9 +456,7 @@ def _toric_weight_simplicial_complex(scheme, divisor, weight):
     owned cochain complex.
     """
     engine_divisor = scheme._engine_toric_divisor(divisor)
-    return engine_divisor._sheaf_complex(
-        _engine_vector(scheme.character_lattice(), weight)
-    )
+    return engine_divisor._sheaf_complex(_engine_vector(scheme.character_lattice(), weight))
 
 
 def _toric_weight_support_hull(scheme, divisor):
@@ -534,15 +502,9 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
         )
         top = int(simplicial.dimension())
         matrices = {q: engine.differential(q) for q in range(-1, top + 1)}
-        pieces = {
-            q + 1: BasedFreeModule(base, matrix.ncols())
-            for q, matrix in matrices.items()
-        }
+        pieces = {q + 1: BasedFreeModule(base, matrix.ncols()) for q, matrix in matrices.items()}
         pieces[top + 2] = BasedFreeModule(base, 0)
-        differentials = {
-            q + 1: _matrix_morphism(base, pieces[q + 1], pieces[q + 2], matrix)
-            for q, matrix in matrices.items()
-        }
+        differentials = {q + 1: _matrix_morphism(base, pieces[q + 1], pieces[q + 2], matrix) for q, matrix in matrices.items()}
         complex_ = CochainComplexes(base)(
             pieces,
             differentials,
@@ -559,9 +521,7 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
 
 def ToricWeightCohomology(scheme, divisor, weight, degree):
     r"""Return the owned weight piece ``H^degree(X,O_X(D))_weight`` from its complex."""
-    return ToricWeightCohomologyComplex(scheme, divisor, weight).cohomology(
-        int(degree)
-    )
+    return ToricWeightCohomologyComplex(scheme, divisor, weight).cohomology(int(degree))
 
 
 def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
@@ -575,9 +535,7 @@ def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
     """
     complex_ = ToricWeightCohomologyComplex(scheme, divisor, weight)
     scalar = complex_.base_ring()(scalar)
-    return scalar * CochainComplexes(complex_.base_ring()).Mor(
-        complex_, complex_
-    ).identity()
+    return scalar * CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
 
 
 def ToricWeightScalarCohomologyMap(scheme, divisor, weight, degree, scalar):
@@ -606,19 +564,9 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
 
     support_hull = _toric_weight_support_hull(scheme, divisor)
     characters = scheme.character_lattice()
-    candidate_weights = tuple(
-        _owned_vector(characters, point)
-        for point in support_hull.integral_points()
-    )
-    pieces = {
-        weight: ToricWeightCohomology(scheme, divisor, weight, degree)
-        for weight in candidate_weights
-    }
-    pieces = {
-        weight: piece
-        for weight, piece in pieces.items()
-        if int(piece.dimension()) != 0
-    }
+    candidate_weights = tuple(_owned_vector(characters, point) for point in support_hull.integral_points())
+    pieces = {weight: ToricWeightCohomology(scheme, divisor, weight, degree) for weight in candidate_weights}
+    pieces = {weight: piece for weight, piece in pieces.items() if int(piece.dimension()) != 0}
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
     construction_data = {
@@ -648,7 +596,6 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     return total
 
 
-
 def _require_smooth_quartic_k3_complex_realization(scheme):
     r"""Require the represented smooth quartic K3 regime over ``QQ``."""
     from dzack_research.preamble.categories.schemes.complete_intersections import (
@@ -657,9 +604,7 @@ def _require_smooth_quartic_k3_complex_realization(scheme):
 
     base = scheme.scheme_base_ring()
     if _engine_ring(base) is not SageQQ:
-        raise NotImplementedError(
-            "the selected quartic K3 integral realization currently uses the specified QQ-to-CC embedding"
-        )
+        raise NotImplementedError("the selected quartic K3 integral realization currently uses the specified QQ-to-CC embedding")
     if scheme not in ProjectiveCompleteIntersections(base):
         raise TypeError("the represented quartic K3 topology requires a projective complete intersection")
     if int(scheme.expected_dimension()) != 2 or tuple(scheme.defining_degrees()) != (4,):
@@ -788,18 +733,14 @@ class QuarticK3IntegralTopology(SageObject):
         source = NamedLattices.Z.twist(4)
         target = self.middle_cohomology_lattice()
         hyperplane = self.hyperplane_first_chern_class()
-        return source.Emb(target)(
-            lambda _label: hyperplane
-        )
+        return source.Emb(target)(lambda _label: hyperplane)
 
     def first_chern_class(self, line_bundle):
         if line_bundle.scheme() is not self.scheme():
             raise ValueError("the first Chern class belongs to a line bundle on this K3 surface")
         degree = getattr(line_bundle, "degree", None)
         if not callable(degree):
-            raise NotImplementedError(
-                "the represented K3 first Chern class currently uses restricted projective O(d) line bundles"
-            )
+            raise NotImplementedError("the represented K3 first Chern class currently uses restricted projective O(d) line bundles")
         return int(degree()) * self.hyperplane_first_chern_class()
 
     @cached_method
@@ -876,7 +817,6 @@ def QuarticK3IntegralCohomology(scheme, degree):
     return QuarticK3IntegralTopology(scheme).integral_cohomology(degree)
 
 
-
 def _integral_topology_construction_data(
     scheme,
     degree,
@@ -901,18 +841,12 @@ def _free_integral_topology_group(
     theory="ordinary singular cohomology",
 ):
     integers = _own_ring(SageZZ)
-    category = (
-        IntegralSingularCohomologyGroups(integers)
-        if category is None
-        else category
-    )
+    category = IntegralSingularCohomologyGroups(integers) if category is None else category
     return FreshFreeModuleOn(
         integers,
         finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
         _extra_categories=(category,),
-        _extra_construction_data=_integral_topology_construction_data(
-            scheme, degree, realization, theory
-        ),
+        _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization, theory),
     )
 
 
@@ -924,15 +858,11 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
     integers = _own_ring(SageZZ)
     source = FreeModule(integers, 1)
     target = FreeModule(integers, 1)
-    presentation = module_homset(source, target)(
-        {0: integers(2) * target.module_generator(0)}
-    )
+    presentation = module_homset(source, target)({0: integers(2) * target.module_generator(0)})
     return FinitelyPresentedModule(
         presentation,
         _extra_categories=(IntegralSingularCohomologyGroups(integers),),
-        _extra_construction_data=_integral_topology_construction_data(
-            scheme, degree, realization
-        ),
+        _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization),
     )
 
 
@@ -1020,12 +950,8 @@ class NodalCubicIntegralTopology(SageObject):
     contravariant comparison map between the two selected theories.
     """
 
-    _ordinary_realization = (
-        "ordinary singular cohomology of the complex nodal cubic, topologically S^2 wedge S^1"
-    )
-    _resolution_realization = (
-        "resolution cohomology via the explicit normalization P^1 -> nodal cubic"
-    )
+    _ordinary_realization = "ordinary singular cohomology of the complex nodal cubic, topologically S^2 wedge S^1"
+    _resolution_realization = "resolution cohomology via the explicit normalization P^1 -> nodal cubic"
 
     def __init__(self, scheme=None) -> None:
         selected = NodalCubic() if scheme is None else scheme
@@ -1115,12 +1041,8 @@ class NodalCubicIntegralTopology(SageObject):
         source_labels = tuple(source.module_generating_set())
         target_labels = tuple(target.module_generating_set())
         if len(source_labels) == len(target_labels) == 1:
-            return module_homset(source, target)(
-                {source_labels[0]: target.module_generator(target_labels[0])}
-            )
-        return module_homset(source, target)(
-            {label: target.zero() for label in source_labels}
-        )
+            return module_homset(source, target)({source_labels[0]: target.module_generator(target_labels[0])})
+        return module_homset(source, target)({label: target.zero() for label in source_labels})
 
 
 @cached_function
@@ -1152,11 +1074,7 @@ def PGL2FundamentalGroup(scheme=None, base_point=None):
     selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
     if selected is not ProjectiveGeneralLinearGroup2():
         raise ValueError("this fundamental-group model is attached to represented PGL_2")
-    point = (
-        selected.point_morphism((1, 0, 0, 1))
-        if base_point is None
-        else base_point
-    )
+    point = selected.point_morphism((1, 0, 0, 1)) if base_point is None else base_point
     ambient = OwnedGroups().C(2)
     generator = next(iter(ambient.group_generators()))
     group = cyclic_subgroup(generator)
@@ -1177,10 +1095,7 @@ class PGL2IntegralTopology(SageObject):
     disappears after rational coefficient change.
     """
 
-    _realization = (
-        "PGL_2(C)=P^3(C)-V(ad-bc), deformation retracted by polar decomposition "
-        "to PU(2) ~= SO(3) ~= RP^3"
-    )
+    _realization = "PGL_2(C)=P^3(C)-V(ad-bc), deformation retracted by polar decomposition to PU(2) ~= SO(3) ~= RP^3"
 
     def __init__(self, scheme=None) -> None:
         selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
@@ -1208,16 +1123,10 @@ class PGL2IntegralTopology(SageObject):
         if degree < 0 or degree > 6:
             raise ValueError("PGL_2 has complex dimension three, so singular cohomology lies in degrees zero through six")
         if degree == 2:
-            return _zmod2_integral_topology_group(
-                self.scheme(), degree, self.realization_description()
-            )
+            return _zmod2_integral_topology_group(self.scheme(), degree, self.realization_description())
         if degree in (0, 3):
-            return _free_integral_topology_group(
-                self.scheme(), degree, 1, self.realization_description()
-            )
-        return _free_integral_topology_group(
-            self.scheme(), degree, 0, self.realization_description()
-        )
+            return _free_integral_topology_group(self.scheme(), degree, 1, self.realization_description())
+        return _free_integral_topology_group(self.scheme(), degree, 0, self.realization_description())
 
     @cached_method
     def rational_cohomology(self, degree):
@@ -1231,9 +1140,7 @@ class PGL2IntegralTopology(SageObject):
 
         integers = _own_ring(SageZZ)
         extension = integers.fraction_field_map()
-        return Modules(integers).base_change_adjunction(extension).unit(
-            self.integral_cohomology(degree)
-        )
+        return Modules(integers).base_change_adjunction(extension).unit(self.integral_cohomology(degree))
 
 
 def PGL2IntegralCohomology(degree):
@@ -1242,13 +1149,9 @@ def PGL2IntegralCohomology(degree):
 
 def _require_smooth_complete_rational_toric_realization(scheme):
     if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
-        raise NotImplementedError(
-            "the selected integral singular-cohomology comparison currently uses the specified QQ-to-CC realization"
-        )
+        raise NotImplementedError("the selected integral singular-cohomology comparison currently uses the specified QQ-to-CC realization")
     if not scheme.fan().is_smooth() or not scheme.fan().is_complete():
-        raise ValueError(
-            "the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety"
-        )
+        raise ValueError("the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety")
 
 
 def ToricIntegralSingularCohomology(scheme, degree):
@@ -1297,18 +1200,8 @@ def ToricCycleClassIsomorphism(scheme, codimension):
         raise ValueError("cycle codimension lies between zero and the scheme dimension")
     chow = scheme.chow_group(dimension - codimension)
     cohomology = scheme.integral_singular_cohomology(2 * codimension)
-    forward = module_homset(chow, cohomology)(
-        {
-            label: cohomology.module_generator(label)
-            for label in chow.module_generating_set()
-        }
-    )
-    inverse = module_homset(cohomology, chow)(
-        {
-            label: chow.module_generator(label)
-            for label in cohomology.module_generating_set()
-        }
-    )
+    forward = module_homset(chow, cohomology)({label: cohomology.module_generator(label) for label in chow.module_generating_set()})
+    inverse = module_homset(cohomology, chow)({label: chow.module_generator(label) for label in cohomology.module_generating_set()})
     return Isomorphism(forward, inverse)
 
 
@@ -1321,12 +1214,7 @@ def ToricPicardToChowIsomorphism(scheme):
     chow = scheme.chow_group(1)
     cycles = scheme.torus_invariant_cycle_group(1)
     cycle_projection = scheme.torus_invariant_cycle_class_map(1)
-    forward = module_homset(picard, chow)(
-        {
-            label: cycle_projection(cycles.module_generator(label))
-            for label in picard.module_generating_set()
-        }
-    )
+    forward = module_homset(picard, chow)({label: cycle_projection(cycles.module_generator(label)) for label in picard.module_generating_set()})
     return Isomorphism(forward, forward.inverse())
 
 
