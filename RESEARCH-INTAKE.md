@@ -471,6 +471,8 @@ Intended owners: `categories/homology/hochschild.py` (`HochschildComplex`, `HH(A
 
 ## Desired capability: right-derived Hom and left-derived tensor — Ext, Tor, derived tensor products — note 2026-09-15
 
+> One also needs basic right-derived functor machinery for (at least) R-modules, for (at least) Hom and tensor (so Ext and Tor). Derived tensor products are especially important
+
 Need basic right-derived functor machinery for `R-Mod` for Hom and tensor — `Ext` and `Tor` — derived tensor products especially.
 
 * `R-Mod : AbCat` Grothendieck abelian (for `R : CommRings` or associative `R : Rings`) with enough injectives and enough projectives/flats. Need derived category `D(R-Mod) : TriCat` as Verdier localization `D = K(R-Mod)[qis^{-1}]` (homotopy category of complexes localized at quasi-isomorphisms), with shift `[1]`, distinguished triangles from mapping cones, and cohomology functors `H^n: D → R-Mod`. Interface lives on `D(R-Mod)`, not as a free `derived_category(R)` helper returning bare complexes.
