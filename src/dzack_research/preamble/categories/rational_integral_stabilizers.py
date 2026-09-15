@@ -90,7 +90,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
-from dzack_research.preamble.categories.lattice_engines import integral_isometry_witness
+from dzack_research.preamble.categories.lattice_engines import _integral_isometry_witness
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -445,7 +445,7 @@ def _full_orthogonal_integral_transporter(
 
     source_lattice = pullback_lattice(source_basis)
     target_lattice = pullback_lattice(target_basis)
-    witness_rows = integral_isometry_witness(
+    witness_rows = _integral_isometry_witness(
         source_lattice.gram_tensor(),
         target_lattice.gram_tensor(),
     )

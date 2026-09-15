@@ -751,7 +751,7 @@ class LatticeIsometry(LatticeEmbedding):
         if lattice.is_negative_definite():
             return ring.one()
         backend_sign = SageZZ(
-            lattice_engines.rational_spinor_norm_sign(
+            lattice_engines._rational_spinor_norm_sign(
                 lattice.gram_tensor(), _tensor_view(self)
             )
         )
@@ -778,7 +778,7 @@ class LatticeIsometry(LatticeEmbedding):
 
         rationals = lattice.base_ring().fraction_field()
         gram = lattice.gram_tensor().change_ring(rationals)
-        vector = lattice_engines.rational_positive_vector(gram)
+        vector = lattice_engines._rational_positive_vector(gram)
         image = _tensor_view(self).change_ring(rationals) * vector
         pairing = gram.contract(vector, image)
         if pairing == rationals.zero():
@@ -815,7 +815,7 @@ class LatticeIsometry(LatticeEmbedding):
 
 
         engine_generators, expected_order, invariant_rank, coinvariant_rank = (
-            lattice_engines.centralizer_discriminant_image(
+            lattice_engines._centralizer_discriminant_image(
                 lattice.gram_tensor(),
                 _tensor_view(self),
             )
@@ -1004,7 +1004,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             return None
         if not engine_capabilities.is_available("lattice.target_primitive_embedding"):
             return None
-        return lattice_engines.target_primitive_embedding(
+        return lattice_engines._target_primitive_embedding(
             source.gram_tensor(),
             target.gram_tensor(),
         )
@@ -1087,7 +1087,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             raise NotImplementedError(
                 "primitive-embedding class representatives require the OSCAR lattice provider"
             )
-        data = lattice_engines.target_primitive_embedding_classes(
+        data = lattice_engines._target_primitive_embedding_classes(
             source.gram_tensor(),
             target.gram_tensor(),
             classification,
@@ -2062,7 +2062,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return False
 
         if engine_capabilities.is_available("lattice.oscar_isometry_witness"):
-            witness_rows = lattice_engines.integral_isometry_witness(
+            witness_rows = lattice_engines._integral_isometry_witness(
                 domain.gram_tensor(),
                 codomain.gram_tensor(),
             )

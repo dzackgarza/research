@@ -288,7 +288,7 @@ def test_explicit_even_unimodular_embedding_crosses_oscar_data_into_live_morphis
 
     monkeypatch.setattr(
         lattice_engines,
-        "even_unimodular_primitive_embedding",
+        "_even_unimodular_primitive_embedding",
         lambda _gram, _positive, _negative: (target_gram, embedding_matrix),
     )
 
@@ -743,7 +743,7 @@ def test_centralizer_discriminant_image_matches_finite_a2_centralizer(monkeypatc
 
     monkeypatch.setattr(
         lattice_engines,
-        "centralizer_discriminant_image",
+        "_centralizer_discriminant_image",
         lambda _gram, _isometry: ((tensor.matrix(ZZ, [[2]]),), ZZ(2), ZZ(1), ZZ(1)),
     )
     lattice = Lattices(ZZ)("A2")

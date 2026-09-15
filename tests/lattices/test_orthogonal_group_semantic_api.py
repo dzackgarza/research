@@ -6,7 +6,7 @@ ARCHIVE_RECONCILIATION = {
     "owner_overrides": {
         "LatticeIsometries.ParentMethods.special_orthogonal_subgroup": "src/dzack_research/preamble/categories/lattices.py",
         "LatticeIsometries.ParentMethods.spinor_kernel_subgroup": "src/dzack_research/preamble/categories/lattices.py",
-        "LatticeIsometries.ElementMethods.centralizer_discriminant_image": "src/dzack_research/preamble/categories/lattice_engines.py",
+        "LatticeIsometries.ElementMethods.centralizer_discriminant_image": "src/dzack_research/preamble/categories/lattice_morphisms.py",
         "LatticeIsometries.ElementMethods.cyclic_subgroup": "src/dzack_research/preamble/categories/lattice_morphisms.py",
     },
     "disposition": "reconciled-live-owner",

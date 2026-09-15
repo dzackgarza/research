@@ -907,7 +907,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     def leech_lattice():
         r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
         integers = _own_ring(SageZZ)
-        positive = Lattices(integers)(lattice_engines.leech_gram_rows())
+        positive = Lattices(integers)(lattice_engines._leech_gram_rows())
         return positive.twist(-integers.one())
 
     @cached_method
@@ -2186,7 +2186,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.embeds_in_even_unimodular(positive, negative):
                 raise ValueError(f"no primitive embedding into II_{{{positive},{negative}}} exists")
 
-            target_gram, embedding_matrix = lattice_engines.even_unimodular_primitive_embedding(self.gram_tensor(), positive, negative)
+            target_gram, embedding_matrix = lattice_engines._even_unimodular_primitive_embedding(self.gram_tensor(), positive, negative)
             target = Lattices(self.base_ring())(target_gram)
             target_generators = tuple(target.module_generators())
             images = tuple(

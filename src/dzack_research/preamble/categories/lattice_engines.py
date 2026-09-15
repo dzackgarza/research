@@ -33,7 +33,7 @@ from py_polyhedral.binaries import (
 )
 
 
-def rational_positive_vector(gram):
+def _rational_positive_vector(gram):
     r"""Return one exact rational positive vector for signature ``(1,n)``.
 
     Sage supplies the rational diagonalization privately.  The returned value
@@ -562,7 +562,7 @@ engine_capabilities.register(
 )
 
 
-def rational_spinor_norm_sign(gram, isometry):
+def _rational_spinor_norm_sign(gram, isometry):
     return engine_capabilities.compute(
         "lattice.rational_spinor_norm_sign",
         gram,
@@ -570,7 +570,7 @@ def rational_spinor_norm_sign(gram, isometry):
     )
 
 
-def centralizer_discriminant_image(gram, isometry):
+def _centralizer_discriminant_image(gram, isometry):
     return engine_capabilities.compute(
         "lattice.centralizer_discriminant_image",
         gram,
@@ -578,7 +578,7 @@ def centralizer_discriminant_image(gram, isometry):
     )
 
 
-def even_unimodular_primitive_embedding(gram, positive, negative):
+def _even_unimodular_primitive_embedding(gram, positive, negative):
     return engine_capabilities.compute(
         "lattice.even_unimodular_primitive_embedding",
         gram,
@@ -587,7 +587,7 @@ def even_unimodular_primitive_embedding(gram, positive, negative):
     )
 
 
-def target_primitive_embedding(source_gram, target_gram):
+def _target_primitive_embedding(source_gram, target_gram):
     return engine_capabilities.compute(
         "lattice.target_primitive_embedding",
         source_gram,
@@ -595,7 +595,7 @@ def target_primitive_embedding(source_gram, target_gram):
     )
 
 
-def target_primitive_embedding_classes(source_gram, target_gram, classification):
+def _target_primitive_embedding_classes(source_gram, target_gram, classification):
     return engine_capabilities.compute(
         "lattice.target_primitive_embedding_classes",
         source_gram,
@@ -604,12 +604,12 @@ def target_primitive_embedding_classes(source_gram, target_gram, classification)
     )
 
 
-def leech_gram_rows():
+def _leech_gram_rows():
     r"""Return Hecke's exact positive-definite Leech Gram rows privately."""
     return engine_capabilities.compute("lattice.leech_gram_rows")
 
 
-def integral_isometry_witness(source_gram, target_gram):
+def _integral_isometry_witness(source_gram, target_gram):
     return engine_capabilities.compute(
         "lattice.oscar_isometry_witness",
         source_gram,
@@ -883,9 +883,4 @@ for _capability, _binary, _operation, _provisioning in _POLYHEDRAL_REALIZATIONS:
     )
 
 
-__all__ = [
-    "centralizer_discriminant_image",
-    "even_unimodular_primitive_embedding",
-    "rational_positive_vector",
-    "rational_spinor_norm_sign",
-]
+__all__: list[str] = []
