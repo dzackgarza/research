@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleSubobjects,
 )
-from dzack_research.preamble.categories.rings.commutative_algebra import PowerSeriesRing
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -865,7 +864,7 @@ def _theta_series(lattice, precision=20, variable="q"):
     backend_series = quadratic_form.theta_series(
         int(precision), var_str=variable
     )
-    series_ring = PowerSeriesRing(lattice.base_ring(), variable)
+    series_ring = lattice.base_ring().power_series_ring(variable)
     engine = _engine_ring(series_ring)
     return series_ring._from_engine_element(engine(backend_series))
 

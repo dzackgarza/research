@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedTorsionModules,
-    PowerSeriesRing,
     TorsionModules,
 )
 
@@ -61,7 +60,7 @@ def test_unit_relation_over_an_inexact_field_is_the_zero_vector_space() -> None:
 
 
 def test_unit_relation_over_formal_power_series_constructs_the_zero_torsion_module() -> None:
-    ring = PowerSeriesRing(QQ, "t")
+    ring = QQ.power_series_ring("t")
     module = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring.one(),))
 
     assert module.base_ring() is ring

@@ -3291,7 +3291,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The formal power series ring in one variable."""
-        return PowerSeriesRing(self.base_ring(), "t")
+        return self.base_ring().power_series_ring("t")
 
     @classmethod
     def _repr_object_names(cls):
@@ -3398,12 +3398,6 @@ def Zp(*args, **kwargs):
         defining,
         precision=int(parser.precision_cap()),
     )
-
-
-def PowerSeriesRing(base_ring, *args, **kwargs):
-    return FormalPowerSeriesRings(_own_ring(base_ring))(*args, **kwargs)
-
-
 class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
@@ -3465,7 +3459,6 @@ __all__ = [
     "GeneratedIdealView",
     "LocalizationRings",
     "PrimeLocalizations",
-    "PowerSeriesRing",
     "QuotientRings",
     "Zp",
 ]

@@ -9,7 +9,6 @@ non-unit of the power-series ring, and in two variables both variables are.
 from dzack_research.preamble.all import (
     CommutativeIdeals,
     GF,
-    PowerSeriesRing,
     QQ,
     Zp,
 )
@@ -24,7 +23,7 @@ def test_a_fields_maximal_ideal_is_the_owned_zero_ideal() -> None:
 
 
 def test_power_series_in_two_variables_are_local_at_both_variables() -> None:
-    ring = PowerSeriesRing(QQ, "x,y")
+    ring = QQ.power_series_ring("x,y")
 
     assert ring.maximal_ideal().ideal_generators() == (
         ring.algebra_generator("x"),
@@ -35,7 +34,7 @@ def test_power_series_in_two_variables_are_local_at_both_variables() -> None:
 def test_power_series_over_a_local_base_retain_the_base_maximal_ideal() -> None:
     base = Zp(3)
     (base_uniformizer,) = base.maximal_ideal().ideal_generators()
-    ring = PowerSeriesRing(base, "t")
+    ring = base.power_series_ring("t")
 
     assert ring.maximal_ideal().ideal_generators() == (
         ring(base_uniformizer),

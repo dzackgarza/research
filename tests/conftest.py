@@ -90,7 +90,7 @@ FIELDS = {
 DISCRETE_VALUATION_RINGS = {
     "ZZ_3": lambda: Zp(3),
     "ZZ_(5)": lambda: ZZ.localize_at_prime(5),
-    "QQ[[t]]": lambda: PowerSeriesRing(QQ, "t"),
+    "QQ[[t]]": lambda: QQ.power_series_ring("t"),
     "QQ[x]_(x)": _localized_polynomial_ring_at_origin,
     "ZZ^_2": lambda: ZZ.adic_completion(ZZ.ideal(2)),
 }
@@ -116,7 +116,7 @@ NOETHERIAN_DOMAINS_NOT_DEDEKIND = {
     "QQ[x,y]": lambda: _polynomial_ring(QQ, "x", "y"),
     "QQ[x,y]/(y^2-x^3)": _cusp,
     "QQ[x,y]_(x,y)": _localized_plane_at_origin,
-    "QQ[[x,y]]": lambda: PowerSeriesRing(QQ, ("x", "y")),
+    "QQ[[x,y]]": lambda: QQ.power_series_ring(("x", "y")),
 }
 
 NON_DOMAINS = {

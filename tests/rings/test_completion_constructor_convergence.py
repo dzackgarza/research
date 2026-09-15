@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     AdicCompletions,
     Cat,
     FormalPowerSeriesRings,
-    PowerSeriesRing,
     Zp,
 )
 
@@ -54,7 +53,7 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
     defining = polynomial.ideal(t)
 
     completion = polynomial.adic_completion(defining)
-    notation = PowerSeriesRing(QQ, "t")
+    notation = QQ.power_series_ring("t")
     declared = FormalPowerSeriesRings(QQ)("t")
 
     assert completion is notation
@@ -67,7 +66,7 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
 
 
 def test_power_series_over_integers_does_not_require_a_maximal_ideal_decision() -> None:
-    series = PowerSeriesRing(ZZ, "q")
+    series = ZZ.power_series_ring("q")
 
     assert series in FormalPowerSeriesRings(ZZ)
     assert series.base_ring() is ZZ

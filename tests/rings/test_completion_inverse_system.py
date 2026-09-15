@@ -1,10 +1,10 @@
 r"""Completion is the represented inverse limit, not a selected finite stage."""
 
-from dzack_research.preamble.all import QQ, AdicallyCompleteRings, PowerSeriesRing
+from dzack_research.preamble.all import QQ, AdicallyCompleteRings
 
 
 def test_power_series_constructor_retains_the_same_adic_completion_data() -> None:
-    series = PowerSeriesRing(QQ, "t")
+    series = QQ.power_series_ring("t")
     assert series in AdicallyCompleteRings()
     source = series.completion_source()
     t = source.algebra_generator("t")

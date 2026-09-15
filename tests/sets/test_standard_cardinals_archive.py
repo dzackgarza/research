@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     RR,
     FramedAlgebras,
     MatrixSpace,
-    PowerSeriesRing,
     aleph0,
     continuum,
 )
@@ -26,7 +25,7 @@ def test_matrix_ring_cardinality_tracks_the_coefficient_ring() -> None:
 
 
 def test_rational_power_series_have_continuum_cardinality() -> None:
-    power_series = PowerSeriesRing(QQ, "t")
+    power_series = QQ.power_series_ring("t")
 
     assert power_series.cardinality() == continuum
     assert power_series not in FramedAlgebras(QQ)

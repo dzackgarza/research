@@ -3,7 +3,6 @@ from sage.all import (
     SR,
     Integer,
     LaurentSeriesRing,
-    PowerSeriesRing,
     exp,
     factorial,
     log,
@@ -95,7 +94,7 @@ def test_series_and_laurent_polynomials_are_formulas() -> None:
     maps = C(Infinity, RR)
     polynomials = QQ.polynomial_ring("t")
     t = polynomials.algebra_generator("t")
-    series_ring = PowerSeriesRing(QQ, "u")
+    series_ring = QQ.power_series_ring("u")
     u = series_ring.algebra_generator("u")
     laurent_ring = QQ.laurent_polynomial_ring("w")
     w = laurent_ring.algebra_generator("w")
@@ -326,7 +325,7 @@ def test_a_formal_power_series_is_its_coefficient_sequence_in_ell_p() -> None:
     maps = C(Infinity, RR)
     polynomials = QQ.polynomial_ring("t")
     t = polynomials.algebra_generator("t")
-    series_ring = PowerSeriesRing(QQ, "u")
+    series_ring = QQ.power_series_ring("u")
     u = series_ring.algebra_generator("u")
     laurent_ring = QQ.laurent_polynomial_ring("w")
     w = laurent_ring.algebra_generator("w")

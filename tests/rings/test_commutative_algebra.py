@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     IntegralDomains,
     LocalRings,
     NoetherianRings,
-    PowerSeriesRing,
     ProjectiveSpace,
     Set,
     Zmod,
@@ -110,7 +109,7 @@ def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
 
 def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
     field = GF(7)
-    power_series = PowerSeriesRing(field, "t")
+    power_series = field.power_series_ring("t")
 
     assert power_series in CompleteLocalRings()
     assert power_series.residue_field() is field

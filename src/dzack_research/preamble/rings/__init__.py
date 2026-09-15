@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     DistinguishedOpenSubobject,
     FormalPowerSeriesRings,
     GeneratedIdealView,
-    PowerSeriesRing,
     PrimeLocalizations,
     PrimeSpectra,
     QuotientRings,
@@ -206,7 +205,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "CyclotomicField": CyclotomicField,
         "QuadraticField": QuadraticField,
         "NumberField": NumberField,
-        "PowerSeriesRing": PowerSeriesRing,
         "MatrixSpace": MatrixSpace,
     }
 
@@ -267,7 +265,6 @@ __all__ = [
     "OwnedRings",
     "OwnedRngs",
     "OwnedSemirings",
-    "PowerSeriesRing",
     "PredicateSubrings",
     "PrimeField",
     "PrimeFields",

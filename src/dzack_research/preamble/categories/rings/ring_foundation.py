@@ -1472,6 +1472,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return _laurent_polynomial_ring(self, *args, **kwargs)
 
+        def power_series_ring(self, *args, **kwargs):
+            r"""Return the formal power-series ring over this ring."""
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                FormalPowerSeriesRings,
+            )
+
+            return FormalPowerSeriesRings(self)(*args, **kwargs)
+
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 
