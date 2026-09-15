@@ -168,6 +168,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "continuous_group_homset",
         "algebra_from_multiplication",
         "own_algebra",
+        "augmented_algebra",
         "tensor_power_permutation",
         "divided_power_product",
         "alternating_power_product",

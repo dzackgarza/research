@@ -51,7 +51,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         ring = self.base_ring()
         polynomials = SymmetricAlgebraOn(ring, ("x",))
         label = next(iter(polynomials.algebra_generating_set()))
-        return augmented_algebra(polynomials.Mor(ring)({label: ring.zero()}))
+        return self(polynomials.Mor(ring)({label: ring.zero()}))
 
     @classmethod
     def _repr_object_names(cls):
@@ -61,7 +61,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     def _call_(self, augmentation):
-        return augmented_algebra(augmentation)
+        return _augmented_algebra(augmentation)
 
     class ParentMethods:
         def is_augmented(self) -> bool:
@@ -102,7 +102,7 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
         ring = self.base_ring()
         polynomials = SymmetricAlgebraOn(ring, ("x",))
         label = next(iter(polynomials.algebra_generating_set()))
-        return augmented_algebra(polynomials.Mor(ring)({label: ring.zero()}))
+        return AugmentedAlgebras(ring)(polynomials.Mor(ring)({label: ring.zero()}))
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
@@ -198,7 +198,7 @@ def _graded_algebra_placement(domain, base):
     return placement
 
 
-def augmented_algebra(augmentation):
+def _augmented_algebra(augmentation):
     r"""Return the domain of ``augmentation``, as an augmented algebra.
 
     An augmentation of an \(R\)-algebra is an algebra morphism \(A\to R\).

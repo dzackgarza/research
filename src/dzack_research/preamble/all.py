@@ -158,7 +158,6 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     SymmetricAlgebras,
     TensorAlgebraOn,
     TensorAlgebras,
-    augmented_algebra,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     MatrixAlgebras as MatrixAlgebras,
