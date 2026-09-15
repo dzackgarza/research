@@ -11,9 +11,6 @@ from dzack_research.preamble.categories.algebras.kahler_differentials import (
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     RestrictedGradedAlgebra,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
 
@@ -80,7 +77,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
             continue
         target_piece = exterior_algebra.graded_piece(target_degree)
         target_component = target_piece.zero()
-        for label, coefficient in module_coefficients(component, source_piece).items():
+        for label, coefficient in source_piece.framing_coefficients(component).items():
             d_coefficient = universal_derivation(coefficient)
             if d_coefficient == omega.zero():
                 continue

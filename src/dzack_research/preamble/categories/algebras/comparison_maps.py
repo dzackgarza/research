@@ -11,9 +11,6 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.power_algebras import (
     PowerAlgebraElement,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -163,9 +160,7 @@ def _divided_to_symmetric(module):
             element = source(element)
         result = target.zero()
         for degree, component in element.homogeneous_components().items():
-            for label, coefficient in module_coefficients(
-                component, source.graded_piece(degree)
-            ).items():
+            for label, coefficient in source.graded_piece(degree).framing_coefficients(component).items():
                 denominator = 1
                 monomial = target.one()
                 if degree == 1:

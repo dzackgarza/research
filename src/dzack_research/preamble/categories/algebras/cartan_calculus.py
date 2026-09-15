@@ -11,11 +11,6 @@ from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     GradedDerivation,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
-
-
 def _vector_field_scalar(vector_field, element):
     r"""Read the value of a vector field as the underlying scalar of ``A``."""
     target = vector_field.codomain()
@@ -23,7 +18,7 @@ def _vector_field_scalar(vector_field, element):
     if int(labels.cardinality()) != 1:
         raise TypeError("a vector field here takes values in the rank-one A-module A")
     label = labels[0]
-    coefficients = module_coefficients(vector_field(element), target)
+    coefficients = target.framing_coefficients(vector_field(element))
     return vector_field.domain()(coefficients.get(label, target.base_ring().zero()))
 
 
@@ -109,7 +104,7 @@ def _interior_product(vector_field):
             source_piece = exterior.graded_piece(degree)
             target_piece = exterior.graded_piece(degree - 1)
             target_component = target_piece.zero()
-            for label, coefficient in module_coefficients(component, source_piece).items():
+            for label, coefficient in source_piece.framing_coefficients(component).items():
                 word = _exterior_word(label, degree)
                 for position, differential_label in enumerate(word):
                     if (

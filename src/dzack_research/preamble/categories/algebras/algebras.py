@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.algebras.associative_algebra_morphisms i
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
@@ -843,7 +842,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             if not _has_exact_algebra_carrier(self):
                 return super()._selected_module_coefficients(element)
             module = self.underlying_module()
-            return module_coefficients(self._carrier_element(element), module)
+            return module.framing_coefficients(self._carrier_element(element))
 
         def _carrier_element(self, element):
             module = self.underlying_module()
@@ -2701,7 +2700,7 @@ def _unit_from_multiplication(multiplication):
                     module.module_generator(right_label),
                 )
             )
-            coefficients = module_coefficients(product, module)
+            coefficients = module.framing_coefficients(product)
             for out_index in range(rank):
                 out_label = labels[out_index]
                 system_entries[right_index * rank + out_index][left_index] = _engine_element(ring, coefficients.get(out_label, ring.zero()))

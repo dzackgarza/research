@@ -1166,6 +1166,10 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = element
             return None
 
+        def framing_coefficients(self, element):
+            r"""Return the finite-support coefficients in this module's selected framing."""
+            return module_coefficients(element, self)
+
         def _represented_kernel_of_morphism(self, morphism):
             _ = morphism
             return NotImplemented

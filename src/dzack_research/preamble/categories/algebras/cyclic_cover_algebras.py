@@ -15,9 +15,6 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
     InvertibleSheaf,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -79,7 +76,7 @@ def _rank_one_coefficient(module: Parent, element: Element) -> Element:
     if not labels.cardinality().is_finite() or int(labels.cardinality()) != 1:
         raise TypeError("a cyclic-cover branch trivialization requires rank-one local modules")
     label = next(iter(labels))
-    coefficients = module_coefficients(module(element), module)
+    coefficients = module.framing_coefficients(module(element))
     return coefficients[label] if label in coefficients else module.base_ring().zero()
 
 
