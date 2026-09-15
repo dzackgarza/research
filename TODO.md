@@ -636,13 +636,6 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 
 ### Workflow and execution prerequisites
 
-- [ ] **`agent-memory-entrypoint`**. **Needs:** none.
-  Restore the architectural-context lookup required by `AGENTS.md` before preamble remediation begins.
-  **Observed gap:** the documented `agent-memory search --scope both ...` command is absent from the supported shell even though the project vault exists and remains readable.
-  **Owner:** repository/tooling environment provisioning and the generated agent-memory instruction block in `AGENTS.md`.
-  **Deliver:** make the documented direct command available in the supported shell, or change the generated instruction block to one canonical fallback invocation that is actually available on this host.  Do not make ad-hoc direct vault greps a second supported workflow.
-  **Acceptance:** from the repository shell, the documented command successfully searches both project and global memory for a known project term and returns the project binding without modifying the vault.
-
 - [ ] **`research-sage-runtime`**. **Needs:** `architecture-remediation`.
   Restore the tracked Sage runtime before terminal execution resumes.
   **Observed gap:** `.envrc` names a source-checkout launcher that resolves into a stub-source tree and cannot import Sage; source inspection alone therefore cannot close the environment complaint.
@@ -786,7 +779,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
-- [ ] **`architecture-remediation`**. **Needs:** `agent-memory-entrypoint`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.
 

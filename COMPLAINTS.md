@@ -64,18 +64,6 @@ Add concrete observed workflow friction here under a descriptive heading, with t
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
 
-### Required agent-memory search command is absent from the working environment
-
-- **User action:** follow `AGENTS.md` before an architectural edit by running `agent-memory search --scope both ...`.
-
-- **Expected:** the required `agent-memory` CLI is available in the repository working environment.
-
-- **Observed:** the shell returned `command not found: agent-memory`; the vault itself remained readable at `/home/dzack/.agent-memory-vault`, so the required context had to be searched directly.
-
-- **Owner:** contribution/tooling environment provisioning.
-
-- **Example:** observed while selecting `analytic-families` on 2026-09-12.
-
 ### Tracked research Sage path resolves to a non-runnable stub source tree
 
 - **User action:** run the repository's mandatory commit gate or regenerate the live preamble megadoc using the `SAGE_BIN` exported by the tracked `.envrc`.
