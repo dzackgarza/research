@@ -1,7 +1,7 @@
 r"""Finite represented ``G``-sets, their orbits, fixed points, and torsors.
 
-A ``G``-set is an object of ``Sets()`` with a chosen ``G``-action, so
-``GSets(G)`` is ``GObjects(G, Sets())``.  The finite represented objects
+A ``G``-set is an object of ``Sets()`` with a chosen ``G``-action, so its
+category is ``GObjects(G, Sets())``.  The finite represented objects
 additionally record the action as a group morphism ``G -> Sym(X)``, which is
 the engine used to compute equivariance, fixed points, orbits, and the
 standard finite free/cofree constructions.
@@ -54,18 +54,13 @@ from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.refine import refine
 
 
-def GSets(group):
-    r"""Return the category of ``group``-sets: objects of ``Sets()`` with a chosen action."""
-    return GObjects(group, Sets())
-
-
 class GSetHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return GSetHomset
 
 
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
-    r"""The represented finite objects of ``GSets(G)``."""
+    r"""The represented finite objects of ``GObjects(G, Sets())``."""
 
     def parameter_category(self):
         r"""A finite ``G``-set is indexed by the acting group ``G``."""
@@ -95,7 +90,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self.group()), FiniteSets(), EnumeratedSets()]
+        return [GObjects(self.group(), Sets()), FiniteSets(), EnumeratedSets()]
 
     def _repr_object_names(self):
         return f"finite {self.group()}-sets"
@@ -618,7 +613,7 @@ class Torsors(OwnedParameterizedCategory):
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self.group())]
+        return [GObjects(self.group(), Sets())]
 
     def _repr_object_names(self):
         return f"torsors under {self.group()}"
@@ -694,7 +689,6 @@ __all__ = [
     "FiniteGSets",
     "GSetHomset",
     "GSetMorphism",
-    "GSets",
     "OrbitSets",
     "Torsors",
 ]

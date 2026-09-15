@@ -118,7 +118,7 @@ class OwnedParameterizedCategory(OwnedCategory):
     r"""An owned category parameterized by one object of a stated category.
 
     ``parameter_category`` is the statement.  ``Subgroups`` is parameterized
-    by a group, ``GSets`` by a group, ``DifferentialGradedModules`` by a
+    by a group, ``GObjects(G, Sets())`` by a group, ``DifferentialGradedModules`` by a
     differential graded algebra, ``GradedAlgebraModules`` by a graded algebra,
     ``PredicateSubgroups`` by a whole category.  Each of those is a different
     structure, and a family that does not say which one it wants can only

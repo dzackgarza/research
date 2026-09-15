@@ -467,7 +467,6 @@ from dzack_research.preamble.categories.group import (
     GroupsWithChosenFinitePresentation,
     GSetHomset,
     GSetMorphism,
-    GSets,
     IndexedFreeGroupHomomorphism,
     IndexedFreeGroupHomset,
     InertiaGroupConjugacyClass,

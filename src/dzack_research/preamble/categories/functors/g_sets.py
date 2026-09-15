@@ -16,10 +16,10 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
-    GSets,
     OrbitSets,
     _fixed_point_set,
 )
+from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -200,7 +200,7 @@ class UnderlyingFiniteGSetFunctor(Functor):
 
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
-        self._generic_forgetful = GSets(self._group).forgetful_functor()
+        self._generic_forgetful = GObjects(self._group, Sets()).forgetful_functor()
         super().__init__(FiniteGSets(self._group), FiniteSets())
 
     def group(self):

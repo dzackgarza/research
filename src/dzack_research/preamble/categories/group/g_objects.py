@@ -8,7 +8,7 @@ of ``G``-objects is a morphism of ``C`` commuting with the two actions, so
 conjugation.  The forgetful functor to ``C`` is evaluation at the one object
 of ``BG``.
 
-``GSets(G)`` is ``GObjects(G, Sets())``, and ``Modules(R[G])`` refines
+The category of ``G``-sets is ``GObjects(G, Sets())``, and ``Modules(R[G])`` refines
 ``GObjects(G, Modules(R))``.  The generic constructor takes the actual functor
 ``BG -> C``.  Represented specializations may retain their concrete carrier,
 but expose that same functor through ``action_functor()``; their private
