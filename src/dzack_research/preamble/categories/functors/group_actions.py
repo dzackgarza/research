@@ -68,7 +68,7 @@ class GroupActionFunctor(Functor):
         return f"{self.group()}-action functor on {self.underlying_object()}"
 
 
-def action_functor_of(acted, group, category):
+def _action_functor_of(acted, group, category):
     r"""Return the unique represented ``BG -> C`` action carried by ``acted``."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
@@ -111,7 +111,7 @@ class ForgetGroupActionFunctor(Functor):
         return self._group
 
     def _apply_object(self, acted):
-        action = action_functor_of(acted, self.group(), self.codomain())
+        action = _action_functor_of(acted, self.group(), self.codomain())
         return action(action.domain().an_object())
 
     def _apply_morphism(self, arrow):
@@ -141,7 +141,7 @@ class TransportGroupActionFunctor(Functor):
         return self._transport
 
     def _apply_object(self, acted):
-        action = action_functor_of(
+        action = _action_functor_of(
             acted,
             self.group(),
             self.transport_functor().domain(),
@@ -158,10 +158,10 @@ class TransportGroupActionFunctor(Functor):
                 self.transport_functor().domain(),
             )
         )
-        source_action = action_functor_of(
+        source_action = _action_functor_of(
             source, self.group(), self.transport_functor().codomain()
         )
-        target_action = action_functor_of(
+        target_action = _action_functor_of(
             target, self.group(), self.transport_functor().codomain()
         )
         return self.codomain().Mor(source, target)(
@@ -176,7 +176,7 @@ class TransportGroupActionFunctor(Functor):
         return f"Transport of {self.group()}-actions through {self.transport_functor()}"
 
 
-def is_augmentation_of_group_algebra(ring_map) -> bool:
+def _is_augmentation_of_group_algebra(ring_map) -> bool:
     r"""Decide whether ``ring_map`` is the augmentation ``R[G] -> R``.
 
     The domain must be a group algebra over the codomain, and the map must
@@ -194,7 +194,7 @@ def is_augmentation_of_group_algebra(ring_map) -> bool:
 
 
 def _augmentation_data(ring_map):
-    assert is_augmentation_of_group_algebra(ring_map), (
+    assert ring_map.is_group_algebra_augmentation(), (
         f"{ring_map} is not the augmentation of a group algebra"
     )
     return _owned_ring(ring_map.domain()).group()
@@ -440,7 +440,7 @@ class RestrictionOfGroupActionFunctor(Functor):
 
                 source_modules = Modules(base_ring[morphism.codomain()])
                 if acted not in source_modules:
-                    action = action_functor_of(acted, morphism.codomain(), category)
+                    action = _action_functor_of(acted, morphism.codomain(), category)
                     from dzack_research.preamble.categories.group.classifying_categories import (
                         ClassifyingFunctor,
                     )
@@ -477,7 +477,7 @@ class RestrictionOfGroupActionFunctor(Functor):
             case _:
                 pass
 
-        action = action_functor_of(acted, morphism.codomain(), category)
+        action = _action_functor_of(acted, morphism.codomain(), category)
         from dzack_research.preamble.categories.group.classifying_categories import (
             ClassifyingFunctor,
         )
@@ -495,10 +495,10 @@ class RestrictionOfGroupActionFunctor(Functor):
         )
         source_functors = self.codomain().functor_category()
         if source in source_functors and target in source_functors:
-            source_action = action_functor_of(
+            source_action = _action_functor_of(
                 source, self.group_morphism().domain(), category
             )
-            target_action = action_functor_of(
+            target_action = _action_functor_of(
                 target, self.group_morphism().domain(), category
             )
             return self.codomain().Mor(source, target)(
@@ -527,6 +527,4 @@ __all__ = [
     "TransportGroupActionFunctor",
     "TrivialActionFunctor",
     "TrivialInvariantsAdjunction",
-    "action_functor_of",
-    "is_augmentation_of_group_algebra",
 ]

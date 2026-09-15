@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:
+def _is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:
     r"""Decide whether ``ring_map`` is ``R[H] -> R[G]`` for a subgroup ``H <= G``.
 
     Both endpoints must be group algebras over one ring, ``H`` must have been
@@ -61,7 +61,7 @@ def is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:
 
 
 def _subgroup_data(ring_map):
-    assert is_group_algebra_map_of_subgroup_inclusion(ring_map), (
+    assert ring_map.is_group_algebra_subgroup_inclusion(), (
         f"{ring_map} is not the group-algebra map of a subgroup inclusion"
     )
     subgroup = _owned_ring(ring_map.domain()).group()
@@ -515,5 +515,4 @@ __all__ = [
     "InductionRestrictionAdjunction",
     "RestrictionCoinductionAdjunction",
     "RestrictionOfActingGroupFunctor",
-    "is_group_algebra_map_of_subgroup_inclusion",
 ]

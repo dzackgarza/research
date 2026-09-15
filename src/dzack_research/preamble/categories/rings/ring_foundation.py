@@ -129,6 +129,22 @@ class RingMorphism(Morphism):
 
         return _own_algebra(self)
 
+    def is_group_algebra_augmentation(self) -> bool:
+        r"""Return whether this map is the represented augmentation ``R[G] -> R``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _is_augmentation_of_group_algebra,
+        )
+
+        return _is_augmentation_of_group_algebra(self)
+
+    def is_group_algebra_subgroup_inclusion(self) -> bool:
+        r"""Return whether this map is induced by a represented subgroup inclusion."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            _is_group_algebra_map_of_subgroup_inclusion,
+        )
+
+        return _is_group_algebra_map_of_subgroup_inclusion(self)
+
     def is_identity(self) -> bool:
         if self.domain() is not self.codomain():
             return False

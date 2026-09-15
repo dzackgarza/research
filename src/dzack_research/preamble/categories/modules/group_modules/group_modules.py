@@ -215,18 +215,16 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``S tensor_{R[G]} - : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
         from dzack_research.preamble.categories.functors.group_actions import (
             CoinvariantsFunctor,
-            is_augmentation_of_group_algebra,
         )
         from dzack_research.preamble.categories.functors.group_induction import (
             InductionFunctor,
-            is_group_algebra_map_of_subgroup_inclusion,
         )
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
         match ring_map:
-            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+            case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return InductionFunctor(ring_map)
-            case _ if is_augmentation_of_group_algebra(ring_map):
+            case _ if ring_map.is_group_algebra_augmentation():
                 return CoinvariantsFunctor(ring_map)
             case _:
                 return ScalarExtensionFunctor(ring_map)
@@ -235,7 +233,6 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``Res_f : Modules(R[G]) -> Modules(A)`` along ``ring_map: A -> R[G]``."""
         from dzack_research.preamble.categories.functors.group_induction import (
             RestrictionOfActingGroupFunctor,
-            is_group_algebra_map_of_subgroup_inclusion,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             RestrictionOfScalarsFunctor,
@@ -243,7 +240,7 @@ class ModulesOverGroupAlgebra(Modules):
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
         match ring_map:
-            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+            case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return RestrictionOfActingGroupFunctor(ring_map)
             case _:
                 return RestrictionOfScalarsFunctor(ring_map)
@@ -252,11 +249,9 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``Hom_{R[G]}(S, -) : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
         from dzack_research.preamble.categories.functors.group_actions import (
             InvariantsFunctor,
-            is_augmentation_of_group_algebra,
         )
         from dzack_research.preamble.categories.functors.group_induction import (
             CoinductionFunctor,
-            is_group_algebra_map_of_subgroup_inclusion,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             CoextensionOfScalarsFunctor,
@@ -264,9 +259,9 @@ class ModulesOverGroupAlgebra(Modules):
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
         match ring_map:
-            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+            case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return CoinductionFunctor(ring_map)
-            case _ if is_augmentation_of_group_algebra(ring_map):
+            case _ if ring_map.is_group_algebra_augmentation():
                 return InvariantsFunctor(ring_map)
             case _:
                 return CoextensionOfScalarsFunctor(ring_map)
@@ -275,11 +270,9 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``S tensor_{R[G]} - -| Res_f`` along ``ring_map: R[G] -> S``."""
         from dzack_research.preamble.categories.functors.group_actions import (
             CoinvariantsTrivialAdjunction,
-            is_augmentation_of_group_algebra,
         )
         from dzack_research.preamble.categories.functors.group_induction import (
             InductionRestrictionAdjunction,
-            is_group_algebra_map_of_subgroup_inclusion,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             _base_change_adjunction,
@@ -287,9 +280,9 @@ class ModulesOverGroupAlgebra(Modules):
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
         match ring_map:
-            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+            case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return InductionRestrictionAdjunction(ring_map)
-            case _ if is_augmentation_of_group_algebra(ring_map):
+            case _ if ring_map.is_group_algebra_augmentation():
                 return CoinvariantsTrivialAdjunction(ring_map)
             case _:
                 return _base_change_adjunction(ring_map)
@@ -298,7 +291,6 @@ class ModulesOverGroupAlgebra(Modules):
         r"""``Res_f -| Hom_A(R[G], -)`` along ``ring_map: A -> R[G]``."""
         from dzack_research.preamble.categories.functors.group_induction import (
             RestrictionCoinductionAdjunction,
-            is_group_algebra_map_of_subgroup_inclusion,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             _restriction_coextension_adjunction,
@@ -306,7 +298,7 @@ class ModulesOverGroupAlgebra(Modules):
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
         match ring_map:
-            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+            case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return RestrictionCoinductionAdjunction(ring_map)
             case _:
                 return _restriction_coextension_adjunction(ring_map)
