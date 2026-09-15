@@ -60,31 +60,32 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.definite_lattices import (
-    babai,
-    bkz_reduction,
-    center_density,
-    closest_vector,
-    contact_polytope,
-    covering_radius,
-    gaussian_heuristic,
-    hadamard_ratio,
-    hermite_invariant,
-    hkz_reduction,
-    kissing_number,
-    lll_reduction,
-    minimum,
-    packing_density,
-    packing_radius,
-    root_sublattice,
-    roots,
-    roots_of_square,
-    shortest_vectors,
-    successive_minima,
-    theta_series,
-    vectors_of_square,
-    vectors_of_square_and_divisibility,
-    voronoi_cell,
-    voronoi_relevant_vectors,
+    _babai,
+    _bkz_reduction,
+    _center_density,
+    _close_vectors,
+    _closest_vector,
+    _contact_polytope,
+    _covering_radius,
+    _gaussian_heuristic,
+    _hadamard_ratio,
+    _hermite_invariant,
+    _hkz_reduction,
+    _kissing_number,
+    _lll_reduction,
+    _minimum,
+    _packing_density,
+    _packing_radius,
+    _root_sublattice,
+    _roots,
+    _roots_of_square,
+    _shortest_vectors,
+    _successive_minima,
+    _theta_series,
+    _vectors_of_square,
+    _vectors_of_square_and_divisibility,
+    _voronoi_cell,
+    _voronoi_relevant_vectors,
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
@@ -2569,7 +2570,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def lll_reduction(self):
 
-            return lll_reduction(self)
+            return _lll_reduction(self)
 
         def LLL(self):
             r"""Return the same formed lattice in an LLL-reduced framing."""
@@ -2577,7 +2578,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def bkz_reduction(self, block_size=20):
 
-            return bkz_reduction(self, block_size=block_size)
+            return _bkz_reduction(self, block_size=block_size)
 
         def BKZ(self, block_size=20):
             r"""Return the same formed lattice in a BKZ-reduced framing."""
@@ -2585,7 +2586,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def hkz_reduction(self):
 
-            return hkz_reduction(self)
+            return _hkz_reduction(self)
 
         def HKZ(self):
             r"""Return the full-block BKZ (HKZ) reframing."""
@@ -2593,27 +2594,27 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def minimum(self):
 
-            return minimum(self)
+            return _minimum(self)
 
         def vectors_of_square(self, square):
 
-            return vectors_of_square(self, square)
+            return _vectors_of_square(self, square)
 
         def vectors_of_square_and_divisibility(self, square, divisibility):
 
-            return vectors_of_square_and_divisibility(self, square, divisibility)
+            return _vectors_of_square_and_divisibility(self, square, divisibility)
 
         def roots(self):
 
-            return roots(self)
+            return _roots(self)
 
         def roots_of_square(self, square):
 
-            return roots_of_square(self, square)
+            return _roots_of_square(self, square)
 
         def root_sublattice(self):
 
-            return root_sublattice(self)
+            return _root_sublattice(self)
 
         def lorentzian_reduction_complex(self, marked_vectors=None):
             r"""Return the completed Lorentzian perfect-domain traversal of this lattice."""
@@ -2874,69 +2875,73 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def shortest_vectors(self):
 
-            return shortest_vectors(self)
+            return _shortest_vectors(self)
 
         def theta_series(self, precision=20, variable="q"):
 
-            return theta_series(self, precision=precision, variable=variable)
+            return _theta_series(self, precision=precision, variable=variable)
 
         def hermite_invariant(self):
 
-            return hermite_invariant(self)
+            return _hermite_invariant(self)
 
         def successive_minima(self):
 
-            return successive_minima(self)
+            return _successive_minima(self)
 
         def gaussian_heuristic(self, *, exact_form=False):
 
-            return gaussian_heuristic(self, exact_form=exact_form)
+            return _gaussian_heuristic(self, exact_form=exact_form)
 
         def hadamard_ratio(self):
 
-            return hadamard_ratio(self)
+            return _hadamard_ratio(self)
 
         def closest_vector(self, target):
 
-            return closest_vector(self, target)
+            return _closest_vector(self, target)
+
+        def close_vectors(self, target, square_bound):
+            r"""Return the lattice vectors within the stated quadratic bound of ``target``."""
+            return _close_vectors(self, target, square_bound)
 
         def babai(self, target):
 
-            return babai(self, target)
+            return _babai(self, target)
 
         approximate_closest_vector = babai
 
         def voronoi_cell(self, bound=None):
 
-            return voronoi_cell(self, bound=bound)
+            return _voronoi_cell(self, bound=bound)
 
         def voronoi_relevant_vectors(self):
 
-            return voronoi_relevant_vectors(self)
+            return _voronoi_relevant_vectors(self)
 
         def contact_polytope(self):
 
-            return contact_polytope(self)
+            return _contact_polytope(self)
 
         def packing_radius(self):
 
-            return packing_radius(self)
+            return _packing_radius(self)
 
         def covering_radius(self):
 
-            return covering_radius(self)
+            return _covering_radius(self)
 
         def center_density(self):
 
-            return center_density(self)
+            return _center_density(self)
 
         def packing_density(self):
 
-            return packing_density(self)
+            return _packing_density(self)
 
         def kissing_number(self):
 
-            return kissing_number(self)
+            return _kissing_number(self)
 
         def twist(self, scalar):
             r"""Keep the module and rescale its form by ``scalar``.
