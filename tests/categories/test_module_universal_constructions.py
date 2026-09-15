@@ -19,10 +19,9 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.sets import NN, cartesian_product_of, finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, Sets, finite_ordered_set
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
@@ -400,7 +399,7 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
 
 
 def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_rectangles() -> None:
-    grid = cartesian_product_of((NN, NN))
+    grid = Sets().product((NN, NN))
     index = PosetCategory(
         grid,
         le=lambda left, right: left[0] <= right[0] and left[1] <= right[1],

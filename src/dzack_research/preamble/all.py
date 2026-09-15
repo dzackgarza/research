@@ -973,7 +973,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     aleph,
     aleph0,
     cardinal,
-    cartesian_product_of,
     continuum,
     finite_ordered_set,
     omega,

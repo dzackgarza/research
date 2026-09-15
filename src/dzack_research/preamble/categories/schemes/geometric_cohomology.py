@@ -43,7 +43,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
-    cartesian_product_of,
+    Sets,
 )
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.refine import refine
@@ -385,7 +385,7 @@ def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
     point of ``NN``.  Thus the grading pair and the Hodge number both remain
     mathematical set elements rather than Python tuple/integer payloads.
     """
-    bidegrees = cartesian_product_of((NN, NN))
+    bidegrees = Sets().product((NN, NN))
     labels = finite_ordered_set(tuple(bidegrees((NN(p), NN(degree - p))) for p in p_values if 0 <= degree - p <= q_bound))
     return finite_indexed_family(
         labels,

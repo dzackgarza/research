@@ -163,6 +163,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "internal_hom_morphism",
         "scheme_product",
         "scheme_fiber_product",
+        "cartesian_product_of",
         "tensor_power_permutation",
         "divided_power_product",
         "alternating_power_product",

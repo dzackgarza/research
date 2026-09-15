@@ -26,8 +26,6 @@ _EXPORTS = {'CountableSets': ('dzack_research.preamble.categories.sets.set_categ
  'placement_of': ('dzack_research.preamble.categories.sets.set_categories', 'placement_of'),
  'register_set_axioms': ('dzack_research.preamble.categories.sets.set_categories',
                          'register_set_axioms'),
- 'cartesian_product_of': ('dzack_research.preamble.categories.sets.set_categories',
-                          'cartesian_product_of'),
  'PowerSets': ('dzack_research.preamble.categories.sets.set_categories', 'PowerSets'),
  'ObjectSetsOfDiscreteCategories': ('dzack_research.preamble.categories.sets.set_categories',
                                     'ObjectSetsOfDiscreteCategories'),
@@ -112,8 +110,7 @@ _EXPORTS = {'CountableSets': ('dzack_research.preamble.categories.sets.set_categ
  'ordered_enumerated_set': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                             'ordered_enumerated_set')}
 
-__all__ = ['cartesian_product_of',
- 'PowerSets',
+__all__ = [ 'PowerSets',
  'ObjectSetsOfDiscreteCategories',
  'FinitePowerSets',
  'DisjointUnionsOfSets',

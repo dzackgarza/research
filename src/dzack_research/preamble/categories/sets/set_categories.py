@@ -707,7 +707,7 @@ class Sets(OwnedCategory):
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
                 return self._categorical_product_construction(family).object()
-            return CartesianProductOfFamily(index_set, family)
+            return _cartesian_product_of_family(index_set, family)
 
         def _categorical_product(self, left, right):
             return self._categorical_product_construction((left, right)).object()
@@ -767,7 +767,7 @@ class Sets(OwnedCategory):
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
                 return self._categorical_coproduct_construction(family).object()
-            return CoproductOfFamily(index_set, family)
+            return _coproduct_of_family(index_set, family)
 
         def _categorical_coproduct(self, left, right):
             return self._categorical_coproduct_construction((left, right)).object()
@@ -895,14 +895,14 @@ class Sets(OwnedCategory):
             )
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
-            return CartesianProductMorphism(
+            return _cartesian_product_morphism(
                 source,
                 target,
                 lambda index: left_morphism if int(index) == 0 else right_morphism,
             )
 
         def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
-            return CoproductMorphism(
+            return _coproduct_morphism(
                 source,
                 target,
                 lambda index: left_morphism if int(index) == 0 else right_morphism,
@@ -1031,11 +1031,32 @@ class Sets(OwnedCategory):
                 return Sets().Mor(self, codomain)
             return _category_hom(category, self, codomain)
 
+        def condition_set(self, predicate) -> Parent:
+            r"""Return the represented subset of ``self`` cut out by ``predicate``."""
+            return Sets().condition_set(self, predicate)
+
+        def image_set(
+            self,
+            map_,
+            *,
+            category=None,
+            is_injective=None,
+            inverse=None,
+        ) -> Parent:
+            r"""Return the represented image of ``self`` under ``map_``."""
+            return Sets().image_set(
+                map_,
+                self,
+                category=category,
+                is_injective=is_injective,
+                inverse=inverse,
+            )
+
         def power_set(self) -> Parent:
-            return PowerSet(self)
+            return _power_set(self)
 
         def exponential(self, exponent: Parent) -> Parent:
-            return ExponentialOfSets(self, exponent)
+            return _exponential_of_sets(self, exponent)
 
         def __mul__(self, other):
             r"""Return $X \times Y$.  A product of sets is a set."""
@@ -1061,10 +1082,10 @@ class Sets(OwnedCategory):
             return Sets().product(indexed_family(Sets.Δ[count - 1], lambda index: self))
 
         def subsets_of_size(self, size: int) -> Parent:
-            return SubsetsOfSize(self, size)
+            return _subsets_of_size(self, size)
 
         def finite_subsets(self) -> Parent:
-            return FiniteSubsets(self)
+            return _finite_subsets(self)
 
     class Finite(CategoryWithAxiom):
         r"""Sets whose cardinality is finite."""
@@ -1144,31 +1165,6 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Parent:
     r"""Notebook notation for construction through :class:`Sets`."""
     return Sets()(source)
 
-
-def ConditionSet[SourcePointT](
-    universe: Parent,
-    predicate: Callable[[SourcePointT], bool],
-) -> Parent:
-    r"""Notebook notation for the set-category condition construction."""
-    return Sets().condition_set(universe, predicate)
-
-
-def ImageSet[SourcePointT, TargetPointT](
-    map_: Callable[[SourcePointT], TargetPointT],
-    domain_subset: Parent,
-    *,
-    category: Category | None = None,
-    is_injective: bool | None = None,
-    inverse: Callable[[TargetPointT], SourcePointT] | None = None,
-) -> Parent:
-    r"""Notebook notation for the set-category image construction."""
-    return Sets().image_set(
-        map_,
-        domain_subset,
-        category=category,
-        is_injective=is_injective,
-        inverse=inverse,
-    )
 
 
 class SetInjection(OwnedSetMorphism):
@@ -1609,7 +1605,7 @@ class PowerSets(OwnedCategory):
 
 
 @cached_function
-def PowerSet(base_set: Parent) -> Parent:
+def _power_set(base_set: Parent) -> Parent:
     return PowerSets()(base_set)
 
 
@@ -1633,7 +1629,7 @@ class FunctionSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""\(\Delta_2^{\Delta_1}\)."""
-        return ExponentialOfSets(Sets.Δ[2], Sets.Δ[1])
+        return Sets.Δ[2].exponential(Sets.Δ[1])
 
     def super_categories(self):
         return [Sets()]
@@ -1682,7 +1678,7 @@ class FunctionSets(OwnedCategory):
 
 
 @cached_function
-def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
+def _exponential_of_sets(codomain: Parent, exponent: Parent) -> Parent:
     return FunctionSets()(codomain, exponent)
 
 
@@ -1691,7 +1687,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""One object of this category."""
-        return SubsetsOfSize(Sets.Δ[2], 2)
+        return Sets.Δ[2].subsets_of_size(2)
 
     def super_categories(self):
         return [Sets()]
@@ -1718,7 +1714,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
             return self._subset_cardinality
 
         def power_set(self) -> Parent:
-            return PowerSet(self.source())
+            return self.source().power_set()
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -1755,7 +1751,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
 
 @cached_function
-def SubsetsOfSize(source: Parent, subset_cardinality: int) -> Parent:
+def _subsets_of_size(source: Parent, subset_cardinality: int) -> Parent:
     return FixedCardinalitySubsetSets()(source, subset_cardinality)
 
 
@@ -1764,7 +1760,7 @@ class FinitePowerSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""One object of this category."""
-        return FiniteSubsets(Sets.Δ[2])
+        return Sets.Δ[2].finite_subsets()
 
     def super_categories(self):
         return [Sets()]
@@ -1782,7 +1778,7 @@ class FinitePowerSets(OwnedCategory):
             return self._source
 
         def power_set(self) -> Parent:
-            return PowerSet(self.source())
+            return self.source().power_set()
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -1815,7 +1811,7 @@ class FinitePowerSets(OwnedCategory):
 
 
 @cached_function
-def FiniteSubsets(source: Parent) -> Parent:
+def _finite_subsets(source: Parent) -> Parent:
     return FinitePowerSets()(source)
 
 
@@ -2109,7 +2105,7 @@ class CartesianProductsOfSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""The square of the ordinal 2."""
-        return CartesianProductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
+        return Sets().product((finite_ordinal_set(2), finite_ordinal_set(2)))
 
     def super_categories(self):
         return [Sets()]
@@ -2450,7 +2446,7 @@ class CoproductsOfSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""The disjoint union of the ordinal 2 with itself."""
-        return CoproductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
+        return Sets().coproduct((finite_ordinal_set(2), finite_ordinal_set(2)))
 
     def super_categories(self):
         return [Sets()]
@@ -2474,7 +2470,7 @@ def _cartesian_product_of_finite_family(family: IndexedFamily) -> Parent:
     return CartesianProductsOfSets()(family.index_set(), family)
 
 
-def CartesianProductOfFamily[IndexT](
+def _cartesian_product_of_family[IndexT](
     index_set: Parent,
     family: Callable[[IndexT], Parent],
 ) -> Parent:
@@ -2525,25 +2521,8 @@ def CartesianProductOfFamily[IndexT](
     return CartesianProductsOfSets()(index_set, family)
 
 
-@cached_function(key=lambda factors: tuple(id(factor) for factor in factors))
-def _cartesian_product_of_tuple(factors: tuple[Parent, ...]) -> Parent:
-    index_set = Sets.Δ[len(factors) - 1]
 
-    def family(index):
-        return factors[int(index)]
-
-    return CartesianProductOfFamily(index_set, family)
-
-
-def CartesianProductOfSets(*factors: Parent) -> Parent:
-    return _cartesian_product_of_tuple(tuple(factors))
-
-
-def cartesian_product_of(factors: Iterable[Parent]) -> Parent:
-    return CartesianProductOfSets(*tuple(factors))
-
-
-def CartesianProductMorphism[IndexT](
+def _cartesian_product_morphism[IndexT](
     source: Parent,
     target: Parent,
     component_morphisms: Callable[[IndexT], SetMorphism],
@@ -2564,7 +2543,7 @@ def _coproduct_of_indexed_family[IndexT](index_set: Parent, family: Callable[[In
     return object_of(CoproductsOfSets(), index_set=index_set, family=family)
 
 
-def CoproductOfFamily[IndexT](
+def _coproduct_of_family[IndexT](
     index_set: Parent,
     family: Callable[[IndexT], Parent],
 ) -> Parent:
@@ -2575,17 +2554,8 @@ def CoproductOfFamily[IndexT](
     return CoproductsOfSets()(index_set, family)
 
 
-@cached_function(key=lambda cofactors: tuple(id(cofactor) for cofactor in cofactors))
-def _coproduct_of_tuple(cofactors: tuple[Parent, ...]) -> Parent:
-    index_set = Sets.Δ[len(cofactors) - 1]
-    return CoproductOfFamily(index_set, lambda index: cofactors[int(index)])
 
-
-def CoproductOfSets(*cofactors: Parent) -> Parent:
-    return _coproduct_of_tuple(tuple(cofactors))
-
-
-def CoproductMorphism[IndexT](
+def _coproduct_morphism[IndexT](
     source: Parent,
     target: Parent,
     component_morphisms: Callable[[IndexT], SetMorphism],
@@ -2858,7 +2828,7 @@ class FinitelySupportedFunctionSets(OwnedCategory):
 
     def an_object(self) -> Parent:
         r"""Functions from the ordinal 2 to itself, all of finite support."""
-        return ExponentialOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
+        return finite_ordinal_set(2).exponential(finite_ordinal_set(2))
 
     def super_categories(self):
         return [Sets()]
@@ -2889,35 +2859,24 @@ class SetSubcategoryMethods:
 
 
 __all__ = [
-    "CartesianProductMorphism",
-    "CartesianProductOfFamily",
-    "CartesianProductOfSets",
     "CartesianProductsOfSets",
-    "ConditionSet",
     "CountableSets",
     "CountablyInfiniteSets",
-    "CoproductMorphism",
-    "CoproductOfFamily",
-    "CoproductOfSets",
     "CoproductsOfSets",
     "DisjointUnionsOfSets",
     "EnumeratedSets",
-    "ExponentialOfSets",
     "FiniteOrdinalSets",
     "FinitePowerSets",
     "FiniteSets",
-    "FiniteSubsets",
     "FinitelySupportedFunctionSets",
     "FixedCardinalitySubsetSets",
     "FunctionSets",
-    "ImageSet",
     "InfiniteEnumeratedSets",
     "InfiniteSets",
     "NaturalNumberSets",
     "NN",
     "ObjectSetsOfDiscreteCategories",
     "PartiallyOrderedSets",
-    "PowerSet",
     "PowerSets",
     "PowerSets",
     "Set",
@@ -2926,10 +2885,8 @@ __all__ = [
     "SetSubcategoryMethods",
     "SetSurjection",
     "Sets",
-    "SubsetsOfSize",
     "TotallyOrderedSets",
     "UncountableSets",
-    "cartesian_product_of",
     "counting_ordinal",
     "placement_of",
     "finite_ordinal_set",
