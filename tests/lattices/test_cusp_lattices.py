@@ -30,7 +30,6 @@ from dzack_research.preamble.all import (
     Set,
     NamedLattices,
     Sterk,
-    cusps,
     nikulin_invariants,
     primitive_isotropic,
     transport_isotropic_object,
@@ -110,7 +109,7 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
     assert lattice.is_even()
     assert lattice.discriminant_group().cardinality() == 1
 
-    cusp_set = cusps(lattice)
+    cusp_set = lattice.cusps()
     assert cusp_set.cardinality() == 1
     cusp = cusp_set[0]
     assert cusp.module_rank() == 1
@@ -137,7 +136,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     line = primitive_isotropic(lattice, (vector,))
     assert line.module_rank() == 1
 
-    cusp = cusps(lattice)[0]
+    cusp = lattice.cusps()[0]
     witness = cusp.transporter_witness(line)
     assert witness is not None
     assert witness.domain() is lattice

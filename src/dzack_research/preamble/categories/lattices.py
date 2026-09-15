@@ -89,6 +89,7 @@ from dzack_research.preamble.categories.definite_lattices import (
 from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.isotropic_orbits import (
+    Cusp,
     IsotropicFlag,
     IsotropicFlagLocus,
     IsotropicSublatticeLocus,
@@ -2764,6 +2765,21 @@ class Lattices(OwnedCategoryOverBaseRing):
             cusps.
             """
             return PrimitiveIsotropicVectorLocus(self)
+
+        def cusps(self, rank=1):
+            r"""Return the ``O(L)``-orbits of primitive isotropic rank-``rank`` subobjects.
+
+            The finite ordered result retains each representative, its
+            parabolic subgroup and stabilizer generators, and transporter
+            witnesses for membership.  Rank one gives zero-dimensional cusps;
+            rank two gives one-dimensional cusps.
+            """
+            return finite_ordered_set(
+                tuple(
+                    Cusp(representative)
+                    for representative in self.Aut().isotropic_orbit_representatives(rank)
+                )
+            )
 
         def primitive_isotropic_sublattices(self, rank=1):
             r"""Return primitive totally isotropic rank-``rank`` subobjects of this lattice."""

@@ -11,10 +11,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.catalogue import Involutions, NamedLattices
-from dzack_research.preamble.categories.isotropic_orbits import (
-    cusps,
-    tits_building_incidence,
-)
+from dzack_research.preamble.categories.isotropic_orbits import tits_building_incidence
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
@@ -79,7 +76,7 @@ class LorentzianE10Application(SageObject):
 
     @cached_method
     def cusp(self):
-        return cusps(self.lattice(), 1)[0]
+        return self.lattice().cusps(1)[0]
 
     def isotropic_line(self):
         return self.cusp().representative()
@@ -135,10 +132,10 @@ class EnriquesHigherWittApplication(SageObject):
         return self.arithmetic_group().tits_building_incidence()
 
     def full_orthogonal_line_cusps(self):
-        return cusps(self.lattice(), 1)
+        return self.lattice().cusps(1)
 
     def full_orthogonal_plane_cusps(self):
-        return cusps(self.lattice(), 2)
+        return self.lattice().cusps(2)
 
     def full_orthogonal_tits_building_incidence(self):
         return tits_building_incidence(self.lattice())

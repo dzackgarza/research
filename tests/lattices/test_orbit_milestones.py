@@ -28,14 +28,13 @@ is the group acting on the polarized period domain.
 from dzack_research.preamble.all import (
     Involutions,
     NamedLattices,
-    cusps,
     primitive_isotropic,
 )
 
 
 def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
     lattice = NamedLattices.E10
-    cusp = cusps(lattice)[0]
+    cusp = lattice.cusps()[0]
     line = cusp.representative()
     quotient = line.isotropic_quotient()
     assert quotient.module_rank() == 8
@@ -64,8 +63,8 @@ def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
 
 def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> None:
     lattice = NamedLattices.TEn
-    line_cusps = cusps(lattice, 1)
-    plane_cusps = cusps(lattice, 2)
+    line_cusps = lattice.cusps(1)
+    plane_cusps = lattice.cusps(2)
 
     # Two lines whose reductions are not isometric cannot share a cusp, and
     # both reduction classes occur among the Sterk lines, so there are at

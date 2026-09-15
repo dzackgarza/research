@@ -191,7 +191,7 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
             raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
         self._group = group
         self._locus = locus
-        self._orbits = cusps(locus.lattice(), rank=locus.rank())
+        self._orbits = locus.lattice().cusps(rank=locus.rank())
 
     def group(self):
         return self._group
@@ -667,38 +667,6 @@ class ArithmeticCuspIncidence(SageObject):
         )
 
 
-def cusps(lattice, rank=1):
-    r"""Return the cusps of ``lattice``: its ``O(L)``-orbits of rank-``k`` subobjects.
-
-    The orbits are finite in number and come back as an ordered set, each
-    carrying its representative, that representative's parabolic subgroup and
-    stabilizer generators, and the transporter witnessing any membership.  For
-    rank one these are the zero-dimensional cusps of the arithmetic quotient,
-    for rank two the one-dimensional ones.
-    """
-    return finite_ordered_set(
-        tuple(
-            Cusp(representative)
-            for representative in lattice.Aut().isotropic_orbit_representatives(rank)
-        )
-    )
-
-
-def arithmetic_cusps(subgroup, rank=1):
-    r"""Return the primitive-isotropic cusp orbits of ``subgroup`` of rank ``rank``.
-
-    The subgroup's own isotropic orbit splitter performs the finite-character
-    double-coset calculation.  Each returned cusp then retains exact subgroup
-    membership and a transporter in that subgroup.
-    """
-    return finite_ordered_set(
-        tuple(
-            ArithmeticCusp(subgroup, representative)
-            for representative in subgroup.isotropic_orbit_representatives(rank)
-        )
-    )
-
-
 def tits_building_incidence(lattice):
     r"""Return the finite line/plane incidence in the ``O(L)`` quotient building.
 
@@ -708,8 +676,8 @@ def tits_building_incidence(lattice):
     embeddings and the transporters to the selected representatives of those
     cusp vertices.
     """
-    line_cusps = cusps(lattice, 1)
-    plane_cusps = cusps(lattice, 2)
+    line_cusps = lattice.cusps(1)
+    plane_cusps = lattice.cusps(2)
     orthogonal_group = lattice.Aut()
     incidences = []
     for flag in orthogonal_group.isotropic_orbit_representatives(2, flag=True):
@@ -748,8 +716,8 @@ def arithmetic_tits_building_incidence(subgroup):
     inheriting transporters from the full orthogonal group.
     """
     lattice = subgroup.supergroup().domain()
-    line_cusps = arithmetic_cusps(subgroup, 1)
-    plane_cusps = arithmetic_cusps(subgroup, 2)
+    line_cusps = subgroup.cusps(1)
+    plane_cusps = subgroup.cusps(2)
     incidences = []
     for flag in subgroup.isotropic_orbit_representatives(2, flag=True):
         line, plane = flag.terms()
@@ -945,9 +913,7 @@ __all__ = [
     "PrimitiveIsotropicVectorOrbit",
     "PrimitiveIsotropicVectorOrbitDecomposition",
     "VectorLocus",
-    "arithmetic_cusps",
     "arithmetic_tits_building_incidence",
-    "cusps",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",

@@ -98,6 +98,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "are_in_one_stable_orbit",
         "cohomology_algebra_homset",
         "covering_discriminant_classes",
+        "cusps",
         "cyclotomic_summand",
         "eichler_criterion_applies",
         "dga_homset",
