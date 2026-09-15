@@ -194,7 +194,7 @@ class OrderEmbedding(Morphism):
     def __mul__(self, other):
         if not isinstance(other, OrderEmbedding) or other.codomain() is not self.domain():
             return NotImplemented
-        return order_homset(other.domain(), self.codomain())(
+        return other.domain().Mor(self.codomain())(
             self.field_embedding() * other.field_embedding()
         )
 
@@ -231,15 +231,9 @@ class OrderHomset(CategoricalHomset):
         return f"Emb({self.domain()}, {self.codomain()})"
 
 
-@cached_function
-def order_homset(domain, codomain) -> OrderHomset:
-    return OrderHomset(domain, codomain)
-
-
 __all__ = [
     "NumberFieldEmbedding",
     "NumberFieldHomset",
     "OrderEmbedding",
     "OrderHomset",
-    "order_homset",
 ]

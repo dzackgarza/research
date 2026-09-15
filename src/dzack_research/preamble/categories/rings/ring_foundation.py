@@ -1908,7 +1908,40 @@ class OwnedOrders(OwnedCategory):
 
         return _order_number_field_adjunction()
 
+    @cached_method(key=lambda self, domain, codomain: (id(domain), id(codomain)))
+    def Mor(self, domain, codomain):
+        r"""Return the exact embedding Hom between two represented orders."""
+        if domain not in self or codomain not in self:
+            raise TypeError("an order embedding requires two represented orders")
+        from dzack_research.preamble.categories.rings.embeddings import OrderHomset
+
+        return OrderHomset(domain, codomain)
+
     class ParentMethods:
+        def Mor(self, codomain, category=None):
+            orders = OwnedOrders()
+            if codomain in orders and (
+                category is None
+                or (
+                    isinstance(category, OwnedCategory)
+                    and category.is_subcategory(orders)
+                )
+            ):
+                return orders.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
+        def _Hom_(self, codomain, category=None):
+            orders = OwnedOrders()
+            if codomain in orders and (
+                category is None
+                or (
+                    isinstance(category, OwnedCategory)
+                    and category.is_subcategory(orders)
+                )
+            ):
+                return orders.Mor(self, codomain)
+            return super()._Hom_(codomain, category=category)
+
         def cardinality(self):
 
             return aleph0

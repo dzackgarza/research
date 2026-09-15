@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldEmbedding,
     OrderEmbedding,
-    order_homset,
 )
 from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedOrders, _engine_ring
@@ -54,7 +53,7 @@ class RingOfIntegersFunctor(Functor):
     def _apply_morphism(self, embedding: NumberFieldEmbedding):
         source = self(embedding.domain())
         target = self(embedding.codomain())
-        return order_homset(source, target)(embedding)
+        return source.Mor(target)(embedding)
 
     def _repr_(self):
         return "Ring-of-integers functor"
@@ -69,7 +68,7 @@ class OrderNumberFieldAdjunction(Adjunction):
     def unit(self, order):
         field = self.left_adjoint()(order)
         maximal_order = self.right_adjoint()(field)
-        return order_homset(order, maximal_order)(
+        return order.Mor(maximal_order)(
             field.Mor(field).identity()
         )
 

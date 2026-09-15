@@ -29,10 +29,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
 )
-from dzack_research.preamble.categories.rings.embeddings import (
-    NumberFieldHomset,
-    order_homset,
-)
+from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedOrders,
@@ -592,13 +589,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             return _own_ring(SageZZ)
 
         algebra_base_ring = base_ring
-
-        def _Hom_(self, codomain, category=None):
-            if codomain not in OwnedOrders():
-                raise TypeError("an order embedding must land in an order")
-            if category is not None and not category.is_subcategory(OwnedOrders()):
-                raise TypeError("this is not an order-embedding category")
-            return order_homset(self, codomain)
 
         def ideal(self, *module_generators):
             from dzack_research.preamble.categories.modules.fractional_ideals import (
