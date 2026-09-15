@@ -131,6 +131,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "restrict_graded_algebra_scalars",
         "restrict_algebra_scalars",
         "ring_as_module",
+        "set_injection",
+        "set_surjection",
         "splits_two_hyperbolic_planes",
         "sub_framing_morphism",
         "subobject_image_adjunction",

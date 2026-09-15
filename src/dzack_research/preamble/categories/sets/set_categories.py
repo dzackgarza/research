@@ -25,8 +25,11 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
+    EpiCategoryConstruction,
     HomCategoryConstruction,
+    MonoCategoryConstruction,
     _category_hom,
+    category_packet,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -1174,6 +1177,13 @@ class SetInjection(OwnedSetMorphism):
     def is_injective(self) -> bool:
         return True
 
+    def __mul__(self, other):
+        if isinstance(other, SetInjection) and other.codomain() is self.domain():
+            return Sets().Mono(other.domain(), self.codomain())(
+                lambda element: self(other(element))
+            )
+        return super().__mul__(other)
+
 
 class SetSurjection(OwnedSetMorphism):
     r"""A set morphism supplied with the assertion that it is surjective."""
@@ -1181,21 +1191,150 @@ class SetSurjection(OwnedSetMorphism):
     def is_surjective(self) -> bool:
         return True
 
+    def __mul__(self, other):
+        if isinstance(other, SetSurjection) and other.codomain() is self.domain():
+            return Sets().Epi(other.domain(), self.codomain())(
+                lambda element: self(other(element))
+            )
+        return super().__mul__(other)
 
-def set_injection[SourcePointT, TargetPointT](
-    domain: Parent,
-    codomain: Parent,
-    function: Callable[[SourcePointT], TargetPointT],
-) -> SetInjection:
-    return SetInjection(Sets().Mor(domain, codomain), function)
+
+class SetInjectionHomset(SetMorCategory):
+    r"""The declared injections between two sets."""
+
+    def __call__(self, datum):
+        if isinstance(datum, Morphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the set injection has the wrong source or target")
+            if datum.parent() is self:
+                return datum
+            try:
+                injective = datum.is_injective()
+            except (AttributeError, NotImplementedError):
+                injective = False
+            if injective is not True:
+                raise ValueError("a set monomorphism requires an injective map")
+            return SetInjection(self, lambda element: datum(element))
+        if not callable(datum):
+            raise TypeError("a set injection is supplied by a callable")
+        return SetInjection(self, datum)
+
+    def arrow_set(self):
+        return Sets().Mor(self.domain(), self.codomain())
+
+    underlying_homset = arrow_set
+
+    def accepts(self, arrow):
+        if not (
+            isinstance(arrow, Morphism)
+            and arrow.domain() is self.domain()
+            and arrow.codomain() is self.codomain()
+        ):
+            return False
+        try:
+            return arrow.is_injective() is True
+        except (AttributeError, NotImplementedError):
+            return False
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only for equal set endpoints")
+        identity = SetInjection(self, lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain_object()
+        target = self.codomain_object()
+        inherited = [
+            superpacket.Monos().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        return [packet.Homs().Of(source, target), *inherited]
+
+    def _repr_(self):
+        return f"Mono_Set({self.domain()}, {self.codomain()})"
 
 
-def set_surjection[SourcePointT, TargetPointT](
-    domain: Parent,
-    codomain: Parent,
-    function: Callable[[SourcePointT], TargetPointT],
-) -> SetSurjection:
-    return SetSurjection(Sets().Mor(domain, codomain), function)
+class SetSurjectionHomset(SetMorCategory):
+    r"""The declared surjections between two sets."""
+
+    def __call__(self, datum):
+        if isinstance(datum, Morphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the set surjection has the wrong source or target")
+            if datum.parent() is self:
+                return datum
+            try:
+                surjective = datum.is_surjective()
+            except (AttributeError, NotImplementedError):
+                surjective = False
+            if surjective is not True:
+                raise ValueError("a set epimorphism requires a surjective map")
+            return SetSurjection(self, lambda element: datum(element))
+        if not callable(datum):
+            raise TypeError("a set surjection is supplied by a callable")
+        return SetSurjection(self, datum)
+
+    def arrow_set(self):
+        return Sets().Mor(self.domain(), self.codomain())
+
+    underlying_homset = arrow_set
+
+    def accepts(self, arrow):
+        if not (
+            isinstance(arrow, Morphism)
+            and arrow.domain() is self.domain()
+            and arrow.codomain() is self.codomain()
+        ):
+            return False
+        try:
+            return arrow.is_surjective() is True
+        except (AttributeError, NotImplementedError):
+            return False
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only for equal set endpoints")
+        identity = SetSurjection(self, lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain_object()
+        target = self.codomain_object()
+        inherited = [
+            superpacket.Epis().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        return [packet.Homs().Of(source, target), *inherited]
+
+    def _repr_(self):
+        return f"Epi_Set({self.domain()}, {self.codomain()})"
+
+
+class SetMonoCategoryConstruction(MonoCategoryConstruction):
+    r"""The declared monomorphisms of sets."""
+
+    def fixed_category_class(self):
+        return SetInjectionHomset
+
+
+class SetEpiCategoryConstruction(EpiCategoryConstruction):
+    r"""The declared epimorphisms of sets."""
+
+    def fixed_category_class(self):
+        return SetSurjectionHomset
+
+
+Sets._MonoCategory = SetMonoCategoryConstruction
+Sets._EpiCategory = SetEpiCategoryConstruction
 
 
 class SetInclusion(OwnedSetMorphism):
@@ -2796,6 +2935,4 @@ __all__ = [
     "finite_ordinal_set",
     "ranking_isomorphism",
     "register_set_axioms",
-    "set_injection",
-    "set_surjection",
 ]

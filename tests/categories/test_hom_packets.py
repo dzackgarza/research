@@ -14,8 +14,6 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
     algebra_underlying_module_functor,
     category_packet,
-    set_injection,
-    set_surjection,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
@@ -46,15 +44,24 @@ def test_hom_and_end_families_recover_actual_external_homsets() -> None:
 def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> None:
     source = Sets.Δ[1]
     target = Sets.Δ[3]
-    inclusion = set_injection(source, target, lambda value: target(value + 1))
-    quotient = set_surjection(target, source, lambda value: source(value % 2))
-
     monos = Sets().Mono(source, target)
     epis = Sets().Epi(target, source)
+    inclusion = monos(lambda value: target(value + 1))
+    quotient = epis(lambda value: source(value % 2))
+    assert inclusion.parent() is monos
+    assert quotient.parent() is epis
     assert inclusion in monos
     assert quotient in epis
 
-    swap = Sets().Mor(source, source)(lambda value: source(1 - int(value)))
+    source_endomorphisms = Sets().Mor(source, source)
+    source_monos = Sets().Mono(source, source)
+    source_epis = Sets().Epi(source, source)
+    constant = source_endomorphisms(lambda _value: source(0))
+    swap = source_endomorphisms(lambda value: source(1 - int(value)))
+    assert constant not in source_monos
+    assert constant not in source_epis
+    assert swap in source_monos
+    assert swap in source_epis
     isomorphism = Isomorphism(swap, swap)
     isos = Sets().Iso(source, source)
     auts = Sets().Aut(source)
@@ -201,21 +208,39 @@ def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> Non
     assert (identity * identity)(ZZ(3)) == ZZ(3)
 
 
-def test_restricted_hom_families_compose_nonidentity_set_injections_in_the_base_homs() -> None:
+def test_set_mono_family_constructs_and_composes_nonidentity_injections() -> None:
     source = Sets.Δ[1]
     middle = Sets.Δ[2]
     target = Sets.Δ[3]
-    first = set_injection(source, middle, lambda value: middle(int(value)))
-    second = set_injection(middle, target, lambda value: target(int(value) + 1))
-
     mono_source = Sets().Mono(source, middle)
     mono_target = Sets().Mono(middle, target)
     mono_composite = Sets().Mono(source, target)
+    first = mono_source(lambda value: middle(int(value)))
+    second = mono_target(lambda value: target(int(value) + 1))
 
     assert first in mono_source
     assert second in mono_target
     composite = second * first
+    assert composite.parent() is mono_composite
     assert composite in mono_composite
     assert composite(source(0)) == target(1)
     assert composite(source(1)) == target(2)
     assert mono_composite.underlying_homset() is Sets().Mor(source, target)
+
+
+def test_set_epi_family_constructs_and_composes_nonidentity_surjections() -> None:
+    source = Sets.Δ[3]
+    middle = Sets.Δ[2]
+    target = Sets.Δ[1]
+    epi_source = Sets().Epi(source, middle)
+    epi_target = Sets().Epi(middle, target)
+    epi_composite = Sets().Epi(source, target)
+    first = epi_source(lambda value: middle(int(value) % 3))
+    second = epi_target(lambda value: target(int(value) % 2))
+
+    composite = second * first
+    assert composite.parent() is epi_composite
+    assert composite in epi_composite
+    assert composite(source(0)) == target(0)
+    assert composite(source(1)) == target(1)
+    assert epi_composite.underlying_homset() is Sets().Mor(source, target)

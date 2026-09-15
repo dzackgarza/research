@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     finite_power_set_functor,
     fixed_cardinality_subset_functor,
     inverse_image_power_set_functor,
-    set_injection,
 )
 
 
@@ -15,8 +14,8 @@ def test_exponential_functor_is_contravariant_in_source_and_covariant_in_target(
     x_small = Sets.Δ[1]
     y = Sets.Δ[1]
     y_large = Sets.Δ[2]
-    pre = set_injection(x_small, x, lambda value: x(value))
-    post = set_injection(y, y_large, lambda value: y_large(value + 1))
+    pre = Sets().Mono(x_small, x)(lambda value: x(value))
+    post = Sets().Mono(y, y_large)(lambda value: y_large(value + 1))
 
     exponential = exponential_functor()
     source_pair = exponential.pair(x, y)
@@ -54,7 +53,7 @@ def test_power_set_and_finite_power_set_functors_act_by_inverse_and_direct_image
 def test_fixed_cardinality_subset_functor_is_defined_exactly_on_injections() -> None:
     source = Sets.Δ[2]
     target = Sets.Δ[4]
-    inclusion = set_injection(source, target, lambda value: target(value + 1))
+    inclusion = Sets().Mono(source, target)(lambda value: target(value + 1))
     pairs = fixed_cardinality_subset_functor(2)
     carried = pairs(inclusion)
     assert carried(pairs(source)({0, 2})) == pairs(target)({1, 3})

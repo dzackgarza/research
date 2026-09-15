@@ -10,8 +10,6 @@ from dzack_research.preamble.all import (
     Sets,
     WideSubcategory,
     common_category,
-    set_injection,
-    set_surjection,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -43,8 +41,8 @@ def test_archived_arrow_subcategories_retain_their_semantic_predicates() -> None
     two = Sets.Δ[1]
     three = Sets.Δ[2]
     one = Sets.Δ[0]
-    inclusion = set_injection(two, three, lambda point: three(int(point)))
-    quotient = set_surjection(three, one, lambda _point: one[0])
+    inclusion = Sets().Mono(two, three)(lambda point: three(int(point)))
+    quotient = Sets().Epi(three, one)(lambda _point: one[0])
     swap = Sets().Mor(two, two)(lambda point: two[1 - int(point)])
     isomorphism = Isomorphism(swap, swap)
 

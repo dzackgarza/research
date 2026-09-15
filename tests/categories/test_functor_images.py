@@ -7,15 +7,14 @@ from dzack_research.preamble.all import (
     ObjectSetFunctor,
     Sets,
     free_forgetful_adjunction,
-    set_injection,
 )
 
 
 def test_cat_reifies_live_functors_and_functor_categories_have_natural_transformations() -> None:
     source = DiscreteCategory(Sets.Δ[1])
     target = DiscreteCategory(Sets.Δ[2])
-    object_map = set_injection(
-        source.object_set(), target.object_set(), lambda value: target.object_set()(value + 1)
+    object_map = Sets().Mono(source.object_set(), target.object_set())(
+        lambda value: target.object_set()(value + 1)
     )
     functor = DiscreteFunctor(source, target, object_map)
 

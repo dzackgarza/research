@@ -1021,8 +1021,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     omega,
     omega0,
     ordinal,
-    set_injection,
-    set_surjection,
 )
 from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
     VectorConfigurations,
