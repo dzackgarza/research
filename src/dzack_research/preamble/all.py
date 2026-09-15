@@ -814,7 +814,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     module_from_action,
     regular_dg_module,
     ring_as_module,
-    sub_framing_morphism,
     tensor_product_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401

@@ -121,6 +121,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "primitive_isotropic_vectors",
         "restrict_scalars",
         "splits_two_hyperbolic_planes",
+        "sub_framing_morphism",
         "subobject_image_adjunction",
         "tensor_hom_adjunction",
         "twist_scalar_action",

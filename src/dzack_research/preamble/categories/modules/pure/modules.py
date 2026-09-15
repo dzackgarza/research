@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbeddingHomset,
     ModuleHomset,
     ModuleMorphism,
+    SubFramingMorphism,
     TensorProductModuleHomset,
     framing_morphism,
     module_coefficients,
@@ -2227,6 +2228,16 @@ class FramedModules(OwnedCategoryOverBaseRing):
             source = self.__dict__.get("_preamble_framing_source")
             assert source is not None, f"{self} has no installed framing source"
             return source
+
+        def sub_framing_morphism(self, codomain):
+            r"""Return the inclusion induced by this framing inside ``codomain``'s framing."""
+            if codomain not in FramedModules(self.base_ring()):
+                raise TypeError("a sub-framing inclusion requires another framed module over the same ring")
+            return SubFramingMorphism(
+                self.Mono(codomain),
+                codomain.module_generator,
+                verify_linearity=False,
+            )
 
         def framing_morphism(self):
             r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""

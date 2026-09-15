@@ -8,11 +8,7 @@ same coefficients.  Nothing is solved and no matrix is formed, which is what
 makes the construction available when the smaller framing is infinite.
 """
 
-from dzack_research.preamble.all import (
-    BasedFreeModule,
-    ZZ,
-    sub_framing_morphism,
-)
+from dzack_research.preamble.all import BasedFreeModule, ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -20,12 +16,13 @@ def _inclusion():
     r"""Return the inclusion of the free module on ``a, c`` into the one on ``a, b, c``."""
     small = BasedFreeModule(ZZ, finite_ordered_set(("a", "c")))
     large = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
-    return small, large, sub_framing_morphism(small, large)
+    return small, large, small.sub_framing_morphism(large)
 
 
 def test_the_inclusion_carries_each_generator_to_its_namesake() -> None:
     small, large, inclusion = _inclusion()
 
+    assert inclusion.parent() is small.Mono(large)
     assert inclusion(small.module_generator("a")) == large.module_generator("a")
     assert inclusion(small.module_generator("c")) == large.module_generator("c")
     assert inclusion.is_injective()

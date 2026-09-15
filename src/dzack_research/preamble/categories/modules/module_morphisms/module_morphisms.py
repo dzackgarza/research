@@ -1935,23 +1935,6 @@ class SubFramingMorphism(ModuleEmbedding):
         return self.domain().linear_combination(module_coefficients(element, self.codomain()))
 
 
-def sub_framing_morphism(domain, codomain) -> SubFramingMorphism:
-    r"""Construct the inclusion of a free module on part of another's framing.
-
-    The caller states by calling this that the domain's framing injects into
-    the codomain's under the labels they share.  Linearity is not checked
-    because there is nothing to check: the morphism is the image of an
-    injection of sets under the free functor, which is linear by construction,
-    and the domain may be infinite.
-    """
-
-    return SubFramingMorphism(
-        domain.module_category().Mor(domain, codomain),
-        codomain.module_generator,
-        verify_linearity=False,
-    )
-
-
 def framing_morphism(domain, codomain, images) -> FramingMorphism:
     homset = domain.module_category().Mor(domain, codomain)
     framing = FramingMorphism(homset, images)
