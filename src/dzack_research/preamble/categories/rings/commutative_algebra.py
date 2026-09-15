@@ -868,7 +868,7 @@ class QuotientRings(OwnedCategory):
 
         def localization_comparison(self, localization_ring):
             r"""Return ``S^{-1}(R/I) ~= S^{-1}R/S^{-1}I`` with both maps."""
-            return quotient_localization_comparison(self, localization_ring)
+            return _quotient_localization_comparison(self, localization_ring)
 
         def completion_comparison(self, source_ideal, *, precision=20):
             r"""Return ``(R/J)^ ~= R^/J R^`` for the selected adic topology.
@@ -880,7 +880,7 @@ class QuotientRings(OwnedCategory):
             maps and the quotient maps rather than from the selected finite
             computation precision.
             """
-            return quotient_completion_comparison(
+            return _quotient_completion_comparison(
                 self,
                 source_ideal,
                 precision=precision,
@@ -2792,7 +2792,7 @@ def _localization_element_from_source_fraction(localization_ring, numerator, den
     return localization_ring(numerator_image / denominator_image)
 
 
-def quotient_localization_comparison(source_quotient, localization_ring):
+def _quotient_localization_comparison(source_quotient, localization_ring):
     r"""Return the canonical isomorphism
 
     ``S^{-1}(R/I) -> S^{-1}R/S^{-1}I``.
@@ -2890,7 +2890,7 @@ def quotient_localization_comparison(source_quotient, localization_ring):
     )
 
 
-def quotient_completion_comparison(source_quotient, source_ideal, *, precision=20):
+def _quotient_completion_comparison(source_quotient, source_ideal, *, precision=20):
     r"""Return the canonical Noetherian comparison ``(R/J)^ ~= R^/J R^``.
 
     The topology on ``R/J`` is defined by the image of ``source_ideal``.  The
