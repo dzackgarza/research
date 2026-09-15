@@ -22,13 +22,13 @@ def _finite_framing(module: Parent) -> Parent:
     return labels
 
 
-def coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
+def _coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
     r"""Return the dependent two-factor index set for a rectangular family."""
 
     return Sets().product(indexed_family(Sets.Δ[1], lambda index: left_labels if int(index) == 0 else right_labels))
 
 
-def coerce_family_value[CoordinateValueInputT](
+def _coerce_family_value[CoordinateValueInputT](
     value_module: Parent,
     value: CoordinateValueInputT,
 ) -> Element:
@@ -39,7 +39,7 @@ def coerce_family_value[CoordinateValueInputT](
     )
 
 
-def coordinate_family[CoordinateValueInputT](
+def _coordinate_family[CoordinateValueInputT](
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
@@ -48,13 +48,13 @@ def coordinate_family[CoordinateValueInputT](
     name: str,
 ) -> IndexedFamily:
     r"""Parse finite rectangular data as a family indexed by ``left × right``."""
-    indices = coordinate_index_set(left_labels, right_labels)
+    indices = _coordinate_index_set(left_labels, right_labels)
     if isinstance(datum, IndexedFamily):
         source_indices = datum.index_set()
 
         def transported(pair: Element) -> Element:
             source_pair = source_indices(lambda index: pair.component(index))
-            return coerce_family_value(value_module, datum[source_pair])
+            return _coerce_family_value(value_module, datum[source_pair])
 
         return indexed_family(indices, transported, name=name)
 
@@ -76,7 +76,7 @@ def coordinate_family[CoordinateValueInputT](
                 raise ValueError(
                     f"the coordinate presentation must have shape {left_size} x {right_size}"
                 ) from error
-            entries[left_position, right_position] = coerce_family_value(
+            entries[left_position, right_position] = _coerce_family_value(
                 value_module, entry
             )
         try:
@@ -106,7 +106,7 @@ def coordinate_family[CoordinateValueInputT](
     )
 
 
-def coordinate_pair[LeftLabelT, RightLabelT](
+def _coordinate_pair[LeftLabelT, RightLabelT](
     values: IndexedFamily,
     left_label: LeftLabelT,
     right_label: RightLabelT,
@@ -117,7 +117,7 @@ def coordinate_pair[LeftLabelT, RightLabelT](
     ]
 
 
-def coordinate_family_from_function[LeftLabelT, RightLabelT, CoordinateValueInputT](
+def _coordinate_family_from_function[LeftLabelT, RightLabelT, CoordinateValueInputT](
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
@@ -125,21 +125,12 @@ def coordinate_family_from_function[LeftLabelT, RightLabelT, CoordinateValueInpu
     *,
     name: str,
 ) -> IndexedFamily:
-    indices = coordinate_index_set(left_labels, right_labels)
+    indices = _coordinate_index_set(left_labels, right_labels)
     return indexed_family(
         indices,
-        lambda pair: coerce_family_value(
+        lambda pair: _coerce_family_value(
             value_module,
             function(pair.component(0), pair.component(1)),
         ),
         name=name,
     )
-
-
-__all__ = [
-    "coerce_family_value",
-    "coordinate_family",
-    "coordinate_family_from_function",
-    "coordinate_index_set",
-    "coordinate_pair",
-]

@@ -43,13 +43,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
-    coordinate_family as _coordinate_family,
+    _coordinate_family,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
-    coordinate_family_from_function as _coordinate_family_from_function,
+    _coordinate_family_from_function,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
-    coordinate_pair as _coordinate_pair,
+    _coordinate_pair,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
     _finite_framing,
