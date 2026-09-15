@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.modules.base_change import base_change_s
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     framing_morphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -354,7 +353,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return _resolution_over_degrees(
                 self,
                 {0: degree_zero, 1: degree_one},
-                {1: module_embedding(degree_one, degree_zero, image)},
+                {1: degree_one.Mono(degree_zero)(image)},
                 self.presentation_projection(),
                 zero,
             )

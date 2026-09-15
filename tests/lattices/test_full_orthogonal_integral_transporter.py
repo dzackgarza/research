@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     Lattices,
     Modules,
     integral_transporter,
-    module_embedding,
 )
 
 
@@ -20,14 +19,12 @@ def _rational_hyperbolic_space():
 def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> None:
     plane, space = _rational_hyperbolic_space()
     e0, e1 = plane.module_generators()
-    source = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
-        {0: space.wrap(e0), 1: space.wrap(e1)},
+    source_module = FreeModule(ZZ, 2)
+    target_module = FreeModule(ZZ, 2)
+    source = source_module.Mono(space)(
+        {0: space.wrap(e0), 1: space.wrap(e1)}
     )
-    target = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
+    target = target_module.Mono(space)(
         {
             0: space.wrap(plane.scalar_multiple(QQ(2), e0)),
             1: space.wrap(plane.scalar_multiple(QQ(1) / 2, e1)),
@@ -49,14 +46,12 @@ def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> No
 def test_nonisometric_commensurable_lattices_have_no_full_orthogonal_transporter() -> None:
     plane, space = _rational_hyperbolic_space()
     e0, e1 = plane.module_generators()
-    source = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
-        {0: space.wrap(e0), 1: space.wrap(e1)},
+    source_module = FreeModule(ZZ, 2)
+    target_module = FreeModule(ZZ, 2)
+    source = source_module.Mono(space)(
+        {0: space.wrap(e0), 1: space.wrap(e1)}
     )
-    target = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
+    target = target_module.Mono(space)(
         {
             0: space.wrap(plane.scalar_multiple(QQ(2), e0)),
             1: space.wrap(e1),

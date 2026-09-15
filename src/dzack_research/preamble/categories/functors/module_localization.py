@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.modules.localizations import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
@@ -125,13 +124,11 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
 
         if source in FramedModules(source.base_ring()):
-            embedded = module_embedding(
-                source,
-                target,
+            embedded = source.Mono(target)(
                 {
                     label: image(source.module_generator(label))
                     for label in source.module_generating_set()
-                },
+                }
             )
             embedded._preamble_localization_functor = self
             return embedded

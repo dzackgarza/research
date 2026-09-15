@@ -14,9 +14,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
     MatrixSpace,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_embedding,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     InternalHomModules,

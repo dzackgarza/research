@@ -36,9 +36,6 @@ return; see ``isotropic_quotient_projection`` below.
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_embedding,
-)
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -99,14 +96,10 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             perpendicular = self.isotropic_perpendicular()
             lift = perpendicular.inclusion().lift
             inclusion = self.inclusion()
-            return module_embedding(
-                self,
-                perpendicular,
-                {
+            return self.Mono(perpendicular)({
                     label: lift(inclusion(self.module_generator(label)))
                     for label in self.module_generating_set()
-                },
-            )
+                })
 
         @cached_method
         def isotropic_quotient(self):

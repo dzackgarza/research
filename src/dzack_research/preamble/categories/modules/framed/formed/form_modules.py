@@ -49,7 +49,6 @@ from dzack_research.preamble.categories.modules.hodge import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -1594,11 +1593,7 @@ def _form_subobject_spanning(module, basis):
 
     labels, embedded, lift = _module_subobject_constructor_data(module, basis)
     free_source = FreeModuleOn(module.base_ring(), labels)
-    preliminary = module_embedding(
-        free_source,
-        module,
-        embedded,
-    )
+    preliminary = free_source.Mono(module)(embedded)
 
     def inclusion_factory(source):
         return form_embedding(source, module, embedded)

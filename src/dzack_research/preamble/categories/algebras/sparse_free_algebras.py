@@ -35,7 +35,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -231,9 +230,7 @@ class SparseFreeAlgebraDegreeModule(Parent):
     @cached_method
     def inclusion(self):
         r"""Return this homogeneous module's canonical inclusion into its algebra."""
-        return module_embedding(
-            self,
-            self.algebra(),
+        return self.Mono(self.algebra())(
             lambda label: self.module_generator(label).algebra_element(),
             verify_linearity=False,
         )

@@ -35,7 +35,7 @@ and ``Res(V)`` is the same additive group read over ``ZZ``.  Nothing is
 tensored and no lattice is base changed.  A lattice in ``V`` is then a
 monomorphism into that one module,
 
-``module_embedding(L, Res(V), images)``,
+``L.Mono(Res(V))(images)``,
 
 with ``ZZ`` on both sides, so the base-ring rule is satisfied rather than
 violated.  ``L`` and ``M`` are two subobjects of one object, ``d M <= L <= M``

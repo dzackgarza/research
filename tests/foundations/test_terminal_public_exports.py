@@ -115,6 +115,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "lorentzian_reduction_complex",
         "module_localization_functor",
         "module_homset",
+        "module_embedding",
         "open_absolute_galois_subgroup",
         "primitive_isotropic",
         "primitive_isotropic_vectors",

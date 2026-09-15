@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -375,9 +374,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
 
         def restricted_inclusion(restricted_module):
-            return module_embedding(
-                restricted_module,
-                self.arrow_set(),
+            return restricted_module.Mono(self.arrow_set())(
                 lambda restricted_derivation: (
                     restricted_derivation.underlying_element().underlying_linear_morphism()
                 ),
@@ -679,9 +676,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     @cached_method
     def inclusion(self):
         r"""Return the canonical inclusion into the underlying graded linear Hom."""
-        return module_embedding(
-            self,
-            self.arrow_set(),
+        return self.Mono(self.arrow_set())(
             lambda derivation: derivation.underlying_linear_morphism(),
             verify_linearity=False,
         )

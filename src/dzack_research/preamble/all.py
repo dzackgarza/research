@@ -811,7 +811,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     divided_square_morphism,
     form_embedding,
     internal_hom_morphism,
-    module_embedding,
     module_from_action,
     regular_dg_module,
     ring_as_module,

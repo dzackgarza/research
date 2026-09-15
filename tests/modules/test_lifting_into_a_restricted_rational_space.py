@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     FinitelyGeneratedModules,
     FreeModule,
     Modules,
-    module_embedding,
 )
 
 
@@ -42,9 +41,9 @@ def test_a_lattice_in_the_rational_plane_contains_a_second_lattice() -> None:
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
 
     standard = FreeModule(ZZ, 2)
-    into_standard = module_embedding(standard, space, {0: space(e0), 1: space(e1)})
+    into_standard = standard.Mono(space)({0: space(e0), 1: space(e1)})
     doubled = FreeModule(ZZ, 2)
-    into_doubled = module_embedding(doubled, space, {0: space(2 * e0), 1: space(2 * e1)})
+    into_doubled = doubled.Mono(space)({0: space(2 * e0), 1: space(2 * e1)})
 
     assert into_standard.is_in_image(into_doubled(doubled.module_generator(0)))
     assert into_standard.lift(space(2 * e0)) == 2 * standard.module_generator(0)
@@ -63,7 +62,7 @@ def test_a_half_integral_vector_of_the_rational_plane_is_not_in_a_lattice() -> N
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
 
     standard = FreeModule(ZZ, 2)
-    into_standard = module_embedding(standard, space, {0: space(e0), 1: space(e1)})
+    into_standard = standard.Mono(space)({0: space(e0), 1: space(e1)})
     half = space(plane.scalar_multiple(QQ(1) / 2, e0))
 
     assert not into_standard.is_in_image(half)
@@ -75,7 +74,7 @@ def test_a_vector_outside_the_rational_span_of_a_line_is_not_in_it() -> None:
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
 
     line = FreeModule(ZZ, 1)
-    into_line = module_embedding(line, space, {0: space(e0)})
+    into_line = line.Mono(space)({0: space(e0)})
 
     assert into_line.is_in_image(space(-3 * e0))
     assert into_line.lift(space(-3 * e0)) == -3 * line.module_generator(0)

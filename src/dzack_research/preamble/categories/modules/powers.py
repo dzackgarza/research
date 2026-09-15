@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleHomset,
     ModuleMorphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -117,15 +116,10 @@ class _PowerModuleParentMethods:
         r"""Return the canonical homogeneous-piece inclusion into its power algebra."""
         algebra = self.ambient_power_algebra()
         degree = self.power_degree()
-        inclusion = module_embedding(
-            self,
-            algebra,
-            lambda label: algebra.from_graded_piece(
+        inclusion = self.Mono(algebra)(lambda label: algebra.from_graded_piece(
                 degree,
                 self.module_generator(label),
-            ),
-            verify_linearity=False,
-        )
+            ), verify_linearity=False)
         inclusion._preamble_lift = self._lift_from_ambient_power_algebra
         self.register_conversion(
             SetMorphism(

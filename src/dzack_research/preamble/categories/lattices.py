@@ -133,7 +133,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -276,7 +275,7 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
         prototype = category(gram, module_generators=labels)
 
     def inclusion_factory(source):
-        module_inclusion = module_embedding(source, module, embedded)
+        module_inclusion = source.Mono(module)(embedded)
         return source.Emb(module)(module_inclusion)
 
     extra_categories = ()

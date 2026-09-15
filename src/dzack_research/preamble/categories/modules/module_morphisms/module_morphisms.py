@@ -1409,6 +1409,71 @@ class ModuleEmbedding(ModuleMorphism):
         return True
 
 
+class ModuleEmbeddingHomset(CategoricalHomset):
+    r"""The declared monomorphisms between two modules over one scalar ring."""
+
+    Element = ModuleEmbedding
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        modules = domain.module_category()
+        if domain not in modules or codomain not in modules:
+            raise TypeError("a module embedding Hom requires two modules over one scalar ring")
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+
+    def _element_constructor_(self, images, *, verify_linearity=True):
+        if isinstance(images, ModuleEmbedding):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the module embedding has the wrong endpoints")
+            if images.parent() is self:
+                return images
+            source = self.domain()
+            if source.is_framed():
+                images = lambda label: images(source.module_generator(label))
+            else:
+                return self.element_class(
+                    self,
+                    lambda element: images(element),
+                    elementwise=True,
+                    verify_linearity=False,
+                )
+        return self.element_class(
+            self,
+            images,
+            verify_linearity=verify_linearity,
+        )
+
+    def base_ring(self):
+        return self.domain().base_ring()
+
+    def scalar_multiple(self, scalar, morphism):
+        r"""Scale an embedding in the underlying linear Hom.
+
+        A scalar multiple of an injective map need not remain injective, so
+        this operation deliberately returns through ``Mor_R`` rather than the
+        Mono parent.
+        """
+        source = self.domain()
+        target = self.codomain()
+        return source.module_category().Mor(source, target).scalar_multiple(
+            scalar,
+            morphism,
+        )
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain()
+        target = self.codomain()
+        inherited = [
+            superpacket.Monos().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        return [packet.Homs().Of(source, target), *inherited]
+
+    def _repr_(self):
+        return f"Emb({self.domain()}, {self.codomain()})"
+
+
 def _model_smith_engine(homset):
     r"""The Smith engine of the presented model of ``homset``, when the model has one."""
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -1891,21 +1956,6 @@ def framing_morphism(domain, codomain, images) -> FramingMorphism:
     homset = domain.module_category().Mor(domain, codomain)
     framing = FramingMorphism(homset, images)
     return framing
-
-
-def module_embedding(
-    domain,
-    codomain,
-    images,
-    *,
-    verify_linearity=True,
-) -> ModuleEmbedding:
-    r"""Construct a declared module monomorphism on a chosen framing."""
-    return ModuleEmbedding(
-        domain.module_category().Mor(domain, codomain),
-        images,
-        verify_linearity=verify_linearity,
-    )
 
 
 class TensorProductModuleMorphism(ModuleMorphism):

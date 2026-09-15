@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     EndCategoryConstruction,
     HomCategoryConstruction,
     IsoCategoryConstruction,
+    MonoCategoryConstruction,
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
@@ -38,12 +39,12 @@ from dzack_research.preamble.categories.algebras.associative_algebra_morphisms i
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleAutomorphismGroup,
+    ModuleEmbeddingHomset,
     ModuleHomset,
     ModuleMorphism,
     TensorProductModuleHomset,
     framing_morphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
@@ -101,6 +102,13 @@ class ModuleHomCategoryConstruction(HomCategoryConstruction):
 
     def fixed_category_class_for(self, domain, codomain):
         return domain._module_homset_class()
+
+
+class ModuleMonoCategoryConstruction(MonoCategoryConstruction):
+    r"""The declared monomorphisms of modules over one scalar ring."""
+
+    def fixed_category_class(self):
+        return ModuleEmbeddingHomset
 
 
 class LinearEndCategoryConstruction(EndCategoryConstruction):
@@ -712,6 +720,7 @@ class Modules(OwnedCategoryOverBaseRing):
         return Category.join(tuple(placement))
 
     _HomCategory = ModuleHomCategoryConstruction
+    _MonoCategory = ModuleMonoCategoryConstruction
     _IsoCategory = ModuleIsoCategoryConstruction
     _EndCategory = ModuleEndCategoryConstruction
 
@@ -754,6 +763,10 @@ class Modules(OwnedCategoryOverBaseRing):
             if category is None:
                 return modules.Mor(self, codomain)
             return _category_homset(category, self, codomain)
+
+        def Mono(self, codomain):
+            r"""Return the declared injective linear maps into ``codomain``."""
+            return Modules(self.base_ring()).Mono(self, codomain)
 
         def End(self):
             r"""Return ``End_R(M)``, the endomorphism ring of this module."""
@@ -1164,11 +1177,12 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
                     selected = self.__dict__.get("_preamble_inclusion")
                     assert selected is not None, f"{self} is a module subobject without constructor-owned inclusion data"
                     return selected
-                inclusion = module_embedding(
-                    self,
-                    ambient,
+                inclusion = self.Mono(ambient)(
                     images,
-                    verify_linearity=self.__dict__.get("_preamble_subobject_verify_linearity", True),
+                    verify_linearity=self.__dict__.get(
+                        "_preamble_subobject_verify_linearity",
+                        True,
+                    ),
                 )
             lift = self.__dict__.get("_preamble_subobject_lift")
             if lift is not None:

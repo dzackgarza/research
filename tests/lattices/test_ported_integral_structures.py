@@ -20,7 +20,6 @@ from dzack_research.preamble.all import (
     integral_right_cosets,
     integral_stabilizer,
     integral_transporter,
-    module_embedding,
 )
 
 
@@ -31,10 +30,9 @@ def _proper_rational_group_and_lattices():
     )
     space = restriction(plane)
     e, f = plane.module_generators()
-    standard = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
-        {0: space.wrap(e), 1: space.wrap(f)},
+    standard_module = FreeModule(ZZ, 2)
+    standard = standard_module.Mono(space)(
+        {0: space.wrap(e), 1: space.wrap(f)}
     )
     involution = plane.Aut()(
         {
@@ -43,9 +41,8 @@ def _proper_rational_group_and_lattices():
         }
     )
     group = RationalMatrixGroup(plane, (involution,))
-    target = module_embedding(
-        FreeModule(ZZ, 2),
-        space,
+    target_module = FreeModule(ZZ, 2)
+    target = target_module.Mono(space)(
         {
             0: space.wrap(involution(e)),
             1: space.wrap(involution(f)),

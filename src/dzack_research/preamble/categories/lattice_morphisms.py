@@ -45,7 +45,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbedding,
     ModuleMorphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -382,13 +381,9 @@ class LatticeEmbedding(LatticeMorphism):
 
         perpendicular = self.orthogonal_complement()
         perpendicular_inclusion = perpendicular.inclusion()
-        into_perpendicular = module_embedding(
-            source,
-            perpendicular,
-            lambda label: perpendicular_inclusion.lift(
+        into_perpendicular = source.Mono(perpendicular)(lambda label: perpendicular_inclusion.lift(
                 self(source.module_generator(label))
-            ),
-        )
+            ))
         assert into_perpendicular.is_primitive(), (
             "the isotropic quotient is not free over the base ring; the selected "
             "isotropic sublattice is not primitive in its orthogonal complement"

@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
-    module_embedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -789,7 +788,7 @@ def ProjectiveLinearSystem(line_bundle, sections):
     selected_map = selected.module_category().Mor(selected, ambient)(images)
     if int(selected_map.kernel().dimension()) != 0:
         raise ValueError("the supplied sections must be a basis of their selected subspace")
-    embedding = module_embedding(selected, ambient, images)
+    embedding = selected.Mono(ambient)(images)
     polynomials = tuple(
         ambient.homogeneous_polynomial(section)
         for section in sections
