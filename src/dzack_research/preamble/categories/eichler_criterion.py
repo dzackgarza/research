@@ -928,16 +928,10 @@ class TwoUEichlerModel(SageObject):
         )
 
 
-def two_u_eichler_model(orthogonal_complement):
-    r"""Return the represented ``U + U + K`` determinant model for ``K``."""
-    return TwoUEichlerModel(orthogonal_complement)
-
-
 __all__ = [
     "EichlerCoveringOrbitDatum",
     "EichlerOrthogonalFactorizationDatum",
     "EichlerRecursiveStabilizerDatum",
     "TwoUEichlerModel",
     "TwoUFullGeneratingDatum",
-    "two_u_eichler_model",
 ]

@@ -2473,6 +2473,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError("the lattice is not even and 2-elementary")
             return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
 
+        def two_u_eichler_model(self):
+            r"""Return the represented ``U + U + self`` Eichler model."""
+            from dzack_research.preamble.categories.eichler_criterion import (
+                TwoUEichlerModel,
+            )
+
+            return TwoUEichlerModel(self)
+
         def rational_polyhedral_cone(
             self,
             halfspace_covectors,

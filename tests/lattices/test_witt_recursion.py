@@ -5,7 +5,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.eichler_criterion import (
     EichlerOrthogonalFactorizationDatum,
     EichlerRecursiveStabilizerDatum,
-    two_u_eichler_model,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -13,7 +12,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 def test_covering_stabilizers_restrict_to_rank_one_smaller_orthogonal_complements() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     lattice = model.lattice()
     recursive = model.recursive_stabilizer_data(integers(-2))
 
@@ -40,7 +39,7 @@ def test_covering_stabilizers_restrict_to_rank_one_smaller_orthogonal_complement
 
 def test_every_live_orthogonal_generator_factors_through_stable_eichler_and_discriminant_parts() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     lattice = model.lattice()
     stable = model.stable_kernel()
 
@@ -59,7 +58,7 @@ def test_every_live_orthogonal_generator_factors_through_stable_eichler_and_disc
 
 def test_source_defined_approximate_family_has_the_expected_four_n_shape() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     family = model.approximate_generating_family()
     rank = int(model.lattice().module_rank())
 
@@ -69,7 +68,7 @@ def test_source_defined_approximate_family_has_the_expected_four_n_shape() -> No
 
 def test_full_generation_data_retains_all_three_sources_of_the_orbit_argument() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     lattice = model.lattice()
     datum = model.full_generating_data(integers(-2))
 

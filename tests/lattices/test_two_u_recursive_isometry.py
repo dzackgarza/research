@@ -1,6 +1,5 @@
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.eichler_criterion import two_u_eichler_model
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
@@ -10,8 +9,8 @@ def test_recursive_two_u_isometry_is_identity_on_the_hyperbolic_factors() -> Non
     lattices = Lattices(integers)
     first_complement = lattices("A2")
     second_complement = lattices([[-2, 1], [1, -2]])
-    source = two_u_eichler_model(first_complement)
-    target = two_u_eichler_model(second_complement)
+    source = first_complement.two_u_eichler_model()
+    target = second_complement.two_u_eichler_model()
 
     assert source.is_isometric_to(target)
     witness = source.isometry_to(target)
@@ -28,8 +27,8 @@ def test_recursive_two_u_isometry_is_identity_on_the_hyperbolic_factors() -> Non
 def test_recursive_two_u_isometry_rejects_nonisometric_complements() -> None:
     integers = _own_ring(SageZZ)
     lattices = Lattices(integers)
-    source = two_u_eichler_model(lattices("A2"))
-    target = two_u_eichler_model(lattices("A1") + lattices("A1"))
+    source = lattices("A2").two_u_eichler_model()
+    target = (lattices("A1") + lattices("A1")).two_u_eichler_model()
 
     assert not source.is_isometric_to(target)
     assert source.isometry_to(target) is None

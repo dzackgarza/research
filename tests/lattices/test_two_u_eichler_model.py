@@ -2,14 +2,13 @@ r"""The represented ``2U`` determinant model carries the two exact SL2 actions."
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.eichler_criterion import two_u_eichler_model
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 def _model():
     integers = _own_ring(SageZZ)
-    return two_u_eichler_model(Lattices(integers)("A1"))
+    return Lattices(integers)("A1").two_u_eichler_model()
 
 
 def test_left_and_right_sl2_actions_are_actual_action_functors() -> None:
@@ -86,7 +85,7 @@ def test_K_direction_eichler_transvections_are_stable_isometries() -> None:
 def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess() -> None:
     integers = _own_ring(SageZZ)
     complement = Lattices(integers)("A2")
-    model = two_u_eichler_model(complement)
+    model = complement.two_u_eichler_model()
     lattice = model.lattice()
     minus_one = complement.O()(tuple(-generator for generator in complement.module_generators()))
     lifted = model.complement_action(minus_one)
@@ -110,7 +109,7 @@ def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess()
 def test_covering_discriminant_classes_have_explicit_primitive_vectors() -> None:
     integers = _own_ring(SageZZ)
     complement = Lattices(integers)("A2")
-    model = two_u_eichler_model(complement)
+    model = complement.two_u_eichler_model()
     square = integers(-2)
     representatives = model.covering_vector_representatives(square)
 
@@ -126,7 +125,7 @@ def test_covering_discriminant_classes_have_explicit_primitive_vectors() -> None
 def test_unimodular_complement_covering_representative_is_the_hyperbolic_one() -> None:
     integers = _own_ring(SageZZ)
     complement = Lattices(integers)("E8")
-    model = two_u_eichler_model(complement)
+    model = complement.two_u_eichler_model()
     representatives = model.covering_vector_representatives(integers(2))
 
     assert representatives.cardinality() == 1
@@ -139,7 +138,7 @@ def test_unimodular_complement_covering_representative_is_the_hyperbolic_one() -
 def test_two_u_model_lifts_generators_of_its_full_discriminant_group() -> None:
     integers = _own_ring(SageZZ)
     complement = Lattices(integers)("A2")
-    model = two_u_eichler_model(complement)
+    model = complement.two_u_eichler_model()
     lattice = model.lattice()
     target = lattice.discriminant_group().O()
     lifts = model.discriminant_generator_lifts()
@@ -155,7 +154,7 @@ def test_two_u_model_lifts_generators_of_its_full_discriminant_group() -> None:
 def test_source_generating_family_retains_each_mathematical_source() -> None:
     integers = _own_ring(SageZZ)
     complement = Lattices(integers)("A2")
-    model = two_u_eichler_model(complement)
+    model = complement.two_u_eichler_model()
     family = model.source_generating_family()
     kinds = {kind for kind, _datum in family.index_set()}
 

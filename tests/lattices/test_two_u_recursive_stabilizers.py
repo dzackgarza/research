@@ -4,7 +4,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.eichler_criterion import (
     EichlerCoveringOrbitDatum,
-    two_u_eichler_model,
 )
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -13,7 +12,7 @@ from dzack_research.preamble.categories.sets.set_categories import Set
 
 def test_covering_classes_retain_stabilizers_and_actual_full_orbit_transporters() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     lattice = model.lattice()
     data = model.covering_orbit_data(integers(-2))
 
@@ -35,7 +34,7 @@ def test_covering_classes_retain_stabilizers_and_actual_full_orbit_transporters(
 
 def test_covering_data_does_not_assert_distinct_full_orbits() -> None:
     integers = _own_ring(SageZZ)
-    model = two_u_eichler_model(Lattices(integers)("A2"))
+    model = Lattices(integers)("A2").two_u_eichler_model()
     data = model.covering_orbit_data(integers(-2))
 
     full_orbit_targets = Set(
