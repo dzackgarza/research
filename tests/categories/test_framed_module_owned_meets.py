@@ -7,9 +7,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
     FreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     ModulesWithChosenFinitePresentation,

@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     BilinearMap,
     FinitelyPresentedTorsionModules,
     ZZ,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -132,9 +131,10 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
         adjunction.counit(tensor_by(source))
         * tensor_by(adjunction.unit(source))
     )
+    tensor_source = tensor_by(source)
     _assert_module_maps_agree(
         left_triangle,
-        module_homset(tensor_by(source), tensor_by(source)).identity(),
+        tensor_source.module_category().Mor(tensor_source, tensor_source).identity(),
     )
 
     right_object = internal_hom_from(target)

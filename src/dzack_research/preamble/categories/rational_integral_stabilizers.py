@@ -67,7 +67,7 @@ Predicate-only rational subgroups with no represented generating family still
 do not satisfy the T2 input contract and are refused rather than approximated.
 
 One further gap bounds the argument these operations take.  The preamble names
-no general linear group of a module: ``module_homset(V, V)`` is the
+no general linear group of a module: ``V.module_category().Mor(V, V)`` is the
 endomorphism set, and the group of its units is not an owned object.  A
 rational group here is therefore a subgroup of ``V.Aut()`` for a rational
 lattice (``rational_lattices.py``), which is the arithmetic case this program
@@ -92,9 +92,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.lattice_engines import integral_isometry_witness
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.engine_capabilities import engine_capabilities

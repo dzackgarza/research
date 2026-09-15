@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
@@ -87,9 +86,6 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         """
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
-        )
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
         )
         from dzack_research.preamble.categories.sets.set_categories import (
             finite_ordinal_set,
@@ -1350,9 +1346,6 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
         )
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
         from dzack_research.preamble.categories.sets.set_categories import (
             finite_ordinal_set,
         )
@@ -2157,8 +2150,15 @@ class AlgebraMorphism(Morphism):
             )
 
         if other.domain() in FramedModules(other.domain().base_ring()):
-            module_map = module_homset(other.domain(), self.codomain())(lambda label: self(other(other.domain().module_generator(label))))
-            return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(module_map)
+            source = other.domain()
+            target = self.codomain()
+            module_map = source.module_category().Mor(source, target)(
+                lambda label: self(other(source.module_generator(label)))
+            )
+            return Algebras(source.base_ring()).Associative().Unital().Mor(
+                source,
+                target,
+            )(module_map)
         return (
             Algebras(other.domain().base_ring())
             .Associative()

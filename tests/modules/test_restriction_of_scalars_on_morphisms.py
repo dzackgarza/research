@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     ZZ,
     FreeModule,
     Modules,
-    module_homset,
 )
 
 

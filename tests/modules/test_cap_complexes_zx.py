@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
     FinitelyPresentedModule,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,

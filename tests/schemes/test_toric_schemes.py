@@ -185,7 +185,6 @@ def test_a_fan_compatible_lattice_map_induces_a_toric_morphism() -> None:
     r"""CLS Thm. 3.3.4: the identity of ``N`` is compatible with any fan and
     with itself, and doubling every cocharacter carries the fan of ``P^2``
     into itself."""
-    from dzack_research.preamble.all import module_homset
 
     fans = _plane_fans()
     fan = fans.projective_space_fan()
@@ -202,7 +201,6 @@ def test_a_fan_compatible_lattice_map_induces_a_toric_morphism() -> None:
 
 def test_a_nonidentity_toric_morphism_retains_its_chart_pullback() -> None:
     r"""On ``P^1``, doubling ``N`` induces ``chi^m |-> chi^(2m)`` on a chart."""
-    from dzack_research.preamble.all import module_homset
 
     fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
     fan = fans.projective_space_fan()
@@ -236,7 +234,6 @@ def test_an_incompatible_lattice_map_is_refused_rather_than_forced() -> None:
     r"""The fan of ``P^1`` in a rank-one lattice is not carried into the fan of
     the affine line by the identity: the ray ``-e_1`` lies in no cone."""
     line_fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
-    from dzack_research.preamble.all import module_homset
 
     projective_line = line_fans.projective_space_fan()
     affine_line = line_fans((((1,),),))

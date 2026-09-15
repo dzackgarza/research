@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedModule,
     Modules,
     PolynomialRing,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

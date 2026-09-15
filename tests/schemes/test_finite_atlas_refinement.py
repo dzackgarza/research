@@ -5,9 +5,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinement
 
 
@@ -100,6 +97,8 @@ def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> N
             fine_index
         ).coordinate_algebra()
         assert local.forward().codomain() is refined.local_module(fine_index)
-        assert local.inverse() * local.forward() == module_homset(
-            local.forward().domain(), local.forward().domain()
+        local_domain = local.forward().domain()
+        assert local.inverse() * local.forward() == local_domain.module_category().Mor(
+            local_domain,
+            local_domain,
         ).identity()

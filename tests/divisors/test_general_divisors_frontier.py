@@ -22,9 +22,6 @@ from dzack_research.preamble.categories.divisors.general_divisors import (
 )
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 
 
 def _cyclic_module(order):

@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.modules import (
     TensorPower,
     divided_power_invariant_inclusion,
     divided_power_morphism,
-    module_homset,
     symmetric_power_morphism,
     tensor_power_permutation,
     tensor_power_polarization,
@@ -100,7 +99,12 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
         _assert_maps_agree(composite, stepwise)
 
         identity = power_morphism(module.module_category().Mor(module, module).identity(), degree)
-        _assert_maps_agree(identity, module_homset(identity.domain(), identity.codomain()).identity())
+        identity_domain = identity.domain()
+        identity_codomain = identity.codomain()
+        _assert_maps_agree(
+            identity,
+            identity_domain.module_category().Mor(identity_domain, identity_codomain).identity(),
+        )
 
 
 def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> None:

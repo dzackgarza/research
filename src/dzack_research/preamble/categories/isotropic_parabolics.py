@@ -38,7 +38,6 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.rings.ring_foundation import (

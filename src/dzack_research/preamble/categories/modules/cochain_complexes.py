@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.modules.graded_modules import GradedModu
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _initialize_module_hom_parent,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
@@ -596,13 +595,16 @@ class CochainHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a cochain endomorphism homset")
+        domain = self.domain()
+
+        def identity_component(degree):
+            piece = domain.graded_piece(degree)
+            return piece.module_category().Mor(piece, piece).identity()
+
         return self(
             indexed_family(
-                self.domain().degree_index_set(),
-                lambda degree: module_homset(
-                    self.domain().graded_piece(degree),
-                    self.domain().graded_piece(degree),
-                ).identity(),
+                domain.degree_index_set(),
+                identity_component,
                 name="Identity cochain-morphism components",
             )
         )

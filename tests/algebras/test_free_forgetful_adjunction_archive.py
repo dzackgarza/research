@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.functors.free_algebras import (
     symmetric_algebra_adjunction,
     tensor_algebra_adjunction,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, module_homset
+from dzack_research.preamble.categories.modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 

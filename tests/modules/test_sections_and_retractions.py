@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     FinitelyPresentedModule,
     ZZ,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

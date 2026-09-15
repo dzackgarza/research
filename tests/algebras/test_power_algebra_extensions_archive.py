@@ -7,9 +7,6 @@ from dzack_research.preamble.categories.algebras.power_algebras import (
     AlternatingAlgebraOf,
     alternating_extension,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 

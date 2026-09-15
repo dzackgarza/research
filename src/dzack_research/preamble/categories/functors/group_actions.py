@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
     _trivial_action,
     group_module_homset,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 

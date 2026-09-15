@@ -4,9 +4,6 @@ from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 
 
 def _cyclic_quotient(ring, relation):

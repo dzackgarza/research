@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,

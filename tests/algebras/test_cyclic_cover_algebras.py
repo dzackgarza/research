@@ -15,9 +15,6 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         Isomorphism,
     )
     from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)

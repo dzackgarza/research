@@ -11,9 +11,6 @@ def _transition(source: Any, target: Any, unit: Any) -> Any:
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     source_generator = _generator(source)
     target_generator = _generator(target)
@@ -90,9 +87,6 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
         Spec,
     )
     from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
@@ -170,9 +164,6 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     right_overlap = cover.restrict_module(local_modules[1], 1, 0)
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
     )
 
     forward = left_overlap.module_category().Mor(left_overlap, right_overlap)(

@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring

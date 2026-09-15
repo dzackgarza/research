@@ -15,9 +15,6 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     _from_engine_ideal,
 )

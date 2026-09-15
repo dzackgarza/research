@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     BilinearMap,
     Modules,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -54,8 +53,10 @@ def test_cartan_inclusion_in_sl2_has_zero_lie_cokernel_but_nonzero_module_cokern
     )
     cartan = _lie_algebra(("h",), {})
 
-    underlying = module_homset(cartan.underlying_module(), sl2.underlying_module())(
-        {"h": sl2.underlying_module().module_generator("h")}
+    cartan_module = cartan.underlying_module()
+    sl2_module = sl2.underlying_module()
+    underlying = cartan_module.module_category().Mor(cartan_module, sl2_module)(
+        {"h": sl2_module.module_generator("h")}
     )
     inclusion = LieAlgebras(QQ).Mor(cartan, sl2)(underlying)
 

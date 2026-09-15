@@ -37,7 +37,6 @@ def test_infinite_free_module_rejects_implicit_finite_prefix_coordinates() -> No
 
 def test_infinite_framing_is_not_enumerated_for_finite_ring_linearity_checks() -> None:
     from dzack_research.preamble.all import GF
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     field = GF(2)
     module = FreeModule(field, NN)
@@ -48,7 +47,6 @@ def test_infinite_framing_is_not_enumerated_for_finite_ring_linearity_checks() -
 
 
 def test_infinite_generator_defined_morphism_keeps_its_image_family_lazy() -> None:
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     module = FreeModule(ZZ, NN)
     evaluated = []

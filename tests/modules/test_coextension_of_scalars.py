@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     Groups,
     Modules,
     SymmetricAlgebraOn,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,

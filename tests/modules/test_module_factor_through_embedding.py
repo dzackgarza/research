@@ -2,7 +2,7 @@ r"""Any module morphism can factor through a represented module subobject."""
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule, module_embedding, module_homset
+from dzack_research.preamble.all import ZZ, BasedFreeModule, module_embedding
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 

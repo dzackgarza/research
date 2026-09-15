@@ -51,7 +51,6 @@ class PicardGroups(Category):
             return self.linear_combination(module_coefficients(element, decomposition))
 
         def base_picard_inclusion(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             base = self.projective_base_picard_group()
             injection = self.projective_picard_biproduct().injection(0)

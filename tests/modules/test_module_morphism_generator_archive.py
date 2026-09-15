@@ -3,9 +3,6 @@ r"""Archive reconciliation for module morphisms as generator-defined linear exte
 import pytest
 
 from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, FreeModule
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 
 
 def _zmod2():

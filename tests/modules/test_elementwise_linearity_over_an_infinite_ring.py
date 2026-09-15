@@ -19,7 +19,6 @@ from dzack_research.preamble.all import (
     GeneralModule,
     PolynomialRing,
     Set,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

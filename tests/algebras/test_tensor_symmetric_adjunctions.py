@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     Modules,
     SymmetricAlgebras,
     TensorAlgebras,
-    module_homset,
     symmetric_algebra_adjunction,
     symmetric_algebra_functor,
     tensor_algebra_adjunction,

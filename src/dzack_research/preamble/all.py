@@ -813,7 +813,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     internal_hom_morphism,
     module_embedding,
     module_from_action,
-    module_homset,
     regular_dg_module,
     ring_as_module,
     sub_framing_morphism,

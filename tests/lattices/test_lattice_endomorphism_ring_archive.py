@@ -6,7 +6,7 @@ group of form-preserving automorphisms.  The archived audit requires that the
 lattice reaches this ring through its ordinary ``End`` vocabulary.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices, Modules, module_homset
+from dzack_research.preamble.all import ZZ, Lattices, Modules
 
 
 def test_lattice_end_is_the_underlying_module_endomorphism_ring() -> None:

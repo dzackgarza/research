@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     BasedFreeModule,
     PolynomialRing,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     Modules,
     ProjectiveModules,
     SymmetricAlgebraOn,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (

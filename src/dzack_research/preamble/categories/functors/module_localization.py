@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.modules.localizations import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,

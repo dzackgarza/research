@@ -38,9 +38,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModule,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersection,

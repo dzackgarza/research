@@ -472,9 +472,6 @@ class AffineModuleSheaf(SageObject):
     def restriction_map(self, source_open, target_open):
         r"""Return the module restriction, linear over the structure-sheaf restriction."""
 
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         ambient = self.scheme()
         structure_restriction = ambient.structure_sheaf().restriction_map(
@@ -585,11 +582,9 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
 
     def sheaf_morphisms(self, source, target):
         r"""``Hom_{O_X}(M~, N~) = Hom_A(M, N)``, where morphisms of these sheaves live."""
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
-
-        return module_homset(self.global_sections(source), self.global_sections(target))
+        source_sections = self.global_sections(source)
+        target_sections = self.global_sections(target)
+        return source_sections.module_category().Mor(source_sections, target_sections)
 
     def tensor_product(self, factors):
         r"""``(M tensor_A N)~``: the equivalence carries the monoidal structure."""

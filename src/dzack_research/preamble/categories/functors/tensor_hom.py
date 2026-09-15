@@ -2,9 +2,6 @@ r"""The tensor--internal-Hom adjunction on modules with chosen finite presentati
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.internal_hom import internal_hom_morphism
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, ModulesWithChosenFinitePresentation
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -30,7 +27,8 @@ class TensorByFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        identity = module_homset(self.fixed_module(), self.fixed_module()).identity()
+        fixed = self.fixed_module()
+        identity = fixed.module_category().Mor(fixed, fixed).identity()
         return tensor_product_morphism(
             morphism,
             identity,
@@ -63,7 +61,8 @@ class InternalHomFromFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        identity = module_homset(self.fixed_source(), self.fixed_source()).identity()
+        fixed = self.fixed_source()
+        identity = fixed.module_category().Mor(fixed, fixed).identity()
         return internal_hom_morphism(
             source,
             target,
@@ -92,11 +91,12 @@ class TensorHomAdjunction(Adjunction):
     def unit(self, module):
         tensor = self.left_adjoint()(module)
         internal_hom = self.right_adjoint()(tensor)
+        fixed = self.fixed_module()
         return module.module_category().Mor(module, internal_hom)(
-            lambda module_label: module_homset(self.fixed_module(), tensor)(
+            lambda module_label: fixed.module_category().Mor(fixed, tensor)(
                 lambda fixed_label: tensor.pure_tensor(
                     module.module_generator(module_label),
-                    self.fixed_module().module_generator(fixed_label),
+                    fixed.module_generator(fixed_label),
                 )
             )
         )

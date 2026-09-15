@@ -1,6 +1,6 @@
 r"""H0 chain-map lifting for nonidentity morphisms of resolved modules."""
 
-from dzack_research.preamble.all import ZZ, FinitelyPresentedModule, module_homset
+from dzack_research.preamble.all import ZZ, FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

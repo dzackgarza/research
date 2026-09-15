@@ -17,9 +17,6 @@ from dzack_research.preamble.categories.divisors.general_divisors import (
     trivial_picard_group,
 )
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 
 
 def _zero_class_group(scheme):

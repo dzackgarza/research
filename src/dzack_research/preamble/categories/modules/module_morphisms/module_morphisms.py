@@ -929,9 +929,11 @@ class ModuleMorphism(Morphism):
         """
         if target_embedding.codomain() is not self.codomain():
             raise ValueError("module factorization through a subobject requires one common codomain")
+        source = self.domain()
+        target = target_embedding.domain()
         images = {}
-        for label in self.domain().module_generating_set():
-            image = self(self.domain().module_generator(label))
+        for label in source.module_generating_set():
+            image = self(source.module_generator(label))
             try:
                 images[label] = (
                     target_embedding.lift(image)
@@ -940,7 +942,7 @@ class ModuleMorphism(Morphism):
                 )
             except (TypeError, ValueError) as error:
                 raise ValueError("the morphism image is not contained in the target subobject") from error
-        return module_homset(self.domain(), target_embedding.domain())(images)
+        return source.module_category().Mor(source, target)(images)
 
     @cached_method
     def selected_presentation_morphism(self):
@@ -974,7 +976,9 @@ class ModuleMorphism(Morphism):
             return target_cover.linear_combination({label: coordinates[label] for label in target.module_generating_set() if coordinates[label]})
 
         cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
-        relation_map = module_homset(source_presentation.domain(), target_presentation.domain())(
+        relation_source = source_presentation.domain()
+        relation_target = target_presentation.domain()
+        relation_map = relation_source.module_category().Mor(relation_source, relation_target)(
             {
                 label: target_presentation.lift(cover_map(source_presentation(source_presentation.domain().module_generator(label))))
                 for label in source_presentation.domain().module_generating_set()
@@ -1216,7 +1220,8 @@ class ModuleMorphism(Morphism):
         r"""Return whether this morphism is its Hom object's identity."""
         if self.domain() is not self.codomain():
             return False
-        return self is module_homset(self.domain(), self.domain()).identity()
+        module = self.domain()
+        return self is module.module_category().Mor(module, module).identity()
 
     def __mul__(self, other):
         if isinstance(other, ModuleMorphism):
@@ -1229,7 +1234,9 @@ class ModuleMorphism(Morphism):
                 return other
             if other._is_the_identity():
                 return self
-            homset = module_homset(other.domain(), self.codomain())
+            source = other.domain()
+            target = self.codomain()
+            homset = source.module_category().Mor(source, target)
             # Composition of certified linear maps is linear.  Keep that theorem
             # as construction data instead of rebuilding the composite from all
             # selected generator images and rechecking the source relations.
@@ -1834,11 +1841,6 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         return f"Hom({self.domain()}, {self.codomain()})"
 
 
-def module_homset(domain, codomain) -> ModuleHomset:
-    r"""``Hom_R(domain, codomain)`` for ``R`` the base of ``domain``; both must be placed over ``R``."""
-    return domain.module_category().Mor(domain, codomain)
-
-
 class SubFramingMorphism(ModuleEmbedding):
     r"""The free module functor applied to an injection of framings.
 
@@ -2037,7 +2039,8 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
     class ParentMethods:
         @cached_method
         def identity(self):
-            identity = module_homset(self.domain(), self.domain()).identity()
+            module = self.domain()
+            identity = module.module_category().Mor(module, module).identity()
             return self._from_known_inverse_pair(identity, identity)
 
         one = identity
@@ -2063,8 +2066,10 @@ class ModuleAutomorphismGroup(CategoricalHomset):
         return self._preamble_base_ring
 
     def _from_known_inverse_pair(self, forward, inverse):
-        forward = module_homset(self.domain(), self.domain())(forward)
-        inverse = module_homset(self.domain(), self.domain())(inverse)
+        module = self.domain()
+        homset = module.module_category().Mor(module, module)
+        forward = homset(forward)
+        inverse = homset(inverse)
         return self.element_class(self, forward, inverse, verify=False)
 
     def __call__(self, datum):
@@ -2080,12 +2085,14 @@ class ModuleAutomorphismGroup(CategoricalHomset):
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
             return self._from_known_inverse_pair(datum.forward(), datum.inverse())
-        forward = module_homset(self.domain(), self.domain())(datum)
+        module = self.domain()
+        forward = module.module_category().Mor(module, module)(datum)
         return self._from_known_inverse_pair(forward, forward.inverse())
 
     @cached_method
     def identity(self):
-        identity = module_homset(self.domain(), self.domain()).identity()
+        module = self.domain()
+        identity = module.module_category().Mor(module, module).identity()
         return self._from_known_inverse_pair(identity, identity)
 
     one = identity

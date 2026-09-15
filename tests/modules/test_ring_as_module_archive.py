@@ -12,9 +12,6 @@ from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     ring_as_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 ARCHIVE_RECONCILIATION = {

@@ -8,9 +8,6 @@ map inside that general construction.
 """
 
 from dzack_research.preamble.all import ZZ, Groups, Lattices, Modules
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/functors/trivial_action.sage",

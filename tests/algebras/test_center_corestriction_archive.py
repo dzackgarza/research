@@ -9,9 +9,6 @@ from dzack_research.preamble.all import (
     OwnedRings,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )

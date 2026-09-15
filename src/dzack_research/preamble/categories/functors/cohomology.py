@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 

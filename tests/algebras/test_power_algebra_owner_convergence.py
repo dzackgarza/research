@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     AlternatingAlgebraOf,
     BasedFreeModule,
     DividedPowerAlgebraOf,
-    module_homset,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (
     AlternatingAlgebraOf as defining_alternating_algebra,

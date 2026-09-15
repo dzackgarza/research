@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     FinitelyPresentedModule,
     Modules,
-    module_homset,
 )
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.sets import finite_ordered_set

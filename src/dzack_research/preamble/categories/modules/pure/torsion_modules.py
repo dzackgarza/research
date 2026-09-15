@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
     MatrixSpace,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
     row_normal_form,
 )

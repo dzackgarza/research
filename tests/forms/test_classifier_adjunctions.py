@@ -9,7 +9,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     ZZ,
     bilinear_free_form_adjunction,
-    module_homset,
     quadratic_free_form_adjunction,
     ring_as_module,
 )

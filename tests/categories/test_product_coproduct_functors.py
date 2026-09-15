@@ -1,5 +1,5 @@
 
-from dzack_research.preamble.all import BasedFreeModule, Sets, ZZ, module_homset
+from dzack_research.preamble.all import BasedFreeModule, Sets, ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import (
     CoproductFunctor,
     DiagonalFunctor,

@@ -2298,7 +2298,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             integers = _own_ring(SageZZ)

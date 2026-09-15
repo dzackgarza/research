@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     module_coefficients,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
@@ -336,14 +335,16 @@ class LatticeEmbedding(LatticeMorphism):
         r"""Factor this lattice embedding through a module embedding when possible."""
         if target_embedding.codomain() is not self.codomain():
             raise ValueError("subobject factorization requires one common codomain")
+        source = self.domain()
+        target = target_embedding.domain()
         images = {}
-        for label in self.domain().module_generating_set():
-            image = self(self.domain().module_generator(label))
+        for label in source.module_generating_set():
+            image = self(source.module_generator(label))
             try:
                 images[label] = target_embedding.lift(image)
             except (TypeError, ValueError) as error:
                 raise ValueError("the first subobject is not contained in the second") from error
-        return module_homset(self.domain(), target_embedding.domain())(images)
+        return source.module_category().Mor(source, target)(images)
 
     def __mul__(self, other):
         if not isinstance(other, LatticeEmbedding):

@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,

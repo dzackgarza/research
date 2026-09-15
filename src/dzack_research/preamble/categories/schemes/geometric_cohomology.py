@@ -26,9 +26,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
     ring_as_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -137,10 +134,9 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
 
         def augmentation(self):
             r"""Return the identification of degree zero with global sections."""
-            return module_homset(
-                self.graded_piece(0),
-                self.geometric_sheaf().global_sections(),
-            ).identity()
+            source = self.graded_piece(0)
+            target = self.geometric_sheaf().global_sections()
+            return source.module_category().Mor(source, target).identity()
 
 
 def AffineGeometricCohomologyComplex(sheaf, cover=None):
@@ -208,9 +204,11 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
             sheaf,
             cover=refinement.fine_cover(),
         )
-        degree_zero = module_homset(
-            source.graded_piece(0),
-            target.graded_piece(0),
+        source_degree_zero = source.graded_piece(0)
+        target_degree_zero = target.graded_piece(0)
+        degree_zero = source_degree_zero.module_category().Mor(
+            source_degree_zero,
+            target_degree_zero,
         ).identity()
         self._source_complex = source
         self._target_complex = target

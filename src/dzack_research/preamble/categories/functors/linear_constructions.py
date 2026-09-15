@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules, FinitelyPresentedModules, biproduct_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring

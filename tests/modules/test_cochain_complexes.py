@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.modules import (
     CochainComplexes,
     FinitelyPresentedModule,
     GradedModules,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

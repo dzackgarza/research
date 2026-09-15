@@ -44,7 +44,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     framing_morphism,
     module_coefficients,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
@@ -1695,7 +1694,9 @@ class FreeResolution:
             raise ValueError("resolution differentials are indexed in positive degree")
         if degree in self._differentials.index_set():
             return self._differentials.value(degree)
-        return module_homset(self.term(degree), self.term(int(degree) - 1)).zero()
+        source = self.term(degree)
+        target = self.term(int(degree) - 1)
+        return source.module_category().Mor(source, target).zero()
 
     def augmentation(self):
         return self._augmentation
@@ -1831,7 +1832,9 @@ class FreeResolutionMorphism:
         selected = self._components.get(degree)
         if selected is not None:
             return selected
-        return module_homset(self.domain().term(degree), self.codomain().term(degree)).zero()
+        source = self.domain().term(degree)
+        target = self.codomain().term(degree)
+        return source.module_category().Mor(source, target).zero()
 
     def chain_homotopy_to(self, other):
         r"""Return a chain homotopy from this lift to ``other``.
@@ -1908,10 +1911,10 @@ class FreeResolutionHomotopy:
         selected = self._components.get(degree)
         if selected is not None:
             return selected
-        return module_homset(
-            self.source().domain().term(degree),
-            self.source().codomain().term(degree + 1),
-        ).zero()
+        chain_map = self.source()
+        source = chain_map.domain().term(degree)
+        target = chain_map.codomain().term(degree + 1)
+        return source.module_category().Mor(source, target).zero()
 
 
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
@@ -3523,7 +3526,9 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         def transpose(self):
 
-            target = module_homset(self.codomain(), self.domain())
+            source = self.codomain()
+            codomain = self.domain()
+            target = source.module_category().Mor(source, codomain)
             _refine_matrix_hom(target)
             return target.from_rows(
                 tuple(tuple(self.matrix_entry(row_label, column_label) for row_label in self.parent().row_index_set()) for column_label in self.parent().column_index_set())
@@ -3538,7 +3543,9 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
             backend = _engine_matrix(self).inverse()
             ring = self.parent().base_ring()
-            target = _refine_matrix_hom(module_homset(self.codomain(), self.domain()))
+            source = self.codomain()
+            codomain = self.domain()
+            target = _refine_matrix_hom(source.module_category().Mor(source, codomain))
             return target.from_rows((ring._from_engine_element(backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
 
         __invert__ = inverse

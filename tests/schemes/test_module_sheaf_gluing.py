@@ -9,9 +9,6 @@ def _rank_one_transition(source, target, unit):
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     source_generator = _rank_one_generator(source)
     target_generator = _rank_one_generator(target)
@@ -25,9 +22,6 @@ def _rank_one_transition(source, target, unit):
 
 
 def _rank_one_map(source, target, scalar):
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     target_generator = _rank_one_generator(target)
     return source.module_category().Mor(source, target)(
@@ -333,7 +327,6 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
         FinitelyPresentedModules,
         PolynomialRing,
         Spec,
-        module_homset,
     )
     from dzack_research.preamble.categories.sets import finite_ordered_set
 

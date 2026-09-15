@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     ZZ,
     BilinearForms,
     QuadraticMap,
-    module_homset,
     ring_as_module,
 )
 

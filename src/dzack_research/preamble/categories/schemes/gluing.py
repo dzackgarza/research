@@ -39,7 +39,6 @@ from dzack_research.preamble.categories.functors.algebra_modules import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -2222,14 +2221,13 @@ class FiniteAtlasModuleGluingDatum(SageObject):
 
     def identity_morphism(self):
         r"""Return the identity morphism of this finite-atlas descent datum."""
+        def identity_at(index):
+            module = self.local_module(index)
+            return module.module_category().Mor(module, module).identity()
+
         return self.morphism_to(
             self,
-            {
-                index: module_homset(
-                    self.local_module(index), self.local_module(index)
-                ).identity()
-                for index in self.chart_indices()
-            },
+            {index: identity_at(index) for index in self.chart_indices()},
         )
 
     def sheaf(self):
@@ -3119,11 +3117,16 @@ class ModuleGluingMorphism(Morphism):
         if len(local_maps) != len(self.domain().local_modules()):
             raise ValueError("a module descent morphism requires one local map on each affine chart")
 
+        domain = self.domain()
+        codomain = self.codomain()
+
+        def owned_local_map(index, local_map):
+            source = domain.local_module(index)
+            target = codomain.local_module(index)
+            return source.module_category().Mor(source, target)(local_map)
+
         self._local_maps = tuple(
-            module_homset(
-                self.domain().local_module(index),
-                self.codomain().local_module(index),
-            )(local_map)
+            owned_local_map(index, local_map)
             for index, local_map in enumerate(local_maps)
         )
         self._restricted_local_maps = {}

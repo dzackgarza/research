@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     framing_morphism,
     module_coefficients,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -254,7 +253,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             morphism = self._preamble_cokernel_morphism
             if morphism is None:
                 raise ValueError("this finitely presented module was not constructed as a cokernel")
-            return module_homset(morphism.codomain(), self)({label: self.module_generator(label) for label in morphism.codomain().module_generating_set()})
+            source = morphism.codomain()
+            return source.module_category().Mor(source, self)(
+                {label: self.module_generator(label) for label in source.module_generating_set()}
+            )
 
         def tensor_product(self, other):
             return Modules(self.base_ring()).tensor_product((self, other))
@@ -2448,7 +2450,12 @@ def FinitelyPresentedModule(
     # underlying R-linear arrow; otherwise later presentation constructions
     # incorrectly inherit the stricter Hom object.
 
-    presentation = module_homset(presentation.domain(), presentation.codomain())(presentation)
+    presentation_source = presentation.domain()
+    presentation_target = presentation.codomain()
+    presentation = presentation_source.module_category().Mor(
+        presentation_source,
+        presentation_target,
+    )(presentation)
     codomain = presentation.codomain()
     base_ring = codomain.base_ring()
     engine = _engine_ring(base_ring)

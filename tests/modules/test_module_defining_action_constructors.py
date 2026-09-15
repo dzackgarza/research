@@ -20,7 +20,6 @@ from dzack_research.preamble.all import (
     ModulesWithChosenFinitePresentation,
     PolynomialRing,
     Set,
-    module_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
@@ -176,9 +175,9 @@ def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -
 
     source_framing = source.framing_object()
     target_framing = target.framing_object()
-    source_change = module_homset(
-        source_framing.arrow().domain(), target_framing.arrow().domain()
-    )(
+    source_free = source_framing.arrow().domain()
+    target_free = target_framing.arrow().domain()
+    source_change = source_free.module_category().Mor(source_free, target_free)(
         {
             "x": target_framing.arrow().domain().module_generator("u"),
             "y": target_framing.arrow().domain().module_generator("v"),

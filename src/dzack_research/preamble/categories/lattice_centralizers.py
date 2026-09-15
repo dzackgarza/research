@@ -29,9 +29,6 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.orthogonal_quotients import (
     _finite_supergroup_elements,
 )
@@ -533,7 +530,8 @@ class CyclotomicDecomposition(SageObject):
             inclusion = summand.inclusion()
             component = components[divisor]
             moved_images.extend(inclusion(component(generator)) for generator in summand.module_generators())
-        moved = module_homset(self.orthogonal_sum(), lattice)(tuple(moved_images))
+        orthogonal_sum = self.orthogonal_sum()
+        moved = orthogonal_sum.module_category().Mor(orthogonal_sum, lattice)(tuple(moved_images))
 
         scalar = lattice.base_ring()(int(self.index().finite_value()))
         scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))

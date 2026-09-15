@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.modules.localizations import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,

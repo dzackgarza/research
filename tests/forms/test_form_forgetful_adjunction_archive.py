@@ -7,7 +7,7 @@ that form.  The live ``free_forms`` owner keeps those same constructions under
 public names are exact aliases, not a parallel implementation.
 """
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
+from dzack_research.preamble.all import ZZ, BasedFreeModule
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFormForgetfulAdjunction,
     BilinearFreeFormAdjunction,

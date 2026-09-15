@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     FinitelyGeneratedFreeModules,
     FreeModuleOn,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _solve_left_integrally,
     framing_morphism,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,

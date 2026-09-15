@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _module_subobject_spanning_with_structure,
     _span_basis_elements,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,

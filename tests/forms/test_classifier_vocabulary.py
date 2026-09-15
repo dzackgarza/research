@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.functors.free_forms import (
     TautologicalBilinearFormFunctor,
     TautologicalQuadraticFormFunctor,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, FreeModuleOn, module_homset
+from dzack_research.preamble.categories.modules import BasedFreeModule, FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )

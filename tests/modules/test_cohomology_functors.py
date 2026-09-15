@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.functors.cohomology import (
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.static_types import cup, de_rham_class_view

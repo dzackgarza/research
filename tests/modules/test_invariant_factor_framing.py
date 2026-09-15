@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     Cardinalities,
     Lattices,
     ZZ,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.modules.pure.modules import (

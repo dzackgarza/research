@@ -134,7 +134,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _solve_left_integrally,
     module_coefficients,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,

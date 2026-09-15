@@ -23,9 +23,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.algebras.algebras import (
     _unit_morphism_from_element,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )

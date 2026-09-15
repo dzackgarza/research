@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     base_change_adjunction,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
-    module_homset,
     order_number_field_adjunction,
     symmetric_algebra_functor,
     tensor_algebra_functor,

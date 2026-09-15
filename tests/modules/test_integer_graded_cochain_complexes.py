@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.functors.cohomology import cohomology_fu
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -118,11 +117,16 @@ def test_lazy_complex_identity_is_a_degree_indexed_cochain_map() -> None:
         lambda degree: _rank_one(f"e{int(degree)}"),
         name="A rank-one module in every degree",
     )
+    def zero_differential(degree):
+        source = pieces(degree)
+        target = pieces(int(degree) + 1)
+        return source.module_category().Mor(source, target)(
+            {source.module_generating_set()[0]: target.zero()}
+        )
+
     differentials = indexed_family(
         degree_set,
-        lambda degree: module_homset(pieces(degree), pieces(int(degree) + 1))(
-            {pieces(degree).module_generating_set()[0]: pieces(int(degree) + 1).zero()}
-        ),
+        zero_differential,
         name="Zero differential in every degree",
     )
     complex_ = CochainComplexes(ZZ).from_family(pieces, differentials)

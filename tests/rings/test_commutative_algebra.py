@@ -431,9 +431,6 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
@@ -486,9 +483,6 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     from dzack_research.preamble.all import FreeModule, LocalizedModules
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
     )
 
     free = FreeModule(ZZ, 1)
@@ -549,9 +543,6 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     from dzack_research.preamble.all import FreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
     )
 
     polynomial = PolynomialRing(QQ, "x")
@@ -617,7 +608,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
 def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
     import logging
 
-    from dzack_research.preamble.all import GF, FreeModule, module_homset, ring_as_module
+    from dzack_research.preamble.all import GF, FreeModule, ring_as_module
 
     field = GF(3)
     finite = ring_as_module(field)
@@ -656,7 +647,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 
 
 def test_general_module_localization_uses_fraction_model_and_detects_s_torsion() -> None:
-    from dzack_research.preamble.all import GeneralModule, LocalizedModules, Set, module_homset
+    from dzack_research.preamble.all import GeneralModule, LocalizedModules, Set
 
     underlying_set = Set([0, 1, 2, 3, 4, 5])
     module = GeneralModule(
@@ -808,7 +799,7 @@ def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
 
 
 def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
-    from dzack_research.preamble.categories.modules import FreeModule, module_homset
+    from dzack_research.preamble.categories.modules import FreeModule
 
     source = FreeModule(ZZ, 2)
     target = FreeModule(ZZ, 1)
@@ -851,7 +842,7 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
 
 def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operations() -> None:
-    from dzack_research.preamble.categories.modules import FreeModule, module_homset
+    from dzack_research.preamble.categories.modules import FreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
@@ -889,7 +880,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
 
 
 def test_general_module_materializes_from_an_underlying_set_and_action() -> None:
-    from dzack_research.preamble.all import GeneralModule, Modules, module_homset
+    from dzack_research.preamble.all import GeneralModule, Modules
 
     field = GF(3)
     module = GeneralModule(

@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,

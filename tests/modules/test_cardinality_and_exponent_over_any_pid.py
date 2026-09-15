@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     GF,
     PolynomialRing,
     ZZ,
-    module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 

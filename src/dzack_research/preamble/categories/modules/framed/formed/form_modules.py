@@ -50,7 +50,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     module_coefficients,
     module_embedding,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -250,10 +249,11 @@ class FormedModuleMorphism(Morphism):
         )
 
     def _check_form_square(self) -> None:
-        source_values = _represented_value_module(self.domain())
+        domain = self.domain()
+        source_values = _represented_value_module(domain)
         if (
-            self.domain() is self.codomain()
-            and self.module_morphism() is module_homset(self.domain(), self.domain()).identity()
+            domain is self.codomain()
+            and self.module_morphism() is domain.module_category().Mor(domain, domain).identity()
             and self.value_morphism() is source_values.module_category().Mor(source_values, source_values).identity()
         ):
             return
@@ -450,7 +450,9 @@ class FormedModuleHomset(CategoricalHomset):
             and not isinstance(datum, FormedModuleMorphism)
             and not isinstance(datum, ModuleMorphism)
         ):
-            datum = module_homset(self.domain(), self.codomain())(datum)
+            domain = self.domain()
+            codomain = self.codomain()
+            datum = domain.module_category().Mor(domain, codomain)(datum)
 
         if isinstance(datum, FormedModuleMorphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
@@ -475,10 +477,11 @@ class FormedModuleHomset(CategoricalHomset):
     @cached_method
     def identity(self):
 
-        values = _represented_value_module(self.domain())
+        domain = self.domain()
+        values = _represented_value_module(domain)
         return self(
             (
-                module_homset(self.domain(), self.domain()).identity(),
+                domain.module_category().Mor(domain, domain).identity(),
                 values.module_category().Mor(values, values).identity(),
             )
         )

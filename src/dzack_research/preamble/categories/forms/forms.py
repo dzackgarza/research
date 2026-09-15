@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     TensorProductModuleHomset,
     TensorProductModuleMorphism,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.powers import (
     DividedSquare,

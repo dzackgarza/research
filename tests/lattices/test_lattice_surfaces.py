@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     Groups,
     Ideals,
     Lattices,
-    module_homset,
     ModuleSubobjects,
     NumberField,
     NumberFieldsWithChosenPrimitiveElement,

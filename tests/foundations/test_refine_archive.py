@@ -105,7 +105,7 @@ def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
 
 
 def test_module_zero_and_unequal_rank_hom_survive_owned_refinement() -> None:
-    from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
+    from dzack_research.preamble.all import ZZ, BasedFreeModule
     from dzack_research.preamble.categories.sets import finite_ordered_set
 
     source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))

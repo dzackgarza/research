@@ -12,7 +12,7 @@ from dzack_research.preamble.categories.functors.free_forgetful import (
     free_module_functor,
     underlying_set_functor,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, module_homset
+from dzack_research.preamble.categories.modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 

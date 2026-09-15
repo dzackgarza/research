@@ -1,6 +1,5 @@
 r"""Categorical tensor products and bilinear maps of represented modules."""
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import Modules, _tensor_pair
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets

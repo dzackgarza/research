@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     Lattices,
     QQ,
     ZZ,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -52,7 +51,7 @@ def matrix_hom():
     source = BasedFreeModule(ZZ, finite_ordered_set(("e0", "e1")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("f0", "f1")))
     f0, f1 = target.module_generators()
-    morphism = module_homset(source, target)(
+    morphism = source.module_category().Mor(source, target)(
         {"e0": f0 + 2 * f1, "e1": 3 * f0 - f1}
     )
     e0, e1 = source.module_generators()

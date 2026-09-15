@@ -838,9 +838,6 @@ class AT21ADEDoubleCover(SageObject):
     """
 
     def __init__(self, base_pair, branch_section) -> None:
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
         from dzack_research.preamble.categories.schemes.gluing import (
             chartwise_closed_subscheme,
             chartwise_fixed_subscheme,

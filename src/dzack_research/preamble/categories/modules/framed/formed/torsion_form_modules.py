@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _integral_left_solver,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
@@ -1183,8 +1182,10 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         normalization = self.normalization_isometry()
         normalized_form = normalization.codomain()
 
-        forward = module_homset(
-            normalization.domain(), normalized_form
+        original_form = normalization.domain()
+        forward = original_form.module_category().Mor(
+            original_form,
+            normalized_form,
         )(normalization.forward())
         inverse = normalized_form.module_category().Mor(
             normalized_form,

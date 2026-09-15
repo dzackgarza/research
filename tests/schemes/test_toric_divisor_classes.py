@@ -33,7 +33,6 @@ from dzack_research.preamble.all import (
     SectionsVanishingToOrder,
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
-    module_homset,
 )
 
 # One rank-two cocharacter lattice for the whole file: a free module is a

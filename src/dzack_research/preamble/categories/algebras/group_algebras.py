@@ -33,9 +33,6 @@ from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
 from dzack_research.preamble.categories.modules.tensor_products import (
     tensor_product_morphism,
@@ -132,7 +129,8 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             )
 
             target_module = algebra_underlying_module_functor(ring)(ring)
-            counit = module_homset(self.underlying_module(), target_module)(
+            source_module = self.underlying_module()
+            counit = source_module.module_category().Mor(source_module, target_module)(
                 {
                     label: target_module(ring.one())
                     for label in self.module_generating_set()

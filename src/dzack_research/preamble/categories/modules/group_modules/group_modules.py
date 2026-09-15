@@ -51,7 +51,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _ModuleHomsetCommonMethods,
     module_coefficients,
-    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -1120,10 +1119,9 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
 
     def underlying_homset(self):
         r"""``Hom_R(Res M, Res N)``, containing the equivariant maps."""
-        return module_homset(
-            self.domain().unacted_module(),
-            self.codomain().unacted_module(),
-        )
+        source = self.domain().unacted_module()
+        target = self.codomain().unacted_module()
+        return source.module_category().Mor(source, target)
 
     def is_equivariant(self, arrow):
         group = self.domain().group()

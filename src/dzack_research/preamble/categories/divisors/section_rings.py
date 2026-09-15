@@ -7,9 +7,6 @@ from dzack_research.preamble.categories.algebras.graded_algebras import GradedAl
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebra,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_homset,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,

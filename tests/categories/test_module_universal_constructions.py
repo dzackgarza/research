@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
+from dzack_research.preamble.all import ZZ, BasedFreeModule
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
