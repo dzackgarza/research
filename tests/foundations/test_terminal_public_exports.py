@@ -108,6 +108,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "g_set_homset",
         "lie_algebra_homset",
         "isometry_primitive_extension",
+        "lorentzian_reduction_complex",
         "module_localization_functor",
         "primitive_isotropic",
         "primitive_isotropic_vectors",

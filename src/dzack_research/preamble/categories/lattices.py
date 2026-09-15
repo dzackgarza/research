@@ -2628,6 +2628,14 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return root_sublattice(self)
 
+        def lorentzian_reduction_complex(self, marked_vectors=None):
+            r"""Return the completed Lorentzian perfect-domain traversal of this lattice."""
+            from dzack_research.preamble.categories.reduction_complexes import (
+                _lorentzian_reduction_complex,
+            )
+
+            return _lorentzian_reduction_complex(self, marked_vectors=marked_vectors)
+
         def vector_configuration(self, module_generating_set):
             r"""Return the sublattice framed by the stated ordered vector family."""
             subobject = self.subobject_on(module_generating_set)

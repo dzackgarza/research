@@ -262,7 +262,7 @@ class RationalReductionCell(SageObject):
         This is the exact local transporter operation used by a reduction
         complex once a finite cell-stabilizer/quotient group is represented.
         Infinite arithmetic traversal remains the separate provider obligation
-        of :func:`lorentzian_reduction_complex`.
+        of the ambient lattice's ``lorentzian_reduction_complex`` method.
         """
         if other.lattice() is not self.lattice():
             return None
@@ -1011,7 +1011,7 @@ def marked_reduction_cell(cell, marked_vectors):
     return MarkedReductionCell(cell, marked_vectors)
 
 
-def lorentzian_reduction_complex(lattice, marked_vectors=None):
+def _lorentzian_reduction_complex(lattice, marked_vectors=None):
     r"""Return the completed Lorentzian perfect-domain traversal of ``lattice``.
 
     The external provider works in signature ``(n,1)``.  Negating a form of
@@ -1054,7 +1054,6 @@ __all__ = [
     "ReductionFaceIncidence",
     "ReductionCellAdjacency",
     "RationalReductionCell",
-    "lorentzian_reduction_complex",
     "marked_reduction_cell",
     "rational_reduction_cell",
     "rational_reduction_complex_exploration",

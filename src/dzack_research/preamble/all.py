@@ -839,9 +839,6 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
 from dzack_research.preamble.categories.rational_lattices import (
     RationalLattices as RationalLattices,
 )
-from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
-    lorentzian_reduction_complex,
-)
 from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ADELogPair,
     ADELogPairs,
