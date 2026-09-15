@@ -106,7 +106,7 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
             return self.boundary_divisor() == self.log_scheme().toric_boundary_divisor()
 
 
-def LogPair(log_scheme, boundary_divisor):
+def _log_pair(log_scheme, boundary_divisor):
     r"""The log pair of a variety and a chosen boundary divisor on it."""
     base = log_scheme.scheme_base_ring()
     return object_of(
@@ -129,4 +129,4 @@ def _toric_log_pair(toric_variety, boundary_divisor):
     )
 
 
-__all__ = ["LogPair", "LogPairs", "ToricLogPairs"]
+__all__ = ["LogPairs", "ToricLogPairs"]

@@ -1133,6 +1133,12 @@ class Schemes(OwnedCategoryOverBaseRing):
         def scheme_category(self):
             return Schemes(self.scheme_base_ring())
 
+        def log_pair(self, boundary_divisor):
+            r"""Return the log pair ``(self, boundary_divisor)``."""
+            from dzack_research.preamble.categories.schemes.log_pairs import _log_pair
+
+            return _log_pair(self, boundary_divisor)
+
         def base_scheme(self):
             ring = self.scheme_base_ring()
             return Spec(ring, base_ring=ring)

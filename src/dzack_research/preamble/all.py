@@ -712,7 +712,6 @@ from dzack_research.preamble.categories.schemes import (
     LatticePolytopes,
     LegendreMonodromyFamily,
     LocallyRingedSpaces,
-    LogPair,
     LogPairs,
     NodalCubic,
     NodalCubicFundamentalGroup,
