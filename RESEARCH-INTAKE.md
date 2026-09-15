@@ -28,6 +28,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Generatingfunctionology (Wilf Ch.1-2) | User note 2026-09-15 | Symbolic recurrences, exact solutions, OGF/EGF, L-functions / zeta | `categories/generating_functions/` + `categories/rings/formal_power_series.py` / `D-Mod` | Proposed — see note below |
 | Monodromy groups/reps + π1/H1 + CW + graded | User note 2026-09-15 | Semantic `π1(X,x)`, `H1^sing`, monodromy groups/reps; CW complexes with sphere homotopy DB; `ZZ^n`-graded complexes / spectral sequences | `categories/topology/` / `categories/homotopy/` + `categories/graded/` | Proposed — see note below |
 | Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
+| Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites | User note 2026-09-15 | Honest `Q_ℓ`, `H^i_ét`, `H^i(Gal,-)` as specialization of site cohomology; Grothendieck topologies, sites, sieves, covering families | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -332,3 +333,21 @@ Need honest `Q_ℓ`, étale cohomology, and Galois cohomology as a specializatio
 * Requires: category `Sites` with objects `(C, J)` (small category + Grothendieck topology via sieves/covering families), morphisms of sites (continuous functors), associated sheaf functor `a: PSh(C) → Sh(C,J)`, and cohomology `RΓ`. Specializations: Zariski site `(Open(X), J_Zar)`, étale site `(Ét_{/X}, J_ét)`, pro-étale, fppf — each is an object of `Sites`. The same formalism must own Zariski, étale, and Galois as instances.
 
 Intended owners: `categories/topology/sites.py` (`Site`, `GrothendieckTopology`, `Sieve`, `CoveringFamily` with axioms), `categories/topology/sheaves_on_site.py` (`Sh(C,J)`), `categories/etale/etale_site.py` (`X_ét`), `categories/etale/ladic_sheaves.py` (`Q_ℓ`, `Q_ℓ(n)` lisse), `categories/galois/galois_cohomology.py` (`H^i(Gal_K, -) = H^i_ét(Spec K, -)` as specialization, not a parallel definition). Not a free `etale_cohomology(X, Q_ell)` function — `X.etale_site().cohomology(i, Q_ell)`, `Spec(K).etale_cohomology()` on the site objects.
+
+## Desired capability: Gauss-Manin, six functors, derived pushforwards — note 2026-09-15
+
+Need the Gauss-Manin connection, some basic six-functor formalism for sheaves, and derived functors — particularly right-derived pushforwards.
+
+* Gauss-Manin connection `∇_{GM}: H^k_{dR}(X/S) → H^k_{dR}(X/S) ⊗ Ω^1_S` is not an ad-hoc matrix `M(t)` from `periods`. It is the flat connection on the relative de Rham cohomology sheaf `H^k_{dR}(X/S) = R^k f_* Ω^•_{X/S}` obtained as the `d_1` differential of the Hodge-de Rham spectral sequence or, equivalently, as the connection induced by the derived pushforward of the relative de Rham complex. Construction lives in `D_S-Mod` via `∇_{GM} ↔ D_S`-action; `PF(w)` is `Ann_{D_S}(w)` for `w = ∫_γ Ω`. Need `∇_{GM}` as object of `FlatConn(S)` with its regular singularities and Griffiths transversality, not just `mat/den`.
+
+* Six functors for sheaves: for any morphism `f: X → S` need functors between derived categories `D(Sh(X)), D(Sh(S))` (étale, coherent, analytic — same formalism via sites):
+  * `f^*: D(S) → D(X)` (pullback, left adjoint to `f_*`), `f_*: D(X) → D(S)` (pushforward)
+  * `f_!: D(X) → D(S)` (pushforward with proper support), `f^!: D(S) → D(X)` (exceptional pullback, right adjoint to `f_!`)
+  * `⊗, Hom` internal tensor and internal hom in `D`
+  * Adjunctions `f^* ⊣ f_*`, `f_! ⊣ f^!`, projection formula `f_!(F ⊗ f^*G) ≅ f_!F ⊗ G`, base change, duality. These are required to state `f.as_family` cohomology, dualizing complexes, and `R f_*` compatibility.
+
+* Derived functors — particularly right-derived pushforwards: `R f_*: D(Sh(X)) → D(Sh(S))` is right derivation of `f_*: Sh(X) → Sh(S)` via injective resolutions. Need `R^i f_* = H^i(R f_*)` as objects `R^i f_* Ω^•`, `R^i f_* Q_ℓ` etc., with `R f_*` preserving constructibility under proper/base-change hypotheses. Period sheaf `H^k_{dR}(X/S) = R^k f_* Ω^•_{X/S}` and `R^k f^{an}_* Q_ℓ`, `R^k f^{an}_* C` (Betti local system) are all instances of the same `R f_*`. The comparison `R^k f_*^{dR} ⊗ C ≅ R^k f^{an}_* C ⊗ O^{an}` is the comparison isomorphism that makes `∇_{GM}` and monodromy agree. Without `R f_*` as derived functor, each `H^k` is a separate ad-hoc construction.
+
+* Requires: category `Derived(C)` for Grothendieck abelian `C = Sh(X_ét), QCoh, Mod_{D_S}`, functors `L f^*, R f_*, R f_!, f^!` as triangulated functors with adjunctions, and the full six-functor package (not just `R f_*`). Specializations: `RΓ(X, -) = R p_*` for `p: X → Spec k`; `H^i_ét = R^iΓ`; `H^i(Gal, -)` is `R^iΓ` for `Spec K`.
+
+Intended owners: `categories/functors/gauss_manifold.py` (`GaussManin` as `∇_{GM}` on `H_{dR}`), `categories/sheaves/six_functors.py` (`f^*, R f_*, R f_!, f^!, ⊗, Hom` with adjunctions), `categories/derived/derived_category.py` (`D(-)`, `R f_*` via injectives, `L f^*`), `categories/derived/pushforward.py` (`R^i f_*` as cohomology sheaves). Not free `pushforward(f, sheaf)` with no derived structure — `f.derived_pushforward(sheaf)` in `D(Sh)` on the site objects, with `R^i` as `H^i`.
