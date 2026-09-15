@@ -188,7 +188,7 @@ class FiniteElementConjugacyClass(SageObject):
         return f"Conjugacy class of {self._representative} in {self._supergroup}"
 
 
-def finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
+def _finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
     backend_prime = _engine_prime(prime_above)
     elements = tuple(
         automorphism
@@ -202,8 +202,8 @@ def finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
     )
 
 
-def finite_inertia_group(quotient, prime_above) -> FiniteGaloisSubgroup:
-    decomposition = finite_decomposition_group(quotient, prime_above)
+def _finite_inertia_group(quotient, prime_above) -> FiniteGaloisSubgroup:
+    decomposition = quotient.decomposition_group(prime_above)
     elements = tuple(
         automorphism
         for automorphism in decomposition
@@ -216,13 +216,13 @@ def finite_inertia_group(quotient, prime_above) -> FiniteGaloisSubgroup:
     )
 
 
-def finite_frobenius_class(
+def _finite_frobenius_class(
     quotient, base_prime, prime_above
 ) -> FiniteElementConjugacyClass:
     prime_above = _engine_prime(prime_above)
     if prime_above.ramification_index() != 1:
         raise ValueError("Frobenius is defined here only at an unramified prime")
-    decomposition = finite_decomposition_group(quotient, prime_above)
+    decomposition = quotient.decomposition_group(prime_above)
     residue = prime_above.residue_field()
     residue_order = _residue_field_order(base_prime)
     field = _engine_ring(quotient.top_field())
@@ -271,9 +271,8 @@ class AbsoluteDecompositionGroup(SageObject):
         return self._prolongation
 
     def image(self, quotient):
-        return finite_decomposition_group(
-            quotient,
-            self._prolongation.at(quotient.extension_data()),
+        return quotient.decomposition_group(
+            self._prolongation.at(quotient.extension_data())
         )
 
     def conjugacy_class(self):
@@ -309,9 +308,8 @@ class AbsoluteInertiaGroup(SageObject):
         return self._prolongation
 
     def image(self, quotient):
-        return finite_inertia_group(
-            quotient,
-            self._prolongation.at(quotient.extension_data()),
+        return quotient.inertia_group(
+            self._prolongation.at(quotient.extension_data())
         )
 
     def conjugacy_class(self):
@@ -409,7 +407,7 @@ class FrobeniusConjugacyClass(SageObject):
         return self._prime
 
     def image(self, quotient, prime_above):
-        return finite_frobenius_class(quotient, self._prime, prime_above)
+        return quotient.frobenius_class(self._prime, prime_above)
 
     def conjugacy_class(self):
         return self
@@ -437,7 +435,4 @@ __all__ = [
     "FrobeniusConjugacyClass",
     "InertiaGroupConjugacyClass",
     "PrimeProlongation",
-    "finite_decomposition_group",
-    "finite_frobenius_class",
-    "finite_inertia_group",
 ]

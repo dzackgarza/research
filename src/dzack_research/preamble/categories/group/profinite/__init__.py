@@ -58,12 +58,6 @@ _EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.pr
                                 'InertiaGroupConjugacyClass'),
  'PrimeProlongation': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
                        'PrimeProlongation'),
- 'finite_decomposition_group': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                                'finite_decomposition_group'),
- 'finite_frobenius_class': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                            'finite_frobenius_class'),
- 'finite_inertia_group': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                          'finite_inertia_group'),
  'ContinuousGroupHomset': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
                            'ContinuousGroupHomset'),
  'FiniteGaloisAutomorphism': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
@@ -121,9 +115,6 @@ __all__ = ['AbsoluteDecompositionGroup',
  'continuous_group_homset',
  'exact_field_homset',
  'extensions_along',
- 'finite_decomposition_group',
- 'finite_frobenius_class',
- 'finite_inertia_group',
  'restrict_along']
 
 def __getattr__(name):

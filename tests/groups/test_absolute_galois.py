@@ -330,6 +330,9 @@ def test_decomposition_inertia_and_frobenius_project_to_exact_finite_objects() -
     inertia_image = inertia.image(quotient)
     frobenius_image = group.frobenius_class(2).image(quotient, prime_above_two)
 
+    assert tuple(decomposition_image) == tuple(quotient.decomposition_group(prime_above_two))
+    assert tuple(inertia_image) == tuple(quotient.inertia_group(prime_above_two))
+    assert frobenius_image == quotient.frobenius_class(2, prime_above_two)
     assert decomposition_image.order() == 2
     assert inertia_image.order() == 1
     assert frobenius_image.representative() != quotient.one()

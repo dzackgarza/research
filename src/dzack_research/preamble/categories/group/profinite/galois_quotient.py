@@ -320,6 +320,30 @@ class FiniteGaloisQuotient(Parent):
                 return candidate
         raise ArithmeticError("the represented finite automorphism has no inverse")
 
+    def decomposition_group(self, prime_above):
+        r"""Return the decomposition subgroup at ``prime_above``."""
+        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
+            _finite_decomposition_group,
+        )
+
+        return _finite_decomposition_group(self, prime_above)
+
+    def inertia_group(self, prime_above):
+        r"""Return the inertia subgroup at ``prime_above``."""
+        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
+            _finite_inertia_group,
+        )
+
+        return _finite_inertia_group(self, prime_above)
+
+    def frobenius_class(self, base_prime, prime_above):
+        r"""Return the unramified Frobenius conjugacy class at ``prime_above``."""
+        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
+            _finite_frobenius_class,
+        )
+
+        return _finite_frobenius_class(self, base_prime, prime_above)
+
     def group_generators(self):
 
         nonidentity = tuple(element for element in self if element != self.one())
