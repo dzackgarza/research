@@ -58,8 +58,8 @@ def test_noncommutative_regular_module_action_lands_in_additive_endomorphisms() 
     endomorphisms = additive.End(ring)
     action = ring.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
-   lambda element: scalar * element,
-),
+            lambda element: scalar * element,
+        ),
     )
     regular = Modules(ring)(action)
 

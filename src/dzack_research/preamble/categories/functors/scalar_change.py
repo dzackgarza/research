@@ -208,8 +208,8 @@ class CoextensionOfScalarsFunctor(Functor):
         endomorphisms = Modules(self._source_ring).End(hom)
         action = self._target_ring.Mor(endomorphisms)(
             lambda scalar: internal_hom_morphism(
-       hom, hom, self._right_multiplication(scalar), identity
-   ),
+                hom, hom, self._right_multiplication(scalar), identity
+            ),
         )
         return Modules(self._target_ring)(hom, action)
 

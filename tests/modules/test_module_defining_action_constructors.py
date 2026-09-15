@@ -294,8 +294,8 @@ def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     endomorphisms = additive.End(ring)
     action = ring.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
-   lambda element: scalar * element,
-),
+            lambda element: scalar * element,
+        ),
     )
     regular = Modules(ring)(action)
     linear_endomorphisms = Modules(ring).End(regular)

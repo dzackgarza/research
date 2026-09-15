@@ -45,8 +45,8 @@ def test_scalar_multiplication_is_evaluation_of_the_chosen_action() -> None:
 
     action = ZZ.Mor(endomorphisms)(
         lambda scalar: endomorphisms(
-   {0: line.scalar_multiple(ZZ(scalar), generator)}
-),
+            {0: line.scalar_multiple(ZZ(scalar), generator)}
+        ),
     )
     acted = Modules(ZZ)(line, action)
     element = acted(line.scalar_multiple(ZZ(3), generator))

@@ -165,12 +165,12 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         )
         self._preamble_algebra_presentation_morphism = presentation_ring.Mor(self)(
             lambda element: self._from_engine_element(
-algebra_engine(
-presentation_engine_map(
-_engine_element(presentation_ring, element)
-)
-)
-),
+                algebra_engine(
+                    presentation_engine_map(
+                        _engine_element(presentation_ring, element)
+                    )
+                )
+            ),
         )
 
 

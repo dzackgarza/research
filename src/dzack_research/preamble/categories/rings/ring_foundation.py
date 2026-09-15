@@ -3071,8 +3071,8 @@ def Zmod(*args, **kwargs):
         ring._preamble_residue_field = residue
         ring._preamble_residue_map = ring.Mor(residue)(
             lambda element: residue(
-SageZZ(_engine_element(ring, element).lift())
-),
+                SageZZ(_engine_element(ring, element).lift())
+            ),
         )
         refine(ring, OwnedLocalRings())
     return ring

@@ -1095,8 +1095,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return ring.Mor(endomorphisms)(
                 lambda scalar: endomorphisms.elementwise(
-             lambda element: self._owned_scalar_multiple(scalar, element),
-         ),
+                    lambda element: self._owned_scalar_multiple(scalar, element),
+                ),
             )
 
         def scalar_action(self):
