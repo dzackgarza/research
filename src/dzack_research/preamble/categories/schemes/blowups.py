@@ -15,9 +15,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    ProductProjectiveSubschemeLineBundleIsomorphism,
-)
 from dzack_research.preamble.categories.divisors.picard_groups import (
     PicardGroup,
     PicardGroups,
@@ -65,10 +62,7 @@ class _ProjectivePointBlowupCanonicalComparison(SageObject):
         self._pulled = pulled
         self._exceptional = exceptional
         self._target = target
-        self._isomorphism = ProductProjectiveSubschemeLineBundleIsomorphism(
-            canonical,
-            target,
-        )
+        self._isomorphism = canonical.canonical_isomorphism_to(target)
 
     def blowup(self):
         return self._blowup

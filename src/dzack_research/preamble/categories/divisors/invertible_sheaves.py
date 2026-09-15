@@ -884,11 +884,15 @@ class ProjectiveSubschemeLineBundle(SageObject):
     def represented_global_section_image(self):
         return self.section_restriction_map().codomain()
 
+    def canonical_isomorphism_to(self, target):
+        r"""Return the canonical comparison with an equal-degree presentation on this scheme."""
+        return _ProjectiveSubschemeLineBundleIsomorphism(self, target)
+
     def _repr_(self):
         return f"O({self.degree()}) restricted to {self.scheme()}"
 
 
-class ProjectiveSubschemeLineBundleIsomorphism(SageObject):
+class _ProjectiveSubschemeLineBundleIsomorphism(SageObject):
     r"""The selected identity of two represented ``O_X(d)`` pullback presentations.
 
     Two objects here carry the same closed immersion and the same integer
@@ -923,7 +927,7 @@ class ProjectiveSubschemeLineBundleIsomorphism(SageObject):
         return type(self)(self.codomain(), self.domain())
 
     def __mul__(self, other):
-        if not isinstance(other, ProjectiveSubschemeLineBundleIsomorphism):
+        if not isinstance(other, _ProjectiveSubschemeLineBundleIsomorphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -1249,6 +1253,10 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
             "a non-ample ambient multiprojective bundle can restrict to an ample bundle; this regime needs a separate criterion"
         )
 
+    def canonical_isomorphism_to(self, target):
+        r"""Return the canonical comparison with an equal-multidegree presentation on this scheme."""
+        return _ProductProjectiveSubschemeLineBundleIsomorphism(self, target)
+
     def _repr_(self):
         degrees = tuple(
             self.multidegree()[label] for label in self.multidegree().index_set()
@@ -1256,7 +1264,7 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
         return f"O{degrees} restricted to {self.scheme()}"
 
 
-class ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
+class _ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
     r"""The canonical comparison of equal-multidegree restricted line bundles."""
 
     def __init__(self, source, target) -> None:
@@ -1292,7 +1300,7 @@ class ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
         return type(self)(self.codomain(), self.domain())
 
     def __mul__(self, other):
-        if not isinstance(other, ProductProjectiveSubschemeLineBundleIsomorphism):
+        if not isinstance(other, _ProductProjectiveSubschemeLineBundleIsomorphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -1307,8 +1315,6 @@ __all__ = [
     "InvertibleSheaf",
     "ProductProjectiveLineBundle",
     "ProductProjectiveSubschemeLineBundle",
-    "ProductProjectiveSubschemeLineBundleIsomorphism",
     "ProjectiveSubschemeLineBundle",
-    "ProjectiveSubschemeLineBundleIsomorphism",
     "ProjectiveSpaceLineBundle",
 ]

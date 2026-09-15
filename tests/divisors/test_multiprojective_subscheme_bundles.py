@@ -1,10 +1,6 @@
 """Restricted multiprojective line bundles retain their exact multidegree."""
 
 from dzack_research.preamble.all import QQ, ProjectiveSpace
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    ProductProjectiveSubschemeLineBundleIsomorphism,
-)
-
 
 def test_restricted_multiprojective_bundles_tensor_and_compare_by_multidegree() -> None:
     plane = ProjectiveSpace(2, QQ)
@@ -21,7 +17,7 @@ def test_restricted_multiprojective_bundles_tensor_and_compare_by_multidegree() 
     exceptional = product.O(1, -1).restrict_to(hypersurface)
     canonical = product.O(-2, -1).restrict_to(hypersurface)
     target = left.tensor_product(exceptional)
-    comparison = ProductProjectiveSubschemeLineBundleIsomorphism(canonical, target)
+    comparison = canonical.canonical_isomorphism_to(target)
 
     assert tuple(canonical.multidegree()[label] for label in canonical.multidegree().index_set()) == (-2, -1)
     assert comparison.domain() is canonical

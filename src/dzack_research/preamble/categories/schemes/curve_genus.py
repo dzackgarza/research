@@ -80,7 +80,7 @@ class CurveLocalDeltaContribution(SageObject):
         )
 
 
-class CurveGenusComparison(SageObject):
+class _CurveGenusComparison(SageObject):
     r"""The normalization-sequence equality between arithmetic and geometric genus."""
 
     def __init__(self, normalization_data) -> None:
@@ -174,7 +174,7 @@ class ProjectiveCurveNormalizationData(SageObject):
 
     @cached_method
     def genus_comparison(self):
-        return CurveGenusComparison(self)
+        return _CurveGenusComparison(self)
 
     def _repr_(self) -> str:
         return f"Normalization data for {self.curve()} via {self.normalization_morphism()}"
@@ -304,7 +304,6 @@ def rational_quintic_with_nonrational_node_normalization():
 
 
 __all__ = [
-    "CurveGenusComparison",
     "CurveLocalDeltaContribution",
     "ProjectiveCurveNormalizationData",
     "rational_quintic_with_nonrational_node_normalization",

@@ -4,9 +4,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    ProjectiveSubschemeLineBundleIsomorphism,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -67,9 +64,7 @@ class _CompleteIntersectionAdjunctionComparison(SageObject):
         self._ambient_canonical = ambient_canonical
         self._normal_determinant = normal_determinant
         self._target = adjunction_target
-        self._isomorphism = ProjectiveSubschemeLineBundleIsomorphism(
-            canonical, adjunction_target
-        )
+        self._isomorphism = canonical.canonical_isomorphism_to(adjunction_target)
 
     def scheme(self):
         return self._scheme
