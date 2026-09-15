@@ -267,10 +267,6 @@ from dzack_research.preamble.categories.functors.core import (
     Adjunction as Adjunction,
 )
 from dzack_research.preamble.categories.functors.core import (
-)
-from dzack_research.preamble.categories.functors.core import (
-)
-from dzack_research.preamble.categories.functors.core import (
     Functor as Functor,
 )
 from dzack_research.preamble.categories.functors.core import (
@@ -278,8 +274,6 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
-)
-from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.categories.functors.de_rham import (
     DegreeZeroDGAFunctor as DegreeZeroDGAFunctor,
