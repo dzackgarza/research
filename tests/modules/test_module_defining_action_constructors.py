@@ -12,7 +12,7 @@ from dzack_research.preamble.all import (
     ZZ,
     AdditiveGroups,
     FramedModules,
-    GeneralModules,
+    GeneralModule,
     MatrixSpace,
     Modules,
     ModulesWithChosenFinitePresentation,
@@ -42,7 +42,8 @@ def _cyclic_six_from_presentation():
 
 
 def _cyclic_six_from_action():
-    return GeneralModules(ZZ).from_operations(
+    return GeneralModule(
+        ZZ,
         Set(list(range(6))),
         addition=lambda left, right: (left + right) % 6,
         zero=0,

@@ -1042,9 +1042,11 @@ class AT21ADEDoubleCover(SageObject):
         return self._base_boundary
 
     def boundary_divisor(self):
-        from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisor
+        from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisorGroups
 
-        return FormalDivisor(_rationals(), ((_rationals().one(), self.boundary_subscheme()),))
+        return FormalDivisorGroups(_rationals()).from_terms(
+            ((_rationals().one(), self.boundary_subscheme()),)
+        )
 
     @cached_method
     def log_boundary_coefficient_ring(self):
@@ -1054,12 +1056,11 @@ class AT21ADEDoubleCover(SageObject):
 
     def log_boundary_divisor(self):
         r"""Return the equipped cover boundary ``D + epsilon R`` of AT21 Section 2."""
-        from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisor
+        from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisorGroups
 
         coefficients = self.log_boundary_coefficient_ring()
         epsilon = coefficients.algebra_generator("epsilon")
-        return FormalDivisor(
-            coefficients,
+        return FormalDivisorGroups(coefficients).from_terms(
             (
                 (coefficients.one(), self.boundary_subscheme()),
                 (epsilon, self.ramification_subscheme()),

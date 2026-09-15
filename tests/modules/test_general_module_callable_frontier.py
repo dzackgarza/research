@@ -7,11 +7,12 @@ equality is refused rather than guessed from callable identity or a finite
 sample.
 """
 
-from dzack_research.preamble.all import ZZ, GeneralModules, Set
+from dzack_research.preamble.all import ZZ, GeneralModule, Set
 
 
 def _unframed_integer_module():
-    return GeneralModules(ZZ).from_operations(
+    return GeneralModule(
+        ZZ,
         Set(ZZ),
         addition=lambda left, right: left + right,
         zero=ZZ.zero(),

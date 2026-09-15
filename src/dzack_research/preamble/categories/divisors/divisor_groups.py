@@ -2,7 +2,7 @@
 
 from collections.abc import Mapping
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules, FreshFreeModuleOn
@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
-    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category_bases import Category
@@ -75,7 +74,41 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free ``R``-module on two prime divisors."""
-        return FormalDivisorGroup(self.base_ring(), ("P", "Q"))
+        return self(("P", "Q"))
+
+    @cached_method(key=lambda self, prime_divisors: tuple(prime_divisors))
+    def _call_(self, prime_divisors):
+        r"""Return the free formal-divisor group on the stated prime divisors."""
+        return FreshFreeModuleOn(
+            self.base_ring(),
+            finite_ordered_set(prime_divisors),
+            _extra_categories=(self,),
+        )
+
+    def from_terms(self, terms):
+        r"""Return the formal linear combination of the stated prime divisors."""
+        ring = self.base_ring()
+        terms = (
+            tuple((coefficient, prime_divisor) for prime_divisor, coefficient in terms.items())
+            if isinstance(terms, Mapping)
+            else tuple(terms)
+        )
+        prime_divisors = finite_ordered_set(
+            tuple(prime_divisor for _, prime_divisor in terms)
+        )
+        group = self(tuple(prime_divisors))
+        coefficients = {
+            prime_divisor: sum(
+                (
+                    ring(coefficient)
+                    for coefficient, component in terms
+                    if component == prime_divisor
+                ),
+                ring.zero(),
+            )
+            for prime_divisor in prime_divisors
+        }
+        return group.linear_combination(coefficients)
 
     @classmethod
     def _repr_object_names(cls):
@@ -115,45 +148,3 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
             return " + ".join(
                 rf"{latex(coefficient)}\,{latex(prime_divisor)}" for coefficient, prime_divisor in terms
             ).replace("+ -", "- ")
-
-
-@cached_function
-def FormalDivisorGroup(coefficient_ring, prime_divisors):
-    r"""Return the group of formal divisors on the stated prime divisors, one per ``(R, S)``."""
-    ring = _owned_ring(coefficient_ring)
-    return FreshFreeModuleOn(
-        ring,
-        finite_ordered_set(prime_divisors),
-        _extra_categories=(FormalDivisorGroups(ring),),
-    )
-
-
-def FormalDivisor(coefficient_ring, terms):
-    r"""Return the formal linear combination of the stated prime divisors.
-
-    The divisor is an element of ``FormalDivisorGroup(R, S)`` for ``S`` the
-    prime divisors in ``terms``, in order of first appearance; that group
-    answers ``terms``, ``components`` and printing for it.
-    """
-    ring = _owned_ring(coefficient_ring)
-    terms = (
-        tuple((coefficient, prime_divisor) for prime_divisor, coefficient in terms.items())
-        if isinstance(terms, Mapping)
-        else tuple(terms)
-    )
-    prime_divisors = finite_ordered_set(
-        tuple(prime_divisor for _, prime_divisor in terms)
-    )
-    group = FormalDivisorGroup(ring, tuple(prime_divisors))
-    coefficients = {
-        prime_divisor: sum(
-            (
-                ring(coefficient)
-                for coefficient, component in terms
-                if component == prime_divisor
-            ),
-            ring.zero(),
-        )
-        for prime_divisor in prime_divisors
-    }
-    return group.linear_combination(coefficients)

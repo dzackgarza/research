@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     Cat,
     ClassGroups,
     DivisorGroups,
-    FormalDivisor,
     FormalDivisorGroups,
     PicardGroups,
     Set,
@@ -75,8 +74,7 @@ def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
 
 
 def test_formal_divisor_keeps_support_and_combines_repeated_terms() -> None:
-    divisor = FormalDivisor(
-        ZZ,
+    divisor = FormalDivisorGroups(ZZ).from_terms(
         ((ZZ(2), "D0"), (ZZ(-1), "D1"), (ZZ(3), "D0")),
     )
     group = divisor.parent()

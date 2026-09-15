@@ -15,7 +15,7 @@ is ``x``.
 from dzack_research.preamble.all import (
     AA,
     GF,
-    GeneralModules,
+    GeneralModule,
     PolynomialRing,
     Set,
 )
@@ -28,7 +28,8 @@ def _group_algebra_of_the_cyclic_group_of_order_three():
     x = ring.algebra_generator("x")
     quotient = ring.quotient_ring(ring.ideal(x**3 - ring.one()))
     project = quotient.quotient_map()
-    module = GeneralModules(ring).from_operations(
+    module = GeneralModule(
+        ring,
         Set(quotient),
         addition=lambda left, right: left + right,
         zero=quotient.zero(),

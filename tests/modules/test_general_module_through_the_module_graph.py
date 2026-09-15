@@ -9,6 +9,7 @@ group by naming a second morphism into the same endomorphisms.
 
 from dzack_research.preamble.all import (
     GF,
+    GeneralModule,
     GeneralModules,
     Modules,
     Set,
@@ -20,7 +21,8 @@ from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 
 def _integers_mod(size):
     r"""Return ``ZZ/size`` as an abelian group on the residues."""
-    return GeneralModules(ZZ).from_operations(
+    return GeneralModule(
+        ZZ,
         Set(list(range(size))),
         addition=lambda left, right: (left + right) % size,
         zero=0,

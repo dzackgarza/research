@@ -642,10 +642,11 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 
 
 def test_general_module_localization_uses_fraction_model_and_detects_s_torsion() -> None:
-    from dzack_research.preamble.all import GeneralModules, LocalizedModules, Set
+    from dzack_research.preamble.all import GeneralModule, LocalizedModules, Set
 
     underlying_set = Set([0, 1, 2, 3, 4, 5])
-    module = GeneralModules(ZZ).from_operations(
+    module = GeneralModule(
+        ZZ,
         underlying_set,
         addition=lambda left, right: (left + right) % 6,
         zero=0,
@@ -872,10 +873,11 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
 
 
 def test_general_module_materializes_from_an_underlying_set_and_action() -> None:
-    from dzack_research.preamble.all import GeneralModules, Modules
+    from dzack_research.preamble.all import GeneralModule, Modules
 
     field = GF(3)
-    module = GeneralModules(field).from_operations(
+    module = GeneralModule(
+        field,
         [0, 1, 2],
         addition=lambda left, right: (left + right) % 3,
         zero=0,
