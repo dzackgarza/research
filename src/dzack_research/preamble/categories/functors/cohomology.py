@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     StrictlyCommutativeDifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
+    _CompositeFunctor,
     Functor,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import (
@@ -65,7 +65,7 @@ class CohomologyFunctor(Functor):
         return f"H^{self.degree()} on cochain complexes over {self.base_ring()}"
 
 
-class DeRhamCohomologyFunctor(CompositeFunctor):
+class DeRhamCohomologyFunctor(_CompositeFunctor):
     r"""The literal composite ``H^p ∘ U_Coch ∘ DR_R``."""
 
     def __init__(self, base_ring, degree) -> None:
@@ -76,7 +76,7 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
         forget_to_complex = StrictlyCommutativeDifferentialGradedAlgebras(
             self._base_ring
         ).inclusion_into(CochainComplexes(self._base_ring))
-        de_rham_complex = CompositeFunctor(de_rham, forget_to_complex)
+        de_rham_complex = _CompositeFunctor(de_rham, forget_to_complex)
         super().__init__(
             de_rham_complex,
             CochainComplexes(self._base_ring).cohomology(self._degree),
@@ -120,7 +120,7 @@ class CohomologyAlgebraFunctor(Functor):
         return f"graded cohomology algebra over {self.base_ring()}"
 
 
-class DeRhamCohomologyAlgebraFunctor(CompositeFunctor):
+class DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
     r"""The composite ``H^* ∘ DR_R``."""
 
     def __init__(self, base_ring) -> None:

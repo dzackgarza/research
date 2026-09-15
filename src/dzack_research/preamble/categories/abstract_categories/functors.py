@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.functors.core import CompositeFunctor, Functor
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -455,13 +455,11 @@ class ConstantDiagram(Functor):
 
 
 
-ComposedFunctor = CompositeFunctor
 
 
 
 __all__ = [
     "CodomainFunctor",
-    "ComposedFunctor",
     "ConstantDiagram",
     "DiscreteCategories",
     "DiscreteCategory",

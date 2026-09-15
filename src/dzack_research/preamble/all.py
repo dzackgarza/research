@@ -84,7 +84,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     Bifunctor,
     CodomainFunctor,
-    ComposedFunctor,
     ConstantDiagram,
     ContravariantFunctor,
     DiscreteCategories,
@@ -269,10 +268,8 @@ from dzack_research.preamble.categories.functors.core import (
     Adjunction as Adjunction,
 )
 from dzack_research.preamble.categories.functors.core import (
-    CompositeAdjunction as CompositeAdjunction,
 )
 from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor as CompositeFunctor,
 )
 from dzack_research.preamble.categories.functors.core import (
     Functor as Functor,
@@ -284,7 +281,6 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
 )
 from dzack_research.preamble.categories.functors.core import (
-    compose_adjunctions as compose_adjunctions,
 )
 from dzack_research.preamble.categories.functors.de_rham import (
     DegreeZeroDGAFunctor as DegreeZeroDGAFunctor,

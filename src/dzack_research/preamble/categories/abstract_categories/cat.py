@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
+    _CompositeFunctor,
     Functor,
     IdentityFunctor,
     NaturalTransformation,
@@ -107,7 +107,7 @@ class CategoryFunctorMorphism(Morphism):
             return NotImplemented
 
         return self.parent().category_of_categories().arrow(
-            CompositeFunctor(other.functor(), self.functor())
+            _CompositeFunctor(other.functor(), self.functor())
         )
 
     def _repr_(self) -> str:

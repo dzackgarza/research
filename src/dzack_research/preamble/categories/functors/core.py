@@ -222,7 +222,7 @@ class Functor(SageObject):
             return other
         if isinstance(other, IdentityFunctor):
             return self
-        return CompositeFunctor(self, other)
+        return _CompositeFunctor(self, other)
 
     def functor_category(self):
         r"""Return the represented functor category containing this functor."""
@@ -350,7 +350,7 @@ class _CategoryInclusionFunctor(Functor):
 
 
 
-class CompositeFunctor(Functor):
+class _CompositeFunctor(Functor):
     r"""The composite ``second ∘ first``.
 
     Unverified specimen: a factor can have more recorded preimages than the
@@ -497,6 +497,10 @@ class Adjunction(SageObject):
     def right_adjoint(self) -> Functor:
         return self._right_adjoint
 
+    def then(self, second: "Adjunction") -> "Adjunction":
+        r"""Compose this adjunction with ``second``."""
+        return _CompositeAdjunction(self, second)
+
     def _semantic_display_label(self) -> str:
         r"""Return a subclass operation label while the base owns the categorical endpoints."""
         for cls in type(self).__mro__:
@@ -547,19 +551,19 @@ class Adjunction(SageObject):
     def unit_transformation(self) -> NaturalTransformation:
         return NaturalTransformation(
             IdentityFunctor(self.left_adjoint().domain()),
-            CompositeFunctor(self.left_adjoint(), self.right_adjoint()),
+            _CompositeFunctor(self.left_adjoint(), self.right_adjoint()),
             self.unit,
         )
 
     def counit_transformation(self) -> NaturalTransformation:
         return NaturalTransformation(
-            CompositeFunctor(self.right_adjoint(), self.left_adjoint()),
+            _CompositeFunctor(self.right_adjoint(), self.left_adjoint()),
             IdentityFunctor(self.left_adjoint().codomain()),
             self.counit,
         )
 
 
-class CompositeAdjunction(Adjunction):
+class _CompositeAdjunction(Adjunction):
     r"""The composite of ``F ⊣ U`` and ``G ⊣ V`` as ``GF ⊣ UV``."""
 
     def __init__(self, first: Adjunction, second: Adjunction) -> None:
@@ -568,8 +572,8 @@ class CompositeAdjunction(Adjunction):
         self._first = first
         self._second = second
         super().__init__(
-            CompositeFunctor(first.left_adjoint(), second.left_adjoint()),
-            CompositeFunctor(second.right_adjoint(), first.right_adjoint()),
+            _CompositeFunctor(first.left_adjoint(), second.left_adjoint()),
+            _CompositeFunctor(second.right_adjoint(), first.right_adjoint()),
         )
 
     def first(self) -> Adjunction:
@@ -587,7 +591,3 @@ class CompositeAdjunction(Adjunction):
         first_counit = self.first().counit(self.second().right_adjoint()(obj))
         return self.second().counit(obj) * self.second().left_adjoint()(first_counit)
 
-
-
-def compose_adjunctions(first: Adjunction, second: Adjunction) -> CompositeAdjunction:
-    return CompositeAdjunction(first, second)
