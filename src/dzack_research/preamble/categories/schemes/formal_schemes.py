@@ -114,6 +114,10 @@ class FormalSpectrum(SageObject):
             second_precision,
         )
 
+    def morphism_to(self, codomain, coordinate_ring_morphism):
+        r"""Return the continuous formal-affine morphism to ``codomain``."""
+        return FormalAffineMorphism(self, codomain, coordinate_ring_morphism)
+
     def _repr_(self):
         return f"Spf({self.source_ring()}, {self.ideal_of_definition()}-adic)"
 
@@ -166,20 +170,8 @@ class FormalAffineMorphism(SageObject):
             self.coordinate_ring_morphism(),
             domain_completion,
         )
-
-
-def formal_spectrum(source_ring, ideal_of_definition):
-    return FormalSpectrum(source_ring, ideal_of_definition)
-
-
-def formal_affine_morphism(domain, codomain, coordinate_ring_morphism):
-    return FormalAffineMorphism(domain, codomain, coordinate_ring_morphism)
-
-
 __all__ = [
     "FormalAffineMorphism",
     "FormalCompletionComparison",
     "FormalSpectrum",
-    "formal_affine_morphism",
-    "formal_spectrum",
 ]

@@ -1491,6 +1491,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             return refine_matrix_algebra(_matrix_space(self, nrows, ncols))
 
+        def formal_spectrum(self, ideal_of_definition):
+            r"""Return ``Spf(self, ideal_of_definition)``."""
+            from dzack_research.preamble.categories.schemes.formal_schemes import (
+                FormalSpectrum,
+            )
+
+            return FormalSpectrum(self, ideal_of_definition)
+
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
 

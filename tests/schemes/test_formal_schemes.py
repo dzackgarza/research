@@ -2,16 +2,11 @@ r"""Formal spectra retain the inverse system, not a computational precision."""
 
 from dzack_research.preamble.all import QQ
 
-from dzack_research.preamble.categories.schemes.formal_schemes import (
-    formal_affine_morphism,
-    formal_spectrum,
-)
-
 
 def test_formal_spectrum_is_distinct_from_completion_and_its_finite_stages() -> None:
     ring = QQ.polynomial_ring("t")
     t = ring.algebra_generator("t")
-    formal = formal_spectrum(ring, ring.ideal(t))
+    formal = ring.formal_spectrum(ring.ideal(t))
     second = formal.thickening_ring(2)
     third = formal.thickening_ring(3)
     transition = formal.transition_ring_map(3, 2)
@@ -27,7 +22,7 @@ def test_formal_spectrum_is_distinct_from_completion_and_its_finite_stages() -> 
 def test_precision_changes_only_the_completion_realization_not_the_formal_object() -> None:
     ring = QQ.polynomial_ring("t")
     t = ring.algebra_generator("t")
-    formal = formal_spectrum(ring, ring.ideal(t))
+    formal = ring.formal_spectrum(ring.ideal(t))
     comparison = formal.compare_precisions(3, 7)
     third_stage = formal.thickening_ring(3)
 
@@ -45,10 +40,10 @@ def test_continuous_formal_map_descends_compatibly_to_every_thickening() -> None
     target = QQ.polynomial_ring("y")
     x = source.algebra_generator("x")
     y = target.algebra_generator("y")
-    formal_source = formal_spectrum(source, source.ideal(x))
-    formal_target = formal_spectrum(target, target.ideal(y))
+    formal_source = source.formal_spectrum(source.ideal(x))
+    formal_target = target.formal_spectrum(target.ideal(y))
     ring_map = target.Mor(source).elementwise(lambda polynomial: source(polynomial(y=x)))
-    morphism = formal_affine_morphism(formal_source, formal_target, ring_map)
+    morphism = formal_source.morphism_to(formal_target, ring_map)
     stage = morphism.thickening_ring_map(3)
 
     assert stage.domain() is formal_target.thickening_ring(3)
