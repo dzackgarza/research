@@ -29,7 +29,6 @@ from dzack_research.preamble.all import (
     Involutions,
     NamedLattices,
     cusps,
-    isometry_primitive_extension,
     primitive_isotropic,
 )
 
@@ -92,7 +91,7 @@ def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> No
 def test_milestone_three_the_polarized_enriques_group_is_a_proper_subgroup() -> None:
     lattice = NamedLattices.LK3
     involution = Involutions.I_En
-    extension = isometry_primitive_extension(involution)
+    extension = involution.primitive_extension()
 
     invariant = extension.invariant
     inclusion = invariant.inclusion()

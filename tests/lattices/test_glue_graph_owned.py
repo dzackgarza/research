@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices, isometry_primitive_extension
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_glue_graph_is_an_owned_finite_set_of_actual_discriminant_elements() -> None:
@@ -9,7 +9,7 @@ def test_glue_graph_is_an_owned_finite_set_of_actual_discriminant_elements() -> 
             lattice.module_generating_set()[1]: -lattice.module_generator(1),
         }
     )
-    extension = isometry_primitive_extension(involution)
+    extension = involution.primitive_extension()
     graph = extension.glue_graph()
 
     assert graph.cardinality() == extension.index()

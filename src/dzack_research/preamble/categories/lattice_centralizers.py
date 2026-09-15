@@ -1165,11 +1165,6 @@ def cyclotomic_summand(isometry, order):
     return evaluated.kernel()
 
 
-def isometry_primitive_extension(isometry) -> IsometryPrimitiveExtension:
-    r"""Return the primitive extension of ``L`` cut out by the isometry ``f``."""
-    return IsometryPrimitiveExtension(isometry)
-
-
 __all__ = [
     "CyclotomicDecomposition",
     "EquivariantLattice",
@@ -1178,5 +1173,4 @@ __all__ = [
     "IsometryPrimitiveExtension",
     "PolarizedEquivariantLattice",
     "cyclotomic_summand",
-    "isometry_primitive_extension",
 ]

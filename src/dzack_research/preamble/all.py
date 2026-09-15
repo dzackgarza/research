@@ -708,7 +708,6 @@ from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F
 from dzack_research.preamble.categories.lattice_centralizers import (  # noqa: F401
     IsometryPrimitiveExtension,
     cyclotomic_summand,
-    isometry_primitive_extension,
 )
 from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
     LatticeEmbedding,

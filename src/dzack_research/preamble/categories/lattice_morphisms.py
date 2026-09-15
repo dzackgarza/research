@@ -621,10 +621,10 @@ class LatticeIsometry(LatticeEmbedding):
         if self.domain() is not self.codomain():
             raise ValueError("a primitive extension is cut out by a lattice automorphism")
         from dzack_research.preamble.categories.lattice_centralizers import (
-            isometry_primitive_extension,
+            IsometryPrimitiveExtension,
         )
 
-        return isometry_primitive_extension(self)
+        return IsometryPrimitiveExtension(self)
 
     def centralizer_group(self):
         r"""Return ``Z_{O(L)}(self)`` through the owned primitive-extension data."""

@@ -24,7 +24,6 @@ from dzack_research.preamble.all import (
     ZZ,
     cyclotomic_summand,
     finite_ordered_set,
-    isometry_primitive_extension,
 )
 
 
@@ -39,7 +38,7 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     first, second = lattice.module_generators()[0], lattice.module_generators()[1]
     assert swap * swap == lattice.Aut().one()
 
-    extension = isometry_primitive_extension(swap)
+    extension = swap.primitive_extension()
     assert extension.lattice is lattice
     assert extension.invariant.module_rank() == 1
     assert extension.coinvariant.module_rank() == 1
@@ -68,7 +67,7 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
 
 def test_the_swap_restricts_to_plus_and_minus_one_on_its_summands() -> None:
     lattice, swap = _hyperbolic_swap()
-    extension = isometry_primitive_extension(swap)
+    extension = swap.primitive_extension()
 
     assert swap in extension.centralizer_group()
     assert lattice.Aut().one() in extension.centralizer_group()
@@ -110,7 +109,7 @@ def test_the_first_two_cyclotomic_summands_split_an_involution() -> None:
 
 def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
     involution = Involutions.I_En
-    extension = isometry_primitive_extension(involution)
+    extension = involution.primitive_extension()
 
     assert extension.lattice is NamedLattices.LK3
     assert extension.invariant.module_rank() == 10
@@ -158,7 +157,7 @@ def _negation(summand):
 
 def test_a_compatible_pair_reassembles_the_swap_of_the_hyperbolic_plane() -> None:
     lattice, swap = _hyperbolic_swap()
-    extension = isometry_primitive_extension(swap)
+    extension = swap.primitive_extension()
 
     # U is even, so this extension is glued by its quadratic discriminant
     # forms and the criterion below is read there.
@@ -176,7 +175,7 @@ def test_a_compatible_pair_reassembles_the_swap_of_the_hyperbolic_plane() -> Non
 
 def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_plane() -> None:
     lattice, swap = _hyperbolic_swap()
-    extension = isometry_primitive_extension(swap)
+    extension = swap.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
     coinvariant_summand = extension.coinvariant.inclusion().domain()
 
@@ -224,7 +223,7 @@ def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_pl
 
 def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> None:
     lattice, involution = _a2_diagram_involution()
-    extension = isometry_primitive_extension(involution)
+    extension = involution.primitive_extension()
 
     assert extension.invariant.module_rank() == 1
     assert extension.coinvariant.module_rank() == 1
@@ -247,7 +246,7 @@ def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> Non
 
 def test_the_a2_centralizer_splits_the_single_root_orbit_in_two() -> None:
     lattice, involution = _a2_diagram_involution()
-    extension = isometry_primitive_extension(involution)
+    extension = involution.primitive_extension()
 
     roots = lattice.vectors_of_square(-2)
     assert roots.cardinality() == 6
@@ -267,7 +266,7 @@ def test_the_a2_centralizer_splits_the_single_root_orbit_in_two() -> None:
 
 def test_the_a2_centralizer_separates_two_roots_that_o_a2_identifies() -> None:
     lattice, involution = _a2_diagram_involution()
-    centralizer = isometry_primitive_extension(involution).centralizer_group()
+    centralizer = involution.primitive_extension().centralizer_group()
     first, second = lattice.module_generators()
     invariant_root = first + second
 
@@ -314,7 +313,7 @@ def _cubic_cyclic_permutation():
 
 def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
     lattice, rotation = _cubic_cyclic_permutation()
-    extension = isometry_primitive_extension(rotation)
+    extension = rotation.primitive_extension()
 
     assert not lattice.is_even()
     assert extension.invariant.module_rank() == 1
@@ -330,7 +329,7 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
 
 def test_a_compatible_pair_reassembles_the_cubic_cyclic_permutation() -> None:
     lattice, rotation = _cubic_cyclic_permutation()
-    extension = isometry_primitive_extension(rotation)
+    extension = rotation.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
 
     # The rotation is the identity on the diagonal and lies in the Weyl group
@@ -353,7 +352,7 @@ def test_a_compatible_pair_reassembles_the_cubic_cyclic_permutation() -> None:
 
 def test_the_negation_pair_reassembles_minus_one_on_the_cubic_lattice() -> None:
     lattice, rotation = _cubic_cyclic_permutation()
-    extension = isometry_primitive_extension(rotation)
+    extension = rotation.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
     coinvariant_summand = extension.coinvariant.inclusion().domain()
 
@@ -378,7 +377,7 @@ def test_the_negation_pair_reassembles_minus_one_on_the_cubic_lattice() -> None:
 
 def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None:
     _lattice, rotation = _cubic_cyclic_permutation()
-    extension = isometry_primitive_extension(rotation)
+    extension = rotation.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
     coinvariant_summand = extension.coinvariant.inclusion().domain()
 
