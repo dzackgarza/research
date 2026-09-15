@@ -2,21 +2,13 @@ r"""Pure abstract category objects use the owned runtime category boundary."""
 
 from dzack_research.preamble.all import Cat, Sets
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
-    Core,
     EndofunctorAlgebras,
     MonomorphismArrowCategory,
-    SubobjectCategory,
     WideSubcategory,
-)
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
-    ProductCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategories,
-    HomCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     BiproductCategory,
@@ -55,8 +47,8 @@ ARCHIVE_RECONCILIATION = {
         "Cat.ParentMethods.Colimits": "src/dzack_research/preamble/categories/abstract_categories/products.py",
         "Cat.ParentMethods.Products": "src/dzack_research/preamble/categories/abstract_categories/products.py",
         "Cat.ParentMethods.Coproducts": "src/dzack_research/preamble/categories/abstract_categories/products.py",
-        "Cat.ParentMethods.OppositeCategory": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
-        "Cat.ParentMethods.ProductCategory": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
+        "Cat.ParentMethods.opposite": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
+        "Cat.product": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
         "Cat.ParentMethods.ImageOf": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
         "Cat.ParentMethods.SliceOver": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.CosliceUnder": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
@@ -73,12 +65,12 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
     points = finite_ordered_set(("a", "b"))
     discrete = DiscreteCategory(points)
     categories = (
-        Core(Sets()),
-        SubobjectCategory(Sets(), points),
+        Sets().Core(),
+        Sets().Subobjects(points),
         WideSubcategory(Sets(), MonomorphismArrowCategory(Sets())),
         EndofunctorAlgebras(IdentityFunctor(Sets())),
         HomCategories(),
-        HomCategoryOf(Sets()),
+        Sets().HomCategory(),
         LimitsOfCategory(discrete, Sets()),
         BiproductCategory((points, points)),
         TensorProductCategory((points, points)),
@@ -104,15 +96,15 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     sets = Sets()
     points = finite_ordered_set(("a", "b"))
 
-    assert sets.ArrowCategory() is ArrowCategory(sets)
-    assert sets.Core() is Core(sets)
-    assert sets.opposite() is OppositeCategory(sets)
-    product = ProductCategory(sets, sets)
+    assert sets.ArrowCategory() is sets.ArrowCategory()
+    assert sets.Core().base_category() is sets
+    assert sets.opposite() is sets.opposite()
+    product = Cat().product((sets, sets))
     pair = product(points, points)
     assert pair.first() is points
     assert pair.second() is points
     assert tuple(pair) == (points, points)
-    assert sets.Subobjects(points) is SubobjectCategory(sets, points)
+    assert sets.Subobjects(points) is sets.Subobjects(points)
 
 
 def test_cat_parent_method_provider_is_plain_and_reuses_the_hom_packet_owner() -> None:

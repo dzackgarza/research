@@ -10,7 +10,6 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-
 # ---------------------------------------------------------------------------
 # Placement: a ring is where its class says it is.
 # ---------------------------------------------------------------------------
@@ -521,7 +520,7 @@ def test_localizing_the_integers_at_a_prime_gives_a_discrete_valuation_ring() ->
 
 
 def test_inverting_a_set_of_elements_of_the_integers() -> None:
-    inverted = Localization(ZZ, 6)
+    inverted = ZZ.localization(6)
     assert inverted(2).is_unit()
     assert inverted(3).is_unit()
     assert not inverted(5).is_unit()

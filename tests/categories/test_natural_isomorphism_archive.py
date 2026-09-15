@@ -1,6 +1,6 @@
 r"""Archive reconciliation for natural isomorphisms as morphisms in ``Cat``."""
 
-from dzack_research.preamble.all import NaturalIsomorphism, Sets
+from dzack_research.preamble.all import Sets
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
@@ -17,8 +17,7 @@ def test_natural_isomorphism_is_an_actual_isomorphism_in_the_functor_category() 
         lambda point: points("right") if point == points("left") else points("left")
     )
 
-    natural_iso = NaturalIsomorphism(
-        constant,
+    natural_iso = constant.natural_isomorphism_to(
         constant,
         lambda _stage: swap,
         lambda _stage: swap,

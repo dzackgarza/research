@@ -238,6 +238,8 @@ class CyclicCoverAlgebra(SageObject):
         source_index: Integer,
         target_index: Integer,
     ) -> CategoricalIsomorphism:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
         source = self.cover().restrict_algebra(
             self.local_algebra(source_index),
             source_index,
@@ -251,12 +253,13 @@ class CyclicCoverAlgebra(SageObject):
         unit = self.line_bundle().transition_unit(source_index, target_index)
         source_z = source.algebra_generator(CYCLIC_COVER_VARIABLE)
         target_z = target.algebra_generator(CYCLIC_COVER_VARIABLE)
-        forward = source.Mor(target)(
+        algebras = Algebras(source.algebra_base_ring()).Associative().Unital()
+        forward = algebras.Mor(source, target)(
             {
                 CYCLIC_COVER_VARIABLE: target(unit.inverse_of_unit()) * target_z,
             }
         )
-        inverse = target.Mor(source)(
+        inverse = algebras.Mor(target, source)(
             {
                 CYCLIC_COVER_VARIABLE: source(unit) * source_z,
             }

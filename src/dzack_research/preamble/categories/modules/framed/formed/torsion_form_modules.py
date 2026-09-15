@@ -46,7 +46,7 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    _solve_left_integrally_element,
+    _integral_left_solver,
     module_coefficients,
     module_homset,
 )
@@ -669,12 +669,13 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     source_labels = tuple(form.module_generating_set())
     regenerated_generators = tuple(regenerated.module_generators())
     forward_images = {}
+    solve = _integral_left_solver(system, ring)
     for position, source_label in enumerate(source_labels):
         target = [
             ring.one() if index == position else ring.zero()
             for index in range(len(source_labels))
         ]
-        solution = _solve_left_integrally_element(system, target, ring)
+        solution = solve(target)
         generator_solution = system.codomain().left_projection()(solution)
         generator_coefficients = module_coefficients(
             generator_solution, lifts.codomain()

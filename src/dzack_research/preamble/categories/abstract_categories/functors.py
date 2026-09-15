@@ -14,14 +14,9 @@ from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
-)
-from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
+from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
     OppositeMorphism,
-    ProductCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -29,12 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
-    Functor,
-    IdentityFunctor,
-    NaturalTransformation,
-)
+from dzack_research.preamble.categories.functors.core import CompositeFunctor, Functor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -50,7 +40,7 @@ class ContravariantFunctor(Functor):
     def __init__(self, domain: Category, codomain: Category) -> None:
 
         self._base_domain = domain
-        super().__init__(OppositeCategory(domain), codomain)
+        super().__init__(domain.opposite(), codomain)
 
     def base_domain(self) -> Category:
         return self._base_domain
@@ -103,7 +93,7 @@ class Bifunctor(Functor):
         codomain: Category,
     ) -> None:
 
-        super().__init__(ProductCategory(left_domain, right_domain), codomain)
+        super().__init__(Cat().product((left_domain, right_domain)), codomain)
 
     def left_domain(self) -> Category:
         return self.domain().first_category()
@@ -173,7 +163,7 @@ class DomainFunctor(Functor):
     r"""The domain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
-        super().__init__(ArrowCategory(category), category)
+        super().__init__(category.ArrowCategory(), category)
 
     def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.source_object()
@@ -186,7 +176,7 @@ class CodomainFunctor(Functor):
     r"""The codomain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
-        super().__init__(ArrowCategory(category), category)
+        super().__init__(category.ArrowCategory(), category)
 
     def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.target_object()
@@ -464,54 +454,9 @@ class ConstantDiagram(Functor):
         return _category_homset(self.codomain(), value, value).identity()
 
 
-def compose_functors(second: Functor, first: Functor) -> Functor:
-    r"""Return ``second ∘ first`` in the current functor core."""
-    if first.codomain() != second.domain():
-        raise ValueError("functors compose only when their middle category agrees")
-    if isinstance(first, IdentityFunctor):
-        return second
-    if isinstance(second, IdentityFunctor):
-        return first
-    return CompositeFunctor(first, second)
-
 
 ComposedFunctor = CompositeFunctor
 
-
-def NaturalTransformations(source: Functor, target: Functor) -> Parent:
-    r"""Return the actual Hom in the functor category."""
-    if source.domain() != target.domain() or source.codomain() != target.codomain():
-        raise ValueError("natural transformations require parallel functors")
-    from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-    category = Cat().Mor(source.domain(), source.codomain())
-    return category.Mor(category(source), category(target))
-
-
-
-def NaturalIsomorphism(
-    source: Functor,
-    target: Functor,
-    components: Callable[[Parent], Morphism],
-    inverse_components: Callable[[Parent], Morphism],
-):
-    r"""Return the isomorphism in ``[C,D]`` selected by inverse components.
-
-    The two supplied component families define inverse natural transformations.
-    Their categorical packaging is therefore an isomorphism between the two
-    functor objects, not a Python pair of transformations.
-    """
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        _isomorphism_from_known_inverse_pair,
-    )
-
-    forward = NaturalTransformations(source, target)(
-        NaturalTransformation(source, target, components)
-    )
-    inverse = NaturalTransformations(target, source)(
-        NaturalTransformation(target, source, inverse_components)
-    )
-    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
 __all__ = [
@@ -523,10 +468,7 @@ __all__ = [
     "DiscreteDiagram",
     "DiscreteFunctor",
     "DomainFunctor",
-    "NaturalIsomorphism",
-    "NaturalTransformations",
     "ObjectSetFunctor",
-    "compose_functors",
     "CartesianProductFunctor",
     "ColimitFunctor",
     "CoproductFunctor",
@@ -542,10 +484,10 @@ class DiagonalFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(category, self._product_category)
 
-    def product_category(self) -> ProductCategory:
+    def product_category(self) -> Category:
         return self._product_category
 
     def _apply_object(self, obj: Parent) -> Parent:
@@ -562,7 +504,7 @@ class ProductFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair: Parent) -> Parent:
@@ -582,7 +524,7 @@ class CoproductFunctor(Functor):
 
     def __init__(self, category: Category) -> None:
 
-        self._product_category = ProductCategory(category, category)
+        self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair: Parent) -> Parent:

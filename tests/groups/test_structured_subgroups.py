@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     PredicateSubgroups,
     PreimageSubgroups,
     StabilizerSubgroups,
-    predicate_subgroup,
 )
 
 
@@ -83,7 +82,7 @@ def test_predicate_subgroup_notation_and_structured_routes_use_category_construc
         return element * identity == identity * element
 
     declared = PredicateSubgroups(group)(predicate, "g commutes with 1")
-    notation = predicate_subgroup(group, predicate, "g commutes with 1")
+    notation = group.predicate_subgroup(predicate, "g commutes with 1")
     centralizer = CentralizerSubgroups(group)(identity)
 
     assert declared.supergroup() is group

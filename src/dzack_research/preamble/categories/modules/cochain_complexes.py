@@ -62,8 +62,7 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         degree is the zero module.  The differentials are the selected maps
         ``C^p -> C^(p+1)``; omitted maps between represented zero pieces are
         zero.  This category constructor is the authoritative finite-support
-        construction.  :func:`CochainComplex` is notebook notation for this
-        operation, not a second factory.
+        construction and the public construction route.
         """
         if not isinstance(pieces, dict) or not isinstance(differentials, dict):
             raise TypeError(
@@ -121,8 +120,16 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         def d(self, element):
             return self.differential()(element)
 
+        def cycles(self, degree):
+            r"""Return ``ker(d^degree)`` as a subobject of ``C^degree``."""
+            return self.differential_component(degree).kernel()
+
+        def boundaries(self, degree):
+            r"""Return ``im(d^(degree-1))`` as a subobject of ``C^degree``."""
+            return self.differential_component(int(degree) - 1).image()
+
         def cohomology(self, degree):
-            return Cohomology(self, degree)
+            return _cohomology(self, degree)
 
 
 class CohomologyModules(OwnedCategoryOverBaseRing):
@@ -130,12 +137,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The degree-zero cohomology of a one-term complex."""
-        from dzack_research.preamble.categories.modules.cochain_complexes import (
-            CochainComplexes,
-            Cohomology,
-        )
-
-        return Cohomology(CochainComplexes(self.base_ring()).an_object(), 0)
+        return CochainComplexes(self.base_ring()).an_object().cohomology(0)
 
     @classmethod
     def _repr_object_names(cls):
@@ -470,7 +472,9 @@ class CochainMorphism(Morphism):
     def __mul__(self, other):
         if not isinstance(other, CochainMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return cochain_homset(other.domain(), self.codomain())(
+        return CochainComplexes(self.domain().base_ring()).Mor(
+            other.domain(), self.codomain()
+        )(
             indexed_family(
                 other.domain().degree_index_set(),
                 lambda degree: self.component(degree) * other.component(degree),
@@ -615,63 +619,10 @@ CochainComplexes._HomCategory = CochainHomCategoryConstruction
 CochainComplexes._EndCategory = LinearEndCategoryConstruction
 
 
-def cochain_homset(domain, codomain):
-    ring = domain.base_ring()
-    if codomain.base_ring() is not ring:
-        raise ValueError("cochain morphisms require one common base ring")
-    category = CochainComplexes(ring)
-    if domain not in category or codomain not in category:
-        raise TypeError("cochain Hom endpoints must lie in one cochain-complex category")
-    return category.Mor(domain, codomain)
-
-
-def CochainComplex(
-    base_ring,
-    pieces,
-    differentials,
-    name=None,
-    *,
-    extra_categories=(),
-    extra_construction_data=None,
-):
-    r"""Notebook notation for ``CochainComplexes(base_ring)(pieces, differentials)``."""
-    return CochainComplexes(base_ring)(
-        pieces,
-        differentials,
-        name=name,
-        extra_categories=extra_categories,
-        extra_construction_data=extra_construction_data,
-    )
-
-
-def CochainComplexFromFamily(base_ring, pieces, differentials, name=None):
-    r"""Return a cochain complex represented lazily in every indexed degree.
-
-    Unlike :func:`CochainComplex`, this constructor does not declare unlisted
-    degrees to be zero.  The two indexed families provide the actual component
-    module and outgoing differential at every degree of their common index set.
-    """
-    return CochainComplexes(base_ring).from_family(
-        pieces,
-        differentials,
-        name=name,
-    )
-
-
-def Cycles(complex_, degree):
-    r"""Return ``ker(d^degree)`` as a subobject of ``C^degree``."""
-    return complex_.differential_component(degree).kernel()
-
-
-def Boundaries(complex_, degree):
-    r"""Return ``im(d^(degree-1))`` as a subobject of ``C^degree``."""
-    return complex_.differential_component(int(degree) - 1).image()
-
-
 _COHOMOLOGY_CACHE = {}
 
 
-def Cohomology(complex_, degree):
+def _cohomology(complex_, degree):
     r"""Return ``H^degree = ker(d^degree) / im(d^(degree-1))``."""
     degree = int(degree)
     cache_key = (id(complex_), degree)
@@ -684,8 +635,8 @@ def Cohomology(complex_, degree):
         return cached
 
     ring = complex_.base_ring()
-    cycles = Cycles(complex_, degree)
-    boundaries = Boundaries(complex_, degree)
+    cycles = complex_.cycles(degree)
+    boundaries = complex_.boundaries(degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
     result = FinitelyPresentedModule(
         boundary_in_cycles,
@@ -705,17 +656,11 @@ def Cohomology(complex_, degree):
 
 
 __all__ = [
-    "Boundaries",
-    "CochainComplex",
-    "CochainComplexFromFamily",
     "CochainComplexElement",
     "CochainComplexObject",
     "CochainComplexes",
     "CochainDifferential",
     "CochainHomset",
     "CochainMorphism",
-    "Cohomology",
     "CohomologyModules",
-    "Cycles",
-    "cochain_homset",
 ]

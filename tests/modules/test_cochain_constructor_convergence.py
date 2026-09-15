@@ -3,9 +3,7 @@ r"""Every public cochain route delegates to the category-owned construction."""
 from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
-    CochainComplex,
     CochainComplexes,
-    CochainComplexFromFamily,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
@@ -23,25 +21,20 @@ def _two_term_data():
     return source, target, differential
 
 
-def test_finite_notation_uses_the_category_constructor() -> None:
+def test_finite_complex_uses_the_category_constructor() -> None:
     source, target, differential = _two_term_data()
     category = CochainComplexes(ZZ)
-    declared = category({0: source, 1: target}, {0: differential})
-    notation = CochainComplex(ZZ, {0: source, 1: target}, {0: differential})
+    complex_ = category({0: source, 1: target}, {0: differential})
 
-    assert declared in category
-    assert notation in category
-    assert declared.graded_piece(0) is source
-    assert notation.graded_piece(1) is target
-    assert declared.differential_component(0)(source.module_generator("e")) == (
+    assert complex_ in category
+    assert complex_.graded_piece(0) is source
+    assert complex_.graded_piece(1) is target
+    assert complex_.differential_component(0)(source.module_generator("e")) == (
         2 * target.module_generator("f")
     )
-    assert notation.differential_component(0)(source.module_generator("e")) == (
-        declared.differential_component(0)(source.module_generator("e"))
-    )
 
 
-def test_lazy_notation_uses_the_category_family_constructor() -> None:
+def test_lazy_complex_uses_the_category_family_constructor() -> None:
     category = CochainComplexes(ZZ)
     degrees = category.base_ring()
     zero = BasedFreeModule(ZZ, finite_ordered_set(()))
@@ -52,11 +45,8 @@ def test_lazy_notation_uses_the_category_family_constructor() -> None:
         name="Zero differentials",
     )
 
-    declared = category.from_family(pieces, differentials)
-    notation = CochainComplexFromFamily(ZZ, pieces, differentials)
+    complex_ = category.from_family(pieces, differentials)
 
-    assert declared in category
-    assert notation in category
-    assert not declared.has_finite_support()
-    assert not notation.has_finite_support()
-    assert declared.degree_index_set() is notation.degree_index_set()
+    assert complex_ in category
+    assert not complex_.has_finite_support()
+    assert complex_.degree_index_set() is degrees

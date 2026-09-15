@@ -1,12 +1,19 @@
 r"""Archive reconciliation for represented torsors as chosen-point ``G``-sets."""
 
-from dzack_research.preamble.all import Groups, Torsors, finite_g_set
+from dzack_research.preamble.all import FiniteGSets, Groups, Torsors, finite_g_set
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/g_sets.sage",
     "live_owner": "src/dzack_research/preamble/categories/group/g_sets.py",
     "disposition": "reconciled-live-owner",
 }
+
+
+def test_finite_g_set_owns_its_equivariant_hom() -> None:
+    group = Groups.C(3)
+    regular = finite_g_set(tuple(group), group, lambda left, right: left * right)
+
+    assert regular.Mor(regular) is FiniteGSets(group).Mor(regular, regular)
 
 
 def test_regular_finite_g_set_refines_to_the_torsor_category_in_place() -> None:

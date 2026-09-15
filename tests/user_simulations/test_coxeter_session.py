@@ -28,6 +28,18 @@ FINITE = {
 }
 
 
+def test_cartan_type_ingress_accepts_the_owned_integer_emitted_by_the_session() -> None:
+    rank = Integer(3)
+    scale = Integer(2)
+
+    diagram = CoxeterDiagrams().from_cartan_type(["A", rank])
+    rooted = CoxeterDiagrams().from_cartan_type(["A", rank], scale=scale)
+
+    assert diagram.cardinality() == rank
+    assert rooted.cardinality() == rank
+    assert rooted.is_rooted()
+
+
 @pytest.mark.parametrize("name", sorted(FINITE))
 def test_a_finite_coxeter_session(name) -> None:
     cartan_type, weyl_order, root_count, coxeter_number, isometry_order = FINITE[name]

@@ -54,7 +54,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         cached = _DE_RHAM_CACHE.get(id(algebra))
         if cached is not None and cached.de_rham_source_algebra() is algebra:
             return cached
-        omega = KahlerDifferentials(algebra)
+        omega = algebra.kahler_differentials()
         exterior = AlternatingAlgebraOf(omega)
         ring_map = algebra.algebra_structure_morphism()
         result = _DeRhamAlgebra(algebra, exterior, omega, ring_map)
@@ -137,16 +137,4 @@ class _DeRhamAlgebra(RestrictedGradedAlgebra):
 _DE_RHAM_CACHE = {}
 
 
-def DeRhamAlgebra(algebra):
-    r"""Return the strictly commutative DGA ``Omega^*_{A/R}``.
-
-    The exterior algebra itself is the existing authoritative
-    ``AlternatingAlgebraOf(Omega^1_{A/R})``.  The public DGA is its restriction
-    from the degree-zero coefficient algebra ``A`` to the differential
-    constants ``R`` along the selected algebra structure morphism.
-    """
-
-    return DeRhamAlgebras(algebra.base_ring())(algebra)
-
-
-__all__ = ["DeRhamAlgebra", "DeRhamAlgebras"]
+__all__ = ["DeRhamAlgebras"]

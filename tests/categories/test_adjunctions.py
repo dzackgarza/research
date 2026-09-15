@@ -1,25 +1,24 @@
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
-    Modules,
     Groups,
+    Modules,
     QuadraticField,
     Sets,
-    ZZ,
     abelianization_adjunction,
+    alternating_algebra_functor,
     base_change_adjunction,
-    category_inclusion,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
     module_homset,
     order_number_field_adjunction,
-    alternating_algebra_functor,
     symmetric_algebra_functor,
     tensor_algebra_functor,
 )
-from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -54,8 +53,8 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     identity = module_homset(module, module).identity()
     negative_identity = module_homset(module, module)({"e": -e})
 
-    equalizer = Equalizer(identity, negative_identity)
-    coequalizer = Coequalizer(identity, negative_identity)
+    equalizer = Modules(ZZ).equalizer(identity, negative_identity)
+    coequalizer = Modules(ZZ).coequalizer(identity, negative_identity)
 
     assert equalizer.module_rank() == 0
     assert coequalizer in Modules(ZZ)
@@ -385,10 +384,9 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     assert unit(group_generators[1]) != abelianization.one()
 
     target_generator = target.group_generators()[0]
-    from dzack_research.preamble.categories.group import group_homset
 
     assert adjunction.right_adjoint()(target) is target
-    sign_to_six = group_homset(group, target)(
+    sign_to_six = group.Mor(target)(
         {
             group_generators[0]: target.one(),
             group_generators[1]: target_generator**3,
@@ -400,12 +398,12 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert recovered(generator) == sign_to_six(generator)
 
     conjugation = group.Aut().one()
-    assert conjugation in group_homset(group, group)
+    assert conjugation in group.Mor(group)
     left, right = adjunction.unit_transformation().naturality_square(conjugation)
     for generator in group_generators:
         assert left(generator) == right(generator)
 
-    target_endomorphism = group_homset(target, target)(
+    target_endomorphism = target.Mor(target)(
         {target_generator: target_generator**5}
     )
     left, right = adjunction.counit_transformation().naturality_square(
@@ -458,11 +456,11 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
     from dzack_research.preamble.all import BilinearForm, Lattices
 
     formed = BilinearForm(lattice, ZZ, [[0, 1], [1, 0]])
-    forget_form = category_inclusion(FormModules(ZZ), Modules(ZZ))
+    forget_form = FormModules(ZZ).inclusion_into(Modules(ZZ))
     assert forget_form(formed) is formed
 
     hyperbolic = Lattices(ZZ)("U")
-    forget_lattice = category_inclusion(Lattices(ZZ), Modules(ZZ))
+    forget_lattice = Lattices(ZZ).inclusion_into(Modules(ZZ))
     assert forget_lattice(hyperbolic) is hyperbolic
 
 

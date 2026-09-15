@@ -162,7 +162,7 @@ def test_coordinate_axes_as_a_presented_algebra(field) -> None:
 
 def test_kahler_differentials_of_a_ring_over_itself_vanish(commutative_ring) -> None:
     r"""$\Omega_{R/R} = 0$."""
-    omega = KahlerDifferentials(commutative_ring)
+    omega = commutative_ring.kahler_differentials()
     assert omega in Modules(commutative_ring)
     assert omega.cardinality() == 1
 
@@ -173,7 +173,7 @@ def test_kahler_differentials_of_the_polynomial_algebra(commutative_ring) -> Non
     polynomials = PolynomialRing(ring, ("x", "y"))
     x = polynomials.algebra_generator("x")
     y = polynomials.algebra_generator("y")
-    omega = KahlerDifferentials(polynomials)
+    omega = polynomials.kahler_differentials()
     d = omega.universal_derivation()
     dx = omega.differential_generator("x")
     dy = omega.differential_generator("y")
@@ -189,7 +189,7 @@ def test_kahler_differentials_of_the_polynomial_algebra(commutative_ring) -> Non
 
 def test_kahler_differentials_of_a_separable_extension_vanish(build) -> None:
     for name, base in (("QQ(i)", QQ), ("QQ(cbrt2)", QQ), ("GF(4)", GF(2))):
-        omega = KahlerDifferentials(build(name).as_algebra_over(base))
+        omega = build(name).as_algebra_over(base).kahler_differentials()
         assert omega.cardinality() == 1
 
 
@@ -201,12 +201,12 @@ def test_kahler_differentials_of_a_ring_of_integers_have_the_order_of_the_discri
     build, name, discriminant
 ) -> None:
     r"""$|\Omega_{\mathcal O_K/\mathbb Z}| = |d_K|$."""
-    omega = KahlerDifferentials(build(name).as_algebra_over(ZZ))
+    omega = build(name).as_algebra_over(ZZ).kahler_differentials()
     assert omega.cardinality() == discriminant
 
 
 def test_kahler_differentials_of_a_rational_function_field(build) -> None:
-    omega = KahlerDifferentials(build("QQ(x)").as_algebra_over(QQ))
+    omega = build("QQ(x)").as_algebra_over(QQ).kahler_differentials()
     assert omega.module_rank() == 1
     assert omega.cardinality() == aleph0
 
@@ -218,7 +218,7 @@ def test_kahler_differentials_of_the_coordinate_axes(field) -> None:
     axes = FinitelyPresentedAlgebra(plane, [x * y])
     xbar = axes.algebra_generator("x")
     ybar = axes.algebra_generator("y")
-    omega = KahlerDifferentials(axes)
+    omega = axes.kahler_differentials()
     dx = omega.differential_generator("x")
     dy = omega.differential_generator("y")
 
@@ -235,7 +235,7 @@ def test_kahler_differentials_of_the_coordinate_axes(field) -> None:
 def test_de_rham_complex_of_the_affine_line(field) -> None:
     polynomials = PolynomialRing(field, "x")
     x = polynomials.algebra_generator("x")
-    de_rham = DeRhamAlgebra(polynomials)
+    de_rham = polynomials.de_rham_algebra()
     d = de_rham.differential()
 
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(field)
@@ -250,7 +250,7 @@ def test_de_rham_complex_of_the_affine_line(field) -> None:
 def test_poincare_lemma_in_characteristic_zero(build, name) -> None:
     r"""$H^1_{dR}(\mathbb A^1_K) = 0$ and $H^0 = K$ when $\operatorname{char} K = 0$."""
     field = build(name)
-    de_rham = DeRhamAlgebra(PolynomialRing(field, "x"))
+    de_rham = PolynomialRing(field, "x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() == 1
     assert de_rham.cohomology(0).module_rank() == 1
 
@@ -259,13 +259,13 @@ def test_poincare_lemma_in_characteristic_zero(build, name) -> None:
 def test_de_rham_cohomology_of_the_line_is_nonzero_in_positive_characteristic(build, name) -> None:
     r"""$x^{p-1}\,dx$ is closed and not exact over $\mathbb F_q$."""
     field = build(name)
-    de_rham = DeRhamAlgebra(PolynomialRing(field, "x"))
+    de_rham = PolynomialRing(field, "x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() != 1
     assert de_rham.cohomology(1).module_rank() >= 1
 
 
 def test_de_rham_cohomology_of_the_integer_line_has_torsion() -> None:
     r"""$x\,dx$ is closed over $\mathbb Z$ and $2\,x\,dx = d(x^2)$, so $H^1$ has $2$-torsion."""
-    de_rham = DeRhamAlgebra(PolynomialRing(ZZ, "x"))
+    de_rham = PolynomialRing(ZZ, "x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() != 1
     assert de_rham.cohomology(0).module_rank() == 1

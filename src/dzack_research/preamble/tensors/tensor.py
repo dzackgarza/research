@@ -29,6 +29,10 @@ from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
+from dzack_research.preamble.categories.modules.graded_direct_sums import (
+    GradedDirectSumElement,
+    GradedDirectSumModule,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     Modules,
@@ -1592,101 +1596,33 @@ class TensorModule(UniqueRepresentation, Parent):
         return tex
 
 
-def _mixed_tensor_valence(valence) -> tuple[int, int]:
+def _mixed_tensor_valence(valence) -> ProductOfNaturalNumbers:
     r"""Normalize one bidegree ``(p,q)`` of the mixed tensor algebra."""
-    point = (NN**2)(valence)
-    return int(point[0]), int(point[1])
+    return (NN**2)(valence)
 
 
-class MixedTensorAlgebraElement(ModuleElement):
+class MixedTensorAlgebraElement(GradedDirectSumElement):
     r"""A finite-support sum of homogeneous mixed tensors."""
-
-    def __init__(self, parent, components) -> None:
-        ModuleElement.__init__(self, parent)
-        normalized = {}
-        for raw_valence, component in components.items():
-            valence = _mixed_tensor_valence(raw_valence)
-            piece = parent.homogeneous_piece(valence)
-            if component.parent() is not piece:
-                raise ValueError(
-                    "a mixed-tensor homogeneous component must belong to its exact tensor module"
-                )
-            if component != piece.zero():
-                normalized[valence] = component
-        self._components = normalized
 
     def valences(self):
         r"""Return the finite set of bidegrees with nonzero component."""
-        return finite_ordered_set(tuple(sorted(self._components)))
-
-    def homogeneous_components(self):
-        return dict(self._components)
-
-    def homogeneous_component(self, valence):
-        valence = _mixed_tensor_valence(valence)
-        return self._components.get(
-            valence,
-            self.parent().homogeneous_piece(valence).zero(),
-        )
-
-    def is_homogeneous(self) -> bool:
-        return len(self._components) <= 1
-
-    def _add_(self, other):
-        if other.parent() is not self.parent():
-            return NotImplemented
-        valences = set(self._components) | set(other._components)
-        return self.parent().from_components(
-            {
-                valence: self.homogeneous_component(valence)
-                + other.homogeneous_component(valence)
-                for valence in valences
-            }
-        )
-
-    def _neg_(self):
-        return self.parent().from_components(
-            {valence: -component for valence, component in self._components.items()}
-        )
-
-    def _lmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
-
-    def _rmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        return finite_ordered_set(tuple(self._components))
 
     def _mul_(self, other):
         if other.parent() is not self.parent():
             return NotImplemented
         return self.parent().multiply(self, other)
 
-    def _richcmp_(self, other, op):
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        equal = isinstance(other, MixedTensorAlgebraElement) and other.parent() is self.parent()
-        if equal:
-            valences = set(self._components) | set(other._components)
-            equal = all(
-                self.homogeneous_component(valence)
-                == other.homogeneous_component(valence)
-                for valence in valences
-            )
-        match op:
-            case _ if op == op_EQ:
-                return equal
-            case _:
-                return not equal
-
     def _repr_(self):
         if not self._components:
             return "0"
         return " + ".join(
-            f"[{p},{q}]({component})"
-            for (p, q), component in sorted(self._components.items())
+            f"[{valence[0]},{valence[1]}]({component})"
+            for valence, component in self._components.items()
         )
 
 
-class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
+class MixedTensorAlgebraParent(GradedDirectSumModule):
     r"""The bigraded algebra ``T(M) tensor T(M^*)`` of a finite framed module.
 
     The current tensor owner realizes each homogeneous piece in the selected
@@ -1697,24 +1633,30 @@ class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
 
     Element = MixedTensorAlgebraElement
 
-    @staticmethod
-    def __classcall__(cls, module):
+    def __init__(self, module) -> None:
+        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+
         rank = module.module_rank()
         if not rank.is_finite():
             raise TypeError("the coordinate mixed tensor algebra currently requires finite rank")
-        return UniqueRepresentation.__classcall__(cls, module)
-
-    def __init__(self, module) -> None:
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
-
         self._module = module
         self._base_ring = _own_ring(module.base_ring())
-        self._rank = int(module.module_rank())
+        self._rank = int(rank)
         self._preamble_algebra_base_ring = self._base_ring
-        Parent.__init__(
+        self._preamble_algebra_is_commutative = self._rank <= 1
+        bigrades = NN**2
+        GradedDirectSumModule.__init__(
             self,
-            base=_engine_ring(self._base_ring),
-            category=Algebras(self._base_ring).Associative().Unital(),
+            self._base_ring,
+            lambda valence: TensorModule(
+                self._base_ring,
+                (self._rank,) * int(valence[0]),
+                (self._rank,) * int(valence[1]),
+            ),
+            name=f"Mixed tensor algebra T({module}) tensor T({module}^*)",
+            degree_index_set=bigrades,
+            grading_monoid=bigrades,
+            extra_categories=(GradedAlgebras(self._base_ring, bigrades),),
         )
 
     def module(self):
@@ -1740,25 +1682,12 @@ class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
 
         return TensorAlgebraOf(self.dual_module())
 
-    def base_ring(self):
-        return self._base_ring
-
     def algebra_base_ring(self):
         return self._base_ring
 
     def homogeneous_piece(self, valence):
-        p, q = _mixed_tensor_valence(valence)
-        return TensorModule(
-            self.base_ring(),
-            (self._rank,) * p,
-            (self._rank,) * q,
-        )
-
-    def from_component(self, valence, component):
-        return self.element_class(self, {_mixed_tensor_valence(valence): component})
-
-    def from_components(self, components):
-        return self.element_class(self, components)
+        r"""Return the tensor module of bidegree ``valence``."""
+        return self.graded_piece(valence)
 
     def include(self, tensor_element):
         r"""Include one live homogeneous tensor in its bidegree."""
@@ -1766,7 +1695,7 @@ class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
             raise TypeError("mixed tensor inclusion requires a represented tensor")
         if _own_ring(tensor_element.base_ring()) is not self.base_ring():
             raise ValueError("the tensor and mixed algebra require one base ring")
-        valence = tuple(int(entry) for entry in tensor_element.tensor_valence())
+        valence = _mixed_tensor_valence(tensor_element.tensor_valence())
         expected = self.homogeneous_piece(valence)
         if tensor_element.parent() is not expected:
             raise ValueError("the tensor does not use the selected frame rank of this mixed algebra")
@@ -1789,20 +1718,10 @@ class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
         return self.from_component((0, 0), scalar_tensor)
 
     def zero(self):
-        return self.from_components({})
+        return GradedDirectSumModule.zero(self)
 
     def one(self):
         return self(self.base_ring().one())
-
-    def scalar_multiple(self, scalar, element):
-        element = self(element)
-        scalar = self.base_ring()(scalar)
-        return self.from_components(
-            {
-                valence: component.parent().scalar_multiple(scalar, component)
-                for valence, component in element.homogeneous_components().items()
-            }
-        )
 
     def multiply(self, left, right):
         left = self(left)

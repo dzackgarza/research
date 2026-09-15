@@ -33,7 +33,6 @@ from dzack_research.preamble.categories.group.groups import (
     _own_group,
     _owned_group,
     _owned_point,
-    group_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -117,7 +116,9 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     @cached_method
     def fixed_points_functor(self):
         r"""``X |-> X^G : FinGSet_G -> FinSet``."""
-        from dzack_research.preamble.categories.functors.g_sets import GSetFixedPointsFunctor
+        from dzack_research.preamble.categories.functors.g_sets import (
+            GSetFixedPointsFunctor,
+        )
 
         return GSetFixedPointsFunctor(self.group())
 
@@ -206,6 +207,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         def cardinality(self):
             return cardinal(self.point_set().cardinality())
+
+        def Mor(self, codomain):
+            r"""Return the equivariant Hom from this G-set to ``codomain``."""
+            return FiniteGSets(self.acting_group()).Mor(self, codomain)
 
         def orbits(self):
             r"""The orbit set ``X / G``."""
@@ -331,7 +336,7 @@ class GSetMorphism(SetMorphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return g_set_homset(other.domain(), self.codomain())(
+        return other.domain().Mor(self.codomain())(
             lambda point: self(other(point))
         )
 
@@ -519,10 +524,6 @@ class OrbitSets(OwnedCategory):
             return f"Orbit set of {self.g_set()}"
 
 
-def g_set_homset(domain, codomain) -> GSetHomset:
-    return FiniteGSets(domain.acting_group()).Mor(domain, codomain)
-
-
 def _permutation_from_point_map(permutation_group, point_set, mapping):
     images = [mapping(point) for point in point_set]
     for point in point_set:
@@ -574,7 +575,7 @@ def _finite_g_set_from_action(group, point_set, action):
     # mathematical point set remains the owned set above.
     backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
-    permutation_representation = group_homset(group, permutations)(
+    permutation_representation = group.Mor(permutations)(
         {
             group_generator: _permutation_from_point_map(
                 permutations,
@@ -708,6 +709,5 @@ __all__ = [
     "Torsors",
     "finite_g_set",
     "fixed_point_set",
-    "g_set_homset",
     "trivial_g_set",
 ]

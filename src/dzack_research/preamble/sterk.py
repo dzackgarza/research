@@ -1,10 +1,10 @@
 r"""Sterk cusp and root configurations for degree-two Enriques moduli."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 def _named_generators(lattice):
@@ -156,7 +156,7 @@ class Sterk:
         w = Sterk.roots_18_0_0()
 
         def reflect(x):
-            half = SageZZ(v["v22"].b(x) / 2)
+            half = x.parent().base_ring()(v["v22"].b(x) / 2)
             return x + half * v["v22"]
 
         def orbit_sum(x):
@@ -232,6 +232,9 @@ class Sterk:
                 v["v21"],
                 v["v22"],
             ),
+        }
+        configurations = {
+            name: finite_ordered_set(roots) for name, roots in configurations.items()
         }
         for name, roots in configurations.items():
             for root in roots:

@@ -5,7 +5,6 @@ from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_bas
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -103,7 +102,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
     def subobject_category(self):
 
         ring = self.base_ring()
-        return SubobjectsOf(Modules(ring), ring_as_module(ring))
+        return Modules(ring).Subobjects(ring_as_module(ring))
 
     def __contains__(self, candidate) -> bool:
         try:

@@ -1,16 +1,15 @@
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AbelianizationAdjunction,
     AlgebraBaseChangeAdjunction,
     FinitelyPresentedAlgebra,
     FreeGroupUnderlyingSetAdjunction,
     Groups,
     OrderNumberFieldAdjunction,
-    QQ,
     QuadraticField,
     SymmetricAlgebraOn,
-    ZZ,
-    group_homset,
 )
 from dzack_research.preamble.categories.rings.embeddings import number_field_homset
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
@@ -53,7 +52,7 @@ def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -
     target = Groups.C(6)
     target_generator = target.group_generators()[0]
     group_generators = group.group_generators()
-    group_morphism = group_homset(group, target)(
+    group_morphism = group.Mor(target)(
         {
             group_generators[0]: target.one(),
             group_generators[1]: target_generator**3,
@@ -110,7 +109,7 @@ def test_free_group_transpose_uses_the_left_functors_recorded_preimage() -> None
     target = Groups.C(3)
     target_generator = target.group_generators()[0]
     generator_map = Sets().Mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
-    group_morphism = group_homset(free_group, target)(generator_map)
+    group_morphism = free_group.Mor(target)(generator_map)
 
     transpose = adjunction.hom_set_isomorphism_forward(group_morphism)
 

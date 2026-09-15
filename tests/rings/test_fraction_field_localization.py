@@ -4,11 +4,10 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    aleph0,
     BasedFreeModule,
-    Localization,
     NumberField,
     PolynomialRing,
+    aleph0,
 )
 from dzack_research.preamble.categories.functors.module_localization import (
     module_localization_functor,
@@ -21,7 +20,7 @@ def test_fraction_field_is_the_nonzero_localization_with_canonical_realization()
     nonzero = ZZ.nonzero_multiplicative_submonoid()
     localization = ZZ.fraction_field_localization()
 
-    assert Localization(ZZ, nonzero) is localization
+    assert ZZ.localization(nonzero) is localization
     assert localization.localization_source() is ZZ
     assert localization.base_ring() is ZZ
     assert localization.localization_submonoid() is nonzero
@@ -84,7 +83,7 @@ def test_module_localization_and_fraction_scalar_change_have_the_same_generic_fi
 
 
 def test_selected_and_prime_localizations_do_not_collapse_to_the_fraction_field() -> None:
-    at_two = Localization(ZZ, ZZ(2))
+    at_two = ZZ.localization(ZZ(2))
     at_three = ZZ.spectrum()(3).local_ring()
     fractions = ZZ.fraction_field_localization()
 

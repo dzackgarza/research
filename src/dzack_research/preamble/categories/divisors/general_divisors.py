@@ -15,7 +15,6 @@ presentation is retained rather than identified with the full divisor group.
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
@@ -24,7 +23,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import biproduct_morphism
+from dzack_research.preamble.categories.modules.pure.modules import Modules, biproduct_morphism
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
     _owned_ideal,
@@ -292,8 +291,9 @@ def projective_space_divisor_class_theory(
         integers,
         finite_ordered_set(("H",)),
     )
-    picard_biproduct = Biproduct(base_picard_group, picard_hyperplane)
-    class_biproduct = Biproduct(base_class_group, class_hyperplane)
+    modules = Modules(integers)
+    picard_biproduct = modules.biproduct((base_picard_group, picard_hyperplane))
+    class_biproduct = modules.biproduct((base_class_group, class_hyperplane))
     picard = PicardGroup(
         picard_biproduct,
         scheme=projective_space,
@@ -349,7 +349,7 @@ def projective_space_picard_group(projective_space, base_picard_group):
     if base_picard_group.base_ring() is not integers:
         raise TypeError("a Picard group is an abelian group over ZZ")
     hyperplane = FreshFreeModuleOn(integers, finite_ordered_set(("O(1)",)))
-    decomposition = Biproduct(base_picard_group, hyperplane)
+    decomposition = Modules(integers).biproduct((base_picard_group, hyperplane))
     return PicardGroup(
         decomposition,
         scheme=projective_space,

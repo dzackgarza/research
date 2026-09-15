@@ -1,16 +1,15 @@
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     BiproductBifunctor,
     CokernelArrowFunctor,
     DualizationFunctor,
     FinitelyGeneratedFreeModules,
+    FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
     KernelArrowFunctor,
     Lattices,
-    ArrowCategory,
-    FinitelyPresentedModules,
     OrthogonalDirectSumBifunctor,
-    ZZ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -104,7 +103,7 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
 
 
 def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> None:
-    finite_free_arrow_category = ArrowCategory(FinitelyGeneratedFreeModules(ZZ))
+    finite_free_arrow_category = FinitelyGeneratedFreeModules(ZZ).ArrowCategory()
 
     plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     line = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
@@ -148,7 +147,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     twice = module_homset(cyclic_source, cyclic_target)({"a": 2 * b})
     left3 = module_homset(cyclic_source, cyclic_source)({"a": 3 * a})
     right3 = module_homset(cyclic_target, cyclic_target)({"b": 3 * b})
-    arrow_category = ArrowCategory(FinitelyPresentedModules(ZZ))
+    arrow_category = FinitelyPresentedModules(ZZ).ArrowCategory()
     twice_arrow = arrow_category(twice)
     square3 = arrow_category.morphism(twice_arrow, twice_arrow, left3, right3)
     left5 = module_homset(cyclic_source, cyclic_source)({"a": 5 * a})

@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     ProjectiveSpace,
     QuadraticField,
-    QuotientRing,
     Spec,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
@@ -96,7 +95,7 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     z = polynomial.algebra_generator("z")
-    ring = QuotientRing(polynomial, polynomial.ideal(x * y - z**2))
+    ring = polynomial.quotient_ring(polynomial.ideal(x * y - z**2))
     x, y, z = ring(x), ring(y), ring(z)
     scheme = Spec(ring, base_ring=QQ)
 

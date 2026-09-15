@@ -1,5 +1,4 @@
 r"""Archive reconciliation for corestriction of algebra maps to the centre."""
-
 import pytest
 
 from dzack_research.preamble.all import (
@@ -9,11 +8,13 @@ from dzack_research.preamble.all import (
     MatrixSpace,
     OwnedRings,
 )
-from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 
 
 def test_exterior_algebra_center_is_the_archived_predicate_subring() -> None:
@@ -67,7 +68,7 @@ def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
             source_label: matrices._carrier_element(matrices.identity()),
         }
     )
-    morphism = algebra_homset(source, matrices)(underlying)
+    morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, matrices)(underlying)
 
     factor = morphism.corestrict_to_center()
     center = matrices.ring_center()
@@ -83,7 +84,7 @@ def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
 
 def test_noncentral_generator_image_refuses_center_corestriction() -> None:
     matrices = MatrixSpace(QQ, 2)
-    morphism = algebra_homset(matrices, matrices).identity()
+    morphism = Algebras(matrices.base_ring()).Associative().Unital().Mor(matrices, matrices).identity()
 
     with pytest.raises(ValueError, match="not central"):
         morphism.corestrict_to_center()

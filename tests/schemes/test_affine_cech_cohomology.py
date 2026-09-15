@@ -1,8 +1,8 @@
 r"""Non-toric coherent cohomology from affine acyclicity."""
 
-from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, QuotientRing, Spec
+from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, Spec
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
-from dzack_research.preamble.categories.modules.cochain_complexes import cochain_homset
+from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     AffineCoverRefinementCohomologyMap,
     AffineGeometricCohomology,
@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.schemes.geometric_cohomology import (
 def _dual_number_sheaf():
     polynomial = PolynomialRing(QQ, "e")
     e = polynomial.algebra_generator("e")
-    algebra = QuotientRing(polynomial, polynomial.ideal(e**2))
+    algebra = polynomial.quotient_ring(polynomial.ideal(e**2))
     scheme = Spec(algebra, base_ring=QQ)
     module = FreeModule(algebra, 1)
     return scheme.associated_module_sheaf(module)
@@ -69,10 +69,16 @@ def test_unit_cover_refinement_has_an_actual_cochain_and_cohomology_comparison()
     source_complex = comparison.source_complex()
     target_complex = comparison.target_complex()
     source_times_two = cohomology_functor(source_complex.base_ring(), 0)(
-        QQ(2) * cochain_homset(source_complex, source_complex).identity()
+        QQ(2)
+        * CochainComplexes(source_complex.base_ring()).Mor(
+            source_complex, source_complex
+        ).identity()
     )
     target_times_two = cohomology_functor(target_complex.base_ring(), 0)(
-        QQ(2) * cochain_homset(target_complex, target_complex).identity()
+        QQ(2)
+        * CochainComplexes(target_complex.base_ring()).Mor(
+            target_complex, target_complex
+        ).identity()
     )
     assert (
         target_times_two(comparison.cohomology_map()(generator))

@@ -14,12 +14,11 @@ case that separates the unit group from the whole ring.
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     OwnedGroups,
     OwnedRings,
-    ZZ,
     module_homset,
-    predicate_subgroup,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -55,11 +54,7 @@ def test_the_stabilizer_of_a_basis_element_is_a_subgroup_of_the_automorphisms() 
     a = plane.module_generator("a")
     automorphisms = OwnedRings().unit_group()(plane.End())
 
-    stabilizer = predicate_subgroup(
-        automorphisms,
-        lambda automorphism: automorphism(a) == a,
-        "f fixes a",
-    )
+    stabilizer = automorphisms.predicate_subgroup(lambda automorphism: automorphism(a) == a, "f fixes a")
 
     assert stabilizer in OwnedGroups()
     assert stabilizer.supergroup() is automorphisms

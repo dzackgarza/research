@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedGroups,
-    group_homset,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -30,7 +29,7 @@ class FreeGroupFunctor(Functor):
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
-        return group_homset(source, target)(
+        return source.Mor(target)(
             SetMorphism(
                 Sets().Mor(source.free_basis(), target),
                 lambda index: target.free_generator(set_morphism(index)),
@@ -74,7 +73,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
 
     def counit(self, group):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
-        return group_homset(free_group, group)(
+        return free_group.Mor(group)(
             SetMorphism(
                 Sets().Mor(free_group.free_basis(), group),
                 lambda group_element: group_element,

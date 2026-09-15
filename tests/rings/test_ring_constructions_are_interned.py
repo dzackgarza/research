@@ -12,10 +12,9 @@ do.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
-    QuotientRing,
     ZZ,
+    PolynomialRing,
 )
 
 
@@ -37,12 +36,12 @@ def test_a_prime_localization_is_one_object() -> None:
 
 
 def test_a_quotient_ring_is_one_object() -> None:
-    assert QuotientRing(ZZ, ZZ.ideal(6)) is QuotientRing(ZZ, ZZ.ideal(6))
+    assert ZZ.quotient_ring(ZZ.ideal(6)) is ZZ.quotient_ring(ZZ.ideal(6))
 
 
 def test_a_quotient_is_keyed_on_the_ideal_not_on_how_it_was_written() -> None:
     assert ZZ.ideal(2) == ZZ.ideal(2, 4)
-    assert QuotientRing(ZZ, ZZ.ideal(2)) is QuotientRing(ZZ, ZZ.ideal(2, 4))
+    assert ZZ.quotient_ring(ZZ.ideal(2)) is ZZ.quotient_ring(ZZ.ideal(2, 4))
 
 
 def test_an_ideal_of_a_localization_is_one_object() -> None:

@@ -95,6 +95,18 @@ class CategoryFunctor[C, D, F]:
     ) -> CategoricalMorphism[
         D, FunctorImage[F, Source], FunctorImage[F, Target]
     ]: ...
+    def induced_hom_functor[Source, Target](
+        self,
+        source: CategoryObject[C, Source],
+        target: CategoryObject[C, Target],
+        /,
+    ) -> InducedHomFunctor[F, C, D, Source, Target]: ...
+    def induced_end_functor[A](
+        self, obj: CategoryObject[C, A], /
+    ) -> InducedEndFunctor[F, C, D, A]: ...
+    def induced_aut_functor[A](
+        self, obj: CategoryObject[C, A], /
+    ) -> InducedAutFunctor[F, C, D, A]: ...
 
 
 class HomObject[C, Source, Target]:
@@ -681,27 +693,6 @@ def functor_morphism_image[C, D, F, Source, Target](
     /,
 ) -> CategoricalMorphism[D, FunctorImage[F, Source], FunctorImage[F, Target]]: ...
 
-
-def induced_hom[C, D, F, Source, Target](
-    functor: CategoryFunctor[C, D, F],
-    source: CategoryObject[C, Source],
-    target: CategoryObject[C, Target],
-    /,
-) -> InducedHomFunctor[F, C, D, Source, Target]: ...
-
-
-def induced_end[C, D, F, A](
-    functor: CategoryFunctor[C, D, F],
-    obj: CategoryObject[C, A],
-    /,
-) -> InducedEndFunctor[F, C, D, A]: ...
-
-
-def induced_aut[C, D, F, A](
-    functor: CategoryFunctor[C, D, F],
-    obj: CategoryObject[C, A],
-    /,
-) -> InducedAutFunctor[F, C, D, A]: ...
 
 
 def module_element_of[R, M](

@@ -33,8 +33,8 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     x, y = coordinates[0], coordinates[1]
 
     # Differential forms and the exterior derivative.
-    omega = KahlerDifferentials(algebra)
-    de_rham = DeRhamAlgebra(algebra)
+    omega = algebra.kahler_differentials()
+    de_rham = algebra.de_rham_algebra()
     rendered(omega)
     rendered(de_rham)
     assert omega.module_rank() == dimension
@@ -107,7 +107,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     if field.characteristic() == 0:
         for degree in range(1, dimension + 1):
             assert de_rham.cohomology(degree).cardinality() == 1
-        punctured = DeRhamAlgebra(LaurentPolynomialRing(field, names))
+        punctured = LaurentPolynomialRing(field, names).de_rham_algebra()
         rendered(punctured)
         assert punctured.cohomology(0).module_rank() == 1
         assert punctured.cohomology(1).module_rank() == dimension

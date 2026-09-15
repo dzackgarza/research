@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.functors.core import Functor
 
 
-class InducedHomFunctor(Functor):
+class _InducedHomFunctor(Functor):
     r"""The functor ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` induced by ``F``."""
 
     def __init__(self, functor, domain_object, codomain_object) -> None:
@@ -65,7 +65,7 @@ class InducedHomFunctor(Functor):
         return f"Hom functor induced by {self.base_functor()}"
 
 
-class InducedEndFunctor(Functor):
+class _InducedEndFunctor(Functor):
     r"""The functor ``End_C(A) -> End_D(F(A))`` induced by ``F``."""
 
     def __init__(self, functor, obj) -> None:
@@ -80,7 +80,7 @@ class InducedEndFunctor(Functor):
         return self._functor
 
     def object_image(self, arrow_object):
-        arrow = InducedHomFunctor._underlying_arrow(arrow_object)
+        arrow = _InducedHomFunctor._underlying_arrow(arrow_object)
         image = self.base_functor().on_morphism(arrow)
         return self.codomain()(image)
 
@@ -104,7 +104,7 @@ class InducedEndFunctor(Functor):
         return f"End functor induced by {self.base_functor()}"
 
 
-class InducedAutFunctor(Functor):
+class _InducedAutFunctor(Functor):
     r"""The functor ``Aut_C(A) -> Aut_D(F(A))`` induced by ``F``."""
 
     def __init__(self, functor, obj) -> None:
@@ -119,7 +119,7 @@ class InducedAutFunctor(Functor):
         return self._functor
 
     def object_image(self, arrow_object):
-        isomorphism = InducedHomFunctor._underlying_arrow(arrow_object)
+        isomorphism = _InducedHomFunctor._underlying_arrow(arrow_object)
         if not isinstance(isomorphism, CategoricalIsomorphism):
             raise TypeError("an Aut object is represented by a categorical isomorphism")
         forward = self.base_functor().on_morphism(isomorphism.forward())
@@ -144,25 +144,3 @@ class InducedAutFunctor(Functor):
 
     def _repr_(self):
         return f"Aut functor induced by {self.base_functor()}"
-
-
-def induced_hom_functor(functor, domain_object, codomain_object) -> InducedHomFunctor:
-    return InducedHomFunctor(functor, domain_object, codomain_object)
-
-
-def induced_end_functor(functor, obj) -> InducedEndFunctor:
-    return InducedEndFunctor(functor, obj)
-
-
-def induced_aut_functor(functor, obj) -> InducedAutFunctor:
-    return InducedAutFunctor(functor, obj)
-
-
-__all__ = [
-    "InducedAutFunctor",
-    "InducedEndFunctor",
-    "InducedHomFunctor",
-    "induced_aut_functor",
-    "induced_end_functor",
-    "induced_hom_functor",
-]

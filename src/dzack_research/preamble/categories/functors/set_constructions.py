@@ -7,10 +7,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     MonomorphismArrowCategory,
     WideSubcategory,
 )
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
-    ProductCategory,
-)
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import (
     ExponentialOfSets,
@@ -26,8 +23,8 @@ class ExponentialFunctor(Functor):
     r"""The internal-Hom functor ``Set^op x Set -> Set``."""
 
     def __init__(self) -> None:
-        self._opposite_sets = OppositeCategory(Sets())
-        self._product_category = ProductCategory(self._opposite_sets, Sets())
+        self._opposite_sets = Sets().opposite()
+        self._product_category = Cat().product((self._opposite_sets, Sets()))
         super().__init__(self._product_category, Sets())
 
     def opposite_sets(self):
@@ -63,7 +60,7 @@ class InverseImagePowerSetFunctor(Functor):
     r"""The contravariant power-set functor on the opposite of Set."""
 
     def __init__(self) -> None:
-        self._opposite_sets = OppositeCategory(Sets())
+        self._opposite_sets = Sets().opposite()
         super().__init__(self._opposite_sets, Sets())
 
     def opposite_sets(self):

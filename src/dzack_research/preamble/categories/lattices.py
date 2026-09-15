@@ -46,10 +46,12 @@ from dzack_research.preamble.categories._lattice import (
     scale_gram_tensor,
     signature_pair,
     signature_pair_of_gram,
-    signature_pairs,
     tensor_product_lattice,
 )
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
+from dzack_research.preamble.categories._lattice import (
+    signature_pairs as signature_pairs,
+)
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
@@ -86,7 +88,6 @@ from dzack_research.preamble.categories.definite_lattices import (
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
     isotropic_flag_locus,
@@ -727,7 +728,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         categories = []
         if lattice.module_rank() != Infinity:
             categories.append(FiniteRankLattices(lattice.base_ring()))
-        if lattice.is_nondegenerate():
+        nondegenerate = lattice.is_nondegenerate()
+        if nondegenerate is True:
             categories.append(NondegenerateLattices(lattice.base_ring()))
         try:
             is_even = lattice.is_even()
@@ -1235,24 +1237,14 @@ class Lattices(OwnedCategoryOverBaseRing):
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.determinant() == 1,
-                "det(g)=1",
-                character_data={"determinant_kernel": True},
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.determinant() == 1, "det(g)=1", character_data={"determinant_kernel": True})
 
         SO = special_orthogonal_group
 
         def spinor_kernel_subgroup(self):
             r"""Return the kernel of the real spinor-norm sign on ``O(L)``."""
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.real_spinor_norm_sign() == 1,
-                "real spinor norm(g)=+1",
-                character_data={"spinor_kernel": True},
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.real_spinor_norm_sign() == 1, "real spinor norm(g)=+1", character_data={"spinor_kernel": True})
 
         @cached_method
         def component_character(self):
@@ -1285,11 +1277,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if positive != integers.one() or negative < integers.one():
                 raise ValueError(f"positive_cone_subgroup requires signature (1,n); got {(positive, negative)}")
 
-            return predicate_subgroup(
-                self.Aut(),
-                lambda automorphism: automorphism.preserves_positive_cone(),
-                "g preserves the positive cone",
-            )
+            return self.Aut().predicate_subgroup(lambda automorphism: automorphism.preserves_positive_cone(), "g preserves the positive cone")
 
         def O_component(self):
             r"""Return the subgroup preserving the selected positive-cone component."""
@@ -1652,9 +1640,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _BiproductGram():
                     return all(summand.is_nondegenerate() for summand in gram._summands)
                 case _ColimitGram():
-                    # The represented colimit forms used here are orthogonal
-                    # unions of nondegenerate finite stages.
-                    return all(stage.is_nondegenerate() for stage in gram._objects)
+                    # A stage callable represents every finite restriction, but
+                    # no finite sample decides nondegeneracy of the full colimit.
+                    return Unknown
                 case _:
                     if not self.module_rank().is_finite():
                         raise NotImplementedError("nondegeneracy of this infinite Gram presentation is not decided")
@@ -2563,6 +2551,33 @@ class Lattices(OwnedCategoryOverBaseRing):
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
 
+        def is_elliptic(self) -> bool:
+            r"""Return whether this finite-rank lattice is negative definite.
+
+            In the reflection-lattice convention used by the project, an
+            elliptic form has signature ``(0,n,0)``.  The public signature pair
+            records only the positive and negative indices, while the rank
+            determines the radical dimension.
+            """
+
+            return self.is_negative_definite()
+
+        def is_parabolic(self) -> bool:
+            r"""Return whether the form has signature ``(0,n-1,1)``.
+
+            Thus a parabolic lattice is negative semidefinite with a
+            one-dimensional radical; negative-definite (elliptic) lattices are
+            deliberately excluded.
+            """
+
+            rank = self.module_rank()
+            if not rank.is_finite():
+                return False
+            finite_rank = int(rank.finite_value())
+            if finite_rank < 2:
+                return False
+            return self.signature_pair() == signature_pair(0, finite_rank - 1)
+
         def lll_reduction(self):
 
             return lll_reduction(self)
@@ -3015,7 +3030,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Iinf = Lattices(ZZ)(ZZ^NN)
                 sage: Iinf.module_generator(0).is_root()
                 True
-                sage: Iinf((2, 1)).is_root()
+                sage: Iinf.linear_combination({0: ZZ(2), 1: ZZ(1)}).is_root()
                 False
             """
 
@@ -3711,11 +3726,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             self.isotropic_embedding()
             levi = self.levi_action()
             identity = self.Aut().one()
-            return predicate_subgroup(
-                self.pointwise_parabolic_subgroup(),
-                lambda isometry: levi(isometry) == identity,
-                "g fixes I pointwise and acts trivially on I^perp/I",
-            )
+            return self.pointwise_parabolic_subgroup().predicate_subgroup(lambda isometry: levi(isometry) == identity, "g fixes I pointwise and acts trivially on I^perp/I")
 
         def lift_isometry(self, isometry):
             r"""Return \(g\in P_I\) with \(\bar g=\) ``isometry``, when \(L\) splits along the lifts.

@@ -17,9 +17,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    TensorProduct,
-)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
@@ -128,7 +125,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 else integers.zero()
             ),
         )
-        return TensorProduct(characters, cocharacters).from_bilinear(dual_frames)
+        tensor_product = FinitelyGeneratedFreeModules(integers).tensor_product(
+            (characters, cocharacters)
+        )
+        return tensor_product.from_bilinear(dual_frames)
 
     def character_cocharacter_value(self, character, cocharacter):
         r"""Return the scalar integer ``<character, cocharacter>``.

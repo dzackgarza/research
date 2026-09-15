@@ -48,7 +48,7 @@ def test_the_koszul_complex_over_the_integers() -> None:
 
 def test_cochain_morphisms_and_the_identity() -> None:
     _, koszul = _koszul_complex(QQ)
-    homset = cochain_homset(koszul, koszul)
+    homset = koszul.Mor(koszul)
     identity = homset.identity()
     assert identity * identity == identity
     assert identity.domain() is koszul
@@ -81,7 +81,7 @@ def test_connections_on_a_free_module_over_the_affine_line(field) -> None:
     line = PolynomialRing(field, "x")
     module = FreeModule(line, 1)
     connections = Connections(module)
-    omega = KahlerDifferentials(line)
+    omega = line.kahler_differentials()
     target = connections.target_module()
     dx = omega.differential_generator("x")
     e = module.module_generator(0)
@@ -105,7 +105,7 @@ def test_curvature_of_a_connection_on_the_plane(field) -> None:
     x = plane.algebra_generator("x")
     module = FreeModule(plane, 1)
     connections = Connections(module)
-    omega = KahlerDifferentials(plane)
+    omega = plane.kahler_differentials()
     target = connections.target_module()
     dy = omega.differential_generator("y")
     e = module.module_generator(0)
@@ -160,10 +160,10 @@ def test_vector_fields_and_lie_brackets(field) -> None:
 
 def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None:
     plane, x, y, field_of = _plane_calculus(field)
-    de_rham = DeRhamAlgebra(plane)
+    de_rham = plane.de_rham_algebra()
     d = de_rham.differential()
-    dx = de_rham(KahlerDifferentials(plane).differential_generator("x"))
-    dy = de_rham(KahlerDifferentials(plane).differential_generator("y"))
+    dx = de_rham(plane.kahler_differentials().differential_generator("x"))
+    dy = de_rham(plane.kahler_differentials().differential_generator("y"))
     d_dx = field_of(plane.one(), plane.zero())
     x_d_dy = field_of(plane.zero(), x)
 
@@ -184,7 +184,7 @@ def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None
 def test_de_rham_cohomology_of_the_punctured_line(field) -> None:
     r"""$H^1_{dR}(\mathbb G_m) $ is spanned by $dx/x$ in characteristic zero."""
     laurent = LaurentPolynomialRing(field, "x")
-    de_rham = DeRhamAlgebra(laurent)
+    de_rham = laurent.de_rham_algebra()
     cohomology = CohomologyAlgebra(de_rham)
     assert cohomology in CohomologyAlgebras(field)
     assert de_rham.cohomology(0).module_rank() == 1
@@ -196,7 +196,7 @@ def test_de_rham_cohomology_of_the_punctured_line(field) -> None:
 
 
 def test_the_regular_dg_module_of_a_dga(field) -> None:
-    de_rham = DeRhamAlgebra(PolynomialRing(field, "x"))
+    de_rham = PolynomialRing(field, "x").de_rham_algebra()
     regular = regular_dg_module(de_rham)
     assert regular in DifferentialGradedModules(de_rham)
     assert regular.dga() is de_rham

@@ -13,16 +13,16 @@ in Noncommutative Rings*, §1 and Theorem 6.1 (Maschke).
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
     CommutativeAlgebras,
     UnitalMultiplicativeAlgebraMorphism,
     _unit_morphism_from_element,
-    algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.augmented_algebras import AugmentedAlgebras
+from dzack_research.preamble.categories.algebras.augmented_algebras import (
+    AugmentedAlgebras,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
 from dzack_research.preamble.categories.modules.tensor_products import (
     tensor_product_morphism,
 )
@@ -46,7 +46,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -136,7 +138,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                     for label in self.module_generating_set()
                 }
             )
-            return algebra_homset(self, ring)(counit)
+            return Algebras(self.base_ring()).Associative().Unital().Mor(self, ring)(counit)
 
         @cached_method
         def regular_representation(self):
@@ -187,7 +189,8 @@ def GroupAlgebra(base_ring, group):
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
     module = FreeModuleOn(ring, group)
-    multiplication = TensorSquare(module).from_bilinear(
+    tensor_square = Modules(ring).tensor_product((module, module))
+    multiplication = tensor_square.from_bilinear(
         BilinearMap(
             module,
             module,
@@ -278,7 +281,7 @@ class GroupAlgebraFunctor(Functor):
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
         return GroupAlgebraMorphism(
-            algebra_homset(source, target),
+            Algebras(source.base_ring()).Associative().Unital().Mor(source, target),
             group_morphism,
         )
 

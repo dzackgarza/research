@@ -407,9 +407,6 @@ def integral_stabilizer(rational_group, lattice_inclusion):
                 rational_group, lattice_inclusion
             ).lattice_stabilizer()
 
-    from dzack_research.preamble.categories.group.predicate_subgroups import (
-        predicate_subgroup,
-    )
     from dzack_research.preamble.categories.modules.pure.modules import (
         RestrictedScalarsModules,
     )
@@ -442,11 +439,7 @@ def integral_stabilizer(rational_group, lattice_inclusion):
             for vector in rational_generators
         )
 
-    return predicate_subgroup(
-        rational_group,
-        preserves_the_lattice,
-        f"g(L)=L for L={lattice}",
-    )
+    return rational_group.predicate_subgroup(preserves_the_lattice, f"g(L)=L for L={lattice}")
 
 
 def integral_transporter(rational_group, source_inclusion, target_inclusion):

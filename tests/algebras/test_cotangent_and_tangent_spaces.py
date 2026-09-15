@@ -19,7 +19,7 @@ def test_the_affine_plane_has_a_two_dimensional_cotangent_space() -> None:
     plane = PolynomialRing(QQ, "x,y")
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    differentials = KahlerDifferentials(plane)
+    differentials = plane.kahler_differentials()
     origin = plane.spectrum()(plane.ideal(x, y))
 
     assert differentials.cotangent_space(origin).dimension() == 2
@@ -31,7 +31,7 @@ def test_the_node_has_a_two_dimensional_cotangent_space_at_its_singular_point() 
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     node = FinitelyPresentedAlgebra(plane, [y**2 - x**3 - x**2])
-    differentials = KahlerDifferentials(node)
+    differentials = node.kahler_differentials()
     origin = node.spectrum()(node.ideal(node(x), node(y)))
 
     assert differentials.cotangent_space(origin).dimension() == 2

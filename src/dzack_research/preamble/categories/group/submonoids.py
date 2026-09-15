@@ -2,7 +2,6 @@
 
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
 from dzack_research.preamble.categories.group.magmas import (
     MonoidMorphism,
     Monoids,
@@ -133,7 +132,7 @@ class _SubmonoidParent(Parent):
 
 def Submonoids(ambient_monoid):
     """Return the generic subobject category of submonoids of ``ambient_monoid``."""
-    return SubobjectsOf(Monoids(), ambient_monoid)
+    return Monoids().Subobjects(ambient_monoid)
 
 
 def generated_submonoid(ambient, generators, *, description=None, structure_data=None):

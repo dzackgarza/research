@@ -9,7 +9,6 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
@@ -18,15 +17,18 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
-    algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _canonical_smith_representative
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+    _canonical_smith_representative,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _SelectedFinitePresentationModules,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     ring_as_module,
@@ -39,6 +41,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
+    Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring as _engine_ring,
@@ -47,7 +50,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
+from dzack_research.preamble.categories.sets.fixed_size_selections import (
+    multisets_of_size,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -424,8 +429,9 @@ class SparseFreeAlgebra(Parent):
         else:
             component = factors[0]
             if len(factors) > 1:
+                modules = Modules(self.base_ring())
                 for factor in factors[1:]:
-                    component = TensorProduct(component, factor)
+                    component = modules.tensor_product((component, factor))
         self._component_cache[key] = component
         return component
 
@@ -660,7 +666,7 @@ def compose_with_free_construction(left, right):
         engine_source.Hom(engine_target),
         lambda element: engine_target(left(right(engine_source(element)))),
     )
-    return algebra_homset(source, target)(composite)
+    return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(composite)
 
 
 class SparseFreeAlgebraMorphism(Morphism):
@@ -777,12 +783,12 @@ class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
 def sparse_free_algebra_homset(domain, codomain):
 
-    return algebra_homset(domain, codomain)
+    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 def free_construction_homset(domain, codomain):
 
-    return algebra_homset(domain, codomain)
+    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 def SparseTensorAlgebraOf(module):

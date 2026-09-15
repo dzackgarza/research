@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the group-ring and underlying-module functors."""
 
-from dzack_research.preamble.all import GF, ZZ, Groups, PolynomialRing, group_homset
+from dzack_research.preamble.all import GF, ZZ, Groups, PolynomialRing
 from dzack_research.preamble.categories.algebras import (
     FreeModuleOnGroupFunctor,
     GroupAlgebraFunctor,
@@ -27,7 +27,7 @@ def test_nonidentity_group_map_moves_the_group_basis_through_the_same_composite(
     target = Groups.C(4)
     source_generator = source.group_generators()[0]
     target_generator = target.group_generators()[0]
-    inclusion = group_homset(source, target)(
+    inclusion = source.Mor(target)(
         {source_generator: target_generator**2}
     )
     functor = GroupAlgebraUnderlyingModuleFunctor(ZZ)
@@ -72,7 +72,7 @@ def test_group_algebra_functor_carries_a_nonidentity_map_between_infinite_free_g
     target = Groups.Free(2, names=("x", "y"))
     source_generator = source.group_generators()[0]
     target_generators = target.group_generators()
-    morphism = group_homset(source, target)(
+    morphism = source.Mor(target)(
         {source_generator: target_generators[0] * target_generators[1]}
     )
     functor = GroupAlgebraUnderlyingModuleFunctor(ZZ)

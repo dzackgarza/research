@@ -1,9 +1,7 @@
 r"""Archive reconciliation for arrow categories, restricted arrows, and cores."""
 
 from dzack_research.preamble.all import (
-    ArrowCategory,
     AutomorphismArrowCategory,
-    Core,
     EndArrowCategory,
     EpimorphismArrowCategory,
     IsoArrowCategory,
@@ -27,7 +25,7 @@ def test_arrow_category_homs_are_commuting_squares_with_componentwise_compositio
     points = Sets.Δ[1]
     identity = Sets().Mor(points, points).identity()
     swap = Sets().Mor(points, points)(lambda point: points[1 - int(point)])
-    arrows = ArrowCategory(Sets())
+    arrows = Sets().ArrowCategory()
     arrow_object = arrows(identity)
     hom = arrows.Mor(arrow_object, arrow_object)
     square = hom(swap, swap)
@@ -73,7 +71,7 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     assert injections.compose(swap, swap) == injections.identity(points)
 
     isomorphism = Isomorphism(swap, swap)
-    core = Core(Sets())
+    core = Sets().Core()
     core_hom = core.Mor(points, points)
     assert isomorphism in core_hom
     converted = core_hom(isomorphism)

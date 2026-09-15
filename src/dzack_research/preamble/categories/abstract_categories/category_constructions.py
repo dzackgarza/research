@@ -73,7 +73,7 @@ class OppositeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def opposite_category(self) -> OppositeCategory:
+    def opposite_category(self) -> _OppositeCategory:
         return self.base_category()
 
     def _element_constructor_(self, underlying_arrow):
@@ -102,7 +102,7 @@ class OppositeHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = OppositeHomset
 
 
-class OppositeCategory(OwnedCategory):
+class _OppositeCategory(OwnedCategory):
     r"""The opposite category ``C^op``."""
 
     _HomCategory = OppositeHomCategoryConstruction
@@ -118,7 +118,7 @@ class OppositeCategory(OwnedCategory):
             self._underlying_object = underlying_object
             super().__init__(**rest)
 
-        def opposite_category(self) -> OppositeCategory:
+        def opposite_category(self) -> _OppositeCategory:
             return self.category()
 
         def underlying_object(self) -> Parent:
@@ -229,7 +229,7 @@ class ProductHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def product_category(self) -> ProductCategory:
+    def product_category(self) -> _ProductCategory:
         return self.base_category()
 
     def _element_constructor_(self, first, second=None):
@@ -264,7 +264,7 @@ class ProductHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = ProductHomset
 
 
-class ProductCategory(OwnedCategory):
+class _ProductCategory(OwnedCategory):
     r"""The categorical product ``C x D``.
 
     Unverified specimens use nonidentity component maps and check both Hom
@@ -275,7 +275,7 @@ class ProductCategory(OwnedCategory):
         sage: points = finite_ordered_set(("a", "b"))
         sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
         sage: collapse = Sets().Mor(points, points)(lambda point: "a")
-        sage: category = ProductCategory(Sets(), Sets())
+        sage: category = Cat().product((Sets(), Sets()))
         sage: obj = category(points, points)
         sage: hom = category.Mor(obj, obj)
         sage: hom is category.HomCategory().Of(obj, obj)
@@ -283,7 +283,7 @@ class ProductCategory(OwnedCategory):
         sage: arrow = hom(swap, swap)
         sage: arrow * arrow == hom.identity()
         True
-        sage: opposite = OppositeCategory(Sets())
+        sage: opposite = Sets().opposite()
         sage: obj = opposite(points)
         sage: hom = opposite.Mor(obj, obj)
         sage: hom is opposite.HomCategory().Of(obj, obj)
@@ -298,7 +298,7 @@ class ProductCategory(OwnedCategory):
 
         sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
         sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
-        sage: category = ProductCategory(injections, Sets())
+        sage: category = Cat().product((injections, Sets()))
         sage: obj = category(points, points)
         sage: category.Mor(obj, obj)(swap, swap).first() is swap
         True
@@ -306,7 +306,7 @@ class ProductCategory(OwnedCategory):
         Traceback (most recent call last):
         ...
         ValueError: the first map is not a morphism of the first category
-        sage: opposite = OppositeCategory(injections)
+        sage: opposite = injections.opposite()
         sage: obj = opposite(points)
         sage: opposite.Mor(obj, obj)(swap).underlying_arrow() is swap
         True
@@ -333,7 +333,7 @@ class ProductCategory(OwnedCategory):
             self._second = second
             super().__init__(**rest)
 
-        def product_category(self) -> ProductCategory:
+        def product_category(self) -> _ProductCategory:
             return self.category()
 
         def first(self) -> Parent:
@@ -396,10 +396,8 @@ class ProductCategory(OwnedCategory):
 
 
 __all__ = [
-    "OppositeCategory",
     "OppositeHomset",
     "OppositeMorphism",
-    "ProductCategory",
     "ProductHomset",
     "ProductMorphism",
 ]

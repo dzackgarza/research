@@ -58,7 +58,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert saturation.is_saturated()
 
     # The quotient, its torsion, its annihilator.
-    quotient = Cokernel(submodule.inclusion())
+    quotient = submodule.inclusion().cokernel()
     rendered(quotient)
     assert quotient in FinitelyPresentedModules(ring)
     assert quotient in Modules(ring)
@@ -92,7 +92,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     rendered(morphism)
     assert morphism.is_injective()
     assert morphism.is_surjective() == ring(2).is_unit()
-    assert Kernel(morphism).module_rank() == 0
+    assert morphism.kernel().module_rank() == 0
     assert morphism.image().module_rank() == 3
     assert morphism.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
     assert (morphism * morphism)(e0) == 2 * e1

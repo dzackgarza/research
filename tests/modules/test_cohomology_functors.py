@@ -3,17 +3,16 @@ from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
     SymmetricAlgebraOn,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.cohomology import (
-    de_rham_cohomology_algebra_functor,
     cohomology_functor,
+    de_rham_cohomology_algebra_functor,
     de_rham_cohomology_functor,
 )
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    CochainComplex,
-    cochain_homset,
+    CochainComplexes,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -26,12 +25,11 @@ def test_cohomology_is_functorial_on_cochain_maps() -> None:
     differential = module_homset(degree_zero, degree_one)(
         {"e": 2 * degree_one.module_generator("f")}
     )
-    complex_ = CochainComplex(
-        ZZ,
+    complex_ = CochainComplexes(ZZ)(
         {0: degree_zero, 1: degree_one},
         {0: differential},
     )
-    times_three = cochain_homset(complex_, complex_)(
+    times_three = CochainComplexes(ZZ).Mor(complex_, complex_)(
         {
             0: module_homset(degree_zero, degree_zero)(
                 {"e": 3 * degree_zero.module_generator("e")}
@@ -57,11 +55,11 @@ def test_algebraic_de_rham_cohomology_is_literal_functor_composition() -> None:
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
-    collapse = algebra_homset(algebra, algebra)({"x": algebra.zero()})
+    collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
     functor = de_rham_cohomology_functor(field, 1)
     h1 = functor(algebra)
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     assert h1 is de_rham.cohomology(1)
 
     omega = de_rham.kahler_differentials()
@@ -79,11 +77,11 @@ def test_algebraic_de_rham_cohomology_ring_is_functorial() -> None:
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
-    collapse = algebra_homset(algebra, algebra)({"x": algebra.zero()})
+    collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
     functor = de_rham_cohomology_algebra_functor(field)
     cohomology = functor(algebra)
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     assert cohomology.source_dga() is de_rham
 
     omega = de_rham.kahler_differentials()

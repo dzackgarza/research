@@ -5,7 +5,6 @@ sets and subsets, the Hom sets between them, and the cardinal arithmetic
 those constructions realize.
 """
 
-import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
@@ -47,9 +46,9 @@ def test_function_sets_between_finite_sets() -> None:
     assert three.exponential(two).cardinality() == 9
     assert Sets().Mor(two, three).cardinality() == 9
     assert Sets().Mor(three, two).cardinality() == 8
-    assert MonoCategoryOf(Sets()).Of(two, three).cardinality() == 6
-    assert MonoCategoryOf(Sets()).Of(three, two).cardinality() == 0
-    assert IsoCategoryOf(Sets()).Of(three, three).cardinality() == 6
+    assert Sets().Mono(two, three).cardinality() == 6
+    assert Sets().Mono(three, two).cardinality() == 0
+    assert Sets().Iso(three, three).cardinality() == 6
     assert Sets().Mor(three, Sets.Δ[0]).cardinality() == 1
 
 

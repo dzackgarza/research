@@ -21,7 +21,6 @@ the universal property of the fibre product read in the two slices).
 
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceOver
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
     AlgebrasWithChosenFinitePresentation,
@@ -300,8 +299,8 @@ class SlicePullbackFunctor(Functor):
         self._base_morphism = base_morphism
         schemes = Schemes(base_morphism.codomain().scheme_base_ring())
         super().__init__(
-            SliceOver(schemes, base_morphism.codomain()),
-            SliceOver(schemes, base_morphism.domain()),
+            schemes.SliceOver(base_morphism.codomain()),
+            schemes.SliceOver(base_morphism.domain()),
         )
 
     def base_morphism(self):
@@ -331,8 +330,8 @@ class SliceCompositionFunctor(Functor):
         self._base_morphism = base_morphism
         schemes = Schemes(base_morphism.codomain().scheme_base_ring())
         super().__init__(
-            SliceOver(schemes, base_morphism.domain()),
-            SliceOver(schemes, base_morphism.codomain()),
+            schemes.SliceOver(base_morphism.domain()),
+            schemes.SliceOver(base_morphism.codomain()),
         )
 
     def base_morphism(self):

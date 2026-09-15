@@ -19,12 +19,8 @@ asked to go; over a polynomial ring it continues by syzygies.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
-from dzack_research.preamble.categories.modules.cochain_complexes import (
-    CochainComplex,
-    Cohomology,
-)
+from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.internal_hom import (
     InternalHom,
     internal_hom_morphism,
@@ -32,7 +28,7 @@ from dzack_research.preamble.categories.modules.internal_hom import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import free_resolution
+from dzack_research.preamble.categories.modules.pure.modules import Modules, free_resolution
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -52,8 +48,7 @@ def _tensored_resolution(module, other, shift, steps):
     resolution = free_resolution(module, steps)
     length = resolution.length()
     tensor = TensorByFunctor(other)
-    return CochainComplex(
-        ring,
+    return CochainComplexes(ring)(
         {shift - term: tensor(resolution.term(term)) for term in range(length + 1)},
         {
             shift - term: tensor(resolution.differential(term))
@@ -72,7 +67,7 @@ def Tor(degree, module, other):
     steps = degree + 1
     length = free_resolution(module, steps).length()
     shift = max(length, degree)
-    return Cohomology(_tensored_resolution(module, other, shift, steps), shift - degree)
+    return _tensored_resolution(module, other, shift, steps).cohomology(shift - degree)
 
 
 def Ext(degree, module, other):
@@ -83,8 +78,7 @@ def Ext(degree, module, other):
     resolution = free_resolution(module, degree + 1)
     length = resolution.length()
     identity = module_homset(other, other).identity()
-    dualized = CochainComplex(
-        ring,
+    dualized = CochainComplexes(ring)(
         {term: InternalHom(resolution.term(term), other) for term in range(length + 1)},
         {
             term - 1: internal_hom_morphism(
@@ -97,7 +91,7 @@ def Ext(degree, module, other):
         },
         name=f"Free resolution of {module} dualized into {other}",
     )
-    return Cohomology(dualized, degree)
+    return dualized.cohomology(degree)
 
 
 def TorMap(degree, morphism, other, *, argument=1, lift=None):
@@ -139,8 +133,9 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
             resolution = free_resolution(other, steps)
             term = resolution.term(degree)
             identity = module_homset(term, term).identity()
-            source_tensor = TensorProduct(term, morphism.domain())
-            target_tensor = TensorProduct(term, morphism.codomain())
+            modules = Modules(term.base_ring())
+            source_tensor = modules.tensor_product((term, morphism.domain()))
+            target_tensor = modules.tensor_product((term, morphism.codomain()))
             component = tensor_product_morphism(
                 identity,
                 morphism,

@@ -50,9 +50,7 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
 
 def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objects() -> None:
     from dzack_research.preamble.all import (
-        ArrowCategory,
         AutomorphismArrowCategory,
-        Core,
         EndArrowCategory,
         IsoArrowCategory,
         Isomorphism,
@@ -65,7 +63,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     x = Sets.Δ[2]
     y = Sets.Δ[4]
     inclusion = set_injection(x, y, lambda value: y(int(value) + 1))
-    arrows = ArrowCategory(Sets())
+    arrows = Sets().ArrowCategory()
     inclusion_object = arrows(inclusion)
     assert inclusion_object in arrows
     assert common_category(x, y).is_subcategory(Sets())
@@ -76,7 +74,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
 
     inverse = end
     isomorphism = Isomorphism(end, inverse)
-    core = Core(Sets())
+    core = Sets().Core()
     assert isomorphism in core.Mor(x, x)
     iso_object = IsoArrowCategory(Sets())(isomorphism)
     aut_object = AutomorphismArrowCategory(Sets())(isomorphism)

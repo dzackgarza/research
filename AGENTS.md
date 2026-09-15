@@ -39,6 +39,13 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+## Owner resume — 2026-09-15
+
+The repository owner explicitly resumed architectural remediation after the
+2026-09-15 pause. Continue the current architecture-remediation DAG according
+to `TODO.md`; do not reinstate the superseded pause unless the owner issues a
+new stop instruction.
+
 ## Preamble coding prerequisites
 
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)

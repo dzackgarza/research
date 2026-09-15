@@ -9,11 +9,10 @@ the end for every drawn input.
 
 from math import factorial
 
-from hypothesis import given, settings
-from sage.misc.latex import latex
-
 from construction_strategies import nondegenerate_gram_2x2, primes, radicands, small_integers
+from hypothesis import given, settings
 from natural_parameters import determinant_2x2, euler_phi, is_prime, prime_factorization, quadratic_field_discriminant, signature_2x2
+from sage.misc.latex import latex
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
@@ -121,7 +120,7 @@ def test_a_generated_finite_group_session(n) -> None:
     assert rotations.order() == n
     assert rotations.is_normal()
     assert dihedral.left_cosets(rotations).cardinality() == 2
-    assert Cokernel(rotations.inclusion()).order() == 2
+    assert rotations.inclusion().cokernel().order() == 2
     rendered(dihedral.conjugacy_classes_representatives())
     assert dihedral.conjugacy_classes_representatives().cardinality() == ((n + 6) // 2 if n % 2 == 0 else (n + 3) // 2)
     points = tuple(range(1, n + 1))

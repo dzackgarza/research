@@ -1,6 +1,8 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
@@ -34,7 +36,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         cut out by a predicate, which is what membership here states.
         """
         group = self.base()
-        return centralizer(group, group.one())
+        return group.centralizer(group.one())
 
     def _repr_object_names(self):
         return "predicate subgroups"
@@ -242,10 +244,9 @@ class _PredicateSubgroupConstruction(OwnedParameterizedCategory):
 
 class KernelSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
-        from dzack_research.preamble.categories.group.groups import group_homset
 
         group = self.base()
-        return self(group_homset(group, group).identity())
+        return self(group.Mor(group).identity())
 
     def _call_(self, morphism):
         r"""Construct the kernel subgroup retaining its defining morphism."""
@@ -291,11 +292,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
 
 class PreimageSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):
-        from dzack_research.preamble.categories.group.groups import group_homset
 
         group = self.base()
         whole = PredicateSubgroups(group)(lambda _element: True, "the whole group")
-        return self(group_homset(group, group).identity(), whole)
+        return self(group.Mor(group).identity(), whole)
 
     def _call_(
         self,
@@ -468,23 +468,6 @@ def predicate_subgroup_category(containing_group):
     return PredicateSubgroups(containing_group)
 
 
-def predicate_subgroup(
-    containing_group,
-    predicate,
-    description,
-    *,
-    character_data=None,
-    character_data_complete=None,
-):
-    r"""Notebook notation for the category-owned predicate subgroup."""
-    return PredicateSubgroups(containing_group)(
-        predicate,
-        description,
-        character_data=character_data,
-        character_data_complete=character_data_complete,
-    )
-
-
 def kernel_subgroup(morphism):
     r"""Notebook notation for the category-owned kernel subgroup."""
     return KernelSubgroups(morphism.domain())(morphism)
@@ -549,11 +532,6 @@ def is_predicate_subgroup(group):
     )
 
 
-def centralizer(containing_group, element):
-    r"""Notebook notation for the category-owned centralizer subgroup."""
-    return CentralizerSubgroups(containing_group)(element)
-
-
 __all__ = [
     "CentralizerSubgroups",
     "IntersectionSubgroups",
@@ -561,11 +539,9 @@ __all__ = [
     "PredicateSubgroups",
     "PreimageSubgroups",
     "StabilizerSubgroups",
-    "centralizer",
     "intersection_subgroup",
     "is_predicate_subgroup",
     "kernel_subgroup",
-    "predicate_subgroup",
     "preimage_subgroup",
     "stabilizer_subgroup",
 ]

@@ -7,10 +7,7 @@ categories, natural transformations, cores, and the Hom, End, Aut, Mono, Epi
 and Iso constructions.
 """
 
-import pytest
-
 from dzack_research.preamble.all import *  # noqa: F401,F403
-
 
 # ---------------------------------------------------------------------------
 # Limits and colimits in Sets.
@@ -20,8 +17,9 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_products_and_coproducts_of_finite_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    product = Product(two, three)
-    coproduct = Coproduct(two, three)
+    sets = Sets()
+    product = sets.product((two, three))
+    coproduct = sets.coproduct((two, three))
 
     assert product.cardinality() == 6
     assert product in Sets()
@@ -30,19 +28,22 @@ def test_products_and_coproducts_of_finite_sets() -> None:
     assert coproduct.cardinality() == 5
     assert coproduct.injection(0).domain() is two
     assert coproduct.injection(1).domain() is three
-    assert Product(Product(three, three), three).cardinality() == 27
+    assert sets.product((sets.product((three, three)), three)).cardinality() == 27
     one = Sets.Δ[0]
-    assert Product(one, three).cardinality() == 3
-    assert Coproduct(one, three).cardinality() == 4
+    assert sets.product((one, three)).cardinality() == 3
+    assert sets.coproduct((one, three)).cardinality() == 4
 
 
 def test_the_universal_property_of_the_product_of_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    product = Product(two, three)
+    product = Sets().product((two, three))
     first = Sets().Mor(three, two)(lambda point: two(int(point) % 2))
     second = Sets().Mor(three, three).identity()
-    induced = product.from_maps(three, {0: first, 1: second})
+    induced = product.from_maps(
+        three,
+        lambda index: first if int(index) == 0 else second,
+    )
     assert induced.domain() is three
     assert induced.codomain() is product
     assert product.projection(0) * induced == first
@@ -55,22 +56,22 @@ def test_pushouts_and_fiber_products_of_finite_sets() -> None:
     three = Sets.Δ[2]
     into_two = Sets().Mor(one, two)(lambda point: two(0))
     into_three = Sets().Mor(one, three)(lambda point: three(0))
-    glued = Pushout(into_two, into_three)
+    glued = Sets().pushout(into_two, into_three)
     assert glued.cardinality() == 4
 
     onto_one_from_two = Sets().Mor(two, one)(lambda point: one(0))
     onto_one_from_three = Sets().Mor(three, one)(lambda point: one(0))
-    pulled_back = FiberProduct(onto_one_from_two, onto_one_from_three)
+    pulled_back = Sets().fiber_product(onto_one_from_two, onto_one_from_three)
     assert pulled_back.cardinality() == 6
     assert pulled_back.left_projection().codomain() is two
 
 
 def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
     three = Sets.Δ[2]
-    subobjects = Subobjects(three)
+    subobjects = Sets().Subobjects(three)
     assert subobjects in Cat()
     assert subobjects.cardinality() == 8
-    assert SubobjectsOf(Sets(), three).cardinality() == 8
+    assert Sets().Subobjects(three).cardinality() == 8
 
 
 # ---------------------------------------------------------------------------
@@ -82,12 +83,16 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
     ring = commutative_ring
     left = FreeModule(ring, 2)
     right = FreeModule(ring, 3)
-    for construction in (Product, Coproduct, Biproduct):
-        both = construction(left, right)
+    modules = Modules(ring)
+    for both in (
+        modules.product((left, right)),
+        modules.coproduct((left, right)),
+        modules.biproduct((left, right)),
+    ):
         assert both in Modules(ring)
         assert both.module_rank() == 5
     assert left.tensor_product(right).module_rank() == 6
-    assert Product(left, right) == Coproduct(left, right)
+    assert modules.product((left, right)) == modules.coproduct((left, right))
 
 
 def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
@@ -97,12 +102,12 @@ def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
     projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
 
-    assert Kernel(projection).module_rank() == 1
-    assert Kernel(projection).inclusion().codomain() is plane
-    assert Cokernel(projection).cardinality() == 1
-    assert Cokernel(doubling).cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
-    assert Cokernel(doubling).projection().domain() is line
-    assert Kernel(doubling).module_rank() == (1 if ring(2) == ring.zero() else 0)
+    assert projection.kernel().module_rank() == 1
+    assert projection.kernel().inclusion().codomain() is plane
+    assert projection.cokernel().cardinality() == 1
+    assert doubling.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
+    assert doubling.cokernel().projection().domain() is line
+    assert doubling.kernel().module_rank() == (1 if ring(2) == ring.zero() else 0)
 
 
 def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
@@ -111,24 +116,24 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     plane = FreeModule(ring, 2)
     first_axis = line.Mor(plane)({0: plane.module_generator(0)})
     second_axis = line.Mor(plane)({0: plane.module_generator(1)})
-    glued = Pushout(first_axis, first_axis)
+    glued = Modules(ring).pushout(first_axis, first_axis)
     assert glued in Modules(ring)
     assert glued.module_rank() == 3
     first_projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
-    pulled_back = FiberProduct(first_projection, first_projection)
+    pulled_back = Modules(ring).fiber_product(first_projection, first_projection)
     assert pulled_back in Modules(ring)
     assert pulled_back.module_rank() == 3
-    assert Pushout(first_axis, second_axis).module_rank() == 3
+    assert Modules(ring).pushout(first_axis, second_axis).module_rank() == 3
 
 
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
     ring = commutative_ring
     module = FreeModule(ring, 2)
-    subobjects = Subobjects(module)
+    subobjects = Modules(ring).Subobjects(module)
     line = module.subobject_on([module.module_generator(0)])
     assert subobjects in Cat()
     assert line in subobjects
-    assert line in SubobjectsOf(Modules(ring), module)
+    assert line in Modules(ring).Subobjects(module)
     assert subobjects.Mor(line, line).identity()(line.module_generator(0)) == line.module_generator(0)
 
 
@@ -141,8 +146,9 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     symmetric = Groups.S(3)
     two = Groups.C(2)
     three = Groups.C(3)
-    product = Product(symmetric, two)
-    free_product = Coproduct(two, three)
+    groups = Groups()
+    product = groups.product((symmetric, two))
+    free_product = groups.coproduct((two, three))
     sign = symmetric.Mor(two)(
         {g: (two.group_generators()[0] if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
     )
@@ -153,20 +159,20 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     assert free_product in Groups()
     assert free_product not in FiniteGroups()
     assert free_product.cardinality() == aleph0
-    assert Kernel(sign).order() == 3
-    assert Kernel(sign).is_abelian()
-    assert Cokernel(Kernel(sign).inclusion()).order() == 2
-    assert Cokernel(sign).order() == 1
-    assert Product(two, three).is_isomorphic_to(Groups.C(6))
+    assert sign.kernel().order() == 3
+    assert sign.kernel().is_abelian()
+    assert sign.kernel().inclusion().cokernel().order() == 2
+    assert sign.cokernel().order() == 1
+    assert groups.product((two, three)).is_isomorphic_to(Groups.C(6))
 
 
 def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
     symmetric = Groups.S(3)
-    subgroups = Subobjects(symmetric)
+    subgroups = Groups().Subobjects(symmetric)
     assert subgroups in Cat()
     assert subgroups.cardinality() == 6
-    assert Subobjects(Groups.C(6)).cardinality() == 4
-    assert Subobjects(Groups.Q()).cardinality() == 6
+    assert Groups().Subobjects(Groups.C(6)).cardinality() == 4
+    assert Groups().Subobjects(Groups.Q()).cardinality() == 6
 
 
 # ---------------------------------------------------------------------------
@@ -177,20 +183,20 @@ def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
 def test_slices_coslices_opposites_products_and_functor_categories() -> None:
     module = FreeModule(ZZ, 2)
     for category in (
-        SliceOver(Modules(ZZ), module),
-        CosliceUnder(OwnedRings(), ZZ),
-        OppositeCategory(Sets()),
-        ProductCategory(Sets(), Groups()),
-        FunctorCategory(Sets(), Sets()),
-        Core(Sets()),
+        Modules(ZZ).SliceOver(module),
+        OwnedRings().CosliceUnder(ZZ),
+        Sets().opposite(),
+        Cat().product((Sets(), Groups())),
+        Cat().Mor(Sets(), Sets()),
+        Sets().Core(),
         Modules(ZZ),
         Sets(),
         Groups(),
     ):
         assert category in Cat()
-    assert module.subobject_on([module.module_generator(0)]) in SliceOver(Modules(ZZ), module)
-    assert Sets.Δ[2] in OppositeCategory(Sets())
-    assert Sets().identity_functor() in FunctorCategory(Sets(), Sets())
+    assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
+    assert Sets.Δ[2] in Sets().opposite()
+    assert Sets().identity_functor() in Cat().Mor(Sets(), Sets())
     assert Fields() in Cat()
     assert Cat() in Cat()
 
@@ -200,16 +206,16 @@ def test_identity_and_inclusion_functors() -> None:
     three = Sets.Δ[2]
     assert identity(three) is three
     assert identity(Sets().Mor(three, three).identity()) == Sets().Mor(three, three).identity()
-    inclusion = category_inclusion(Fields(), CommutativeRings())
+    inclusion = Fields().inclusion_into(CommutativeRings())
     assert inclusion(QQ) is QQ
     assert inclusion.domain() is Fields()
     assert inclusion.codomain() is CommutativeRings()
-    assert category_inclusion(AbelianGroups(), Groups())(Groups.C(4)) is Groups.C(4)
+    assert AbelianGroups().inclusion_into(Groups())(Groups.C(4)) is Groups.C(4)
 
 
 def test_natural_transformations_between_functors() -> None:
     identity = Sets().identity_functor()
-    transformations = NaturalTransformations(identity, identity)
+    transformations = identity.natural_transformations_to(identity)
     assert transformations in Sets()
     three = Sets.Δ[2]
     unit = transformations.identity()
@@ -222,31 +228,31 @@ def test_isomorphisms_and_the_core() -> None:
     two = Sets.Δ[1]
     swap = Sets().Mor(two, two)(lambda point: two(1 - int(point)))
     isomorphism = Isomorphism(swap, swap)
-    assert isomorphism in IsoCategoryOf(Sets()).Of(two, two)
-    assert isomorphism in Core(Sets()).Mor(two, two)
-    assert isomorphism.inverse() * isomorphism == IsoCategoryOf(Sets()).Of(two, two).identity()
-    assert IsoCategoryOf(Sets()).Of(two, two).cardinality() == 2
-    assert Core(Sets()).Mor(two, Sets.Δ[2]).cardinality() == 0
+    assert isomorphism in Sets().Iso(two, two)
+    assert isomorphism in Sets().Core().Mor(two, two)
+    assert isomorphism.inverse() * isomorphism == Sets().Iso(two, two).identity()
+    assert Sets().Iso(two, two).cardinality() == 2
+    assert Sets().Core().Mor(two, Sets.Δ[2]).cardinality() == 0
 
 
 def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
-    assert HomCategoryOf(Sets()).Of(two, three) is Sets().Mor(two, three)
-    assert HomCategoryOf(Sets()).Of(two, three).cardinality() == 9
-    assert EndCategoryOf(Sets()).Of(three).cardinality() == 27
-    assert AutCategoryOf(Sets()).Of(three).order() == 6
-    assert AutCategoryOf(Sets()).Of(three) in Groups()
-    assert MonoCategoryOf(Sets()).Of(two, three).cardinality() == 6
-    assert EpiCategoryOf(Sets()).Of(three, two).cardinality() == 6
-    assert EpiCategoryOf(Sets()).Of(two, three).cardinality() == 0
-    assert IsoCategoryOf(Sets()).Of(two, three).cardinality() == 0
+    assert Sets().Mor(two, three) is Sets().Mor(two, three)
+    assert Sets().Mor(two, three).cardinality() == 9
+    assert Sets().End(three).cardinality() == 27
+    assert Sets().Aut(three).order() == 6
+    assert Sets().Aut(three) in Groups()
+    assert Sets().Mono(two, three).cardinality() == 6
+    assert Sets().Epi(three, two).cardinality() == 6
+    assert Sets().Epi(two, three).cardinality() == 0
+    assert Sets().Iso(two, three).cardinality() == 0
 
 
 def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
     plane = FreeModule(field, 2)
-    endomorphisms = EndCategoryOf(Modules(field)).Of(plane)
-    automorphisms = AutCategoryOf(Modules(field)).Of(plane)
+    endomorphisms = Modules(field).End(plane)
+    automorphisms = Modules(field).Aut(plane)
     assert endomorphisms in Cat()
     assert automorphisms in Groups()
     assert endomorphisms.identity() in automorphisms

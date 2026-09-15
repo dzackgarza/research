@@ -1,7 +1,6 @@
 r"""Cohomology algebra retains only commutativity justified by its source DGA."""
-
 from dzack_research.preamble.all import GF, ZZ
-from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
@@ -25,8 +24,12 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
 from dzack_research.preamble.categories.functors.cohomology import (
     cohomology_algebra_functor,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -108,7 +111,7 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     dga = _noncommutative_zero_differential_dga()
     x = dga.algebra_generator("x")
     y = dga.algebra_generator("y")
-    swap_algebra = algebra_homset(dga, dga)({"x": y, "y": x})
+    swap_algebra = Algebras(dga.base_ring()).Associative().Unital().Mor(dga, dga)({"x": y, "y": x})
     swap = dga_homset(dga, dga)(swap_algebra)
 
     cohomology = CohomologyAlgebra(dga)

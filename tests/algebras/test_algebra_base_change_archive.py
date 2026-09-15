@@ -10,8 +10,12 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FinitelyPresentedAlgebra,
+    PolynomialRing,
     SymmetricAlgebraOn,
     algebra_base_change_adjunction,
+)
+from dzack_research.preamble.categories.algebras.restricted_scalars import (
+    restrict_algebra_scalars,
 )
 from dzack_research.preamble.categories.rings import ring_homset
 
@@ -69,3 +73,18 @@ def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None
     assert first_adjunction is not second_adjunction
     assert first_adjunction.left_adjoint().ring_map() is first
     assert second_adjunction.left_adjoint().ring_map() is second
+
+
+def test_scalar_restriction_retains_the_selected_ring_map_identity() -> None:
+    algebra = PolynomialRing(QQ, "x")
+    first_map = QQ.Mor(QQ).identity()
+    second_map = QQ.Mor(QQ).identity()
+
+    first = restrict_algebra_scalars(algebra, first_map)
+    second = restrict_algebra_scalars(algebra, second_map)
+
+    assert first is restrict_algebra_scalars(algebra, first_map)
+    assert second is restrict_algebra_scalars(algebra, second_map)
+    assert first is not second
+    assert first.ring_map() is first_map
+    assert second.ring_map() is second_map

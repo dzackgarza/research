@@ -19,10 +19,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    CoequalizerOfFamily,
-    EqualizerOfFamily,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -662,13 +658,19 @@ class ModulesOverGroupAlgebra(Modules):
             r"""``M^G = Hom_{R[G]}(R, M)``, the wide equalizer of the action and the identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            return EqualizerOfFamily(self._finite_action_endomorphism_family())
+            coefficient_module = self.unacted_module()
+            return Modules(coefficient_module.base_ring()).equalizer_of_family(
+                self._finite_action_endomorphism_family()
+            )
 
         def module_coinvariants(self):
             r"""``M_G = R tensor_{R[G]} M``, the wide coequalizer of the action and the identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            return CoequalizerOfFamily(self._finite_action_endomorphism_family())
+            coefficient_module = self.unacted_module()
+            return Modules(coefficient_module.base_ring()).coequalizer_of_family(
+                self._finite_action_endomorphism_family()
+            )
 
         @cached_method
         def equivariant_endomorphism_module(self):

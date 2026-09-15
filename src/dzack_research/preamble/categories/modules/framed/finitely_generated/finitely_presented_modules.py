@@ -16,11 +16,9 @@ from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
     Isomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.base_change import base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     framing_morphism,
@@ -259,8 +257,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return module_homset(morphism.codomain(), self)({label: self.module_generator(label) for label in morphism.codomain().module_generating_set()})
 
         def tensor_product(self, other):
-
-            return TensorProduct(self, other)
+            return Modules(self.base_ring()).tensor_product((self, other))
 
         def free_resolution(self, steps=None):
             r"""Return a free resolution of the selected presentation.
@@ -1011,7 +1008,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 for row_index, row in enumerate(relation_rows)
                 for column_index, coefficient in enumerate(row)
             ):
-                arrows = ArrowCategory(Modules(ring))
+                arrows = Modules(ring).ArrowCategory()
                 original_object = arrows(presentation)
                 identity = arrows.Mor(original_object, original_object).identity()
                 return Isomorphism(identity, identity)
@@ -1071,7 +1068,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 (~column_change_backend).transpose(),
             )
 
-            arrows = ArrowCategory(Modules(ring))
+            arrows = Modules(ring).ArrowCategory()
             original_object = arrows(presentation)
             normalized_object = arrows(normalized_presentation)
             forward = arrows.Mor(original_object, normalized_object)(

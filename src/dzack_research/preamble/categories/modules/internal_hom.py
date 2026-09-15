@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.sage_object import SageObject
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
     _presentation_from_relation_rows,
@@ -22,6 +21,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     InternalHomModules,
+    Modules,
     _represented_finite_presentation,
     _tensor_pair,
 )

@@ -31,12 +31,15 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
     _OwnedAlgebraParent,
-    algebra_homset,
     refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
+    StrictlyGradedCommutativeAlgebras,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreeModuleOn,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -47,8 +50,11 @@ from dzack_research.preamble.categories.modules.powers import (
     SymmetricPower,
     TensorPower,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
@@ -379,10 +385,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             generator_values=selected_generator_values,
             categories=tuple(placement),
         )
-        self._preamble_algebra_presentation_morphism = algebra_homset(
-            presentation_ring,
-            self,
-        )(
+        self._preamble_algebra_presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
             lambda label: self.algebra_generator(label)
         )
         if commutative_backend:
@@ -440,6 +443,185 @@ def _presented_algebra_on_engine(
     )
 
 
+def _localized_coefficient_presentation_backend(
+    presentation_ring,
+    selected_relations,
+):
+    r"""Realize a finite presentation over a finitely generated localization.
+
+    For ``S^{-1}A[x_1,...,x_n]/I`` with a chosen finite generating family for
+    ``S``, compute in the standard polynomial presentation
+
+    ``A[x_1,...,x_n,t_1,...,t_r]/(t_i s_i - 1, I~)``.
+
+    The public algebra keeps its selected presentation over ``S^{-1}A``.  This
+    helper supplies only the private Sage quotient, the images of the selected
+    algebra generators in that quotient, and the exact lift back to the
+    selected presentation.  The construction therefore changes no public
+    scalar ring or presentation data.
+    """
+
+    base = presentation_ring.base_ring()
+    if base not in LocalizationRings():
+        return None
+    try:
+        inverted = tuple(base.inverted_elements())
+    except NotImplementedError:
+        return None
+    if not inverted:
+        return None
+
+    coefficient_source = base.localization_source()
+    presentation_engine = _engine_ring(presentation_ring)
+    coefficient_source_engine = _engine_ring(coefficient_source)
+    base_engine = _engine_ring(base)
+    try:
+        variable_names = tuple(presentation_engine.variable_names())
+        polynomial_bottom = _SagePolynomialRing(
+            coefficient_source_engine,
+            names=variable_names,
+        )
+        flattening_factory = getattr(
+            polynomial_bottom,
+            "flattening_morphism",
+            None,
+        )
+        if not callable(flattening_factory):
+            return None
+        flattening = flattening_factory()
+        flattened = flattening.codomain()
+        unflatten = flattening.section()
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+    flat_names = tuple(flattened.variable_names())
+    occupied = set(flat_names)
+    inverse_names = []
+    for position in range(len(inverted)):
+        candidate = f"localization_inverse_{position}"
+        while candidate in occupied:
+            candidate = "localization_" + candidate
+        occupied.add(candidate)
+        inverse_names.append(candidate)
+    engine_presentation = _SagePolynomialRing(
+        flattened.base_ring(),
+        names=(*flat_names, *inverse_names),
+    )
+    engine_generators = tuple(engine_presentation.gens())
+    flattened_generators = engine_generators[: flattened.ngens()]
+    inverse_generators = engine_generators[flattened.ngens() :]
+    flattened_to_engine = flattened.hom(
+        flattened_generators,
+        engine_presentation,
+    )
+
+    def bottom_polynomial(element):
+        represented = presentation_engine(
+            _engine_element(presentation_ring, element)
+        )
+        coefficients = represented.dict()
+        common_denominator = coefficient_source_engine.one()
+        represented_coefficients = {}
+        for exponent, coefficient in coefficients.items():
+            represented_coefficient = base_engine(coefficient)
+            represented_coefficients[exponent] = represented_coefficient
+            common_denominator *= coefficient_source_engine(
+                represented_coefficient.denominator()
+            )
+
+        cleared = {}
+        for exponent, represented_coefficient in represented_coefficients.items():
+            denominator = coefficient_source_engine(
+                represented_coefficient.denominator()
+            )
+            multiplier, remainder = common_denominator.quo_rem(denominator)
+            if remainder != coefficient_source_engine.zero():
+                raise ArithmeticError(
+                    "the selected common denominator does not clear a presentation coefficient"
+                )
+            cleared[exponent] = (
+                coefficient_source_engine(represented_coefficient.numerator())
+                * multiplier
+            )
+        return polynomial_bottom(cleared)
+
+    engine_relations = []
+    for inverse, inverted_element in zip(
+        inverse_generators,
+        inverted,
+        strict=True,
+    ):
+        bottom_element = coefficient_source_engine(
+            _engine_element(coefficient_source, inverted_element)
+        )
+        represented = flattened_to_engine(
+            flattening(polynomial_bottom(bottom_element))
+        )
+        engine_relations.append(
+            inverse * represented - engine_presentation.one()
+        )
+    engine_relations.extend(
+        flattened_to_engine(flattening(bottom_polynomial(relation)))
+        for relation in selected_relations
+    )
+
+    quotient_engine = engine_presentation.quotient(
+        engine_presentation.ideal(tuple(engine_relations))
+    )
+
+    coefficient_generators = tuple(coefficient_source_engine.gens())
+    base_generators = tuple(base_engine.gens())
+    if len(coefficient_generators) == len(base_generators):
+        scalar_images = [
+            quotient_engine(
+                flattened_to_engine(
+                    flattening(polynomial_bottom(generator))
+                )
+            )
+            for generator in coefficient_generators
+        ]
+        engine_scalar_map = base_engine.hom(
+            scalar_images,
+            quotient_engine,
+        )
+        if not quotient_engine.has_coerce_map_from(base_engine):
+            # This quotient engine is a private realization of an algebra over
+            # ``base``.  Register exactly that represented scalar embedding so
+            # Sage's affine-scheme engine sees the same map; no public owned
+            # coercion is introduced.
+            quotient_engine.register_coercion(engine_scalar_map)
+
+    generator_values = tuple(
+        quotient_engine(
+            flattened_to_engine(flattening(polynomial_bottom.gen(position)))
+        )
+        for position in range(polynomial_bottom.ngens())
+    )
+
+    reverse_images = [
+        presentation_engine(unflatten(generator))
+        for generator in flattened.gens()
+    ]
+    reverse_images.extend(
+        presentation_engine(
+            base_engine(
+                _engine_element(coefficient_source, inverted_element)
+            )
+            ** -1
+        )
+        for inverted_element in inverted
+    )
+    engine_to_presentation = engine_presentation.hom(
+        reverse_images,
+        presentation_engine,
+    )
+
+    def presentation_lift(element):
+        return engine_to_presentation(quotient_engine(element).lift())
+
+    return quotient_engine, generator_values, presentation_lift
+
+
 def _finitely_presented_algebra_from_data(
     presentation_ring,
     relations,
@@ -484,6 +666,9 @@ def _finitely_presented_algebra_from_data(
     presentation_flattening = None
     quotient_presentation_engine = presentation_engine
     quotient_ideal = presentation_ideal
+    quotient_engine = None
+    generator_values = None
+    presentation_lift = None
     if isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
         presentation_engine.base_ring(),
         (PolynomialRing_generic, MPolynomialRing_base),
@@ -505,12 +690,24 @@ def _finitely_presented_algebra_from_data(
                 for index in selected_relations.index_set()
             ]
         )
-    quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
-    presentation_lift = (
-        (lambda element: element)
-        if quotient_engine is quotient_presentation_engine
-        else None
-    )
+    elif (
+        isinstance(presentation_engine, MPolynomialRing_base)
+        and base in LocalizationRings()
+    ):
+        localized_backend = _localized_coefficient_presentation_backend(
+            presentation_ring,
+            selected_relations,
+        )
+        if localized_backend is not None:
+            quotient_engine, generator_values, presentation_lift = localized_backend
+
+    if quotient_engine is None:
+        quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
+        if quotient_engine is quotient_presentation_engine:
+
+            def presentation_lift(element):
+                return element
+
     labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
@@ -541,6 +738,7 @@ def _finitely_presented_algebra_from_data(
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
+        generator_values=generator_values,
         presentation_lift=presentation_lift,
     )
 
@@ -567,7 +765,9 @@ def FinitelyPresentedAlgebra(
 class FreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The free algebra on one generator."""
-        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            TensorAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -598,7 +798,9 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The polynomial algebra on one generator, graded by degree."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -787,7 +989,9 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The tensor algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            TensorAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -933,7 +1137,9 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The symmetric algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1052,7 +1258,9 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The exterior algebra on the free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_algebras import AlternatingAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            AlternatingAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return AlternatingAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1183,7 +1391,7 @@ def _quotient_by_algebra_elements_backend(
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )
-    quotient_map = algebra_homset(algebra, quotient)(
+    quotient_map = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, quotient)(
         {
             label: quotient.algebra_generator(label)
             for label in algebra.algebra_generating_set()

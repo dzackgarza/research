@@ -737,7 +737,9 @@
           "morphisms": 0
         }
       ],
-      "specimens": [],
+      "specimens": [
+        "RR"
+      ],
       "problem": ""
     },
     "AdditiveMagmas": {
@@ -1231,7 +1233,7 @@
     "AdicallyCompleteRings": {
       "display": "AdicallyCompleteRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1675",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1674",
       "summary": "Commutative rings represented as complete for a chosen adic topology.",
       "owned": true,
       "exported": true,
@@ -1361,7 +1363,7 @@
     "AffineGSchemes": {
       "display": "AffineGSchemes",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1704",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1717",
       "summary": "Represented affine schemes with a chosen action of one group.",
       "owned": true,
       "exported": true,
@@ -1525,7 +1527,7 @@
     "AffineSchemes": {
       "display": "AffineSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1446",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1459",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -1734,7 +1736,7 @@
     "AffineSpaces": {
       "display": "AffineSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2094",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2107",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -3116,7 +3118,7 @@
     "AlternatingAlgebras": {
       "display": "AlternatingAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:1050",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:1046",
       "summary": "Exterior/alternating algebras.",
       "owned": true,
       "exported": true,
@@ -3362,7 +3364,7 @@
     "ArtinianRings": {
       "display": "ArtinianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1620",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1619",
       "summary": "Artinian commutative rings.",
       "owned": true,
       "exported": true,
@@ -3959,7 +3961,7 @@
     "BiproductModules": {
       "display": "BiproductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3042",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3019",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -4154,7 +4156,7 @@
       "owned": true,
       "exported": true,
       "arity": "nullary",
-      "probed_as": "Card: cardinalities with a unique morphism kappa -> lambda exactly when kappa <= lambda",
+      "probed_as": "Category of cardinalities",
       "supers": [
         "Objects"
       ],
@@ -4297,7 +4299,7 @@
     "CartesianProductsOfSets": {
       "display": "CartesianProductsOfSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1735",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1633",
       "summary": "Dependent products of families of sets.",
       "owned": true,
       "exported": true,
@@ -4479,7 +4481,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -4537,7 +4539,7 @@
       "owned": true,
       "exported": true,
       "arity": "nullary",
-      "probed_as": "Cat: categories with functors as morphisms",
+      "probed_as": "Category of categories",
       "supers": [
         "Objects"
       ],
@@ -4926,7 +4928,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -4979,7 +4981,7 @@
     "ClosedEmbeddings": {
       "display": "ClosedEmbeddings",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4180",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4204",
       "summary": "Subobjects of ``X`` whose inclusion is a closed immersion.",
       "owned": true,
       "exported": true,
@@ -5089,7 +5091,7 @@
     "ClosedSubschemes": {
       "display": "ClosedSubschemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4520",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4544",
       "summary": "Closed subschemes of schemes over ``R``: a scheme with its closed immersion.",
       "owned": true,
       "exported": true,
@@ -6762,7 +6764,7 @@
     "CompleteLocalRings": {
       "display": "CompleteLocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1695",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1694",
       "summary": "Local rings complete for the represented maximal-ideal/adic topology.",
       "owned": true,
       "exported": true,
@@ -7323,7 +7325,7 @@
     "CoproductsOfSets": {
       "display": "CoproductsOfSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2059",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1957",
       "summary": "Dependent coproducts (disjoint unions) of families of sets.",
       "owned": true,
       "exported": true,
@@ -7487,7 +7489,7 @@
     "CountableSets": {
       "display": "CountableSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2620",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2515",
       "summary": "Sets equipped with a countable enumeration.",
       "owned": true,
       "exported": true,
@@ -7551,7 +7553,7 @@
     "CountablyInfiniteSets": {
       "display": "CountablyInfiniteSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2639",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2534",
       "summary": "Countably infinite sets.",
       "owned": true,
       "exported": true,
@@ -8286,7 +8288,7 @@
     "CyclicCovers": {
       "display": "CyclicCovers",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/cyclic_covers.py:599",
+      "source": "src/dzack_research/preamble/categories/schemes/cyclic_covers.py:591",
       "summary": "Degree-``n`` cyclic covers of ``Spec(A)``, with their deck action.",
       "owned": true,
       "exported": true,
@@ -10188,7 +10190,7 @@
     "DisjointUnionsOfSets": {
       "display": "DisjointUnionsOfSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2059",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1957",
       "summary": "Dependent coproducts (disjoint unions) of families of sets.",
       "owned": true,
       "exported": true,
@@ -10253,7 +10255,7 @@
     "DividedPowerAlgebras": {
       "display": "DividedPowerAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:1241",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:1237",
       "summary": "Divided-power algebras ``Gamma(M)`` with their canonical grading.",
       "owned": true,
       "exported": true,
@@ -10698,7 +10700,7 @@
     "DivisionRings": {
       "display": "DivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1708",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1707",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -10884,13 +10886,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -11182,7 +11184,7 @@
     "EnumeratedSets": {
       "display": "EnumeratedSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:137",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:50",
       "summary": "Sets equipped with a represented ranking/enumeration.",
       "owned": true,
       "exported": true,
@@ -11304,7 +11306,7 @@
     "EvenLattices": {
       "display": "EvenLattices(R)",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3244",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3231",
       "summary": "Lattices satisfying ``b(x,x) in 2R`` for every lattice vector ``x``.",
       "owned": true,
       "exported": true,
@@ -11350,7 +11352,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -11380,13 +11382,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -11488,7 +11490,7 @@
     "ExactFieldHomset": {
       "display": "ExactFieldHomset",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/profinite/field_morphisms.py:160",
+      "source": "src/dzack_research/preamble/categories/group/profinite/field_morphisms.py:152",
       "summary": "A represented Hom object which is both a Sage Homset and a category.",
       "owned": true,
       "exported": true,
@@ -11505,7 +11507,7 @@
     "FiberProductSchemes": {
       "display": "FiberProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:3781",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:3805",
       "summary": "Schemes equipped as selected pullbacks of one represented cospan.",
       "owned": true,
       "exported": true,
@@ -11641,7 +11643,7 @@
     "Fields": {
       "display": "Fields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1717",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1716",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -11812,7 +11814,9 @@
           "morphisms": 0
         }
       ],
-      "specimens": [],
+      "specimens": [
+        "RR"
+      ],
       "problem": ""
     },
     "FiniteGSets": {
@@ -11922,7 +11926,7 @@
     "FinitePowerSets": {
       "display": "FinitePowerSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1638",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1536",
       "summary": "Finite power objects \\(P_{fin}(X)\\), the finite subsets of \\(X\\).",
       "owned": true,
       "exported": true,
@@ -12002,7 +12006,7 @@
     "FiniteRankLattices": {
       "display": "FiniteRankLattices(R)",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3206",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3193",
       "summary": "Lattices whose underlying free module has finite rank.",
       "owned": true,
       "exported": true,
@@ -12053,7 +12057,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -12083,7 +12087,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -12094,14 +12098,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -12215,7 +12219,7 @@
     "FiniteTypeSchemes": {
       "display": "FiniteTypeSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1379",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1392",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -12551,7 +12555,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -12562,14 +12566,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -12740,7 +12744,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -12751,14 +12755,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -12829,7 +12833,7 @@
     "FinitelyGeneratedGroups": {
       "display": "FinitelyGeneratedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2507",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2437",
       "summary": "Groups admitting some finite generating set.",
       "owned": true,
       "exported": true,
@@ -13504,7 +13508,7 @@
     "FinitelyPresentedGroups": {
       "display": "FinitelyPresentedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2630",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2560",
       "summary": "Finitely presented groups, as a property of the group.",
       "owned": true,
       "exported": true,
@@ -14013,7 +14017,7 @@
     "FinitelySupportedFunctionSets": {
       "display": "FinitelySupportedFunctionSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2702",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2597",
       "summary": "Function sets whose elements have finite support.",
       "owned": true,
       "exported": true,
@@ -14404,13 +14408,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -14749,7 +14753,7 @@
     "FractionFieldQuotients": {
       "display": "FractionFieldQuotients(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py:42",
+      "source": "src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py:43",
       "summary": "Modules ``Frac(R) / a`` for a fractional ideal ``a`` of ``R``.",
       "owned": true,
       "exported": true,
@@ -14837,7 +14841,7 @@
           {
             "name": "additive_order",
             "signature": "()",
-            "summary": "ModuleElement.additive_order(self)",
+            "summary": "ModuleElement.additive_order(self) File: sage/structure/element.pyx (starting at line 2456)",
             "mark": ""
           },
           {
@@ -14875,7 +14879,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -14964,7 +14968,7 @@
           {
             "name": "ElementType",
             "signature": "(parent, value) -> None",
-            "summary": "File: /home/dzack/gitclones/sage-dev-allopts/src/sage/structure/element.pyx (starting at line 2367)",
+            "summary": "File: sage/structure/element.pyx (starting at line 2377)",
             "mark": ""
           },
           {
@@ -15080,7 +15084,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -15344,7 +15348,7 @@
     "FramedFreeModules": {
       "display": "FramedFreeModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py:325",
+      "source": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py:316",
       "summary": "Free modules equipped with the canonical basis map.",
       "owned": true,
       "exported": true,
@@ -15401,6 +15405,12 @@
             "mark": ""
           },
           {
+            "name": "framing_morphism",
+            "signature": "()",
+            "summary": "",
+            "mark": ""
+          },
+          {
             "name": "is_finite",
             "signature": "() -> bool",
             "summary": "Return whether the underlying free module is finite.",
@@ -15427,7 +15437,7 @@
           {
             "name": "module_generators",
             "signature": "()",
-            "summary": "Return the image of the canonical free basis map as a set.",
+            "summary": "",
             "mark": "cached"
           },
           {
@@ -15477,7 +15487,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -15582,7 +15592,7 @@
           {
             "name": "framing_morphism",
             "signature": "()",
-            "summary": "Return the selected epimorphism \\(F(S) \\twoheadrightarrow M\\).",
+            "summary": "Return the presentation \\(F(S) \\twoheadrightarrow M\\) of the framing.",
             "mark": ""
           },
           {
@@ -15590,12 +15600,6 @@
             "signature": "()",
             "summary": "Return this selected framing as an object of ``Arr(R-Mod)``.",
             "mark": "cached"
-          },
-          {
-            "name": "framing_source",
-            "signature": "()",
-            "summary": "Return the actual free module selected as the source of this framing.",
-            "mark": ""
           },
           {
             "name": "inject_variables",
@@ -15636,7 +15640,7 @@
           {
             "name": "module_generators",
             "signature": "()",
-            "summary": "Return the selected framing as the indexed family ``s \u21a6 m_s``.",
+            "summary": "",
             "mark": "cached"
           },
           {
@@ -15715,7 +15719,7 @@
     "FreeAlgebras": {
       "display": "FreeAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:567",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:563",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -15954,13 +15958,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -16793,7 +16797,7 @@
     "GradedFreeAlgebras": {
       "display": "GradedFreeAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:598",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:594",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -17420,7 +17424,7 @@
     "GroupAutomorphismGroup": {
       "display": "GroupAutomorphismGroup",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1581",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1511",
       "summary": "The canonical owned homset Hom(G,H).",
       "owned": true,
       "exported": true,
@@ -17437,7 +17441,7 @@
     "GroupHomset": {
       "display": "GroupHomset",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1386",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1316",
       "summary": "The canonical owned homset Hom(G,H).",
       "owned": true,
       "exported": true,
@@ -17471,7 +17475,7 @@
     "Groups": {
       "display": "Groups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1705",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1635",
       "summary": "Groups whose notebook-facing group interface is owned by the preamble.",
       "owned": true,
       "exported": true,
@@ -17551,7 +17555,7 @@
     "GroupsWithChosenFiniteGeneratingSet": {
       "display": "GroupsWithChosenFiniteGeneratingSet",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2526",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2456",
       "summary": "Finitely generated groups carrying a chosen finite generating set.",
       "owned": true,
       "exported": true,
@@ -17669,7 +17673,7 @@
     "GroupsWithChosenFinitePresentation": {
       "display": "GroupsWithChosenFinitePresentation",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2649",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2579",
       "summary": "Groups carrying a chosen finite presentation.",
       "owned": true,
       "exported": true,
@@ -18186,7 +18190,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -18216,13 +18220,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -18397,7 +18401,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -18597,7 +18601,7 @@
     "IndexedFreeGroupHomset": {
       "display": "IndexedFreeGroupHomset",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1282",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1212",
       "summary": "The canonical Hom-set out of the free group on a chosen set.",
       "owned": true,
       "exported": true,
@@ -18614,7 +18618,7 @@
     "InfiniteEnumeratedSets": {
       "display": "InfiniteEnumeratedSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:163",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:76",
       "summary": "Countably infinite enumerated sets.",
       "owned": true,
       "exported": true,
@@ -18686,7 +18690,7 @@
     "IntegralDomains": {
       "display": "IntegralDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1521",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1520",
       "summary": "Commutative rings without zero divisors.",
       "owned": true,
       "exported": true,
@@ -18816,7 +18820,7 @@
     "IntegralSchemes": {
       "display": "IntegralSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1395",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1408",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -19354,7 +19358,7 @@
     "IsotropicReductions": {
       "display": "IsotropicReductions(R)",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3373",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3360",
       "summary": "Lattices \\(K_I=I^\\perp/I\\) built from a totally isotropic \\(\\iota:I\\hookrightarrow L\\).",
       "owned": true,
       "exported": true,
@@ -19517,7 +19521,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -19547,13 +19551,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -19793,7 +19797,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -20029,7 +20033,7 @@
       "owned": true,
       "exported": true,
       "arity": "parameterized",
-      "probed_as": "Lattices(Integer Ring)",
+      "probed_as": "Lattices(ZZ)",
       "supers": [
         "FormedModules",
         "FramedFreeModules",
@@ -20385,7 +20389,7 @@
           {
             "name": "equip_form_morphism",
             "signature": "()",
-            "summary": "Return the inverse canonical identification equipping the free module with the form.",
+            "summary": "",
             "mark": "cached"
           },
           {
@@ -20397,7 +20401,7 @@
           {
             "name": "forget_form_morphism",
             "signature": "()",
-            "summary": "Return the canonical module identification from the lattice to its free module.",
+            "summary": "",
             "mark": "cached"
           },
           {
@@ -20405,18 +20409,6 @@
             "signature": "()",
             "summary": "Return the existing lattice pairing as a bilinear-form morphism.",
             "mark": "cached"
-          },
-          {
-            "name": "framing_morphism",
-            "signature": "()",
-            "summary": "Return the canonical framing ``Free_R(S) -> L`` used by construction.",
-            "mark": "cached"
-          },
-          {
-            "name": "framing_source",
-            "signature": "()",
-            "summary": "Return the retained free module whose canonical framing equips this lattice.",
-            "mark": ""
           },
           {
             "name": "gaussian_heuristic",
@@ -20697,7 +20689,7 @@
           {
             "name": "module_generating_set",
             "signature": "()",
-            "summary": "Return the generating set of the actual underlying free module.",
+            "summary": "Return the labels of the distinguished free-module framing.",
             "mark": ""
           },
           {
@@ -20705,6 +20697,12 @@
             "signature": "(index)",
             "summary": "Return the module generator indexed by ``index``.",
             "mark": ""
+          },
+          {
+            "name": "module_generators",
+            "signature": "()",
+            "summary": "",
+            "mark": "cached"
           },
           {
             "name": "module_rank",
@@ -20943,7 +20941,7 @@
           {
             "name": "unformed_module",
             "signature": "()",
-            "summary": "Return the actual free module equipped with this lattice form.",
+            "summary": "Read this same parent at its weaker module level.",
             "mark": ""
           },
           {
@@ -21169,13 +21167,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -21780,7 +21778,7 @@
     "LocalRings": {
       "display": "LocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1635",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1634",
       "summary": "Commutative rings equipped with their unique maximal ideal.",
       "owned": true,
       "exported": true,
@@ -21910,7 +21908,7 @@
     "LocalizedModules": {
       "display": "LocalizedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/localizations.py:34",
+      "source": "src/dzack_research/preamble/categories/modules/localizations.py:33",
       "summary": "Modules represented as ``S^{-1}M`` for a chosen localization ``S^{-1}R``.",
       "owned": true,
       "exported": true,
@@ -22483,7 +22481,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -22494,14 +22492,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -22644,7 +22642,7 @@
     "MatrixEndomorphismSpaces": {
       "display": "MatrixEndomorphismSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3610",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3587",
       "summary": "The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.",
       "owned": true,
       "exported": true,
@@ -22764,7 +22762,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -22775,14 +22773,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -22913,7 +22911,7 @@
     "MatrixSpaces": {
       "display": "MatrixSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3254",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:3231",
       "summary": "Hom objects between finitely generated framed free ``R``-modules.",
       "owned": true,
       "exported": true,
@@ -23177,7 +23175,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -23188,14 +23186,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -23849,7 +23847,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -24094,7 +24092,7 @@
     "NoetherianRings": {
       "display": "NoetherianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1602",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1601",
       "summary": "Noetherian commutative rings.",
       "owned": true,
       "exported": true,
@@ -24224,7 +24222,7 @@
     "NoncrystallographicRootLattices": {
       "display": "NoncrystallographicRootLattices(R)",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3785",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3772",
       "summary": "Finite noncrystallographic root lattices over their exact coefficient order.",
       "owned": true,
       "exported": true,
@@ -24307,7 +24305,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -24337,7 +24335,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -24348,14 +24346,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -24474,7 +24472,7 @@
     "NondegenerateLattices": {
       "display": "NondegenerateLattices(R)",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3227",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3214",
       "summary": "Lattices whose correlation map has zero kernel.",
       "owned": true,
       "exported": true,
@@ -24520,7 +24518,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -24550,13 +24548,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -24658,7 +24656,7 @@
     "NormalSchemes": {
       "display": "NormalSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1412",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1425",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -24749,7 +24747,7 @@
     "NumberFieldsWithChosenPrimitiveElement": {
       "display": "NumberFieldsWithChosenPrimitiveElement",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/number_fields.py:525",
+      "source": "src/dzack_research/preamble/categories/rings/number_fields.py:519",
       "summary": "Number fields carrying the primitive element selected by their presentation.",
       "owned": true,
       "exported": true,
@@ -24968,7 +24966,7 @@
     "ObjectSetsOfDiscreteCategories": {
       "display": "ObjectSetsOfDiscreteCategories",
       "subsystem": "preamble_root",
-      "source": "/home/dzack/gitclones/sage-dev-allopts/.venv/lib/python3.14/site-packages/sage/categories/sets_cat.py:102",
+      "source": "/home/dzack/miniforge3/envs/sage/lib/python3.12/site-packages/sage/categories/sets_cat.py:100",
       "summary": "The category of sets.",
       "owned": false,
       "exported": true,
@@ -25221,7 +25219,7 @@
     "OpenImmersions": {
       "display": "OpenImmersions",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4547",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4571",
       "summary": "Subobjects of ``X`` whose inclusion is an open immersion.",
       "owned": true,
       "exported": true,
@@ -25384,7 +25382,7 @@
     "OrderedRings": {
       "display": "OrderedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1505",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1504",
       "summary": "Totally ordered rings in the owned scalar hierarchy.",
       "owned": true,
       "exported": true,
@@ -26149,7 +26147,7 @@
     "OwnedCategoryOverBaseRing": {
       "display": "OwnedCategoryOverBaseRing(R)",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1897",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1896",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -26161,7 +26159,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7efe8c4b5a60>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7890b8722f20>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
@@ -26314,7 +26312,7 @@
     "OwnedDivisionRings": {
       "display": "OwnedDivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1708",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1707",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -26449,7 +26447,7 @@
     "OwnedFields": {
       "display": "OwnedFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1717",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1716",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -26663,7 +26661,7 @@
     "OwnedFinitelyGeneratedGroups": {
       "display": "OwnedFinitelyGeneratedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2507",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2437",
       "summary": "Groups admitting some finite generating set.",
       "owned": true,
       "exported": true,
@@ -26763,7 +26761,7 @@
     "OwnedFinitelyPresentedGroups": {
       "display": "OwnedFinitelyPresentedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2630",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2560",
       "summary": "Finitely presented groups, as a property of the group.",
       "owned": true,
       "exported": true,
@@ -26868,7 +26866,7 @@
     "OwnedGroups": {
       "display": "OwnedGroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1705",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1635",
       "summary": "Groups whose notebook-facing group interface is owned by the preamble.",
       "owned": true,
       "exported": true,
@@ -27652,7 +27650,7 @@
     "OwnedNumberFields": {
       "display": "OwnedNumberFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/number_fields.py:99",
+      "source": "src/dzack_research/preamble/categories/rings/number_fields.py:93",
       "summary": "Finite extensions of ``QQ``.",
       "owned": true,
       "exported": true,
@@ -28149,7 +28147,7 @@
     "OwnedOrders": {
       "display": "OwnedOrders",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1757",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1756",
       "summary": "Orders in number fields as a ring-theoretic property category.",
       "owned": true,
       "exported": true,
@@ -28462,7 +28460,7 @@
     "OwnedRings": {
       "display": "OwnedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1135",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,
@@ -28772,7 +28770,7 @@
     "OwnedRngs": {
       "display": "OwnedRngs",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1122",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1121",
       "summary": "Rngs on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -28880,7 +28878,7 @@
     "OwnedSemirings": {
       "display": "OwnedSemirings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1109",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1108",
       "summary": "Semirings on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -29032,7 +29030,7 @@
     "PartiallyOrderedSets": {
       "display": "PartiallyOrderedSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2677",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2572",
       "summary": "Sets equipped with a partial order.",
       "owned": true,
       "exported": true,
@@ -29185,7 +29183,7 @@
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -29264,7 +29262,7 @@
     "PowerSets": {
       "display": "PowerSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1341",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:1239",
       "summary": "The power object \\(P(X)\\), represented by subobjects of ``X``.",
       "owned": true,
       "exported": true,
@@ -29520,7 +29518,7 @@
     "PredicateSubrings": {
       "display": "PredicateSubrings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:332",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:331",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -29682,7 +29680,7 @@
     "PrimeFields": {
       "display": "PrimeFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1785",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1784",
       "summary": "Prime fields \\(\\mathbf F_p\\).",
       "owned": true,
       "exported": true,
@@ -30300,7 +30298,7 @@
     "PrincipalIdealDomains": {
       "display": "PrincipalIdealDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1577",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1576",
       "summary": "Principal ideal domains in the owned ring hierarchy.",
       "owned": true,
       "exported": true,
@@ -30462,7 +30460,7 @@
     "ProductProjectiveSpaces": {
       "display": "ProductProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2579",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2592",
       "summary": "Finite products of projective spaces over one base ring.",
       "owned": true,
       "exported": true,
@@ -30625,7 +30623,7 @@
     "ProductSchemes": {
       "display": "ProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2416",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2429",
       "summary": "Scheme products equipped with their stated factors and projections.",
       "owned": true,
       "exported": true,
@@ -30868,7 +30866,7 @@
     "ProjectiveCompleteIntersections": {
       "display": "ProjectiveCompleteIntersections(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/complete_intersections.py:97",
+      "source": "src/dzack_research/preamble/categories/schemes/complete_intersections.py:93",
       "summary": "Closed complete intersections over a field or polynomial parameter base.",
       "owned": true,
       "exported": true,
@@ -31616,7 +31614,7 @@
     "ProjectivePointBlowups": {
       "display": "ProjectivePointBlowups(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/blowups.py:102",
+      "source": "src/dzack_research/preamble/categories/schemes/blowups.py:98",
       "summary": "Blowups of ``P^2`` at one represented rational point.",
       "owned": true,
       "exported": true,
@@ -31933,7 +31931,7 @@
     "ProjectiveSchemes": {
       "display": "ProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2037",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2050",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -32060,7 +32058,7 @@
     "ProjectiveSpaces": {
       "display": "ProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2178",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2191",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -32406,7 +32404,7 @@
     "QuasiAffineSchemes": {
       "display": "QuasiAffineSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2000",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2013",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -32522,7 +32520,7 @@
     "QuasiProjectiveSchemes": {
       "display": "QuasiProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2020",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2033",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -32711,18 +32709,12 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FinitelyGeneratedModules",
-          "objects": 12,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "FramedModules",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
@@ -32735,6 +32727,12 @@
         },
         {
           "from": "FinitelyGeneratedFreeFormModules",
+          "objects": 11,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "FramedModules",
           "objects": 11,
           "elements": 0,
           "morphisms": 0
@@ -33427,7 +33425,7 @@
     "RestrictedScalarsModules": {
       "display": "RestrictedScalarsModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2286",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2269",
       "summary": "Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.",
       "owned": true,
       "exported": true,
@@ -33631,7 +33629,7 @@
     "Rings": {
       "display": "Rings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1135",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,
@@ -33754,7 +33752,7 @@
     "RootLattices": {
       "display": "RootLattices",
       "subsystem": "lattices",
-      "source": "src/dzack_research/preamble/categories/lattices.py:3841",
+      "source": "src/dzack_research/preamble/categories/lattices.py:3828",
       "summary": "Negative-definite ADE root lattices with a chosen simple-root framing.",
       "owned": true,
       "exported": true,
@@ -33868,7 +33866,7 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 155,
+          "objects": 154,
           "elements": 24,
           "morphisms": 0
         },
@@ -33898,7 +33896,7 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
@@ -33909,14 +33907,14 @@
           "morphisms": 0
         },
         {
-          "from": "FramedModules",
+          "from": "ModulesWithChosenFinitePresentation",
           "objects": 12,
           "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "ModulesWithChosenFinitePresentation",
-          "objects": 12,
+          "from": "FramedModules",
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -34043,7 +34041,7 @@
     "SchemeMonomorphisms": {
       "display": "SchemeMonomorphisms",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4625",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:4649",
       "summary": "Monomorphisms of schemes.",
       "owned": true,
       "exported": true,
@@ -34060,7 +34058,7 @@
     "Schemes": {
       "display": "Schemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:853",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:866",
       "summary": "Schemes over ``Spec(R)`` for the represented base ring ``R``.",
       "owned": true,
       "exported": true,
@@ -34548,7 +34546,7 @@
     "SeparatedSchemes": {
       "display": "SeparatedSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1364",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1377",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -34643,7 +34641,7 @@
     "Sets": {
       "display": "Sets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:561",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:474",
       "summary": "The owned category of sets.",
       "owned": true,
       "exported": true,
@@ -34862,6 +34860,7 @@
       ],
       "specimens": [
         "NonNegativeReals",
+        "RR",
         "UnitInterval"
       ],
       "problem": ""
@@ -34909,7 +34908,7 @@
     "SmoothSchemes": {
       "display": "SmoothSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1432",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1445",
       "summary": "A full subcategory of ``Sch/R`` cut out by one property.",
       "owned": true,
       "exported": true,
@@ -35275,7 +35274,7 @@
     "Subgroups": {
       "display": "Subgroups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:2753",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:2683",
       "summary": "Groups represented as a specified subgroup of one ambient owned group.",
       "owned": true,
       "exported": true,
@@ -35469,7 +35468,7 @@
     "SymmetricAlgebras": {
       "display": "SymmetricAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:931",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:927",
       "summary": "Symmetric algebras of represented modules.",
       "owned": true,
       "exported": true,
@@ -35844,7 +35843,7 @@
     "TensorAlgebras": {
       "display": "TensorAlgebras(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:785",
+      "source": "src/dzack_research/preamble/categories/algebras/free_algebras.py:781",
       "summary": "Tensor algebras of represented modules.",
       "owned": true,
       "exported": true,
@@ -36087,7 +36086,7 @@
     "TensorProductModules": {
       "display": "TensorProductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2821",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2798",
       "summary": "Modules carrying a selected tensor-product universal object.",
       "owned": true,
       "exported": true,
@@ -38775,7 +38774,7 @@
     "TotallyOrderedSets": {
       "display": "TotallyOrderedSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2688",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2583",
       "summary": "Sets equipped with a total order.",
       "owned": true,
       "exported": true,
@@ -38844,7 +38843,7 @@
     "UncountableSets": {
       "display": "UncountableSets",
       "subsystem": "sets",
-      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2658",
+      "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2553",
       "summary": "Sets whose represented cardinal is provably uncountable.",
       "owned": true,
       "exported": true,
@@ -39576,13 +39575,13 @@
         },
         {
           "from": "FramedFreeModules",
-          "objects": 13,
+          "objects": 14,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "FramedModules",
-          "objects": 12,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -39670,7 +39669,7 @@
     "groups": {
       "display": "groups",
       "subsystem": "group",
-      "source": "src/dzack_research/preamble/categories/group/groups.py:1705",
+      "source": "src/dzack_research/preamble/categories/group/groups.py:1635",
       "summary": "Groups whose notebook-facing group interface is owned by the preamble.",
       "owned": true,
       "exported": true,
@@ -39765,8 +39764,8 @@
       "subsystem": "functors",
       "source": "src/dzack_research/preamble/categories/functors/abelianization.py:123",
       "summary": "``(-)^ab \u22a3 i``.",
-      "domain": "Abelianization functor: Category of groups -> Category of abelian groups",
-      "codomain": "Inclusion of abelian groups into groups: Category of abelian groups -> Category of groups",
+      "domain": "Abelianization functor",
+      "codomain": "Inclusion of abelian groups into groups",
       "problem": ""
     },
     {
@@ -39783,7 +39782,7 @@
       "name": "Adjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:440",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:421",
       "summary": "An adjunction ``F \u22a3 U`` with its unit, counit, and Hom-set bijection.",
       "domain": "",
       "codomain": "",
@@ -39916,14 +39915,14 @@
       "source": "src/dzack_research/preamble/categories/functors/cardinality.py:14",
       "summary": "Send a set to its cardinal and a set isomorphism to the unique order arrow.",
       "domain": "Core of Category of sets",
-      "codomain": "Card: cardinalities with a unique morphism kappa -> lambda exactly when kappa <= lambda",
+      "codomain": "Category of cardinalities",
       "problem": ""
     },
     {
       "name": "CategoryInclusionFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:272",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:256",
       "summary": "The canonical functor along a declared subcategory inclusion.",
       "domain": "",
       "codomain": "",
@@ -40023,7 +40022,7 @@
       "name": "ComposedFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:310",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:294",
       "summary": "The composite ``second \u2218 first``.",
       "domain": "",
       "codomain": "",
@@ -40033,7 +40032,7 @@
       "name": "CompositeAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:519",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:483",
       "summary": "The composite of ``F \u22a3 U`` and ``G \u22a3 V`` as ``GF \u22a3 UV``.",
       "domain": "",
       "codomain": "",
@@ -40043,7 +40042,7 @@
       "name": "CompositeFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:310",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:294",
       "summary": "The composite ``second \u2218 first``.",
       "domain": "",
       "codomain": "",
@@ -40245,8 +40244,8 @@
       "subsystem": "functors",
       "source": "src/dzack_research/preamble/categories/functors/free_groups.py:65",
       "summary": "The adjunction ``F : Set <-> Grp : U``.",
-      "domain": "Free-group functor: Category of sets -> Category of groups",
-      "codomain": "Underlying-set functor on groups: Category of groups -> Category of sets",
+      "domain": "Free-group functor",
+      "codomain": "Underlying-set functor on groups",
       "problem": ""
     },
     {
@@ -40333,7 +40332,7 @@
       "name": "IdentityFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/core.py:247",
+      "source": "src/dzack_research/preamble/categories/functors/core.py:231",
       "summary": "A functor with explicit actions on objects and morphisms.",
       "domain": "",
       "codomain": "",
@@ -40455,8 +40454,8 @@
       "subsystem": "functors",
       "source": "src/dzack_research/preamble/categories/functors/orders_number_fields.py:64",
       "summary": "``Frac \u22a3 O``.",
-      "domain": "Fraction-field functor: Category of owned orders -> Category of number fields",
-      "codomain": "Ring-of-integers functor: Category of number fields -> Category of owned orders",
+      "domain": "Fraction-field functor",
+      "codomain": "Ring-of-integers functor",
       "problem": ""
     },
     {

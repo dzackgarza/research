@@ -103,29 +103,29 @@ def test_spectra_with_infinitely_many_points(build) -> None:
 
 
 def test_kahler_differentials_of_localizations_and_quotients(build) -> None:
-    local = KahlerDifferentials(build("ZZ_(5)").as_algebra_over(ZZ))
-    dual = KahlerDifferentials(build("GF(2)[t]/(t^2)").as_algebra_over(GF(2)))
-    finite = KahlerDifferentials(Zmod(12).as_algebra_over(ZZ))
+    local = build("ZZ_(5)").as_algebra_over(ZZ).kahler_differentials()
+    dual = build("GF(2)[t]/(t^2)").as_algebra_over(GF(2)).kahler_differentials()
+    finite = Zmod(12).as_algebra_over(ZZ).kahler_differentials()
     assert local.cardinality() == 1
     assert dual.cardinality() == 4
     assert finite.cardinality() == 1
     integers = PolynomialRing(ZZ, "x")
     x = integers.algebra_generator("x")
     quotient = integers.quotient_ring(integers.ideal(x**2 + 1))
-    assert KahlerDifferentials(quotient.as_algebra_over(ZZ)).cardinality() == 4
+    assert quotient.as_algebra_over(ZZ).kahler_differentials().cardinality() == 4
 
 
 def test_tensor_products_and_pushouts_of_algebras() -> None:
     first = PolynomialRing(QQ, "x")
     second = PolynomialRing(QQ, "y")
-    plane = commutative_algebra_coproduct(first, second)
+    plane = CommutativeAlgebras(QQ).coproduct((first, second))
     assert plane in CommutativeAlgebraCoproducts(QQ)
     assert plane in CommutativeAlgebras(QQ)
     assert plane.krull_dimension() == 2
     assert plane in IntegralDomains()
     assert plane.coproduct_injection(0)(first.algebra_generator("x")) * plane.coproduct_injection(1)(second.algebra_generator("y")) != plane.zero()
     gaussian = build_gaussian_rationals()
-    split = commutative_algebra_coproduct(gaussian, gaussian)
+    split = CommutativeAlgebras(QQ).coproduct((gaussian, gaussian))
     assert split not in IntegralDomains()
     assert split.krull_dimension() == 0
 
@@ -133,7 +133,7 @@ def test_tensor_products_and_pushouts_of_algebras() -> None:
     t = parameter.algebra_generator("t")
     square = parameter.Mor(first)({"t": first.algebra_generator("x") ** 2})
     cube = parameter.Mor(second)({"t": second.algebra_generator("y") ** 3})
-    glued = commutative_algebra_pushout(square, cube)
+    glued = CommutativeAlgebras(QQ).pushout(square, cube)
     assert glued in CommutativeAlgebraPushouts(QQ)
     assert glued.krull_dimension() == 1
     assert glued in IntegralDomains()

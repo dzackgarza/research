@@ -13,7 +13,6 @@ from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
 from sage.schemes.generic.algebraic_scheme import AlgebraicScheme_subscheme as _SageAlgebraicSchemeSubscheme
 from sage.schemes.generic.scheme import AffineScheme as _SageAffineScheme
 from sage.schemes.generic.scheme import Scheme as _SageScheme
-from sage.schemes.generic.spec import Spec as _SageSpec
 from sage.schemes.product_projective.space import (
     ProductProjectiveSpaces as _SageProductProjectiveSpaces,
 )
@@ -22,15 +21,6 @@ from sage.schemes.projective.projective_space import (
 )
 from sage.structure.category_object import CategoryObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Core,
-    CosliceUnder,
-    SliceOver,
-)
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coproduct,
-    Pushout,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -71,7 +61,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _proper_restriction_base_ring,
     ring_homset,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
@@ -87,22 +76,47 @@ _AFFINE_SPECTRA = {}
 
 
 def _elements_determining_maps_out_of(algebra, base):
-    r"""Elements of ``algebra`` on which two ring maps out of it already agree.
+    r"""Elements of ``algebra`` on which two base-ring maps out of it already agree.
 
-    A map out of a framed algebra is fixed by the images of its algebra
-    generators.  A map out of ``S^{-1}A`` is fixed by its restriction along
-    ``A -> S^{-1}A``, because that restriction is what the localization is
-    universal for, so a tower of localizations is answered by the framed
-    algebra at its foot with its generators carried up by the localization
-    maps.  ``None`` says the foot is not framed by a finite family, and the
-    maps have to be compared some other way.
+    A map out of a framed ``R``-algebra is fixed by the images of its algebra
+    generators together with its restriction to ``R``.  When the represented
+    scheme base is a smaller ring ``k``, determine that restriction recursively
+    from a finite family for ``R/k`` and carry those scalars into the algebra by
+    its structure morphism.  A map out of ``S^{-1}A`` is fixed by its
+    restriction along ``A -> S^{-1}A``, so localization towers recurse to the
+    framed algebra at their foot.  ``None`` says no represented finite
+    determining family is available.
     """
-    if algebra in FramedAlgebras(base):
+    if algebra is base:
+        return ()
+
+    algebra_base = getattr(algebra, "algebra_base_ring", lambda: None)()
+    if algebra_base is not None and algebra in FramedAlgebras(algebra_base):
         labels = algebra.algebra_generating_set()
         if not labels.cardinality().is_finite():
             return None
-        return tuple(algebra.algebra_generator(label) for label in labels)
+        generators = tuple(algebra.algebra_generator(label) for label in labels)
+        if algebra_base is base:
+            return generators
+        scalar_generators = _elements_determining_maps_out_of(algebra_base, base)
+        if scalar_generators is None:
+            return None
+        structure = algebra.algebra_structure_morphism()
+        return generators + tuple(structure(element) for element in scalar_generators)
+
     if algebra in LocalizationRings():
+        if algebra is base:
+            return ()
+        if base in LocalizationRings():
+            if algebra.localization_source() is base:
+                return ()
+            if algebra.localization_source() is base.localization_source():
+                try:
+                    base.restriction_to(algebra)
+                except (AssertionError, NotImplementedError, TypeError, ValueError):
+                    pass
+                else:
+                    return ()
         below = _elements_determining_maps_out_of(algebra.localization_source(), base)
         if below is None:
             return None
@@ -166,9 +180,9 @@ class SchemeMorphism(Morphism):
         return self.native_morphism()(native_value)
 
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
         if not isinstance(other, SchemeMorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
             return NotImplemented
         # The identity is a two-sided unit.  That is a theorem, so the
         # composite is the other factor itself.
@@ -705,22 +719,38 @@ class SchemeMorCategory(CategoricalHomset):
     Element = SchemeMorphism
 
     def __init__(self, schemes, domain, codomain) -> None:
-        self._engine_homset = _SageScheme._Hom_(domain, codomain)
+        try:
+            self._engine_homset = _SageScheme._Hom_(domain, codomain)
+        except TypeError:
+            self._engine_homset = None
         CategoricalHomset.__init__(self, HomCategoryConstruction(schemes), domain, codomain)
 
     def _engine_homset_crossing(self):
         r"""Return the private Sage Homset these morphisms are computed in."""
+        if self._engine_homset is None:
+            raise NotImplementedError(
+                "these owned scheme endpoints have no common native Sage Homset"
+            )
         return self._engine_homset
 
     def _element_constructor_(self, datum):
         if isinstance(datum, SchemeMorphism):
             if datum.parent() is self:
                 return datum
+            pullback = getattr(datum, "_preamble_coordinate_algebra_morphism", None)
+            if (
+                pullback is not None
+                and self.domain() in AffineSchemes(_scheme_base_ring(self.domain()))
+                and self.codomain() in AffineSchemes(_scheme_base_ring(self.codomain()))
+                and pullback.domain() is self.codomain().coordinate_algebra()
+                and pullback.codomain() is self.domain().coordinate_algebra()
+            ):
+                return _RepresentedAffineSchemeMorphism(self, pullback)
             datum = datum.native_morphism()
         if (
             isinstance(datum, Morphism)
             and self.domain() in AffineSchemes(_scheme_base_ring(self.domain()))
-            and self.codomain() in AffineSchemes(_scheme_base_ring(self.domain()))
+            and self.codomain() in AffineSchemes(_scheme_base_ring(self.codomain()))
             and datum.domain() is self.codomain().coordinate_algebra()
             and datum.codomain() is self.domain().coordinate_algebra()
         ):
@@ -766,6 +796,43 @@ def _scheme_base_ring(scheme):
     return _own_ring(scheme.base_ring())
 
 
+def _algebra_structure_morphism_from_base(algebra, base_ring):
+    r"""Return the retained scalar map ``base_ring -> algebra`` along its algebra tower."""
+
+    base_ring = _own_ring(base_ring)
+    if algebra is base_ring:
+        return ring_homset(base_ring, base_ring).identity()
+    algebra_base = getattr(algebra, "algebra_base_ring", lambda: None)()
+    if algebra_base is None:
+        raise ValueError(f"{algebra} has no represented algebra structure over {base_ring}")
+    upper = algebra.algebra_structure_morphism()
+    if algebra_base is base_ring:
+        return upper
+    lower = _algebra_structure_morphism_from_base(algebra_base, base_ring)
+    return ring_homset(base_ring, algebra).elementwise(
+        lambda scalar: upper(lower(scalar))
+    )
+
+
+def _affine_structure_morphism_to_base(scheme, base_ring):
+    r"""Return ``scheme -> Spec(base_ring)`` from the retained scalar tower."""
+
+    base_ring = _own_ring(base_ring)
+    if scheme not in AffineSchemes(base_ring):
+        raise TypeError("a represented affine structure morphism requires an affine scheme over the stated base")
+    if scheme.scheme_base_ring() is base_ring:
+        return scheme.structure_morphism()
+    base_scheme = Spec(base_ring, base_ring=base_ring)
+    pullback = _algebra_structure_morphism_from_base(
+        scheme.coordinate_algebra(),
+        base_ring,
+    )
+    return _RepresentedAffineSchemeMorphism(
+        Schemes(base_ring).Mor(scheme, base_scheme),
+        pullback,
+    )
+
+
 def _scheme_isomorphism(forward, inverse):
     r"""Return the selected inverse pair in the core of the scheme category.
 
@@ -779,7 +846,7 @@ def _scheme_isomorphism(forward, inverse):
         raise ValueError("an inverse pair must reverse the same two scheme endpoints")
     base = forward.domain().scheme_base_ring()
     schemes = Schemes(base)
-    return Core(schemes).Mor(forward.domain(), forward.codomain())(forward, inverse)
+    return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 def _has_scheme_placement(scheme, category_class) -> bool:
@@ -955,7 +1022,7 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     @cached_method
     def slice_category(self):
-        return SliceOver(self, self.base_scheme())
+        return self.SliceOver(self.base_scheme())
 
     def as_slice_object(self, scheme):
         if scheme not in self:
@@ -971,7 +1038,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         point of ``X`` is an object of the coslice; the two constructions are
         opposite and neither stands in for the other.
         """
-        return CosliceUnder(self, self.base_scheme())
+        return self.CosliceUnder(self.base_scheme())
 
     def as_coslice_object(self, point):
         r"""Read a morphism ``Spec R -> X`` as a pointed ``R``-scheme."""
@@ -1561,7 +1628,7 @@ class AffineSchemes(_SchemePropertyCategory):
                 KahlerDifferentials,
             )
 
-            return KahlerDifferentials(self.coordinate_algebra())
+            return self.coordinate_algebra().kahler_differentials()
 
         def is_flat(self) -> bool:
             r"""Return whether this represented affine scheme is flat over its base."""
@@ -1640,22 +1707,28 @@ class AffineSchemes(_SchemePropertyCategory):
             \(D(f)=\operatorname{Spec}A[1/f]\), and the localization map
             \(A\to A[1/f]\) induces the open immersion.
             """
-            from dzack_research.preamble.categories.rings.commutative_algebra import Localization
-
             algebra = self.coordinate_algebra()
             element = algebra(element)
             cache = getattr(self, "_preamble_distinguished_open_cache", ())
             for cached_element, cached_open in cache:
                 if cached_element == element:
                     return cached_open
-            localized = Localization(algebra, element)
+            localized = algebra.localization(element)
             localization_map = localized.localization_map()
             base = self.scheme_base_ring()
-            open_subscheme = _fresh_affine_spectrum(
-                localized,
-                base,
-                extra_categories=(OpenImmersions(self),),
-            )
+            canonical_ambient = Spec(algebra, base_ring=base)
+            if self is canonical_ambient:
+                open_subscheme = refine_scheme(
+                    Spec(localized, base_ring=base),
+                    base,
+                    (OpenImmersions(self),),
+                )
+            else:
+                open_subscheme = _fresh_affine_spectrum(
+                    localized,
+                    base,
+                    extra_categories=(OpenImmersions(self),),
+                )
             inclusion = _affine_morphism_from_pullback(
                 open_subscheme,
                 self,
@@ -2931,13 +3004,24 @@ def _selected_or_rebuilt_engine_morphism(pullback):
     declines, which is not the end of the question: a framed domain still lets
     the generic bridge rebuild the native map from the images of the algebra
     generators, and that is where a plain ``Spec`` of a localization map is
-    answered.
+    answered.  A semilinear algebra map retains an ordinary algebra morphism
+    into the restricted-scalar target; that target has the same computation
+    ring as the stated target algebra, so the retained map is also the native
+    realization of the underlying ring pullback.
     """
     if isinstance(pullback, RingMorphism):
         try:
             return pullback._engine_morphism_crossing()
         except NotImplementedError:
             pass
+    algebra_morphism = getattr(pullback, "algebra_morphism", None)
+    if callable(algebra_morphism):
+        represented = algebra_morphism()
+        if (
+            _engine_ring(represented.domain()) is _engine_ring(pullback.domain())
+            and _engine_ring(represented.codomain()) is _engine_ring(pullback.codomain())
+        ):
+            return _engine_algebra_morphism(represented)
     return _engine_algebra_morphism(pullback)
 
 
@@ -3253,22 +3337,18 @@ def affine_spec_morphism(algebra_morphism):
 
     source_algebra = algebra_morphism.domain()
     target_algebra = algebra_morphism.codomain()
-    ring = source_algebra.base_ring()
-    if source_algebra not in CommutativeAlgebras(ring) or target_algebra not in CommutativeAlgebras(ring):
+    source_base = source_algebra.base_ring()
+    target_base = target_algebra.base_ring()
+    if (
+        source_algebra not in CommutativeAlgebras(source_base)
+        or target_algebra not in CommutativeAlgebras(target_base)
+    ):
         raise TypeError("affine Spec acts on a represented algebra morphism")
-    if source_algebra.base_ring() is not target_algebra.base_ring():
-        raise ValueError("affine Spec requires an algebra morphism over one scalar base")
-    source_scheme = Spec(target_algebra, base_ring=ring)
-    target_scheme = Spec(source_algebra, base_ring=ring)
-    native = _native_scheme_homset(source_scheme, target_scheme)(_engine_coordinate_pullback(algebra_morphism), check=False)
-    morphism = refine_scheme_morphism(
-        native,
-        source_algebra.base_ring(),
-        domain=source_scheme,
-        codomain=target_scheme,
+    return _affine_morphism_from_pullback(
+        Spec(target_algebra),
+        Spec(source_algebra),
+        algebra_morphism,
     )
-    morphism._preamble_coordinate_algebra_morphism = algebra_morphism
-    return morphism
 
 
 def _normalized_space_names(names):
@@ -3748,10 +3828,11 @@ def scheme_product(*schemes):
                     )
         else:
             algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
-            algebra = Coproduct(algebras[0], algebras[1])
+            commutative_algebras = CommutativeAlgebras(base)
+            algebra = commutative_algebras.coproduct((algebras[0], algebras[1]))
             factor_maps = list(algebra.coproduct_injections())
             for next_algebra in algebras[2:]:
-                new_algebra = Coproduct(algebra, next_algebra)
+                new_algebra = commutative_algebras.coproduct((algebra, next_algebra))
                 left_map, right_map = new_algebra.coproduct_injections()
                 factor_maps = [left_map * factor_map for factor_map in factor_maps] + [right_map]
                 algebra = new_algebra
@@ -4076,15 +4157,17 @@ def scheme_fiber_product(left_map, right_map):
         # A colimit under the initial object is the colimit of the discrete
         # diagram, so X x_{Spec R} Y = Spec(A tensor_R B) and the induced map
         # out of it is the coproduct's own factorization.
-        algebra_pushout = Coproduct(
-            left.coordinate_algebra(),
-            right.coordinate_algebra(),
+        algebra_pushout = CommutativeAlgebras(base_ring).coproduct(
+            (left.coordinate_algebra(), right.coordinate_algebra())
         )
         left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
         cocone_factorization = algebra_pushout.from_cocone
     else:
         try:
-            algebra_pushout = Pushout(left_pullback, right_pullback)
+            algebra_pushout = CommutativeAlgebras(base_ring).pushout(
+                left_pullback,
+                right_pullback,
+            )
             left_pushout_map = algebra_pushout.left_pushout_map()
             right_pushout_map = algebra_pushout.right_pushout_map()
         except NotImplementedError:
@@ -4584,17 +4667,24 @@ class OpenImmersions(_SchemeSubobjectsOf):
             assert morphism.codomain() is codomain, "a corestriction is taken of a morphism into the codomain of the inclusion"
             assert self.is_distinguished_open(), "the represented open corestriction requires a distinguished open"
             source = morphism.domain()
-            assert source in AffineSchemes(codomain.scheme_base_ring()), "the represented open corestriction currently requires an affine source"
+            assert source in AffineSchemes(source.scheme_base_ring()), "the represented open corestriction currently requires an affine source"
             source_algebra = source.coordinate_algebra()
             open_algebra = self.coordinate_algebra()
             pullback = morphism.coordinate_algebra_morphism()
             defining_element = codomain.coordinate_algebra()(self.distinguished_open_element())
-            assert source_algebra(pullback(defining_element)).is_unit(), (
-                "the morphism does not land in this distinguished open: it does not send the defining element to a unit"
-            )
+            if not source_algebra(pullback(defining_element)).is_unit():
+                raise ValueError(
+                    "the morphism does not land in this distinguished open: it does not send the defining element to a unit"
+                )
 
-            factor_pullback = open_algebra.induced_morphism(pullback)
-            factor = source.Mor(self)(factor_pullback)
+            inclusion_pullback = self.inclusion().coordinate_algebra_morphism()
+            factorizer = getattr(inclusion_pullback, "induced_morphism", None)
+            factor_pullback = (
+                factorizer(pullback)
+                if callable(factorizer)
+                else open_algebra.induced_morphism(pullback)
+            )
+            factor = _scheme_mor_category(source, self)(factor_pullback)
             assert self.inclusion() * factor == morphism, "the corestriction does not recover the morphism through the inclusion"
             return factor
 

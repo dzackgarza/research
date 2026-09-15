@@ -135,7 +135,7 @@ def test_tensor_product_of_free_modules(commutative_ring) -> None:
 
 def test_tensor_and_divided_squares(commutative_ring) -> None:
     module = _free(commutative_ring, 3)
-    assert TensorSquare(module).module_rank() == 9
+    assert Modules(commutative_ring).tensor_product((module, module)).module_rank() == 9
     assert DividedSquare(module).module_rank() == 6
 
 
@@ -143,7 +143,7 @@ def test_biproduct_of_free_modules(commutative_ring) -> None:
     ring = commutative_ring
     left = _free(ring, 2)
     right = _free(ring, 3)
-    both = Biproduct(left, right)
+    both = Modules(ring).biproduct((left, right))
     assert both.module_rank() == 5
     assert both in FinitelyGeneratedFreeModules(ring)
     retraction = both.left_projection() * both.left_inclusion()
@@ -166,10 +166,10 @@ def test_a_projection_and_its_kernel(commutative_ring) -> None:
     assert projection.is_surjective()
     assert not projection.is_injective()
     assert projection.kernel().module_rank() == 1
-    assert Kernel(projection).module_rank() == 1
+    assert projection.kernel().module_rank() == 1
     assert projection.image().module_rank() == 1
     assert projection.cokernel().cardinality() == 1
-    assert Cokernel(projection).cardinality() == 1
+    assert projection.cokernel().cardinality() == 1
 
 
 def test_multiplication_by_two_on_the_regular_module(integral_domain) -> None:
@@ -200,7 +200,7 @@ def test_a_submodule_and_its_quotient(commutative_ring) -> None:
     assert submodule.inclusion().is_injective()
     assert submodule.inclusion().codomain() is module
     assert submodule.module_rank() == 2
-    quotient = Cokernel(submodule.inclusion())
+    quotient = submodule.inclusion().cokernel()
     assert quotient in Modules(ring)
     assert quotient in FinitelyPresentedModules(ring)
     assert quotient.cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality() * ring.cardinality()
@@ -304,7 +304,7 @@ def test_free_resolution_over_a_principal_ideal_domain(pid) -> None:
 
 def test_a_principal_ideal_as_a_module(dedekind_domain) -> None:
     ring = dedekind_domain
-    ideal = Ideal(ring, [ring(3)])
+    ideal = ring.ideal(ring(3))
     assert ideal in Modules(ring)
     assert ideal in ModuleSubobjects(ring)
     assert ideal.inclusion().codomain() is ring.regular_module()

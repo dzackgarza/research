@@ -121,7 +121,7 @@ def test_a_plane_curve_session(name) -> None:
     assert curve.coordinate_ring().Mor(cusp).cardinality() >= 1
 
     # Kähler differentials and the de Rham complex of the cusp.
-    omega = KahlerDifferentials(cusp)
+    omega = cusp.kahler_differentials()
     rendered(omega)
     d = omega.universal_derivation()
     dx = omega.differential_generator("x")
@@ -131,7 +131,7 @@ def test_a_plane_curve_session(name) -> None:
     assert omega.scalar_multiple(2 * ybar, dy) == omega.scalar_multiple(3 * xbar**2, dx)
     assert dx != omega.zero()
     assert omega.generic_rank() == 1
-    de_rham = DeRhamAlgebra(cusp)
+    de_rham = cusp.de_rham_algebra()
     rendered(de_rham)
     assert de_rham.differential()(de_rham(xbar)) == de_rham(dx)
     assert de_rham.cohomology(0).module_rank() == 1
@@ -139,7 +139,7 @@ def test_a_plane_curve_session(name) -> None:
 
     # Over the smooth affine line the Poincaré lemma holds in characteristic zero.
     line = PolynomialRing(field, "t")
-    line_de_rham = DeRhamAlgebra(line)
+    line_de_rham = line.de_rham_algebra()
     rendered(line_de_rham)
     if field.characteristic() == 0:
         assert line_de_rham.cohomology(1).cardinality() == 1

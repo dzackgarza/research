@@ -9,9 +9,8 @@ from dzack_research.preamble.all import ZZ, PolynomialRing
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    CochainComplex,
+    CochainComplexes,
     FinitelyPresentedModule,
-    cochain_homset,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -34,7 +33,7 @@ def _specimen():
             "b": target.scalar_multiple(x, c),
         }
     )
-    complex_ = CochainComplex(ring, {0: source, 1: target}, {0: differential})
+    complex_ = CochainComplexes(ring)({0: source, 1: target}, {0: differential})
     return ring, x, source, target, a, b, c, differential, complex_
 
 
@@ -67,7 +66,7 @@ def test_cap_cohomology_retains_the_quotient_projection_R_mod_2_x() -> None:
 
 def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
     ring, _x, source, target, _a, _b, c, _differential, complex_ = _specimen()
-    zero = cochain_homset(complex_, complex_)(
+    zero = CochainComplexes(ring).Mor(complex_, complex_)(
         {
             0: module_homset(source, source)(
                 {label: source.zero() for label in source.module_generating_set()}

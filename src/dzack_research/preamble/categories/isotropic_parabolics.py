@@ -153,15 +153,8 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         @cached_method
         def parabolic_subgroup(self):
             r"""Return ``P_I = Stab_{O(L)}(I)`` as a predicate subgroup of ``O(L)``."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
-            return predicate_subgroup(
-                self.ambient_lattice().Aut(),
-                self.stabilizes,
-                f"g maps {self} onto itself",
-            )
+            return self.ambient_lattice().Aut().predicate_subgroup(self.stabilizes, f"g maps {self} onto itself")
 
         def levi_restriction(self, automorphism):
             r"""Return ``g|_I`` in ``GL(I)`` for ``g`` in the parabolic subgroup."""
@@ -224,9 +217,6 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         @cached_method
         def unipotent_radical(self):
             r"""Return ``U_I``, the kernel of ``P_I -> GL(I) x O(I^perp/I)``."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             inclusion = self.inclusion()
             embedded = self.embedded_module_generators()
@@ -246,11 +236,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
                 "the unipotent radical is cut out inside the orthogonal group of "
                 "the lattice this subobject includes into"
             )
-            return predicate_subgroup(
-                self.ambient_lattice().Aut(),
-                is_unipotent,
-                f"g acts as the identity on {self} and on its isotropic reduction",
-            )
+            return self.ambient_lattice().Aut().predicate_subgroup(is_unipotent, f"g acts as the identity on {self} and on its isotropic reduction")
 
         def eichler_transvection(self, orthogonal_vector):
             r"""Return the Eichler transvection ``E_{f,x}`` of this isotropic line.

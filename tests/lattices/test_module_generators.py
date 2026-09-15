@@ -223,6 +223,21 @@ def test_twist_rescales_the_form_at_every_rank() -> None:
     assert n0 * n1 == 0
 
 
+def test_colimit_lattice_constructs_before_undecidable_property_refinement() -> None:
+    from sage.rings.infinity import Infinity
+
+    category = Lattices(ZZ)
+    colimit = category.colimit(lambda rank: category(ZZ**rank))
+    e0 = colimit.module_generator(0)
+    e3 = colimit.module_generator(3)
+    support = e0 + e3
+
+    assert colimit.module_rank() == Infinity
+    assert e0 * e0 == 1
+    assert e0 * e3 == 0
+    assert support * support == 2
+
+
 def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     from sage.rings.infinity import Infinity
 

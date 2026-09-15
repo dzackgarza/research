@@ -23,7 +23,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.algebras.algebras import (
     _unit_morphism_from_element,
 )
-from dzack_research.preamble.categories.abstract_categories import TensorSquare
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
@@ -41,7 +40,7 @@ class _TensorSquareFunctor(Functor):
         super().__init__(modules, modules)
 
     def _apply_object(self, module):
-        return TensorSquare(module)
+        return Modules(QQ).tensor_product((module, module))
 
     def _apply_morphism(self, morphism):
         return tensor_product_morphism(
@@ -56,7 +55,7 @@ def _two_products_on_one_module():
     module = BasedFreeModule(QQ, finite_ordered_set(("1", "x")))
     one = module.module_generator("1")
     x = module.module_generator("x")
-    tensor_square = TensorSquare(module)
+    tensor_square = Modules(QQ).tensor_product((module, module))
 
     dual_numbers = tensor_square.from_bilinear(
         BilinearMap(
@@ -92,7 +91,7 @@ def test_two_products_retain_one_exact_supplied_module() -> None:
     tensor_square = _TensorSquareFunctor()
     structures = EndofunctorAlgebras(tensor_square)
     x = module.module_generator("x")
-    x_tensor_x = TensorSquare(module).pure_tensor(x, x)
+    x_tensor_x = Modules(QQ).tensor_product((module, module)).pure_tensor(x, x)
 
     dual = structures.algebra(module, dual_numbers)
     split = structures.algebra(module, split_idempotent)
@@ -182,7 +181,7 @@ def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
     module = BasedFreeModule(QQ, finite_ordered_set(("a", "b")))
     a = module.module_generator("a")
     b = module.module_generator("b")
-    tensor_square = TensorSquare(module)
+    tensor_square = Modules(QQ).tensor_product((module, module))
     multiplication = tensor_square.from_bilinear(
         BilinearMap(
             module,

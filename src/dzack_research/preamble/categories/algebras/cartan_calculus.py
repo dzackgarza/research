@@ -107,7 +107,7 @@ def InteriorProduct(vector_field):
         raise TypeError("contraction requires a derivation with values in A")
 
 
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     exterior = de_rham.extension_algebra()
 
     def contract_extension(element):

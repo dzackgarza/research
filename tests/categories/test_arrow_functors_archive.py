@@ -1,7 +1,6 @@
 r"""Archived domain/codomain functors on the represented arrow category."""
 
 from dzack_research.preamble.all import (
-    ArrowCategory,
     CodomainFunctor,
     DomainFunctor,
     Sets,
@@ -18,7 +17,7 @@ def test_domain_and_codomain_functors_select_the_two_edges_of_a_commuting_square
     identity_two = Sets().Mor(two, two).identity()
     collapse_to_a = Sets().Mor(two, two)(lambda _point: two[0])
 
-    arrows = ArrowCategory(Sets())
+    arrows = Sets().ArrowCategory()
     source = arrows(pick_a)
     target = arrows(identity_two)
     square = arrows.Mor(source, target)(pick_a, collapse_to_a)

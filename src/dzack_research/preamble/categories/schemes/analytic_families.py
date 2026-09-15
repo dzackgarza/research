@@ -18,9 +18,6 @@ from sage.all import QQ as SageQQ
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    SliceOver,
-)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -173,7 +170,7 @@ class AnalyticDiscFamily(SageObject):
         self._analytic_total = analytic_total
         self._analytic_base = analytic_base
         self._analytic_family = analytic_family
-        self._slice_object = SliceOver(ComplexManifolds(), analytic_base)(analytic_family)
+        self._slice_object = ComplexManifolds().SliceOver(analytic_base)(analytic_family)
 
     def scalar_embedding(self):
         return self._scalar_embedding

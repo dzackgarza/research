@@ -8,9 +8,8 @@ kernel is the contraction of zero, which is the defining ideal again.
 """
 
 from dzack_research.preamble.all import (
-    PolynomialRing,
     QQ,
-    QuotientRing,
+    PolynomialRing,
 )
 
 
@@ -18,7 +17,7 @@ def _plane_and_line():
     r"""Return the plane, its quotient by ``y``, and the quotient map."""
     plane = PolynomialRing(QQ, "x,y")
     y = plane.algebra_generator("y")
-    line = QuotientRing(plane, plane.ideal(y))
+    line = plane.quotient_ring(plane.ideal(y))
     return plane, line, line.quotient_map()
 
 

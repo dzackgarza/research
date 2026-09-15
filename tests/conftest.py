@@ -27,80 +27,6 @@ import pytest
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-# The session no longer publishes a global for an operation whose owner is in
-# argument position (`ARC-12`).  Each entry below is the owned spelling, and
-# reading the table is how a test written against the old global learns what
-# to say instead.  Nothing here adds capability: every value is one call on the
-# object the old global took as its first argument.
-_OWNED_SPELLINGS = {
-    "Kernel": lambda morphism: morphism.kernel(),
-    "Cokernel": lambda morphism: morphism.cokernel(),
-    "Ideal": lambda ring, module_generating_set: ring.ideal(*module_generating_set),
-    "FractionField": lambda ring: ring.fraction_field(),
-    "Localization": lambda ring, *datum: ring.localization(*datum),
-    "PrimeLocalization": lambda ring, prime: ring.localize_at_prime(prime),
-    "QuotientRing": lambda ring, ideal: ring.quotient_ring(ideal),
-    "AdicCompletion": lambda ring, ideal, **options: ring.adic_completion(ideal, **options),
-    # A construction is taken over an index set, so the owned method reads a
-    # family of factors; the binary form the old global published reaches a
-    # session only through operator notation.
-    "Product": lambda left, right: _common_owned_category(left, right).product([left, right]),
-    "Coproduct": lambda left, right: _common_owned_category(left, right).coproduct([left, right]),
-    "Biproduct": lambda left, right: _common_owned_category(left, right).biproduct([left, right]),
-    "TensorProduct": lambda left, right: _common_owned_category(left, right).tensor_product([left, right]),
-    "TensorSquare": lambda obj: _common_owned_category(obj, obj).tensor_product([obj, obj]),
-    # A construction on a category is reached from that category; one whose
-    # inputs are several categories is a construction in Cat.
-    "Core": lambda category: category.Core(),
-    "OppositeCategory": lambda category: category.opposite(),
-    "SliceOver": lambda category, base_object: category.SliceOver(base_object),
-    "CosliceUnder": lambda category, base_object: category.CosliceUnder(base_object),
-    "SubobjectsOf": lambda category, base_object: category.SubobjectCategory(base_object),
-    "SuperobjectsOf": lambda category, base_object: category.SuperobjectCategory(base_object),
-    "Subobjects": lambda base_object, category=None: (
-        base_object.category() if category is None else category
-    ).SubobjectCategory(base_object),
-    "ProductCategory": lambda left, right: Cat().product([left, right]),
-    # A span owns its pushout, and the category publishes it too; the legs are
-    # the span's data, not an arity.
-    "Pushout": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain(), right.codomain()
-    ).pushout(left, right),
-    "FiberProduct": lambda left, right: _common_owned_category(
-        left.domain(), right.domain(), left.codomain()
-    ).fiber_product(left, right),
-    "Equalizer": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain()
-    ).equalizer(left, right),
-    "Coequalizer": lambda left, right: _common_owned_category(
-        left.domain(), left.codomain()
-    ).coequalizer(left, right),
-    "EqualizerOfFamily": lambda arrows: _common_owned_category(
-        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
-    ).equalizer_of_family(arrows),
-    "CoequalizerOfFamily": lambda arrows: _common_owned_category(
-        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
-    ).coequalizer_of_family(arrows),
-}
-
-
-def _common_owned_category(*objects):
-    r"""The category a test names implicitly by handing over its objects."""
-    return common_category(*objects)
-
-FractionField = _OWNED_SPELLINGS["FractionField"]
-
-
-def pytest_collection_modifyitems(session, config, items) -> None:
-    r"""Give each test module the owned spelling under the old global's name."""
-    for item in items:
-        module = getattr(item, "module", None)
-        if module is None:
-            continue
-        for name, owned in _OWNED_SPELLINGS.items():
-            module.__dict__.setdefault(name, owned)
-
-
 def _polynomial_ring(ring, *names):
     return PolynomialRing(ring, names if len(names) > 1 else names[0])
 
@@ -154,8 +80,8 @@ FIELDS = {
     "QQ(sqrt-23)": lambda: QuadraticField(-23, "s"),
     "QQ(zeta5)": lambda: CyclotomicField(5, "z"),
     "QQ(cbrt2)": _rationals_cube_root_of_two,
-    "QQ(x)": lambda: FractionField(_polynomial_ring(QQ, "x")),
-    "GF(5)(t)": lambda: FractionField(_polynomial_ring(GF(5), "t")),
+    "QQ(x)": lambda: _polynomial_ring(QQ, "x").fraction_field(),
+    "GF(5)(t)": lambda: _polynomial_ring(GF(5), "t").fraction_field(),
     "QQ[x]/(x^2+1)": lambda: _quotient(
         _polynomial_ring(QQ, "x"), _polynomial_ring(QQ, "x").algebra_generator("x") ** 2 + 1
     ),

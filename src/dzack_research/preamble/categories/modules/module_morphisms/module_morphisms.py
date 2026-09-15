@@ -11,10 +11,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
-    TensorProduct,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
@@ -102,8 +98,8 @@ def _has_finite_free_framing(module) -> bool:
     return labels.cardinality().is_finite()
 
 
-def _solve_left_integrally_element(system, target, ring):
-    r"""Return the row-coefficient element ``a`` with ``a*system = target``."""
+def _integral_left_solver(system, ring):
+    r"""Factor one integral system once and return its exact row solver."""
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
@@ -112,35 +108,43 @@ def _solve_left_integrally_element(system, target, ring):
 
     transposed = system.transpose()
     smith, left, right = transposed.smith_form()
-
     target_labels = left.domain().module_generating_set()
-    target_values = tuple(ring(value) for value in target)
-    if len(target_values) != int(target_labels.cardinality()):
-        raise ValueError("the target has the wrong length for this linear system")
-    target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
-    shifted_vector = left(target_vector)
-    shifted_coefficients = module_coefficients(shifted_vector, left.codomain())
     shifted_labels = left.codomain().module_generating_set()
+    width = int(smith.domain().module_generating_set().cardinality())
 
-    source_labels = smith.domain().module_generating_set()
-    width = int(source_labels.cardinality())
-    solution = [ring.zero()] * width
-    for index, shifted_label in enumerate(shifted_labels):
-        value = shifted_coefficients.get(shifted_label, ring.zero())
-        divisor = smith[index, index] if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
-        if divisor == 0:
-            if value != 0:
-                raise ValueError("the element is not in the image of this morphism")
-            continue
-        quotient, remainder = value.quo_rem(divisor)
-        if remainder != 0:
-            raise ValueError("the element is not in the image over the base ring")
-        solution[index] = quotient
+    def solve(target):
+        target_values = tuple(ring(value) for value in target)
+        if len(target_values) != int(target_labels.cardinality()):
+            raise ValueError("the target has the wrong length for this linear system")
+        target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
+        shifted_vector = left(target_vector)
+        shifted_coefficients = module_coefficients(shifted_vector, left.codomain())
 
-    normalized_solution = right.domain().linear_combination(
-        {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}
-    )
-    return right(normalized_solution)
+        solution = [ring.zero()] * width
+        for index, shifted_label in enumerate(shifted_labels):
+            value = shifted_coefficients.get(shifted_label, ring.zero())
+            divisor = smith[index, index] if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
+            if divisor == 0:
+                if value != 0:
+                    raise ValueError("the element is not in the image of this morphism")
+                continue
+            quotient, remainder = value.quo_rem(divisor)
+            if remainder != 0:
+                raise ValueError("the element is not in the image over the base ring")
+            solution[index] = quotient
+
+        normalized_solution = right.domain().linear_combination(
+            {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}
+        )
+        return right(normalized_solution)
+
+    return solve
+
+
+def _solve_left_integrally_element(system, target, ring):
+    r"""Return the row-coefficient element ``a`` with ``a*system = target``."""
+
+    return _integral_left_solver(system, ring)(target)
 
 
 def _solve_left_integrally(system, target, ring):
@@ -692,7 +696,11 @@ class ModuleMorphism(Morphism):
         if not isinstance(other, ModuleMorphism) or other.domain() is not self.domain():
             raise ValueError("stacking module maps requires one common domain")
 
-        target = Biproduct(self.codomain(), other.codomain())
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        target = Modules(self.codomain().base_ring()).biproduct(
+            (self.codomain(), other.codomain())
+        )
         return target.to_product(self, other)
 
     @cached_method
@@ -1918,7 +1926,11 @@ class TensorProductModuleMorphism(ModuleMorphism):
         if morphism.codomain() is not self.left_module():
             raise ValueError("the pullback map must land in the form's module")
 
-        source = TensorProduct(morphism.domain(), morphism.domain())
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        source = Modules(morphism.domain().base_ring()).tensor_product(
+            (morphism.domain(), morphism.domain())
+        )
         induced = module_homset(source, self.domain())(
             lambda pair: self.domain().pure_tensor(
                 morphism(morphism.domain().module_generator(pair.component(0))),

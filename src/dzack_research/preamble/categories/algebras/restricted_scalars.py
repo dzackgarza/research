@@ -12,6 +12,7 @@ a second authoritative ring implementation.
 
 from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
+from sage.misc.classcall_metaclass import typecall
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -33,6 +34,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
+
+_RESTRICTED_SCALAR_ALGEBRAS = {}
 
 
 class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
@@ -331,6 +334,15 @@ def restrict_algebra_scalars(algebra, ring_map):
     if not isinstance(ring_map, Map):
         raise TypeError("algebra scalar restriction is specified by a ring morphism")
 
+    cache_key = (id(algebra), id(ring_map))
+    cached = _RESTRICTED_SCALAR_ALGEBRAS.get(cache_key)
+    if (
+        cached is not None
+        and cached.algebra_over_extension() is algebra
+        and cached.ring_map() is ring_map
+    ):
+        return cached
+
     extension_ring = algebra.base_ring()
     if _engine_ring(ring_map.codomain()) is not _engine_ring(extension_ring):
         raise ValueError(
@@ -371,7 +383,8 @@ def restrict_algebra_scalars(algebra, ring_map):
         if has_selected_presentation
         else None
     )
-    return _RestrictedScalarsAlgebraParent(
+    restricted = typecall(
+        _RestrictedScalarsAlgebraParent,
         algebra,
         ring_map,
         labels,
@@ -380,6 +393,8 @@ def restrict_algebra_scalars(algebra, ring_map):
         restricted_algebra_labels,
         presentation_data=presentation_data,
     )
+    _RESTRICTED_SCALAR_ALGEBRAS[cache_key] = restricted
+    return restricted
 
 
 __all__ = [

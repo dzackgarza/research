@@ -79,12 +79,12 @@ def test_infinite_dependent_product_accepts_callable_sections_without_enumeratio
 
 
 def test_infinite_free_module_biproduct_uses_tagged_lazy_framing() -> None:
-    from dzack_research.preamble.categories.abstract_categories import Biproduct
+    from dzack_research.preamble.categories.modules import Modules
     from dzack_research.preamble.categories.sets import NN
 
     left = BasedFreeModule(ZZ, NN)
     right = BasedFreeModule(ZZ, NN)
-    direct_sum = Biproduct(left, right)
+    direct_sum = Modules(ZZ).biproduct((left, right))
     e5 = left.module_generator(NN(5))
     f7 = right.module_generator(NN(7))
 

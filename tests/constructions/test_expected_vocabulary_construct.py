@@ -11,7 +11,6 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-
 # ---------------------------------------------------------------------------
 # Group algebras.
 # ---------------------------------------------------------------------------
@@ -551,5 +550,5 @@ def test_forgetful_and_free_functors_by_their_usual_names() -> None:
     assert forget.compose(free) == forget * free
     assert Modules(ZZ).underlying_abelian_group()(FreeModule(ZZ, 2)).is_abelian()
     assert OwnedRings().underlying_abelian_group()(ZZ) in AbelianGroups()
-    assert Yoneda(Sets())(Sets.Δ[1]) in FunctorCategory(OppositeCategory(Sets()), Sets())
+    assert Yoneda(Sets())(Sets.Δ[1]) in Cat().Mor(Sets().opposite(), Sets())
     assert Sets().hom_functor(Sets.Δ[1])(Sets.Δ[2]).cardinality() == 9

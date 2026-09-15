@@ -12,10 +12,9 @@ carries \(\mathbf Z^\times=\{\pm 1\}\) into \(\mathbf F_5^\times\), sending
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     OwnedGroups,
     OwnedRings,
-    ZZ,
-    predicate_subgroup,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.rings import GF
@@ -40,11 +39,7 @@ def test_the_square_roots_of_one_are_a_subgroup_of_the_units() -> None:
     field = GF(5)
     units = _units_of_the_field_of_five_elements()
 
-    roots = predicate_subgroup(
-        units,
-        lambda unit: unit * unit == units.one(),
-        "u^2 = 1",
-    )
+    roots = units.predicate_subgroup(lambda unit: unit * unit == units.one(), "u^2 = 1")
 
     assert roots in OwnedGroups()
     assert roots.supergroup() is units

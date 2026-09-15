@@ -2,7 +2,6 @@ r"""The tensor--internal-Hom adjunction on modules with chosen finite presentati
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.internal_hom import (
     InternalHom,
@@ -31,7 +30,7 @@ class TensorByFunctor(Functor):
         return self._fixed_module
 
     def _apply_object(self, module):
-        return TensorProduct(module, self.fixed_module())
+        return self.codomain().tensor_product((module, self.fixed_module()))
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

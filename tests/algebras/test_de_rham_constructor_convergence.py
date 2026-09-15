@@ -14,7 +14,7 @@ def test_de_rham_routes_share_one_category_owned_object() -> None:
     category = DeRhamAlgebras(ZZ)
 
     declared = category(algebra)
-    notation = DeRhamAlgebra(algebra)
+    notation = algebra.de_rham_algebra()
     functor_image = de_rham_functor(ZZ)(algebra)
 
     assert declared is notation

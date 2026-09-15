@@ -35,8 +35,12 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
 )
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
-from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    form_embedding,
+)
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+    torsion_form_isometry,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     ModuleMorphism,
@@ -51,7 +55,9 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import realize_owned_category
@@ -1509,10 +1515,10 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def centralizer(self, isometry):
         r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup."""
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            centralizer,
+            CentralizerSubgroups,
         )
 
-        return centralizer(self, isometry)
+        return CentralizerSubgroups(self)(isometry)
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""

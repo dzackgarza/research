@@ -15,9 +15,6 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
@@ -72,7 +69,7 @@ class InverseSystem(DiagramCategory):
 
     def __init__(self, index_category: Category, target_category: Category) -> None:
         self._base_index_category = index_category
-        super().__init__(OppositeCategory(index_category), target_category)
+        super().__init__(index_category.opposite(), target_category)
 
     def base_index_category(self) -> Category:
         r"""Return ``J`` when this inverse system category is ``[J^op,C]``."""
@@ -1255,11 +1252,6 @@ class LimitsOfCategory(OwnedCategoryBase):
     @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
         r"""Return the selected limit, using products and an equalizer on finite represented shapes."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            EqualizerConstruction,
-            ProductConstruction,
-        )
-
         object_set, objects, arrows = self._finite_shape_data(diagram)
         extremal = self._extremal_shape_object(objects, arrows, terminal=False)
         if extremal is not None:
@@ -1281,19 +1273,13 @@ class LimitsOfCategory(OwnedCategoryBase):
             lambda label: diagram(objects.value(label)),
             name="Object factors of a finite limit",
         )
-        product_objects = ProductConstruction(
-            object_factors,
-            target_category=target,
-        )
+        product_objects = target.product_construction(object_factors)
         arrow_factors = indexed_family(
             arrows,
             lambda arrow: diagram(arrow.codomain()),
             name="Arrow-target factors of a finite limit",
         )
-        product_arrows = ProductConstruction(
-            arrow_factors,
-            target_category=target,
-        )
+        product_arrows = target.product_construction(arrow_factors)
 
         def object_label(obj):
             for label in object_set:
@@ -1322,7 +1308,7 @@ class LimitsOfCategory(OwnedCategoryBase):
 
         target_projection = compatibility_map(False)
         arrow_projection = compatibility_map(True)
-        equalizer = EqualizerConstruction(target_projection, arrow_projection)
+        equalizer = target.equalizer_construction(target_projection, arrow_projection)
         equalizer_shape = equalizer.diagram().domain()
         into_product = equalizer.structure_morphism(equalizer_shape.source())
         universal_cone = ConeCategory(diagram).cone(
@@ -1368,11 +1354,6 @@ class ColimitsOfCategory(LimitsOfCategory):
     @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
         r"""Return the selected colimit, using coproducts and a coequalizer on finite shapes."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            CoequalizerConstruction,
-            CoproductConstruction,
-        )
-
         object_set, objects, arrows = self._finite_shape_data(diagram)
         extremal = self._extremal_shape_object(objects, arrows, terminal=True)
         if extremal is not None:
@@ -1394,19 +1375,13 @@ class ColimitsOfCategory(LimitsOfCategory):
             lambda label: diagram(objects.value(label)),
             name="Object cofactors of a finite colimit",
         )
-        coproduct_objects = CoproductConstruction(
-            object_cofactors,
-            target_category=target,
-        )
+        coproduct_objects = target.coproduct_construction(object_cofactors)
         arrow_cofactors = indexed_family(
             arrows,
             lambda arrow: diagram(arrow.domain()),
             name="Arrow-source cofactors of a finite colimit",
         )
-        coproduct_arrows = CoproductConstruction(
-            arrow_cofactors,
-            target_category=target,
-        )
+        coproduct_arrows = target.coproduct_construction(arrow_cofactors)
 
         def object_label(obj):
             for label in object_set:
@@ -1435,7 +1410,7 @@ class ColimitsOfCategory(LimitsOfCategory):
 
         source_injection = compatibility_map(False)
         arrow_injection = compatibility_map(True)
-        coequalizer = CoequalizerConstruction(source_injection, arrow_injection)
+        coequalizer = target.coequalizer_construction(source_injection, arrow_injection)
         coequalizer_shape = coequalizer.diagram().domain()
         from_coproduct = coequalizer.costructure_morphism(coequalizer_shape.target())
         universal_cocone = CoconeCategory(diagram).cocone(

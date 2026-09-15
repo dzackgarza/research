@@ -1,6 +1,6 @@
 r"""Archive reconciliation for owned group homomorphisms and automorphisms."""
 
-from dzack_research.preamble.all import Groups, group_homset
+from dzack_research.preamble.all import Groups
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/group_morphisms.sage",
@@ -14,7 +14,7 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     target = Groups.C(2)
     source_generator = source.group_generators()[0]
     target_generator = target.group_generators()[0]
-    morphism = group_homset(source, target)({source_generator: target_generator})
+    morphism = source.Mor(target)({source_generator: target_generator})
 
     assert morphism.domain() is source
     assert morphism.codomain() is target
@@ -25,9 +25,9 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
 
 
 def test_finite_group_homset_cardinality_uses_the_represented_gap_homset() -> None:
-    assert group_homset(Groups.C(2), Groups.C(3)).cardinality() == 1
-    assert group_homset(Groups.C(4), Groups.C(6)).cardinality() == 2
-    assert group_homset(Groups.C(12), Groups.C(18)).cardinality() == 6
+    assert Groups.C(2).Mor(Groups.C(3)).cardinality() == 1
+    assert Groups.C(4).Mor(Groups.C(6)).cardinality() == 2
+    assert Groups.C(12).Mor(Groups.C(18)).cardinality() == 6
 
 
 def test_kernel_image_and_lift_are_actual_group_constructions() -> None:
@@ -35,7 +35,7 @@ def test_kernel_image_and_lift_are_actual_group_constructions() -> None:
     target = Groups.C(2)
     source_generator = source.group_generators()[0]
     target_generator = target.group_generators()[0]
-    morphism = group_homset(source, target)({source_generator: target_generator})
+    morphism = source.Mor(target)({source_generator: target_generator})
 
     kernel = morphism.kernel()
     image = morphism.image()
@@ -103,8 +103,8 @@ def test_composition_is_diagrammatic_and_retains_endpoints() -> None:
     c2 = Groups.C(2)
     generator4 = c4.group_generators()[0]
     generator2 = c2.group_generators()[0]
-    projection = group_homset(c4, c2)({generator4: generator2})
-    inclusion = group_homset(c2, c4)({generator2: generator4**2})
+    projection = c4.Mor(c2)({generator4: generator2})
+    inclusion = c2.Mor(c4)({generator2: generator4**2})
     composite = inclusion * projection
 
     assert composite.domain() is c4

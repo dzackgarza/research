@@ -73,8 +73,10 @@ class PowerAlgebra(GradedDirectSumModule):
 
         constructor = AlternatingPower if flavor == "alternating" else DividedPower
         degree_index_set = None
-        if flavor == "alternating" and module in FinitelyGeneratedFreeModules(base):
-            degree_index_set = Sets.Δ[int(module.module_rank())]
+        if flavor == "alternating":
+            generator_count = module.module_generating_set().cardinality()
+            if generator_count.is_finite():
+                degree_index_set = Sets.Δ[int(generator_count.finite_value())]
 
         flavor_category = AlternatingAlgebras(base) if flavor == "alternating" else DividedPowerAlgebras(base)
         categories = [flavor_category, FramedAlgebras(base)]

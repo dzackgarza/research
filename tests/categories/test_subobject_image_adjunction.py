@@ -1,10 +1,10 @@
 from dzack_research.preamble.all import (
+    NN,
+    ZZ,
     BasedFreeModule,
     FinitelyPresentedModule,
     FreeModuleOn,
     ModuleSubobjects,
-    NN,
-    ZZ,
     module_homset,
     subobject_image_adjunction,
 )
@@ -52,8 +52,8 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
         {"e1": 2 * u, "e2": v}
     )
 
-    source_subobjects = Subobjects(source)
-    target_subobjects = Subobjects(target)
+    source_subobjects = source.category().Subobjects(source)
+    target_subobjects = target.category().Subobjects(target)
     a = source.subobject_on((2 * e1 + e2,))
     not_a = source.subobject_on((e1,))
     b = target.subobject_on((4 * u, v))

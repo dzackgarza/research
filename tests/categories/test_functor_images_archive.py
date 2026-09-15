@@ -1,10 +1,7 @@
 r"""Archive reconciliation for categories of chosen functor images."""
 
 from dzack_research.preamble.categories.abstract_categories.functor_images import ImageOfFunctor
-from dzack_research.preamble.categories.abstract_categories.functors import (
-    DiscreteCategory,
-    compose_functors,
-)
+from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.functors.core import Functor, IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -127,8 +124,8 @@ def test_functor_image_hom_exposes_codomain_hom_and_composes_through_it() -> Non
 def test_archived_composition_with_identity_keeps_the_nonidentity_set_map() -> None:
     functor = _IdentitySetsFunctor()
     identity = IdentityFunctor(Sets())
-    composed_left = compose_functors(identity, functor)
-    composed_right = compose_functors(functor, identity)
+    composed_left = functor.then(identity)
+    composed_right = identity.then(functor)
     source = finite_ordered_set((0, 1))
     target = finite_ordered_set(("a", "b"))
     arrow = Sets().Mor(source, target)(lambda value: target("a") if value == 0 else target("b"))

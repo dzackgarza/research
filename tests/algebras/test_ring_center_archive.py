@@ -1,7 +1,6 @@
 import pytest
 
 from dzack_research.preamble.all import QQ, CommutativeRings, FreeAlgebraOn, MatrixSpace, OwnedRings
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -27,7 +26,7 @@ def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
         matrices,
         lambda element: conjugator * element * conjugator,
     )
-    core = Core(OwnedRings())
+    core = OwnedRings().Core()
     automorphism = core.Mor(matrices, matrices)(conjugation, conjugation)
 
     center_functor = OwnedRings().center_functor()

@@ -12,9 +12,6 @@ from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    TensorProduct,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleHomset,
     TensorProductModuleMorphism,
@@ -112,7 +109,9 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
             if morphism.codomain() is not self.module():
                 raise ValueError("the pullback map must land in the form's module")
 
-            source = TensorProduct(morphism.domain(), morphism.domain())
+            source = Modules(morphism.domain().base_ring()).tensor_product(
+                (morphism.domain(), morphism.domain())
+            )
             induced = module_homset(source, self.domain())(
                 lambda pair: self.domain().pure_tensor(
                     morphism(

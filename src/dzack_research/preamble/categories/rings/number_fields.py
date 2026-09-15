@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
     FractionalIdeal,
-    Ideal,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
@@ -606,28 +605,29 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
             return order_homset(self, codomain)
 
         def ideal(self, *module_generators):
+            from dzack_research.preamble.categories.modules.fractional_ideals import (
+                _integral_ideal,
+            )
 
-            return Ideal(self, module_generators)
+            return _integral_ideal(self, tuple(module_generators))
 
         def fractional_ideal(self, *module_generators):
 
             return FractionalIdeal(self, module_generators)
 
         def localization(self, *elements):
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                Localization,
-            )
+            from dzack_research.preamble.categories.rings.commutative_algebra import _localization
 
-            return Localization(self, *elements)
+            return _localization(self, *elements)
 
         localize = localization
 
         def localize_at_prime(self, prime):
             from dzack_research.preamble.categories.rings.commutative_algebra import (
-                PrimeLocalization,
+                _prime_localization_from_input,
             )
 
-            return PrimeLocalization(self, prime)
+            return _prime_localization_from_input(self, prime)
 
         localization_at_prime = localize_at_prime
 

@@ -71,7 +71,7 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
             "y": values.zero(),
         }
     )
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     X = de_rham.from_degree_zero(x)
     Y = de_rham.from_degree_zero(y)
     dx = de_rham.d(X)
@@ -124,7 +124,7 @@ def test_cartan_commutator_identities_hold_on_the_de_rham_algebra() -> None:
     )
     bracket = LieBracket(Xfield, Yfield)
 
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     X = de_rham.from_degree_zero(x)
     Y = de_rham.from_degree_zero(y)
     test_form = X * de_rham.d(Y) + de_rham.d(X) * de_rham.d(Y)

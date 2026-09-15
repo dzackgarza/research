@@ -1,21 +1,27 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
+    AlternatingAlgebraOf,
     DeRhamAlgebra,
+    Derivations,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
     KahlerDifferentials,
     StrictlyCommutativeDifferentialGradedAlgebras,
     StrictlyGradedCommutativeAlgebras,
     SymmetricAlgebraOn,
-    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.de_rham import (
     de_rham_adjunction,
     de_rham_functor,
 )
-from dzack_research.preamble.categories.modules import BasedFreeModule, ring_as_module
-from dzack_research.preamble.categories.modules import InternalHom, ModuleSubobjects, Modules
-from dzack_research.preamble.categories.algebras import AlternatingAlgebraOf, Derivations
+from dzack_research.preamble.categories.modules import (
+    BasedFreeModule,
+    InternalHom,
+    Modules,
+    ModuleSubobjects,
+    ring_as_module,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -39,7 +45,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
-    omega = KahlerDifferentials(algebra)
+    omega = algebra.kahler_differentials()
     dx = omega.differential_generator("x")
     dy = omega.differential_generator("y")
     universal = omega.universal_derivation()
@@ -100,7 +106,7 @@ def test_relative_conormal_and_tangent_comparison_for_xy_equals_t() -> None:
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
 
-    omega = KahlerDifferentials(algebra)
+    omega = algebra.kahler_differentials()
     conormal = omega.conormal_module()
     conormal_map = omega.conormal_morphism()
     relation_label = next(iter(conormal.module_generating_set()))
@@ -140,7 +146,7 @@ def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_cons
     algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
 
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(QQ)
     assert de_rham.degree_zero_algebra() is algebra
@@ -166,7 +172,7 @@ def test_de_rham_differential_descends_through_a_singular_quotient() -> None:
     x = polynomial.algebra_generator("x")
     y = polynomial.algebra_generator("y")
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     X = de_rham.from_degree_zero(algebra.algebra_generator("x"))
     Y = de_rham.from_degree_zero(algebra.algebra_generator("y"))
 
@@ -181,12 +187,12 @@ def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
     xbar = algebra.algebra_generator("x")
 
-    omega = KahlerDifferentials(algebra)
+    omega = algebra.kahler_differentials()
     dx = omega.differential_generator("x")
     assert omega.scalar_multiple(2 * xbar, dx) == omega.zero()
     assert omega.universal_derivation()(xbar**2) == omega.zero()
 
-    de_rham = DeRhamAlgebra(algebra)
+    de_rham = algebra.de_rham_algebra()
     assert de_rham.cohomology(0).module_rank() == 1
     assert de_rham.cohomology(1).is_zero()
 
@@ -196,7 +202,9 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
         FinitelyPresentedAlgebra,
         KahlerDifferentialModules,
     )
-    from dzack_research.preamble.categories.modules.localizations import LocalizedModules
+    from dzack_research.preamble.categories.modules.localizations import (
+        LocalizedModules,
+    )
 
     polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = polynomial.algebra_generator("x")
@@ -206,8 +214,8 @@ def test_kahler_differentials_and_universal_derivation_commute_with_localization
     ybar = axes.algebra_generator("y")
     localized = axes.localization(xbar)
 
-    omega = KahlerDifferentials(axes)
-    localized_omega = KahlerDifferentials(localized)
+    omega = axes.kahler_differentials()
+    localized_omega = localized.kahler_differentials()
     assert localized_omega in KahlerDifferentialModules(localized)
     assert localized_omega in LocalizedModules(localized)
     assert localized_omega.localization_source_module() is omega
@@ -238,7 +246,7 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     target = SymmetricAlgebraOn(QQ, ("t",))
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
-    morphism = algebra_homset(source, target)({"x": t**2})
+    morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, target)({"x": t**2})
 
     functor = de_rham_functor(QQ)
     source_dr = functor(source)
@@ -258,7 +266,7 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
     t = degree_zero.algebra_generator("t")
     adjunction = de_rham_adjunction(QQ)
     target = adjunction.left_adjoint()(degree_zero)
-    algebra_map = algebra_homset(source, degree_zero)({"x": t**2})
+    algebra_map = Algebras(source.base_ring()).Associative().Unital().Mor(source, degree_zero)({"x": t**2})
 
     transpose = adjunction.hom_set_isomorphism_inverse(
         algebra_map,

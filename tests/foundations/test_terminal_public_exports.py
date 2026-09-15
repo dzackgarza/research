@@ -1,29 +1,18 @@
-r"""Public session names whose absence broke terminal collection.
+r"""Public session vocabulary and rejected legacy operation globals.
 
 These are mathematical constructors deliberately used by the construction and
-archive proof surfaces.  Importing this module is the regression: each name
-must be exported by ``dzack_research.preamble.all`` rather than reached through
-an implementation module.
+archive proof surfaces.  The session exports owner/category/specimen names, but
+does not publish owner-in-argument operations as free functions.
 """
 
+import dzack_research.preamble.all as session
 from dzack_research.preamble.all import (
-    AdicCompletion,
     AdicCompletions,
-    Biproduct,
-    CochainComplexFromFamily,
-    Coproduct,
-    Core,
     DividedPowerAlgebraOf,
     DividedPowerAlgebraOn,
     DividedPowerAlgebras,
-    Localization,
     OwnedCategoryOverBaseRing,
-    Product,
-    Pushout,
     QuadraticMap,
-    QuotientRing,
-    TensorProduct,
-    TensorSquare,
     finite_ordered_set,
     ring_morphism,
 )
@@ -31,25 +20,95 @@ from dzack_research.preamble.all import (
 
 def test_terminal_collection_vocabulary_is_public() -> None:
     names = (
-        AdicCompletion,
         AdicCompletions,
-        Biproduct,
-        CochainComplexFromFamily,
-        Coproduct,
-        Core,
         DividedPowerAlgebraOf,
         DividedPowerAlgebraOn,
         DividedPowerAlgebras,
-        Localization,
         OwnedCategoryOverBaseRing,
-        Product,
-        Pushout,
         QuadraticMap,
-        QuotientRing,
-        TensorProduct,
-        TensorSquare,
         finite_ordered_set,
         ring_morphism,
     )
 
     assert all(name is not None for name in names)
+
+
+def test_owner_in_argument_universal_operations_are_not_session_globals() -> None:
+    forbidden = (
+        "Biproduct",
+        "Coproduct",
+        "Product",
+        "Pushout",
+        "TensorProduct",
+        "TensorSquare",
+        "Kernel",
+        "Cokernel",
+        "Equalizer",
+        "Coequalizer",
+        "EqualizerOfFamily",
+        "CoequalizerOfFamily",
+        "FiberProduct",
+        "Subobjects",
+        "Core",
+        "ProductConstruction",
+        "CoproductConstruction",
+        "EqualizerConstruction",
+        "CoequalizerConstruction",
+        "FractionField",
+        "Localization",
+        "PrimeLocalization",
+        "QuotientRing",
+        "ResidueField",
+        "AdicCompletion",
+        "Ideal",
+        "OppositeCategory",
+        "ProductCategory",
+        "SliceOver",
+        "CosliceUnder",
+        "SubobjectsOf",
+        "SuperobjectsOf",
+        "CoveringObjectsOf",
+        "CoveredObjectsOf",
+        "ArrowCategory",
+        "FunctorCategory",
+        "HomCategoryOf",
+        "EndCategoryOf",
+        "MonoCategoryOf",
+        "EpiCategoryOf",
+        "IsoCategoryOf",
+        "AutCategoryOf",
+        "SliceCategory",
+        "CosliceCategory",
+        "SubobjectCategory",
+        "SuperobjectCategory",
+        "CoveringObjectCategory",
+        "CoveredObjectCategory",
+        "CochainComplex",
+        "CochainComplexFromFamily",
+        "Cycles",
+        "Boundaries",
+        "Cohomology",
+        "cochain_homset",
+        "algebra_homset",
+        "group_homset",
+        "g_set_homset",
+        "commutative_algebra_coproduct",
+        "commutative_algebra_pushout",
+        "centralizer",
+        "predicate_subgroup",
+        "DeRhamAlgebra",
+        "KahlerDifferentials",
+        "NaturalTransformations",
+        "NaturalIsomorphism",
+        "compose_functors",
+        "category_inclusion",
+        "induced_hom_functor",
+        "induced_end_functor",
+        "induced_aut_functor",
+        "CategoryInclusionFunctor",
+        "InducedHomFunctor",
+        "InducedEndFunctor",
+        "InducedAutFunctor",
+    )
+
+    assert all(not hasattr(session, name) for name in forbidden)

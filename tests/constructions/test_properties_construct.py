@@ -8,8 +8,7 @@ concrete counterexample the session mishandles.
 
 from math import factorial, gcd, lcm, prod
 
-from hypothesis import given, settings
-
+from conftest import COMMUTATIVE_RINGS, FIELDS, PRINCIPAL_IDEAL_DOMAINS, specimen
 from construction_strategies import (
     cartan_types,
     cyclic_module_orders,
@@ -26,7 +25,7 @@ from construction_strategies import (
     small_integers,
     symmetric_groups,
 )
-from conftest import COMMUTATIVE_RINGS, FIELDS, PRINCIPAL_IDEAL_DOMAINS, specimen
+from hypothesis import given, settings
 from natural_parameters import (
     binomial,
     determinant_2x2,
@@ -71,12 +70,14 @@ def test_the_integers_modulo_n(n) -> None:
 @given(n=cyclic_orders, m=cyclic_orders)
 def test_cyclic_groups_and_their_homomorphisms(n, m) -> None:
     cyclic = Groups.C(n)
+    groups = Groups()
     assert cyclic.order() == n
     assert cyclic in AbelianGroups()
     assert cyclic.Aut().order() == euler_phi(n)
     assert cyclic.Mor(Groups.C(m)).cardinality() == gcd(n, m)
-    assert Product(cyclic, Groups.C(m)).order() == n * m
-    assert Product(cyclic, Groups.C(m)).is_isomorphic_to(Groups.C(n * m)) == (gcd(n, m) == 1)
+    product = groups.product((cyclic, Groups.C(m)))
+    assert product.order() == n * m
+    assert product.is_isomorphic_to(Groups.C(n * m)) == (gcd(n, m) == 1)
     assert cyclic.subgroups().cardinality() == number_of_divisors(n)
     assert cyclic.group_generators()[0].order() == n
 
@@ -159,7 +160,7 @@ def test_quadratic_fields(d) -> None:
         assert 1 <= primes_above.cardinality() <= 2
         assert (p in field.ramified_primes()) == (quadratic_field_discriminant(d) % p == 0)
         assert sum(P.ramification_index() * P.residue_degree() for P in primes_above) == 2
-    assert KahlerDifferentials(field.ring_of_integers().as_algebra_over(ZZ)).cardinality() == abs(quadratic_field_discriminant(d))
+    assert field.ring_of_integers().as_algebra_over(ZZ).kahler_differentials().cardinality() == abs(quadratic_field_discriminant(d))
 
 
 @survey
@@ -249,14 +250,15 @@ def test_ranks_of_free_module_constructions(name, r, s) -> None:
     ring = specimen(name)
     left = FreeModule(ring, r)
     right = FreeModule(ring, s)
+    modules = Modules(ring)
     assert left.module_rank() == r
     assert left.tensor_product(right).module_rank() == r * s
     assert left.Hom(right).module_rank() == r * s
-    assert Biproduct(left, right).module_rank() == r + s
+    assert modules.biproduct((left, right)).module_rank() == r + s
     assert left.dual_module().module_rank() == r
     assert ExteriorForms(left, 2).module_rank() == binomial(r, 2)
     assert DividedSquare(left).module_rank() == binomial(r + 1, 2)
-    assert TensorSquare(left).module_rank() == r * r
+    assert modules.tensor_product((left, left)).module_rank() == r * r
     assert left in FinitelyGeneratedFreeModules(ring)
     assert (left.cardinality() == 1) == (r == 0)
 
@@ -285,7 +287,10 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
         q = field.cardinality()
         assert space.cardinality() == q**r
         assert space.Aut().order() == prod(q**r - q**i for i in range(r))
-    kernel = Kernel(space.Mor(FreeModule(field, 1))({label: FreeModule(field, 1).module_generator(0) for label in range(r)}))
+    morphism = space.Mor(FreeModule(field, 1))(
+        {label: FreeModule(field, 1).module_generator(0) for label in range(r)}
+    )
+    kernel = morphism.kernel()
     assert kernel.module_rank() == r - 1
 
 
@@ -299,14 +304,15 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
 def test_finite_set_constructions(n, m) -> None:
     left = Sets.Δ[n - 1]
     right = Sets.Δ[m - 1]
+    sets = Sets()
     assert left.cardinality() == n
-    assert Product(left, right).cardinality() == n * m
-    assert Coproduct(left, right).cardinality() == n + m
+    assert sets.product((left, right)).cardinality() == n * m
+    assert sets.coproduct((left, right)).cardinality() == n + m
     assert ExponentialOfSets(left, right).cardinality() == n**m
     assert Sets().Mor(right, left).cardinality() == n**m
     assert left.power_set().cardinality() == 2**n
     assert left.Aut().order() == factorial(n)
-    assert MonoCategoryOf(Sets()).Of(right, left).cardinality() == (factorial(n) // factorial(n - m) if m <= n else 0)
+    assert Sets().Mono(right, left).cardinality() == (factorial(n) // factorial(n - m) if m <= n else 0)
     for k in range(0, min(n, 4) + 1):
         assert left.subsets_of_size(k).cardinality() == binomial(n, k)
     assert cardinal(n) + cardinal(m) == cardinal(n + m)

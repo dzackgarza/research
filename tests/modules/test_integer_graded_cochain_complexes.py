@@ -7,9 +7,7 @@ from dzack_research.preamble.categories.algebras import (
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
-    CochainComplex,
-    CochainComplexFromFamily,
-    cochain_homset,
+    CochainComplexes,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -26,8 +24,7 @@ def test_shifted_complex_retains_integer_grading_and_boundary_cohomology() -> No
     times_three = module_homset(degree_minus_one, degree_zero)(
         {"e": 3 * degree_zero.module_generator("f")}
     )
-    complex_ = CochainComplex(
-        ZZ,
+    complex_ = CochainComplexes(ZZ)(
         {-1: degree_minus_one, 0: degree_zero},
         {-1: times_three},
     )
@@ -45,12 +42,11 @@ def test_shifted_complex_retains_integer_grading_and_boundary_cohomology() -> No
 
 def test_negative_degree_cohomology_is_functorial_on_shifted_complexes() -> None:
     degree_minus_one = _rank_one("e")
-    complex_ = CochainComplex(
-        ZZ,
+    complex_ = CochainComplexes(ZZ)(
         {-1: degree_minus_one},
         {},
     )
-    times_two = cochain_homset(complex_, complex_)(
+    times_two = CochainComplexes(ZZ).Mor(complex_, complex_)(
         {
             -1: module_homset(degree_minus_one, degree_minus_one)(
                 {"e": 2 * degree_minus_one.module_generator("e")}
@@ -72,7 +68,7 @@ def test_nonnegative_dga_has_the_same_zero_incoming_complex_boundary() -> None:
     polynomial = SymmetricAlgebraOn(field, ("x",))
     x = polynomial.algebra_generator("x")
     algebra = FinitelyPresentedAlgebra(polynomial, [x**2])
-    dga = DeRhamAlgebra(algebra)
+    dga = algebra.de_rham_algebra()
 
     incoming = dga.differential_component(-1)
     assert incoming.domain().is_zero()
@@ -105,7 +101,7 @@ def test_lazy_integer_complex_does_not_turn_unrequested_degrees_into_zero() -> N
         differential,
         name="Zero differential in every degree",
     )
-    complex_ = CochainComplexFromFamily(ZZ, pieces, differentials)
+    complex_ = CochainComplexes(ZZ).from_family(pieces, differentials)
 
     assert not complex_.has_finite_support()
     assert complex_.degree_convention() == "cohomological"
@@ -129,8 +125,8 @@ def test_lazy_complex_identity_is_a_degree_indexed_cochain_map() -> None:
         ),
         name="Zero differential in every degree",
     )
-    complex_ = CochainComplexFromFamily(ZZ, pieces, differentials)
-    identity = cochain_homset(complex_, complex_).identity()
+    complex_ = CochainComplexes(ZZ).from_family(pieces, differentials)
+    identity = CochainComplexes(ZZ).Mor(complex_, complex_).identity()
 
     source = pieces(-4)
     generator = source.module_generator(source.module_generating_set()[0])

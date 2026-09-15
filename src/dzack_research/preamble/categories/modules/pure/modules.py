@@ -14,10 +14,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Biproduct,
-    Subobjects,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     EndCategoryConstruction,
     HomCategoryConstruction,
@@ -28,13 +24,13 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ConeCategory,
     CoproductCoconeCategory,
-    _parallel_pair_diagram,
     ProductConeCategory,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
     _discrete_diagram,
     _factor_family,
     _finite_factor_family,
+    _parallel_pair_diagram,
 )
 from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
     AssociativeAlgebraHomCategoryConstruction,
@@ -496,14 +492,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
-        def equalizer(self, left_arrow, right_arrow):
-            r"""Return the equalizer of a parallel pair."""
-            return self._categorical_equalizer(left_arrow, right_arrow)
-
-        def coequalizer(self, left_arrow, right_arrow):
-            r"""Return the coequalizer of a parallel pair."""
-            return self._categorical_coequalizer(left_arrow, right_arrow)
-
         def _categorical_equalizer(self, left_morphism, right_morphism):
             r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
             return self._categorical_equalizer_construction(
@@ -618,14 +606,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 return raw_factor * coequalizer_transport.inverse()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
-
-        def equalizer_of_family(self, arrows):
-            r"""Return the wide equalizer of a family of parallel arrows."""
-            return self._categorical_equalizer_family(arrows)
-
-        def coequalizer_of_family(self, arrows):
-            r"""Return the wide coequalizer of a family of parallel arrows."""
-            return self._categorical_coequalizer_family(arrows)
 
         def _categorical_equalizer_family(self, morphisms):
             r"""Realize a finite wide equalizer through kernels/intersections."""
@@ -1048,11 +1028,7 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the localized module ``M_p`` at a represented prime."""
             ring = self.base_ring()
             if self is ring:
-                from dzack_research.preamble.categories.rings.commutative_algebra import (
-                    PrimeLocalization,
-                )
-
-                return PrimeLocalization(ring, prime)
+                return ring.localize_at_prime(prime)
             localization_ring = ring.spectrum()(prime).local_ring()
             return self.localize(localization_ring)
 
@@ -1241,7 +1217,7 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             if self.inclusion().codomain() is not other.inclusion().codomain():
                 raise ValueError("a subobject intersection requires one common codomain")
 
-            direct_sum = Biproduct(self, other)
+            direct_sum = Modules(self.base_ring()).biproduct((self, other))
             difference = direct_sum.from_summands(self.inclusion(), -other.inclusion())
             kernel = difference.kernel()
             into_left = direct_sum.left_projection() * kernel.inclusion()
@@ -1503,11 +1479,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         those objects and morphisms, so this category exposes that owner
         rather than inventing a second presentation-morphism implementation.
         """
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            ArrowCategory,
-        )
-
-        return ArrowCategory(Modules(self.base_ring()))
+        return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
         def __init__(
@@ -1732,7 +1704,7 @@ class FreeResolution:
             return False
 
         def agree(image, kernel, term):
-            subobjects = Subobjects(term, Modules(term.base_ring()))
+            subobjects = Modules(term.base_ring()).Subobjects(term)
             return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
 
         if not agree(
@@ -2078,6 +2050,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 zero,
             )
 
+        @cached_method
         def dual_module(self):
             return self._fresh_free_module_on(self.module_generating_set())
 
@@ -2159,11 +2132,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
         the left edge is an arbitrary ``R``-linear map between the selected free
         sources, not necessarily one induced by a function of label sets.
         """
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            ArrowCategory,
-        )
-
-        return ArrowCategory(Modules(self.base_ring()))
+        return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
         def __init__(
@@ -2823,11 +2792,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The tensor square of the free module of rank one."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
         free = Modules(self.base_ring()).an_object()
-        return TensorProduct(free, free)
+        return Modules(self.base_ring()).tensor_product((free, free))
 
     @classmethod
     def _repr_object_names(cls):
@@ -3042,11 +3008,8 @@ def _biproduct_label(label_set, index, label):
 class BiproductModules(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The biproduct of the free module of rank one with itself."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
         free = Modules(self.base_ring()).an_object()
-        return Biproduct(free, free)
+        return Modules(self.base_ring()).biproduct((free, free))
 
     @classmethod
     def _repr_object_names(cls):
@@ -3233,9 +3196,13 @@ def _module_biproduct_with_data(
 
 def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if source is None:
-        source = Biproduct(left_morphism.domain(), right_morphism.domain())
+        source = Modules(left_morphism.domain().base_ring()).biproduct(
+            (left_morphism.domain(), right_morphism.domain())
+        )
     if target is None:
-        target = Biproduct(left_morphism.codomain(), right_morphism.codomain())
+        target = Modules(left_morphism.codomain().base_ring()).biproduct(
+            (left_morphism.codomain(), right_morphism.codomain())
+        )
 
     if source.biproduct_factor(0) is not left_morphism.domain() or source.biproduct_factor(1) is not right_morphism.domain():
         raise ValueError("the source biproduct has different factors")

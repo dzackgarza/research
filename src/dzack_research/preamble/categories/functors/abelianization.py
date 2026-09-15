@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.group.groups import (
     _element_to_engine,
     _gap_model,
     _own_group,
-    group_homset,
 )
 from dzack_research.preamble.refine import refine
 
@@ -45,7 +44,7 @@ class AbelianizationFunctor(Functor):
             OwnedFiniteAbelianGroups() if group.is_finite() is True else OwnedAbelianGroups()
         )
         quotient = refine(quotient, placement)
-        quotient_projection = group_homset(group, quotient)(projection)
+        quotient_projection = group.Mor(quotient)(projection)
         self._quotient_projections[id(quotient)] = (
             quotient,
             quotient_projection,
@@ -98,7 +97,7 @@ class AbelianizationFunctor(Functor):
         )
         if induced.is_bool():
             raise ValueError("the group morphism did not induce a map on abelianizations")
-        return group_homset(source_abelianization, target_abelianization)(induced)
+        return source_abelianization.Mor(target_abelianization)(induced)
 
     def _repr_(self):
         return "Abelianization functor"
@@ -149,7 +148,7 @@ class AbelianizationAdjunction(Adjunction):
         )
         if engine.is_bool():
             raise ValueError("the abelianization of an abelian group did not canonically identify with it")
-        return group_homset(abelianization, abelian_group)(engine)
+        return abelianization.Mor(abelian_group)(engine)
 
 
     def _repr_(self):

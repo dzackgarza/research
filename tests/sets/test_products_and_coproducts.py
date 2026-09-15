@@ -4,9 +4,11 @@ from dzack_research.preamble.all import (
     CartesianProductOfSets,
     CoproductMorphism,
     CoproductOfSets,
+    NN,
     Sets,
     cardinal,
 )
+from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -34,6 +36,13 @@ def test_set_product_has_projection_and_pairing_universal_property() -> None:
     competing = Sets().Mor(source, product)(lambda value: product((f(value), g(value))))
     for value in source:
         assert competing(value) == paired(value)
+
+
+def test_cartesian_product_of_additive_monoids_has_pointwise_addition() -> None:
+    product = NN**2
+    assert product in AdditiveMonoids()
+    assert product((1, 2)) + product((3, 4)) == product((4, 6))
+    assert product.zero() == product((0, 0))
 
 
 def test_set_coproduct_has_injection_and_copairing_universal_property() -> None:
