@@ -145,7 +145,7 @@ def _gap_model(group):
                 raise NotImplementedError("GAP normalization of this abelian group requires finiteness")
             return libgap(engine.permutation_group())
         case CoxeterMatrixGroup():
-            free, relations = coxeter_presentation(engine.coxeter_matrix())
+            free, relations = _coxeter_presentation(engine.coxeter_matrix())
             return libgap(free / list(relations))
         case NamedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_generic():
             if _engine_finiteness(engine) is not True:
@@ -428,7 +428,7 @@ def _presentation_of(group):
             presented = engine.permutation_group().as_finitely_presented_group()
             return _own_group(presented.free_group()), tuple(presented.relations())
         case CoxeterMatrixGroup():
-            free, relations = coxeter_presentation(engine.coxeter_matrix())
+            free, relations = _coxeter_presentation(engine.coxeter_matrix())
             return _own_group(free), relations
         case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
             presented = engine.as_permutation_group().as_finitely_presented_group()
@@ -2865,7 +2865,7 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
             return self._preamble_selected_subgroup_generators
 
 
-def coxeter_presentation(coxeter_matrix, names=None):
+def _coxeter_presentation(coxeter_matrix, names=None):
     from sage.groups.free_group import FreeGroup
 
     indices = tuple(coxeter_matrix.index_set())
