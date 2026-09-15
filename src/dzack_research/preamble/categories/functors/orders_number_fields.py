@@ -95,7 +95,7 @@ class OrderNumberFieldAdjunction(Adjunction):
 
 
 @cached_function
-def order_number_field_adjunction() -> OrderNumberFieldAdjunction:
+def _order_number_field_adjunction() -> OrderNumberFieldAdjunction:
     return OrderNumberFieldAdjunction()
 
 
@@ -103,5 +103,4 @@ __all__ = [
     "FractionFieldFunctor",
     "OrderNumberFieldAdjunction",
     "RingOfIntegersFunctor",
-    "order_number_field_adjunction",
 ]

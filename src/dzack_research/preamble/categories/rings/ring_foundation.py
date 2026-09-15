@@ -1900,6 +1900,14 @@ class OwnedOrders(OwnedCategory):
             OwnedNoetherianRings(),
         ]
 
+    def fraction_field_adjunction(self):
+        r"""Return ``Frac -| O`` from orders to number fields."""
+        from dzack_research.preamble.categories.functors.orders_number_fields import (
+            _order_number_field_adjunction,
+        )
+
+        return _order_number_field_adjunction()
+
     class ParentMethods:
         def cardinality(self):
 

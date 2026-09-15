@@ -3,9 +3,9 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     Groups,
     Modules,
+    OwnedOrders,
     QuadraticField,
     Sets,
-    order_number_field_adjunction,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -320,7 +320,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
 def test_fraction_field_is_left_adjoint_to_ring_of_integers_with_embedding_naturality_and_triangles() -> None:
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
-    adjunction = order_number_field_adjunction()
+    adjunction = OwnedOrders().fraction_field_adjunction()
     fraction_field = adjunction.left_adjoint()
     ring_of_integers = adjunction.right_adjoint()
 

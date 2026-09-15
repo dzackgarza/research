@@ -464,9 +464,6 @@ from dzack_research.preamble.categories.functors.orders_number_fields import (
 from dzack_research.preamble.categories.functors.orders_number_fields import (
     RingOfIntegersFunctor as RingOfIntegersFunctor,
 )
-from dzack_research.preamble.categories.functors.orders_number_fields import (
-    order_number_field_adjunction as order_number_field_adjunction,
-)
 from dzack_research.preamble.categories.functors.scalar_change import (
     BaseChangeAdjunction as BaseChangeAdjunction,
 )
