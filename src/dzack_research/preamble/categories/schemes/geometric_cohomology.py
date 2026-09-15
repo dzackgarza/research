@@ -389,7 +389,7 @@ def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
     )
 
 
-class ToricHodgeData(SageObject):
+class _ToricHodgeData(SageObject):
     r"""Pure Hodge numbers tied to the live integral cohomology of one toric realization."""
 
     def __init__(self, scheme) -> None:
@@ -603,7 +603,7 @@ def _require_smooth_quartic_k3_complex_realization(scheme):
         raise ValueError("the quartic K3 integral realization requires a smooth surface")
 
 
-class QuarticK3IntegralTopology(SageObject):
+class _QuarticK3IntegralTopology(SageObject):
     r"""Integral singular cohomology of a smooth quartic K3 with one marking.
 
     Under the selected complex realization, a smooth quartic surface is a K3
@@ -735,7 +735,7 @@ class QuarticK3IntegralTopology(SageObject):
 
     @cached_method
     def hodge_structure(self):
-        return QuarticK3HodgeData(self.scheme())
+        return _QuarticK3HodgeData(self.scheme())
 
     def middle_cohomology_torsion_free_quotient(self):
         r"""K3 middle cohomology is already torsion-free."""
@@ -746,7 +746,7 @@ class QuarticK3IntegralTopology(SageObject):
 
 
 
-class QuarticK3HodgeData(SageObject):
+class _QuarticK3HodgeData(SageObject):
     r"""Pure Hodge data of the selected smooth quartic K3 realization.
 
     Adjunction gives ``K_X = O_X``.  The represented restriction of the unique
@@ -1252,11 +1252,10 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
 
 def _toric_hodge_structure(scheme):
     r"""Return the pure diagonal Hodge data of a smooth complete toric complex realization."""
-    return ToricHodgeData(scheme)
+    return _ToricHodgeData(scheme)
 
 
 __all__ = [
-    "QuarticK3HodgeData",
     "GeometricFundamentalGroups",
     "NodalCubicIntegralTopology",
     "NodalCubicNormalization",
@@ -1267,7 +1266,6 @@ __all__ = [
     "PGL2IntegralTopology",
     "PGL2IntegralCohomology",
     "IntegralSingularCohomologyGroups",
-    "QuarticK3IntegralTopology",
     "AffineGeometricCohomology",
     "AffineGeometricCohomologyComplex",
     "AffineGeometricCohomologyComplexes",
@@ -1277,6 +1275,5 @@ __all__ = [
     "ToricGeometricLineBundleCohomologySpaces",
     "ToricIntegralSingularCohomologyGroups",
     "ToricFundamentalGroups",
-    "ToricHodgeData",
     "ToricWeightCohomologyComplexes",
 ]

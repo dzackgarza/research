@@ -60,7 +60,7 @@ def _cyclic_two_module():
     )
 
 
-class EnriquesMarkedIntegralCohomology(SageObject):
+class _EnriquesMarkedIntegralCohomology(SageObject):
     r"""A chosen equivariant marking of the quotient and K3 integral ``H^2`` data."""
 
     def __init__(self, enriques_surface) -> None:
@@ -220,7 +220,7 @@ class HorikawaEnriquesSurface(SageObject):
 
     @cached_method
     def integral_cohomology(self):
-        return EnriquesMarkedIntegralCohomology(self)
+        return _EnriquesMarkedIntegralCohomology(self)
 
     def invariant_lattice(self):
         return self.integral_cohomology().invariant_lattice()
@@ -347,6 +347,5 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
 
 
 __all__ = [
-    "EnriquesMarkedIntegralCohomology",
     "HorikawaEnriquesSurface",
 ]

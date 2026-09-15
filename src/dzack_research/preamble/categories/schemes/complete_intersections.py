@@ -345,10 +345,10 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         @cached_method
         def integral_topology(self):
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                QuarticK3IntegralTopology,
+                _QuarticK3IntegralTopology,
             )
 
-            return QuarticK3IntegralTopology(self)
+            return _QuarticK3IntegralTopology(self)
 
         def integral_singular_cohomology(self, degree):
             return self.integral_topology().integral_cohomology(degree)
@@ -356,10 +356,10 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         @cached_method
         def hodge_structure(self):
             from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-                QuarticK3HodgeData,
+                _QuarticK3HodgeData,
             )
 
-            return QuarticK3HodgeData(self)
+            return _QuarticK3HodgeData(self)
 
         def del_pezzo_degree(self):
             r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
