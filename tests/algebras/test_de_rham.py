@@ -2,6 +2,7 @@ from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
     CommutativeAlgebras,
     DeRhamAlgebra,
+    DifferentialGradedAlgebras,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
     KahlerDifferentials,
@@ -10,9 +11,6 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.functors.de_rham import (
-    de_rham_adjunction,
-)
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     Modules,
@@ -258,7 +256,9 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
     degree_zero = SymmetricAlgebraOn(QQ, ("t",))
     x = source.algebra_generator("x")
     t = degree_zero.algebra_generator("t")
-    adjunction = de_rham_adjunction(QQ)
+    adjunction = CommutativeAlgebras(QQ).de_rham_adjunction()
+    assert adjunction.left_adjoint() is CommutativeAlgebras(QQ).de_rham()
+    assert adjunction.right_adjoint() is DifferentialGradedAlgebras(QQ).degree_zero_algebra()
     target = adjunction.left_adjoint()(degree_zero)
     algebra_map = Algebras(source.base_ring()).Associative().Unital().Mor(source, degree_zero)({"x": t**2})
 

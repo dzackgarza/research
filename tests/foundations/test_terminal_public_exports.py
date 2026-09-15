@@ -167,6 +167,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "bilinear_free_form_adjunction",
         "quadratic_free_form_adjunction",
         "cochain_underlying_graded_module_functor",
+        "de_rham_adjunction",
+        "degree_zero_dga_functor",
         "base_change_adjunction",
         "restriction_coextension_adjunction",
         "algebra_base_change_adjunction",

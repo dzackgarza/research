@@ -326,12 +326,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 from dzack_research.preamble.categories.functors.de_rham import (
     DeRhamFunctor as DeRhamFunctor,
 )
-from dzack_research.preamble.categories.functors.de_rham import (
-    de_rham_adjunction as de_rham_adjunction,
-)
-from dzack_research.preamble.categories.functors.de_rham import (
-    degree_zero_dga_functor as degree_zero_dga_functor,
-)
 from dzack_research.preamble.categories.functors.free_algebras import (
     AlternatingAlgebraFunctor as AlternatingAlgebraFunctor,
 )

@@ -481,6 +481,14 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
 
         return _de_rham_functor(self.base_ring())
 
+    def de_rham_adjunction(self):
+        r"""Return the algebraic de Rham/degree-zero adjunction over this base."""
+        from dzack_research.preamble.categories.functors.de_rham import (
+            _de_rham_adjunction,
+        )
+
+        return _de_rham_adjunction(self.base_ring())
+
     def de_rham_cohomology(self, degree):
         r"""Return ``H^degree_dR(-/R)`` on this commutative algebra category."""
         from dzack_research.preamble.categories.functors.cohomology import (

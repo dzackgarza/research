@@ -173,12 +173,12 @@ def _de_rham_functor(base_ring) -> DeRhamFunctor:
 
 
 @cached_function
-def degree_zero_dga_functor(base_ring) -> DegreeZeroDGAFunctor:
+def _degree_zero_dga_functor(base_ring) -> DegreeZeroDGAFunctor:
     return DegreeZeroDGAFunctor(base_ring)
 
 
 @cached_function
-def de_rham_adjunction(base_ring) -> DeRhamAdjunction:
+def _de_rham_adjunction(base_ring) -> DeRhamAdjunction:
     return DeRhamAdjunction(base_ring)
 
 
@@ -186,6 +186,4 @@ __all__ = [
     "DeRhamAdjunction",
     "DeRhamFunctor",
     "DegreeZeroDGAFunctor",
-    "de_rham_adjunction",
-    "degree_zero_dga_functor",
 ]

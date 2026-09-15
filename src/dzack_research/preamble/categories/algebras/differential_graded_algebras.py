@@ -98,6 +98,14 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
     _HomCategory = None
 
+    def degree_zero_algebra(self):
+        r"""Return the functor taking a DGA to its degree-zero algebra."""
+        from dzack_research.preamble.categories.functors.de_rham import (
+            _degree_zero_dga_functor,
+        )
+
+        return _degree_zero_dga_functor(self.base_ring())
+
     def cohomology_algebra(self):
         r"""Return the graded cohomology-algebra functor ``H^*`` on this category."""
         from dzack_research.preamble.categories.functors.cohomology import (
