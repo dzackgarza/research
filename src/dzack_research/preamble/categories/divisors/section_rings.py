@@ -5,7 +5,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
-    AffineSemigroupAlgebra,
+    AffineSemigroupAlgebras,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -323,9 +323,8 @@ def _line_bundle_section_ring(category, bundle):
     if not semigroup_generators:
         raise ArithmeticError("a nonnegative projective O(d) must have a degree-one section")
     names = tuple(f"s{position}" for position in range(len(semigroup_generators)))
-    return AffineSemigroupAlgebra(
+    return AffineSemigroupAlgebras(category.base_ring())(
         semigroup_generators,
-        category.base_ring(),
         names=names,
         extra_categories=(category,),
         extra_construction_data=(
@@ -365,9 +364,8 @@ def _toric_divisor_section_ring(category, scheme, divisor):
         tuple(int(entry) for entry in vector)
         for vector in _SageCone(cone_rays).Hilbert_basis()
     )
-    return AffineSemigroupAlgebra(
+    return AffineSemigroupAlgebras(category.base_ring())(
         hilbert_basis,
-        category.base_ring(),
         names=tuple(f"s{position}" for position in range(len(hilbert_basis))),
         extra_categories=(category, OwnedIntegralDomains()),
         extra_construction_data=(
