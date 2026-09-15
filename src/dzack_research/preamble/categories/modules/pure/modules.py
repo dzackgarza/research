@@ -22,10 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
-    CoconeCategory,
-    ConeCategory,
-    CoproductCoconeCategory,
-    ProductConeCategory,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
     _discrete_diagram,
@@ -481,7 +477,7 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             product = self.biproduct(family)
             diagram = _discrete_diagram(family, self)
-            universal_cone = ProductConeCategory(diagram).cone(
+            universal_cone = (diagram).ProductCones().cone(
                 product,
                 lambda index: product.projection(index.value()),
             )
@@ -504,7 +500,7 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             coproduct = self.biproduct(family)
             diagram = _discrete_diagram(family, self)
-            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
                 lambda index: coproduct.injection(index.value()),
             )
@@ -542,7 +538,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 left_morphism, right_morphism, ambient_modules
             )
             shape = diagram.domain()
-            universal_cone = ConeCategory(diagram).cone(
+            universal_cone = (diagram).Cones().cone(
                 equalizer,
                 lambda index: (
                     inclusion
@@ -612,7 +608,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 left_morphism, right_morphism, ambient_modules
             )
             shape = diagram.domain()
-            universal_cocone = CoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).Cocones().cocone(
                 coequalizer,
                 lambda index: (
                     projection * left_morphism

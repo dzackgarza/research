@@ -359,12 +359,12 @@ def _is_owned_object(parent: Parent) -> bool:
 
 def _cone_on(source: Parent):
     diagram = _one_object_diagram(source)
-    return ConeCategory(diagram).cone(source, lambda _index: _identity_on(source))
+    return diagram.Cones().cone(source, lambda _index: _identity_on(source))
 
 
 def _cocone_on(source: Parent):
     diagram = _one_object_diagram(source)
-    return CoconeCategory(diagram).cocone(source, lambda _index: _identity_on(source))
+    return diagram.Cocones().cocone(source, lambda _index: _identity_on(source))
 
 
 def _vector_stabilizer(lattice):

@@ -232,6 +232,40 @@ class Functor(SageObject):
 
         return RestrictedDiagram(self, indexing_functor)
 
+    def Cones(self):
+        r"""Return the category of cones over this diagram."""
+        from dzack_research.preamble.categories.abstract_categories.products import ConeCategory
+
+        return ConeCategory(self)
+
+    def Cocones(self):
+        r"""Return the category of cocones under this diagram."""
+        from dzack_research.preamble.categories.abstract_categories.products import CoconeCategory
+
+        return CoconeCategory(self)
+
+    def ProductCones(self):
+        r"""Return the category of product cones over this discrete diagram."""
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            ProductConeCategory,
+        )
+
+        return ProductConeCategory(self)
+
+    def CoproductCocones(self):
+        r"""Return the category of coproduct cocones under this discrete diagram."""
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            CoproductCoconeCategory,
+        )
+
+        return CoproductCoconeCategory(self)
+
+    def Spans(self):
+        r"""Return the span category carried by this discrete diagram."""
+        from dzack_research.preamble.categories.abstract_categories.products import SpanCategory
+
+        return SpanCategory(self)
+
     def functor_category(self):
         r"""Return the represented functor category containing this functor."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat

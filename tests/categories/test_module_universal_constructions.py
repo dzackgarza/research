@@ -3,9 +3,7 @@ import pytest
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
-    CoconeCategory,
     ColimitsOfCategory,
-    ConeCategory,
     DirectedSystem,
     FiniteSequenceDiagram,
     InverseSystem,
@@ -46,7 +44,7 @@ def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
     assert left * inclusion == right * inclusion
 
     diagonal = probe.module_category().Mor(probe, plane)({"t": x + y})
-    cone = ConeCategory(diagram).cone(
+    cone = (diagram).Cones().cone(
         probe,
         lambda index: diagonal if index is shape.source() else left * diagonal,
     )
@@ -78,7 +76,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
     assert projection * left == projection * right
 
     summation = plane.module_category().Mor(plane, target)({"x": z, "y": z})
-    cocone = CoconeCategory(diagram).cocone(
+    cocone = (diagram).Cocones().cocone(
         target,
         lambda index: summation * left if index is shape.source() else summation,
     )
@@ -191,7 +189,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     product_shape = product.diagram().domain()
     to_left = probe.module_category().Mor(probe, left)({"t": 2 * x})
     to_right = probe.module_category().Mor(probe, right)({"t": 3 * y})
-    cone = ConeCategory(product.diagram()).cone(
+    cone = (product.diagram()).Cones().cone(
         probe,
         lambda index: to_left if int(index.value()) == 0 else to_right,
     )
@@ -204,7 +202,7 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     coproduct_shape = coproduct.diagram().domain()
     from_left = left.module_category().Mor(left, probe)({"x": 5 * t})
     from_right = right.module_category().Mor(right, probe)({"y": 7 * t})
-    cocone = CoconeCategory(coproduct.diagram()).cocone(
+    cocone = (coproduct.diagram()).Cocones().cocone(
         probe,
         lambda index: from_left if int(index.value()) == 0 else from_right,
     )
@@ -229,7 +227,7 @@ def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> 
     assert product.object() is not coproduct.object()
 
     probe = finite_ordered_set(("a", "b"))
-    product_cone = ConeCategory(product.diagram()).cone(
+    product_cone = (product.diagram()).Cones().cone(
         probe,
         lambda _index: None,
     )
@@ -237,7 +235,7 @@ def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> 
     assert into_terminal.domain() is probe
     assert into_terminal.codomain() is product.object()
 
-    coproduct_cocone = CoconeCategory(coproduct.diagram()).cocone(
+    coproduct_cocone = (coproduct.diagram()).Cocones().cocone(
         probe,
         lambda _index: None,
     )
@@ -264,7 +262,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     to_zero = probe.module_category().Mor(probe, line)({"t": e})
     to_one = twice * to_zero
     to_two = thrice * to_one
-    cone = ConeCategory(diagram).cone(
+    cone = (diagram).Cones().cone(
         probe,
         lambda index: (to_zero, to_one, to_two)[index.position()],
     )
@@ -280,7 +278,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     from_two = line.module_category().Mor(line, probe)({"e": t})
     assert colimit.costructure_morphism(shape(1)) * twice == colimit.costructure_morphism(shape(0))
     assert colimit.costructure_morphism(shape(2)) * thrice == colimit.costructure_morphism(shape(1))
-    cocone = CoconeCategory(diagram).cocone(
+    cocone = (diagram).Cocones().cocone(
         probe,
         lambda index: (from_zero, from_one, from_two)[index.position()],
     )

@@ -628,7 +628,7 @@ class SelectedLimitConstruction(SageObject):
         if cone.diagram() is not self.diagram():
             raise ValueError("the cone to factor must lie over this construction's diagram")
         apex_map = self._factorizer(cone)
-        return ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+        return (self.diagram()).Cones().Mor(cone, self.cone())(apex_map)
 
     def induced_map(self, transformation, target_construction):
         r"""Return the map on selected limits induced by ``D -> E``."""
@@ -637,7 +637,7 @@ class SelectedLimitConstruction(SageObject):
         if transformation.target() is not target_construction.diagram():
             raise ValueError("the natural transformation must end at the target limit's diagram")
         target_diagram = target_construction.diagram()
-        induced_cone = ConeCategory(target_diagram).cone(
+        induced_cone = (target_diagram).Cones().cone(
             self.object(),
             lambda index: (
                 transformation.component(index) * self.structure_morphism(index)
@@ -674,7 +674,7 @@ class SelectedColimitConstruction(SageObject):
         if cocone.diagram() is not self.diagram():
             raise ValueError("the cocone to factor must lie under this construction's diagram")
         apex_map = self._factorizer(cocone)
-        return CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
+        return (self.diagram()).Cocones().Mor(self.cocone(), cocone)(apex_map)
 
     def induced_map(self, transformation, target_construction):
         r"""Return the map on selected colimits induced by ``D -> E``."""
@@ -683,7 +683,7 @@ class SelectedColimitConstruction(SageObject):
         if transformation.target() is not target_construction.diagram():
             raise ValueError("the natural transformation must end at the target colimit's diagram")
         source_diagram = self.diagram()
-        induced_cocone = CoconeCategory(source_diagram).cocone(
+        induced_cocone = (source_diagram).Cocones().cocone(
             target_construction.object(),
             lambda index: (
                 target_construction.costructure_morphism(index)
@@ -890,7 +890,7 @@ class ConeCategory(OwnedCategory):
         sage: points = finite_ordered_set(("a", "b"))
         sage: one = finite_ordered_set(("*",))
         sage: diagram = ConstantDiagram(index, Sets(), one)
-        sage: category = ConeCategory(diagram)
+        sage: category = diagram.Cones()
         sage: leg = Sets().Mor(points, one)(lambda point: "*")
         sage: cone = category.cone(points, lambda obj: leg)
         sage: hom = category.Mor(cone, cone)
@@ -899,7 +899,7 @@ class ConeCategory(OwnedCategory):
         sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
         sage: hom(swap) * hom(swap) == hom.identity()
         True
-        sage: cocones = CoconeCategory(diagram)
+        sage: cocones = diagram.Cocones()
         sage: leg = Sets().Mor(one, points)(lambda point: "a")
         sage: cocone = cocones.cocone(points, lambda obj: leg)
         sage: hom = cocones.Mor(cocone, cocone)
@@ -918,7 +918,7 @@ class ConeCategory(OwnedCategory):
         sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
         sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
         sage: diagram = ConstantDiagram(empty_shape, injections, points)
-        sage: category = ConeCategory(diagram)
+        sage: category = diagram.Cones()
         sage: cone = category.cone(points, lambda obj: injections.identity(points))
         sage: hom = category.Mor(cone, cone)
         sage: hom(swap).apex_map() is swap
@@ -1105,7 +1105,7 @@ class SpanCategory(ConeCategory):
     """
 
     def super_categories(self):
-        return [ConeCategory(self.diagram())]
+        return [(self.diagram()).Cones()]
 
     class ParentMethods:
         def target_category(self) -> Category:
@@ -1130,14 +1130,14 @@ class ProductConeCategory(ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
     def super_categories(self):
-        return [ConeCategory(self.diagram())]
+        return [(self.diagram()).Cones()]
 
 
 class CoproductCoconeCategory(CoconeCategory):
     r"""Selected coproduct cocones under one finite discrete diagram."""
 
     def super_categories(self):
-        return [CoconeCategory(self.diagram())]
+        return [(self.diagram()).Cocones()]
 
 
 class LimitsOfCategory(OwnedCategoryBase):
@@ -1224,7 +1224,7 @@ class LimitsOfCategory(OwnedCategoryBase):
         if extremal is not None:
             initial, arrows_from_initial = extremal
             apex = diagram(initial)
-            universal_cone = ConeCategory(diagram).cone(
+            universal_cone = (diagram).Cones().cone(
                 apex,
                 lambda index: diagram(arrows_from_initial[index]),
             )
@@ -1258,7 +1258,7 @@ class LimitsOfCategory(OwnedCategoryBase):
         product_arrows.diagram().domain()
 
         def compatibility_map(use_diagram_arrow):
-            cone = ConeCategory(product_arrows.diagram()).cone(
+            cone = (product_arrows.diagram()).Cones().cone(
                 product_objects.object(),
                 lambda q_index: (
                     diagram(q_index.value())
@@ -1278,7 +1278,7 @@ class LimitsOfCategory(OwnedCategoryBase):
         equalizer = target.equalizer_construction(target_projection, arrow_projection)
         equalizer_shape = equalizer.diagram().domain()
         into_product = equalizer.structure_morphism(equalizer_shape.source())
-        universal_cone = ConeCategory(diagram).cone(
+        universal_cone = (diagram).Cones().cone(
             equalizer.object(),
             lambda index: (
                 product_objects.structure_morphism(p_shape(object_label(index)))
@@ -1287,12 +1287,12 @@ class LimitsOfCategory(OwnedCategoryBase):
         )
 
         def factorizer(cone):
-            product_cone = ConeCategory(product_objects.diagram()).cone(
+            product_cone = (product_objects.diagram()).Cones().cone(
                 cone.apex(),
                 lambda index: cone.structure_morphism(objects.value(index.value())),
             )
             into_product_from_apex = product_objects.factor(product_cone).apex_map()
-            equalizer_cone = ConeCategory(equalizer.diagram()).cone(
+            equalizer_cone = (equalizer.diagram()).Cones().cone(
                 cone.apex(),
                 lambda index: (
                     into_product_from_apex
@@ -1326,7 +1326,7 @@ class ColimitsOfCategory(LimitsOfCategory):
         if extremal is not None:
             terminal, arrows_to_terminal = extremal
             apex = diagram(terminal)
-            universal_cocone = CoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).Cocones().cocone(
                 apex,
                 lambda index: diagram(arrows_to_terminal[index]),
             )
@@ -1360,7 +1360,7 @@ class ColimitsOfCategory(LimitsOfCategory):
         b_shape = coproduct_objects.diagram().domain()
 
         def compatibility_map(use_diagram_arrow):
-            cocone = CoconeCategory(coproduct_arrows.diagram()).cocone(
+            cocone = (coproduct_arrows.diagram()).Cocones().cocone(
                 coproduct_objects.object(),
                 lambda a_index: (
                     coproduct_objects.costructure_morphism(
@@ -1380,7 +1380,7 @@ class ColimitsOfCategory(LimitsOfCategory):
         coequalizer = target.coequalizer_construction(source_injection, arrow_injection)
         coequalizer_shape = coequalizer.diagram().domain()
         from_coproduct = coequalizer.costructure_morphism(coequalizer_shape.target())
-        universal_cocone = CoconeCategory(diagram).cocone(
+        universal_cocone = (diagram).Cocones().cocone(
             coequalizer.object(),
             lambda index: (
                 from_coproduct
@@ -1391,12 +1391,12 @@ class ColimitsOfCategory(LimitsOfCategory):
         )
 
         def factorizer(cocone):
-            object_cocone = CoconeCategory(coproduct_objects.diagram()).cocone(
+            object_cocone = (coproduct_objects.diagram()).Cocones().cocone(
                 cocone.apex(),
                 lambda index: cocone.costructure_morphism(objects.value(index.value())),
             )
             from_objects = coproduct_objects.factor(object_cocone).apex_map()
-            coequalizer_cocone = CoconeCategory(coequalizer.diagram()).cocone(
+            coequalizer_cocone = (coequalizer.diagram()).Cocones().cocone(
                 cocone.apex(),
                 lambda index: (
                     from_objects * source_injection
@@ -1542,12 +1542,9 @@ def _discrete_diagram(factors, target_category=None):
 
 __all__ = [
     "BiproductCategory",
-    "CoconeCategory",
     "CoconeMorphism",
     "ColimitsOfCategory",
-    "ConeCategory",
     "ConeMorphism",
-    "CoproductCoconeCategory",
     "CoproductsOfCategory",
     "DiagramCategory",
     "DirectSumCategory",
@@ -1559,11 +1556,9 @@ __all__ = [
     "ParallelPairCategory",
     "ParallelPairDiagram",
     "PosetCategory",
-    "ProductConeCategory",
     "ProductsOfCategory",
     "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
-    "SpanCategory",
     "TensorProductCategory",
 ]

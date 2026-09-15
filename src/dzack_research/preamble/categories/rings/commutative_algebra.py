@@ -24,7 +24,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
-    ConeCategory,
     InverseSystem,
     PosetCategory,
     SelectedLimitConstruction,
@@ -1809,7 +1808,7 @@ class AdicCompletions(Category):
         def adic_limit_cone(self):
             r"""Return the canonical cone ``A_hat -> (A/I^n)_n``."""
             system = self.adic_inverse_system()
-            return ConeCategory(system).cone(
+            return (system).Cones().cone(
                 self,
                 lambda index: self.adic_projection(system.exponent(index)),
             )

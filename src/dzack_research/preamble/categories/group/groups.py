@@ -1897,7 +1897,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             from sage.groups.perm_gps.permgroup import PermutationGroup
 
             from dzack_research.preamble.categories.abstract_categories.products import (
-                ProductConeCategory,
                 SelectedLimitConstruction,
                 _discrete_diagram,
                 _finite_factor_family,
@@ -1929,7 +1928,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     libgap.Projection(product_engine, position)
                 )
 
-            universal_cone = ProductConeCategory(diagram).cone(
+            universal_cone = (diagram).ProductCones().cone(
                 product,
                 lambda index: projection(index.value()),
             )
@@ -1967,7 +1966,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             group; no GAP group or mapping crosses the public boundary.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
-                CoproductCoconeCategory,
                 SelectedColimitConstruction,
                 _discrete_diagram,
                 _finite_factor_family,
@@ -2026,7 +2024,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     presentation_isomorphisms[position] * embeddings[position]
                 )
 
-            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
                 lambda index: injection(index.value()),
             )

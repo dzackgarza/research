@@ -16,10 +16,6 @@ from dzack_research.preamble.categories.abstract_categories.functors import (
     ConstantDiagram,
     DiscreteCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.products import (
-    CoconeCategory,
-    ConeCategory,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -35,7 +31,7 @@ def test_cone_retains_projection_and_nonidentity_apex_maps() -> None:
     diagram, one = _one_object_diagram()
     points = finite_ordered_set(("a", "b"))
     leg = Sets().Mor(points, one)(lambda _point: "*")
-    cones = ConeCategory(diagram)
+    cones = (diagram).Cones()
     cone = cones.cone(points, lambda _obj: leg)
     hom = cones.Mor(cone, cone)
     swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
@@ -51,7 +47,7 @@ def test_cocone_retains_injection_and_composes_apex_maps() -> None:
     diagram, one = _one_object_diagram()
     points = finite_ordered_set(("a", "b"))
     leg = Sets().Mor(one, points)(lambda _point: "a")
-    cocones = CoconeCategory(diagram)
+    cocones = (diagram).Cocones()
     cocone = cocones.cocone(points, lambda _obj: leg)
     hom = cocones.Mor(cocone, cocone)
     collapse_map = Sets().Mor(points, points)(lambda _point: "a")
@@ -69,7 +65,7 @@ def test_cone_apex_map_must_belong_to_the_target_category_even_for_empty_diagram
     empty = finite_ordered_set(())
     injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
     diagram = ConstantDiagram(DiscreteCategory(empty), injections, points)
-    cones = ConeCategory(diagram)
+    cones = (diagram).Cones()
     cone = cones.cone(points, lambda _obj: injections.identity(points))
     hom = cones.Mor(cone, cone)
     swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")

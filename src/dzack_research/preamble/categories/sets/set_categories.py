@@ -713,7 +713,6 @@ class Sets(OwnedCategory):
 
         def _categorical_product_construction(self, factors):
             from dzack_research.preamble.categories.abstract_categories.products import (
-                ProductConeCategory,
                 SelectedLimitConstruction,
                 _discrete_diagram,
                 _finite_factor_family,
@@ -724,7 +723,7 @@ class Sets(OwnedCategory):
                 raise TypeError("a set product requires set-valued factors")
             product = _cartesian_product_of_finite_family(family)
             diagram = _discrete_diagram(family, self)
-            universal_cone = ProductConeCategory(diagram).cone(
+            universal_cone = (diagram).ProductCones().cone(
                 product,
                 lambda index: product.projection(index.value()),
             )
@@ -773,7 +772,6 @@ class Sets(OwnedCategory):
 
         def _categorical_coproduct_construction(self, factors):
             from dzack_research.preamble.categories.abstract_categories.products import (
-                CoproductCoconeCategory,
                 SelectedColimitConstruction,
                 _discrete_diagram,
                 _finite_factor_family,
@@ -784,7 +782,7 @@ class Sets(OwnedCategory):
                 raise TypeError("a set coproduct requires set-valued factors")
             coproduct = _coproduct_of_finite_family(family)
             diagram = _discrete_diagram(family, self)
-            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).CoproductCocones().cocone(
                 coproduct,
                 lambda index: coproduct.injection(index.value()),
             )
@@ -806,7 +804,6 @@ class Sets(OwnedCategory):
             self, left_morphism, right_morphism
         ):
             from dzack_research.preamble.categories.abstract_categories.products import (
-                CoconeCategory,
                 SelectedColimitConstruction,
                 _parallel_pair_diagram,
             )
@@ -872,7 +869,7 @@ class Sets(OwnedCategory):
                 left_morphism, right_morphism, self
             )
             shape = diagram.domain()
-            universal_cocone = CoconeCategory(diagram).cocone(
+            universal_cocone = (diagram).Cocones().cocone(
                 quotient,
                 lambda index: (
                     projection * left_morphism

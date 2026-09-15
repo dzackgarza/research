@@ -71,10 +71,6 @@ def test_group_coproduct_is_the_owned_free_product() -> None:
 
 
 def test_group_coproduct_factorization_extends_the_factor_maps() -> None:
-    from dzack_research.preamble.categories.abstract_categories import (
-        CoproductCoconeCategory,
-    )
-
     two = Groups.C(2)
     three = Groups.C(3)
     target = Groups.S(3)
@@ -86,7 +82,7 @@ def test_group_coproduct_factorization_extends_the_factor_maps() -> None:
     three_generator = three.group_generators()[0]
     first = two.Mor(target)({two_generator: target((1, 2))})
     second = three.Mor(target)({three_generator: target((1, 2, 3))})
-    cocone = CoproductCoconeCategory(diagram).cocone(
+    cocone = (diagram).CoproductCocones().cocone(
         target,
         lambda index: first if index is first_index else second,
     )
