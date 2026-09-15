@@ -4,9 +4,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -224,10 +221,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 changed_source_section = changed_source.linear_combination(
                     {
                         label: target_ring(ring_map(coefficient))
-                        for label, coefficient in module_coefficients(
-                            source_section,
-                            source_sections,
-                        ).items()
+                        for label, coefficient in source_sections.framing_coefficients(source_section).items()
                     }
                 )
                 target_section = comparison(changed_source_section)

@@ -20,9 +20,6 @@ from sage.structure.element import Element
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
     FinitelyGeneratedFreeModules,
@@ -48,7 +45,7 @@ def _engine_lattice(module):
 
 def _engine_vector(module, element):
     r"""Coordinates of an owned free-module element in its chosen frame."""
-    coefficients = module_coefficients(module(element), module)
+    coefficients = module.framing_coefficients(module(element))
     return _engine_lattice(module)(
         [int(coefficients.get(label, 0)) for label in module.module_generating_set()]
     )
@@ -143,7 +140,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             )
         integers = _integers()
         paired = pairing(character, cocharacter)
-        coefficients = module_coefficients(paired, values)
+        coefficients = values.framing_coefficients(paired)
         return integers(coefficients.get(labels[0], integers.zero()))
 
     def _repr_object_names(self):

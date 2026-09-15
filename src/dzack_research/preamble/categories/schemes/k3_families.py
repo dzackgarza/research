@@ -38,9 +38,6 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpace,
@@ -314,9 +311,7 @@ class HorikawaK3DoubleCover(SageObject):
             index, -self.base_ring().one()
         )
         z = local.algebra_generator("z")
-        coefficients = module_coefficients(
-            deck.coordinate_algebra_morphism()(z), local
-        )
+        coefficients = local.framing_coefficients(deck.coordinate_algebra_morphism()(z))
         expected = local.base_ring().algebra_structure_morphism()(
             -self.base_ring().one()
         )

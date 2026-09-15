@@ -2,9 +2,6 @@ r"""Toric blowups of smooth surfaces at torus-fixed points."""
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import _refine_scheme
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
@@ -86,7 +83,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             source_group = source.weil_divisor_group()
             target_group = self.weil_divisor_group()
             divisor = source_group(divisor)
-            coefficients = module_coefficients(divisor, source_group)
+            coefficients = source_group.framing_coefficients(divisor)
             return target_group.linear_combination(
                 {
                     self._refined_ray_for_source_ray(ray): coefficient
@@ -113,7 +110,7 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
                 pulled = self.blowup_morphism().pullback_divisor(
                     source_weil.module_generator(label)
                 )
-                coefficients = module_coefficients(pulled, target_weil)
+                coefficients = target_weil.framing_coefficients(pulled)
                 return target_picard.linear_combination(coefficients)
 
             return source_picard.module_category().Mor(source_picard, target_picard)(image)

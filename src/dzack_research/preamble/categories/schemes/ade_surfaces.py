@@ -26,7 +26,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -756,7 +755,7 @@ class AT21ToricADEPair(SageObject):
         from dzack_research.preamble.categories.schemes.polytopes import LatticePolygon
 
         sections = self.branch_section_space()
-        coefficients = module_coefficients(sections(section), sections)
+        coefficients = sections.framing_coefficients(sections(section))
         support = tuple(
             tuple(int(coordinate) for coordinate in character)
             for character, coefficient in coefficients.items()
@@ -849,10 +848,7 @@ class AT21ADEDoubleCover(SageObject):
             for character in ambient_sections.module_generating_set()
         }
         coefficients = {}
-        branch_coefficients = module_coefficients(
-            self._branch_section,
-            base_pair.branch_section_space(),
-        )
+        branch_coefficients = base_pair.branch_section_space().framing_coefficients(self._branch_section)
         for character, coefficient in branch_coefficients.items():
             key = (*tuple(int(value) for value in character), 0)
             if key not in ambient_by_coordinates:
