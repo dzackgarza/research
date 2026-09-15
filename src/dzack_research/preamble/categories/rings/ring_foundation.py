@@ -1280,9 +1280,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 built the same way.
                 """
                 from dzack_research.preamble.categories.rings.commutative_ideals import (
-                    CommutativeIdeal,
+                    _commutative_ideal,
                 )
 
+                if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
+                    generators = tuple(generators[0])
                 if self in LocalizationRings():
                     source = self.localization_source()
                     numerators = tuple(
@@ -1290,7 +1292,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                         for generator in generators
                     )
                     return source.ideal(*numerators).extension_to_localization(self)
-                return CommutativeIdeal(self, *generators)
+                return _commutative_ideal(self, tuple(generators))
 
             def quotient_ring(self, ideal):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (

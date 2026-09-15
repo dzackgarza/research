@@ -830,14 +830,6 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
     )
 
 
-def CommutativeIdeal(ring, *generators):
-    r"""Return ``(generators) <= R`` with its selected module inclusion."""
-    source = _own_ring(ring)
-    if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
-        generators = tuple(generators[0])
-    return _commutative_ideal(source, generators)
-
-
 @cached_function
 def _commutative_ideal(source, generators):
     r"""Return the one ideal of ``R`` built from this generating family.
@@ -931,4 +923,4 @@ def _commutative_ideal(source, generators):
     return ideal
 
 
-__all__ = ["CommutativeIdeal", "CommutativeIdeals"]
+__all__ = ["CommutativeIdeals"]

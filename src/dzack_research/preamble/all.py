@@ -850,7 +850,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     AdicallyCompleteRings,
     AdicCompletions,
     ArtinianRings,
-    CommutativeIdeal,
     CommutativeIdeals,
     CommutativeRings,
     CompleteLocalRings,

@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     Zp,
 )
 from dzack_research.preamble.categories.rings.commutative_ideals import (
-    CommutativeIdeal,
     CommutativeIdeals,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
@@ -244,7 +243,6 @@ __all__ = [
     "AdicCompletions",
     "AdicallyCompleteRings",
     "ArtinianRings",
-    "CommutativeIdeal",
     "CommutativeIdeals",
     "CommutativeRings",
     "OwnedCommutativeRings",
