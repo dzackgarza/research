@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _finitely_generated_free_placement(ring, module_generating_set):
@@ -553,7 +553,7 @@ def _new_sparse_free_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return object_of(Cat().meet(tuple(categories)), **data)
+    return _object_of(Cat().meet(tuple(categories)), **data)
 
 
 

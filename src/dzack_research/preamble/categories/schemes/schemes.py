@@ -1146,9 +1146,9 @@ class Schemes(OwnedCategoryOverBaseRing):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     PrimeSpectra,
                 )
-                from dzack_research.preamble.owned_category import object_of
+                from dzack_research.preamble.owned_category import _object_of
 
-                return object_of(
+                return _object_of(
                     PrimeSpectra(),
                     ring=self.coordinate_algebra(),
                     ringed_space=self,

@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class OppositeMorphism(Morphism):
@@ -144,7 +144,7 @@ class _OppositeCategory(OwnedCategory):
     def object(self, underlying_object: Parent) -> Parent:
         if underlying_object not in self.base_category():
             raise TypeError("the object lies outside the base category")
-        return object_of(self, underlying_object=underlying_object)
+        return _object_of(self, underlying_object=underlying_object)
 
     __call__ = object
 
@@ -375,7 +375,7 @@ class _ProductCategory(OwnedCategory):
     def pair(self, first: Parent, second: Parent) -> Parent:
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError("the pair lies outside the product category")
-        return object_of(self, first=first, second=second)
+        return _object_of(self, first=first, second=second)
 
     __call__ = pair
 

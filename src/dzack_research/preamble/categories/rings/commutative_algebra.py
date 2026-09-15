@@ -69,7 +69,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetInclusion,
     UncountableSets,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -2381,7 +2381,7 @@ def _quotient_ring(source, defining_ideal):
     if dimension == 0:
         placements.append(OwnedArtinianRings())
 
-    return object_of(
+    return _object_of(
         Category.join((QuotientRings(), CommutativeAlgebras(source), *placements)),
         source=source,
         defining_ideal=defining_ideal,
@@ -2676,7 +2676,7 @@ def _finite_generated_localization(source, submonoid):
         algebra_categories = [Algebras(algebra_base).Associative().Unital(), OwnedAlgebras(algebra_base)]
         if algebra_source in CommutativeAlgebras(algebra_base):
             algebra_categories.append(CommutativeAlgebras(algebra_base))
-    return object_of(
+    return _object_of(
         Category.join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
@@ -2717,7 +2717,7 @@ def _fraction_field_localization(source, submonoid):
     placements = [OwnedIntegralDomains(), OwnedFields()]
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
-    return object_of(
+    return _object_of(
         Category.join((LocalizationRings(), *placements)),
         source=source,
         submonoid=submonoid,
@@ -3025,7 +3025,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         placements.extend((Algebras(base).Associative().Unital(), OwnedAlgebras(base)))
         if source in CommutativeAlgebras(base):
             placements.append(CommutativeAlgebras(base))
-    return object_of(
+    return _object_of(
         Category.join([PrimeLocalizations(), *placements]),
         source=source,
         submonoid=submonoid,

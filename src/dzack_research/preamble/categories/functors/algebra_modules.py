@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class _UnderlyingAlgebraModules(OwnedCategoryOverBaseRing):
@@ -162,7 +162,7 @@ class _UnderlyingAlgebraModules(OwnedCategoryOverBaseRing):
 
 @cached_function(key=lambda algebra, ring: (id(algebra), id(ring)))
 def _legacy_algebra_underlying_module(algebra, ring):
-    return object_of(
+    return _object_of(
         _UnderlyingAlgebraModules(ring),
         algebra=algebra,
         base_ring=ring,

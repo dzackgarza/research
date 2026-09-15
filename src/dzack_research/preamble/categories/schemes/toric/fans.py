@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _integers():
@@ -168,14 +168,14 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             engine_cones.append(_SageCone(engine_rays, lattice=engine_lattice))
         if not engine_cones:
             engine_cones = [_SageCone([], lattice=engine_lattice)]
-        return object_of(self, engine_fan=_SageFan(engine_cones, lattice=engine_lattice))
+        return _object_of(self, engine_fan=_SageFan(engine_cones, lattice=engine_lattice))
 
     def from_engine_fan(self, engine_fan):
         r"""Adopt one engine fan whose lattice rank matches ``N``."""
         assert int(engine_fan.lattice_dim()) == int(self.lattice().module_rank()), (
             "the engine fan lives in a lattice of the wrong rank"
         )
-        return object_of(self, engine_fan=engine_fan)
+        return _object_of(self, engine_fan=engine_fan)
 
     @cached_method
     def trivial_fan(self):

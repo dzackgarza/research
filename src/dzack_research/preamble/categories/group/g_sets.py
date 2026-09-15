@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     Sets,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import refine
 
 
@@ -578,7 +578,7 @@ def _finite_g_set_from_action(group, point_set, action):
             for group_generator in group.group_generators()
         }
     )
-    return object_of(
+    return _object_of(
         FiniteGSets(permutation_representation.domain()),
         point_set=point_set,
         permutation_representation=permutation_representation,

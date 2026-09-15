@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _primitive_integral_coordinates(coordinates):
@@ -170,9 +170,9 @@ class RationalPolyhedralCones(OwnedCategory):
             from dzack_research.preamble.categories.chamber_complexes import (
                 WeylChamberComplexes,
             )
-            from dzack_research.preamble.owned_category import object_of
+            from dzack_research.preamble.owned_category import _object_of
 
-            return object_of(
+            return _object_of(
                 WeylChamberComplexes(),
                 fundamental_chamber=self,
             )
@@ -371,7 +371,7 @@ def _rational_polyhedral_cone(
     wall_roots=None,
     complete=None,
 ):
-    return object_of(
+    return _object_of(
         RationalPolyhedralCones(),
         lattice=lattice,
         halfspace_covectors=tuple(halfspace_covectors),

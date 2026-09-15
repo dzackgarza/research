@@ -64,9 +64,9 @@ class GSetOrbitsFunctor(Functor):
         return self._group
 
     def _apply_object(self, g_set):
-        from dzack_research.preamble.owned_category import object_of
+        from dzack_research.preamble.owned_category import _object_of
 
-        return object_of(OrbitSets(), g_set=g_set)
+        return _object_of(OrbitSets(), g_set=g_set)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

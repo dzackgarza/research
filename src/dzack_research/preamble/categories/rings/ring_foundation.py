@@ -1360,9 +1360,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     PrimeSpectra,
                 )
-                from dzack_research.preamble.owned_category import object_of
+                from dzack_research.preamble.owned_category import _object_of
 
-                return object_of(PrimeSpectra(), ring=self)
+                return _object_of(PrimeSpectra(), ring=self)
 
             def total_quotient_ring(self):
                 r"""Return ``Q(R) = S^{-1}R`` for ``S`` the regular elements of ``R``.

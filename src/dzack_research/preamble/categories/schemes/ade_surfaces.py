@@ -43,7 +43,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.static_types import ProductOfNaturalNumbers
 
@@ -572,7 +572,7 @@ def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
     vertices, point, decorations = _ade_polygon_data(letter, rank, variant, bool(affine))
     polygon = LatticePolygon(vertices)
     toric_base = polygon.toric_variety(base_ring)
-    return object_of(
+    return _object_of(
         ADELogPairs(toric_base.scheme_base_ring()),
         dynkin_letter=letter,
         dynkin_rank=rank,

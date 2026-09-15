@@ -802,7 +802,7 @@ def _construction_contract_from_type(
                     # ``OwnedParent`` is the terminal host-runtime sink of the
                     # cooperative chain, not a mathematical constructor level.
                     # Counting its ``**rest`` would make every owned contract
-                    # permanently open and would prevent object_of from ever
+                    # permanently open and would prevent _object_of from ever
                     # detecting undeclared public construction data.
                     continue
                 variadic.append(provider)
@@ -866,7 +866,7 @@ def _hom_construction_contract(
     return _construction_contract_from_type(hom, type(hom))
 
 
-def object_of(category: Category, **data: ConstructionData) -> Parent:
+def _object_of(category: Category, **data: ConstructionData) -> Parent:
     r"""The object of ``category`` built from the data its levels declare.
 
     The instantiable class is ``category.parent_class``; this is the one line

@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 IndexT = TypeVar("IndexT")
@@ -223,7 +223,7 @@ class FiniteOrdinalSets(OwnedCategory):
 
     def _call_(self, size):
         r"""Construct the canonical finite ordinal of cardinality ``size``."""
-        return object_of(self, size=size)
+        return _object_of(self, size=size)
 
     class ParentMethods:
         def __init__(self, size: int, **rest) -> None:
@@ -1512,7 +1512,7 @@ class PowerSets(OwnedCategory):
 
     def _call_(self, base_set):
         r"""Construct the power object of ``base_set``."""
-        return object_of(self, base_set=base_set)
+        return _object_of(self, base_set=base_set)
 
     class ParentMethods:
         def __init__(self, base_set: Parent, **rest) -> None:
@@ -1656,7 +1656,7 @@ def _function_set_of(codomain, exponent):
     """
     from dzack_research.preamble.refine import refine
 
-    exponential = object_of(FunctionSets(), codomain=codomain, exponent=exponent)
+    exponential = _object_of(FunctionSets(), codomain=codomain, exponent=exponent)
     if exponent in FiniteSets():
         refine(exponential, FinitelySupportedFunctionSets())
     return exponential
@@ -1732,7 +1732,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def _call_(self, source, subset_cardinality):
         r"""Construct the set of subsets of ``source`` of the stated cardinality."""
-        return object_of(
+        return _object_of(
             self,
             source=source,
             subset_cardinality=subset_cardinality,
@@ -1805,7 +1805,7 @@ class FinitePowerSets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
-        return object_of(self, source=source)
+        return _object_of(self, source=source)
 
     class ParentMethods:
         def __init__(self, source: Parent, **rest) -> None:
@@ -2578,7 +2578,7 @@ def _coproduct_of_finite_family(family: IndexedFamily) -> Parent:
 
 @cached_function(key=lambda index_set, family: (id(index_set), id(family)))
 def _coproduct_of_indexed_family[IndexT](index_set: Parent, family: Callable[[IndexT], Parent]) -> Parent:
-    return object_of(CoproductsOfSets(), index_set=index_set, family=family)
+    return _object_of(CoproductsOfSets(), index_set=index_set, family=family)
 
 
 def _coproduct_of_family[IndexT](
@@ -2856,7 +2856,7 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
-NN = object_of(NaturalNumberSets())
+NN = _object_of(NaturalNumberSets())
 
 
 class FinitelySupportedFunctionSets(OwnedCategory):

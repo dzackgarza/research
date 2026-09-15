@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class CharacterSets(OwnedParameterizedCategory):
@@ -168,7 +168,7 @@ def _character_set(group):
     group = _owned_group(group)
     if group not in FiniteGroups():
         raise TypeError("ordinary finite character sets require a finite group")
-    return object_of(CharacterSets(group), group=group)
+    return _object_of(CharacterSets(group), group=group)
 
 
 __all__ = [

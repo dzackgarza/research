@@ -79,7 +79,7 @@ from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 if TYPE_CHECKING:
     # What a module of functions is offered as an element: a symbolic
@@ -515,7 +515,7 @@ def FunctionModule(base_ring: Ring, kind: str, domain_name: str) -> Parent:
     Cached on its arguments: one module per $(R,\text{kind},\text{domain})$, or
     two parents print alike and their elements refuse to add.
     """
-    return object_of(
+    return _object_of(
         FunctionModules(base_ring),
         kind=kind,
         domain_name=domain_name,

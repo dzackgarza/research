@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class ComplexManifoldPoint(SageObject):
@@ -171,7 +171,7 @@ class TopologicalManifolds(OwnedCategory):
             structure="topological",
             unique_tag=object(),
         )
-        return object_of(
+        return _object_of(
             self,
             engine_manifold=engine,
             manifold_dimension=dimension,
@@ -338,7 +338,7 @@ class DifferentiableManifolds(OwnedCategory):
             diff_degree=degree,
             unique_tag=object(),
         )
-        return object_of(
+        return _object_of(
             self,
             engine_manifold=engine,
             manifold_dimension=dimension,
@@ -372,7 +372,7 @@ class SmoothManifolds(OwnedCategory):
             structure="smooth",
             unique_tag=object(),
         )
-        return object_of(
+        return _object_of(
             self,
             engine_manifold=engine,
             manifold_dimension=dimension,
@@ -519,7 +519,7 @@ class ComplexManifolds(OwnedCategory):
             structure="smooth",
             unique_tag=object(),
         )
-        return object_of(
+        return _object_of(
             self,
             engine_manifold=engine,
             manifold_dimension=dimension,
@@ -554,7 +554,7 @@ class ComplexManifolds(OwnedCategory):
             coord_def={ambient_chart._engine_chart(): restriction},
         )
         engine_chart = ambient_chart._engine_chart().restrict(engine_open)
-        opened = object_of(
+        opened = _object_of(
             self,
             engine_manifold=engine_open,
             manifold_dimension=ambient.dimension(),

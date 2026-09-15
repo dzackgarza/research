@@ -197,7 +197,7 @@ class Modules(OwnedCategoryOverBaseRing):
         ``Modules(R)(X, rho)`` states those same endpoints explicitly.
         """
         from dzack_research.preamble.categories.modules.general_modules import GeneralModules
-        from dzack_research.preamble.owned_category import object_of
+        from dzack_research.preamble.owned_category import _object_of
 
         if scalar_action is None:
             scalar_action = datum
@@ -211,7 +211,7 @@ class Modules(OwnedCategoryOverBaseRing):
         assert scalar_action.codomain() is AdditiveGroups().AdditiveCommutative().End(module), (
             f"the scalar action must land in the additive endomorphism ring of {module}"
         )
-        return object_of(
+        return _object_of(
             GeneralModules(self.base_ring()),
             base_ring=self.base_ring(),
             rho=scalar_action,

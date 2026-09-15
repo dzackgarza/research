@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
@@ -347,7 +347,7 @@ def _owned_fraction_field_quotient(engine: QmodnZ) -> Parent:
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():
         placement.append(TorsionModules(base_ring))
-    return object_of(Category.join(placement), engine=engine)
+    return _object_of(Category.join(placement), engine=engine)
 
 
 def _from_qmodnz_backend(quotient):

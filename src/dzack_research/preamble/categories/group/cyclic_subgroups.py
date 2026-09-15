@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 __all__ = ["CyclicGroups"]
@@ -58,7 +58,7 @@ class CyclicGroups(OwnedCategory):
         placement = [self, Subgroups(supergroup)]
         if supergroup in FiniteGroups():
             placement.append(FiniteAbelianGroups())
-        return object_of(
+        return _object_of(
             Cat().meet(placement),
             supergroup=supergroup,
             generator=supergroup(generator),

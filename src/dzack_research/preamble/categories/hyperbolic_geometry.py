@@ -7,7 +7,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _primitive_on_selected_ray(lattice, vector, timelike):
@@ -152,7 +152,7 @@ class HyperbolicSpaces(OwnedCategory):
                 raise ValueError("a hyperbolic polyhedron cone must live in the space's lattice")
             if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
                 raise ValueError("the cone is not contained in the selected closed positive cone")
-            return object_of(HyperbolicPolyhedra(), space=self, cone=cone)
+            return _object_of(HyperbolicPolyhedra(), space=self, cone=cone)
 
         def _repr_(self):
             return f"Hyperbolic projectivization of {self._component}"
@@ -213,11 +213,11 @@ class HyperbolicPolyhedra(OwnedCategory):
 
 
 def _positive_cone_component(lattice, timelike):
-    return object_of(PositiveConeComponents(), lattice=lattice, timelike=timelike)
+    return _object_of(PositiveConeComponents(), lattice=lattice, timelike=timelike)
 
 
 def _hyperbolic_space(component):
-    return object_of(HyperbolicSpaces(), component=component)
+    return _object_of(HyperbolicSpaces(), component=component)
 
 
 __all__ = [

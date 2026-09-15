@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Set
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         verify=True,
     ):
         r"""Return the module on ``underlying_set`` with the stated operations."""
-        return object_of(
+        return _object_of(
             self,
             base_ring=self.base_ring(),
             underlying_set=underlying_set,

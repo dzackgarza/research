@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import tensor
 
 
@@ -85,7 +85,7 @@ class RegularPolytopes(OwnedCategory):
         diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
         if not diagram.is_elliptic():
             raise ValueError("this Schlaefli symbol does not define a finite spherical regular polytope")
-        return object_of(
+        return _object_of(
             self,
             schlafli_bonds=finite_ordered_set(bonds),
             symmetry_coxeter_diagram=diagram,
@@ -687,7 +687,7 @@ def _convex_polytope(
     conditions the finer categories state, so the construction decides them
     once and the object is placed accordingly.
     """
-    probe = object_of(
+    probe = _object_of(
         ConvexPolytopes(),
         vertices=vertices,
         lattice=lattice,
@@ -707,7 +707,7 @@ def _convex_polytope(
     )
     if placement is ConvexPolytopes():
         return probe
-    return object_of(
+    return _object_of(
         placement,
         vertices=probe,
         lattice=probe.ambient_lattice(),

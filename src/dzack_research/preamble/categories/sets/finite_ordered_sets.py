@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     TotallyOrderedSets,
     finite_ordinal_set,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
@@ -199,7 +199,7 @@ class OrderedEnumeratedSets(OwnedCategory):
         image_inverse=None,
     ):
         r"""Construct an ordered enumerated set from its chosen enumeration."""
-        return object_of(
+        return _object_of(
             self,
             index_set=index_set,
             element_at=element_at,
@@ -366,7 +366,7 @@ class FiniteOrderedSets(OwnedCategory):
         r"""Construct a finite ordered set from a known finite enumeration."""
         if elements in self:
             return elements
-        return object_of(self, elements=elements)
+        return _object_of(self, elements=elements)
 
     def from_indexed(
         self,
@@ -397,7 +397,7 @@ class FiniteOrderedSets(OwnedCategory):
                 except (TypeError, ValueError):
                     return False
                 return True
-        return object_of(
+        return _object_of(
             self,
             elements=_IndexedFiniteOrderedPresentation(
                 index_set,
@@ -498,7 +498,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
 
     def _call_(self, source, predicate, *, name=None):
         r"""Construct the finite ordered subset cut out by ``predicate``."""
-        return object_of(self, source=source, predicate=predicate, name=name)
+        return _object_of(self, source=source, predicate=predicate, name=name)
 
     class ParentMethods:
         _derived_construction_parameters = frozenset(

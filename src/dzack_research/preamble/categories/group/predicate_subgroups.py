@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):
@@ -51,7 +51,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         character_data_complete=None,
     ):
         r"""Construct the predicate subgroup of this category's ambient group."""
-        return object_of(
+        return _object_of(
             self,
             supergroup=self.base(),
             predicate=predicate,
@@ -298,7 +298,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         if morphism.domain() is not group:
             raise ValueError("the kernel morphism has the wrong domain group")
         identity = morphism.codomain().one()
-        return object_of(
+        return _object_of(
             self,
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
@@ -360,7 +360,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 return morphism(element) in subgroup
         if description is None:
             description = f"{morphism}(g) lies in {subgroup}"
-        return object_of(
+        return _object_of(
             self,
             supergroup=group,
             predicate=predicate,
@@ -410,7 +410,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         group = self.base()
         if description is None:
             description = f"g stabilizes {stabilized_object} {action}"
-        return object_of(
+        return _object_of(
             self,
             supergroup=group,
             predicate=predicate,
@@ -446,7 +446,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
         group = self.base()
         if element not in group:
             raise ValueError(f"{element} is not in {group}")
-        return object_of(
+        return _object_of(
             self,
             supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
@@ -485,7 +485,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         subgroups = tuple(subgroups)
         if any(subgroup.supergroup() is not group for subgroup in subgroups):
             raise ValueError("an intersection requires subgroups of one ambient group")
-        return object_of(
+        return _object_of(
             self,
             supergroup=group,
             predicate=lambda element: all(element in subgroup for subgroup in subgroups),

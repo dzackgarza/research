@@ -56,7 +56,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetInclusion,
     Sets,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _canonical_pid_associate(ring, element):
@@ -1856,7 +1856,7 @@ def _new_presented_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return object_of(Cat().meet(tuple(categories)), **data)
+    return _object_of(Cat().meet(tuple(categories)), **data)
 
 
 def _resolution_over_degrees(module, terms, differentials, augmentation, zero):

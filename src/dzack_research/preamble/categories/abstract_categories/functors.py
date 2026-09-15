@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
@@ -306,7 +306,7 @@ class DiscreteCategory(OwnedCategory):
             raise TypeError("a discrete category is constructed from a set")
         self._object_set = object_set
         self._objects = indexed_family(
-            object_set, lambda value: object_of(self, value=value),
+            object_set, lambda value: _object_of(self, value=value),
             name=f"Objects of the discrete category on {object_set}",
         )
         super().__init__()

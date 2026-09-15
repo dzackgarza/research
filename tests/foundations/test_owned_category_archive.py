@@ -5,7 +5,7 @@ live runtime preserves that protocol and strengthens it with deterministic
 category-graph ordering and validated construction contracts.  These
 specimens record the three semantic invariants the archived public surface
 carried: inherited implementation declarations remain visible, categories
-are objects of ``Cat``, and ``object_of`` constructs the category's own object
+are objects of ``Cat``, and ``_object_of`` constructs the category's own object
 type without changing category identity.
 """
 
@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import (
     OwnedCategoryObject,
     declared_implementation_types,
-    object_of,
+    _object_of,
 )
 from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
@@ -52,7 +52,7 @@ class _DeclarationDerived(_DeclarationBase):
 
 class _ArchiveConstructionCategory(OwnedCategory):
     def an_object(self):
-        return object_of(self, archive_value=0)
+        return _object_of(self, archive_value=0)
 
     class ParentMethods:
         def __init__(self, archive_value, **rest):
@@ -82,7 +82,7 @@ def test_owned_categories_are_objects_of_cat() -> None:
 
 def test_object_of_constructs_the_category_object_type_with_literal_identity() -> None:
     category = _ArchiveConstructionCategory()
-    obj = object_of(category, archive_value=7)
+    obj = _object_of(category, archive_value=7)
 
     assert isinstance(obj, category.ObjectType)
     assert obj.category() is category

@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class FunctorImageMorphism(Morphism):
@@ -147,7 +147,7 @@ class ImageOfFunctor(OwnedCategory):
         if recorded is not None and recorded[0] is preimage:
             return recorded[1]
         image = self.functor()(preimage)
-        presented = object_of(self, preimage=preimage, underlying_image=image)
+        presented = _object_of(self, preimage=preimage, underlying_image=image)
         self._presentations[key] = (preimage, presented)
         return presented
 

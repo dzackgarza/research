@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
@@ -222,7 +222,7 @@ class ArrowCategory(OwnedCategory):
         cached = self._arrow_objects.get(key)
         if cached is not None and cached.arrow() is arrow:
             return cached
-        result = object_of(self, arrow=arrow)
+        result = _object_of(self, arrow=arrow)
         self._arrow_objects[key] = result
         return result
 

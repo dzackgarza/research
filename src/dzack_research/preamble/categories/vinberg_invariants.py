@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     ordered_enumerated_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _projective_line_over(base_ring):
@@ -114,7 +114,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
                         raise ValueError(
                             "a symmetric projective weighting has equal reverse edge weights"
                         )
-        return object_of(
+        return _object_of(
             self,
             base_ring=base_ring,
             vertices=tuple(vertices),
@@ -683,7 +683,7 @@ def _vinberg_invariant_of_bond(bond):
 
 
 def _vinberg_invariant_matrix(base_ring, index_set, numerators, denominators):
-    return object_of(
+    return _object_of(
         VinbergInvariantMatrices(),
         base_ring=base_ring,
         index_set=index_set,

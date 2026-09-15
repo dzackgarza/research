@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class LocalizedModules(OwnedCategoryOverBaseRing):
@@ -521,7 +521,7 @@ def _localized_module(
                 ]
             )
 
-    return object_of(Category.join(placement), **data)
+    return _object_of(Category.join(placement), **data)
 
 
 def _transported_presentation(source_module, localization_ring):

@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
 
@@ -961,7 +961,7 @@ Ordinal = OrdinalSemirings().ElementType
 
 @cached_function
 def Ordinals() -> OrdinalSemiring:
-    return object_of(OrdinalSemirings())
+    return _object_of(OrdinalSemirings())
 
 
 def ordinal(value: Ordinal | SupportsInt) -> Ordinal:
@@ -977,7 +977,7 @@ omega0 = omega(0)
 
 @cached_function
 def _cardinal_with_expression(expression) -> Cardinalities.ObjectType:
-    return object_of(Cardinalities(), expression=expression)
+    return _object_of(Cardinalities(), expression=expression)
 
 
 def cardinal(

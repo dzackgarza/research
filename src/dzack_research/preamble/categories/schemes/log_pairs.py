@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class LogPairs(OwnedCategoryOverBaseRing):
@@ -106,7 +106,7 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
 def _log_pair(log_scheme, boundary_divisor):
     r"""The log pair of a variety and a chosen boundary divisor on it."""
     base = log_scheme.scheme_base_ring()
-    return object_of(
+    return _object_of(
         LogPairs(base),
         log_scheme=log_scheme,
         boundary_divisor=boundary_divisor,
@@ -119,7 +119,7 @@ def _toric_log_pair(toric_variety, boundary_divisor):
     assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
         "the boundary of a toric log pair is a torus-invariant divisor"
     )
-    return object_of(
+    return _object_of(
         ToricLogPairs(base),
         log_scheme=toric_variety,
         boundary_divisor=boundary_divisor,

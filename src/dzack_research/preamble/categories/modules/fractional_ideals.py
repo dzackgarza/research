@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_vector,
@@ -632,7 +632,7 @@ def _fractional_ideal_object(ring, fraction_field, values, integral):
     if integral:
         placement.append(Ideals(ring))
     placement.append(FinitelyGeneratedModules(ring))
-    return object_of(
+    return _object_of(
         Cat().meet(placement),
         base_ring=ring,
         fraction_field=fraction_field,

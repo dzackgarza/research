@@ -213,7 +213,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "subsets of a fixed size": lambda: Sets.Δ[2].subsets_of_size(2),
         "finite subsets": lambda: Sets.Δ[2].finite_subsets(),
         "ordinals": lambda: Ordinals(),
-        # A cardinal is built by ``object_of`` through the owned chain like
+        # A cardinal is built by ``_object_of`` through the owned chain like
         # any other object here -- ``type(cardinal(3))`` is
         # ``Cardinalities.parent_class`` and it is a ``Parent``, not an
         # element -- so the sweep's question is the same question for it.

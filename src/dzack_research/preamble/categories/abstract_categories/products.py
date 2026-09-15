@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
@@ -162,7 +162,7 @@ class PosetCategory(OwnedCategory):
         self._le = le
         self._objects = indexed_family(
             ordered_set,
-            lambda value: object_of(self, value=value),
+            lambda value: _object_of(self, value=value),
             name=f"Objects of the poset category on {ordered_set}",
         )
         super().__init__()
@@ -297,7 +297,7 @@ class FiniteOrdinalCategory(OwnedCategory):
         self._object_set = Sets.Δ[size - 1]
         self._objects = indexed_family(
             self._object_set,
-            lambda position: object_of(self, position=int(position)),
+            lambda position: _object_of(self, position=int(position)),
             name="Objects of a finite ordinal category",
         )
         super().__init__()
@@ -482,7 +482,7 @@ class ParallelPairCategory(OwnedCategory):
         self._positions = finite_ordered_set((0, 1))
         self._objects = indexed_family(
             self._positions,
-            lambda position: object_of(self, position=position),
+            lambda position: _object_of(self, position=position),
             name="Objects of the walking parallel pair",
         )
         super().__init__()
@@ -999,7 +999,7 @@ class ConeCategory(OwnedCategory):
 
         constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(constant, self.diagram(), components)
-        return object_of(self, apex=apex, transformation=transformation)
+        return _object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain: Parent, codomain: Parent) -> ConeHomset:
         if domain not in self or codomain not in self:
@@ -1081,7 +1081,7 @@ class CoconeCategory(OwnedCategory):
 
         constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(self.diagram(), constant, components)
-        return object_of(self, apex=apex, transformation=transformation)
+        return _object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain: Parent, codomain: Parent) -> CoconeHomset:
         if domain not in self or codomain not in self:

@@ -67,7 +67,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import _object_of
 
 
 class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -1257,7 +1257,7 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
             linearized_scalar,
         )
     )
-    return object_of(
+    return _object_of(
         GeneralModules(group_algebra),
         base_ring=group_algebra,
         rho=scalar_action,
