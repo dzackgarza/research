@@ -11,7 +11,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.modules.base_change import base_change_codomain
+from dzack_research.preamble.categories.modules.base_change import _base_change_codomain
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
@@ -485,7 +485,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
-            target_ring = base_change_codomain(self, ring_map)
+            target_ring = _base_change_codomain(self, ring_map)
             return FreshFreeModuleOn(
                 target_ring,
                 self.module_generating_set(),

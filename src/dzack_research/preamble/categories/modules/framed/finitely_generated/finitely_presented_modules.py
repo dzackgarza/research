@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.modules.base_change import base_change_scalar
+from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     framing_morphism,
     module_coefficients,
@@ -1330,7 +1330,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 relation_label: sum(
                     (
                         target.scalar_multiple(
-                            base_change_scalar(ring_map, coefficient),
+                            _base_change_scalar(ring_map, coefficient),
                             target.module_generator(module_label),
                         )
                         for module_label, coefficient in zip(target.module_generating_set(), row, strict=True)

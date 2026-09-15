@@ -21,8 +21,8 @@ from dzack_research.preamble.categories.forms.forms import (
     is_quadratic_form,
 )
 from dzack_research.preamble.categories.modules.base_change import (
-    base_change_codomain,
-    base_change_scalar,
+    _base_change_codomain,
+    _base_change_scalar,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -685,7 +685,7 @@ class FiberedFormedModuleHomset(CategoricalHomset):
 
     def __init__(self, domain, codomain, ring_map) -> None:
 
-        target_ring = base_change_codomain(domain, ring_map)
+        target_ring = _base_change_codomain(domain, ring_map)
         if target_ring != codomain.base_ring():
             raise ValueError("the coefficient map does not land at the target base ring")
         self._ring_map = ring_map
@@ -1073,7 +1073,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Base-change a scalar-valued finite free form along ``R -> S``."""
 
             assert self.value_module() is self.base_ring()
-            target_ring = base_change_codomain(self, ring_map)
+            target_ring = _base_change_codomain(self, ring_map)
             source = self
             source_labels = source.module_generating_set()
             changed = target_ring.free_module(source_labels)
@@ -1082,7 +1082,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             if _is_bilinear_form(form):
                 try:
                     changed_values = form.coordinate_values().map(
-                        lambda value: base_change_scalar(ring_map, value),
+                        lambda value: _base_change_scalar(ring_map, value),
                         name="Base-changed bilinear coordinate values",
                     )
                 except TypeError:
@@ -1103,7 +1103,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                             result += (
                                 left_coefficient
                                 * right_coefficient
-                                * base_change_scalar(
+                                * _base_change_scalar(
                                     ring_map,
                                     form(source_left, source_right),
                                 )
@@ -1119,7 +1119,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             try:
                 changed_lift_values = form.lift_coordinate_values().map(
-                    lambda value: base_change_scalar(ring_map, value),
+                    lambda value: _base_change_scalar(ring_map, value),
                     name="Base-changed quadratic-lift coordinate values",
                 )
             except TypeError:
@@ -1136,7 +1136,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     source_left = source.module_generator(left_label)
                     result += (
                         left_coefficient**2
-                        * base_change_scalar(ring_map, form(source_left))
+                        * _base_change_scalar(ring_map, form(source_left))
                     )
                     left_rank = source_labels.ranking_map()(left_label)
                     for right_label, right_coefficient in coefficients.items():
@@ -1146,7 +1146,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         result += (
                             left_coefficient
                             * right_coefficient
-                            * base_change_scalar(
+                            * _base_change_scalar(
                                 ring_map,
                                 form.b(source_left, source_right),
                             )
