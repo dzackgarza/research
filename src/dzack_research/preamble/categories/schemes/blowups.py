@@ -15,14 +15,13 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.divisors.general_divisors import (
-    projective_space_picard_group,
-    trivial_picard_group,
-)
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     ProductProjectiveSubschemeLineBundleIsomorphism,
 )
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.picard_groups import (
+    PicardGroup,
+    PicardGroups,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -265,9 +264,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         @cached_method
         def source_picard_group(self):
             source = self.blowup_source()
-            return projective_space_picard_group(
-                source,
-                trivial_picard_group(source.base_scheme()),
+            return source.picard_group(
+                PicardGroups().trivial(source.base_scheme())
             )
 
         @cached_method

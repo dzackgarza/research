@@ -2234,14 +2234,9 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "the represented affine-space Picard group currently requires a field base"
                 )
-            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
-            integers = _own_ring(SageZZ)
-            return PicardGroup(
-                BasedFreeModule(integers, finite_ordered_set(())), scheme=self
-            )
+            return PicardGroups().trivial(self)
 
         @cached_method
         def class_group(self):
@@ -2328,22 +2323,34 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 )
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
             from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
-            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             integers = _own_ring(SageZZ)
             zero_module = BasedFreeModule(integers, finite_ordered_set(()))
             base_scheme = self.base_scheme()
-            base_picard = PicardGroup(zero_module, scheme=base_scheme)
+            base_picard = PicardGroups().trivial(base_scheme)
             base_class = ClassGroup(zero_module, scheme=base_scheme)
             comparison = base_picard.module_category().Mor(base_picard, base_class)({})
             return projective_space_divisor_class_theory(
                 self, base_picard, base_class, comparison
             )
 
-        def picard_group(self):
-            return self.divisor_class_theory().picard_group()
+        def picard_group(self, base_picard_group=None):
+            r"""Return the represented Picard group of this projective space.
+
+            With no supplied base Picard group, use the represented field-base
+            divisor-class theory.  Supplying ``Pic(S)`` invokes the projective
+            bundle formula ``Pic(P^n_S) = Pic(S) direct_sum ZZ[O(1)]``.
+            """
+            if base_picard_group is None:
+                return self.divisor_class_theory().picard_group()
+            from dzack_research.preamble.categories.divisors.general_divisors import (
+                _projective_space_picard_group,
+            )
+
+            return _projective_space_picard_group(self, base_picard_group)
 
         def class_group(self):
             return self.divisor_class_theory().class_group()

@@ -335,7 +335,7 @@ def projective_space_divisor_class_theory(
     return theory
 
 
-def projective_space_picard_group(projective_space, base_picard_group):
+def _projective_space_picard_group(projective_space, base_picard_group):
     r"""Return ``Pic(P^n_S) = Pic(S) direct_sum ZZ[O(1)]`` from represented ``Pic(S)``.
 
     The base Picard group is required input.  In particular this construction
@@ -355,11 +355,6 @@ def projective_space_picard_group(projective_space, base_picard_group):
             "projective_picard_biproduct": decomposition,
         },
     )
-
-
-def trivial_picard_group(scheme):
-    r"""Return the represented zero Picard group of a scheme whose triviality is known."""
-    return PicardGroup(FreshFreeModuleOn(_integers(), finite_ordered_set(())), scheme=scheme)
 
 
 class DivisorClassComparison(SageObject):
@@ -470,6 +465,4 @@ __all__ = [
     "FiniteAtlasCartierDivisor",
     "principal_weil_divisor",
     "projective_space_divisor_class_theory",
-    "projective_space_picard_group",
-    "trivial_picard_group",
 ]

@@ -13,9 +13,11 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.general_divisors import (
     projective_space_divisor_class_theory,
-    trivial_picard_group,
 )
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.picard_groups import (
+    PicardGroup,
+    PicardGroups,
+)
 
 
 def _zero_class_group(scheme):
@@ -35,7 +37,7 @@ def _cyclic_module(order):
 def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
     projective = ProjectiveSpace(3, QQ)
     base = projective.base_scheme()
-    base_picard = trivial_picard_group(base)
+    base_picard = PicardGroups().trivial(base)
     base_class = _zero_class_group(base)
     base_comparison = base_picard.module_category().Mor(base_picard, base_class)({})
 

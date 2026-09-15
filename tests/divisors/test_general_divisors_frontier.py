@@ -16,10 +16,11 @@ from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
     FiniteAtlasCartierDivisor,
-    projective_space_picard_group,
-    trivial_picard_group,
 )
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.picard_groups import (
+    PicardGroup,
+    PicardGroups,
+)
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
 
 
@@ -35,8 +36,8 @@ def _cyclic_module(order):
 
 def test_projective_space_over_a_field_has_the_hyperplane_picard_generator() -> None:
     plane = ProjectiveSpace(2, QQ)
-    base_picard = trivial_picard_group(plane.base_scheme())
-    picard = projective_space_picard_group(plane, base_picard)
+    base_picard = PicardGroups().trivial(plane.base_scheme())
+    picard = plane.picard_group(base_picard)
 
     assert picard.picard_scheme() is plane
     assert picard.projective_base_picard_group() is base_picard
@@ -52,7 +53,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
     base = Spec(order, base_ring=order)
     base_picard = PicardGroup(_cyclic_module(2), scheme=base)
     relative_line = ProjectiveSpace(1, order)
-    picard = projective_space_picard_group(relative_line, base_picard)
+    picard = relative_line.picard_group(base_picard)
 
     base_generator = base_picard.module_generator(0)
     pulled_base_class = picard.base_picard_inclusion()(base_generator)

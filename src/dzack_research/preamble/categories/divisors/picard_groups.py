@@ -19,6 +19,27 @@ class PicardGroups(Category):
 
         return [FramedModules(_own_ring(SageZZ))]
 
+    def trivial(self, scheme):
+        r"""Return the represented zero Picard group for ``scheme``.
+
+        This is an explicit construction for a scheme whose Picard triviality
+        is already known; it does not assert or decide that theorem.
+        """
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            BasedFreeModule,
+        )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+
+        integers = _own_ring(SageZZ)
+        return PicardGroup(
+            BasedFreeModule(integers, finite_ordered_set(())),
+            scheme=scheme,
+        )
+
     class ParentMethods:
         def picard_scheme(self):
             scheme = getattr(self, "_preamble_picard_scheme", None)

@@ -207,8 +207,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     TorusInvariantCycleGroups,
     WeilDivisorGroup,
     WeilDivisorGroups,
-    projective_space_picard_group,
-    trivial_picard_group,
 )
 from dzack_research.preamble.categories.forms import (
     BilinearFormMorphism,
