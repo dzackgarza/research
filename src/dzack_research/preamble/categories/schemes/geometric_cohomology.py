@@ -896,7 +896,7 @@ def NodalCubicNormalization():
     return normalization
 
 
-def NodalCubicFundamentalGroup(scheme=None, base_point=None):
+def _nodal_cubic_fundamental_group(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1`` of the rational nodal cubic, an infinite cyclic group."""
 
 
@@ -915,7 +915,7 @@ def NodalCubicFundamentalGroup(scheme=None, base_point=None):
     )
 
 
-def ProjectiveLineFundamentalGroup(line, base_point):
+def _projective_line_fundamental_group(line, base_point):
     r"""Return the trivial pointed fundamental group of one represented projective line."""
 
 
@@ -972,11 +972,11 @@ class NodalCubicIntegralTopology(SageObject):
 
     @cached_method
     def fundamental_group(self):
-        return NodalCubicFundamentalGroup(self.scheme(), self.base_point())
+        return _nodal_cubic_fundamental_group(self.scheme(), self.base_point())
 
     @cached_method
     def normalization_fundamental_group(self):
-        return ProjectiveLineFundamentalGroup(
+        return _projective_line_fundamental_group(
             self.normalization_scheme(),
             self.normalization_base_point(),
         )
@@ -1058,7 +1058,7 @@ def ProjectiveGeneralLinearGroup2():
     return pgl2
 
 
-def PGL2FundamentalGroup(scheme=None, base_point=None):
+def _pgl2_fundamental_group(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1(PGL_2(C)) ~= C_2``."""
 
 
@@ -1106,7 +1106,7 @@ class PGL2IntegralTopology(SageObject):
 
     @cached_method
     def fundamental_group(self):
-        return PGL2FundamentalGroup(self.scheme(), self.base_point())
+        return _pgl2_fundamental_group(self.scheme(), self.base_point())
 
     @cached_method
     def integral_cohomology(self, degree):
@@ -1257,9 +1257,6 @@ def _toric_hodge_structure(scheme):
 
 __all__ = [
     "QuarticK3HodgeData",
-    "ProjectiveLineFundamentalGroup",
-    "PGL2FundamentalGroup",
-    "NodalCubicFundamentalGroup",
     "GeometricFundamentalGroups",
     "NodalCubicIntegralTopology",
     "NodalCubicNormalization",
