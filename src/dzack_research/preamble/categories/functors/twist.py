@@ -8,7 +8,6 @@ existing :meth:`twist` implementation; this module adds only the categorical
 morphism action required by the archived contract.
 """
 
-from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.functors.core import Functor
@@ -58,10 +57,4 @@ class TwistFunctor(Functor):
         return f"Twist by {self.scale()}"
 
 
-@cached_function
-def twist_functor(scale):
-    r"""Return the cached integral-lattice twist functor of scale ``scale``."""
-    return TwistFunctor(scale)
-
-
-__all__ = ["TwistFunctor", "twist_functor"]
+__all__ = ["TwistFunctor"]

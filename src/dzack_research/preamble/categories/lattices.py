@@ -586,6 +586,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             return LatticesOverGroupAlgebra(ring)
         return super().__classcall__(cls, ring)
 
+    @cached_method
+    def twist_functor(self, scale):
+        r"""Return the integral-lattice endofunctor ``L |-> L(scale)``."""
+        if _engine_ring(self.base_ring()) is not SageZZ:
+            raise TypeError("the represented lattice twist functor is integral")
+        from dzack_research.preamble.categories.functors.twist import TwistFunctor
+
+        return TwistFunctor(scale)
+
     @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
     def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> FiniteRankLattices.ParentMethods: ...
 
