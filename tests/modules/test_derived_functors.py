@@ -8,12 +8,10 @@ cyclic module came out.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    Ext,
     ExtMap,
     FinitelyPresentedModule,
     FreeModule,
     PolynomialRing,
-    Tor,
     TorMap,
     ring_as_module,
 )
@@ -30,45 +28,45 @@ def _cyclic(ring, generator):
 
 def test_tor_over_the_integers_is_the_gcd_and_vanishes_above_the_resolution() -> None:
     six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ring_as_module(ZZ)
-    assert Tor(0, six, four).cardinality() == 2
-    assert Tor(1, six, four).cardinality() == 2
-    assert Tor(2, six, four).cardinality() == 1
-    assert Tor(0, six, integers).cardinality() == 6
-    assert Tor(1, six, integers).cardinality() == 1
-    assert Tor(1, integers, six).cardinality() == 1
+    assert six.tor(four, degree=0).cardinality() == 2
+    assert six.tor(four, degree=1).cardinality() == 2
+    assert six.tor(four, degree=2).cardinality() == 1
+    assert six.tor(integers, degree=0).cardinality() == 6
+    assert six.tor(integers, degree=1).cardinality() == 1
+    assert integers.tor(six, degree=1).cardinality() == 1
 
 
 def test_ext_over_the_integers() -> None:
     six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ring_as_module(ZZ)
-    assert Ext(0, six, integers).cardinality() == 1
-    assert Ext(1, six, integers).cardinality() == 6
-    assert Ext(0, six, four).cardinality() == 2
-    assert Ext(1, six, four).cardinality() == 2
-    assert Ext(2, six, four).cardinality() == 1
-    assert Ext(0, integers, six).cardinality() == 6
-    assert Ext(1, integers, six).cardinality() == 1
+    assert six.ext(integers, degree=0).cardinality() == 1
+    assert six.ext(integers, degree=1).cardinality() == 6
+    assert six.ext(four, degree=0).cardinality() == 2
+    assert six.ext(four, degree=1).cardinality() == 2
+    assert six.ext(four, degree=2).cardinality() == 1
+    assert integers.ext(six, degree=0).cardinality() == 6
+    assert integers.ext(six, degree=1).cardinality() == 1
 
 
 def test_tor_remembers_the_tensored_resolution() -> None:
     six, four = _cyclic(ZZ, 6), _cyclic(ZZ, 4)
-    tor = Tor(1, six, four)
+    tor = six.tor(four, degree=1)
     tensored = tor.cochain_complex()
     assert tor.cohomological_degree() == 0
     assert tensored.graded_piece(1).tensor_factor(0) is six.free_resolution().term(0)
     assert tensored.graded_piece(0).tensor_factor(0) is six.free_resolution().term(1)
     assert tensored.graded_piece(0).tensor_factor(1) is four
-    assert Tor(0, six, four).cochain_complex() is tensored
+    assert six.tor(four, degree=0).cochain_complex() is tensored
 
 
 def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
     square, line = _cyclic(ring, x**2), _cyclic(ring, x)
-    assert tuple(Tor(1, square, line).invariant_factors()) == (x,)
-    assert tuple(Tor(0, square, line).invariant_factors()) == (x,)
-    assert tuple(Ext(1, square, ring_as_module(ring)).invariant_factors()) == (x**2,)
-    assert Ext(0, square, ring_as_module(ring)).invariant_factors().cardinality() == 0
-    assert Ext(0, square, ring_as_module(ring)).module_rank() == 0
+    assert tuple(square.tor(line, degree=1).invariant_factors()) == (x,)
+    assert tuple(square.tor(line, degree=0).invariant_factors()) == (x,)
+    assert tuple(square.ext(ring_as_module(ring), degree=1).invariant_factors()) == (x**2,)
+    assert square.ext(ring_as_module(ring), degree=0).invariant_factors().cardinality() == 0
+    assert square.ext(ring_as_module(ring), degree=0).module_rank() == 0
 
 
 def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
@@ -77,8 +75,8 @@ def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
     two = _cyclic(ZZ, 2)
     quotient = six.Mor(three)({0: three.module_generator(0)})
 
-    tor_source = Tor(1, six, two)
-    tor_target = Tor(1, three, two)
+    tor_source = six.tor(two, degree=1)
+    tor_target = three.tor(two, degree=1)
     tor_map = TorMap(1, quotient, two)
     cycle_module = tor_source.cochain_complex().graded_piece(tor_source.degree())
     cycle_label = next(iter(cycle_module.module_generating_set()))
@@ -88,8 +86,8 @@ def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
     assert tor_map(tor_class).parent() is tor_target
 
     integers = ring_as_module(ZZ)
-    ext_source = Ext(1, three, integers)
-    ext_target = Ext(1, six, integers)
+    ext_source = three.ext(integers, degree=1)
+    ext_target = six.ext(integers, degree=1)
     ext_map = ExtMap(1, quotient, integers)
     assert ext_map.domain() is ext_source
     assert ext_map.codomain() is ext_target

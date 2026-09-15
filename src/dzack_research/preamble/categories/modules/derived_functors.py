@@ -55,7 +55,7 @@ def _tensored_resolution(module, other, shift, steps):
     )
 
 
-def Tor(degree, module, other):
+def _tor(module, other, degree=0):
     r"""Return ``Tor_degree(module, other)``, the homology of ``F_• ⊗ other``."""
     degree = int(degree)
     assert degree >= 0, "a homological degree is nonnegative"
@@ -67,7 +67,7 @@ def Tor(degree, module, other):
     return _tensored_resolution(module, other, shift, steps).cohomology(shift - degree)
 
 
-def Ext(degree, module, other):
+def _ext(module, other, degree=0):
     r"""Return ``Ext^degree(module, other)``, the cohomology of ``Hom(F_•, other)``."""
     degree = int(degree)
     assert degree >= 0, "a cohomological degree is nonnegative"
@@ -100,7 +100,7 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
     variable is unchanged and the component is
     ``id_{F_n} tensor morphism``.  In both cases a represented homology class
     is sent through its selected cycle representative, so the map is induced
-    on the same owned quotient that defines :func:`Tor`.
+    on the same owned quotient that defines ``module.tor``.
     """
     degree = int(degree)
     if degree < 0:
@@ -121,8 +121,8 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
                 raise ValueError("the selected Tor lift lies over a different module morphism")
             tensor = TensorByFunctor(other)
             component = tensor(lifted.component(degree))
-            source = Tor(degree, morphism.domain(), other)
-            target = Tor(degree, morphism.codomain(), other)
+            source = morphism.domain().tor(other, degree=degree)
+            target = morphism.codomain().tor(other, degree=degree)
         case 2:
             if lift is not None:
                 raise ValueError("an explicit resolution lift applies only to Tor's first argument")
@@ -139,8 +139,8 @@ def TorMap(degree, morphism, other, *, argument=1, lift=None):
                 source=source_tensor,
                 target=target_tensor,
             )
-            source = Tor(degree, other, morphism.domain())
-            target = Tor(degree, other, morphism.codomain())
+            source = other.tor(morphism.domain(), degree=degree)
+            target = other.tor(morphism.codomain(), degree=degree)
         case _:
             raise ValueError("TorMap argument must be 1 or 2")
     return module_homset(source, target).elementwise(
@@ -183,8 +183,8 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
                 lifted.component(degree),
                 identity,
             )
-            source = Ext(degree, morphism.codomain(), other)
-            target = Ext(degree, morphism.domain(), other)
+            source = morphism.codomain().ext(other, degree=degree)
+            target = morphism.domain().ext(other, degree=degree)
         case 2:
             if lift is not None:
                 raise ValueError("an explicit resolution lift applies only to Ext's first argument")
@@ -200,8 +200,8 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
                 identity,
                 morphism,
             )
-            source = Ext(degree, other, morphism.domain())
-            target = Ext(degree, other, morphism.codomain())
+            source = other.ext(morphism.domain(), degree=degree)
+            target = other.ext(morphism.codomain(), degree=degree)
         case _:
             raise ValueError("ExtMap argument must be 1 or 2")
     return module_homset(source, target).elementwise(
@@ -211,4 +211,4 @@ def ExtMap(degree, morphism, other, *, argument=1, lift=None):
     )
 
 
-__all__ = ["Ext", "ExtMap", "Tor", "TorMap"]
+__all__ = ["ExtMap", "TorMap"]

@@ -20,7 +20,6 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     QQ,
     ZZ,
-    Tor,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -109,7 +108,7 @@ def test_tor_of_the_residue_field_reads_the_degree_two_term() -> None:
     """
     module = _residue_field_module()
 
-    tor = Tor(2, module, module)
+    tor = module.tor(module, degree=2)
     complex_ = tor.cochain_complex()
     resolution = module.free_resolution(3)
 

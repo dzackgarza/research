@@ -2,11 +2,9 @@ r"""Tor and Ext retain their functoriality in the second module variable."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    Ext,
     ExtMap,
     FinitelyPresentedModule,
     FreeModule,
-    Tor,
     TorMap,
 )
 
@@ -27,8 +25,8 @@ def test_tor_is_covariant_in_the_second_variable() -> None:
     first_quotient = larger.Mor(source_module)({0: source_module.module_generator(0)})
     quotient = source_module.Mor(target_module)({0: target_module.module_generator(0)})
 
-    source = Tor(1, first, source_module)
-    target = Tor(1, first, target_module)
+    source = first.tor(source_module, degree=1)
+    target = first.tor(target_module, degree=1)
     induced = TorMap(1, quotient, first, argument=2)
 
     assert induced.domain() is source
@@ -40,7 +38,7 @@ def test_tor_is_covariant_in_the_second_variable() -> None:
 
     first_map = TorMap(1, first_quotient, first, argument=2)
     composite = TorMap(1, quotient * first_quotient, first, argument=2)
-    larger_source = Tor(1, first, larger)
+    larger_source = first.tor(larger, degree=1)
     larger_cycle_module = larger_source.cochain_complex().graded_piece(larger_source.degree())
     larger_label = next(iter(larger_cycle_module.module_generating_set()))
     larger_class = larger_source.class_of_cycle(
@@ -57,8 +55,8 @@ def test_ext_is_covariant_in_the_second_variable() -> None:
     first_quotient = larger.Mor(source_module)({0: source_module.module_generator(0)})
     quotient = source_module.Mor(target_module)({0: target_module.module_generator(0)})
 
-    source = Ext(1, first, source_module)
-    target = Ext(1, first, target_module)
+    source = first.ext(source_module, degree=1)
+    target = first.ext(target_module, degree=1)
     induced = ExtMap(1, quotient, first, argument=2)
 
     assert induced.domain() is source
@@ -70,7 +68,7 @@ def test_ext_is_covariant_in_the_second_variable() -> None:
 
     first_map = ExtMap(1, first_quotient, first, argument=2)
     composite = ExtMap(1, quotient * first_quotient, first, argument=2)
-    larger_source = Ext(1, first, larger)
+    larger_source = first.ext(larger, degree=1)
     larger_cycle_module = larger_source.cochain_complex().graded_piece(larger_source.degree())
     larger_label = next(iter(larger_cycle_module.module_generating_set()))
     larger_class = larger_source.class_of_cycle(

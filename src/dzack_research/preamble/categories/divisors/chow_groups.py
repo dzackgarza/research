@@ -274,7 +274,6 @@ class SerreIntersectionData(SageObject):
     """
 
     def __init__(self, left, right, point) -> None:
-        from dzack_research.preamble.categories.modules.derived_functors import Tor
         from dzack_research.preamble.categories.schemes.schemes import AffineSpaces
 
         ambient = left.inclusion().codomain()
@@ -300,7 +299,7 @@ class SerreIntersectionData(SageObject):
         right_module = right.defining_ideal_owned().inclusion().cokernel()
         maximum_degree = int(ambient.relative_dimension())
         tor_modules = tuple(
-            Tor(degree, left_module, right_module)
+            left_module.tor(right_module, degree=degree)
             for degree in range(maximum_degree + 1)
         )
         lengths = tuple(

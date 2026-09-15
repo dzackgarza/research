@@ -1418,15 +1418,15 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 
         def tor(self, other, degree=0):
             r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
-            from dzack_research.preamble.categories.modules.derived_functors import Tor
+            from dzack_research.preamble.categories.modules.derived_functors import _tor
 
-            return Tor(degree, self, other)
+            return _tor(self, other, degree=degree)
 
         def ext(self, other, degree=0):
             r"""Return ``Ext^degree(self, other)`` from the selected free resolution."""
-            from dzack_research.preamble.categories.modules.derived_functors import Ext
+            from dzack_research.preamble.categories.modules.derived_functors import _ext
 
-            return Ext(degree, self, other)
+            return _ext(self, other, degree=degree)
 
         def projective_dimension(self):
             r"""Return the projective dimension in the regimes where it is decided exactly.
