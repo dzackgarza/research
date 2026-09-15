@@ -4485,7 +4485,7 @@ def _line_bundle_transition_images(line_bundle, source_index, target_index):
     return images
 
 
-def finite_atlas_line_bundle_module_sheaf(line_bundle):
+def _finite_atlas_line_bundle_module_sheaf(line_bundle):
     r"""Return the rank-one module sheaf underlying a finite-atlas line bundle."""
     from dzack_research.preamble.categories.divisors.invertible_sheaves import (
         FiniteAtlasInvertibleSheaf,
@@ -4521,15 +4521,15 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
         self._refinement = refinement
         self._line_bundle = line_bundle
         self._pullback_functor = finite_atlas_module_pullback_functor(refinement)
-        coarse_module_sheaf = finite_atlas_line_bundle_module_sheaf(line_bundle)
+        coarse_module_sheaf = line_bundle.module_sheaf()
         self._generic_pullback = self._pullback_functor.on_object(
             coarse_module_sheaf
         )
         self._line_bundle_refinement = refinement.pullback_invertible_sheaf(
             line_bundle
         )
-        self._specialized_module_sheaf = finite_atlas_line_bundle_module_sheaf(
-            self._line_bundle_refinement.refined_bundle()
+        self._specialized_module_sheaf = (
+            self._line_bundle_refinement.refined_bundle().module_sheaf()
         )
         generic = self._generic_pullback.gluing_datum()
         specialized = self._specialized_module_sheaf.gluing_datum()
@@ -4839,6 +4839,5 @@ __all__ = [
     "finite_atlas_module_pullback_functor",
     "chartwise_closed_subscheme",
     "chartwise_fixed_subscheme",
-    "finite_atlas_line_bundle_module_sheaf",
     "compare_finite_atlas_line_bundle_pullback",
 ]

@@ -403,10 +403,10 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
     @cached_method
     def module_sheaf(self):
         from dzack_research.preamble.categories.schemes.gluing import (
-            finite_atlas_line_bundle_module_sheaf,
+            _finite_atlas_line_bundle_module_sheaf,
         )
 
-        return finite_atlas_line_bundle_module_sheaf(self)
+        return _finite_atlas_line_bundle_module_sheaf(self)
 
     @cached_method
     def compatible_sections(self):
