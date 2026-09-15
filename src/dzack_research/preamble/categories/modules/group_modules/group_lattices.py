@@ -121,7 +121,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def _call_(self, lattice, action):
         r"""Equip ``lattice`` with the action ``action(g, v)``, which must preserve its form."""
-        return group_lattice(lattice, self.acting_group(), action)
+        return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
         def group(self):
@@ -262,13 +262,13 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     self.action_of(group_element)(inclusion(vector))
                 )
 
-            return group_lattice(formed, self.group(), restricted_action)
+            return Lattices(self.group_algebra())(formed, restricted_action)
 
         def character(self):
             return self.group_module().character()
 
 
-def group_lattice(lattice, group_or_action, action=None):
+def _group_lattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
 
     base_ring = lattice.base_ring()
@@ -303,5 +303,4 @@ __all__ = [
     "GroupLatticeMorphism",
     "GroupLatticeHomset",
     "LatticesOverGroupAlgebra",
-    "group_lattice",
 ]

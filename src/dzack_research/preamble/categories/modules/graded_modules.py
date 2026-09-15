@@ -120,9 +120,11 @@ class GradedModuleMorphism(ModuleMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        return graded_module_homset(other.domain(), self.codomain()).elementwise(
-            lambda element: self(other(element))
-        )
+        domain = other.domain()
+        monoid = require_grading_monoid(domain.grading_monoid())
+        return GradedModules(domain.base_ring(), monoid).Mor(
+            domain, self.codomain()
+        ).elementwise(lambda element: self(other(element)))
 
 
 class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
@@ -319,13 +321,3 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 if parent.degree_on_module_generator(generator) < degree:
                     result += parent.scalar_multiple(coefficient, generator)
             return result
-
-
-def graded_module_homset(domain, codomain) -> GradedModuleHomset:
-    ring = domain.base_ring()
-    if codomain.base_ring() is not ring:
-        raise ValueError("graded-module morphisms require one base ring")
-    monoid = require_grading_monoid(domain.grading_monoid())
-    if require_grading_monoid(codomain.grading_monoid()) != monoid:
-        raise ValueError("graded-module morphisms require one grading monoid")
-    return GradedModules(ring, monoid).Mor(domain, codomain)
