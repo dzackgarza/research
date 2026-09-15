@@ -65,7 +65,7 @@ def _integer_koszul_parity():
     return integers.Mor(parity_target)(parity_target)
 
 
-def koszul_parity(grading_monoid, parity=None):
+def _koszul_parity(grading_monoid, parity=None):
     r"""Return the parity homomorphism ``M -> ZZ/2`` the Koszul rule reads through.
 
     A monoid admits many homomorphisms to ``ZZ/2`` -- the trivial one among
@@ -110,7 +110,7 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
         monoid = require_grading_monoid(grading_monoid)
-        selected_parity = koszul_parity(monoid, parity)
+        selected_parity = _koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls, base_ring, monoid, _parity_key(selected_parity)
         )
@@ -158,7 +158,7 @@ class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
         monoid = require_grading_monoid(grading_monoid)
-        selected_parity = koszul_parity(monoid, parity)
+        selected_parity = _koszul_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls, base_ring, monoid, _parity_key(selected_parity)
         )
