@@ -4,8 +4,6 @@ from importlib import import_module as _import_module
 
 _EXPORTS = {'DiscriminantBilinearModules': ('dzack_research.preamble.categories.modules.framed.formed.discriminant_modules',
                                  'DiscriminantBilinearModules'),
- 'DiscriminantModule': ('dzack_research.preamble.categories.modules.framed.formed.discriminant_modules',
-                        'DiscriminantModule'),
  'DiscriminantModules': ('dzack_research.preamble.categories.modules.framed.formed.discriminant_modules',
                          'DiscriminantModules'),
  'DiscriminantQuadraticModules': ('dzack_research.preamble.categories.modules.framed.formed.discriminant_modules',
@@ -64,7 +62,6 @@ _EXPORTS = {'DiscriminantBilinearModules': ('dzack_research.preamble.categories.
 __all__ = ['BilinearForm',
  'BilinearFormModules',
  'DiscriminantBilinearModules',
- 'DiscriminantModule',
  'DiscriminantModules',
  'DiscriminantQuadraticModules',
  'FinitelyGeneratedFormModules',

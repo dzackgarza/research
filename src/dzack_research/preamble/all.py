@@ -586,7 +586,6 @@ from dzack_research.preamble.categories.modules import (
     ConnectionSpace,
     DifferentialGradedModules,
     DiscriminantBilinearModules,
-    DiscriminantModule,
     DiscriminantModules,
     DiscriminantQuadraticModules,
     DividedSquareModules,

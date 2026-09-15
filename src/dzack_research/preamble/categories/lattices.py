@@ -109,7 +109,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (
 )
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
-    DiscriminantModule,
+    _discriminant_module,
     DiscriminantQuadraticModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
@@ -1886,7 +1886,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def discriminant_module(self):
             r"""Return ``A_L = coker(L -> L^#)`` with the selected dual-basis presentation."""
 
-            return DiscriminantModule(self)
+            return _discriminant_module(self)
 
         def discriminant_projection(self):
             r"""Return the quotient morphism ``L^# -> A_L``."""

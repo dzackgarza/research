@@ -954,7 +954,7 @@ def _descended_quadratic_gram(dual_lattice, labels, bilinear_values, quadratic_v
     )
 
 
-def DiscriminantModule(lattice):
+def _discriminant_module(lattice):
     r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported."""
     assert lattice.module_rank().is_finite() and lattice.is_nondegenerate()
 
@@ -1004,7 +1004,6 @@ def DiscriminantModule(lattice):
 
 __all__ = [
     "DiscriminantBilinearModules",
-    "DiscriminantModule",
     "DiscriminantModules",
     "DiscriminantQuadraticModules",
     "DiscriminantSubmodules",
