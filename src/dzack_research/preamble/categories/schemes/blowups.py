@@ -281,7 +281,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             labels = tuple(source.module_generating_set())
             if len(labels) != 1:
                 raise ArithmeticError("Pic(P^2) over a field must have one selected generator")
-            return module_homset(source, self.picard_group())(
+            return source.module_category().Mor(source, self.picard_group())(
                 {labels[0]: self.hyperplane_picard_class()}
             )
 

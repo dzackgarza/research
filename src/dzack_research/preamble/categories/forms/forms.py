@@ -112,7 +112,7 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
             source = Modules(morphism.domain().base_ring()).tensor_product(
                 (morphism.domain(), morphism.domain())
             )
-            induced = module_homset(source, self.domain())(
+            induced = source.module_category().Mor(source, self.domain())(
                 lambda pair: self.domain().pure_tensor(
                     morphism(
                         morphism.domain().module_generator(pair.component(0))

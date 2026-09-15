@@ -1290,7 +1290,7 @@ class ModuleMorphism(Morphism):
         codomain = self.codomain()
         assert self.is_surjective(), "only an epimorphism has a section"
         assert codomain.is_free(), f"a section chooses a preimage of each generator, and {codomain} must be free for those choices to respect no relation"
-        return module_homset(codomain, self.domain())(
+        return codomain.module_category().Mor(codomain, self.domain())(
             lambda label: self.lift(codomain.module_generator(label))
         )
 
@@ -1315,7 +1315,7 @@ class ModuleMorphism(Morphism):
             generator = codomain.module_generator(label)
             return self.lift(generator - splitting(quotient_map(generator)))
 
-        return module_homset(codomain, self.domain())(image)
+        return codomain.module_category().Mor(codomain, self.domain())(image)
 
     def inverse(self):
         r"""Return the two-sided inverse, with coordinate inversion on matrix objects.
@@ -1364,7 +1364,7 @@ class ModuleMorphism(Morphism):
         assert self.is_surjective(), "only a bijection has a two-sided inverse"
         codomain = self.codomain()
         inverse_image = self.lift if _has_finite_free_framing(self.domain()) else self.preimage
-        return module_homset(codomain, self.domain())(
+        return codomain.module_category().Mor(codomain, self.domain())(
             lambda label: inverse_image(codomain.module_generator(label))
         )
 
@@ -1961,13 +1961,13 @@ class TensorProductModuleMorphism(ModuleMorphism):
         source = Modules(morphism.domain().base_ring()).tensor_product(
             (morphism.domain(), morphism.domain())
         )
-        induced = module_homset(source, self.domain())(
+        induced = source.module_category().Mor(source, self.domain())(
             lambda pair: self.domain().pure_tensor(
                 morphism(morphism.domain().module_generator(pair.component(0))),
                 morphism(morphism.domain().module_generator(pair.component(1))),
             )
         )
-        return module_homset(source, self.codomain())(self * induced)
+        return source.module_category().Mor(source, self.codomain())(self * induced)
 
     def polar_form(self):
         if self.left_module() is not self.right_module():

@@ -81,7 +81,7 @@ def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise()
     for index in datum.chart_indices():
         module = source.sections_on_chart(index)
         labels = module.module_generating_set()
-        local_maps[index] = module_homset(module, target.sections_on_chart(index))(
+        local_maps[index] = module.module_category().Mor(module, target.sections_on_chart(index))(
             {
                 labels[0]: target.sections_on_chart(index).module_generator(labels[0]),
                 labels[1]: target.sections_on_chart(index).zero(),
@@ -120,7 +120,7 @@ def test_finite_atlas_sheaf_operations_survive_affine_refinement() -> None:
     for index in datum.chart_indices():
         module = source.sections_on_chart(index)
         labels = module.module_generating_set()
-        local_maps[index] = module_homset(module, target.sections_on_chart(index))(
+        local_maps[index] = module.module_category().Mor(module, target.sections_on_chart(index))(
             {
                 labels[0]: target.sections_on_chart(index).module_generator(labels[0]),
                 labels[1]: target.sections_on_chart(index).zero(),

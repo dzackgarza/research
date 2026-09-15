@@ -1131,7 +1131,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
                     if coefficient
                 }
             )
-        return module_homset(self._normalized_form, self._normalized_form)(images)
+        return self._normalized_form.module_category().Mor(self._normalized_form, self._normalized_form)(images)
 
     def _from_engine_matrix(self, engine_matrix):
         r"""Cross one private engine matrix to an owned form automorphism.
@@ -1186,8 +1186,9 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         forward = module_homset(
             normalization.domain(), normalized_form
         )(normalization.forward())
-        inverse = module_homset(
-            normalized_form, normalization.domain()
+        inverse = normalized_form.module_category().Mor(
+            normalized_form,
+            normalization.domain(),
         )(normalization.inverse())
         from sage.matrix.constructor import matrix as sage_matrix
 
@@ -1839,7 +1840,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     "the pairing does not identify this module with its Pontryagin dual because it is degenerate"
                 )
-            characters = module_homset(self, self.value_module())
+            characters = self.module_category().Mor(self, self.value_module())
 
             def character(element):
                 element = self(element)

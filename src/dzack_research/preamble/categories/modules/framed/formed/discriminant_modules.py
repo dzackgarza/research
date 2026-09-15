@@ -328,7 +328,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             from sage.categories.morphism import SetMorphism
 
 
-            characters = module_homset(self, self.bilinear_value_module())
+            characters = self.module_category().Mor(self, self.bilinear_value_module())
 
             def character(element):
                 element = self(element)

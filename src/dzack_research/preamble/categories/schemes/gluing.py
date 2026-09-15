@@ -1553,7 +1553,7 @@ class SemilinearModuleMorphism(SageObject):
             }
         else:
             linear_images = dict(images)
-        self._linearization = module_homset(self._extended_source, target)(
+        self._linearization = self._extended_source.module_category().Mor(self._extended_source, target)(
             linear_images
         )
 

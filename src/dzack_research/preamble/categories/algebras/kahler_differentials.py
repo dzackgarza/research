@@ -202,7 +202,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             if derivation.domain() is not self.source_algebra():
                 raise ValueError("the derivation has the wrong source algebra")
 
-            return module_homset(self, derivation.codomain())(
+            return self.module_category().Mor(self, derivation.codomain())(
                 {
                     ("d", label): derivation.generator_image(label)
                     for label in derivation.parent().generator_labels()

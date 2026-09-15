@@ -1548,10 +1548,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         except (AttributeError, ValueError):
             source_module = None
         if source_module is not None:
-            module_homset(
-                source_module,
-                self.codomain().underlying_module(),
-            )(self._images.value)
+            source_module.module_category().Mor(source_module, self.codomain().underlying_module())(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()

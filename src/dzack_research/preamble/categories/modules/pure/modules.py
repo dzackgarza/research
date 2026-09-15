@@ -1762,7 +1762,7 @@ class FreeResolution:
         components = {}
         source_zero = self.term(0)
         target_augmentation = target_resolution.augmentation()
-        components[0] = module_homset(source_zero, target_resolution.term(0))(
+        components[0] = source_zero.module_category().Mor(source_zero, target_resolution.term(0))(
             {
                 label: target_augmentation.preimage(
                     morphism(self.augmentation()(source_zero.module_generator(label)))
@@ -1776,10 +1776,7 @@ class FreeResolution:
             target_differential = target_resolution.differential(degree)
             previous = components[degree - 1]
             source_differential = self.differential(degree)
-            components[degree] = module_homset(
-                source_term,
-                target_resolution.term(degree),
-            )(
+            components[degree] = source_term.module_category().Mor(source_term, target_resolution.term(degree))(
                 {
                     label: target_differential.preimage(
                         previous(source_differential(source_term.module_generator(label)))
@@ -2865,7 +2862,12 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             if bilinear.left_factor() is not left or bilinear.right_factor() is not right:
                 raise ValueError("the bilinear map has different tensor factors")
 
-            return module_homset(self, bilinear.codomain())(lambda pair: bilinear.generator_image(pair.component(0), pair.component(1)))
+            return self.module_category().Mor(self, bilinear.codomain())(
+                lambda pair: bilinear.generator_image(
+                    pair.component(0),
+                    pair.component(1),
+                )
+            )
 
 
 def _represented_finite_presentation(module) -> bool:

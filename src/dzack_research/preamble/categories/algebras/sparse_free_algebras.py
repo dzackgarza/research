@@ -719,7 +719,7 @@ class SparseFreeAlgebraMorphism(Morphism):
         source = self.domain().free_source_module()
         component = source.module_component(key)
         images = {component_label: self._raw_image(source.module_label_from_component(key, component_label)) for component_label in component.module_generating_set()}
-        certified = module_homset(component, self.codomain())(images)
+        certified = component.module_category().Mor(component, self.codomain())(images)
         self._component_maps[key] = certified
         return certified
 

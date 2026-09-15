@@ -287,7 +287,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
 
         module = self.module()
         tensor_square = Modules(module.base_ring()).tensor_product((module, module))
-        return module_homset(tensor_square, self.codomain())(
+        return tensor_square.module_category().Mor(tensor_square, self.codomain())(
             lambda left, right: self(left + right) - self(left) - self(right)
         )
 

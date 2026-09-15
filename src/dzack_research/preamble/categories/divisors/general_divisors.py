@@ -414,10 +414,7 @@ class DivisorClassComparison(SageObject):
             weil_cokernel,
             self._class_group,
         )
-        self._picard_to_class = module_homset(
-            self._picard_group,
-            self._class_group,
-        )(
+        self._picard_to_class = self._picard_group.module_category().Mor(self._picard_group, self._class_group)(
             {
                 label: self._weil_class_projection(
                     cartier_to_weil(cartier_group.module_generator(label))

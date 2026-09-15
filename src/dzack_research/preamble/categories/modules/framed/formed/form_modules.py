@@ -625,7 +625,7 @@ class FiberedFormedModuleMorphism(Morphism):
                 self.domain(), middle_changed, self.ring_map(), middle_element
             )
             module_images[label] = self.module_morphism()(lifted_middle)
-        module_map = module_homset(direct_changed, self.codomain())(module_images)
+        module_map = direct_changed.module_category().Mor(direct_changed, self.codomain())(module_images)
 
         other_values = _represented_value_module(other.base_changed_domain())
         middle_values = _represented_value_module(self.domain())
@@ -685,7 +685,7 @@ class FiberedFormedModuleHomset(CategoricalHomset):
             raise ValueError("the fibered identity must lie over the identity ring map")
 
         changed = self.base_changed_domain()
-        module_map = module_homset(changed, self.domain())(
+        module_map = changed.module_category().Mor(changed, self.domain())(
             {
                 label: self.domain().module_generator(label)
                 for label in self.domain().module_generating_set()

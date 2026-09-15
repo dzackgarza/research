@@ -206,7 +206,7 @@ class LocalizationCokernelComparison(SageObject):
                 "localized cokernel framings no longer match the selected codomain framing"
             )
 
-        self._forward = module_homset(
+        self._forward = self._localized_source_cokernel.module_category().Mor(
             self._localized_source_cokernel,
             self._target_cokernel,
         )(
@@ -215,7 +215,7 @@ class LocalizationCokernelComparison(SageObject):
                 for label in codomain_labels
             }
         )
-        self._inverse = module_homset(
+        self._inverse = self._target_cokernel.module_category().Mor(
             self._target_cokernel,
             self._localized_source_cokernel,
         )(
@@ -272,7 +272,7 @@ class LocalizationKernelComparison(SageObject):
             raise ArithmeticError(
                 "the image of the localized kernel inclusion is not the selected kernel of the localized morphism"
             )
-        identity = module_homset(
+        identity = self._localized_source_kernel.module_category().Mor(
             self._localized_source_kernel,
             self._target_kernel,
         ).identity()
