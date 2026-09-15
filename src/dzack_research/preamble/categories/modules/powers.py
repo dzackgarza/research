@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreeModuleOn,
     FreshFreeModuleOn,
     MatrixSpace,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -643,7 +642,7 @@ def _presented_degree_power(
     ring = _owned_ring(module.base_ring())
     if degree == 0:
 
-        return ring_as_module(ring)
+        return ring.regular_module()
     if degree == 1:
         return module
 
@@ -762,7 +761,7 @@ def TensorPower(module, degree):
     degree = _degree(degree)
     if degree == 0:
 
-        return ring_as_module(module.base_ring())
+        return module.base_ring().regular_module()
     if degree == 1:
         return module
     return _tensor_power_nontrivial(module, degree)

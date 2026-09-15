@@ -1462,15 +1462,21 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return ``{}_R R``, the rank-one left regular module.
 
             The ring remains the scalar object; the module is the canonical
-            free rank-one carrier on which ``r`` acts by left multiplication.
-            This is the same owner used by ideals, duality, and scalar-change
-            constructions rather than a second ring-as-module presentation.
+            free rank-one object on which ``r`` acts by left multiplication.
+            If this ring already carries that canonical finite-free module
+            structure, the regular module is the ring itself; otherwise it is
+            the canonical rank-one based free module over this ring.
             """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
+                BasedFreeModule,
+            )
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                FinitelyGeneratedFreeModules,
             )
 
-            return ring_as_module(self)
+            if self in FinitelyGeneratedFreeModules(self):
+                return self
+            return BasedFreeModule(self, 1)
 
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""

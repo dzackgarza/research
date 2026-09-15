@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     Modules,
     ModuleSubobjects,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -52,7 +51,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     assert ybar * dx + xbar * dy == omega.zero()
     assert universal(xbar * ybar) == omega.zero()
 
-    values = ring_as_module(algebra)
+    values = algebra.regular_module()
     derivation = Derivations(algebra, values)(
         {
             "x": values.scalar_multiple(xbar, values.module_generator(0)),

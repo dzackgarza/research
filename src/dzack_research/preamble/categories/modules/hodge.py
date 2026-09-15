@@ -1,7 +1,6 @@
 r"""Determinant, Poincaré-duality, and Hodge constructions on finite free modules."""
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -76,7 +75,7 @@ def VolumeTrivialization(module, forward, inverse):
     """
 
     determinant = DeterminantLine(module)
-    scalars = ring_as_module(module.base_ring())
+    scalars = module.base_ring().regular_module()
     if forward.domain() is not determinant or forward.codomain() is not scalars:
         raise ValueError("the volume map must have type det(M) -> R")
     if inverse.domain() is not scalars or inverse.codomain() is not determinant:
@@ -96,7 +95,7 @@ def FramingVolumeTrivialization(module, unit=None):
     """
     determinant = DeterminantLine(module)
     ring = module.base_ring()
-    scalars = ring_as_module(ring)
+    scalars = ring.regular_module()
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
     unit = ring.one() if unit is None else ring(unit)
@@ -115,7 +114,7 @@ def FramingVolumeTrivialization(module, unit=None):
 def _volume_scalars(module, volume):
 
     determinant = DeterminantLine(module)
-    scalars = ring_as_module(module.base_ring())
+    scalars = module.base_ring().regular_module()
     if volume not in Modules(module.base_ring()).Iso(determinant, scalars):
         raise TypeError("the Hodge datum requires an isomorphism det(M) ~= R")
     top = _unique_generator(determinant)

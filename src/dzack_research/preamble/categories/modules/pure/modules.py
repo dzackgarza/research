@@ -1002,10 +1002,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     "the represented left-module dual requires a commutative base ring"
                 )
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
-            )
-            return self.module_category().Mor(self, ring_as_module(ring))
+            return self.module_category().Mor(self, ring.regular_module())
 
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""

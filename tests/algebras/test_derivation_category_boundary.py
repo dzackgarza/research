@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.algebras import (
     KahlerDifferentials,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects, ring_as_module
+from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
 
 
 def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> None:
@@ -17,7 +17,7 @@ def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> 
     algebra = FinitelyPresentedAlgebra(polynomial, [x * y])
     xbar = algebra.algebra_generator("x")
     ybar = algebra.algebra_generator("y")
-    values = ring_as_module(algebra)
+    values = algebra.regular_module()
     derivation = Derivations(algebra, values)(
         {
             "x": values.scalar_multiple(xbar, values.module_generator(0)),

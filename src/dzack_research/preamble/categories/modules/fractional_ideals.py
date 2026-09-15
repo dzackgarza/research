@@ -11,7 +11,6 @@ from sage.structure.richcmp import richcmp
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     MatrixSpace,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
@@ -520,12 +519,12 @@ def _fraction_field_as_module(base_ring):
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
     scalar_map = OwnedRings().Mor(ring, field)(lambda scalar: field(scalar))
-    return ring_as_module(field).restrict_scalars(scalar_map)
+    return field.regular_module().restrict_scalars(scalar_map)
 
 
 def _fractional_ideal_inclusion(ideal, integral):
 
-    target = ring_as_module(ideal.base_ring()) if integral else _fraction_field_as_module(ideal.base_ring())
+    target = ideal.base_ring().regular_module() if integral else _fraction_field_as_module(ideal.base_ring())
     images = {}
     for label in ideal.module_generating_set():
         value = ideal.module_generator(label)._inclusion_value()

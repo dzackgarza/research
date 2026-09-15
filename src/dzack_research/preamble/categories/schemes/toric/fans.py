@@ -20,9 +20,6 @@ from sage.structure.element import Element
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    ring_as_module,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -114,7 +111,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         characters = self.character_lattice()
         cocharacters = self.lattice()
         integers = _integers()
-        values = ring_as_module(integers)
+        values = integers.regular_module()
         dual_frames = BilinearMap(
             characters,
             cocharacters,

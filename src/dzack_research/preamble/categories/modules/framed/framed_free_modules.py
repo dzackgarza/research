@@ -895,12 +895,3 @@ def FreshFreeModuleOn(
 def BasedFreeModule(base_ring, rank_or_labels):
     r"""Return the selected based free module on a rank or explicit labels."""
     return FreeModule(base_ring, rank_or_labels)
-
-
-@cached_function
-def ring_as_module(ring):
-    r"""Return the canonical free rank-one module of a ring over itself."""
-    result = _owned_ring(ring)
-    if result in FinitelyGeneratedFreeModules(result):
-        return result
-    return BasedFreeModule(result, 1)

@@ -19,7 +19,6 @@ from dzack_research.preamble.all import (
     Groups,
     Modules,
     OwnedRings,
-    ring_as_module,
 )
 from dzack_research.preamble.rings import (
     predicate_subring,
@@ -173,15 +172,11 @@ def test_a_ring_is_the_rank_one_free_module_over_itself(promoted_ring: Any) -> N
     answers for its own rank, and the canonical free rank-one module over it
     is the ring, not a second object built to stand for it.
 
-    This is expected to fail today, and the failure is the point.  Nothing
-    places a ring among the finitely generated free modules over itself, so
-    ``ring_as_module`` takes its second branch and returns a separate
-    ``BasedFreeModule`` of rank one.  The branch above it already expects the
-    identification and is unreachable.  What would supply it is that
-    placement, with the framing on the ring's own unit, made where the ring is
-    placed as an algebra over itself.
+    The regular-module construction is owned by the ring itself, so this
+    specimen also fixes the identity expected from repeated
+    ``ring.regular_module()`` calls.
     """
     ring = promoted_ring
     assert ring in FinitelyGeneratedFreeModules(ring)
     assert ring.module_generating_set().cardinality() == 1
-    assert ring_as_module(ring) is ring
+    assert ring.regular_module() is ring

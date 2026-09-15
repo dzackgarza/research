@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     ZZ,
     bilinear_free_form_adjunction,
     quadratic_free_form_adjunction,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     _represented_value_module,
@@ -44,7 +43,7 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
     module_map = formed.module_category().Mor(formed, formed)(
         {"e": 3 * generator}
     )
-    values = ring_as_module(ZZ)
+    values = ZZ.regular_module()
     value_map = values.module_category().Mor(values, values)(
         {0: 9 * values.module_generator(0)}
     )

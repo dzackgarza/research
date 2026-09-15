@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedModule,
     FreeModule,
     PolynomialRing,
-    ring_as_module,
 )
 
 
@@ -25,7 +24,7 @@ def _cyclic(ring, generator):
 
 
 def test_tor_over_the_integers_is_the_gcd_and_vanishes_above_the_resolution() -> None:
-    six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ring_as_module(ZZ)
+    six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ZZ.regular_module()
     assert six.tor(four, degree=0).cardinality() == 2
     assert six.tor(four, degree=1).cardinality() == 2
     assert six.tor(four, degree=2).cardinality() == 1
@@ -35,7 +34,7 @@ def test_tor_over_the_integers_is_the_gcd_and_vanishes_above_the_resolution() ->
 
 
 def test_ext_over_the_integers() -> None:
-    six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ring_as_module(ZZ)
+    six, four, integers = _cyclic(ZZ, 6), _cyclic(ZZ, 4), ZZ.regular_module()
     assert six.ext(integers, degree=0).cardinality() == 1
     assert six.ext(integers, degree=1).cardinality() == 6
     assert six.ext(four, degree=0).cardinality() == 2
@@ -62,9 +61,9 @@ def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     square, line = _cyclic(ring, x**2), _cyclic(ring, x)
     assert tuple(square.tor(line, degree=1).invariant_factors()) == (x,)
     assert tuple(square.tor(line, degree=0).invariant_factors()) == (x,)
-    assert tuple(square.ext(ring_as_module(ring), degree=1).invariant_factors()) == (x**2,)
-    assert square.ext(ring_as_module(ring), degree=0).invariant_factors().cardinality() == 0
-    assert square.ext(ring_as_module(ring), degree=0).module_rank() == 0
+    assert tuple(square.ext(ring.regular_module(), degree=1).invariant_factors()) == (x**2,)
+    assert square.ext(ring.regular_module(), degree=0).invariant_factors().cardinality() == 0
+    assert square.ext(ring.regular_module(), degree=0).module_rank() == 0
 
 
 def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
@@ -83,7 +82,7 @@ def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
     assert tor_map.codomain() is tor_target
     assert tor_map(tor_class).parent() is tor_target
 
-    integers = ring_as_module(ZZ)
+    integers = ZZ.regular_module()
     ext_source = three.ext(integers, degree=1)
     ext_target = six.ext(integers, degree=1)
     ext_map = quotient.ext_map(integers, degree=1)

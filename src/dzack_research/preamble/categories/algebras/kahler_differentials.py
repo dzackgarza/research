@@ -149,9 +149,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         def tangent_space(self, point):
             r"""Return the relative Zariski tangent space dual to ``cotangent_space(point)``."""
 
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
-            )
 
             algebra = self.source_algebra()
             spectrum = algebra.spectrum()
@@ -160,7 +157,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             cotangent = self.cotangent_space(point)
             return cotangent.module_category().Mor(
                 cotangent,
-                ring_as_module(point.residue_field()),
+                point.residue_field().regular_module(),
             )
 
         def tangent_dimension(self, point):

@@ -6,8 +6,6 @@ _EXPORTS = {'FinitelyGeneratedFreeModules': ('dzack_research.preamble.categories
                                   'FinitelyGeneratedFreeModules'),
  'BasedFreeModule': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
                      'BasedFreeModule'),
- 'ring_as_module': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
-                    'ring_as_module'),
  'FinitelyPresentedModules': ('dzack_research.preamble.categories.modules.pure.modules',
                               'FinitelyPresentedModules'),
  'ModulesWithChosenFinitePresentation': ('dzack_research.preamble.categories.modules.pure.modules',
@@ -25,8 +23,7 @@ __all__ = ['BasedFreeModule',
  'FinitelyPresentedModules',
  'FinitelyPresentedTorsionModules',
  'ModulesWithChosenFinitePresentation',
- 'TorsionModule',
- 'ring_as_module']
+ 'TorsionModule']
 
 def __getattr__(name):
     try:

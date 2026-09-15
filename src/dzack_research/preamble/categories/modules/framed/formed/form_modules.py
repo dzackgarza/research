@@ -37,7 +37,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
     _module_subobject_constructor_data,
     _span_basis_elements,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.hodge import (
     AlgebraicCorrelationMorphism,
@@ -123,20 +122,20 @@ def _represented_value_module(formed_module):
 
     A scalar-valued form publicly takes values in the ring ``R``.  When ``R``
     is already carrying its canonical self-module structure it is returned
-    directly; otherwise :func:`ring_as_module` supplies the canonical rank-one
+    directly; otherwise ``R.regular_module()`` supplies the canonical rank-one
     realization over itself.  Genuine module-valued forms are unchanged.
     """
 
     value = formed_module.value_module()
     ring = formed_module.base_ring()
     if value is ring:
-        return ring_as_module(ring)
+        return ring.regular_module()
     if value in Modules(ring):
         return value
     if value in OwnedRings():
         try:
             scalar_map = OwnedRings().Mor(ring, value)(lambda scalar: value(scalar))
-            return ring_as_module(value).restrict_scalars(scalar_map)
+            return value.regular_module().restrict_scalars(scalar_map)
         except (TypeError, ValueError, NotImplementedError):
             pass
     raise TypeError(

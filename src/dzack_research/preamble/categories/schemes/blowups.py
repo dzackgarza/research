@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -285,7 +284,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         @cached_method
         def picard_intersection_pairing(self):
             picard = self.picard_group()
-            values = ring_as_module(_integers())
+            values = _integers().regular_module()
 
             def value(left, right):
                 if left == "H" and right == "H":

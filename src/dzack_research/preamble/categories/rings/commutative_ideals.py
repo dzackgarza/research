@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.localizations import (
     LocalizedModule,
@@ -44,8 +43,8 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
     it is asked for.
     """
     localization_map = localization_ring.localization_map()
-    source_regular_module = ring_as_module(source_ideal.ring())
-    target_regular_module = ring_as_module(localization_ring)
+    source_regular_module = source_ideal.ring().regular_module()
+    target_regular_module = localization_ring.regular_module()
     source_regular_labels = tuple(source_regular_module.module_generating_set())
     target_regular_labels = tuple(target_regular_module.module_generating_set())
     if len(source_regular_labels) != 1 or len(target_regular_labels) != 1:
@@ -97,7 +96,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
     def subobject_category(self):
 
         ring = self.base_ring()
-        return Modules(ring).Subobjects(ring_as_module(ring))
+        return Modules(ring).Subobjects(ring.regular_module())
 
     def __contains__(self, candidate) -> bool:
         try:
@@ -799,7 +798,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
     if len(labels) != len(target_generators):
         raise ArithmeticError("scalar extension changed the selected ideal framing")
 
-    ambient_module = ring_as_module(target)
+    ambient_module = target.regular_module()
     target_engine = _engine_ring(target)
     backend = target_engine.ideal(
         tuple(_engine_element(target, generator) for generator in target_generators)
@@ -863,7 +862,7 @@ def _commutative_ideal(source, generators):
             )
 
         generator = selected[0]
-        ambient_module = ring_as_module(source)
+        ambient_module = source.regular_module()
         if generator == engine.zero():
             ideal = FreshFreeModuleOn(
                 source,
@@ -912,7 +911,7 @@ def _commutative_ideal(source, generators):
             for position, label in enumerate(relation_labels)
         }
     )
-    ambient_module = ring_as_module(source)
+    ambient_module = source.regular_module()
     ideal = FinitelyPresentedModule(
         presentation,
         _subobject_ambient=ambient_module,

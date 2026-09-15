@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.algebras.derivations import (
     GradedDerivation,
     GradedDerivations,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -22,7 +21,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 def VectorFields(algebra):
     r"""Return ``Der_R(A,A)`` as the existing derivation module."""
 
-    return Derivations(algebra, ring_as_module(algebra))
+    return Derivations(algebra, algebra.regular_module())
 
 
 def _vector_field_scalar(vector_field, element):

@@ -66,7 +66,6 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -1533,7 +1532,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             picard = self.picard_group()
             weil = self.weil_divisor_group()
             integers = _integers()
-            values = ring_as_module(integers)
+            values = integers.regular_module()
             return BilinearMap(
                 picard,
                 picard,

@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -377,7 +376,7 @@ class SparseFreeAlgebra(Parent):
         if degree < 0:
             raise ValueError("a graded degree is nonnegative")
         if degree == 0:
-            return ring_as_module(self.base_ring())
+            return self.base_ring().regular_module()
         if degree == 1:
             return self.free_source_module()
         cached = self._graded_piece_cache.get(degree)
@@ -421,7 +420,7 @@ class SparseFreeAlgebra(Parent):
             factors = tuple(SymmetricPower(source.module_component(source_key), multiplicity) for source_key, multiplicity in self._component_items(key))
 
         if not factors:
-            component = ring_as_module(self.base_ring())
+            component = self.base_ring().regular_module()
         else:
             component = factors[0]
             if len(factors) > 1:
@@ -532,7 +531,7 @@ class SparseFreeAlgebra(Parent):
         if self._source_has_component_protocol():
             return self._component_module(key)
 
-        return ring_as_module(self.base_ring())
+        return self.base_ring().regular_module()
 
     def module_component_generator_label(self, label):
         label = self.module_generating_set()._element_constructor_(label)

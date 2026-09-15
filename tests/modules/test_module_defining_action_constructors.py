@@ -24,9 +24,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    ring_as_module,
-)
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     AlternatingPowerModules,
@@ -288,9 +285,9 @@ def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None
     module = _cyclic_six_from_presentation()
     dual = module.dual_module()
 
-    assert dual is module.module_category().Mor(module, ring_as_module(ZZ))
+    assert dual is module.module_category().Mor(module, ZZ.regular_module())
     assert dual.source_module() is module
-    assert dual.target_module() is ring_as_module(ZZ)
+    assert dual.target_module() is ZZ.regular_module()
     assert dual in ModulesWithChosenFinitePresentation(ZZ)
     assert dual.presentation_object().arrow() is dual.presentation()
 

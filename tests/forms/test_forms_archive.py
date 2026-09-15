@@ -4,12 +4,11 @@ from dzack_research.preamble.all import (
     ZZ,
     BilinearForms,
     QuadraticMap,
-    ring_as_module,
 )
 
 
 def _rank_one_module():
-    return ring_as_module(ZZ)
+    return ZZ.regular_module()
 
 
 def _generator(module):

@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
     FreeModule,
     FreshFreeModuleOn,
-    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -702,7 +701,7 @@ class QuarticK3IntegralTopology(SageObject):
     @cached_method
     def cup_product_pairing(self):
         middle = self.middle_cohomology_lattice()
-        values = ring_as_module(_own_ring(SageZZ))
+        values = _own_ring(SageZZ).regular_module()
         return BilinearMap(
             middle,
             middle,

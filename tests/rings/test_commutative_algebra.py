@@ -196,11 +196,11 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     generic = spectrum(ring.ideal(0))
     origin = spectrum(ring.ideal(x))
 
-    from dzack_research.preamble.categories.modules import Modules, ring_as_module
+    from dzack_research.preamble.categories.modules import Modules
     assert origin.ideal() in Modules(spectrum.ring()).Subobjects(
-        ring_as_module(spectrum.ring())
+        spectrum.ring().regular_module()
     )
-    assert origin.ideal().inclusion().codomain() is ring_as_module(spectrum.ring())
+    assert origin.ideal().inclusion().codomain() is spectrum.ring().regular_module()
 
     assert generic.specializes_to(origin)
     assert not origin.specializes_to(generic)
@@ -208,7 +208,7 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
 
     closed_origin = spectrum.V(x)
     assert closed_origin.defining_ideal() in Modules(spectrum.ring()).Subobjects(
-        ring_as_module(spectrum.ring())
+        spectrum.ring().regular_module()
     )
     punctured_line = spectrum.D(x)
     assert generic not in closed_origin
@@ -228,16 +228,16 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
 
 
 def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> None:
-    from dzack_research.preamble.categories.modules import Modules, ring_as_module
+    from dzack_research.preamble.categories.modules import Modules
 
     ring = PolynomialRing(QQ, ("x", "y"))
     x, y = ring.algebra_generators()
     ideal = ring.ideal(x**2, x * y)
     other = ring.ideal(y)
 
-    subobjects = Modules(ring).Subobjects(ring_as_module(ring))
+    subobjects = Modules(ring).Subobjects(ring.regular_module())
     assert ideal in subobjects
-    assert ideal.inclusion().codomain() is ring_as_module(ring)
+    assert ideal.inclusion().codomain() is ring.regular_module()
     assert ideal.inclusion().is_injective()
     assert ideal == ring.ideal(ring(x**2), ring(x * y))
 
@@ -608,10 +608,10 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
 def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
     import logging
 
-    from dzack_research.preamble.all import GF, FreeModule, ring_as_module
+    from dzack_research.preamble.all import GF, FreeModule
 
     field = GF(3)
-    finite = ring_as_module(field)
+    finite = field.regular_module()
     finite_hom = finite.module_category().Mor(finite, finite)
     linear = finite_hom.elementwise(
         lambda element: finite.scalar_multiple(field(2), element)
