@@ -6,12 +6,7 @@ responsibilities between ``FreeForgetfulAdjunction`` and the common
 ``Adjunction`` owner; these specimens identify that semantic replacement.
 """
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.functors.free_forgetful import (
-    free_forgetful_adjunction,
-    free_module_functor,
-    underlying_set_functor,
-)
+from dzack_research.preamble.all import Modules, ZZ
 from dzack_research.preamble.categories.modules import BasedFreeModule
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -58,7 +53,7 @@ ARCHIVE_RECONCILIATIONS = (
 
 
 def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
-    adjunction = free_forgetful_adjunction(ZZ)
+    adjunction = Sets().free_module_adjunction(ZZ)
     labels = finite_ordered_set(("x", "y"))
     module = BasedFreeModule(ZZ, finite_ordered_set(("a", "b")))
     free = adjunction.left_adjoint()(labels)
@@ -84,7 +79,7 @@ def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
 
 
 def test_archived_triangle_identities_are_the_live_unit_and_counit() -> None:
-    adjunction = free_forgetful_adjunction(ZZ)
+    adjunction = Sets().free_module_adjunction(ZZ)
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     labels = finite_ordered_set(("u", "v"))
@@ -108,8 +103,8 @@ def test_free_and_underlying_functors_land_in_declared_codomains_on_a_nonidentit
     set_map = Sets().Mor(source, target)(
         lambda label: target("b") if label == source("x") else target("c")
     )
-    free = free_module_functor(ZZ)
-    underlying = underlying_set_functor(ZZ)
+    free = Sets().free_module(ZZ)
+    underlying = Modules(ZZ).underlying_set()
 
     source_module = free(source)
     target_module = free(target)
@@ -130,7 +125,7 @@ def test_free_and_underlying_functors_land_in_declared_codomains_on_a_nonidentit
 
 
 def test_archived_unit_is_natural_on_a_nonidentity_set_map() -> None:
-    adjunction = free_forgetful_adjunction(ZZ)
+    adjunction = Sets().free_module_adjunction(ZZ)
     source = finite_ordered_set(("x", "y"))
     target = finite_ordered_set(("a", "b", "c"))
     morphism = Sets().Mor(source, target)(

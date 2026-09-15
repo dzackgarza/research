@@ -924,10 +924,10 @@ class Sets(OwnedCategory):
             ``R``-modules; the adjunction is ``free_module_adjunction``.
             """
             from dzack_research.preamble.categories.functors.free_forgetful import (
-                free_module_functor,
+                _free_module_functor,
             )
 
-            return free_module_functor(base_ring)
+            return _free_module_functor(base_ring)
 
         def free_module_adjunction(self, base_ring: Parent) -> Adjunction:
             r"""``F_R -| U`` between ``Set`` and ``Mod_R``.
@@ -938,10 +938,10 @@ class Sets(OwnedCategory):
             evaluates a formal ``R``-combination of elements of ``M``.
             """
             from dzack_research.preamble.categories.functors.free_forgetful import (
-                free_forgetful_adjunction,
+                _free_forgetful_adjunction,
             )
 
-            return free_forgetful_adjunction(base_ring)
+            return _free_forgetful_adjunction(base_ring)
 
         def free_group(self) -> Functor:
             r"""``F : Set -> Grp``, the free-group functor.
@@ -952,10 +952,10 @@ class Sets(OwnedCategory):
             groups; the adjunction is ``free_group_adjunction``.
             """
             from dzack_research.preamble.categories.functors.free_groups import (
-                free_group_functor,
+                _free_group_functor,
             )
 
-            return free_group_functor()
+            return _free_group_functor()
 
         def free_group_adjunction(self) -> Adjunction:
             r"""``F -| U`` between ``Set`` and ``Grp``.
@@ -966,10 +966,10 @@ class Sets(OwnedCategory):
             word in the elements of ``G``.
             """
             from dzack_research.preamble.categories.functors.free_groups import (
-                free_group_underlying_set_adjunction,
+                _free_group_underlying_set_adjunction,
             )
 
-            return free_group_underlying_set_adjunction()
+            return _free_group_underlying_set_adjunction()
 
         def cardinality_functor(self) -> Functor:
             r"""``# : core(Set) -> Card``, the cardinality functor.

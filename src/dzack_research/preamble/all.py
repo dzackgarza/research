@@ -371,9 +371,6 @@ from dzack_research.preamble.categories.functors.free_forgetful import (
 from dzack_research.preamble.categories.functors.free_forgetful import (
     UnderlyingSetFunctor as UnderlyingSetFunctor,
 )
-from dzack_research.preamble.categories.functors.free_forgetful import (
-    free_forgetful_adjunction as free_forgetful_adjunction,
-)
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFreeFormAdjunction as BilinearFreeFormAdjunction,
 )
@@ -406,9 +403,6 @@ from dzack_research.preamble.categories.functors.free_groups import (
 )
 from dzack_research.preamble.categories.functors.free_groups import (
     GroupUnderlyingSetFunctor as GroupUnderlyingSetFunctor,
-)
-from dzack_research.preamble.categories.functors.free_groups import (
-    free_group_underlying_set_adjunction as free_group_underlying_set_adjunction,
 )
 from dzack_research.preamble.categories.functors.group_actions import (
     CoinvariantsFunctor as CoinvariantsFunctor,

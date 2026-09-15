@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     FiniteSets,
     Groups,
     Modules,
-    free_group_underlying_set_adjunction,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
@@ -164,7 +163,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
 
 
 def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_property() -> None:
-    adjunction = free_group_underlying_set_adjunction()
+    adjunction = Sets().free_group_adjunction()
     source = finite_ordered_set((ZZ(2), ZZ(3)))
     second_source = finite_ordered_set((ZZ(5), ZZ(7)))
     target = Groups.C(3)

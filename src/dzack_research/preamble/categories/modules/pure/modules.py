@@ -317,10 +317,10 @@ class Modules(OwnedCategoryOverBaseRing):
             and forgetting the scalar action removes structure, not elements.
             """
             from dzack_research.preamble.categories.functors.free_forgetful import (
-                underlying_set_functor,
+                _underlying_set_functor,
             )
 
-            return underlying_set_functor(self.base_ring())
+            return _underlying_set_functor(self.base_ring())
 
         def dualization(self):
             r"""``(-)^* = Hom_R(-, R)``, the contravariant ``R``-linear dualization.

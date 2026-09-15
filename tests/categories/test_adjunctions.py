@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
     abelianization_adjunction,
-    free_forgetful_adjunction,
     order_number_field_adjunction,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -86,7 +85,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
 
 
 def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_and_triangles() -> None:
-    adjunction = free_forgetful_adjunction(ZZ)
+    adjunction = Sets().free_module_adjunction(ZZ)
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
 
@@ -516,7 +515,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
 
 
 def test_free_and_scalar_extension_functors_preserve_identities_and_composition() -> None:
-    free = free_forgetful_adjunction(ZZ).left_adjoint()
+    free = Sets().free_module_adjunction(ZZ).left_adjoint()
     source_set = finite_ordered_set((ZZ(1), ZZ(2)))
     middle_set = finite_ordered_set((ZZ(3), ZZ(4)))
     target_set = finite_ordered_set((ZZ(5), ZZ(6)))

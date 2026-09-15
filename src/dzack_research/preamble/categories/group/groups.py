@@ -2084,10 +2084,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             and forgetting the multiplication removes structure, not elements.
             """
             from dzack_research.preamble.categories.functors.free_groups import (
-                group_underlying_set_functor,
+                _group_underlying_set_functor,
             )
 
-            return group_underlying_set_functor()
+            return _group_underlying_set_functor()
 
     class ElementMethods:
         def inverse(self):

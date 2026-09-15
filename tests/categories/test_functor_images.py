@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     DiscreteFunctor,
     ObjectSetFunctor,
     Sets,
-    free_forgetful_adjunction,
 )
 
 
@@ -41,9 +40,8 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
 
 
 def test_functor_provenance_records_objects_and_morphisms_in_one_store() -> None:
-    free = free_forgetful_adjunction(__import__(
-        "dzack_research.preamble.all", fromlist=["ZZ"]
-    ).ZZ).left_adjoint()
+    ring = __import__("dzack_research.preamble.all", fromlist=["ZZ"]).ZZ
+    free = Sets().free_module_adjunction(ring).left_adjoint()
     source = Sets.Δ[0]
 
     image = free(source)
