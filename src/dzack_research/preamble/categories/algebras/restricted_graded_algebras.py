@@ -247,7 +247,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
 
 @cached_function(key=lambda algebra, ring_map: (id(algebra), id(ring_map)))
-def restrict_graded_algebra_scalars(algebra, ring_map):
+def _restrict_graded_algebra_scalars(algebra, ring_map):
     result = RestrictedGradedAlgebra(algebra, ring_map)
     return result
 
@@ -255,5 +255,4 @@ def restrict_graded_algebra_scalars(algebra, ring_map):
 __all__ = [
     "RestrictedGradedAlgebra",
     "RestrictedGradedAlgebraElement",
-    "restrict_graded_algebra_scalars",
 ]

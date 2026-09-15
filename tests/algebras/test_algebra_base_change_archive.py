@@ -14,9 +14,6 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
     algebra_base_change_adjunction,
 )
-from dzack_research.preamble.categories.algebras.restricted_scalars import (
-    restrict_algebra_scalars,
-)
 from dzack_research.preamble.categories.rings import ring_homset
 
 ARCHIVE_RECONCILIATION = {
@@ -80,11 +77,11 @@ def test_scalar_restriction_retains_the_selected_ring_map_identity() -> None:
     first_map = QQ.Mor(QQ).identity()
     second_map = QQ.Mor(QQ).identity()
 
-    first = restrict_algebra_scalars(algebra, first_map)
-    second = restrict_algebra_scalars(algebra, second_map)
+    first = algebra.restrict_scalars(first_map)
+    second = algebra.restrict_scalars(second_map)
 
-    assert first is restrict_algebra_scalars(algebra, first_map)
-    assert second is restrict_algebra_scalars(algebra, second_map)
+    assert first is algebra.restrict_scalars(first_map)
+    assert second is algebra.restrict_scalars(second_map)
     assert first is not second
     assert first.ring_map() is first_map
     assert second.ring_map() is second_map

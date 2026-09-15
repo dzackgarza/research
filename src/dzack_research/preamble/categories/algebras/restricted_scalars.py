@@ -52,9 +52,9 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         ring = self.base_ring()
-        return restrict_algebra_scalars(
-            SymmetricAlgebraOn(ring, ("x",)),
-            ring_morphism(ring, ring, lambda element: element),
+        algebra = SymmetricAlgebraOn(ring, ("x",))
+        return algebra.restrict_scalars(
+            ring_morphism(ring, ring, lambda element: element)
         )
 
     @classmethod
@@ -322,11 +322,11 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     )
 
 
-def restrict_algebra_scalars(algebra, ring_map):
+def _restrict_algebra_scalars(algebra, ring_map):
     r"""Return ``Res_f(B)`` for ``f : R -> S`` and an ``S``-algebra ``B``.
 
-    Scalar restriction itself is global: the returned algebra always retains
-    the exact underlying computation ring of ``B`` and composes its structure
+    The returned algebra retains the exact underlying computation ring of
+    ``B`` and composes its structure
     map with ``f``.  The stronger chosen finite presentation is retained only
     when it can be constructed from chosen presentations of both ``S/R`` and
     ``B/S`` along the selected structure map of ``S``.
@@ -397,7 +397,4 @@ def restrict_algebra_scalars(algebra, ring_map):
     return restricted
 
 
-__all__ = [
-    "RestrictedScalarsAlgebras",
-    "restrict_algebra_scalars",
-]
+__all__ = ["RestrictedScalarsAlgebras"]

@@ -172,8 +172,6 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     algebra_from_multiplication,
     augmented_algebra,
     own_algebra,
-    restrict_algebra_scalars,
-    restrict_graded_algebra_scalars,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     MatrixAlgebras as MatrixAlgebras,

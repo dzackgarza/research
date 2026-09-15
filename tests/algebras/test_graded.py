@@ -73,6 +73,21 @@ def test_a_graded_free_algebra_is_an_algebra_over_its_unit_graded_piece() -> Non
     assert to_ground(combined(QQ(4))) == QQ(4)
 
 
+def test_graded_scalar_restriction_is_owned_by_the_graded_algebra() -> None:
+    session = _session()
+    QQ = session["QQ"]
+    SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
+
+    algebra = SymmetricAlgebraOn(QQ, ["x"])
+    identity = QQ.Mor(QQ).identity()
+    restricted = algebra.restrict_scalars(identity)
+
+    assert restricted.extension_algebra() is algebra
+    assert restricted.ring_map() is identity
+    assert restricted.grading_monoid() is algebra.grading_monoid()
+    assert algebra.restrict_scalars(identity) is restricted
+
+
 def test_grading_monoid_must_be_a_monoid() -> None:
     session = _session()
     QQ = session["QQ"]

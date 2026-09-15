@@ -31,9 +31,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     algebra_structure_view,
 )
-from dzack_research.preamble.categories.algebras.restricted_scalars import (
-    restrict_algebra_scalars,
-)
 from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )
@@ -1671,7 +1668,7 @@ class SemilinearAlgebraMorphism(SageObject):
         self._source = source
         self._target = target
         self._scalar_map = scalar_map
-        self._restricted_target = restrict_algebra_scalars(target, scalar_map)
+        self._restricted_target = target.restrict_scalars(scalar_map)
         supplied = (
             {label: images(label) for label in labels}
             if callable(images)
@@ -3495,7 +3492,7 @@ class AlgebraGluingDatum(Parent):
         source_open = self.cover().intersection(*source_indices)
         target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
-        restricted_target = restrict_algebra_scalars(target, ring_map)
+        restricted_target = target.restrict_scalars(ring_map)
         cached = _algebra_homset(source, restricted_target)(
             lambda label: restricted_target(target.algebra_generator(label))
         )

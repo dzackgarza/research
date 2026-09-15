@@ -120,8 +120,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                                        'StrictlyGradedCommutativeAlgebras'),
  'RestrictedScalarsAlgebras': ('dzack_research.preamble.categories.algebras.restricted_scalars',
                                'RestrictedScalarsAlgebras'),
- 'restrict_algebra_scalars': ('dzack_research.preamble.categories.algebras.restricted_scalars',
-                              'restrict_algebra_scalars'),
  'Derivation': ('dzack_research.preamble.categories.algebras.derivations', 'Derivation'),
  'DerivationSpace': ('dzack_research.preamble.categories.algebras.derivations', 'DerivationSpace'),
  'Derivations': ('dzack_research.preamble.categories.algebras.derivations', 'Derivations'),
@@ -137,8 +135,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                              'RestrictedGradedAlgebra'),
  'RestrictedGradedAlgebraElement': ('dzack_research.preamble.categories.algebras.restricted_graded_algebras',
                                     'RestrictedGradedAlgebraElement'),
- 'restrict_graded_algebra_scalars': ('dzack_research.preamble.categories.algebras.restricted_graded_algebras',
-                                     'restrict_graded_algebra_scalars'),
  'CommutativeDifferentialGradedAlgebras': ('dzack_research.preamble.categories.algebras.differential_graded_algebras',
                                            'CommutativeDifferentialGradedAlgebras'),
  'DGAHomset': ('dzack_research.preamble.categories.algebras.differential_graded_algebras',
@@ -267,8 +263,6 @@ __all__ = ['AugmentedAlgebras',
  'tensor_to_alternating',
  'tensor_to_symmetric',
  'refine_algebra',
- 'restrict_algebra_scalars',
- 'restrict_graded_algebra_scalars',
 ]
 
 def __getattr__(name):

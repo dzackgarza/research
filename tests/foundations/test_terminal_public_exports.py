@@ -121,6 +121,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "primitive_isotropic",
         "primitive_isotropic_vectors",
         "restrict_scalars",
+        "restrict_graded_algebra_scalars",
+        "restrict_algebra_scalars",
         "ring_as_module",
         "splits_two_hyperbolic_planes",
         "sub_framing_morphism",

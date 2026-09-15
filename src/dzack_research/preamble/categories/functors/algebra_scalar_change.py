@@ -25,9 +25,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.algebras.restricted_scalars import (
-    restrict_algebra_scalars,
-)
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -245,7 +242,7 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, algebra):
-        return restrict_algebra_scalars(algebra, self.ring_map())
+        return algebra.restrict_scalars(self.ring_map())
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

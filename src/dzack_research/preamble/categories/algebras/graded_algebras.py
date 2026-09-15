@@ -220,6 +220,14 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return [algebra, graded_modules]
 
     class ParentMethods:
+        def restrict_scalars(self, ring_map):
+            r"""Restrict scalars while retaining this algebra's grading."""
+            from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
+                _restrict_graded_algebra_scalars,
+            )
+
+            return _restrict_graded_algebra_scalars(self, ring_map)
+
         def homogeneous_degree(self, element):
             r"""Return the selected degree of one nonzero homogeneous element."""
             element = self(element)

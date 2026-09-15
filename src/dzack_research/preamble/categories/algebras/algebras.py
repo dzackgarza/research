@@ -665,6 +665,14 @@ class Algebras(OwnedCategoryOverBaseRing):
         def base_ring(self):
             return self.algebra_base_ring()
 
+        def restrict_scalars(self, ring_map):
+            r"""Return this algebra with scalars restricted along ``ring_map``."""
+            from dzack_research.preamble.categories.algebras.restricted_scalars import (
+                _restrict_algebra_scalars,
+            )
+
+            return _restrict_algebra_scalars(self, ring_map)
+
         def is_algebra(self) -> bool:
             return True
 
