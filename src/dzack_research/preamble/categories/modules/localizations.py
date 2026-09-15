@@ -462,12 +462,11 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
 
 __all__ = [
-    "LocalizedModule",
     "LocalizedModules",
 ]
 
 
-def LocalizedModule(
+def _localized_module(
     source_module,
     localization_ring,
     localization_functor,

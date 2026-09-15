@@ -275,7 +275,7 @@ def _construct_kahler_differentials(algebra):
             )
         source_omega = source.kahler_differentials()
         from dzack_research.preamble.categories.modules.localizations import (
-            LocalizedModule,
+            _localized_module,
         )
 
         # Localization is an algebra base change A -> S^{-1}A and Kähler
@@ -284,10 +284,10 @@ def _construct_kahler_differentials(algebra):
         #   Omega^1_{S^{-1}A/R} = S^{-1}A tensor_A Omega^1_{A/R}.
         #
         # Choose that localized module itself as the represented differential
-        # object.  Its LocalizedModules data therefore retains the comparison
+        # object.  Its _localized_modules data therefore retains the comparison
         # source and localization unit rather than merely recording an
         # isomorphic but unrelated presentation.
-        return LocalizedModule(
+        return _localized_module(
             source_omega,
             algebra,
             algebra.localization_functor(),

@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.localizations import (
-    LocalizedModule,
+    _localized_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -64,7 +64,7 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
             target_regular_module.module_generator(target_regular_label),
         )
 
-    ideal = LocalizedModule(
+    ideal = _localized_module(
         source_ideal,
         localization_ring,
         localization_ring.localization_functor(),

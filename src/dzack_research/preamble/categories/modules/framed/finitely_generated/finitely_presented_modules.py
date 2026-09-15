@@ -505,7 +505,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
 
             # Fitting ideals commute with arbitrary base change, hence in
-            # particular with localization.  A LocalizedModule remembers its
+            # particular with localization.  A localized module remembers its
             # source presentation, so use that theorem directly instead of
             # demanding a second matrix-minor engine over S^{-1}R.  Concretely,
             # every presentation minor maps to the corresponding minor of the
@@ -513,10 +513,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             # Fitt_i(S^{-1}M) = S^{-1}Fitt_i(M).
             if ring in LocalizationRings():
                 from dzack_research.preamble.categories.modules.localizations import (
-                    LocalizedModules,
+                    _localized_modules,
                 )
 
-                if self in LocalizedModules(ring):
+                if self in _localized_modules(ring):
                     source = self.localization_source_module()
                     source_ring = ring.localization_source()
                     if source in _SelectedFinitePresentationModules(source_ring):
@@ -2497,7 +2497,7 @@ def FinitelyPresentedModule(
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FreshFreeModuleOn,
         )
-        from dzack_research.preamble.categories.modules.localizations import LocalizedModule
+        from dzack_research.preamble.categories.modules.localizations import _localized_module
 
         source_ring = base_ring.localization_source()
         local_rows = tuple(_matrix_coordinate_rows(relations))
@@ -2538,7 +2538,7 @@ def FinitelyPresentedModule(
             local_extra_categories.append(BiproductModules(base_ring))
             local_extra_data["biproduct_factors"] = _biproduct_factors
 
-        localized = LocalizedModule(
+        localized = _localized_module(
             source_quotient,
             base_ring,
             localization,

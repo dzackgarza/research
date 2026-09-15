@@ -6,8 +6,8 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.localizations import (
-    LocalizedModule,
-    LocalizedModules,
+    _localized_module,
+    _localized_modules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
@@ -55,7 +55,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 ),
                 "subobject_verify_linearity": False,
             }
-        return LocalizedModule(
+        return _localized_module(
             module,
             self.localization_ring(),
             self,
@@ -76,8 +76,8 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 embedded._preamble_localization_functor = self
                 return embedded
 
-        if source in LocalizedModules(source.base_ring()):
-            if target in LocalizedModules(target.base_ring()):
+        if source in _localized_modules(source.base_ring()):
+            if target in _localized_modules(target.base_ring()):
                 def on_fraction(fraction):
                     return target.fraction(
                         morphism(fraction.numerator()),
@@ -99,7 +99,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 on_fraction,
                 verify_linearity=False,
             )
-        elif target in LocalizedModules(target.base_ring()):
+        elif target in _localized_modules(target.base_ring()):
 
             if source not in FramedModules(source.base_ring()):
                 raise NotImplementedError(
@@ -146,7 +146,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
         image = self(module) if localized is None else localized
         restricted = image.restrict_scalars(self.ring_map())
-        if image in LocalizedModules(image.base_ring()):
+        if image in _localized_modules(image.base_ring()):
             return module.module_category().Mor(module, restricted).elementwise(
                 lambda element: restricted.wrap(image.fraction(element)),
                 verify_linearity=False,
@@ -308,5 +308,5 @@ class LocalizationKernelComparison(SageObject):
 __all__ = [
     "LocalizationCokernelComparison",
     "LocalizationKernelComparison",
-    "LocalizedModules",
+    "_localized_modules",
 ]
