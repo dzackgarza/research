@@ -4167,13 +4167,3 @@ class RootLattices(OwnedCategory):
                     if parent.module_generator(label).b(self) != 0
                 }
             )
-
-
-def refine_root_lattice(lattice, cartan_type):
-    r"""Record the Cartan type whose negative Cartan form built ``lattice``."""
-    return lattice.lattice_category()._refine_root_lattice(lattice, cartan_type)
-
-
-def refine_lattice_properties(lattice):
-    r"""Attach the finite lattice properties directly decidable from the form."""
-    return lattice.lattice_category()._refine_lattice_object(lattice)
