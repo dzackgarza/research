@@ -621,6 +621,7 @@ Treat the pin as blocked, record it that way against the affected items in the o
   **Acceptance:** the actual failed proposition is established and the affected downstream construction remains coherent.
 
 - [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
+  **Goal:** Exercise the repaired preamble as a coherent live Sage mathematical session: import the public category/lattice language, regenerate its derived views, inspect research examples, and run final QC.
   **Fresh-session invariant:** before this node can close, a fresh live Sage process on the repository's active environment must execute `from dzack_research.preamble.all import *` successfully and expose at least the core `Cat` and `Lattices` entry points.
   Regenerate the preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with the live session; graph node counts are an inventory, not acceptance by themselves.
   Treat a preamble-owned import warning or an import-order-dependent result as a terminal repair, not as harmless startup noise.
@@ -637,6 +638,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 ### Workflow and execution prerequisites
 
 - [ ] **`research-sage-runtime`**. **Needs:** `architecture-remediation`.
+  **Goal:** Restore the repository’s stable Sage execution environment so the final mathematical session and `.sage` consumers run against the intended Sage installation rather than a stub or temporary runtime.
   Restore the tracked Sage runtime before terminal execution resumes.
   **Observed gap:** `.envrc` names a source-checkout launcher that resolves into a stub-source tree and cannot import Sage; source inspection alone therefore cannot close the environment complaint.
   **Owner:** the tracked `.envrc` runtime contract and the supported static Sage installation for this repository.
@@ -669,6 +671,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** one framing authority supplies source, selected epi, generator set and generator evaluation across the audited descendants; specialization methods that remain have a documented stronger codomain/operation and are not renamings of the generic result.
 
 - [ ] **`owned-provenance-data`**. **Needs:** none.
+  **Goal:** Represent chosen source maps, presentations, base changes, completions, and comparison morphisms as first-class construction data instead of hidden `_preamble_*` provenance attributes.
   Replace hidden `_preamble_*source*`, functor-preimage, coordinate-morphism, and provenance side channels with first-class construction data (`CON-05`, `STY-07`, `OWN-03`--`05`).
   **Observed gap:** the audit found 108 attachment/provenance sites across 32 files, including functor-image preimages, de Rham/Kahler/cohomology source attributes, coordinate-algebra morphisms, completion sources and base-change sources.
   **Owners:** the functor image, chosen presentation, comparison morphism, base-change datum, completion datum, or other mathematical construction whose later operations require the source.
@@ -676,6 +679,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** affected downstream operations recover required source objects/maps from their defining construction, not ad-hoc attributes on an otherwise ordinary result; deleting a private source attribute cannot change the mathematics because no such authority remains.
 
 - [ ] **`refinement-convergence`**. **Needs:** `owned-provenance-data`.
+  **Goal:** Construct objects with all structure implied or selected by their defining data, reserving later refinement for genuinely new mathematical facts proved after construction.
   Eliminate runtime refinement as a second ordinary construction mechanism under `ARC-13`, `STY-08`, and `OWN-02`--`03`.
   **Observed gap:** 49 `refine(...)` call sites remain; ring and scheme constructors still install standard structure or `_preamble_scheme_*` state after object allocation.
   **Deliver:** standard structure that follows from defining data is present when the object is constructed; selected structure is passed explicitly through its constructor/functor; later `refine` remains only for a genuinely new mathematical fact proved after construction.  Remove call-history/import-order dependence from inherited operations.
@@ -690,6 +694,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** finite free/lattice examples show their generator image (for example `{e_0, e_1}` or an equally informative owned-set rendering); infinite examples preserve laziness and expose the indexing mathematics without implementation taxonomy; no audited generator display is merely a renamed type.
 
 - [ ] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
+  **Goal:** Replace bare `gens`, `basis`, `dual`, and similar names with structure-qualified operations whose mathematical codomain is clear from the name itself.
   Remove public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified referent.
   **Observed gap:** current examples include fractional-ideal/lattice `gens`, lattice/isotropic `basis`, and six divisor/sheaf `dual()` methods.
   **Deliver:** choose names such as `module_generators`, `group_generators`, `ideal_generators`, `lattice_basis`, `dual_module`, `dual_lattice`, `dual_sheaf`, etc. according to the actual codomain; remove aliases that preserve the ambiguous spelling and migrate every ordinary consumer in the same unit.
@@ -709,6 +714,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** the audited public signatures contain no bare Python tuple/list return for mathematical product data; component access factors through the owned product/projections and works for the stated index object rather than only a hard-coded pair.
 
 - [ ] **`mathematical-return-types`**. **Needs:** `owner-api-convergence`, `framing-specialization-convergence`, `refinement-convergence`, `categorical-representation-convergence`, `owned-product-codomains`.
+  **Goal:** State public API codomains in mathematical terms—sets, categories, refinements, morphism spaces—rather than framework-universal `Parent`, `Element`, or ad hoc `Any`.
   Replace framework-universal public return annotations (`Parent`, `Element`, `CategoryObject`, and ad hoc `Any`) with mathematical codomains under `LEX-12`--`15`.
   **Observed gap:** the audit counted 261 framework-universal return annotations, including functor images, cardinalities and scheme operations.
   **Deliver:** after the affected public APIs have stabilized, annotate each operation by the mathematical set/category/refinement its values inhabit.  When Python cannot yet express that codomain directly, introduce or reuse one central mathematically named alias/refinement rather than a local implementation wrapper.
@@ -718,12 +724,14 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 ### Computational boundaries and duplicate algorithms
 
 - [ ] **`assertion-frontiers`**. **Needs:** none.
+  **Goal:** Keep public operations at their full mathematical domain while making the exact unsupported computational remainder fail explicitly at the representation/hypothesis frontier.
   Replace public mathematical `NotImplementedError` control flow with the exact computational frontier required by `CAT-01`, `DEF-06`, `STY-48`, and `DEV-11`.
   **Observed gap:** 449 direct raises remain, in 212 public callables, with major concentrations in schemes, algebras, commutative algebra, modules, lattices and groups.
   **Deliver:** for each public mathematical operation, keep it at the domain where the notion is defined, route every supported exact case through its maintained owner, and assertion-gate only the precise unsupported computational remainder with the missing hypothesis/representation stated.  Remove methods with no successful mathematical case or make genuine abstract contracts abstract.
   **Acceptance:** no public mathematical API uses `NotImplementedError` as its ordinary unsupported-case semantics; representative unsupported inputs fail at an informative assertion frontier without returning a false mathematical value or narrowing the method's codomain.
 
 - [ ] **`placeholder-stubs`**. **Needs:** `assertion-frontiers`.
+  **Goal:** Remove unconditional `assert False`, `pass`, and similar placeholders from public mathematical promises by implementing the operation, making it genuinely abstract, or deleting the misplaced API.
   Remove unconditional visible mathematical placeholders (`STY-48`, `STY-160`).
   **Observed gap:** tensor `_index_ranks()`/`tensor_valence()` use unconditional `assert False`; an optional abstract profinite-group method uses `pass` rather than the required Sage abstract contract.
   **Deliver:** implement the operation at its proper owner when mathematics is available; otherwise make the genuine abstract contract explicit or delete/move a method that is not defined at that layer.  Use `...` in Sage abstract bodies as required by policy.
@@ -736,12 +744,14 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** object and morphism transport are two actions of the same retained functor/construction, not parallel algorithms, and a nonidentity group-module map commutes with scalar change through that one owner.
 
 - [ ] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
+  **Goal:** Give constructions such as de Rham algebras, Kähler differentials, cohomology, and absolute Galois groups one shared identity/caching mechanism keyed by their defining mathematical data.
   Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism (`STY-55`, `DEV-12`, `OWN-10`).
   **Observed gap:** five independent dictionaries encode construction identity and lifetime.
   **Deliver:** after chosen provenance is first-class, use the appropriate shared unique-representation/cached-function/cached-method owner keyed by the defining mathematical data.  Do not cache by display strings or backend handles and do not use a cache to invent identity between different chosen presentations.
   **Acceptance:** repeated construction with identical defining data retains the documented identity; genuinely different choices remain distinct; no audited theory keeps a parallel identity dictionary.
 
 - [ ] **`singular-kernel-delegation`**. **Needs:** `framing-primary-epi`, `assertion-frontiers`.
+  **Goal:** Delegate finitely presented module kernel/syzygy computation to a maintained Sage/Singular operation through one adapter, then raise the result to the owned kernel object, inclusion, and presentation.
   Replace `_singular_presentation_kernel`'s long Python orchestration with a maintained Singular/Sage operation behind one owned adapter crossing (`ENG-01`--`03`, `STY-57`--`59`, `OWN-08`).
   **Observed gap:** current code manually builds matrices, lifts coefficients, invokes Singular `modulo`, reconstructs relations and recovers lifts across roughly 170 lines.
   **Deliver:** identify the exact maintained kernel/syzygy/presentation operation that returns enough data to reconstruct the owned kernel inclusion and selected presentation.  Keep representation conversion at the adapter boundary; do not reproduce the standard algorithm in Python around lower-level Singular calls.
@@ -754,6 +764,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** representative torsion-form subobject orbits/stabilizers agree with the retained action, return through the general owned action API, and the torsion-form subtree contains no independent orbit engine.
 
 - [ ] **`imperative-algorithm-cleanup`**. **Needs:** `group-module-scalar-change-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`.
+  **Goal:** Replace generic local traversal, grouping, multiplication, and accumulation code with standard mathematical operations or mature dependency owners, retaining loops only when they are genuinely theory-specific algorithms.
   Remove the remaining guide-catalogued imperative algorithms only after their larger duplicated owners have converged.
   **Observed gap:** examples include bilinear nested accumulation, duplicate free-algebra target multiplication loops, divided-power coefficient loops, absolute-Galois append/filter construction, `setdefault(...).append(...)` grouping, and bespoke `frontier`/`seen` traversals in lattice/action code.
   **Deliver:** for each audited site, identify the standard mathematical operation or mature dependency owner and replace the local algorithm with that operation.  When an explicit loop is genuinely the theory-specific algorithm, retain it and document the mathematical reason rather than rewriting it cosmetically.
@@ -762,6 +773,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 ### Public interaction and proof surfaces
 
 - [ ] **`coordinate-firewall`**. **Needs:** `framing-specialization-convergence`.
+  **Goal:** Confine coordinates and raw matrices/vectors to explicitly chosen finite framings or presentations; ordinary lattice/module/morphism interaction should remain semantic.
   Close ordinary public coordinate/storage escape hatches that bypass semantic owners (`ARC-18`, `API-02`, `DEV-40`).
   **Observed gap:** lattice elements expose `to_list`/`to_tuple`/`to_vector`, tensor elements expose raw `components()`/`list()`, and module morphisms expose matrix storage as ordinary public interaction; the canonical notebook teaches these routes.
   **Deliver:** keep explicit coordinate views only on the selected finite framing/presentation object where coordinates are mathematically part of that chosen datum.  Ordinary element/morphism APIs route through owned operations, Homs and universal constructions; downstream research code migrates before the old hatches are removed.
@@ -774,18 +786,21 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** the old global route makes the relevant test fail, while the owner route exercises the same mathematical construction; no test harness mutation silently supplies or preserves the API being removed.
 
 - [ ] **`canonical-notebook-contract`**. **Needs:** `owner-api-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `categorical-representation-convergence`, `coordinate-firewall`.
+  **Goal:** Turn the canonical notebook into an executable research narrative organized by mathematical questions and witnesses, using the same final public API expected from ordinary users.
   Repair the canonical notebook to satisfy `NB-01`--`05`, `ARC-07`, `LEX-10`, and `DEV-40` after the public APIs it teaches have converged.
   **Observed gap:** 30/51 code cells are unexecuted, committed failure output remains, several mathematical claims occur only in prose, section headings are implementation tours, and examples use old globals/ambiguous generator APIs/raw constructors and coordinate paths.
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
 - [ ] **`architecture-remediation`**. **Needs:** `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+  **Goal:** Converge the twenty complaint-derived architecture repairs into one coherent mathematical API before any final runtime/session claim is accepted.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.
 
 ### Post-remediation convergence
 
 - [ ] **`refactor-audit`**. **Needs:** `terminal-session`.
+  **Goal:** After the repaired mathematics runs end-to-end, audit the repository for duplicated authority, poor organization, and maintainability defects that survived the architecture work.
   Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the final public session.
   The public mathematical API need not change and should not change incidentally; this pass is about internal sources of truth, ownership and maintainability that survive the mandatory architecture repairs.
 
@@ -794,6 +809,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** the whole-repository pass is complete; every defensible finding has either been repaired at its owner or is represented by a concrete repair row that has itself closed; and a final read finds no remaining source-of-truth, ownership, or duplication defect in this scope.  A clean pass requires no receipt commit.
 
 - [ ] **`type-paydown`**. **Needs:** `refactor-audit`.
+  **Goal:** Improve static type information only where it clarifies the mathematics and makes correctness easier to reason about; do not contort code merely to lower an error count.
   Pay down type errors where doing so is reasonable, and not one step further.
   Every typing decision must improve the legibility of the code, the ability to understand what it does, and the ability to reason statically about whether it is correct.  That is the standard the change is judged against, not the error count.
 
@@ -819,9 +835,11 @@ These are not prerequisites for the required mathematics, complaint remediation,
   Use existing polygon, Three.js, and diagram rendering owners; do not install implicit global display hooks.
 
 - [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
+  **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.
   Select a concrete mathematical query before provisioning an adapter.
 
 - [ ] **`optional-engine`**. **Needs:** `terminal-session`. Extend private engine integrations when a named construction benefits: Sage/Singular for local and polynomial algebra, libGAP for group actions, persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for its exact algebra strengths, and `py_polyhedral` for required polyhedral binaries.
+  **Goal:** Extend private CAS/engine integrations only for a named mathematical construction that benefits from that engine, returning owned objects and maps at the public boundary.
   Maxima stays within its symbolic-calculus domain.
   **Decision:** search existing interfaces first; provision only the needed dependency; put reusable codecs and bridge defects at their actual owner.
   Mathematical outputs always return as owned objects and maps.
