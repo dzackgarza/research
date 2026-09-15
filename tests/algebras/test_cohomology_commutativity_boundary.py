@@ -18,9 +18,6 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
     GradedCommutativeAlgebras,
     StrictlyGradedCommutativeAlgebras,
 )
-from dzack_research.preamble.categories.functors.cohomology import (
-    cohomology_algebra_functor,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
 )
@@ -112,7 +109,7 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     swap = DifferentialGradedAlgebras(dga.base_ring()).Mor(dga, dga)(swap_algebra)
 
     cohomology = CohomologyAlgebra(dga)
-    functor = cohomology_algebra_functor(ZZ)
+    functor = DifferentialGradedAlgebras(ZZ).cohomology_algebra()
     assert functor.domain() is DifferentialGradedAlgebras(ZZ)
     assert functor(dga) is cohomology
     induced = functor(swap)

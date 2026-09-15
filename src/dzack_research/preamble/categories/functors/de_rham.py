@@ -168,7 +168,7 @@ class DeRhamAdjunction(Adjunction):
 
 
 @cached_function
-def de_rham_functor(base_ring) -> DeRhamFunctor:
+def _de_rham_functor(base_ring) -> DeRhamFunctor:
     return DeRhamFunctor(base_ring)
 
 
@@ -187,6 +187,5 @@ __all__ = [
     "DeRhamFunctor",
     "DegreeZeroDGAFunctor",
     "de_rham_adjunction",
-    "de_rham_functor",
     "degree_zero_dga_functor",
 ]

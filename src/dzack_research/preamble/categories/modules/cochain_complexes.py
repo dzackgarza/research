@@ -112,6 +112,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
     _HomCategory = None
 
+    def cohomology(self, degree):
+        r"""Return the degree-``degree`` cohomology functor on this category."""
+        from dzack_research.preamble.categories.functors.cohomology import (
+            _cohomology_functor,
+        )
+
+        return _cohomology_functor(self.base_ring(), degree)
+
     class ParentMethods:
         def differential(self):
             return self._preamble_differential

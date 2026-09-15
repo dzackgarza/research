@@ -6,7 +6,6 @@ part of the assertions.
 """
 
 from dzack_research.preamble.all import ZZ, PolynomialRing
-from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
@@ -75,7 +74,7 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
             ),
         }
     )
-    functor = cohomology_functor(ring, 1)
+    functor = CochainComplexes(ring).cohomology(1)
     h1 = functor(complex_)
     nonzero = h1.class_of_cycle(c)
     induced = functor(zero)

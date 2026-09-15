@@ -284,9 +284,6 @@ from dzack_research.preamble.categories.functors.algebra_scalar_change import (
 from dzack_research.preamble.categories.functors.algebra_scalar_change import (
     AlgebraScalarExtensionFunctor as AlgebraScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-    algebra_base_change_adjunction as algebra_base_change_adjunction,
-)
 from dzack_research.preamble.categories.functors.cardinality import (
     CardinalityFunctor as CardinalityFunctor,
 )
@@ -310,18 +307,6 @@ from dzack_research.preamble.categories.functors.cohomology import (
 )
 from dzack_research.preamble.categories.functors.cohomology import (
     DeRhamCohomologyFunctor as DeRhamCohomologyFunctor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    cohomology_algebra_functor as cohomology_algebra_functor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    cohomology_functor as cohomology_functor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    de_rham_cohomology_algebra_functor as de_rham_cohomology_algebra_functor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    de_rham_cohomology_functor as de_rham_cohomology_functor,
 )
 from dzack_research.preamble.categories.functors.core import (
     Adjunction as Adjunction,
@@ -355,9 +340,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 )
 from dzack_research.preamble.categories.functors.de_rham import (
     de_rham_adjunction as de_rham_adjunction,
-)
-from dzack_research.preamble.categories.functors.de_rham import (
-    de_rham_functor as de_rham_functor,
 )
 from dzack_research.preamble.categories.functors.de_rham import (
     degree_zero_dga_functor as degree_zero_dga_functor,

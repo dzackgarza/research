@@ -476,10 +476,26 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
     def de_rham(self):
         r"""``DR_R : CAlg_R -> SCDGA_R``, the algebraic de Rham functor."""
         from dzack_research.preamble.categories.functors.de_rham import (
-            de_rham_functor,
+            _de_rham_functor,
         )
 
-        return de_rham_functor(self.base_ring())
+        return _de_rham_functor(self.base_ring())
+
+    def de_rham_cohomology(self, degree):
+        r"""Return ``H^degree_dR(-/R)`` on this commutative algebra category."""
+        from dzack_research.preamble.categories.functors.cohomology import (
+            _de_rham_cohomology_functor,
+        )
+
+        return _de_rham_cohomology_functor(self.base_ring(), degree)
+
+    def de_rham_cohomology_algebra(self):
+        r"""Return the graded algebraic de Rham cohomology functor ``H^*_dR``."""
+        from dzack_research.preamble.categories.functors.cohomology import (
+            _de_rham_cohomology_algebra_functor,
+        )
+
+        return _de_rham_cohomology_algebra_functor(self.base_ring())
 
     def product(self, factors):
         r"""Return the product of a represented two-object family."""
@@ -634,6 +650,32 @@ class Algebras(OwnedCategoryOverBaseRing):
             )
 
             return _algebra_underlying_module_functor(self.base_ring(), self)
+
+        def base_change_adjunction(self, ring_map):
+            r"""Return ``S tensor_R - -| Res_f`` on associative unital algebras."""
+            ordinary = Algebras(self.base_ring()).Associative().Unital()
+            if not self.is_subcategory(ordinary):
+                raise TypeError(
+                    "algebra scalar change is represented on associative unital algebras"
+                )
+            if _owned_ring(ring_map.domain()) is not self.base_ring():
+                raise ValueError("the scalar map has the wrong source ring")
+            from dzack_research.preamble.categories.functors.algebra_scalar_change import (
+                _algebra_base_change_adjunction,
+            )
+
+            return _algebra_base_change_adjunction(ring_map)
+
+        def scalar_extension(self, ring_map):
+            r"""Return scalar extension along ``ring_map`` from this algebra category."""
+            return self.base_change_adjunction(ring_map).left_adjoint()
+
+        def restriction_of_scalars(self, ring_map):
+            r"""Return scalar restriction along ``ring_map`` into this algebra category."""
+            if _owned_ring(ring_map.codomain()) is not self.base_ring():
+                raise ValueError("the scalar map has the wrong target ring")
+            source = Algebras(ring_map.domain()).Associative().Unital()
+            return source.base_change_adjunction(ring_map).right_adjoint()
 
         def Associative(self):
             r"""Return the refinement satisfying ``(xy)z=x(yz)``."""

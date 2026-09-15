@@ -6,9 +6,7 @@ from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-from dzack_research.preamble.categories.functors.cohomology import (
-    cohomology_algebra_functor,
-)
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialGradedAlgebras
 
 
 def test_notation_and_functor_land_in_the_category_owned_object() -> None:
@@ -20,7 +18,7 @@ def test_notation_and_functor_land_in_the_category_owned_object() -> None:
 
     declared = category(dga)
     notation = CohomologyAlgebra(dga)
-    functor_image = cohomology_algebra_functor(ZZ)(dga)
+    functor_image = DifferentialGradedAlgebras(ZZ).cohomology_algebra()(dga)
 
     assert declared is notation
     assert declared is functor_image

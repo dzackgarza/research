@@ -549,9 +549,14 @@ def base_changed_relative_context(ring_map, context):
 
 def algebra_base_change(ring_map):
     """Return the live algebra scalar-extension/restriction adjunction."""
-    from dzack_research.preamble.categories.functors.algebra_scalar_change import algebra_base_change_adjunction
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-    return algebra_base_change_adjunction(ring_map)
+    return (
+        Algebras(ring_map.domain())
+        .Associative()
+        .Unital()
+        .base_change_adjunction(ring_map)
+    )
 
 
 def extend_algebra(ring_map, algebra):
@@ -875,9 +880,9 @@ def cycle_representative(cohomology_module, cohomology_class):
 
 def cohomology_map(morphism, degree):
     """Return the map induced by a cochain morphism on degree-``degree`` cohomology."""
-    from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
+    from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 
-    return cohomology_functor(morphism.domain().base_ring(), int(degree))(morphism)
+    return CochainComplexes(morphism.domain().base_ring()).cohomology(int(degree))(morphism)
 
 
 def map_cohomology_class(morphism, degree, cohomology_class):
@@ -1047,9 +1052,9 @@ def cup(left, right):
 
 def de_rham_map(morphism):
     """Apply the live affine de Rham functor to one relative algebra morphism."""
-    from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
+    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 
-    return de_rham_functor(morphism.domain().base_ring())(morphism)
+    return CommutativeAlgebras(morphism.domain().base_ring()).de_rham()(morphism)
 
 
 def pullback_form(morphism, form):
@@ -1059,10 +1064,10 @@ def pullback_form(morphism, form):
 
 def de_rham_cohomology_map(morphism, degree):
     """Return the map induced on degree-``degree`` algebraic de Rham cohomology."""
-    from dzack_research.preamble.categories.functors.cohomology import de_rham_cohomology_functor
+    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 
-    return de_rham_cohomology_functor(
-        morphism.domain().base_ring(), int(degree)
+    return CommutativeAlgebras(morphism.domain().base_ring()).de_rham_cohomology(
+        int(degree)
     )(morphism)
 
 

@@ -2,6 +2,7 @@ r"""Cohomology functors for represented cochain complexes and de Rham DGAs."""
 
 from sage.misc.cachefunc import cached_function
 
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
@@ -14,7 +15,6 @@ from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
 )
-from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
@@ -73,14 +73,14 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
 
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
-        de_rham = de_rham_functor(self._base_ring)
+        de_rham = CommutativeAlgebras(self._base_ring).de_rham()
         forget_to_complex = StrictlyCommutativeDifferentialGradedAlgebras(
             self._base_ring
         ).inclusion_into(CochainComplexes(self._base_ring))
         de_rham_complex = CompositeFunctor(de_rham, forget_to_complex)
         super().__init__(
             de_rham_complex,
-            cohomology_functor(self._base_ring, self._degree),
+            CochainComplexes(self._base_ring).cohomology(self._degree),
         )
 
     def base_ring(self):
@@ -128,8 +128,8 @@ class DeRhamCohomologyAlgebraFunctor(CompositeFunctor):
 
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            de_rham_functor(self._base_ring),
-            cohomology_algebra_functor(self._base_ring),
+            CommutativeAlgebras(self._base_ring).de_rham(),
+            DifferentialGradedAlgebras(self._base_ring).cohomology_algebra(),
         )
 
     def base_ring(self):
@@ -140,22 +140,22 @@ class DeRhamCohomologyAlgebraFunctor(CompositeFunctor):
 
 
 @cached_function
-def cohomology_functor(base_ring, degree) -> CohomologyFunctor:
+def _cohomology_functor(base_ring, degree) -> CohomologyFunctor:
     return CohomologyFunctor(base_ring, degree)
 
 
 @cached_function
-def de_rham_cohomology_functor(base_ring, degree) -> DeRhamCohomologyFunctor:
+def _de_rham_cohomology_functor(base_ring, degree) -> DeRhamCohomologyFunctor:
     return DeRhamCohomologyFunctor(base_ring, degree)
 
 
 @cached_function
-def cohomology_algebra_functor(base_ring) -> CohomologyAlgebraFunctor:
+def _cohomology_algebra_functor(base_ring) -> CohomologyAlgebraFunctor:
     return CohomologyAlgebraFunctor(base_ring)
 
 
 @cached_function
-def de_rham_cohomology_algebra_functor(base_ring) -> DeRhamCohomologyAlgebraFunctor:
+def _de_rham_cohomology_algebra_functor(base_ring) -> DeRhamCohomologyAlgebraFunctor:
     return DeRhamCohomologyAlgebraFunctor(base_ring)
 
 
@@ -164,8 +164,4 @@ __all__ = [
     "CohomologyAlgebraFunctor",
     "DeRhamCohomologyFunctor",
     "DeRhamCohomologyAlgebraFunctor",
-    "cohomology_algebra_functor",
-    "cohomology_functor",
-    "de_rham_cohomology_algebra_functor",
-    "de_rham_cohomology_functor",
 ]

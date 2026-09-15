@@ -1,5 +1,6 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
+    CommutativeAlgebras,
     DeRhamAlgebra,
     FinitelyPresentedAlgebra,
     GradedCommutativeAlgebras,
@@ -11,7 +12,6 @@ from dzack_research.preamble.categories.algebras import (
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.de_rham import (
     de_rham_adjunction,
-    de_rham_functor,
 )
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
@@ -242,7 +242,7 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     t = target.algebra_generator("t")
     morphism = Algebras(source.base_ring()).Associative().Unital().Mor(source, target)({"x": t**2})
 
-    functor = de_rham_functor(QQ)
+    functor = CommutativeAlgebras(QQ).de_rham()
     source_dr = functor(source)
     target_dr = functor(target)
     mapped = functor(morphism)

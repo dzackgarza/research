@@ -4,7 +4,6 @@ from dzack_research.preamble.categories.algebras import (
     FinitelyPresentedAlgebra,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
@@ -53,7 +52,7 @@ def test_negative_degree_cohomology_is_functorial_on_shifted_complexes() -> None
         }
     )
 
-    h_minus_one_functor = cohomology_functor(ZZ, -1)
+    h_minus_one_functor = CochainComplexes(ZZ).cohomology(-1)
     h_minus_one = h_minus_one_functor(complex_)
     generator_class = h_minus_one.class_of_cycle(
         degree_minus_one.module_generator("e")

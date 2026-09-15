@@ -9,7 +9,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
-from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _own_group,
@@ -183,7 +182,7 @@ def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar, *, cover=None):
     complex_ = AffineGeometricCohomologyComplex(sheaf, cover=cover)
     scalar = complex_.base_ring()(scalar)
     cochain_map = scalar * CochainComplexes(complex_.base_ring()).Mor(complex_, complex_).identity()
-    return cohomology_functor(complex_.base_ring(), int(degree))(cochain_map)
+    return CochainComplexes(complex_.base_ring()).cohomology(int(degree))(cochain_map)
 
 
 class AffineCoverRefinementCohomologyComparison(SageObject):
@@ -212,9 +211,8 @@ class AffineCoverRefinementCohomologyComparison(SageObject):
         self._source_complex = source
         self._target_complex = target
         self._cochain_map = CochainComplexes(source.base_ring()).Mor(source, target)({0: degree_zero})
-        self._cohomology_map = cohomology_functor(
-            source.base_ring(),
-            self._degree,
+        self._cohomology_map = CochainComplexes(source.base_ring()).cohomology(
+            self._degree
         )(self._cochain_map)
 
     def refinement(self):
@@ -543,7 +541,7 @@ def ToricWeightScalarCohomologyMap(scheme, divisor, weight, degree, scalar):
         weight,
         scalar,
     )
-    return cohomology_functor(scheme.scheme_base_ring(), int(degree))(cochain_map)
+    return CochainComplexes(scheme.scheme_base_ring()).cohomology(int(degree))(cochain_map)
 
 
 def ToricLineBundleCohomology(scheme, divisor, degree):

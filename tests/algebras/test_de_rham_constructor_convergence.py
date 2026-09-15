@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.algebras.de_rham_algebras import (
     DeRhamAlgebra,
     DeRhamAlgebras,
 )
-from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
 
 def test_de_rham_routes_share_one_category_owned_object() -> None:
@@ -15,7 +14,7 @@ def test_de_rham_routes_share_one_category_owned_object() -> None:
 
     declared = category(algebra)
     notation = algebra.de_rham_algebra()
-    functor_image = de_rham_functor(ZZ)(algebra)
+    functor_image = CommutativeAlgebras(ZZ).de_rham()(algebra)
 
     assert declared is notation
     assert declared is functor_image

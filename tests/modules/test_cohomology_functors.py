@@ -4,12 +4,7 @@ from dzack_research.preamble.categories.algebras import (
     FinitelyPresentedAlgebra,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.functors.cohomology import (
-    cohomology_functor,
-    de_rham_cohomology_algebra_functor,
-    de_rham_cohomology_functor,
-)
+from dzack_research.preamble.categories.algebras.algebras import Algebras, CommutativeAlgebras
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplexes,
@@ -39,7 +34,7 @@ def test_cohomology_is_functorial_on_cochain_maps() -> None:
         }
     )
 
-    functor = cohomology_functor(ZZ, 1)
+    functor = CochainComplexes(ZZ).cohomology(1)
     h1 = functor(complex_)
     nonzero = h1.class_of_cycle(degree_one.module_generator("f"))
     induced = functor(times_three)
@@ -56,7 +51,7 @@ def test_algebraic_de_rham_cohomology_is_literal_functor_composition() -> None:
     xbar = algebra.algebra_generator("x")
     collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
-    functor = de_rham_cohomology_functor(field, 1)
+    functor = CommutativeAlgebras(field).de_rham_cohomology(1)
     h1 = functor(algebra)
     de_rham = algebra.de_rham_algebra()
     assert h1 is de_rham.cohomology(1)
@@ -78,7 +73,7 @@ def test_algebraic_de_rham_cohomology_ring_is_functorial() -> None:
     xbar = algebra.algebra_generator("x")
     collapse = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)({"x": algebra.zero()})
 
-    functor = de_rham_cohomology_algebra_functor(field)
+    functor = CommutativeAlgebras(field).de_rham_cohomology_algebra()
     cohomology = functor(algebra)
     de_rham = algebra.de_rham_algebra()
     assert cohomology.source_dga() is de_rham
