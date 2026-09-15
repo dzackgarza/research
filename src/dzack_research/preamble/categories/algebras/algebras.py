@@ -1632,11 +1632,14 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-            FinitelyPresentedAlgebraOn,
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FinitelyPresentedAlgebra,
         )
 
-        return FinitelyPresentedAlgebraOn(self.base_ring(), ("x",), ("x^2",))
+        return FinitelyPresentedAlgebra(
+            self.base_ring().free_module(("x",)).symmetric_algebra(),
+            ("x^2",),
+        )
 
     @classmethod
     def _repr_object_names(cls):
@@ -1655,11 +1658,14 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-            FinitelyPresentedAlgebraOn,
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FinitelyPresentedAlgebra,
         )
 
-        return FinitelyPresentedAlgebraOn(self.base_ring(), ("x",), ("x^2",))
+        return FinitelyPresentedAlgebra(
+            self.base_ring().free_module(("x",)).symmetric_algebra(),
+            ("x^2",),
+        )
 
     @classmethod
     def _repr_object_names(cls):

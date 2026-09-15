@@ -8,7 +8,7 @@ retain stronger information when it is genuinely available.
 
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, FinitelyPresentedAlgebraOn, PolynomialRing
+from dzack_research.preamble.all import QQ, ZZ, FinitelyPresentedAlgebra, PolynomialRing
 from dzack_research.preamble.rings import Zp
 
 
@@ -61,7 +61,10 @@ def test_finite_p_adic_agreement_does_not_become_exact_equality_and_can_refine()
 
 
 def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpotence() -> None:
-    fat_plane = FinitelyPresentedAlgebraOn(QQ, ("x", "y"), ("x^2",))
+    fat_plane = FinitelyPresentedAlgebra(
+        QQ.free_module(("x", "y")).symmetric_algebra(),
+        ("x^2",),
+    )
     x = fat_plane.algebra_generator("x")
     y = fat_plane.algebra_generator("y")
     maximal = fat_plane.ideal(x, y)
