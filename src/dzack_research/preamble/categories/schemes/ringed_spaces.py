@@ -192,8 +192,8 @@ class DistinguishedAffineCovers(OwnedCategory):
     With no parameter this is the catalogue containing every represented
     distinguished affine cover.  ``DistinguishedAffineCovers(X)`` is its fibre
     over one affine scheme ``X``; that fibre is a subcategory of covering
-    families in the category of represented open subobjects of ``X`` and is
-    the selected family category for the distinguished-affine coverage.
+    families in the slice ``AffSch_R/X`` and is the selected family category
+    for the distinguished-affine coverage of ``X``.
     """
 
     @staticmethod
@@ -219,9 +219,10 @@ class DistinguishedAffineCovers(OwnedCategory):
         scheme = self.scheme()
         if scheme is None:
             raise ValueError("the global cover catalogue has no single site category")
-        from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return OpenImmersions(scheme)
+        affine_schemes = Schemes(scheme.scheme_base_ring()).Affine()
+        return affine_schemes.SliceCategory(scheme)
 
     def coverage(self):
         scheme = self.scheme()
@@ -248,18 +249,18 @@ class DistinguishedAffineCovers(OwnedCategory):
         scheme = self.scheme()
         if scheme is None:
             return "distinguished affine covers"
-        return f"distinguished affine covering families on {scheme}"
+        return f"distinguished affine covering families of {scheme}"
 
 
 @cached_function(key=lambda scheme: id(scheme))
 def distinguished_affine_coverage(scheme) -> Coverage:
-    r"""The coverage selected by distinguished affine covering families on ``X``."""
+    r"""The distinguished-open coverage in ``AffSch_R/X``."""
 
     category = DistinguishedAffineCovers(scheme)
     return Coverage(
         category.site_category(),
         category,
-        name=f"Distinguished-affine coverage on {scheme}",
+        name=f"Distinguished-affine coverage of {scheme}",
     )
 
 
@@ -291,19 +292,29 @@ class DistinguishedAffineCover(CoveringFamily):
 
         category = DistinguishedAffineCovers(scheme)
         site = category.site_category()
-        target = scheme.distinguished_open(algebra.one())
+        target = site.an_object()
+        chart_objects = {
+            index: site.object(self.open(index).inclusion()) for index in self._atlas
+        }
         members = finite_indexed_family(
             self._atlas,
-            lambda index: site.Mor(self.open(index), target)(),
+            lambda index: site.Mor(chart_objects[index], target)(
+                self.open(index).inclusion()
+            ),
             name="Distinguished affine cover arrows",
         )
         overlaps = {}
         for left_index, right_index in combinations(tuple(self._atlas), 2):
             overlap = self.intersection(left_index, right_index)
+            overlap_object = site.object(overlap.inclusion())
             overlaps[left_index, right_index] = (
-                overlap,
-                site.Mor(overlap, self.open(left_index))(),
-                site.Mor(overlap, self.open(right_index))(),
+                overlap_object,
+                site.Mor(overlap_object, chart_objects[left_index])(
+                    overlap.inclusion_into(self.open(left_index))
+                ),
+                site.Mor(overlap_object, chart_objects[right_index])(
+                    overlap.inclusion_into(self.open(right_index))
+                ),
             )
         CoveringFamily.__init__(self, category, target, members, overlaps)
 
