@@ -228,15 +228,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 from dzack_research.preamble.categories.functors.de_rham import (
     DeRhamFunctor as DeRhamFunctor,
 )
-from dzack_research.preamble.categories.functors.free_groups import (
-    FreeGroupFunctor as FreeGroupFunctor,
-)
-from dzack_research.preamble.categories.functors.free_groups import (
-    FreeGroupUnderlyingSetAdjunction as FreeGroupUnderlyingSetAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_groups import (
-    GroupUnderlyingSetFunctor as GroupUnderlyingSetFunctor,
-)
 from dzack_research.preamble.categories.functors.linear_constructions import (
     BiproductBifunctor as BiproductBifunctor,
 )

@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class FreeGroupFunctor(Functor):
+class _FreeGroupFunctor(Functor):
     r"""``F : Set -> Grp``."""
 
     def __init__(self) -> None:
@@ -40,7 +40,7 @@ class FreeGroupFunctor(Functor):
         return "Free-group functor"
 
 
-class GroupUnderlyingSetFunctor(Functor):
+class _GroupUnderlyingSetFunctor(Functor):
     r"""``U : Grp -> Set``."""
 
     _faithful = True
@@ -61,11 +61,11 @@ class GroupUnderlyingSetFunctor(Functor):
         return "Underlying-set functor on groups"
 
 
-class FreeGroupUnderlyingSetAdjunction(Adjunction):
+class _FreeGroupUnderlyingSetAdjunction(Adjunction):
     r"""The adjunction ``F : Set <-> Grp : U``."""
 
     def __init__(self) -> None:
-        super().__init__(FreeGroupFunctor(), GroupUnderlyingSetFunctor())
+        super().__init__(_FreeGroupFunctor(), _GroupUnderlyingSetFunctor())
 
     def unit(self, set_object):
         free_group = self.left_adjoint()(set_object)
@@ -83,22 +83,18 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
 
 
 @cached_function
-def _free_group_functor() -> FreeGroupFunctor:
-    return FreeGroupFunctor()
+def _free_group_functor() -> _FreeGroupFunctor:
+    return _FreeGroupFunctor()
 
 
 @cached_function
-def _group_underlying_set_functor() -> GroupUnderlyingSetFunctor:
-    return GroupUnderlyingSetFunctor()
+def _group_underlying_set_functor() -> _GroupUnderlyingSetFunctor:
+    return _GroupUnderlyingSetFunctor()
 
 
 @cached_function
-def _free_group_underlying_set_adjunction() -> FreeGroupUnderlyingSetAdjunction:
-    return FreeGroupUnderlyingSetAdjunction()
+def _free_group_underlying_set_adjunction() -> _FreeGroupUnderlyingSetAdjunction:
+    return _FreeGroupUnderlyingSetAdjunction()
 
 
-__all__ = [
-    "FreeGroupFunctor",
-    "FreeGroupUnderlyingSetAdjunction",
-    "GroupUnderlyingSetFunctor",
-]
+__all__ = []

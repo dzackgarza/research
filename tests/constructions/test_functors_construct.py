@@ -14,8 +14,6 @@ NULLARY_FUNCTORS = {
     "AbelianizationFunctor": (AbelianizationFunctor, lambda: Groups.S(3), AbelianGroups),
     "CardinalityFunctor": (CardinalityFunctor, lambda: Sets.Δ[2], None),
     "FinitePowerSetFunctor": (FinitePowerSetFunctor, lambda: Sets.Δ[2], Sets),
-    "FreeGroupFunctor": (FreeGroupFunctor, lambda: Sets.Δ[1], Groups),
-    "GroupUnderlyingSetFunctor": (GroupUnderlyingSetFunctor, lambda: Groups.S(3), Sets),
     "RingOfIntegersFunctor": (RingOfIntegersFunctor, lambda: QQ, OwnedOrders),
     "FractionFieldFunctor": (FractionFieldFunctor, lambda: ZZ, OwnedNumberFields),
 }
