@@ -5611,6 +5611,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Rule**: When the same noun exists for several structures on one object, the public name states the structure explicitly.
   Use `group_generators`, `module_generators`, `algebra_generators`, `module_generating_set`, and similarly qualified dual or action names.
   Do not keep a bare ambiguous name as a compatibility alias underneath the precise one.
+  When one predicate name is true of an object under two of its structures -- `is_framed` on a framed module that is also a framed algebra -- qualify both (`is_framed_module`, `is_framed_algebra`); never resolve the collision by deleting one in favour of category membership, and never by surveying Sage, which has no such notion: this rule is the standard.
 
 - **Rationale**: An algebra can simultaneously have group, module, and algebra generators; an object can carry several dualities.
   A bare `generators()` or `dual()` therefore has no stable mathematical referent even when today's concrete class happens to have only one candidate.

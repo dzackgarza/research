@@ -95,6 +95,10 @@ the batch. A commit is not a claim that everything is finished; the message can 
 still pending. What it buys is that a stall, a kill or an ended turn costs a wait and nothing
 else, rather than taking the work with it.
 
+A checkpoint that adopts another worker's edits still names, in its body, each decision
+it adopts. `4b1786db` adopted a working tree "as it stands"; the algebra copy entered
+through it, and no reasoning for it exists anywhere.
+
 Commit in coherent groups as you go, not in one batch at the end. A construction and the specimens that would falsify it are a commit, whether or not the suite has run over them yet.
 
 ## Mathematical tracing and complaints (always-on)
@@ -337,6 +341,13 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   with the node; a missing ID is not evidence of completion. A split transfers
   all unfinished obligations and redirects the affected edges. Follow the DAG's
   maintenance rules rather than keeping a second graph or completed-node ledger.
+- **A node states the mathematical delta, never a mechanism.** "Constructs through the
+  presented-module route" is a mechanism; "is a module constructed through `Modules(R)`
+  on the data of `M`, answering `unformed_module()` with `M`" is a delta. A mechanism
+  named in a node is not ratified by being written there: before implementing it, trace
+  it to the owner's ruling in a transcript, a plan, or a `CONTRIBUTING` rule, and if none
+  exists rewrite the node before working it (`DEV-56`). The `algebras-are-modules` node
+  named a copy-and-identify mechanism nobody had ruled on, and it was built.
 
 This is required maintenance of the work being delivered, not a separate audit
 project. Do not accumulate progress tables, handoff histories, completed rows,
@@ -1221,6 +1232,37 @@ one that is not is a long one. Discovering the chain is long is information
 about the problem. It is never a reason to declare the original node ready,
 nor to weaken it so that the foundation is no longer required.
 
+# A misstep is a population, not a slice (always-on)
+
+When a construction is found to contradict the architecture, repairing the object in
+front of you is the smallest part of the work, because the hand that built it built its
+siblings. Before the slice is repaired, four things are established and filed:
+
+1. **How it entered.** The commits that introduced it and what they recorded. An empty
+   body, or a checkpoint that adopted a working tree "as it stands", is itself a finding.
+2. **The mental model that produced it**, written as the false belief so the next reader
+   recognises it: "threading means re-running the lower constructor with extra data";
+   "an existing object can never gain structure, so build a copy"; "the pattern for a
+   datum is a `WithChosenX` subcategory".
+3. **Where else it stands**, measured by an observable tell -- a grep a reader can rerun --
+   per subtree, never by a judgment of intent, and named in the node by the mathematics
+   it fails; an engine class appears only as the file it lives in. Each population becomes
+   a DAG node with one loop body.
+4. **Which rule would have prevented it.** If the rule exists and was violated, the node
+   cites it. If two rules conflict, the conflict is recorded for the owner to rule on. If
+   no rule exists, it is written at its owner -- `CONTRIBUTING` for construction and
+   naming, this file for always-on doctrine -- in the same commit that files the nodes.
+
+A correction that reframes a finding never deletes it. When the owner corrects the
+account of a misstep, the observation stays and is refiled in the corrected terms;
+retracting it is the slice failure again. A deviation from the stated architecture is
+debt and is filed the moment it is seen, however it was found.
+
+A definition or theorem asserted while giving this account is opened from a source
+first -- the formalization corpus, a text -- never recalled. The centre of a nonassociative
+algebra was asserted from memory on 2026-09-17 where the definition is the centroid
+(Mathlib `CentroidHom`), and the question built on it was wrong.
+
 # A supercategory declaration is a mathematical claim (always-on)
 
 `super_categories()` states that **every object of this category is an object
@@ -1474,6 +1516,16 @@ specified, never a `forget_*` object method or a second global operation.
 So there is no forwarding to write, to generate, or to delete.
 *The tell:* any method whose body is `return self.forget_<something>().<the same name>()`;
 any stored `_module`, `_underlying` or `_module_morphism` holding the level below.
+
+**A structured object built from a received object retains it as data, and nothing
+else.** `M.equip_bilinear_form(R, b)`, `Modules(R[G])(M, rho)` and `Algebras(R)(M, m)`
+build the structured object on the data of $M$ and answer `unformed_module()` with $M$,
+the accessor the specification writes. That accessor returns the constructor's retained
+datum; it is not the forgetful functor, which is the identity on the object. There is no
+identification map between the two to name: elements pass by coercion. `CON-16` owns the
+constructor side (one entry per category, every convenience computes the datum and routes
+in). *The tell:* `equip_*`/`forget_*` morphisms; `*_source_module`; a `from_*`/`to_*`
+pair; a `WithChosenX` category where `X` is the category's own defining datum.
 
 **All of this holds uniformly across objects, elements and arrows.** The public owned
 protocol is `ObjectType`, `ElementType`, `HomCatType`, `EndCatType`, `AutCatType`, with
@@ -2248,6 +2300,15 @@ The exceptions are narrow, and each must be nameable at the site:
 
 Nothing else qualifies. A probe outside these sites is a defect, and it is
 where a non-mathematical shortcut hides.
+
+**Exceptions are not control flow either.** `try`/`except` is banned in owned runtime
+code, the same ban `test-guidelines` states for tests (`POLICY.NO_EXCEPTION_CONTROL_FLOW`).
+A branch on placement is `case`/`match` on categorical containment; a computation the
+engine cannot perform is an asserted frontier with its hypothesis named. A `try:` in
+mathematical code is never weighed as "engine adaptation": an adapter that must catch an
+engine exception is declared as such under `OWN-06`, and that declaration is the only
+site. On 2026-09-17 the 500 `try:` blocks in the tree were reported as unmeasured
+candidates; they are violations, and their node carries them as such.
 
 ## A list is not a mathematical object
 
