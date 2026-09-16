@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
-    ProjectiveSchemes,
+    Schemes,
 )
 
 
@@ -214,9 +214,9 @@ class AnalyticDiscFamily(SageObject):
 
     def coherent_gaga_applies(self) -> bool:
         r"""Return whether this selected family satisfies the proper GAGA hypothesis."""
-        return self._algebraic_total in ProjectiveSchemes(
+        return self._algebraic_total in Schemes(
             self._algebraic_total.scheme_base_ring()
-        )
+        ).Projective()
 
     def _repr_(self) -> str:
         return f"Analytic family {self.analytic_total_space()} -> {self.analytic_base()}"

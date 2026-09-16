@@ -12,8 +12,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
-    ProjectiveSchemes,
     ProjectiveSpaces,
+    Schemes,
     _categorical_scheme_morphism,
     _refine_scheme,
 )
@@ -153,7 +153,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         return f"projective complete intersections over {self.base_ring()}"
 
     def super_categories(self):
-        return [ProjectiveSchemes(self.base_ring()), ClosedSubschemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Projective(), ClosedSubschemes(self.base_ring())]
 
     def __contains__(self, candidate) -> bool:
         base = self.base_ring()

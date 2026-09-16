@@ -70,7 +70,7 @@ from dzack_research.preamble.categories.schemes.group_schemes import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
-    AffineSchemes,
+    Schemes,
     _affine_morphism_from_pullback,
     _affine_spec_morphism,
 )
@@ -643,7 +643,7 @@ class CyclicCovers(OwnedCategory):
         )
 
     def super_categories(self):
-        return [AffineSchemes(self.base_algebra())]
+        return [Schemes(self.base_algebra()).Affine()]
 
     def _repr_object_names(self):
         return (

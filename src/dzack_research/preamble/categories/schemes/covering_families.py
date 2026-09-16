@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasRefinement,
     _FiniteSchemeGluingDatum,
 )
-from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
+from dzack_research.preamble.categories.schemes.schemes import Schemes
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -105,7 +105,7 @@ class RingedCoveringOverlap(SageObject):
         base = getattr(self.space(), "scheme_base_ring", lambda: None)()
         if base is None:
             return False
-        return self.space() in AffineSchemes(base)
+        return self.space() in Schemes(base).Affine()
 
     def affine_refinement(self):
         r"""Use the overlap's represented affine gluing as an affine refinement.

@@ -574,10 +574,10 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
     def module_category(self):
         r"""``Modules(A)``: the category this one is equivalent to, for affine ``X``."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         scheme = self.scheme()
-        assert scheme in AffineSchemes(scheme.scheme_base_ring()), (
+        assert scheme in Schemes(scheme.scheme_base_ring()).Affine(), (
             "the equivalence with a module category is stated on an affine scheme; on a glued "
             "scheme a quasi-coherent sheaf is gluing data over an affine cover"
         )

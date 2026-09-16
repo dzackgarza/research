@@ -70,10 +70,8 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    NormalSchemes,
     SchemeMorphism,
     Schemes,
-    SmoothSchemes,
     _has_scheme_placement,
     _categorical_scheme_morphism,
     _refine_scheme,
@@ -517,7 +515,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             Varieties(self.base_ring()),
-            NormalSchemes(self.base_ring()),
+            Schemes(self.base_ring()).Normal(),
         ]
 
     def __contains__(self, candidate) -> bool:
@@ -1836,7 +1834,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None):
     dimension = int(fan.dimension())
     placements = [ToricSchemes(base)]
     if fan.is_smooth():
-        placements.append(SmoothSchemes(base))
+        placements.append(Schemes(base).Smooth())
     if dimension == 1:
         placements.append(Curves(base))
     if dimension == 2:

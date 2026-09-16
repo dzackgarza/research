@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
+    Schemes,
     _affine_spec_morphism,
 )
 
@@ -18,7 +18,7 @@ class _AffineSpecFunctor(Functor):
         base = _owned_ring(base_ring)
         self._base_ring = base
         algebras = Algebras(base).Associative().Unital().Commutative()
-        Functor.__init__(self, algebras.opposite(), AffineSchemes(base))
+        Functor.__init__(self, algebras.opposite(), Schemes(base).Affine())
 
     def base_ring(self):
         return self._base_ring

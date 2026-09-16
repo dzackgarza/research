@@ -35,8 +35,8 @@ from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    ProjectiveSchemes,
     ProjectiveSpaces,
+    Schemes,
 )
 
 
@@ -357,7 +357,7 @@ class LegendreMonodromyFamily(SageObject):
     def proper_base_change_hypotheses_hold(self, point) -> bool:
         return (
             point is self.base_point()
-            and self.family_scheme() in ProjectiveSchemes(self.parameter_algebra())
+            and self.family_scheme() in Schemes(self.parameter_algebra()).Projective()
         )
 
     def stalk_to_fiber_comparison(self):

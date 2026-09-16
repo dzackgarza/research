@@ -39,7 +39,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
     AffineSpaces,
     FiberProductSchemes,
     ProductProjectiveSpaces,
@@ -221,7 +220,7 @@ class _SchemeBaseChangeFunctor(Functor):
                     scheme.structure_morphism(),
                     self.base_morphism(),
                 )
-            case _ if scheme in AffineSchemes(source):
+            case _ if scheme in Schemes(source).Affine():
                 changed = _fresh_affine_spectrum(
                     _base_changed_algebra(scheme.coordinate_algebra(), self.ring_map()),
                     target,

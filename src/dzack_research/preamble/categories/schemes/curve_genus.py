@@ -28,8 +28,8 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.schemes import (
-    ProjectiveSchemes,
     ProjectiveSpaces,
+    Schemes,
 )
 from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
@@ -118,12 +118,12 @@ class ProjectiveCurveNormalizationData(SageObject):
         local_contributions,
     ) -> None:
         base = curve.scheme_base_ring()
-        if curve not in Curves(base) or curve not in ProjectiveSchemes(base):
+        if curve not in Curves(base) or curve not in Schemes(base).Projective():
             raise TypeError("curve normalization data require a projective integral curve")
         if normalization_morphism.codomain() is not curve:
             raise ValueError("the normalization morphism must land in the selected curve")
         normalization = normalization_morphism.domain()
-        if normalization not in Curves(base) or normalization not in ProjectiveSchemes(base):
+        if normalization not in Curves(base) or normalization not in Schemes(base).Projective():
             raise TypeError("the represented normalization must itself be a projective curve")
         contributions = tuple(local_contributions)
         if not contributions:

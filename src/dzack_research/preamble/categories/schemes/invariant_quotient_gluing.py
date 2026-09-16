@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.group.groups import (
 
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
-    AffineSchemes,
     OpenImmersions,
     SchemeMorphism,
     Schemes,
@@ -261,10 +260,10 @@ class FiniteGluedInvariantQuotient(SageObject):
         acted_schemes = GObjects(acting_group, Schemes(base_ring))
         for index in self.chart_index_set():
             acted_chart = self.acted_charts()[index]
-            if acted_chart not in acted_schemes or acted_chart not in AffineSchemes(base_ring):
+            if acted_chart not in acted_schemes or acted_chart not in Schemes(base_ring).Affine():
                 raise TypeError("every quotient chart must be an affine G-scheme over the stated base")
             source_chart = acted_chart.unacted_scheme()
-            if source_chart not in AffineSchemes(base_ring):
+            if source_chart not in Schemes(base_ring).Affine():
                 raise TypeError("every acted chart must retain its affine source scheme")
 
         self._source_charts = finite_indexed_family(
@@ -457,7 +456,7 @@ class FiniteGluedInvariantQuotient(SageObject):
             raise TypeError("the target must be a represented open subscheme")
         if not open_subscheme.is_distinguished_open():
             raise TypeError("the target open must be represented by one distinguished element")
-        if morphism.domain() not in AffineSchemes(self.base_ring()):
+        if morphism.domain() not in Schemes(self.base_ring()).Affine():
             raise TypeError("distinguished-open factorization requires an affine source")
 
         target_algebra = target_scheme.coordinate_algebra()
@@ -763,7 +762,7 @@ class FiniteGluedInvariantQuotient(SageObject):
         if morphism.domain() is not self.source_scheme():
             raise ValueError("the invariant morphism must start at the glued quotient source")
         target: Scheme = morphism.codomain()
-        if target not in AffineSchemes(self.base_ring()):
+        if target not in Schemes(self.base_ring()).Affine():
             raise NotImplementedError(
                 "the glued quotient universal property is represented for affine targets"
             )
