@@ -781,6 +781,12 @@ Call counts remain legitimate as **diagnosis**: they locate a recursion, name th
 function that repeats, and prove a cascade exists. Use them to say what is
 happening, never to say how expensive it is.
 
+A claim about *why* something is slow is held to the same standard as a claim
+about how slow it is. A named cause with no measurement behind it is fabrication
+unless it is written as a hypothesis in words that cannot be read as a result.
+`DEV-62` owns the rule; *Every task is an instrument* below owns the moment it
+applies.
+
 # What optimization is for (always-on)
 
 The dominating concerns are legibility, auditability by a mathematician,
@@ -808,7 +814,9 @@ mathematics. That is the tell that it was waste.
 Genuine hot paths may later need `case`/`match` dispatch or caching. That is a
 design change: propose it and discuss it explicitly first. Reaching for a cache,
 or for a literature constant in place of a computation, before finding out *why*
-something is slow, is not optimization — it is hiding the defect.
+something is slow, is not optimization — it is hiding the defect. Reaching for a
+different library is the same move with a worse consequence: it also deletes
+the site where the cost would have been measured (`ENG-07`, `ENG-08`).
 
 **Test specimens are small by default.** A proof of correctness for invariants,
 coinvariants, or \(O(L)\) does not need \(E_8\), a K3 lattice, or an Enriques
@@ -816,6 +824,63 @@ lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
 coinvariants are quick. Reach for a large specimen only when the claim is about
 that specimen.
+
+# Every task is an instrument; the product is a map of Sage (always-on)
+
+Nothing built here is an end. A tool that prints its view, a category that
+constructs, a cell that reproduces a table: each is an instrument, and the
+result in front of you is worth orders of magnitude less than what producing it
+teaches about the engine underneath. The product is a durable map of Sage's
+ecosystem -- which spelling of an operation to route through, what it demands,
+what it returns, where it is absent, where it is wrong, where it is correct and
+unaffordable at research size -- encoded as one owned name per operation and
+written down in `TRAPS.md`. An owned name with no such finding behind it is a
+rename. `CONTRIBUTING.md` states the philosophy under *The artifacts are
+instruments; the product is a map of Sage*; `ENG-07`, `ENG-08`, `DEV-62` and
+`DEV-63` are the reviewable rules. This section binds at the moment of
+friction.
+
+**Friction with Sage is the datum, and it halts the task.** A slow call, a
+rejected input, or a wrong-shaped result is the most informative event the task
+can produce. The sequence, in order, before any other edit:
+
+1. Isolate the engine. Build the same specimen -- same order, same shape -- in
+   Sage with no preamble in the process.
+2. Measure. Wall time against the size parameter, at more than one size.
+3. Search inside Sage. The method's `algorithm=` choices, the backends Sage
+   ships, a different constructor, the sibling module. Read the source.
+4. Record. The `TRAPS.md` row, with the command, the specimen, the version and
+   the numbers, in this turn.
+5. Only then choose the route the owned name delegates to.
+
+Hand-rolling the routine, swapping the library, adding a cache, or deleting the
+call that exposed the cost before step 4 exists is banned. Each closes the task
+and empties the map: nothing is learned about the Sage routine's speed, its
+output convention, its input demands, or its failure modes, and the search for
+the Sage-internal answer is abandoned exactly where it would have paid. The
+escalation ladder -- Sage native, then the backends Sage ships, then ownership
+under an audit trail -- is the research protocol, and a rung teaches only if
+you stand on it. This holds for repository tooling as much as for preamble
+mathematics: a tool that reads the tree is computing on the same graph Sage
+walks to join and linearize the preamble's categories, so its cost curve is
+also a cost model for session import and refinement.
+
+**A sentence about the engine with no measurement behind it is fabrication.**
+"It is slow because it is MILP-backed." "Sage's startup is the cost." "The
+native method cannot take this input." Each has the grammar of a finding, and
+that grammar is what makes it fraud rather than error: an error is a
+measurement that came out wrong; this is a story standing where a measurement
+should be. It ends the search, it borrows authority from sounding like a
+mechanism, it is trusted forever once written down, and it is lazy, because
+the measurement usually costs a second. Write the probe, or write "untested" in
+words that cannot be mistaken for a result. The first two claims above were
+both asserted here on 2026-09-16, both unmeasured, both wrong: the slow call
+was in the library that had just been swapped in to avoid Sage.
+
+**A correction halts action.** When the user is correcting the model of the
+work, stop running things. Every command executed under the old model is one
+more result to unwind, and a library swap made while the correction was still
+arriving destroyed the measurement the correction was about.
 
 # Repository layout
 

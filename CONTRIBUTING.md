@@ -378,6 +378,42 @@ elapsed time alone does not prove reinvention. Returning repeatedly to local
 repairs while retaining the same bypass is not a forward trajectory merely
 because each repair is individually substantive.
 
+### The artifacts are instruments; the product is a map of Sage
+
+Every task in this repository is a means. A tool that prints its view, a
+category that constructs, a notebook cell that reproduces a table: each is an
+instrument, and the result it produces is worth very little next to what
+producing it teaches about the engine underneath. The product of the work is a
+durable map of Sage's ecosystem: which spelling of an operation to route
+through, what it demands of its input, what it returns, where it is absent,
+where it is present and wrong, and where it is present, correct, and
+unaffordable at the size the research runs at. The preamble encodes that map as
+one owned name per operation, and every owned name is a place where somebody
+found out what Sage does there. Without that finding an owned name is a rename.
+
+This inverts the ordinary cost model. The route that feels cheap, which is to
+close the task in front of you by whatever works, yields nothing: the task
+closes and the map gains no entry. The route that feels expensive, which is to
+stay inside Sage when it resists, find out why, find the keyword, the backend
+or the constructor that answers, and write down what was found, is the one that
+pays, and it pays long after the task is forgotten. Friction with the engine is
+therefore the most informative event a task can produce. A slow call, a rejected
+input, a wrong-shaped result: each is a fact about Sage that the map does not
+yet hold. Going around it costs nothing visible and destroys the only thing the
+task was for.
+
+Two moves throw the knowledge away, and both feel like progress from the
+inside. Hand-rolling the algorithm closes the task while leaving the engine's
+own routine unexamined: nothing is learned about its speed, its output
+convention, its input demands, or its failure modes. Pivoting to a second
+library at the first bump leaves the ecosystem the project is mapping, so the
+search for the Sage-internal answer is abandoned exactly where it would have
+paid, and the dependency surface fragments. The escalation ladder, Sage native,
+then the backends Sage ships, then ownership under an audit trail, is not a
+convenience ordering. It is the research protocol, and a rung teaches only if
+you stand on it. `ENG-07` and `ENG-08` make this reviewable; `DEV-62` says what
+counts as a finding and `DEV-63` says where a finding lands.
+
 ### Interactive discovery is the user-facing consequence
 
 The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations they own.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
@@ -4359,6 +4395,16 @@ The same rule applies to free objects, quotients, localizations, scalar restrict
 
 A stronger object may of course use a distinct parent so that two choices of added structure remain distinct.  That does not make its underlying object fictitious: the distinct structured parent must still retain and reuse the actual weaker object and the canonical comparison maps.
 
+#### `STY-191`: Comment or docstring teaches standard mathematics -> state the convention, cite the source, delete the lesson
+
+The reader of this repository's source is a mathematician.  A comment or docstring states what the reader cannot supply from the code and their own training: the convention chosen where several exist (reduced or unreduced homology, left or right action, which duality functor), an engine's input demand or output shape (with its `TRAPS.md` row), the hypothesis under which a criterion applies, and the citation.  It never derives, motivates, or teaches the mathematics the code uses.
+
+**Bad:** a docstring explaining that a graph is a 1-dimensional complex, that \(H_1\) is therefore the whole cycle space, and that \(\pi_1\) is free of rank \(E - V + C\), above a function that calls `minimum_cycle_basis`.
+
+**Preferred:** "Sage returns reduced homology, so \(H_0\) has rank one less than the number of components." followed by the call.
+
+The test: delete the paragraph and ask whether a mathematician reading the code loses anything they could not supply.  If not, it was a lesson.  A derivation that genuinely belongs somewhere belongs in the docs book or a cited source, and the code cites it.
+
 ### Review rule for new imperative code
 
 Before accepting a new global helper, explicit `for`/`while`, mutable accumulator, cache, registry, runtime probe, or bespoke data structure, check the catalogue above and answer:
@@ -5676,6 +5722,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: identify the owned operation first, inspect the capability map/upstream documentation, add the narrow backend crossing, and return the owned result.  If no mature implementation actually exists, record that concrete gap and only then design the smallest source-grounded algorithm the project deliberately chooses to own.
 
+#### `ENG-07`: Friction With the Engine Is the Datum; It Is Never Routed Around
+
+- **Rule**: When a Sage route is slow, rejects an input, or returns a result of the wrong shape, the task changes at that point.  Before any other edit: isolate the engine from the preamble on a specimen of the same order and shape; measure the cost as wall time against the size parameter, at more than one size; search inside Sage for the alternate route (the method's `algorithm=` choices, a backend Sage ships reached through Sage's own interface, a different constructor, a sibling module), reading the source; and record what was found under `DEV-63`.  Only then choose the route the owned name delegates to.  Replacing the library, hand-rolling the routine, adding a cache, or deleting the call that exposed the cost before that record exists is banned, whatever the size of the tool and whether or not the code is preamble mathematics.
+
+- **Rationale**: A gap in Sage has three kinds, absent, present and wrong, and present but unaffordable, and the owned name exists to absorb whichever one is found.  The measurement is the admission ticket: `ENG-06` lets the preamble own an algorithm only on a demonstrated gap, so discarding the measurement forecloses the one route by which the project could ever legitimately take the computation on.  The finding is also the most durable thing the task can produce: it does not expire, it does not depend on the state of the tree, and it costs a researcher's afternoon to rediscover every time it is lost.  See *The artifacts are instruments; the product is a map of Sage* under the design philosophy.
+
+- **Observed**: the declared-category-graph tool, 2026-09-16.  The first version hand-rolled a spanning forest and a cycle basis where `Graph.minimum_cycle_basis` exists; the second, on a speed complaint, replaced Sage's graph library with `networkx`.  Neither examined the Sage routine.  The result was zero knowledge of `Graph.minimum_cycle_basis`, `longest_path`, or `SimplicialComplex.homology` on the one graph that Sage itself traverses to join and linearize the preamble's own categories, and the swap would have left the tool looking fine while the fact stayed hidden.  The measurement is scheduled as the TODO node `category-graph-engine`.
+
+- **Violation Example**: `import networkx` added to a module because a Sage call felt slow; a depth-first search written in place of the Sage routine because a Sage constructor rejected the input as given; a `cached_method` added to a slow path before anyone found out why it is slow; a slow view deleted from a tool so that the tool passes.
+
+- **Correct Example**: build a Sage graph of the same order and shape with no preamble in the process, time the call at three sizes, read the method's source for its `algorithm=` choices, record the curve and the chosen route in `TRAPS.md`, and route the owned operation through that spelling.  If the route is unaffordable at every size the research uses, that record is the `ENG-06` gap, and owning the algorithm becomes a decision the project can now make.
+
+#### `ENG-08`: A Second Engine Is Adopted Only on a Recorded Measurement
+
+- **Rule**: The Sage ecosystem is searched to exhaustion before any computation leaves it: Sage's own spelling, then the backends Sage ships and reaches through its own interface (GAP through `libgap`, PARI, Singular, its graph and numerical backends).  A library outside that ecosystem is adopted for an operation only when a `DEV-63` record shows the Sage route absent, wrong, or unaffordable at the sizes the research uses, and the adoption is recorded beside that measurement with the route it replaces.  `ENG-03` and `ENG-05` say which engines are acceptable; this rule says when a change of engine is.
+
+- **Rationale**: The preamble routes one name to one computation so that the researcher never learns there was a choice.  That works only when the choice was made on evidence and written down.  An engine swapped in to dodge an unmeasured cost is a second computation path with no reason attached, and it removes the site at which the Sage fact would have been measured.  The fragmentation is also real: two graph libraries in one tree are two sets of input conventions, two output shapes, and two homes for the same defect.
+
+- **Violation Example**: replacing `sage.graphs.graph.Graph` with `networkx.Graph` in a tool because one view was slow, with no timing of the Sage call; adding `sympy` for a factorization Sage's rings already perform; a justfile recipe that installs a package to run a computation Sage's own interpreter already provides.
+
+- **Correct Example**: measure the Sage route first; if a shipped backend answers, select it through Sage's own keyword and record that; if nothing inside the ecosystem answers, record the gap with its measurement, then adopt the outside library under `ENG-05` with the record cited at the crossing.
+
 
 
 * * *
@@ -6635,6 +6703,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: reconcile the ledger against the repository, record the
   claim for the selected node, author and commit under that claim, then
   release the claim with the delivered state reflected in the ledger.
+
+#### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
+
+- **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, `COMPLAINTS.md`, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.
+
+- **Rationale**: Such a sentence does four things.  It terminates the search: a named cause closes the question, and the story then stands between the reader and the measurement.  It borrows authority from plausibility: reciting a mechanism that would explain the observation feels, from the inside, identical to having found it, and the reader cannot tell the difference.  It counterfeits the project's currency: the product here is empirical knowledge of Sage (`ENG-07`), so an unmeasured engine claim is forged coin in the one denomination that matters, and it is trusted permanently because nobody re-derives a recorded fact.  And it is lazy in the literal sense: the measurement usually costs a second.  A false row in `TRAPS.md` is more expensive than an empty file for exactly the reason a true row is valuable.
+
+- **Observed**: 2026-09-16, the same tool as `ENG-07`.  Two causes were asserted in the register of findings: that a Sage path method is MILP-backed and its cycle enumeration explodes, "those are the cost"; then that Sage's interpreter startup was the cost.  Neither had been timed.  When timing happened, the interpreter started in a fraction of a second (`TRAPS.md` holds the current numbers), and the slow call was in the library that had just been swapped in to avoid the Sage one.  Both claims pointed away from the truth, and either, recorded, would have steered every later reader off a Sage route that was never measured.
+
+- **Violation Example**: "it is slow because it is MILP-backed"; "Sage's startup dominates"; "the native method cannot take this input" with no reproduction; a `TRAPS.md` row with no command; a docstring that explains a workaround by a property of the engine nobody checked.
+
+- **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs each, the version, the command; or the sentence "I have not measured this", followed by the measurement.
+
+#### `DEV-63`: Measured Engine Facts Have One Durable Owner
+
+- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  `COMPLAINTS.md` keeps the unresolved need under `DEV-59` and is emptied on delivery; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
+
+- **Rationale**: The fact is the product (`ENG-07`) and it has no other home.  A commit body is found only by someone who already suspects the commit; a conversation is gone; a docstring at one site is invisible to the next site that meets the same engine.  One ledger, read before any engine route is chosen, is what turns one measurement into every later rediscovery avoided.
+
+- **Violation Example**: a measurement quoted in a reply and nowhere else; a workaround committed with the engine fact only in the commit body; a cost recorded as a `COMPLAINTS.md` gap and deleted when the consumer was delivered, taking the fact with it.
+
+- **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs, the version, the command, and the consequence for per-invocation tooling.
 
 
 * * *
