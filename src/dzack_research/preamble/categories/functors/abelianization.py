@@ -45,31 +45,32 @@ class _AbelianizationFunctor(Functor):
         )
         quotient = refine(quotient, placement)
         quotient_projection = group.Mor(quotient)(projection)
-        self._quotient_projections[id(quotient)] = (
+        self._quotient_projections[id(group)] = (
+            group,
             quotient,
             quotient_projection,
         )
         return quotient
 
-    def quotient_projection_from_image(self, abelianization):
-        self.chosen_preimage(abelianization)
-        stored = self._quotient_projections.get(id(abelianization))
-        if stored is None or stored[0] is not abelianization:
-            raise KeyError("the abelianization image has no retained quotient projection")
-        return stored[1]
-
     def quotient_projection(self, group):
         quotient = self(group)
-        projection = self.quotient_projection_from_image(quotient)
-        if projection.domain() is not group:
-            raise ValueError("the abelianization quotient has the wrong source group")
+        stored = self._quotient_projections.get(id(group))
+        if (
+            stored is None
+            or stored[0] is not group
+            or stored[1] is not quotient
+        ):
+            raise KeyError("the group has no retained abelianization quotient projection")
+        projection = stored[2]
+        if projection.domain() is not group or projection.codomain() is not quotient:
+            raise ValueError("the retained abelianization quotient projection has the wrong endpoints")
         return projection
 
     def _apply_morphism(self, morphism):
         source_abelianization = self(morphism.domain())
         target_abelianization = self(morphism.codomain())
-        source_projection = self.quotient_projection_from_image(source_abelianization).gap()
-        target_projection = self.quotient_projection_from_image(target_abelianization).gap()
+        source_projection = self.quotient_projection(morphism.domain()).gap()
+        target_projection = self.quotient_projection(morphism.codomain()).gap()
         source_model = _gap_model(source_abelianization)
         target_model = _gap_model(target_abelianization)
         source_group = morphism.domain()
@@ -130,9 +131,7 @@ class _AbelianizationAdjunction(Adjunction):
 
     def counit(self, abelian_group):
         abelianization = self.left_adjoint()(abelian_group)
-        projection = self.left_adjoint().quotient_projection_from_image(
-            abelianization
-        ).gap()
+        projection = self.left_adjoint().quotient_projection(abelian_group).gap()
         quotient_model = _gap_model(abelianization)
         target_model = _gap_model(abelian_group)
         generators = tuple(quotient_model.GeneratorsOfGroup())
