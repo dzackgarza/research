@@ -155,7 +155,12 @@ class SchemeMorphism(Morphism):
         Morphism.__init__(self, homset)
 
     def native_morphism(self):
-        return self._native_morphism
+        native = getattr(self, "_native_morphism", None)
+        assert native is not None, (
+            "a native Sage scheme-morphism crossing requires a selected native representative; "
+            "this categorical morphism is represented intrinsically instead"
+        )
+        return native
 
     def domain(self):
         return self.parent().domain() if self._preamble_domain_override is None else self._preamble_domain_override

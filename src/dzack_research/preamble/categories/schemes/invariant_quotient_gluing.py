@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Hashable
 from itertools import combinations
 from types import NotImplementedType
-from typing import NoReturn
 
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.schemes.generic.scheme import Scheme
@@ -65,11 +64,6 @@ class _ChartMapIntoGluedScheme(SchemeMorphism):
     def local_affine_map(self) -> SchemeMorphism:
         return self._local_affine_map
 
-    def native_morphism(self) -> NoReturn:
-        raise NotImplementedError(
-            "a map through one chart of a glued scheme is represented by that factorization"
-        )
-
     def __mul__(self, other: SchemeMorphism) -> SchemeMorphism | NotImplementedType:
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -112,11 +106,6 @@ class _ChartwiseGluedSchemeMorphism(SchemeMorphism):
     def local_map(self, index: Hashable) -> SchemeMorphism:
         local_map: SchemeMorphism = self.local_maps()[index]
         return local_map
-
-    def native_morphism(self) -> NoReturn:
-        raise NotImplementedError(
-            "a morphism out of a finite gluing is represented by its compatible chart maps"
-        )
 
     def _postcompose_with(self, after: SchemeMorphism) -> SchemeMorphism | NotImplementedType:
         if after.domain() is not self.codomain():
@@ -243,12 +232,12 @@ class FiniteGluedInvariantQuotient(SageObject):
         quotient_transitions: IndexedFamily,
         source_scheme: Scheme | None = None,
     ) -> None:
-        if acting_group not in FiniteGroups():
-            raise NotImplementedError("glued invariant quotients currently require a finite group")
-        if acting_group not in GroupsWithChosenFiniteGeneratingSet():
-            raise NotImplementedError(
-                "glued invariant quotients require a chosen finite group generating set"
-            )
+        assert acting_group in FiniteGroups(), (
+            "glued invariant quotients are represented here for a finite acting group"
+        )
+        assert acting_group in GroupsWithChosenFiniteGeneratingSet(), (
+            "glued invariant quotients require a chosen finite group generating set"
+        )
         if acted_charts.cardinality().is_finite() is not True:
             raise TypeError("a glued invariant quotient requires finitely many affine charts")
         if int(acted_charts.cardinality().finite_value()) == 0:
@@ -763,10 +752,9 @@ class FiniteGluedInvariantQuotient(SageObject):
         if morphism.domain() is not self.source_scheme():
             raise ValueError("the invariant morphism must start at the glued quotient source")
         target: Scheme = morphism.codomain()
-        if target not in AffineSchemes(self.base_ring()):
-            raise NotImplementedError(
-                "the glued quotient universal property is represented for affine targets"
-            )
+        assert target in AffineSchemes(self.base_ring()), (
+            "the represented glued-quotient universal property is the affine-target factorization"
+        )
         represented = self.source_scheme().Mor(target)(morphism)
         local_maps = finite_indexed_family(
             self.chart_index_set(),
@@ -868,8 +856,9 @@ def _c2_invariant_localization_lift(
     invertible there.  This avoids choosing a semi-invariant sign for ``d``.
     """
     group = acted_chart.acting_group()
-    if int(group.order()) != 2:
-        raise NotImplementedError("this stable-principal-open descent is currently represented for C2")
+    assert int(group.order()) == 2, (
+        "the represented stable-principal-open invariant descent is the C2 specialization"
+    )
     generator = next(iter(group.group_generators()))
     overlap_ring = source_overlap.coordinate_algebra()
     numerator, denominator = overlap_ring.localization_fraction_data(element)
@@ -952,8 +941,9 @@ def _c2_chartwise_glued_invariant_quotient(
     functions through the source transition and expressing them in the source
     invariant algebra via the common invariant-ring certificate.
     """
-    if int(acting_group.order()) != 2:
-        raise NotImplementedError("automatic chartwise quotient descent is currently represented for C2")
+    assert int(acting_group.order()) == 2, (
+        "automatic chartwise invariant-quotient descent is represented here for C2"
+    )
     datum = source_scheme.gluing_datum()
     indices = datum.chart_index_set()
     if tuple(local_actions.index_set()) != tuple(indices):
