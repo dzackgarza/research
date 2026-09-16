@@ -28,5 +28,6 @@ def test_structured_lattice_specializations_retain_their_defining_data() -> None
         return swap_isometry(vector)
 
     acted = Lattices(ZZ[group])(plane, swap)
+    assert acted.source_group_module().unacted_module() is plane
     assert acted.action().domain() is group
     assert acted.gram_tensor() == plane.gram_tensor()

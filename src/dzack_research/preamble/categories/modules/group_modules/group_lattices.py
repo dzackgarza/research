@@ -28,6 +28,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class GroupLatticeConstruction:
+    r"""The selected acted module whose action is transported to a lattice."""
+
+    def __init__(self, source_group_module) -> None:
+        self._source_group_module = source_group_module
+
+    def source_group_module(self):
+        return self._source_group_module
+
+
 class GroupLatticeMorphism(LatticeMorphism):
     r"""A form-preserving equivariant morphism of lattices with one group action."""
 
@@ -122,11 +132,18 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
+        def group_lattice_construction(self):
+            r"""Return the selected acted-module construction defining this group lattice."""
+            return self._preamble_group_lattice_construction
+
+        def source_group_module(self):
+            return self.group_lattice_construction().source_group_module()
+
         def group(self):
-            return self._preamble_group_module_source.group()
+            return self.source_group_module().group()
 
         def group_algebra(self):
-            return self._preamble_group_module_source.group_algebra()
+            return self.source_group_module().group_algebra()
 
         def Mor(self, codomain, category=None):
             group_lattices = Lattices(self.group_algebra())
@@ -145,14 +162,14 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             return super()._Hom_(codomain, category)
 
         def is_trivial_action(self) -> bool:
-            return self._preamble_group_module_source.is_trivial_action()
+            return self.source_group_module().is_trivial_action()
 
         def unacted_module(self):
-            return self._preamble_group_module_source.unacted_module()
+            return self.source_group_module().unacted_module()
 
         @cached_method
         def action(self):
-            source_group_module = self._preamble_group_module_source
+            source_group_module = self.source_group_module()
             group = source_group_module.group()
 
             def transported_image(group_element, label):
@@ -280,7 +297,9 @@ def _group_lattice(lattice, group_or_action, action=None):
         module_generators=lattice.module_generating_set(),
     )
     extra_categories = [Lattices(base_ring[group])]
-    construction_data = [("group_module_source", source_group_module)]
+    construction_data = [
+        ("group_lattice_construction", GroupLatticeConstruction(source_group_module))
+    ]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
         construction_data.append(("cartan_type", lattice.cartan_type()))
