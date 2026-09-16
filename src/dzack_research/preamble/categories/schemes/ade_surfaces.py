@@ -804,8 +804,9 @@ class AT21ToricADEPair(SageObject):
         retained source polygon.  The A-table uses a different affine chart
         normalization and is deliberately not guessed here.
         """
-        if self.is_affine_type():
-            raise NotImplementedError("Table 5 normal forms here are represented for finite D/E shapes")
+        assert not self.is_affine_type(), (
+            "the represented Table 5 normal forms require a finite D/E shape"
+        )
         rank = int(self.dynkin_rank())
         if self.dynkin_letter() == "D":
             terms = {
@@ -822,8 +823,9 @@ class AT21ToricADEPair(SageObject):
                 (0, 0): constant,
             }
         else:
-            raise NotImplementedError(
-                "the source A normal form uses its separate affine-chart normalization; use a represented branch section directly"
+            assert self.dynkin_letter() in ("D", "E"), (
+                "the represented Table 5 branch normal form is the D/E source normalization; "
+                "type A uses its separate affine-chart normalization"
             )
         return self.branch_section(terms)
 
@@ -1103,8 +1105,9 @@ class AT21ADEDoubleCover(SageObject):
             IsolatedHypersurfaceSingularity,
         )
 
-        if self.base_pair().dynkin_letter() != "E" or int(self.base_pair().dynkin_rank()) != 8:
-            raise NotImplementedError("the represented AT21 local/global singularity specimen is E8")
+        assert self.base_pair().dynkin_letter() == "E" and int(self.base_pair().dynkin_rank()) == 8, (
+            "the represented AT21 local/global singularity specimen is the E8 specialization"
+        )
         ring = self.base_scheme().scheme_base_ring().polynomial_ring(("x", "y", "z"))
         x, y, z = tuple(ring.algebra_generators())
         return IsolatedHypersurfaceSingularity(
