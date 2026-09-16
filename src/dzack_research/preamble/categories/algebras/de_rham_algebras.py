@@ -1,5 +1,7 @@
 r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 
+from sage.misc.cachefunc import cached_function
+
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
@@ -53,15 +55,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
             raise TypeError(
                 "an algebraic de Rham algebra is constructed from a commutative algebra over the same base ring"
             )
-        cached = _DE_RHAM_CACHE.get(id(algebra))
-        if cached is not None and cached.de_rham_source_algebra() is algebra:
-            return cached
-        omega = algebra.kahler_differentials()
-        exterior = omega.exterior_algebra()
-        ring_map = algebra.algebra_structure_morphism()
-        result = _DeRhamAlgebra(algebra, exterior, omega, ring_map)
-        _DE_RHAM_CACHE[id(algebra)] = result
-        return result
+        return _de_rham_algebra_from_source(algebra)
 
     @classmethod
     def _repr_object_names(cls):
@@ -137,7 +131,12 @@ class _DeRhamAlgebra(RestrictedGradedAlgebra):
         self._preamble_differential = Differential(self, differential)
 
 
-_DE_RHAM_CACHE = {}
+@cached_function(key=lambda algebra: id(algebra))
+def _de_rham_algebra_from_source(algebra):
+    omega = algebra.kahler_differentials()
+    exterior = omega.exterior_algebra()
+    ring_map = algebra.algebra_structure_morphism()
+    return _DeRhamAlgebra(algebra, exterior, omega, ring_map)
 
 
 __all__ = ["DeRhamAlgebras"]

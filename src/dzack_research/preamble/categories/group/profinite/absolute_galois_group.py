@@ -7,7 +7,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.number_fields import NumberFields
 from sage.misc.classcall_metaclass import typecall
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
@@ -381,7 +381,9 @@ class AbsoluteGaloisCategoryConstruction(_RestrictedHomCategoryOf):
             return False
 
 
-_ABSOLUTE_GALOIS_GROUP_CACHE = {}
+@cached_function(key=lambda field: id(field))
+def _canonical_absolute_galois_group(field):
+    return typecall(AbsoluteGaloisGroup, field)
 
 
 class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
@@ -417,13 +419,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                 extra_categories=extra_categories,
             )
 
-        key = id(field)
-        cached = _ABSOLUTE_GALOIS_GROUP_CACHE.get(key)
-        if cached is not None and cached.base_field() is field:
-            return cached
-        result = typecall(cls, field)
-        _ABSOLUTE_GALOIS_GROUP_CACHE[key] = result
-        return result
+        return _canonical_absolute_galois_group(field)
 
     def __init__(
         self,

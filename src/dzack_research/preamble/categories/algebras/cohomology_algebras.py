@@ -13,6 +13,7 @@ both commutative and noncommutative source DGAs.
 """
 
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -69,12 +70,7 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
             raise TypeError(
                 "a cohomology algebra is constructed from a differential graded algebra over the same base ring"
             )
-        cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
-        if cached is not None and cached.source_dga() is dga:
-            return cached
-        result = _CohomologyAlgebra(dga)
-        _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
-        return result
+        return _cohomology_algebra_from_dga(dga)
 
     @classmethod
     def _repr_object_names(cls):
@@ -235,7 +231,9 @@ class CohomologyAlgebraHomset(CategoricalHomset):
         )
 
 
-_COHOMOLOGY_ALGEBRA_CACHE = {}
+@cached_function(key=lambda dga: id(dga))
+def _cohomology_algebra_from_dga(dga):
+    return _CohomologyAlgebra(dga)
 
 
 __all__ = [

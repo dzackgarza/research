@@ -1,6 +1,7 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -633,21 +634,10 @@ CochainComplexes._HomCategory = CochainHomCategoryConstruction
 CochainComplexes._EndCategory = LinearEndCategoryConstruction
 
 
-_COHOMOLOGY_CACHE = {}
-
-
+@cached_function(key=lambda complex_, degree: (id(complex_), int(degree)))
 def _cohomology(complex_, degree):
     r"""Return ``H^degree = ker(d^degree) / im(d^(degree-1))``."""
     degree = int(degree)
-    cache_key = (id(complex_), degree)
-    cached = _COHOMOLOGY_CACHE.get(cache_key)
-    if (
-        cached is not None
-        and cached.cochain_complex() is complex_
-        and cached.cohomological_degree() == degree
-    ):
-        return cached
-
     ring = complex_.base_ring()
     cycles = complex_.cycles(degree)
     boundaries = complex_.boundaries(degree)
@@ -665,7 +655,6 @@ def _cohomology(complex_, degree):
             "cohomology_boundary_in_cycles": boundary_in_cycles,
         },
     )
-    _COHOMOLOGY_CACHE[cache_key] = result
     return result
 
 
