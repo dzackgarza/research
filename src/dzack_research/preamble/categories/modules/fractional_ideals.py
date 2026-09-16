@@ -30,7 +30,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
@@ -216,15 +215,6 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                     "a nonintegral fractional ideal is a submodule of Frac(R), not of R"
                 )
             return self
-
-        @cached_method
-        def module_generators(self):
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                
-            )
 
         def gens(self):
             r"""Return the selected ideal generators.
