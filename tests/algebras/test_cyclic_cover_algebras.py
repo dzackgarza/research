@@ -10,7 +10,7 @@ def _generator(module: Any) -> Any:
 def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import InvertibleSheaf, Spec
+    from dzack_research.preamble.all import InvertibleSheaf
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Isomorphism,
     )

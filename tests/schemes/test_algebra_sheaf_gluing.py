@@ -28,7 +28,7 @@ def _sign_transition(source, target, sign):
 
 
 def _two_chart_sign_datum():
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -89,7 +89,7 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
 
 
 def test_three_chart_algebra_descent_checks_the_algebra_cocycle() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()

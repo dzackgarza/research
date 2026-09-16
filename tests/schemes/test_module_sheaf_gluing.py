@@ -30,7 +30,7 @@ def _rank_one_map(source, target, scalar):
 
 
 def test_two_chart_module_descent_builds_the_actual_compatible_section_module() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -164,7 +164,7 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
 
 
 def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -223,7 +223,7 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
 
 
 def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -264,7 +264,7 @@ def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> Non
 
 
 def test_module_descent_morphisms_have_identities_and_compose_chartwise() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, Spec
+from dzack_research.preamble.all import QQ
 
 
 def test_localization_of_a_presented_domain_has_its_own_affine_spectrum() -> None:

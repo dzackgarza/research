@@ -5,7 +5,7 @@ from itertools import combinations
 
 def _three_chart_cover():
     r"""``A^1_Q`` covered by ``D(x)``, ``D(1-x)`` and ``D(2-x)``."""
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")

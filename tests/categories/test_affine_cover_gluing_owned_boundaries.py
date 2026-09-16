@@ -2,7 +2,7 @@ r"""Affine-cover descent categories are owned and parameterized by actual covers
 
 import pytest
 
-from dzack_research.preamble.all import QQ, Spec
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Schemes, Spec
+from dzack_research.preamble.all import ZZ, Schemes
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,

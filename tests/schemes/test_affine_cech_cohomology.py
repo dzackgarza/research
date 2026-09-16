@@ -1,6 +1,6 @@
 r"""Non-toric coherent cohomology from affine acyclicity."""
 
-from dzack_research.preamble.all import QQ, Spec
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     AffineGeometricCohomologyComplexes,

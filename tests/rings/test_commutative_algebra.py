@@ -307,7 +307,7 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
 
 
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
-    from dzack_research.preamble.all import Algebras, Spec
+    from dzack_research.preamble.all import Algebras
 
     source = QQ.polynomial_ring("x")
     middle = QQ.polynomial_ring("t")

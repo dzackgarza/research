@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, Spec
+from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 

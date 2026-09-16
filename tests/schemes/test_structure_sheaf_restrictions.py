@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 def test_distinguished_affine_cover_has_function_restrictions_and_overlap_composition() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -42,7 +42,7 @@ def test_distinguished_affine_cover_has_function_restrictions_and_overlap_compos
 
 
 def test_affine_module_sheaf_restriction_is_linear_over_function_restriction() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -88,7 +88,7 @@ def test_affine_module_sheaf_restriction_is_linear_over_function_restriction() -
 
 
 def test_distinguished_affine_cover_rejects_a_noncover_and_noncontainment() -> None:
-    from dzack_research.preamble.all import QQ, Spec
+    from dzack_research.preamble.all import QQ
 
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
