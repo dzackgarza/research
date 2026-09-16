@@ -153,11 +153,11 @@ def test_a_generated_local_session(p) -> None:
     assert extension.cardinality() == p * p
     assert extension.Mor(extension).cardinality() == 2
     assert field.Mor(extension).cardinality() == 1
-    line = AffineSpace(1, field)
+    line = AffineSpaces(field)(1)
     rendered(line)
     assert line.point_count() == p
     assert line.point_count(2) == p * p
-    assert ProjectiveSpace(1, field).point_count() == p + 1
+    assert ProjectiveSpaces(field)(1).point_count() == p + 1
     lattice = Lattices(field)([[2, 1], [1, 2]])
     rendered(lattice)
     assert lattice.is_nondegenerate() == (p != 3)

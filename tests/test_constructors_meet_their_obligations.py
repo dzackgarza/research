@@ -245,8 +245,8 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "picard group": lambda: PicardGroups()(ZZ.free_module(Sets.Δ[6])),
         "class group": lambda: ClassGroups()(ZZ.free_module(Sets.Δ[7])),
         # ---- schemes ----
-        "affine space": lambda: AffineSpace(2, QQ),
-        "projective space": lambda: ProjectiveSpace(2, QQ),
+        "affine space": lambda: AffineSpaces(QQ)(2),
+        "projective space": lambda: ProjectiveSpaces(QQ)(2),
         "convex polytope": lambda: ConvexPolytopes()([[0, 0], [1, 0], [0, 1]]),
         "convex polygon": lambda: ConvexPolygons()([[0, 0], [1, 0], [0, 1]]),
         "lattice polytope": lambda: LatticePolytopes()([[0, 0], [1, 0], [0, 1]]),
@@ -406,7 +406,7 @@ def _isotropic_flag_stabilizer(lattice):
 
 
 def _affine_divisor():
-    affine = AffineSpace(2, QQ)
+    affine = AffineSpaces(QQ)(2)
     x = affine.coordinate_ring().algebra_generators()[0]
     return affine.closed_subscheme(x)
 

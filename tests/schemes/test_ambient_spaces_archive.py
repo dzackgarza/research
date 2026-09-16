@@ -1,10 +1,8 @@
-"""Archive reconciliation for the ambient affine/projective space constructors."""
+"""Archive reconciliation for the ambient affine/projective space owners."""
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
     AffineSpaces,
-    ProjectiveSpace,
     ProjectiveSpaces,
 )
 
@@ -15,8 +13,8 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_archived_affine_space_constructor_is_the_live_owned_constructor() -> None:
-    affine = AffineSpace(2, QQ, names=("x", "y"))
+def test_archived_affine_space_constructor_is_owned_by_affine_spaces() -> None:
+    affine = AffineSpaces(QQ)(2, names=("x", "y"))
 
     assert affine in AffineSpaces(QQ)
     assert affine.relative_dimension() == 2
@@ -24,8 +22,8 @@ def test_archived_affine_space_constructor_is_the_live_owned_constructor() -> No
     assert tuple(affine.coordinate_ring().variable_names()) == ("x", "y")
 
 
-def test_archived_projective_space_constructor_is_the_live_owned_constructor() -> None:
-    projective = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+def test_archived_projective_space_constructor_is_owned_by_projective_spaces() -> None:
+    projective = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
 
     assert projective in ProjectiveSpaces(QQ)
     assert projective.relative_dimension() == 2

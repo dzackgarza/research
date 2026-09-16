@@ -179,8 +179,8 @@ def test_prime_fields_and_p_adics(p) -> None:
     assert Groups.C(p).Aut().order() == p - 1
     assert Groups.GL(2, field).order() == (p**2 - 1) * (p**2 - p)
     assert FreeModule(field, 2).Aut().order() == (p**2 - 1) * (p**2 - p)
-    assert AffineSpace(2, field).point_count() == p**2
-    assert ProjectiveSpace(2, field).point_count() == p**2 + p + 1
+    assert AffineSpaces(field)(2).point_count() == p**2
+    assert ProjectiveSpaces(field)(2).point_count() == p**2 + p + 1
 
 
 # ---------------------------------------------------------------------------

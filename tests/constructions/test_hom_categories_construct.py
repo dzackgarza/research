@@ -20,7 +20,7 @@ OBJECTS = {
     "a vector space over GF(2)": (lambda: FreeModule(GF(2), 2), 6, 16),
     "a lattice": (lambda: Lattices(ZZ)("A2"), 12, None),
     "a polynomial algebra": (lambda: PolynomialRing(QQ, "x"), None, None),
-    "an affine line": (lambda: AffineSpace(1, QQ), None, None),
+    "an affine line": (lambda: AffineSpaces(QQ)(1), None, None),
 }
 
 
