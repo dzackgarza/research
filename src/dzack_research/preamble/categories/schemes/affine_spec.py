@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 )
 
 
-class AffineSpecFunctor(ContravariantFunctor):
+class _AffineSpecFunctor(ContravariantFunctor):
     r"""The contravariant functor ``Spec_R: CAlg_R -> AffSch_R``."""
 
     def __init__(self, base_ring) -> None:
@@ -38,7 +38,7 @@ class AffineSpecFunctor(ContravariantFunctor):
 
 @cached_function
 def _affine_spec_functor(base_ring):
-    return AffineSpecFunctor(base_ring)
+    return _AffineSpecFunctor(base_ring)
 
 
-__all__ = ["AffineSpecFunctor"]
+__all__ = []

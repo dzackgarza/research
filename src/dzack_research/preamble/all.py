@@ -382,7 +382,6 @@ from dzack_research.preamble.categories.schemes import (
     AffineSchemes,
     AffineSpaceAnalytificationFunctor,
     AffineSpaces,
-    AffineSpecFunctor,
     AnalyticDiscFamily,
     AT21ADEDoubleCover,
     AT21ToricADEPair,
