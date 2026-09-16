@@ -1271,11 +1271,8 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return [Algebras(self.base_ring()).Commutative()]
 
                 def an_object(self):
-                    from dzack_research.preamble.categories.functors.free_algebras import (
-                        SymmetricAlgebraFunctor,
-                    )
-
-                    return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+                    modules = Modules(self.base_ring())
+                    return modules.symmetric_algebra()(modules.an_object())
 
             class ParentMethods(_UnitalAlgebraParentMethods):
                 def _algebra_homset_class(self):
@@ -1501,12 +1498,8 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The polynomial algebra on one generator, framed by it."""
-        from dzack_research.preamble.categories.functors.free_algebras import (
-            SymmetricAlgebraFunctor,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+        modules = Modules(self.base_ring())
+        return modules.symmetric_algebra()(modules.an_object())
 
     @classmethod
     def _repr_object_names(cls):
@@ -1585,16 +1578,12 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``End_R(Free_R([2]))``, the two-by-two matrix algebra."""
-        from dzack_research.preamble.categories.functors.free_forgetful import (
-            FreeModuleFunctor,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
         from dzack_research.preamble.categories.sets.set_categories import (
             finite_ordinal_set,
         )
 
         ring = self.base_ring()
-        plane = FreeModuleFunctor(ring)(finite_ordinal_set(2))
+        plane = Sets().free_module(ring)(finite_ordinal_set(2))
         return Modules(ring).Mor(plane, plane)
 
     @classmethod
@@ -2445,12 +2434,8 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The polynomial algebra on one generator."""
-        from dzack_research.preamble.categories.functors.free_algebras import (
-            SymmetricAlgebraFunctor,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+        modules = Modules(self.base_ring())
+        return modules.symmetric_algebra()(modules.an_object())
 
     @classmethod
     def _repr_object_names(cls):

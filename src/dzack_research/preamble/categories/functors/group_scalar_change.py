@@ -13,10 +13,6 @@ only restricts the scalar ring.
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.functors.scalar_change import (
-    RestrictionOfScalarsFunctor,
-    ScalarExtensionFunctor,
-)
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
 )
@@ -62,7 +58,7 @@ class GroupModuleScalarExtensionFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         underlying = morphism.underlying_module_morphism()
-        scalar_extension = ScalarExtensionFunctor(self.ring_map())
+        scalar_extension = Modules(self._source_ring).scalar_extension(self.ring_map())
         scalar_extension.adopt_object_image(
             morphism.domain().unacted_module(), source.unacted_module()
         )
@@ -125,7 +121,7 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        restriction = RestrictionOfScalarsFunctor(self.ring_map())
+        restriction = Modules(self._target_ring).restriction_of_scalars(self.ring_map())
         restriction.adopt_object_image(
             morphism.domain().unacted_module(),
             source.unacted_module(),

@@ -134,16 +134,13 @@ class AlgebraScalarExtensionFunctor(Functor):
         )
 
         if algebra in SymmetricAlgebras(self._source_ring):
-            from dzack_research.preamble.categories.functors.free_algebras import (
-                SymmetricAlgebraFunctor,
-            )
-            from dzack_research.preamble.categories.functors.scalar_change import (
-                ScalarExtensionFunctor,
-            )
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             source_module = algebra.free_source_module()
-            extended_module = ScalarExtensionFunctor(self.ring_map())(source_module)
-            return SymmetricAlgebraFunctor(self._target_ring)(extended_module)
+            extended_module = Modules(self._source_ring).scalar_extension(self.ring_map())(
+                source_module
+            )
+            return Modules(self._target_ring).symmetric_algebra()(extended_module)
 
         match algebra in AlgebrasWithChosenFinitePresentation(self._source_ring):
             case True:
