@@ -18,11 +18,12 @@ def test_affine_semigroup_algebra_retains_its_selected_binomial_presentation() -
 
     assert algebra in owner
     assert z == x * y
-    assert algebra._preamble_affine_semigroup_generator_coordinates == (
+    assert algebra.affine_semigroup_presentation().generator_coordinates() == (
         (1, 0),
         (0, 1),
         (1, 1),
     )
+    assert "_preamble_affine_semigroup_generator_coordinates" not in algebra.__dict__
 
 
 def test_affine_semigroup_membership_requires_the_selected_lattice_presentation() -> None:

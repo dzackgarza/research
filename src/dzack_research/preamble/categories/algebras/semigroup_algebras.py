@@ -14,6 +14,17 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
+class _AffineSemigroupPresentation:
+    r"""The selected lattice-generator presentation defining an affine semigroup algebra."""
+
+    def __init__(self, generator_coordinates) -> None:
+        self._generator_coordinates = generator_coordinates
+
+    def generator_coordinates(self):
+        r"""Return the selected finite lattice-generator coordinates."""
+        return self._generator_coordinates
+
+
 class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
     r"""Affine semigroup algebras with one selected finite lattice presentation."""
 
@@ -35,8 +46,16 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         return (
             candidate in Algebras(self.base_ring()).Associative().Unital().Commutative()
             and candidate in AlgebrasWithChosenFinitePresentation(self.base_ring())
-            and hasattr(candidate, "_preamble_affine_semigroup_generator_coordinates")
+            and isinstance(
+                candidate.__dict__.get("_affine_semigroup_presentation"),
+                _AffineSemigroupPresentation,
+            )
         )
+
+    class ParentMethods:
+        def affine_semigroup_presentation(self):
+            r"""Return the selected finite lattice-generator presentation."""
+            return self._affine_semigroup_presentation
 
     def _call_(
         self,
@@ -76,7 +95,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             for relation in engine_ideal.gens()
         )
         construction_data = (
-            ("_preamble_affine_semigroup_generator_coordinates", coordinates),
+            ("_affine_semigroup_presentation", _AffineSemigroupPresentation(coordinates)),
             *tuple(extra_construction_data),
         )
         return (presentation).quotient_by_relations(relations,
