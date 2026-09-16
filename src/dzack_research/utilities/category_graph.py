@@ -487,19 +487,27 @@ def _axiom_edges(
     """The edges Sage's join supplies, computed rather than written.
 
     Each axiom vertex declares every vertex with one axiom fewer, down to the
-    base; and for a written ``X -> Y``, ``X.S`` declares ``Y.T`` where ``T`` is
-    the part of ``S`` that ``Y`` or a category above it defines
+    base; and for a written ``X.S -> Y.T``, ``X.S+U`` declares ``Y.T+V`` where
+    ``V`` is the part of ``U`` that ``Y`` or a category above it defines
     (``CategoryWithAxiom.super_categories`` applies the axiom to every
     supercategory of the base, and ``_with_axiom_as_tuple`` walks upward to
-    the nearest category defining it).
+    the nearest category defining it).  A written edge on a join class,
+    ``Schemes.QuasiAffine.FiniteType -> Schemes.QuasiProjective``, therefore
+    reaches every join that includes those axioms.
     """
     nested: dict[str, set[str]] = {}
     for d in declarations:
         if d.axiom_of:
             nested.setdefault(d.axiom_of, set()).update(d.qualified_name.split(".")[1:])
     above: dict[str, set[str]] = {}
+    written: dict[str, set[tuple[frozenset[str], str, frozenset[str]]]] = {}
     for below, over in declared:
-        if "." not in below and "." not in over:
+        below_base, *below_axioms = below.split(".")
+        over_base, *over_axioms = over.split(".")
+        written.setdefault(below_base, set()).add(
+            (frozenset(below_axioms), over_base, frozenset(over_axioms))
+        )
+        if not below_axioms and not over_axioms:
             above.setdefault(below, set()).add(over)
 
     # Axioms a base can apply: its own nested ones and those of every category
@@ -526,10 +534,13 @@ def _axiom_edges(
         targets = [
             _vertex(base, tuple(a for a in axioms if a != dropped)) for dropped in axioms
         ]
-        for over in above.get(base, ()):
-            carried = tuple(a for a in axioms if a in defined.get(over, ()))
-            if carried:
-                targets.append(_vertex(over, carried))
+        for stated, over, over_axioms in written.get(base, ()):
+            if not stated <= set(axioms):
+                continue
+            carried = {a for a in axioms if a not in stated and a in defined.get(over, ())}
+            target_axioms = tuple(over_axioms | carried)
+            if target_axioms and (stated or carried):
+                targets.append(_vertex(over, target_axioms))
         for target in targets:
             if (vertex, target) not in edges:
                 edges.add((vertex, target))

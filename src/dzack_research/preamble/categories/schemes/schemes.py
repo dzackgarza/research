@@ -1846,6 +1846,23 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_quasi_affine(self):
                 return True
 
+        class FiniteType(CategoryWithAxiom):
+            r"""Quasi-affine schemes of finite type over the base.
+
+            A quasi-affine morphism of finite type is quasi-projective
+            (Stacks Tag 0B3H, Lemma 29.41.7), so this join declares
+            quasi-projectivity.  Neither hypothesis alone gives it: a
+            quasi-affine scheme need not be of finite type, and finite type
+            says nothing about an ample sheaf.
+            """
+
+            def an_object(self):
+                r"""The affine line, which is affine and of finite type."""
+                return AffineSpaces(self.base_ring())(1)
+
+            def extra_super_categories(self):
+                return [Schemes(self.base_ring()).QuasiProjective()]
+
     class QuasiProjective(CategoryWithAxiom):
         r"""Schemes quasi-projective over the base."""
 
