@@ -4969,10 +4969,12 @@ class SchemeMonomorphisms(_MonoCategoryOf):
         source = arrow.domain()
         if source in ClosedEmbeddings(codomain) or source in OpenImmersions(codomain):
             return True
-        open_image = arrow.__dict__.get("_preamble_open_image")
-        open_image_isomorphism = arrow.__dict__.get("_preamble_open_image_isomorphism")
-        if open_image is None or open_image_isomorphism is None:
+        open_image_accessor = getattr(arrow, "open_image", None)
+        chart_isomorphism_accessor = getattr(arrow, "chart_isomorphism", None)
+        if not callable(open_image_accessor) or not callable(chart_isomorphism_accessor):
             return False
+        open_image = open_image_accessor()
+        open_image_isomorphism = chart_isomorphism_accessor()
         return open_image in OpenImmersions(codomain) and open_image_isomorphism.forward().domain() is source and open_image_isomorphism.forward().codomain() is open_image
 
 

@@ -198,8 +198,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         self._preamble_codomain_override = None
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
-        self._preamble_open_image = open_image
-        self._preamble_open_image_isomorphism = chart_isomorphism
+        self._open_image = open_image
         self._chart_isomorphism = chart_isomorphism
 
     def gluing_datum(self):
@@ -209,7 +208,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return self._chart_index
 
     def open_image(self):
-        return self._preamble_open_image
+        return self._open_image
 
     def chart_isomorphism(self):
         return self._chart_isomorphism
