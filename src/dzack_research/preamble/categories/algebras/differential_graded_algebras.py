@@ -53,15 +53,13 @@ class DegreewiseLinearMorphism(Morphism):
         source = self.domain()
         target = self.codomain()
         ring = source.base_ring()
-        if source not in FramedModules(ring) or target not in FramedModules(ring):
-            raise NotImplementedError(
-                "this differential component has no selected framed-module backend"
-            )
+        assert source in FramedModules(ring) and target in FramedModules(ring), (
+            "materializing a differential component as a module morphism requires selected framings on both endpoints"
+        )
         labels = source.module_generating_set()
-        if not labels.cardinality().is_finite():
-            raise NotImplementedError(
-                "this differential component has no finite framed-module backend"
-            )
+        assert labels.cardinality().is_finite(), (
+            "materializing a differential component as a module morphism requires a finite selected source framing"
+        )
         return source.module_category().Mor(source, target)(
             {label: self(source.module_generator(label)) for label in labels}
         )

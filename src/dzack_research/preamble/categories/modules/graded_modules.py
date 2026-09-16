@@ -62,23 +62,32 @@ def _concentrated_graded_module(base_ring, grading_monoid=None):
     )
 
 
-def _selected_homogeneous_degree(element):
-    r"""Return one represented homogeneous degree without imposing one element API."""
+def _represented_homogeneous_degree_or_none(element):
+    r"""Return a represented homogeneous degree, or ``None`` when no degree view is selected."""
     parent = element.parent()
     selected = parent.__dict__.get("_preamble_concentrated_degree")
     if selected is not None:
         if element == parent.zero():
             raise ValueError("zero has no selected homogeneous degree here")
         return selected
-    try:
-        homogeneous = element.is_homogeneous()
-        degree = element.degree()
-    except AttributeError as error:
-        raise NotImplementedError(
-            "this graded-module element has no represented homogeneous degree"
-        ) from error
-    if not homogeneous:
+    homogeneous_function = getattr(element, "is_homogeneous", None)
+    degree_function = getattr(element, "degree", None)
+    match callable(homogeneous_function) and callable(degree_function):
+        case False:
+            return None
+        case True:
+            pass
+    if not homogeneous_function():
         raise ValueError("the graded-module element is not homogeneous")
+    return degree_function()
+
+
+def _selected_homogeneous_degree(element):
+    r"""Return one represented homogeneous degree without imposing one element API."""
+    degree = _represented_homogeneous_degree_or_none(element)
+    assert degree is not None, (
+        "this graded-module element has no represented homogeneous degree"
+    )
     return degree
 
 
@@ -96,17 +105,15 @@ class GradedModuleMorphism(ModuleMorphism):
             return
         for label in domain.module_generating_set():
             source = domain.module_generator(label)
-            try:
-                source_degree = _selected_homogeneous_degree(source)
-            except NotImplementedError:
+            source_degree = _represented_homogeneous_degree_or_none(source)
+            if source_degree is None:
                 continue
             image = self(source)
             if image == self.codomain().zero():
                 continue
-            try:
-                target_degree = _selected_homogeneous_degree(image)
-            except NotImplementedError as error:
-                raise ValueError("a graded-module map has a nonhomogeneous image") from error
+            target_degree = _represented_homogeneous_degree_or_none(image)
+            if target_degree is None:
+                raise ValueError("a graded-module map has an image with no represented homogeneous degree")
             if target_degree != source_degree:
                 raise ValueError("a graded-module morphism must preserve degree")
 
@@ -231,10 +238,9 @@ class GradedModules(OwnedCategoryOverBaseRing):
             represented grading on its framing refuses rather than guessing.
             """
             selected = self.__dict__.get("_preamble_degree_on_module_generator")
-            if selected is None:
-                raise NotImplementedError(
-                    f"{self} has no represented degree on its selected module framing"
-                )
+            assert selected is not None, (
+                f"{self} has no represented degree on its selected module framing"
+            )
             return selected(module_generator)
 
         def module_generators_of_degree(self, degree):
@@ -242,11 +248,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             if self not in FramedModules(self.base_ring()):
                 raise TypeError("graded-piece generators require a framed graded module")
             labels = self.module_generating_set()
-            if labels.cardinality().is_finite() is not True:
-                raise NotImplementedError(
-                    "generic degree-piece filtering requires a finite selected framing; "
-                    "an infinite graded construction supplies its intrinsic graded_piece instead"
-                )
+            assert labels.cardinality().is_finite() is True, (
+                "generic degree-piece filtering requires a finite selected framing; "
+                "an infinite graded construction supplies its intrinsic graded_piece instead"
+            )
             return finite_ordered_set(
                 tuple(
                     self.module_generator(label)
