@@ -5409,7 +5409,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rationale**: the specification is written blind and its names are the contract; the implementation meets the contract by resolving the name to the right category, not by keeping the old class alive beside the new one.
 
-- **Violation Example**: `OwnedOrders` kept as a class "because a join carries no methods" while also declaring the join, so the name is both the join and a second class over it.
+- **Violation Example**: `OwnedOrders` kept as a class "because a join holds no methods" while also declaring the join, so the name is both the join and a second class over it.
 
 - **Correct Example**: `StrictlyCommutativeDifferentialGradedAlgebras(R)` returning `DifferentialGradedAlgebras(R).Supercommutative().Alternating()`; `PrimeFields` as the plural name of `OwnedRings.Division.Commutative.Prime`.
 
