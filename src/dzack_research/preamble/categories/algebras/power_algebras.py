@@ -37,6 +37,20 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class _PowerAlgebraConstruction:
+    r"""The selected source module and flavor defining one power algebra."""
+
+    def __init__(self, source_module, flavor) -> None:
+        self._source_module = source_module
+        self._flavor = flavor
+
+    def source_module(self):
+        return self._source_module
+
+    def flavor(self):
+        return self._flavor
+
+
 class PowerAlgebraElement(GradedDirectSumElement):
     r"""An element of a power algebra, using graded-direct-sum storage."""
 
@@ -52,8 +66,7 @@ class PowerAlgebra(GradedDirectSumModule):
     def __init__(self, module, flavor) -> None:
         if flavor not in {"alternating", "divided"}:
             raise ValueError("power algebra flavor must be alternating or divided")
-        self._preamble_free_algebra_source_module = module
-        self._flavor = flavor
+        self._power_algebra_construction = _PowerAlgebraConstruction(module, flavor)
         base = _owned_ring(module.base_ring())
         self._preamble_algebra_base_ring = base
 
@@ -90,21 +103,24 @@ class PowerAlgebra(GradedDirectSumModule):
 
     def is_commutative(self) -> bool:
         r"""Divided powers commute; an alternating algebra commutes on at most one generator or in characteristic two."""
-        if self._flavor == "divided":
+        if self.flavor() == "divided":
             return True
         generators = self._preamble_algebra_generating_set.cardinality()
         if generators.is_finite() and int(generators.finite_value()) <= 1:
             return True
         return int(self.base_ring().characteristic()) == 2
 
+    def power_algebra_construction(self):
+        return self._power_algebra_construction
+
     def flavor(self):
-        return self._flavor
+        return self.power_algebra_construction().flavor()
 
     def algebra_base_ring(self):
         return self.base_ring()
 
     def free_source_module(self):
-        return self._preamble_free_algebra_source_module
+        return self.power_algebra_construction().source_module()
 
     def _power_algebra_homset_class(self):
         return PowerAlgebraHomset

@@ -64,17 +64,33 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
 
 
+class _PowerConstruction:
+    r"""The selected source module and degree defining one module power."""
+
+    def __init__(self, source, degree) -> None:
+        self._source = source
+        self._degree = int(degree)
+
+    def source(self):
+        return self._source
+
+    def degree(self):
+        return self._degree
+
+
 class _PowerModuleParentMethods:
-    def __init__(self, power_source, power_degree, **rest) -> None:
-        self._preamble_power_source = power_source
-        self._preamble_power_degree = int(power_degree)
+    def __init__(self, power_construction, **rest) -> None:
+        self._power_construction = power_construction
         super().__init__(**rest)
 
+    def power_construction(self):
+        return self._power_construction
+
     def power_source(self):
-        return self._preamble_power_source
+        return self.power_construction().source()
 
     def power_degree(self):
-        return self._preamble_power_degree
+        return self.power_construction().degree()
 
     def _lift_from_ambient_power_algebra(self, element):
         r"""Read an ambient homogeneous element back in this power module."""
@@ -396,15 +412,11 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
         return [DividedPowerModules(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, divided_square_source, **rest) -> None:
-            self._preamble_divided_square_source = divided_square_source
-            super().__init__(**rest)
-
         def _module_homset_class(self):
             return QuadraticModuleHomset
 
         def divided_square_source(self):
-            return self._preamble_divided_square_source
+            return self.power_source()
 
         def quadratic(self, element):
             r"""Return the universal quadratic value ``gamma_2(element)``."""
@@ -696,9 +708,7 @@ def _divided_square(module):
             DividedSquareModules(module.base_ring()),
         ),
         extra_construction_data={
-            "divided_square_source": module,
-            "power_source": module,
-            "power_degree": 2,
+            "power_construction": _PowerConstruction(module, 2),
         },
     )
 
@@ -732,8 +742,7 @@ def _tensor_power_nontrivial(module, degree):
         family,
         extra_categories=(TensorPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_source": module,
-            "power_degree": degree,
+            "power_construction": _PowerConstruction(module, degree),
         },
     )
 
@@ -754,8 +763,7 @@ def _symmetric_power_nontrivial(module, degree):
         "symmetric",
         extra_categories=(SymmetricPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_source": module,
-            "power_degree": degree,
+            "power_construction": _PowerConstruction(module, degree),
         },
     )
 
@@ -776,8 +784,7 @@ def _alternating_power_nontrivial(module, degree):
         "alternating",
         extra_categories=(AlternatingPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_source": module,
-            "power_degree": degree,
+            "power_construction": _PowerConstruction(module, degree),
         },
     )
 
@@ -804,8 +811,7 @@ def _divided_power_nontrivial(module, degree):
         "divided",
         extra_categories=(DividedPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_source": module,
-            "power_degree": degree,
+            "power_construction": _PowerConstruction(module, degree),
         },
     )
 
