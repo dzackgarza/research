@@ -1245,7 +1245,18 @@ siblings. Before the slice is repaired, four things are established and filed:
 2. **The mental model that produced it**, written as the false belief so the next reader
    recognises it: "threading means re-running the lower constructor with extra data";
    "an existing object can never gain structure, so build a copy"; "the pattern for a
-   datum is a `WithChosenX` subcategory".
+   datum is a `WithChosenX` subcategory". The false belief is mathematical before it is
+   procedural, and the account names it as mathematics. The code's partition of a
+   category is never a theorem about the objects: on 2026-09-17 the tree's split of
+   `Algebras(R)` into a nonassociative root and a unital associative refinement holding
+   the structure morphism was read as "a Lie algebra has no structure morphism", an
+   impossibility manufactured from the code's shape and then "solved" by a generalization
+   (the centroid) that the question never needed. A Lie algebra is an algebra: an
+   $R$-module with an $R$-bilinear multiplication satisfying two more identities. Over
+   commutative $R$ the datum $(M, m)$ already is the structure, $\rho$ is the scalar
+   action of $M$, and the textbook case over a field carries over unchanged. Derive the
+   mathematics independently of the tree first; the tree's shape is one of the things
+   being judged.
 3. **Where else it stands**, measured by an observable tell -- a grep a reader can rerun --
    per subtree, never by a judgment of intent, and named in the node by the mathematics
    it fails; an engine class appears only as the file it lives in. Each population becomes
