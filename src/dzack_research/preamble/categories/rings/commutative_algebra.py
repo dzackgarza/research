@@ -632,6 +632,32 @@ class DistinguishedOpenSubobject(SetInclusion):
 
 
 
+class _QuotientRingConstruction:
+    r"""The source ring, defining ideal, and quotient map of ``R/I``."""
+
+    def __init__(self, source, defining_ideal) -> None:
+        self._source = source
+        self._defining_ideal = defining_ideal
+        self._quotient_map = None
+
+    def source(self):
+        return self._source
+
+    def defining_ideal(self):
+        return self._defining_ideal
+
+    def set_quotient_map(self, morphism) -> None:
+        if self._quotient_map is not None and self._quotient_map is not morphism:
+            raise ValueError("this quotient construction already has its canonical map")
+        self._quotient_map = morphism
+
+    def quotient_map(self):
+        assert self._quotient_map is not None, (
+            "a quotient construction must acquire its canonical map during construction"
+        )
+        return self._quotient_map
+
+
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
@@ -704,8 +730,10 @@ class QuotientRings(OwnedCategory):
             _engine_ring=None,
             **rest,
         ) -> None:
-            self._preamble_quotient_source = source
-            self._preamble_defining_ideal = defining_ideal
+            self._quotient_construction = _QuotientRingConstruction(
+                source,
+                defining_ideal,
+            )
             self._preamble_engine_ring = _engine_ring
             self._preamble_algebra_base_ring = source
             # The quotient is already placed in ``Algebras(source)`` by its
@@ -715,9 +743,10 @@ class QuotientRings(OwnedCategory):
             # construction datum at this level.
             super().__init__(base=source, **rest)
 
-            self._preamble_quotient_map = source.Mor(self)(
+            quotient_map = source.Mor(self)(
                 lambda element: self(element),
             )
+            self._quotient_construction.set_quotient_map(quotient_map)
 
         def _element_constructor_(self, value):
             if isinstance(value, self.category().ElementType) and value.parent() is self:
@@ -857,13 +886,13 @@ class QuotientRings(OwnedCategory):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
 
         def quotient_source(self):
-            return self._preamble_quotient_source
+            return self._quotient_construction.source()
 
         def defining_ideal(self):
-            return self._preamble_defining_ideal
+            return self._quotient_construction.defining_ideal()
 
         def quotient_map(self):
-            return self._preamble_quotient_map
+            return self._quotient_construction.quotient_map()
 
         def localization_comparison(self, localization_ring):
             r"""Return ``S^{-1}(R/I) ~= S^{-1}R/S^{-1}I`` with both maps."""
@@ -3407,8 +3436,10 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
     def __init__(self, engine, base, polynomial, defining_ideal, label) -> None:
-        self._preamble_quotient_source = polynomial
-        self._preamble_defining_ideal = defining_ideal
+        self._quotient_construction = _QuotientRingConstruction(
+            polynomial,
+            defining_ideal,
+        )
         placements = [QuotientRings()]
         if base in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
@@ -3423,11 +3454,12 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
             (label,),
             categories=tuple(placements),
         )
-        self._preamble_quotient_map = _canonical_map(
+        quotient_map = _canonical_map(
             polynomial,
             self,
             engine.coerce_map_from(_engine_ring(polynomial)),
         )
+        self._quotient_construction.set_quotient_map(quotient_map)
         if base in OwnedLocalRings():
             epsilon_bar = self._from_engine_element(engine.gen())
             self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
