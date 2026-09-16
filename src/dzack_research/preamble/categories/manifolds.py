@@ -383,27 +383,51 @@ class SmoothManifolds(OwnedCategory):
         )
 
 
+class HolomorphicMapPresentation:
+    r"""The selected chart presentation defining one represented holomorphic map."""
+
+    def __init__(self, engine_map, coordinate_expressions, source_label, target_label) -> None:
+        self._engine_map = engine_map
+        self._coordinate_expressions = tuple(coordinate_expressions)
+        self._source_label = source_label
+        self._target_label = target_label
+
+    def engine_map(self):
+        return self._engine_map
+
+    def coordinate_expressions(self):
+        return self._coordinate_expressions
+
+    def source_chart_label(self):
+        return self._source_label
+
+    def target_chart_label(self):
+        return self._target_label
+
+
 class HolomorphicMap(Morphism):
     r"""A holomorphic map represented by polynomial formulas in selected complex charts."""
 
-    def __init__(self, parent, engine_map, coordinate_expressions, source_label, target_label) -> None:
+    def __init__(self, parent, presentation) -> None:
         Morphism.__init__(self, parent)
-        self._preamble_engine_map = engine_map
-        self._preamble_coordinate_expressions = tuple(coordinate_expressions)
-        self._preamble_source_chart_label = source_label
-        self._preamble_target_chart_label = target_label
+        if not isinstance(presentation, HolomorphicMapPresentation):
+            raise TypeError("a holomorphic map requires a selected chart presentation")
+        self._presentation = presentation
+
+    def presentation(self):
+        return self._presentation
 
     def coordinate_expressions(self):
-        return self._preamble_coordinate_expressions
+        return self.presentation().coordinate_expressions()
 
     def source_chart(self):
-        return self.domain().atlas()[self._preamble_source_chart_label]
+        return self.domain().atlas()[self.presentation().source_chart_label()]
 
     def target_chart(self):
-        return self.codomain().atlas()[self._preamble_target_chart_label]
+        return self.codomain().atlas()[self.presentation().target_chart_label()]
 
     def _engine_holomorphic_map(self):
-        return self._preamble_engine_map
+        return self.presentation().engine_map()
 
     def __mul__(self, other):
         if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
@@ -475,8 +499,15 @@ class ComplexManifoldHomset(CategoricalHomset):
         )
 
     def _from_engine_polynomial_map(self, engine, expressions, source_label, target_label):
+        presentation = HolomorphicMapPresentation(
+            engine,
+            tuple(expressions),
+            source_label,
+            target_label,
+        )
         return self.element_class(
-            self, engine, tuple(expressions), source_label, target_label
+            self,
+            presentation,
         )
 
     @cached_method
