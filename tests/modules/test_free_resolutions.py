@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     ZZ,
-    FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -17,7 +16,7 @@ def test_presented_pid_module_has_actual_short_free_resolution() -> None:
     presentation = relations.module_category().Mor(relations, f0)(
         {"r": 6 * f0.module_generator("x")}
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
     resolution = module.free_resolution()
 
     assert resolution.module() is module
@@ -41,7 +40,7 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
             "r2": 4 * f0.module_generator("x"),
         }
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
     resolution = module.free_resolution()
 
     assert not presentation.is_injective()
@@ -70,11 +69,9 @@ def test_free_module_has_trivial_free_resolution() -> None:
 def test_finite_framing_is_the_term_zero_data_of_the_pid_resolution() -> None:
     f0 = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    module = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, f0)(
+    module = relations.module_category().Mor(relations, f0)(
             {"r": 5 * f0.module_generator("b")}
-        )
-    )
+        ).cokernel()
     resolution = module.free_resolution()
 
     assert module.is_finitely_generated()

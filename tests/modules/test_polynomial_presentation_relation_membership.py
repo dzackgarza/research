@@ -1,17 +1,12 @@
 r"""Exact relation membership for selected presentations over polynomial rings."""
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
-)
 
 
 def _cyclic_quotient(ring, relation):
     free = ring.free_module(1)
     generator = free.module_generator(0)
-    return FinitelyPresentedModule(
-        free.module_category().Mor(free, free)({0: relation * generator})
-    )
+    return free.module_category().Mor(free, free)({0: relation * generator}).cokernel()
 
 
 def test_univariate_relation_membership_is_over_the_polynomial_ring() -> None:

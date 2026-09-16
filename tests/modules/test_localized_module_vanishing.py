@@ -9,7 +9,6 @@ says the module is zero away from its support.
 
 from dzack_research.preamble.all import (
     AdditiveGroups,
-    FinitelyPresentedModule,
     QQ,
     ZZ,
 )
@@ -20,11 +19,9 @@ def _cyclic_module(ring, scalar):
     r"""Return ``R/(scalar)`` presented on one generator."""
     free = ring.free_module(finite_ordered_set(("g",)))
     relations = ring.free_module(finite_ordered_set(("r",)))
-    return FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)(
+    return relations.module_category().Mor(relations, free)(
             {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
-        )
-    )
+        ).cokernel()
 
 
 def test_inverting_the_annihilator_kills_a_cyclic_module() -> None:

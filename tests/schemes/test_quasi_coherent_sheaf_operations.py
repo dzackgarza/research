@@ -9,7 +9,6 @@ zero on the open where that coordinate is a unit.
 
 from dzack_research.preamble.all import (
     AffineSpace,
-    FinitelyPresentedModule,
     QQ,
     QuasiCoherentSheaves,
 )
@@ -85,7 +84,7 @@ def test_the_tensor_product_of_two_free_sheaves_has_the_product_rank() -> None:
 def test_the_skyscraper_has_the_presentation_that_defines_it() -> None:
     r"""``O --x--> O -> O_origin -> 0`` on the affine line."""
     line, algebra, x, sheaves, structure, multiply_by_x = _line_and_multiplication()
-    origin_sheaf = sheaves.associated_sheaf(FinitelyPresentedModule(multiply_by_x))
+    origin_sheaf = sheaves.associated_sheaf(multiply_by_x.cokernel())
 
     presentation = sheaves.local_presentation(origin_sheaf)
     assert presentation.domain().module_generating_set().cardinality() == 1

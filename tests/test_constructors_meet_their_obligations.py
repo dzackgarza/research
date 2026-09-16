@@ -274,12 +274,10 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "divided square": lambda: Lattices(ZZ)("A2").divided_square(),
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
-        "finitely presented module": lambda: FinitelyPresentedModule(
-            ZZ.free_module(Sets.Δ[0]).hom(
+        "finitely presented module": lambda: (ZZ.free_module(Sets.Δ[0]).hom(
                 {0: ZZ.free_module(Sets.Δ[0]).module_generator(0) * 2},
                 ZZ.free_module(Sets.Δ[0]),
-            )
-        ),
+            )).cokernel(),
         # ---- forms ----
         # The two form homsets: built transiently everywhere a form is made,
         # and never asked for themselves.

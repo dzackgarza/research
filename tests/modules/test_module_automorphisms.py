@@ -9,7 +9,6 @@ left to choose.
 
 from dzack_research.preamble.all import (
     ZZ,
-    FinitelyPresentedModule,
     Modules,
 )
 
@@ -108,9 +107,7 @@ def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup
 def test_a_finite_presented_module_automorphism_uses_actual_finite_preimages() -> None:
     free = ZZ.free_module(finite_ordered_set(("g",)))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    quotient = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": 3 * free.module_generator("g")})
-    )
+    quotient = relations.module_category().Mor(relations, free)({"r": 3 * free.module_generator("g")}).cokernel()
     generator = quotient.module_generator("g")
     negation = quotient.module_category().Mor(quotient, quotient)({"g": -generator}).as_automorphism()
 

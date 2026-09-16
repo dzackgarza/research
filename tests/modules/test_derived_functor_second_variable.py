@@ -2,16 +2,13 @@ r"""Tor and Ext retain their functoriality in the second module variable."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    FinitelyPresentedModule,
 )
 
 
 def _cyclic(integer):
     line = ZZ.free_module(1)
     relations = ZZ.free_module(1)
-    return FinitelyPresentedModule(
-        relations.Mor(line)({0: ZZ(integer) * line.module_generator(0)})
-    )
+    return relations.Mor(line)({0: ZZ(integer) * line.module_generator(0)}).cokernel()
 
 
 def test_tor_is_covariant_in_the_second_variable() -> None:

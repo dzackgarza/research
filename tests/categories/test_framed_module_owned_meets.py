@@ -1,8 +1,5 @@
 r"""Framed free and finitely presented modules use owned construction meets."""
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
@@ -30,7 +27,7 @@ def test_presented_module_keeps_owned_selected_presentation() -> None:
     presentation = relations.module_category().Mor(relations, target)(
         {"r": 2 * target.module_generator("x")}
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
 
     assert module in ModulesWithChosenFinitePresentation(integers)
     assert module.presentation().domain() is relations

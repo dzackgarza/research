@@ -8,7 +8,6 @@ part of the assertions.
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
-    FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -85,18 +84,14 @@ def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_mo
     x = ring.algebra_generator("x")
     source_free = ring.free_module(finite_ordered_set(("a",)))
     source_relations = ring.free_module(finite_ordered_set(("r",)))
-    source = FinitelyPresentedModule(
-        source_relations.module_category().Mor(source_relations, source_free)(
+    source = source_relations.module_category().Mor(source_relations, source_free)(
             {"r": ring(2) * x * source_free.module_generator("a")}
-        )
-    )
+        ).cokernel()
     target_free = ring.free_module(finite_ordered_set(("c",)))
     target_relations = ring.free_module(finite_ordered_set(("s",)))
-    target = FinitelyPresentedModule(
-        target_relations.module_category().Mor(target_relations, target_free)(
+    target = target_relations.module_category().Mor(target_relations, target_free)(
             {"s": ring(2) * target_free.module_generator("c")}
-        )
-    )
+        ).cokernel()
     reduction = source.module_category().Mor(source, target)(
         {"a": target.module_generator("c")}
     )

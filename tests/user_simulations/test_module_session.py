@@ -68,7 +68,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert torsion in TorsionModules(ring)
     assert torsion.cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality() ** 2
     assert quotient.annihilator() == ring.ideal(ring.zero())
-    presented = FinitelyPresentedModule(submodule.inclusion())
+    presented = (submodule.inclusion()).cokernel()
     rendered(presented)
     assert presented.module_rank() == 1
     invariant_factors = presented.invariant_factors()

@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     NN,
     ZZ,
-    FinitelyPresentedModule,
     ModuleSubobjects,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -24,9 +23,7 @@ def _assert_order_maps_agree(left, right) -> None:
 def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> None:
     cover = ZZ.free_module(finite_ordered_set((0,)))
     generator = cover.module_generator(0)
-    module = FinitelyPresentedModule(
-        cover.module_category().Mor(cover, cover)({0: 2 * generator})
-    )
+    module = (cover.module_category().Mor(cover, cover)({0: 2 * generator})).cokernel()
 
     assert module not in ModuleSubobjects(ZZ)
     whole = module.subobject_on(module.module_generators())

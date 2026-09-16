@@ -8,7 +8,6 @@ cyclic module came out.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedModule,
 )
 
 
@@ -16,9 +15,7 @@ def _cyclic(ring, generator):
     r"""The cyclic module ``R / (generator)`` presented by one relation on one generator."""
     line = ring.free_module(1)
     relations = ring.free_module(1)
-    return FinitelyPresentedModule(
-        relations.Mor(line)({0: ring(generator) * line.module_generator(0)})
-    )
+    return relations.Mor(line)({0: ring(generator) * line.module_generator(0)}).cokernel()
 
 
 def test_tor_over_the_integers_is_the_gcd_and_vanishes_above_the_resolution() -> None:

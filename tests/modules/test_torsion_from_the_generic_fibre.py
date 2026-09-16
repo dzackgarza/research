@@ -8,7 +8,6 @@ ideal domain's shortcut, not the definition.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedModule,
     QQ,
     ZZ,
 )
@@ -37,9 +36,7 @@ def test_a_free_module_has_zero_torsion_submodule() -> None:
 def test_a_finite_abelian_group_is_torsion_with_itself_as_torsion_submodule() -> None:
     free = ZZ.free_module(finite_ordered_set(("g",)))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    module = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")})
-    )
+    module = relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")}).cokernel()
 
     assert module.is_torsion()
     assert not module.is_torsion_free()
@@ -50,9 +47,7 @@ def test_a_finite_abelian_group_is_torsion_with_itself_as_torsion_submodule() ->
 def test_the_generic_fibre_of_a_mixed_module_keeps_only_the_free_rank() -> None:
     free = ZZ.free_module(finite_ordered_set(("g", "h")))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    module = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")})
-    )
+    module = relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")}).cokernel()
 
     assert module.generic_rank() == 1
     assert not module.is_torsion()

@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedModule,
     FinitelyPresentedModules,
     InternalHomModules,
     Modules,
@@ -98,8 +97,8 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     zero = algebra.free_module(finite_ordered_set(()))
     source_free = algebra.free_module(finite_ordered_set(("u", "v")))
     target_free = algebra.free_module(finite_ordered_set(("w",)))
-    source = FinitelyPresentedModule(zero.module_category().Mor(zero, source_free)({}))
-    target = FinitelyPresentedModule(zero.module_category().Mor(zero, target_free)({}))
+    source = zero.module_category().Mor(zero, source_free)({}).cokernel()
+    target = zero.module_category().Mor(zero, target_free)({}).cokernel()
     morphism = source.module_category().Mor(source, target)(
         {
             "u": target.scalar_multiple(ybar, target.module_generator("w")),
@@ -128,18 +127,14 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
 def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     source_free = ZZ.free_module(finite_ordered_set(("x",)))
     source_relations = ZZ.free_module(finite_ordered_set(("r4",)))
-    source = FinitelyPresentedModule(
-        source_relations.module_category().Mor(source_relations, source_free)(
+    source = source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
-        )
-    )
+        ).cokernel()
     target_free = ZZ.free_module(finite_ordered_set(("y",)))
     target_relations = ZZ.free_module(finite_ordered_set(("r2",)))
-    target = FinitelyPresentedModule(
-        target_relations.module_category().Mor(target_relations, target_free)(
+    target = target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}
-        )
-    )
+        ).cokernel()
     hom = source.module_category().Mor(source, target)
     construction = hom.internal_hom_construction()
     assert construction.source_module() is source

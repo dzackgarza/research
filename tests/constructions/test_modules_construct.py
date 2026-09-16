@@ -246,7 +246,7 @@ def test_a_finitely_presented_module_over_every_commutative_ring(commutative_rin
     presentation = relations.Mor(generators)(
         {0: 2 * generators.module_generator(0), 1: 6 * generators.module_generator(1)}
     )
-    module = FinitelyPresentedModule(presentation)
+    module = (presentation).cokernel()
 
     assert module in FinitelyPresentedModules(ring)
     assert module in Modules(ring)
@@ -288,7 +288,7 @@ def test_free_resolution_over_a_principal_ideal_domain(pid) -> None:
     generators = _free(ring, 2)
     relations = _free(ring, 1)
     presentation = relations.Mor(generators)({0: 6 * generators.module_generator(0)})
-    module = FinitelyPresentedModule(presentation)
+    module = (presentation).cokernel()
     resolution = module.free_resolution()
 
     assert resolution.is_exact()
@@ -369,7 +369,7 @@ def test_modules_over_a_field_are_free(field) -> None:
     generators = _free(field, 2)
     relations = _free(field, 1)
     presentation = relations.Mor(generators)({0: generators.module_generator(0) + generators.module_generator(1)})
-    quotient = FinitelyPresentedModule(presentation)
+    quotient = (presentation).cokernel()
 
     assert quotient in VectorSpaces(field)
     assert quotient in FreeModules(field)

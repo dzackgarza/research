@@ -2,7 +2,6 @@ r"""Archive reconciliation for Hermite normalization of presented modules."""
 
 from dzack_research.preamble.all import (
     ZZ,
-    FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -26,7 +25,7 @@ def test_hermite_form_changes_only_the_relation_rows() -> None:
             "r2": 4 * free.module_generator("x"),
         }
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
     normalization = module.hermite_form()
     normalized = normalization.codomain()
 
@@ -47,7 +46,7 @@ def test_hermite_and_smith_normalizations_are_distinct_constructions() -> None:
     presentation = relations.module_category().Mor(relations, free)(
         {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
     hermite = module.hermite_form()
     smith = module.invariant_factor_form()
 

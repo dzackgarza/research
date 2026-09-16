@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
-    FinitelyPresentedModule,
     GradedModules,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -52,18 +51,14 @@ def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
 def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> None:
     source_free = ZZ.free_module(finite_ordered_set(("x",)))
     source_relations = ZZ.free_module(finite_ordered_set(("r4",)))
-    source = FinitelyPresentedModule(
-        source_relations.module_category().Mor(source_relations, source_free)(
+    source = source_relations.module_category().Mor(source_relations, source_free)(
             {"r4": 4 * source_free.module_generator("x")}
-        )
-    )
+        ).cokernel()
     target_free = ZZ.free_module(finite_ordered_set(("y",)))
     target_relations = ZZ.free_module(finite_ordered_set(("r2",)))
-    target = FinitelyPresentedModule(
-        target_relations.module_category().Mor(target_relations, target_free)(
+    target = target_relations.module_category().Mor(target_relations, target_free)(
             {"r2": 2 * target_free.module_generator("y")}
-        )
-    )
+        ).cokernel()
     differential = source.module_category().Mor(source, target)(
         {"x": target.module_generator("y")}
     )

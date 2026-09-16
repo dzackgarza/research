@@ -2,7 +2,7 @@ r"""Archive reconciliation for module morphisms as generator-defined linear exte
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, FinitelyPresentedModule
+from dzack_research.preamble.all import ZZ
 
 
 def _zmod2():
@@ -11,7 +11,7 @@ def _zmod2():
     relation = relations.module_category().Mor(relations, generators)(
         {relations.module_generating_set()[0]: 2 * generators.module_generator(0)}
     )
-    return FinitelyPresentedModule(relation)
+    return relation.cokernel()
 
 
 def test_generator_assignment_is_retained_as_the_defining_set_morphism() -> None:

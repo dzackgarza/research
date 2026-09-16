@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     Algebras,
     BilinearMap,
     FinitelyGeneratedFreeModules,
-    FinitelyPresentedModule,
     FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
     Modules,
@@ -133,7 +132,7 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
     presentation = relations.module_category().Mor(relations, free)(
         {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
     )
-    module = FinitelyPresentedModule(presentation)
+    module = presentation.cokernel()
 
     modules = module.module_category()
     for constructor in (modules.tensor_algebra(), modules.symmetric_algebra()):
@@ -411,11 +410,9 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
 
     cover = ZZ.free_module(finite_ordered_set(("x", "y")))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    nondiagonal = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, cover)(
+    nondiagonal = relations.module_category().Mor(relations, cover)(
             {"r": 2 * cover.module_generator("x") + 4 * cover.module_generator("y")}
-        )
-    )
+        ).cokernel()
     nondiagonal_iterated = free(underlying(free(nondiagonal)))
     nondiagonal_source_labels = nondiagonal_iterated.algebra_generating_set()
     x = nondiagonal_iterated.algebra_generator(

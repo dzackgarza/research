@@ -8,7 +8,6 @@ image, and the monomorphism is injective there.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedModule,
     ZZ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -57,12 +56,8 @@ def test_the_cokernel_projection_kills_exactly_the_image() -> None:
 def test_a_presented_module_with_no_torsion_is_recognised_as_free() -> None:
     free = ZZ.free_module(finite_ordered_set(("g", "h")))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    torsion_free = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": free.module_generator("g")})
-    )
-    with_torsion = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")})
-    )
+    torsion_free = relations.module_category().Mor(relations, free)({"r": free.module_generator("g")}).cokernel()
+    with_torsion = relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")}).cokernel()
 
     assert torsion_free.is_free()
     assert not with_torsion.is_free()

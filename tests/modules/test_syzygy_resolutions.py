@@ -15,7 +15,6 @@ resolution truncated at the relations would report the wrong module there.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedModule,
     QQ,
     ZZ,
 )
@@ -35,7 +34,7 @@ def _residue_field_module():
             "ry": y * free.module_generator("g"),
         }
     )
-    return FinitelyPresentedModule(presentation)
+    return presentation.cokernel()
 
 
 def test_the_residue_field_of_the_plane_resolves_in_two_steps() -> None:
@@ -115,9 +114,7 @@ def test_tor_of_the_residue_field_reads_the_degree_two_term() -> None:
 def test_a_principal_ideal_domain_resolves_in_one_step_however_far_it_is_asked() -> None:
     free = ZZ.free_module(finite_ordered_set(("g",)))
     relations = ZZ.free_module(finite_ordered_set(("r",)))
-    module = FinitelyPresentedModule(
-        relations.module_category().Mor(relations, free)({"r": ZZ(6) * free.module_generator("g")})
-    )
+    module = relations.module_category().Mor(relations, free)({"r": ZZ(6) * free.module_generator("g")}).cokernel()
 
     assert module.free_resolution(4) is module.free_resolution()
     assert module.free_resolution(4).length() == 1
