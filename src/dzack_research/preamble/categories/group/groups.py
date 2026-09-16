@@ -1861,10 +1861,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     def group_algebra(self, base_ring):
         r"""The functor \(R[-]\colon \mathbf{Grp}\to\mathbf{Alg}_R\)."""
         from dzack_research.preamble.categories.algebras.group_algebras import (
-            GroupAlgebraFunctor,
+            _GroupAlgebraFunctor,
         )
 
-        return GroupAlgebraFunctor(base_ring)
+        return _GroupAlgebraFunctor(base_ring)
 
     _HomCategory = GroupHomCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction

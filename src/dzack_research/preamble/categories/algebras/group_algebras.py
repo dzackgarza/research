@@ -245,7 +245,7 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
             raise ValueError("the induced group-algebra map does not preserve the unit")
 
 
-class GroupAlgebraFunctor(Functor):
+class _GroupAlgebraFunctor(Functor):
     r"""\(R[-]\colon \mathbf{Grp}\to \mathbf{Alg}_R\).
 
     On a group morphism \(f\colon H\to G\) it is the algebra morphism
@@ -289,7 +289,7 @@ class GroupAlgebraUnderlyingModuleFunctor(Functor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
         self._base_ring = ring
-        self._group_algebra_functor = GroupAlgebraFunctor(ring)
+        self._group_algebra_functor = _GroupAlgebraFunctor(ring)
         self._underlying_module_functor = (
             self._group_algebra_functor.codomain().underlying_module()
         )
