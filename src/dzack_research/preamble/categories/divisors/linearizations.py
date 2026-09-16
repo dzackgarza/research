@@ -92,6 +92,23 @@ class _EigensectionDivisorConstruction(SageObject):
         return self._character
 
 
+class _ProductProjectiveCoordinateActionConstruction(SageObject):
+    r"""The coordinate weights and affine-chart arrows defining one product action."""
+
+    def __init__(self, coordinate_weights, local_automorphisms) -> None:
+        self._coordinate_weights = coordinate_weights
+        self._local_automorphisms = local_automorphisms
+
+    def coordinate_weights(self):
+        return self._coordinate_weights
+
+    def local_automorphisms(self):
+        return self._local_automorphisms
+
+    def local_automorphism(self, chart_index):
+        return self.local_automorphisms()[chart_index]
+
+
 class _ProjectiveLineBundleLinearization(SageObject):
     r"""A character-twisted linearization of ``O(d)`` under a projective action."""
 
@@ -416,11 +433,19 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         assert int(group.order()) == 2, (
             "the represented coordinate-weight specialization is the C2 action"
         )
-        weights = getattr(scheme_action_functor, "_preamble_coordinate_weights", None)
+        construction = getattr(
+            scheme_action_functor,
+            "_preamble_product_projective_coordinate_action_construction",
+            None,
+        )
+        if not isinstance(construction, _ProductProjectiveCoordinateActionConstruction):
+            raise ValueError("the product action must retain its coordinate construction data")
+        weights = construction.coordinate_weights()
         if weights is None or weights.index_set() is not scheme.factors().index_set():
             raise ValueError("the product action must retain coordinate weights on the exact factor index set")
         self._line_bundle = line_bundle
         self._scheme_action_functor = scheme_action_functor
+        self._coordinate_action_construction = construction
         self._group = group
         self._character = character
         self._validate_character()
@@ -431,8 +456,11 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
     def section_scheme(self):
         return self.projective_product()
 
+    def coordinate_action_construction(self):
+        return self._coordinate_action_construction
+
     def coordinate_weights(self):
-        return self.scheme_action_functor()._preamble_coordinate_weights
+        return self.coordinate_action_construction().coordinate_weights()
 
     def local_chart_automorphism(self, group_element, chart_index):
         group_element = self.acting_group()(group_element)
@@ -440,7 +468,7 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         chart_index = atlas.normalize_chart_index(chart_index)
         if group_element == self.acting_group().one():
             return atlas.chart(chart_index).categorical_identity_morphism()
-        return self.scheme_action_functor()._preamble_local_automorphisms[chart_index]
+        return self.coordinate_action_construction().local_automorphism(chart_index)
 
     def local_jacobian_scalar(self, group_element, chart_index):
         r"""Return the determinant of the diagonal action on affine chart coordinates."""
@@ -577,12 +605,15 @@ def _c2_diagonal_product_projective_action(projective_product, group=None):
         projective_product,
         lambda element: identity if element == group.one() else nontrivial,
     )
-    action._preamble_coordinate_weights = weights
-    action._preamble_nontrivial_automorphism = nontrivial
-    action._preamble_local_automorphisms = finite_indexed_family(
-        atlas.chart_index_set(),
-        lambda index: local_automorphisms[index],
-        name="Affine-chart automorphisms of the diagonal sign action",
+    action._preamble_product_projective_coordinate_action_construction = (
+        _ProductProjectiveCoordinateActionConstruction(
+            weights,
+            finite_indexed_family(
+                atlas.chart_index_set(),
+                lambda index: local_automorphisms[index],
+                name="Affine-chart automorphisms of the diagonal sign action",
+            ),
+        )
     )
     return action
 

@@ -131,6 +131,9 @@ def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> 
     bundle = product.O(1, 1)
     action = product.c2_diagonal_sign_action()
     linearized = bundle.linearize(action, lambda _element: QQ.one())
+    construction = linearized.coordinate_action_construction()
 
     assert linearized.line_bundle() is bundle
     assert linearized.section_scheme() is product
+    assert construction.coordinate_weights() is linearized.coordinate_weights()
+    assert construction.local_automorphisms().index_set() is product.standard_affine_atlas().chart_index_set()
