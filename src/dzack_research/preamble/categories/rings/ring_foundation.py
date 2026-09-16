@@ -1302,6 +1302,45 @@ class OwnedRngs(OwnedCategory):
         return [Semigroups(), AdditiveGroups()]
 
 
+class LocalRingConstruction:
+    r"""The selected maximal ideal and residue quotient data of a local ring."""
+
+    def __init__(self, maximal_ideal, residue_field, residue_map=None) -> None:
+        self._maximal_ideal = maximal_ideal
+        self._residue_field = residue_field
+        self._residue_map = residue_map
+
+    def maximal_ideal(self):
+        return self._maximal_ideal
+
+    def residue_field(self):
+        return self._residue_field
+
+    def residue_map(self):
+        return self._residue_map
+
+
+def _install_local_ring_construction(ring, maximal_ideal, residue_field, residue_map=None):
+    r"""Install the selected local-ring quotient datum on ``ring`` exactly once."""
+    if maximal_ideal.ring() is not ring:
+        raise ValueError("a local-ring maximal ideal must be an ideal of the represented ring")
+    if residue_map is not None:
+        if residue_map.domain() is not ring or residue_map.codomain() is not residue_field:
+            raise ValueError("a local-ring residue map must have endpoints R -> kappa(m)")
+    construction = LocalRingConstruction(maximal_ideal, residue_field, residue_map)
+    existing = getattr(ring, "_local_ring_construction", None)
+    if existing is not None:
+        if (
+            existing.maximal_ideal() is not maximal_ideal
+            or existing.residue_field() is not residue_field
+            or existing.residue_map() is not residue_map
+        ):
+            raise ValueError("this ring already has a different selected local-ring construction")
+        return ring
+    ring._local_ring_construction = construction
+    return ring
+
+
 class OwnedRings(CategoryPacketMethods, OwnedCategory):
     """Unital rings whose notebook-facing ring interface is owned here."""
 
@@ -1598,28 +1637,26 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 def is_local(self):
                     return True
 
+                def local_ring_construction(self):
+                    construction = getattr(self, "_local_ring_construction", None)
+                    assert construction is not None, (
+                        f"{self} is placed as a nonfield local ring without its selected maximal-ideal/residue construction"
+                    )
+                    return construction
+
                 def maximal_ideal(self):
-                    return self._preamble_maximal_ideal
+                    return self.local_ring_construction().maximal_ideal()
 
                 def residue_field(self):
-                    return self._preamble_residue_field
+                    return self.local_ring_construction().residue_field()
 
                 def residue_map(self):
-                    r"""Return the local quotient map ``R -> kappa(m)``.
-
-                    A field carries the identity map.  Other local-ring constructors
-                    retain the quotient map together with the selected maximal ideal
-                    and residue field.
-                    """
-                    selected = getattr(self, "_preamble_residue_map", None)
-                    if selected is not None:
-                        return selected
-                    residue = self.residue_field()
-                    assert residue is self, (
-                        f"the residue map {self} -> {residue} is not constructed here; the level "
-                        "that introduces the residue field of this ring supplies it"
+                    r"""Return the selected local quotient map ``R -> kappa(m)``."""
+                    selected = self.local_ring_construction().residue_map()
+                    assert selected is not None, (
+                        f"the residue map of {self} is part of its local-ring construction and has not been supplied"
                     )
-                    return self.Mor(self).identity()
+                    return selected
 
             class Complete(CategoryWithAxiom):
                 r"""Complete local rings: complete and separated for the maximal-ideal topology."""
@@ -3453,13 +3490,13 @@ def Zmod(*args, **kwargs):
 
         prime, _exponent = factors[0]
         residue = GF(prime)
-        ring._preamble_maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
-        ring._preamble_residue_field = residue
-        ring._preamble_residue_map = ring.Mor(residue)(
+        maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
+        residue_map = ring.Mor(residue)(
             lambda element: residue(
                 SageZZ(_engine_element(ring, element).lift())
             ),
         )
+        _install_local_ring_construction(ring, maximal_ideal, residue, residue_map)
         refine(ring, OwnedRings().Commutative().Local())
     return ring
 
