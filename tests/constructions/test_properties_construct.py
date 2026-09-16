@@ -178,7 +178,7 @@ def test_prime_fields_and_p_adics(p) -> None:
     assert (ZZ).affine_spectrum().underlying_space()(ZZ.ideal(p)).residue_field().cardinality() == p
     assert Groups.C(p).Aut().order() == p - 1
     assert Groups.GL(2, field).order() == (p**2 - 1) * (p**2 - p)
-    assert FreeModule(field, 2).Aut().order() == (p**2 - 1) * (p**2 - p)
+    assert field.free_module(2).Aut().order() == (p**2 - 1) * (p**2 - p)
     assert AffineSpaces(field)(2).point_count() == p**2
     assert ProjectiveSpaces(field)(2).point_count() == p**2 + p + 1
 
@@ -248,16 +248,16 @@ def test_root_lattices_of_every_simply_laced_type(cartan_type) -> None:
 @given(name=family(COMMUTATIVE_RINGS), r=ranks, s=ranks)
 def test_ranks_of_free_module_constructions(name, r, s) -> None:
     ring = specimen(name)
-    left = FreeModule(ring, r)
-    right = FreeModule(ring, s)
+    left = ring.free_module(r)
+    right = ring.free_module(s)
     modules = Modules(ring)
     assert left.module_rank() == r
     assert left.tensor_product(right).module_rank() == r * s
     assert left.Hom(right).module_rank() == r * s
     assert modules.biproduct((left, right)).module_rank() == r + s
     assert left.dual_module().module_rank() == r
-    assert ExteriorForms(left, 2).module_rank() == binomial(r, 2)
-    assert DividedSquare(left).module_rank() == binomial(r + 1, 2)
+    assert left.exterior_forms(2).module_rank() == binomial(r, 2)
+    assert left.divided_square().module_rank() == binomial(r + 1, 2)
     assert modules.tensor_product((left, left)).module_rank() == r * r
     assert left in FinitelyGeneratedFreeModules(ring)
     assert (left.cardinality() == 1) == (r == 0)
@@ -278,7 +278,7 @@ def test_torsion_modules_over_principal_ideal_domains(name, orders) -> None:
 @given(name=family(FIELDS), r=positive_ranks)
 def test_vector_spaces_over_catalogue_fields(name, r) -> None:
     field = specimen(name)
-    space = FreeModule(field, r)
+    space = field.free_module(r)
     assert space in VectorSpaces(field)
     assert space.module_rank() == r
     assert space.Hom(space).module_rank() == r * r
@@ -287,8 +287,9 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
         q = field.cardinality()
         assert space.cardinality() == q**r
         assert space.Aut().order() == prod(q**r - q**i for i in range(r))
-    morphism = space.Mor(FreeModule(field, 1))(
-        {label: FreeModule(field, 1).module_generator(0) for label in range(r)}
+    line = field.free_module(1)
+    morphism = space.Mor(line)(
+        {label: line.module_generator(0) for label in range(r)}
     )
     kernel = morphism.kernel()
     assert kernel.module_rank() == r - 1
@@ -308,7 +309,7 @@ def test_finite_set_constructions(n, m) -> None:
     assert left.cardinality() == n
     assert sets.product((left, right)).cardinality() == n * m
     assert sets.coproduct((left, right)).cardinality() == n + m
-    assert ExponentialOfSets(left, right).cardinality() == n**m
+    assert left.exponential(right).cardinality() == n**m
     assert Sets().Mor(right, left).cardinality() == n**m
     assert left.power_set().cardinality() == 2**n
     assert left.Aut().order() == factorial(n)
@@ -324,7 +325,7 @@ def test_finite_set_constructions(n, m) -> None:
 @given(name=family(COMMUTATIVE_RINGS), n=small_integers)
 def test_polynomials_and_ideals_over_catalogue_rings(name, n) -> None:
     ring = specimen(name)
-    polynomials = PolynomialRing(ring, "x")
+    polynomials = ring.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert (x**n).degree() == n
