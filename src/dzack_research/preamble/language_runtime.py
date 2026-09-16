@@ -100,17 +100,6 @@ def ellipsis_iter(*args):
     return iter(ellipsis_range(*args))
 
 
-def var(*_args, **_kwargs):
-    raise NotImplementedError(
-        "the preamble has no owned generic symbolic-variable parent yet"
-    )
-
-
-def symbolic_expression(*_args, **_kwargs):
-    raise NotImplementedError(
-        "the preamble has no owned generic symbolic-expression parent yet"
-    )
-
 
 _RUNTIME = {
     "Integer": Integer,
@@ -119,8 +108,6 @@ _RUNTIME = {
     "RealApproximation": RealApproximation,
     "ellipsis_range": ellipsis_range,
     "ellipsis_iter": ellipsis_iter,
-    "var": var,
-    "symbolic_expression": symbolic_expression,
     "factorial": factorial,
     "matrix": matrix,
     "Set": Set,

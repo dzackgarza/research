@@ -568,8 +568,6 @@ matrix = _language_runtime.matrix
 factorial = _language_runtime.factorial
 ellipsis_range = _language_runtime.ellipsis_range
 ellipsis_iter = _language_runtime.ellipsis_iter
-var = _language_runtime.var
-symbolic_expression = _language_runtime.symbolic_expression
 GradedLebesgueAlgebra = graded_lebesgue_algebra()
 LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()
 
