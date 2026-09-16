@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class CardinalityFunctor(Functor):
+class _CardinalityFunctor(Functor):
     r"""Send a set to its cardinal and a set isomorphism to the unique order arrow."""
 
     def __init__(self) -> None:
@@ -91,8 +91,8 @@ class CardinalityFunctor(Functor):
 
 
 @cached_function
-def _cardinality_functor() -> CardinalityFunctor:
-    return CardinalityFunctor()
+def _cardinality_functor() -> _CardinalityFunctor:
+    return _CardinalityFunctor()
 
 
-__all__ = ["CardinalityFunctor"]
+__all__ = []

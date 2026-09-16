@@ -180,9 +180,6 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
 )
 
 # Explicit redundant aliases below are public session exports, not private imports.
-from dzack_research.preamble.categories.functors.cardinality import (
-    CardinalityFunctor as CardinalityFunctor,
-)
 from dzack_research.preamble.categories.functors.cochain_complexes import (
     CochainUnderlyingGradedModuleFunctor as CochainUnderlyingGradedModuleFunctor,
 )
