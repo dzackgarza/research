@@ -701,6 +701,53 @@ These nodes build the missing categories rather than leaving the false declarati
   **Undecided:** `CharacterSets` calls itself a category of sets while \(\mathrm{Char}(G)\) carries a ring structure.  Whether the category is of the sets or of the rings is a decision this node surfaces rather than settles.
   **Acceptance:** none of these categories declares a supercategory its own definition contradicts, and the one undecided member is recorded as a decision rather than left as a false declaration.
 
+- [ ] **`group-objects-construction`**. **Needs:** none.
+  **Goal:** Own group objects in a category with finite products, \(\mathrm{Grp}(C)\), as a construction parameterized by \(C\) and declaring \(C\) (`CAT-20`), so that affine group schemes are `Grp(Schemes(R).Affine())` and their actions are objects of the category of \(G\)-objects for a group object \(G\).
+  **Observed gap:** `AffineGroupSchemes` and `AffineGroupSchemeActions` (schemes/group_schemes.py:55, :249) declare `AffineSchemes(R)` directly, the true but non-immediate parent, because `GObjects(G, C)` takes an owned abstract group (group/g_objects.py:174), not a group object of \(C\).
+  **Owners:** the owned product construction on `Cat` objects; `GObjects`, which should be the case of a discrete group object.
+  **Acceptance:** an affine group scheme is placed through the group-object construction; the two scheme categories declare it and nothing two levels up; `GObjects(G, C)` is its restriction to constant group objects.
+
+- [ ] **`represented-toric-schemes-retirement`**. **Needs:** none.
+  **Goal:** A toric scheme is an object of `ToricSchemes(R)` over its own base; there is no base-free category of represented toric schemes.
+  **Observed gap:** `RepresentedToricSchemes` (schemes/toric/toric_schemes.py:483) is named for its engine representation and, being base-free, declares `LocallyRingedSpaces()`, two levels above the scheme tower. Its one consumer is `CoxRings.parameter_category` (divisors/cox_rings.py:27), and `OwnedParameterizedCategory.__init__` (abstract_categories/objects.py:148) calls `parameter_category()` before the parameter is stored, so a parameter category depending on the parameter's own base needs that contract changed.
+  **Acceptance:** the base-free class is gone; each represented toric scheme is constructed in `ToricSchemes(R)`; `CoxRings` takes its parameter's category from the parameter.
+
+- [ ] **`quasi-affine-finite-type-is-quasi-projective`**. **Needs:** none.
+  **Goal:** State the theorem that a quasi-affine scheme of finite type over an affine base is quasi-projective, at the join where its hypotheses hold: `Schemes(R).QuasiAffine().FiniteType()` declares `Schemes(R).QuasiProjective()` through `extra_super_categories` on the nested join class.
+  **Observed gap:** the edge was declared on `AffineSpaces` as a leaf fact and removed as a shortcut (b7f74892); nothing now declares affine space quasi-projective. Stating it on `QuasiAffine` alone would be false (finite type is needed).
+  **Acceptance:** `AffineSpaces` reaches `Schemes(R).QuasiProjective()` by the computed join and declares nothing about it itself.
+
+- [ ] **`grading-parity-datum`**. **Needs:** none.
+  **Goal:** The parameter of `GradedModules` is the grading monoid \(M\) together with a monoid morphism \(M \to \mathbb{Z}/2\), canonical for \(\mathbb{Z}\) (reduction) and \(\mathbb{Z}/2\) (identity) and explicit otherwise, so the Koszul parity is data on the grading.
+  **Observed gap:** `GradedCommutativeAlgebras(R, M, parity)` holds the parity as a category parameter (tests/categories/test_koszul_parity.py records the ruling), so an axiom on graded algebras cannot read it and a stated parity on another monoid would become unsayable.
+  **Acceptance:** `GradedModules(R, (M, eps))` constructs; `eps` is reachable from the grading; consumers state a non-canonical parity by the grading, never by a separate argument.
+
+- [ ] **`supercommutative-from-grading-parity`**. **Needs:** `grading-parity-datum`.
+  **Goal:** Graded commutativity is the Sage-registered axiom `Supercommutative` on `GradedAlgebras`, reading the parity from the grading; `GradedCommutativeAlgebras` is its thin name, `CommutativeDifferentialGradedAlgebras` is spelled `DifferentialGradedAlgebras(R).Supercommutative()` and retired (`CAT-18`).
+  **Observed gap:** the conversion was written (83433bcb) and held (342281a1) because the parity was not yet grading data.
+  **Undecided:** the strict variant (odd elements square to zero) has two literature names, "alternating" (Bourbaki, Algebra III §4.9) and "strictly commutative" (Sage's `commutative_dga`); until one is chosen, `StrictlyGradedCommutativeAlgebras` and `StrictlyCommutativeDifferentialGradedAlgebras` stay classes declaring the axiom, and the specification names both.
+  **Acceptance:** the graded-commutative DGA diamond is a computed join in `just category-graph cells`.
+
+- [ ] **`direct-sum-objects-parameter`**. **Needs:** none.
+  **Goal:** `DirectSumObjects` is a construction on a category with biproducts and declares that category (`CAT-20`), so `BiproductModules` and `BiproductLattices` reach their bases through it.
+  **Observed gap:** the class is unparameterized and declares `Objects()`; the specification spells it `DirectSumObjects()` (tests/constructions/test_direct_sum_objects_archive.py:29-53, test_categorical_constructions_construct.py:274). Either that spelling names the total category of the fibration over `Cat`, which then needs its own placement, or the specification's mathematics is wrong and the edit is the one the expectation subtrees admit.
+  **Acceptance:** the decision is recorded at the expectation and the class declares its base category or the total category, never `Objects()`.
+
+- [ ] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
+  **Goal:** Every category-of-categories construction is an object of `Cat`: `_FunctorCategory`, `_OppositeCategory`, `_ProductCategory`, `ClassifyingCategory`, `DiscreteCategory`, `ImageOfFunctor`, alongside `HomCategories` (done, 61bd8c65) and `_ArrowCategory`.
+  **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
+  **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
+
+- [ ] **`objects-hub-data-categories`**. **Needs:** none.
+  **Goal:** `Cardinalities`, `AlgebraGluingData`, `ModuleGluingData`, `CommutativeAlgebraParameters`, `GradedAlgebraParameters` and `DistinguishedAffineCovers` declare the categories their definitions name instead of `Objects()`.
+  **Observed gap:** `Cardinalities` (sets/cardinals.py) declares `Objects()` and Sage's `Semirings().Commutative()` side by side, a foreign edge; the others are gluing data and parameter packets whose objects are diagrams or tuples of owned objects, which the tree can state through its product and slice constructions.
+  **Acceptance:** none declares `Objects()` or a Sage category; each is placed by an owned construction or left abstract with the missing construction named.
+
+- [ ] **`membership-by-placement`**. **Needs:** none.
+  **Goal:** No `__contains__` decides membership by a predicate (`CAT-23`).
+  **Observed gap:** `Schemes.__contains__` answers lower-base membership by walking the candidate ring's base tower (schemes/schemes.py), so `X in Schemes(ZZ)` is true for a QQ-scheme that inherits nothing from it; `Sets.Countable.Infinite` decides membership by cardinality (a6078850); `QuasiCoherentSheaves.__contains__` duck-types (owned by `sheaf-object-placement`).
+  **Acceptance:** each such membership is answered by placement at construction or through the functor of `CAT-16`; the predicates are gone.
+
 ### Owner API and construction data
 
 - [x] **`owner-api-convergence`**. **Needs:** none.
@@ -848,7 +895,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
-- [ ] **`architecture-remediation`**. **Needs:** `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `algebras-are-modules`, `arrow-category-placement`, `geometric-space-placement`, `combinatorial-object-placement`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `group-objects-construction`, `represented-toric-schemes-retirement`, `quasi-affine-finite-type-is-quasi-projective`, `grading-parity-datum`, `supercommutative-from-grading-parity`, `direct-sum-objects-parameter`, `cat-valued-placement`, `objects-hub-data-categories`, `membership-by-placement`, `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `algebras-are-modules`, `arrow-category-placement`, `geometric-space-placement`, `combinatorial-object-placement`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
   **Goal:** Converge the twenty complaint-derived architecture repairs into one coherent mathematical API before any final runtime/session claim is accepted.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.

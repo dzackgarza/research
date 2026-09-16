@@ -59,7 +59,7 @@ The highest-priority architectural defects are therefore: **(1) remove the globa
 ### Categories declared into `Sets()` whose objects are not sets
 
 `super_categories()` states that every object of the category is an object of those.
-Thirty categories declare `Sets()`; `just category-graph by-supercategory` lists the group, and `just category-graph audit` reports what is mechanically checkable about the graph (no name is declared as a supercategory without being defined, and there are no cycles among distinct categories).
+The `Sets()` group is the largest in the tree; `just category-graph by-supercategory` lists it, and `just category-graph audit` reports what is mechanically checkable about the graph (no name is declared as a supercategory without being defined, and there are no cycles among distinct categories).
 Reading each member against the definition in its own docstring separates the group in two.
 
 **Correct: sets with structure.**
@@ -69,7 +69,6 @@ Reading each member against the definition in its own docstring separates the gr
 
 | Category | Its own definition | The category that should be declared | Source |
 | --- | --- | --- | --- |
-| `Algebras` | "``R``-modules equipped with one bilinear multiplication" | `Modules(R)` | `algebras/algebras.py:630` |
 | `_ArrowCategory` | "the category ``Arr(C)=Fun([1],C)``" | an object of `Cat`; a functor category | `abstract_categories/arrow_categories.py:156` |
 | `QuasiCoherentSheaves` | "quasi-coherent ``O_X``-modules on one scheme ``X``" | sheaves of `O_X`-modules | `schemes/ringed_spaces.py:541` |
 | `RingedSpaces` | "ringed spaces ``(X,O_X)``" | a space together with a sheaf of rings | `schemes/ringed_spaces.py:642` |
@@ -98,12 +97,11 @@ The functor category and the opposite category both exist and are what the presh
 **Consequences now visible.**
 Every sheaf in the tree is outside the category graph as a plain `SageObject`: `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and its descendants, `HigherDirectImageSheaf`.
 None inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents from Stacks Tag 01I8, and `QuasiCoherentSheaves.__contains__` duck-types its argument for want of a placement.
-`Algebras` declaring `Sets()` rather than `Modules(R)` is the same defect in the core algebra layer, where an algebra's module operations should be inherited rather than restated.
 
 **Required end state.**
 No category declares a supercategory its own definition contradicts.
 Where the honest category is missing it is built; where it is not yet decided, `super_categories()` is left abstract so the category refuses to construct.
-Scheduled as `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement` and `sets-group-placement` in [TODO.md](TODO.md).
+Scheduled as `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `geometric-space-placement` and `combinatorial-object-placement` in [TODO.md](TODO.md).
 
 **Coverage boundary.**
 Read from source: the declared graph, and each listed category's own class docstring.
