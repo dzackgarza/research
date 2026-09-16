@@ -1109,6 +1109,70 @@ This governs the rules below:
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
 - Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
 
+# A supercategory declaration is a mathematical claim (always-on)
+
+`super_categories()` states that **every object of this category is an object
+of those**. It is a theorem about the objects, not a slot to fill so that
+construction proceeds, and it is read by inheritance: an object receives the
+operations of everything its category declares.
+
+So a declaration that is merely *available* is a false theorem installed where
+nobody looks for one. The recurring shape is `Sets()` written where the objects
+are not sets:
+
+- a **sheaf** on a space $X$ is a functor on $\mathrm{Open}(X)$, so it is an
+  object of a functor category;
+- a **ringed space** is a space together with a sheaf of rings;
+- a **manifold** is a locally ringed space;
+- a **log pair** is a scheme together with a divisor.
+
+None of these has an underlying set that its category could be declaring, and
+where one *does* exist the declaration still belongs to the forgetful functor,
+never to the object. `Sets()` in such a row is the value category of some
+functor in the construction, leaked upward into the slot where the object's own
+category belongs.
+
+**When the honest supercategory does not exist in the tree, that absence is the
+finding.** Do not write down the nearest available category to fill the slot,
+and do not delete the row. Record the missing mathematics in `COMPLAINTS.md`
+under `DEV-59` with its dependency path, and state the consumer it blocks. A
+category declared into the wrong place is worse than a category with a gap
+recorded against it, because the gap is legible and the false claim is not.
+
+**Presheaves and sheaves are functor categories.** $\mathrm{Presh}(C) := [C,
+\mathbf{Set}]$, a functor $\mathrm{Cat} \to \mathrm{Cat}$; more generally
+$(C, D) \mapsto [C, D]$ is a bifunctor $\mathrm{Cat} \times \mathrm{Cat} \to
+\mathrm{Cat}$, which is the same construction the tree already owns as its
+functor category. Sheaves on $C$ are the full subcategory of $\mathrm{Presh}(C)$
+cut out by descent for a coverage. Stating them this way is what makes the
+passage to stacks and $\infty$-stacks a change of value category rather than a
+new theory (`https://ncatlab.org/nlab/show/infinity-stack`). Any sheaf-like
+category -- quasi-coherent sheaves, invertible sheaves, structure sheaves,
+sheaves of modules or of algebras -- is placed under that construction, never
+under `Sets()`.
+
+## Reading the declarations
+
+The declared graph is generated from source, without importing the tree, so it
+answers while the preamble is mid-refactor and does not load:
+
+```bash
+just category-graph                     # every category, and what it declares
+just category-graph by-supercategory    # each supercategory, and who claims it
+just category-graph foreign             # owned categories declaring a Sage category
+just category-graph-svg                 # the literal graph, rendered
+```
+
+The `by-supercategory` view is the audit surface: a large group under one
+heading is one mathematical claim made many times over, and reading the members
+together is how a member that does not belong becomes visible. Run it after any
+change to a category's placement, and read the group the change lands in rather
+than the single row it adds.
+
+The live survey (`just preamble-megadoc`) answers a different question -- what a
+session *does* -- and its `supers` field is empty for parameterized categories,
+so it must never be read as evidence that a declaration is absent.
+
 # Mathematical ontology (always-on)
 
 The rules below are the shapes that recur across unrelated categories. Each states

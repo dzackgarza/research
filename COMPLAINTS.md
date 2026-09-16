@@ -56,6 +56,57 @@ Those 92 need regeneration before they can be counted as additional current viol
 The highest-priority architectural defects are therefore: **(1) remove the global operation language; (2) reconstruct framing around the selected epi itself rather than post-hoc generator metadata; (3) eliminate hidden provenance/refinement state; (4) replace the `NotImplementedError` computational model; (5) restore one categorical representation for functors/adjunctions/universal structures; and (6) repair the test/notebook surfaces so they actually enforce rather than conceal those decisions.**
 
 
+### Presheaves are absent, so every sheaf-like category is declared into `Sets()`
+
+**The missing general mathematics.** The presheaf category
+$\mathrm{Presh}(C) := [C, \mathbf{Set}]$, and with it the general functor
+category $[C, D]$ as a bifunctor
+$\mathrm{Cat} \times \mathrm{Cat} \to \mathrm{Cat}$, $(C, D) \mapsto [C, D]$.
+Sheaves on $C$ are then the full subcategory of $\mathrm{Presh}(C)$ whose
+objects satisfy descent for a coverage on $C$. Taking the value category $D$ as
+the parameter is what makes the passage to stacks and $\infty$-stacks a change
+of $D$ rather than a separate theory.
+
+**Dependency path.** quasi-coherent sheaf $\to$ sheaf of $\mathcal{O}_X$-modules
+$\to$ sheaf on $X$ valued in $\mathbf{Mod}$ $\to$ subcategory of
+$\mathrm{Presh}(\mathrm{Open}(X), \mathbf{Mod})$ cut out by descent $\to$
+functor category $[\mathrm{Open}(X)^{\mathrm{op}}, \mathbf{Mod}]$ $\to$ the
+opposite category and the functor category, both of which the tree owns
+(`FunctorCategory`, and `.opposite()` as used by the affine spectrum functor).
+The gap is the two nodes in the middle: presheaves, and descent for a coverage.
+
+**Observed evidence.** `just category-graph by-supercategory` puts thirty
+categories under `Sets()`. Among them are objects that are not sets at all:
+`QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`), `RingedSpaces`,
+`TopologicalManifolds`, `LogPairs`, `HyperbolicSpaces`. Each declares `Sets()`
+because the category its objects actually belong to is not in the tree.
+`QuasiCoherentSheaves` states the correct mathematics in its own docstring --
+the equivalence with $\mathbf{Mod}_A$ on affine $X$, Stacks Tag 01I8 -- while
+declaring a supercategory that contradicts it.
+
+**Existing partial capability.** The affine case is represented and works:
+`module_category()`, `associated_sheaf()`, `global_sections()` and
+`sheaf_morphisms()` realize the equivalence with $\mathbf{Mod}_A$, and the
+non-affine case is assembled as gluing data by
+`DistinguishedAffineCover.glue_modules`. That gluing data *is* the descent
+condition, written once for one situation instead of being the definition of
+the sheaf subcategory.
+
+**Affected consumers.** Everything sheaf-shaped presently sited outside the
+category graph as a plain `SageObject`: `StructureSheaf`, `AffineModuleSheaf`,
+`GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`
+(`schemes/ringed_spaces.py`, `schemes/gluing.py`), `InvertibleSheaf` and its
+descendants (`divisors/invertible_sheaves.py`), and `HigherDirectImageSheaf`
+(`schemes/monodromy.py`). None of these is an object of a category, so none
+inherits the abelian or monoidal structure its own documentation asserts, and
+`QuasiCoherentSheaves.__contains__` has to duck-type its argument rather than
+ask for a placement.
+
+**Coverage boundary.** Read from source only: the declared category graph, the
+scheme and divisor subtrees named above, and their docstrings. No session was
+run. Whether any consumer additionally *depends* on the false `Sets()`
+declaration -- rather than merely carrying it -- was not determined.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
