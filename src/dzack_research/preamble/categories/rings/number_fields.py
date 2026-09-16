@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedFields,
     OwnedOrders,
     OwnedRings,
     _engine_element,
@@ -97,7 +96,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         return "number fields"
 
     def super_categories(self):
-        return [OwnedFields()]
+        return [OwnedRings().Division().Commutative()]
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -222,7 +221,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             finite extension of ``QQ``.
             """
 
-            if target not in OwnedFields():
+            if target not in OwnedRings().Division().Commutative():
                 raise TypeError("number-field embeddings require an owned target field")
             if target in OwnedNumberFields():
                 return self.Mor(target).embeddings()

@@ -16,8 +16,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
-    OwnedIntegralDomains,
-    PrincipalIdealDomains,
+    OwnedRings,
     _engine_element,
     _engine_quotient_cover_ideal,
     _engine_ring,
@@ -339,7 +338,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             match method:
                 case None:
                     ring = self.ring()
-                    match ring in PrincipalIdealDomains():
+                    match ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                         case True:
                             pass
                         case False:
@@ -388,7 +387,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             match method:
                 case None:
                     ring = self.ring()
-                    match ring in PrincipalIdealDomains():
+                    match ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
                         case True:
                             pass
                         case False:
@@ -864,7 +863,7 @@ def _commutative_ideal(source, generators):
     try:
         syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
     except NotImplementedError:
-        if source not in OwnedIntegralDomains() or len(selected) != 1:
+        if source not in OwnedRings().Commutative().NoZeroDivisors() or len(selected) != 1:
             raise NotImplementedError(
                 "this ideal has no selected exact module-presentation backend"
             )

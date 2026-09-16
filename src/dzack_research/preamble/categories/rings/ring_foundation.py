@@ -25,6 +25,7 @@ from sage.arith.misc import (
     number_of_divisors as _engine_number_of_divisors,
 )
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
@@ -81,6 +82,15 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
+
+if "Noetherian" not in all_axioms:
+    all_axioms.add("Noetherian")
+if "Artinian" not in all_axioms:
+    all_axioms.add("Artinian")
+if "Local" not in all_axioms:
+    all_axioms.add("Local")
+if "PrincipalIdeals" not in all_axioms:
+    all_axioms.add("PrincipalIdeals")
 
 
 class RingMorphism(Morphism):
@@ -203,7 +213,7 @@ class RingMorphism(Morphism):
             AdicCompletions,
         )
 
-        if codomain in AdicCompletions() and domain in OwnedNoetherianRings():
+        if codomain in AdicCompletions() and domain in OwnedRings().Noetherian():
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 _flat_extension_commutative_ideal,
             )
@@ -888,7 +898,7 @@ class LocalizationRings(OwnedCategory):
             if difference == source.zero():
                 return True
 
-            if source in OwnedIntegralDomains():
+            if source in OwnedRings().Commutative().NoZeroDivisors():
                 return False
 
             structure = self.localization_submonoid().structure_data()
@@ -1317,6 +1327,224 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         r"""Return ``Z : Core(Ring) -> CRing``."""
         return RingCenterFunctor()
 
+    class SubcategoryMethods:
+        def Division(self):
+            r"""Return this category with the axiom that every nonzero element is a unit."""
+            return self._with_axiom("Division")
+
+        def NoZeroDivisors(self):
+            r"""Return this category with the axiom ``xy = 0  =>  x = 0 or y = 0``."""
+            return self._with_axiom("NoZeroDivisors")
+
+        def Noetherian(self):
+            r"""Return this category with the ascending chain condition on ideals."""
+            return self._with_axiom("Noetherian")
+
+        def Artinian(self):
+            r"""Return this category with the descending chain condition on ideals."""
+            return self._with_axiom("Artinian")
+
+    class Division(CategoryWithAxiom):
+        r"""Division rings: every nonzero element is a unit."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "division rings"
+
+        def an_object(self):
+            r"""The field of two elements."""
+            return GF(2)
+
+        def extra_super_categories(self):
+            return [OwnedRings().NoZeroDivisors()]
+
+        class Commutative(CategoryWithAxiom):
+            r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "fields"
+
+            def an_object(self):
+                r"""The field of two elements."""
+                return GF(2)
+
+            def extra_super_categories(self):
+                r"""The ideals of a field are ``0`` and the field."""
+                return [
+                    OwnedRings().Commutative().PrincipalIdeals(),
+                    OwnedRings().Artinian(),
+                    OwnedRings().Commutative().Local(),
+                ]
+
+            class ParentMethods:
+                def field_generators(self):
+                    r"""Return exact elements which determine a unital map out of this field."""
+                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                        _field_generators,
+                    )
+
+                    return _field_generators(self)
+
+                def exact_morphisms_to(self, codomain):
+                    r"""Return the exact-field morphism object from this field to ``codomain``."""
+                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                        _exact_field_homset,
+                    )
+
+                    return _exact_field_homset(self, codomain)
+
+                def exact_embeddings(self, codomain):
+                    r"""Return the exact embeddings of this field into ``codomain``."""
+                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                        _exact_embeddings,
+                    )
+
+                    return _exact_embeddings(self, codomain)
+
+                def first_exact_embedding(self, codomain):
+                    r"""Choose the first exact embedding into ``codomain`` in deterministic order."""
+                    embeddings = self.exact_embeddings(codomain)
+                    if embeddings.cardinality() == 0:
+                        raise ValueError(f"no exact embedding of {self} into {codomain} is available")
+                    return embeddings[0]
+
+                def maximal_ideal(self):
+                    r"""Return the zero ideal, the unique maximal ideal of a field."""
+                    return self.ideal(self.zero())
+
+                def residue_field(self):
+                    return self
+
+                def residue_map(self):
+                    return self.Mor(self).identity()
+
+                def absolute_galois_group(self):
+                    r"""Return the absolute Galois group ``G_K`` of this field ``K``.
+
+                    The group is the existing profinite owner; this field method is
+                    only the mathematical construction site and creates no parallel
+                    realization.
+                    """
+                    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+                        AbsoluteGaloisGroup,
+                    )
+
+                    return AbsoluteGaloisGroup(self)
+
+    class NoZeroDivisors(CategoryWithAxiom):
+        r"""Domains: rings in which ``xy = 0`` forces ``x = 0`` or ``y = 0``."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "domains"
+
+        def an_object(self):
+            r"""The integers."""
+            return _own_ring(SageZZ)
+
+        class Commutative(CategoryWithAxiom):
+            r"""Integral domains, spelled as Sage spells them: ``Domains().Commutative()``."""
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "integral domains"
+
+            def an_object(self):
+                r"""The integers."""
+                return _own_ring(SageZZ)
+
+            class ParentMethods:
+                def is_integral_domain(self, *args, **kwargs):
+                    return True
+
+                def fractional_ideal(self, *module_generators):
+                    r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
+                    from dzack_research.preamble.categories.modules.fractional_ideals import (
+                        _fractional_ideal,
+                    )
+
+                    if len(module_generators) == 1 and isinstance(
+                        module_generators[0], (tuple, list)
+                    ):
+                        module_generators = tuple(module_generators[0])
+                    return _fractional_ideal(self, tuple(module_generators))
+
+                @cached_method
+                def nonzero_multiplicative_submonoid(self):
+                    r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
+                    from dzack_research.preamble.categories.rings.commutative_algebra import (
+                        _nonzero_element_submonoid,
+                    )
+
+                    return _nonzero_element_submonoid(self)
+
+                @cached_method
+                def fraction_field_localization(self):
+                    r"""Return the represented localization ``(R-{0})^-1 R``."""
+                    from dzack_research.preamble.categories.rings.commutative_algebra import (
+                        _localization_at_submonoid,
+                    )
+
+                    if self in OwnedRings().Division().Commutative():
+                        return self
+                    return _localization_at_submonoid(
+                        self,
+                        self.nonzero_multiplicative_submonoid(),
+                    )
+
+                @cached_method
+                def fraction_field_map(self):
+                    r"""Return the localization map ``R -> Frac(R)``.
+
+                    This is the localization of ``R`` at its nonzero elements, so it is
+                    injective exactly because ``R`` is a domain.  Scalar extension along
+                    it is the generic fibre: a module dies under it exactly on its
+                    torsion, and an ideal extends along it to the unit ideal exactly
+                    when it is nonzero.
+                    """
+                    if self in OwnedRings().Division().Commutative():
+                        return self.Mor(self).identity()
+                    localization = self.fraction_field_localization()
+                    return (
+                        localization.fraction_field_comparison()
+                        * localization.localization_map()
+                    )
+
+    class Noetherian(CategoryWithAxiom):
+        r"""Noetherian rings: the ascending chain condition on ideals."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "noetherian rings"
+
+        def an_object(self):
+            r"""The integers."""
+            return _own_ring(SageZZ)
+
+        class ParentMethods:
+            def is_noetherian(self):
+                return True
+
+    class Artinian(CategoryWithAxiom):
+        r"""Artinian rings: the descending chain condition on ideals."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "artinian rings"
+
+        def an_object(self):
+            r"""The field of two elements: a field is artinian."""
+            return GF(2)
+
+        def extra_super_categories(self):
+            r"""Hopkins–Levitzki: an artinian ring is noetherian."""
+            return [OwnedRings().Noetherian()]
+
+        class ParentMethods:
+            def is_artinian(self):
+                return True
+
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
@@ -1328,9 +1556,89 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""The integers."""
             return _own_ring(SageZZ)
 
+        class SubcategoryMethods:
+            def Local(self):
+                r"""Return this category with the axiom of a unique maximal ideal."""
+                return self._with_axiom("Local")
+
+            def PrincipalIdeals(self):
+                r"""Return this category with the axiom that every ideal is principal."""
+                return self._with_axiom("PrincipalIdeals")
+
+        class Local(CategoryWithAxiom):
+            r"""Local rings: one maximal ideal."""
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "local rings"
+
+            def an_object(self):
+                r"""The integers localized at the prime (2)."""
+                return _own_ring(SageZZ).localize_at_prime(2)
+
+            class ParentMethods:
+                def is_local(self):
+                    return True
+
+                def maximal_ideal(self):
+                    return self._preamble_maximal_ideal
+
+                def residue_field(self):
+                    return self._preamble_residue_field
+
+                def residue_map(self):
+                    r"""Return the local quotient map ``R -> kappa(m)``.
+
+                    A field carries the identity map.  Other local-ring constructors
+                    retain the quotient map together with the selected maximal ideal
+                    and residue field.
+                    """
+                    selected = getattr(self, "_preamble_residue_map", None)
+                    if selected is not None:
+                        return selected
+                    residue = self.residue_field()
+                    assert residue is self, (
+                        f"the residue map {self} -> {residue} is not constructed here; the level "
+                        "that introduces the residue field of this ring supplies it"
+                    )
+                    return self.Mor(self).identity()
+
+            class Complete(CategoryWithAxiom):
+                r"""Complete local rings: complete and separated for the maximal-ideal topology."""
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "complete local rings"
+
+                def an_object(self):
+                    r"""The 2-adic integers: complete, and local because (2) is maximal."""
+                    return _own_ring(SageZZ).adic_completion(2)
+
+                def extra_super_categories(self):
+                    r"""The maximal ideal is the ideal of definition, so the datum is determined."""
+                    return [OwnedAdicallyCompleteRings()]
+
+        class PrincipalIdeals(CategoryWithAxiom):
+            r"""Principal ideal rings: every ideal is principal (Mathlib's ``IsPrincipalIdealRing``)."""
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "principal ideal rings"
+
+            def an_object(self):
+                r"""The integers."""
+                return _own_ring(SageZZ)
+
+            def extra_super_categories(self):
+                r"""A principal ideal is finitely generated."""
+                return [OwnedRings().Noetherian()]
+
         class ParentMethods:
             def is_commutative(self):
                 return True
+
+            def krull_dimension(self):
+                return _engine_krull_dimension(self)
 
             def as_algebra_over(self, base_ring):
                 from dzack_research.preamble.categories.algebras.algebras import _refine_algebra
@@ -1444,7 +1752,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 the fraction field.
                 """
 
-                assert self in OwnedIntegralDomains(), (
+                assert self in OwnedRings().Commutative().NoZeroDivisors(), (
                     f"the total quotient ring of {self} inverts a submonoid given by a "
                     "predicate, and the selected localization engine represents only a "
                     "finitely generated one; over an integral domain it is Frac(R)"
@@ -1463,7 +1771,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 """
 
                 ring = self.parent()
-                if ring in OwnedIntegralDomains():
+                if ring in OwnedRings().Commutative().NoZeroDivisors():
                     return not self.is_zero()
                 zero_ideal = ring.ideal(ring.zero())
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
@@ -1753,9 +2061,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def fraction_field(self):
             r"""Return the fraction field through its nonzero-element localization."""
-            if self in OwnedFields():
+            if self in OwnedRings().Division().Commutative():
                 return self
-            if self not in OwnedIntegralDomains():
+            if self not in OwnedRings().Commutative().NoZeroDivisors():
                 raise ValueError(
                     f"{self} is not an integral domain, so it has no fraction field; "
                     "inverting its regular elements is the total quotient-ring construction"
@@ -1764,7 +2072,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
 
 class OwnedOrderedRings(OwnedCategory):
-    r"""Totally ordered rings in the owned scalar hierarchy."""
+    r"""Rings with a chosen total order compatible with the operations.
+
+    A ring can support several orders (a real quadratic field has two), so
+    the order is a chosen datum.
+    """
 
     def an_object(self):
         r"""The integers with their usual order."""
@@ -1779,83 +2091,14 @@ class OwnedOrderedRings(OwnedCategory):
             return self if self >= zero else -self
 
 
-class OwnedIntegralDomains(OwnedCategory):
-    r"""Commutative rings without zero divisors."""
-
-    def an_object(self):
-        r"""The integers."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [OwnedRings().Commutative()]
-
-    class ParentMethods:
-        def is_integral_domain(self, *args, **kwargs):
-            return True
-
-        def fractional_ideal(self, *module_generators):
-            r"""Return the fractional ideal spanned by the stated elements of ``Frac(self)``."""
-            from dzack_research.preamble.categories.modules.fractional_ideals import (
-                _fractional_ideal,
-            )
-
-            if len(module_generators) == 1 and isinstance(
-                module_generators[0], (tuple, list)
-            ):
-                module_generators = tuple(module_generators[0])
-            return _fractional_ideal(self, tuple(module_generators))
-
-        @cached_method
-        def nonzero_multiplicative_submonoid(self):
-            r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _nonzero_element_submonoid,
-            )
-
-            return _nonzero_element_submonoid(self)
-
-        @cached_method
-        def fraction_field_localization(self):
-            r"""Return the represented localization ``(R-{0})^-1 R``."""
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _localization_at_submonoid,
-            )
-
-            if self in OwnedFields():
-                return self
-            return _localization_at_submonoid(
-                self,
-                self.nonzero_multiplicative_submonoid(),
-            )
-
-        @cached_method
-        def fraction_field_map(self):
-            r"""Return the localization map ``R -> Frac(R)``.
-
-            This is the localization of ``R`` at its nonzero elements, so it is
-            injective exactly because ``R`` is a domain.  Scalar extension along
-            it is the generic fibre: a module dies under it exactly on its
-            torsion, and an ideal extends along it to the unit ideal exactly
-            when it is nonzero.
-            """
-            if self in OwnedFields():
-                return self.Mor(self).identity()
-            localization = self.fraction_field_localization()
-            return (
-                localization.fraction_field_comparison()
-                * localization.localization_map()
-            )
+def OwnedIntegralDomains():
+    r"""``OwnedRings().Commutative().NoZeroDivisors()``, the session name for integral domains."""
+    return OwnedRings().Commutative().NoZeroDivisors()
 
 
-class OwnedPrincipalIdealDomains(OwnedCategory):
-    r"""Principal ideal domains in the owned ring hierarchy."""
-
-    def an_object(self):
-        r"""The integers."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [OwnedIntegralDomains(), OwnedNoetherianRings()]
+def OwnedPrincipalIdealDomains():
+    r"""``OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()``, the session name for PIDs."""
+    return OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
 
 
 def _engine_krull_dimension(ring):
@@ -1883,82 +2126,29 @@ def _engine_krull_dimension(ring):
         ) from error
 
 
-class OwnedNoetherianRings(OwnedCategory):
-    r"""Noetherian commutative rings."""
-
-    def an_object(self):
-        r"""The integers."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [OwnedRings().Commutative()]
-
-    class ParentMethods:
-        def is_noetherian(self):
-            return True
-
-        def krull_dimension(self):
-            return _engine_krull_dimension(self)
+def OwnedNoetherianRings():
+    r"""``OwnedRings().Commutative().Noetherian()``, the session name for Noetherian rings."""
+    return OwnedRings().Commutative().Noetherian()
 
 
-class OwnedArtinianRings(OwnedCategory):
-    r"""Artinian commutative rings."""
-
-    def an_object(self):
-        r"""The field of two elements: a field is artinian."""
-        return GF(2)
-
-    def super_categories(self):
-        return [OwnedNoetherianRings()]
-
-    class ParentMethods:
-        def is_artinian(self):
-            return True
+def OwnedArtinianRings():
+    r"""``OwnedRings().Commutative().Artinian()``, the session name for Artinian rings."""
+    return OwnedRings().Commutative().Artinian()
 
 
-class OwnedLocalRings(OwnedCategory):
-    r"""Commutative rings equipped with their unique maximal ideal."""
-
-    def an_object(self):
-        r"""The integers localized at the prime (2)."""
-        return _own_ring(SageZZ).localize_at_prime(2)
-
-    def super_categories(self):
-        return [OwnedRings().Commutative()]
-
-    class ParentMethods:
-        def is_local(self):
-            return True
-
-        def maximal_ideal(self):
-            return self._preamble_maximal_ideal
-
-        def residue_field(self):
-            return self._preamble_residue_field
-
-        def residue_map(self):
-            r"""Return the local quotient map ``R -> kappa(m)``.
-
-            A field carries the identity map.  Other local-ring constructors
-            retain the quotient map together with the selected maximal ideal
-            and residue field.
-            """
-            selected = getattr(self, "_preamble_residue_map", None)
-            if selected is not None:
-                return selected
-            residue = self.residue_field()
-            assert residue is self, (
-                f"the residue map {self} -> {residue} is not constructed here; the level "
-                "that introduces the residue field of this ring supplies it"
-            )
-            return self.Mor(self).identity()
+def OwnedLocalRings():
+    r"""``OwnedRings().Commutative().Local()``, the session name for local rings."""
+    return OwnedRings().Commutative().Local()
 
 
 class OwnedAdicallyCompleteRings(OwnedCategory):
-    r"""Commutative rings represented as complete for a chosen adic topology."""
+    r"""Commutative rings with a chosen ideal of definition for which they are adically complete.
+
+    The ideal is a chosen datum: every ring is complete for its zero ideal.
+    """
 
     def an_object(self):
-        r"""The 2-adic integers: complete, and local because (2) is maximal."""
+        r"""The 2-adic integers, complete for the ideal (2)."""
         return _own_ring(SageZZ).adic_completion(2)
 
     def super_categories(self):
@@ -1972,97 +2162,26 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
             return self._adic_completion_construction.defining_ideal()
 
 
-class OwnedCompleteLocalRings(OwnedCategory):
-    r"""Local rings complete for the represented maximal-ideal/adic topology."""
-
-    def an_object(self):
-        r"""The 2-adic integers: complete, and local because (2) is maximal."""
-        return _own_ring(SageZZ).adic_completion(2)
-
-    def super_categories(self):
-        return [OwnedLocalRings(), OwnedAdicallyCompleteRings()]
+def OwnedCompleteLocalRings():
+    r"""``OwnedRings().Commutative().Local().Complete()``, the session name for complete local rings."""
+    return OwnedRings().Commutative().Local().Complete()
 
 
-class OwnedDivisionRings(OwnedCategory):
-    def an_object(self):
-        r"""The field of two elements."""
-        return GF(2)
-
-    def super_categories(self):
-        return [OwnedRings()]
+def OwnedDivisionRings():
+    r"""``OwnedRings().Division()``, the session name for division rings."""
+    return OwnedRings().Division()
 
 
-class OwnedFields(OwnedCategory):
-    def an_object(self):
-        r"""The field of two elements."""
-        return GF(2)
-
-    def super_categories(self):
-        return [
-            OwnedDivisionRings(),
-            OwnedPrincipalIdealDomains(),
-            OwnedArtinianRings(),
-            OwnedLocalRings(),
-        ]
-
-    class ParentMethods:
-        def field_generators(self):
-            r"""Return exact elements which determine a unital map out of this field."""
-            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-                _field_generators,
-            )
-
-            return _field_generators(self)
-
-        def exact_morphisms_to(self, codomain):
-            r"""Return the exact-field morphism object from this field to ``codomain``."""
-            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-                _exact_field_homset,
-            )
-
-            return _exact_field_homset(self, codomain)
-
-        def exact_embeddings(self, codomain):
-            r"""Return the exact embeddings of this field into ``codomain``."""
-            from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-                _exact_embeddings,
-            )
-
-            return _exact_embeddings(self, codomain)
-
-        def first_exact_embedding(self, codomain):
-            r"""Choose the first exact embedding into ``codomain`` in deterministic order."""
-            embeddings = self.exact_embeddings(codomain)
-            if embeddings.cardinality() == 0:
-                raise ValueError(f"no exact embedding of {self} into {codomain} is available")
-            return embeddings[0]
-
-        def maximal_ideal(self):
-            r"""Return the zero ideal, the unique maximal ideal of a field."""
-            return self.ideal(self.zero())
-
-        def residue_field(self):
-            return self
-
-        def residue_map(self):
-            return self.Mor(self).identity()
-
-        def absolute_galois_group(self):
-            r"""Return the absolute Galois group ``G_K`` of this field ``K``.
-
-            The group is the existing profinite owner; this field method is
-            only the mathematical construction site and creates no parallel
-            realization.
-            """
-            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-                AbsoluteGaloisGroup,
-            )
-
-            return AbsoluteGaloisGroup(self)
+def OwnedFields():
+    r"""``OwnedRings().Division().Commutative()``, the session name for fields."""
+    return OwnedRings().Division().Commutative()
 
 
 class OwnedOrders(OwnedCategory):
-    r"""Orders in number fields as a ring-theoretic property category."""
+    r"""Orders: integral domains finitely generated as ``ZZ``-modules.
+
+    The number field is ``Frac(O) = O (x) QQ``, determined by the ring.
+    """
 
     _certifying_predicate = "_preamble_is_number_field_order"
 
@@ -2071,10 +2190,7 @@ class OwnedOrders(OwnedCategory):
         return _own_ring(SageZZ)
 
     def super_categories(self):
-        return [
-            OwnedIntegralDomains(),
-            OwnedNoetherianRings(),
-        ]
+        return [OwnedRings().Commutative().NoZeroDivisors().Noetherian()]
 
     def fraction_field_adjunction(self):
         r"""Return ``Frac -| O`` from orders to number fields."""
@@ -2131,14 +2247,14 @@ class OwnedOrders(OwnedCategory):
 
 
 class PrimeFields(OwnedCategory):
-    r"""Prime fields \(\mathbf F_p\)."""
+    r"""Prime fields \(\mathbf F_p\) and \(\mathbb Q\): fields with no proper subfield."""
 
     def an_object(self):
         r"""The field of two elements."""
         return GF(2)
 
     def super_categories(self):
-        return [OwnedFields()]
+        return [OwnedRings().Division().Commutative()]
 
 
 @cached_function
@@ -3017,7 +3133,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         try:
             size = self.cardinality()
             if size.is_finite():
-                kind = "Field" if self in OwnedFields() else "Ring"
+                kind = "Field" if self in OwnedRings().Division().Commutative() else "Ring"
                 return f"Finite {kind.lower()} with {size} elements"
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             pass
@@ -3064,13 +3180,13 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
 
         extra.append(Algebras(scalars).Associative().Unital())
     if engine in SageIntegralDomains():
-        extra.append(OwnedIntegralDomains())
+        extra.append(OwnedRings().Commutative().NoZeroDivisors())
     if engine is SageZZ or engine is SageQQ:
         extra.append(OwnedOrderedRings())
     if engine is SageQQ:
         extra.append(PrimeFields())
     if category.is_subcategory(SagePrincipalIdealDomains()):
-        extra.append(OwnedPrincipalIdealDomains())
+        extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     elif (
         isinstance(engine, SageNumberFieldOrder)
         and engine.is_maximal()
@@ -3080,17 +3196,17 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
         # ideal class group is trivial.  Sage does not place number-field
         # orders in its PrincipalIdealDomains category, so retain this
         # theorem at the owned boundary where the class number is exact.
-        extra.append(OwnedPrincipalIdealDomains())
+        extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     try:
         noetherian = engine.is_noetherian()
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         noetherian = engine is SageZZ
     if noetherian is True or engine is SageZZ:
-        extra.append(OwnedNoetherianRings())
+        extra.append(OwnedRings().Noetherian())
     if engine in SageFields():
-        placement = OwnedFields()
+        placement = OwnedRings().Division().Commutative()
     elif category.is_subcategory(SageDivisionRings()):
-        placement = OwnedDivisionRings()
+        placement = OwnedRings().Division()
     else:
         placement = OwnedRings()
     joined = Category.join((placement, _owned_ring_size(engine), *extra))
@@ -3287,10 +3403,10 @@ def Zmod(*args, **kwargs):
 
     factors = tuple(modulus.factor())
     if bool(engine.is_field()):
-        refine(ring, OwnedFields())
+        refine(ring, OwnedRings().Division().Commutative())
         return ring
 
-    refine(ring, OwnedArtinianRings())
+    refine(ring, OwnedRings().Artinian())
     if len(factors) == 1:
         from dzack_research.preamble.categories.rings.commutative_algebra import (
             GeneratedIdealView,
@@ -3305,7 +3421,7 @@ def Zmod(*args, **kwargs):
                 SageZZ(_engine_element(ring, element).lift())
             ),
         )
-        refine(ring, OwnedLocalRings())
+        refine(ring, OwnedRings().Commutative().Local())
     return ring
 
 
