@@ -61,6 +61,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
 
     assert structured is not module
     assert structured in ModulesWithConnection(algebra)
+    assert structured.connection_construction().source_connection() is zero_connection
     assert structured.connection().parent() is structured.connections()
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()

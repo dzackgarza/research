@@ -34,6 +34,18 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class ModuleConnectionConstruction:
+    r"""The selected connection from which a structured module is transported."""
+
+    def __init__(self, source_connection) -> None:
+        if not isinstance(source_connection, Connection):
+            raise TypeError("a module-connection construction starts from a Connection")
+        self._source_connection = source_connection
+
+    def source_connection(self):
+        return self._source_connection
+
+
 class CommutativeAlgebraParameters(OwnedCategory):
     r"""The parameter domain of module categories with algebraic connection."""
 
@@ -109,20 +121,25 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         categories = [self]
         if connection.is_flat():
             categories.append(ModulesWithFlatConnection(algebra))
+        construction = ModuleConnectionConstruction(connection)
         return algebra._fresh_free_module_on(
             source.module_generating_set(),
             _extra_categories=tuple(categories),
-            _extra_construction_data={"source_connection": connection},
+            _extra_construction_data={"connection_construction": construction},
         )
 
     class ParentMethods:
-        def __init__(self, source_connection, **rest) -> None:
-            self._preamble_source_connection = source_connection
+        def __init__(self, connection_construction, **rest) -> None:
+            self._connection_construction = connection_construction
             super().__init__(**rest)
+
+        def connection_construction(self):
+            r"""Return the selected connection construction defining this module."""
+            return self._connection_construction
 
         @cached_method
         def connection(self):
-            source_connection = self._preamble_source_connection
+            source_connection = self.connection_construction().source_connection()
             transported_target = self.connections().target_module()
             omega = source_connection.one_forms()
 
