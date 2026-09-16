@@ -2,7 +2,8 @@ r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.functors import ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -49,21 +50,23 @@ class _DualizationFunctor(ContravariantFunctor):
         )
 
 
-class _BiproductBifunctor(Bifunctor):
+class _BiproductBifunctor(Functor):
     r"""The direct-sum/biproduct bifunctor on finitely presented modules."""
 
     def __init__(self, base_ring) -> None:
         category = FinitelyPresentedModules(_owned_ring(base_ring))
-        super().__init__(category, category, category)
+        super().__init__(Cat().product((category, category)), category)
 
-    def _apply_pair_object(self, left, right):
-        return self.codomain().biproduct((left, right))
+    def _apply_object(self, pair):
+        return self.codomain().biproduct((pair.first(), pair.second()))
 
-    def _apply_pair_morphism(self, left_morphism, right_morphism):
+    def _apply_morphism(self, pair_morphism):
+        left_morphism = pair_morphism.first()
+        right_morphism = pair_morphism.second()
         return left_morphism.biproduct_map(
             right_morphism,
-            source=self(left_morphism.domain(), right_morphism.domain()),
-            target=self(left_morphism.codomain(), right_morphism.codomain()),
+            source=self(pair_morphism.domain()),
+            target=self(pair_morphism.codomain()),
         )
 
 
@@ -127,17 +130,18 @@ class _CokernelArrowFunctor(_ArrowConstructionFunctor):
         )
 
 
-class _OrthogonalDirectSumBifunctor(Bifunctor):
+class _OrthogonalDirectSumBifunctor(Functor):
     r"""The orthogonal-direct-sum bifunctor on finite-rank lattices."""
 
     def __init__(self, base_ring) -> None:
 
         category = Lattices(_owned_ring(base_ring))
-        super().__init__(category, category, category)
+        super().__init__(Cat().product((category, category)), category)
 
-    def _apply_pair_object(self, left, right):
+    def _apply_object(self, pair):
+        left, right = pair.first(), pair.second()
         if not left.module_rank().is_finite() or not right.module_rank().is_finite():
-            raise NotImplementedError("the active orthogonal-sum bifunctor uses finite concatenated bases")
+            raise NotImplementedError("the active orthogonal-sum functor uses finite concatenated bases")
         return left + right
 
     @staticmethod
@@ -152,10 +156,12 @@ class _OrthogonalDirectSumBifunctor(Bifunctor):
             }
         )
 
-    def _apply_pair_morphism(self, left_morphism, right_morphism):
+    def _apply_morphism(self, pair_morphism):
 
-        source = self(left_morphism.domain(), right_morphism.domain())
-        target = self(left_morphism.codomain(), right_morphism.codomain())
+        left_morphism = pair_morphism.first()
+        right_morphism = pair_morphism.second()
+        source = self(pair_morphism.domain())
+        target = self(pair_morphism.codomain())
         source_labels = source.module_generating_set()
         left_source_labels = left_morphism.domain().module_generating_set()
         right_source_labels = right_morphism.domain().module_generating_set()

@@ -16,6 +16,16 @@ def _assert_module_maps_agree(left, right) -> None:
         assert left(generator) == right(generator)
 
 
+def _product_object(functor, left, right):
+    return functor.domain()(left, right)
+
+
+def _product_morphism(functor, left, right):
+    source = _product_object(functor, left.domain(), right.domain())
+    target = _product_object(functor, left.codomain(), right.codomain())
+    return functor.domain().Mor(source, target)(left, right)
+
+
 def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> None:
     m = ZZ.free_module(finite_ordered_set(("x", "y")))
     n = ZZ.free_module(finite_ordered_set(("u", "v")))
@@ -48,7 +58,7 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
     left_generator = left.module_generator(0)
     right_generator = right.module_generator(0)
     biproduct = FinitelyPresentedModules(ZZ).biproduct_bifunctor()
-    direct_sum = biproduct(left, right)
+    direct_sum = biproduct(_product_object(biproduct, left, right))
 
     left_identity = left.module_category().Mor(left, left).identity()
     right_identity = right.module_category().Mor(right, right).identity()
@@ -85,12 +95,18 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
     left_times_three = left.module_category().Mor(left, left)({0: 3 * left_generator})
     right_zero = right.module_category().Mor(right, right)({0: right.zero()})
     _assert_module_maps_agree(
-        biproduct(left_times_three * left_times_three, right_zero * right_zero),
-        biproduct(left_times_three, right_zero)
-        * biproduct(left_times_three, right_zero),
+        biproduct(
+            _product_morphism(
+                biproduct,
+                left_times_three * left_times_three,
+                right_zero * right_zero,
+            )
+        ),
+        biproduct(_product_morphism(biproduct, left_times_three, right_zero))
+        * biproduct(_product_morphism(biproduct, left_times_three, right_zero)),
     )
     _assert_module_maps_agree(
-        biproduct(left_identity, right_identity),
+        biproduct(_product_morphism(biproduct, left_identity, right_identity)),
         direct_sum.module_category().Mor(direct_sum, direct_sum).identity(),
     )
 
@@ -210,8 +226,10 @@ def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     right_identity = right.Aut().identity()
 
     orthogonal_sum = Lattices(ZZ).orthogonal_direct_sum_bifunctor()
-    summed = orthogonal_sum(left, right)
-    image = orthogonal_sum(left_negation, right_identity)
+    summed = orthogonal_sum(_product_object(orthogonal_sum, left, right))
+    image = orthogonal_sum(
+        _product_morphism(orthogonal_sum, left_negation, right_identity)
+    )
     source_labels = summed.module_generating_set()
     assert image(summed.module_generator(source_labels[0])) == -summed.module_generator(
         source_labels[0]
@@ -225,12 +243,22 @@ def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
 
     _assert_module_maps_agree(
         orthogonal_sum(
-            left_negation * left_negation, right_negation * right_negation
+            _product_morphism(
+                orthogonal_sum,
+                left_negation * left_negation,
+                right_negation * right_negation,
+            )
         ),
-        orthogonal_sum(left_negation, right_negation)
-        * orthogonal_sum(left_negation, right_negation),
+        orthogonal_sum(
+            _product_morphism(orthogonal_sum, left_negation, right_negation)
+        )
+        * orthogonal_sum(
+            _product_morphism(orthogonal_sum, left_negation, right_negation)
+        ),
     )
     _assert_module_maps_agree(
-        orthogonal_sum(left_identity, right_identity),
+        orthogonal_sum(
+            _product_morphism(orthogonal_sum, left_identity, right_identity)
+        ),
         summed.module_category().Mor(summed, summed).identity(),
     )
