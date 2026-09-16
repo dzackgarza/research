@@ -142,7 +142,7 @@ preamble-megadoc:
 
 # Every declared category and its declared supercategories, read from source
 # without importing it -- so it answers on a tree that does not currently load.
-# FORMAT: table (default), by-supercategory, foreign, dot, json.
+# FORMAT: table (default), by-supercategory, foreign, audit, shape, dot, json.
 category-graph format="table":
     PYTHONPATH=src python3 -m dzack_research.utilities.category_graph --format {{format}}
 

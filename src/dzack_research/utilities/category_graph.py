@@ -407,6 +407,119 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _declared_edges(
+    declarations: list[CategoryDeclaration],
+) -> set[tuple[str, str]]:
+    """Edges between categories this tree defines, self-declaration dropped."""
+    names = {d.name for d in declarations}
+    return {
+        (d.name, supercategory.resolved)
+        for d in declarations
+        for supercategory in d.supercategories
+        if supercategory.resolved in names and supercategory.resolved != d.name
+    }
+
+
+def render_shape(declarations: list[CategoryDeclaration]) -> str:
+    """Breadth, depth, cycle rank and shortcuts: the graph's shape as numbers.
+
+    The intended shape is a near-tree, deep and narrow. Breadth at a node counts
+    the categories declaring it directly, so it counts unfactored edges: the
+    intermediate categories between a node and its claimants are exactly what a
+    wide node is missing. Depth is what atomic declarations produce.
+    """
+    edges = _declared_edges(declarations)
+    vertices = {name for edge in edges for name in edge}
+
+    parent = {name: name for name in vertices}
+
+    def root(name: str) -> str:
+        while parent[name] != name:
+            parent[name] = parent[parent[name]]
+            name = parent[name]
+        return name
+
+    for below, above in edges:
+        first, second = root(below), root(above)
+        if first != second:
+            parent[first] = second
+    components = len({root(name) for name in vertices})
+
+    breadth: dict[str, int] = {}
+    upward: dict[str, set[str]] = {}
+    for below, above in edges:
+        breadth[above] = breadth.get(above, 0) + 1
+        upward.setdefault(below, set()).add(above)
+
+    def depth(name: str, seen: frozenset[str] = frozenset()) -> int:
+        if name in seen:
+            return 0
+        return max(
+            (1 + depth(above, seen | {name}) for above in upward.get(name, ())),
+            default=0,
+        )
+
+    depths = {name: depth(name) for name in vertices}
+    longest = max(depths.values(), default=0)
+    shortcuts = sorted(
+        (below, above)
+        for below, above in edges
+        if any(
+            above in _reachable(other, edges, {(below, above)})
+            for other in upward.get(below, set()) - {above}
+        )
+    )
+
+    lines = [
+        "The declared graph as numbers.  Intended shape: near-tree, deep and narrow.",
+        "",
+        f"vertices {len(vertices)}   edges {len(edges)}   components {components}",
+        f"rank of pi_1 (E - V + C) = {len(edges) - len(vertices) + components}",
+        f"longest chain to a maximal category = {longest}",
+        "",
+        "## Breadth: categories declared directly by the most others",
+        "",
+        "Each count is the number of unfactored edges into that node, unless every",
+        "claimant's own definition really does place it one step below.",
+        "",
+    ]
+    for name in sorted(breadth, key=lambda n: (-breadth[n], n))[:15]:
+        lines.append(f"{breadth[name]:5d}  {name}")
+    lines += ["", "## Depth: how many steps each leaf is from the top", ""]
+    distribution: dict[int, int] = {}
+    for value in depths.values():
+        distribution[value] = distribution.get(value, 0) + 1
+    for value in sorted(distribution):
+        lines.append(f"  depth {value:2d}: {distribution[value]:4d} categories")
+    lines += [
+        "",
+        f"## Shortcut edges: a declaration a longer declared path already gives ({len(shortcuts)})",
+        "",
+        "Each adds a loop and no reachability.  Removing one costs nothing.",
+        "",
+    ]
+    lines.extend(f"{below} -> {above}" for below, above in shortcuts)
+    return "\n".join(lines) + "\n"
+
+
+def _reachable(
+    start: str, edges: set[tuple[str, str]], banned: set[tuple[str, str]]
+) -> set[str]:
+    """Every category reachable upward from ``start``, ignoring ``banned`` edges."""
+    upward: dict[str, set[str]] = {}
+    for below, above in edges - banned:
+        upward.setdefault(below, set()).add(above)
+    seen: set[str] = set()
+    stack = [start]
+    while stack:
+        name = stack.pop()
+        for above in upward.get(name, ()):
+            if above not in seen:
+                seen.add(above)
+                stack.append(above)
+    return seen
+
+
 def render_dot(declarations: list[CategoryDeclaration]) -> str:
     """The literal declared graph, one edge per declared supercategory."""
     declared = {d.qualified_name for d in declarations} | {d.name for d in declarations}
@@ -455,7 +568,15 @@ def main() -> None:
     parser.add_argument("root", nargs="?", type=Path, default=_default_root())
     parser.add_argument(
         "--format",
-        choices=("table", "by-supercategory", "foreign", "audit", "dot", "json"),
+        choices=(
+            "table",
+            "by-supercategory",
+            "foreign",
+            "audit",
+            "shape",
+            "dot",
+            "json",
+        ),
         default="table",
     )
     parser.add_argument("-o", "--output", type=Path)
@@ -467,6 +588,7 @@ def main() -> None:
         "by-supercategory": render_by_supercategory,
         "foreign": render_foreign,
         "audit": render_audit,
+        "shape": render_shape,
         "dot": render_dot,
         "json": render_json,
     }[arguments.format](declarations)

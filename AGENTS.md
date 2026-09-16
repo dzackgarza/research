@@ -1109,6 +1109,50 @@ This governs the rules below:
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
 - Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
 
+# A missing foundation parks the work that found it (always-on)
+
+Research work meets missing foundations constantly. The move is always the
+same, and it is not a judgment call:
+
+1. **Park** the node you are on. It is not abandoned and not deferred; it is
+   waiting on something that was just discovered to be underneath it.
+2. **Build the DAG of what it needs**, down to what already exists, and
+   terminating at the node you were doing.
+3. **Add the edges**, so the parked node now `Needs:` the foundation.
+4. **Take a ready node** from the bottom of what you just built.
+
+You never proceed past an observed mathematical deficiency. Not with a note
+attached, not with a substitute in place, not with a `TODO` at the site. The
+work is genuinely blocked, and the blockage is a discovery about the shape of
+the problem rather than an obstacle to route around.
+
+**The failure this prevents has a specific shape: recording the gap and
+continuing.** Filing the deficiency in `COMPLAINTS.md` and leaving the work
+queue untouched produces a document that describes the hole and a queue that
+still schedules work over it. It feels like diligence -- the observation was
+real, it was written down carefully, and the note is true. What makes it a
+failure is that the DAG, which is the thing that actually selects work, was
+never told. Nothing downstream changes, and the next worker inherits the same
+queue and walks into the same hole.
+
+So the test, applied before continuing past anything you have just called
+missing:
+
+> **Which node's `Needs` list changed?**
+
+If the answer is none, the foundation was observed and not acted on.
+
+`COMPLAINTS.md` records *why* the node is owed, with its dependency path and
+evidence, under `DEV-59`. `TODO.md` schedules it. The two are not substitutes,
+and the complaint is never the whole response.
+
+**Scope is a real question, and it is answered by the DAG, not by scoping the
+mathematics down.** The prerequisite chain terminates at what exists, so a
+foundation whose own prerequisites are already present is a short chain, and
+one that is not is a long one. Discovering the chain is long is information
+about the problem. It is never a reason to declare the original node ready,
+nor to weaken it so that the foundation is no longer required.
+
 # A supercategory declaration is a mathematical claim (always-on)
 
 `super_categories()` states that **every object of this category is an object
@@ -1183,11 +1227,108 @@ The `by-supercategory` view is the audit surface: a large group under one
 heading is one mathematical claim made many times over, and reading the members
 together is how a member that does not belong becomes visible. Run it after any
 change to a category's placement, and read the group the change lands in rather
-than the single row it adds.
+than the single row it adds. `just category-graph audit` reports what needs no
+reading of the objects: a name declared as a supercategory and defined nowhere,
+a declaration computed from a local expression so the edge is not stated at
+all, a category declaring its own name, and cycles.
 
 The live survey (`just preamble-megadoc`) answers a different question -- what a
 session *does* -- and its `supers` field is empty for parameterized categories,
 so it must never be read as evidence that a declaration is absent.
+
+## Every declaration is the immediate one, and factoring is mandatory
+
+Declaring `C -> D` asserts a forgetful functor $U : C \to D$. The rule is that
+$U$ must be **atomic**: one step of structure, not a composite.
+
+> **The factorization test.** Ask, from the mathematics alone: is there a
+> category $A$ with $C \to A \to D$, where $A$ is a well-defined category that
+> can own operations? If yes, the declaration `C -> D` is wrong and must be
+> replaced by `C -> A`. **This holds when $A$ does not exist in the tree.**
+> Then $A$ is what you build.
+
+Run the test on the mathematics, never on the code. Reading the category list
+first and picking the nearest available node inverts the whole thing: it makes
+the current contents of the tree decide what is true, so every gap becomes
+permanent the moment something is declared across it. Name the categories the
+objects actually pass through, and only then find out which of them exist.
+
+The bar for $A$ is that it is a real category with a definition and operations
+of its own -- convex bodies, topological spaces, labelled graphs, modules.
+Inventing a node so that a rule is technically satisfied is the over-compliance
+failure this repository bans everywhere else: a category with no mathematical
+referent is worse than the unfactored edge, because the edge is at least
+visibly wrong. If the intermediate has no name in the literature, that is a
+signal to check the notion, not licence to coin one.
+
+## The shape the graph is converging on
+
+**A near-tree: high depth, low breadth.** Depth is what atomic declarations
+produce -- a long chain from a leaf to `Sets()`, each step adding exactly one
+structure, every operation inherited from the level that owns it. Breadth at a
+node is how many categories declare it directly, and it is the diagnostic:
+
+| Reading | What it means |
+| --- | --- |
+| High breadth at a node | The intermediate categories between it and its claimants are missing. Breadth counts unfactored edges. |
+| High breadth at `Sets()` | The worst case: the claim that those objects share nothing but their points. |
+| A short path from a leaf to `Sets()` | Structure is being restated at the leaf instead of inherited. Expect duplicated operations, and look for them. |
+| A category declaring two or more levels up | A shortcut edge. It duplicates a path that already exists and adds a loop that carries no information. |
+
+Breadth at `Sets()` is never zero: some objects are sets with structure and
+belong there. The question is never the count, it is whether each member's own
+definition puts it there.
+
+## $\pi_1$, and what is actually being minimized
+
+For the declared graph, $\pi_1$ is free of rank $E - V + C$. A generator is a
+pair of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
+functors that the graph asserts are equal. Nothing checks that assertion: Sage
+computes a C3 linearization, so a diamond that does *not* commute never raises
+-- it silently selects one route, and the object's inherited operations are
+whichever the ordering picked. **Each generator is a coherence obligation and a
+site where method resolution can quietly return the wrong answer.**
+
+Shortcut edges are unearned generators: they add a loop while adding no
+reachability, so removing them costs nothing. Keeping the transitive reduction
+is minimizing $\pi_1$.
+
+**The trap.** Taken raw, "minimize $\pi_1$" favours the graph this section
+exists to prevent. A star is a tree, so thirty categories each declaring only
+`Sets()` has rank zero; you can drive $\pi_1$ to zero by deleting every
+intermediate category, and a single point is perfectly coherent. The criterion
+is therefore **minimal $\pi_1$ among graphs that state every true forgetful
+functor and only immediate ones**. Factoring an edge through a new category adds
+one vertex and one edge and leaves the rank unchanged, so building the missing
+mathematics is free by this measure. The rank rises only where a genuine join
+appears, and that loop is wanted, because it is a real theorem.
+
+Genuine multiple inheritance is real -- $\mathbf{Z}$ is a ring and a module and
+a monoid. Those diamonds are **computed**, as joins and axioms, so that
+commutativity follows from the join construction instead of being asserted
+again at every site that happens to need it.
+
+## Red flags
+
+Each is observable in the declaration itself, with no judgment of intent:
+
+- `Sets()` declared by a category whose own docstring describes a structured
+  object -- a sheaf, a space, a pair, a complex, a matrix, a diagram.
+- A declaration naming a category two or more levels above the one being
+  declared.
+- A supercategory chosen because it is what the tree has, rather than what the
+  objects pass through. The tell is a declaration that nobody could derive from
+  the category's own definition.
+- A supercategory added so that construction proceeds, or so that one inherited
+  method becomes reachable. Placement is a theorem about the objects; it is not
+  a way to obtain a method.
+- A leaf implementing an operation that a category on its path already owns.
+  That is evidence the path is missing, and the fix is the path, not the leaf.
+- Any node whose breadth grew in the change you are about to commit.
+
+Parameterized recursion is not a red flag: `Modules(R)` declaring `Modules(S)`
+for a restriction base ring is restriction of scalars, a loop on the name and
+not on the objects.
 
 # Mathematical ontology (always-on)
 
