@@ -60,6 +60,16 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class _FreeAlgebraConstruction:
+    r"""The selected source module of a free-algebra construction."""
+
+    def __init__(self, source_module) -> None:
+        self._source_module = source_module
+
+    def source_module(self):
+        return self._source_module
+
+
 def _finite_labels(labels):
     if labels in FiniteOrderedSets():
         return labels
@@ -137,7 +147,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
         construction_data=(
-            (("_preamble_free_algebra_source_module", source_module),)
+            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
             if source_module is not None
             else ()
         ),
@@ -168,7 +178,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
         GradedFreeAlgebras(base),
         TensorAlgebras(base),
         construction_data=(
-            (("_preamble_free_algebra_source_module", source_module),)
+            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
             if source_module is not None
             else ()
         ),
@@ -317,7 +327,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             lift_to_presentation,
         )
         if free_source_module is not None:
-            self._preamble_free_algebra_source_module = free_source_module
+            self._free_algebra_construction = _FreeAlgebraConstruction(free_source_module)
 
         placement = [
             FinitelyPresentedAlgebras(base),
@@ -1042,7 +1052,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         # The module a construction selected to build this algebra on.
         # Declared here so a reader of this category sees the field, and so an
         # algebra reached by a route that selected none answers below.
-        _preamble_free_algebra_source_module = None
+        _free_algebra_construction = None
 
         def free_source_module(self):
             r"""Return the module whose tensor algebra this object represents.
@@ -1054,9 +1064,9 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             \(S\) is the degree-one piece either way.  So the source module is
             a fact about the algebra, not about which constructor was called.
             """
-            selected = self._preamble_free_algebra_source_module
-            if selected is not None:
-                return selected
+            construction = self._free_algebra_construction
+            if construction is not None:
+                return construction.source_module()
             return self.algebra_base_ring().free_module(self.algebra_generating_set())
 
         @cached_method
@@ -1116,7 +1126,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
     class ParentMethods:
         # The module a construction selected to build this algebra on, as on
         # tensor algebras above.
-        _preamble_free_algebra_source_module = None
+        _free_algebra_construction = None
 
         def free_source_module(self):
             r"""Return the module whose symmetric algebra this object represents.
@@ -1126,9 +1136,9 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             variable names has a source module just as one built from a module
             does, and it is the free module on its own algebra generating set.
             """
-            selected = self._preamble_free_algebra_source_module
-            if selected is not None:
-                return selected
+            construction = self._free_algebra_construction
+            if construction is not None:
+                return construction.source_module()
             return self.algebra_base_ring().free_module(self.algebra_generating_set())
 
         def from_component(self, degree, component):
@@ -1238,7 +1248,11 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def free_source_module(self):
-            return self._preamble_free_algebra_source_module
+            construction = getattr(self, "_free_algebra_construction", None)
+            assert construction is not None, (
+                "an alternating free-algebra realization must retain its selected source module"
+            )
+            return construction.source_module()
 
         def Mor(self, codomain, category=None):
             alternating = AlternatingAlgebras(self.base_ring())
@@ -1421,7 +1435,11 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def free_source_module(self):
-            return self._preamble_free_algebra_source_module
+            construction = getattr(self, "_free_algebra_construction", None)
+            assert construction is not None, (
+                "a divided-power free-algebra realization must retain its selected source module"
+            )
+            return construction.source_module()
 
         def Mor(self, codomain, category=None):
             divided = DividedPowerAlgebras(self.base_ring())

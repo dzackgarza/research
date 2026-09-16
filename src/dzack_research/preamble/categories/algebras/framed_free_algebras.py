@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
+    _FreeAlgebraConstruction,
     _symmetric_algebra_on,
     _tensor_algebra_on,
     _finite_labels,
@@ -79,7 +80,7 @@ def _symmetric_algebra_of(module):
             FreeAlgebras(base),
             GradedFreeAlgebras(base),
             SymmetricAlgebras(base),
-            construction_data=(("_preamble_free_algebra_source_module", module),),
+            construction_data=(("_free_algebra_construction", _FreeAlgebraConstruction(module)),),
         )
     else:
         presentation_ring = _symmetric_algebra_on(
