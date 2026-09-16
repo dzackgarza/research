@@ -258,7 +258,7 @@ def test_stabilizers_as_predicate_subgroups() -> None:
 
 
 def test_submonoids_of_the_natural_numbers_and_the_integers() -> None:
-    evens = Submonoids(NN)(lambda n: n % 2 == 0, "even")
+    evens = NN.predicate_submonoid(lambda n: n % 2 == 0, "even")
     numerical = NN.submonoid([3, 5])
     assert NN(4) in evens
     assert NN(3) not in evens
