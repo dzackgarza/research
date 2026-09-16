@@ -171,3 +171,7 @@ def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
     assert hom.framing_morphism() is framing
     assert framing.domain() is framing_source
     assert framing.codomain() is hom
+    for label in hom.module_generating_set():
+        assert hom.module_generator(label) == framing(
+            framing_source.module_generator(label)
+        )

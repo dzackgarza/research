@@ -3582,27 +3582,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def module_generating_set(self):
-            return self._preamble_module_generating_set
-
-        def module_generator(self, label):
-            labels = self.module_generating_set()
-            if label not in labels:
-                raise ValueError(f"{label!r} is not a matrix-unit label")
-            return self._preamble_module_generator_function(labels(label))
-
-        @cached_method
-        def module_generators(self):
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                name="Matrix-unit family",
-            )
-
-        def number_of_module_generators(self):
-            return self.module_generating_set().cardinality()
-
         def row_index_set(self):
             return self.codomain().module_generating_set()
 

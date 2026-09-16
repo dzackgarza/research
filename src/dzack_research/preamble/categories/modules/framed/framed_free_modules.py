@@ -47,7 +47,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -205,6 +204,26 @@ class _SparseFreeModuleParent:
         if label not in labels:
             raise ValueError(f"{label!r} is not a module-generator label")
         return self.element_class(self, {labels(label): self.base_ring().one()})
+
+    def module_generating_set(self):
+        r"""Return the labels of this private sparse identity framing."""
+        labels = self.__dict__.get("_preamble_module_generating_set")
+        assert labels is not None, f"{self} declares no module generating set"
+        return labels
+
+    def module_generator(self, label):
+        r"""Return the sparse basis element selected by this identity framing."""
+        return self._basis_element(label)
+
+    @cached_method
+    def module_generators(self):
+        r"""Return the image of the sparse free-basis unit as an owned set."""
+        return Sets().image_set(
+            self.module_generator_morphism(),
+            self.module_generating_set(),
+            is_injective=True,
+            inverse=lambda generator: self(generator).underlying_set_element(),
+        )
 
     def __call__(self, value):
         r"""Construct a free-module element through the owned coordinate syntax."""
@@ -385,30 +404,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             if selected is not None:
                 return selected
             return _owned_ring(self.base())
-
-        def module_generating_set(self):
-            labels = self.__dict__.get("_preamble_module_generating_set")
-            assert labels is not None, f"{self} declares no module generating set"
-            return labels
-
-        def module_generator(self, label):
-            selected_function = self.__dict__.get("_preamble_module_generator_function")
-            if selected_function is not None:
-                return selected_function(label)
-            if label not in self.module_generating_set():
-                raise ValueError(f"{label!r} is not a module-generator label")
-            return self._preamble_module_generator_values[label]
-
-        @cached_method
-        def module_generators(self):
-            r"""Return the image of the canonical free basis map as a set."""
-
-            return Sets().image_set(
-                self.module_generator_morphism(),
-                self.module_generating_set(),
-                is_injective=True,
-                inverse=lambda generator: self(generator).underlying_set_element(),
-            )
 
         def diagonal_gram(self, exceptions, default=1):
             r"""Return the diagonal type-``(0,2)`` tensor in this selected basis."""
