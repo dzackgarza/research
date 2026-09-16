@@ -1362,7 +1362,11 @@ whichever the ordering picked. **Each generator is a coherence obligation and a
 site where method resolution can quietly return the wrong answer.**
 
 `just category-graph cells` computes the homology and a minimum cycle basis, so
-each generator is a short readable square rather than a wandering path. It
+each generator is a short readable square rather than a wandering path. Every
+generator lies inside one 2-connected block, and the view lists the blocks
+first: a near-tree has only small ones, so a block of a hundred categories is
+the region where declarations mesh, and it is the finding, never something to
+route around. The view then
 separates the generators killed by deleting one declaration -- where one route
 is a single edge and the other a path with the same endpoints, so the two
 composites are the same functor -- from those owing a real cell. The first kind

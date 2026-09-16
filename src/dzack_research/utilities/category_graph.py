@@ -19,6 +19,10 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from sage.graphs.digraph import DiGraph
+from sage.graphs.graph import Graph
+from sage.topology.simplicial_complex import SimplicialComplex
+
 CATEGORY_BASES: frozenset[str] = frozenset(
     {
         "Category",
@@ -361,22 +365,14 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     # A category may legitimately declare itself on other data: `Modules(R)`
     # declares `Modules(S)` for a restriction base ring.  That is a loop on the
     # name and not on the objects, so it is reported apart from real cycles.
-    recursive = sorted(
-        {d.name for d in declarations if d.name in d.heads}
-    )
-    edges = {d.name: set(d.heads) - {d.name} for d in declarations}
-    cycles: list[str] = []
-    for start in sorted(edges):
-        seen: set[str] = set()
-        stack = [(start, (start,))]
-        while stack:
-            node, path = stack.pop()
-            for head in sorted(edges.get(node, ())):
-                if head == start:
-                    cycles.append(" -> ".join((*path, head)))
-                elif head not in seen and head in edges:
-                    seen.add(head)
-                    stack.append((head, (*path, head)))
+    recursive = sorted({d.name for d in declarations if d.name in d.heads})
+    # A strongly connected component with more than one category is a set of
+    # categories each declared to lie under the others.
+    cycles = [
+        ", ".join(sorted(component))
+        for component in _digraph(_declared_edges(declarations)).strongly_connected_components()
+        if len(component) > 1
+    ]
 
     lines = [
         "Mechanically checkable defects in the declared category graph.",
@@ -420,104 +416,160 @@ def _declared_edges(
     }
 
 
-def render_shape(declarations: list[CategoryDeclaration]) -> str:
-    """Breadth, depth, cycle rank and shortcuts: the graph's shape as numbers.
+def _graph(edges: set[tuple[str, str]]) -> Graph:
+    return Graph(sorted(edges))
 
-    The intended shape is a near-tree, deep and narrow. Breadth at a node counts
-    the categories declaring it directly, so it counts unfactored edges: the
-    intermediate categories between a node and its claimants are exactly what a
-    wide node is missing. Depth is what atomic declarations produce.
+
+def _digraph(edges: set[tuple[str, str]]) -> DiGraph:
+    return DiGraph(sorted(edges))
+
+
+def _shortcuts(edges: set[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Declarations a longer declared path already gives."""
+    reduction = set(_digraph(edges).transitive_reduction().edges(labels=False))
+    return sorted(edges - reduction)
+
+
+def _chains_above(directed: DiGraph) -> dict[str, int]:
+    """The longest chain of declarations above each category.
+
+    ``level_sets()`` of the reversed graph puts a category in level ``k`` when
+    its longest path to a maximal category has ``k`` declarations (Sage's
+    ``DiGraph.level_sets``, linear time).  ``longest_path()`` is a MILP by
+    default; see ``TRAPS.md``.
     """
+    return {
+        name: level
+        for level, names in enumerate(directed.reverse().level_sets())
+        for name in names
+    }
+
+
+def _in_cyclic_order(graph: Graph, cycle: list[str]) -> list[str]:
+    """Order a cycle's vertices around it.
+
+    Sage's ``minimum_cycle_basis`` returns each cycle as a vertex set, not in
+    cyclic order (``sage.graphs.base.boost_graph.min_cycle_basis``).
+    """
+    induced = graph.subgraph(cycle).cycle_basis()
+    return induced[0] if len(induced) == 1 else sorted(cycle)
+
+
+def _minimum_cycle_basis(graph: Graph) -> list[list[str]]:
+    """Sage's default minimum cycle basis takes integer vertices only; relabel.
+
+    Wall time on the declared graph is in ``TRAPS.md``.
+    """
+    relabelled = graph.copy()
+    names = relabelled.relabel(return_map=True)
+    back = {integer: name for name, integer in names.items()}
+    return [
+        _in_cyclic_order(graph, [back[v] for v in cycle])
+        for cycle in relabelled.minimum_cycle_basis()
+    ]
+
+
+def _blocks(graph: Graph) -> list[list[str]]:
+    """The 2-connected blocks holding at least one cycle, largest first.
+
+    The cycle space is the direct sum of the blocks' cycle spaces, so every
+    generator lies inside one block.  A near-tree has only small blocks.
+    """
+    blocks, _ = graph.blocks_and_cut_vertices()
+    return sorted((sorted(b) for b in blocks if len(b) >= 3), key=len, reverse=True)
+
+
+def render_shape(declarations: list[CategoryDeclaration]) -> str:
+    """Breadth, depth and shortcuts.  The intended shape is deep and narrow."""
     edges = _declared_edges(declarations)
-    vertices = {name for edge in edges for name in edge}
-
-    parent = {name: name for name in vertices}
-
-    def root(name: str) -> str:
-        while parent[name] != name:
-            parent[name] = parent[parent[name]]
-            name = parent[name]
-        return name
-
-    for below, above in edges:
-        first, second = root(below), root(above)
-        if first != second:
-            parent[first] = second
-    components = len({root(name) for name in vertices})
-
-    breadth: dict[str, int] = {}
-    upward: dict[str, set[str]] = {}
-    for below, above in edges:
-        breadth[above] = breadth.get(above, 0) + 1
-        upward.setdefault(below, set()).add(above)
-
-    def depth(name: str, seen: frozenset[str] = frozenset()) -> int:
-        if name in seen:
-            return 0
-        return max(
-            (1 + depth(above, seen | {name}) for above in upward.get(name, ())),
-            default=0,
-        )
-
-    depths = {name: depth(name) for name in vertices}
-    longest = max(depths.values(), default=0)
-    shortcuts = sorted(
-        (below, above)
-        for below, above in edges
-        if any(
-            above in _reachable(other, edges, {(below, above)})
-            for other in upward.get(below, set()) - {above}
-        )
-    )
+    directed = _digraph(edges)
+    breadth = directed.in_degree(labels=True)
+    depth = _chains_above(directed)
 
     lines = [
         "The declared graph as numbers.  Intended shape: near-tree, deep and narrow.",
         "",
-        f"vertices {len(vertices)}   edges {len(edges)}   components {components}",
-        f"rank of pi_1 (E - V + C) = {len(edges) - len(vertices) + components}",
-        f"longest chain to a maximal category = {longest}",
+        (
+            f"categories {directed.order()}   "
+            f"declarations {directed.size()}   "
+            f"pieces {_graph(edges).connected_components_number()}"
+        ),
+        f"longest chain of declarations = {max(depth.values(), default=0)}",
         "",
         "## Breadth: categories declared directly by the most others",
         "",
-        "Each count is the number of unfactored edges into that node, unless every",
-        "claimant's own definition really does place it one step below.",
+        "Each count is the number of unfactored declarations into that node,",
+        "unless every claimant's own definition places it one step below.",
         "",
     ]
     for name in sorted(breadth, key=lambda n: (-breadth[n], n))[:15]:
-        lines.append(f"{breadth[name]:5d}  {name}")
-    lines += ["", "## Depth: how many steps each leaf is from the top", ""]
-    distribution: dict[int, int] = {}
-    for value in depths.values():
-        distribution[value] = distribution.get(value, 0) + 1
-    for value in sorted(distribution):
-        lines.append(f"  depth {value:2d}: {distribution[value]:4d} categories")
+        if breadth[name]:
+            lines.append(f"{breadth[name]:5d}  {name}")
+
+    histogram: dict[int, int] = {}
+    for value in depth.values():
+        histogram[value] = histogram.get(value, 0) + 1
+    lines += ["", "## Depth: longest chain above each category", ""]
+    for value in sorted(histogram):
+        lines.append(f"  depth {value:2d}: {histogram[value]:4d} categories")
+
+    shortcuts = _shortcuts(edges)
     lines += [
         "",
-        f"## Shortcut edges: a declaration a longer declared path already gives ({len(shortcuts)})",
-        "",
-        "Each adds a loop and no reachability.  Removing one costs nothing.",
+        f"## Shortcut declarations, dropped by the transitive reduction ({len(shortcuts)})",
         "",
     ]
     lines.extend(f"{below} -> {above}" for below, above in shortcuts)
     return "\n".join(lines) + "\n"
 
 
-def _reachable(
-    start: str, edges: set[tuple[str, str]], banned: set[tuple[str, str]]
-) -> set[str]:
-    """Every category reachable upward from ``start``, ignoring ``banned`` edges."""
-    upward: dict[str, set[str]] = {}
-    for below, above in edges - banned:
-        upward.setdefault(below, set()).add(above)
-    seen: set[str] = set()
-    stack = [start]
-    while stack:
-        name = stack.pop()
-        for above in upward.get(name, ()):
-            if above not in seen:
-                seen.add(above)
-                stack.append(above)
-    return seen
+def render_cells(declarations: list[CategoryDeclaration]) -> str:
+    r"""Homology of the declaration graph, and the cycles owing a 2-cell.
+
+    Each generator is two routes between the same pair of categories, asserted
+    to be the same composite of forgetful functors; nothing in the source
+    proves it.  Homology is unreduced (Sage's default is reduced).
+    """
+    edges = _declared_edges(declarations)
+    graph = _graph(edges)
+    homology = SimplicialComplex([list(edge) for edge in edges]).homology(reduced=False)
+    blocks = _blocks(graph)
+    shortcuts = _shortcuts(edges)
+    dropped = {frozenset(edge) for edge in shortcuts}
+
+    def owes_a_cell(cycle: list[str]) -> bool:
+        return not any(
+            frozenset(pair) in dropped for pair in zip(cycle, cycle[1:] + cycle[:1])
+        )
+
+    lines = [
+        "Homology of the declaration graph.",
+        "",
+        f"  0-cells {graph.order()}    1-cells {graph.size()}    2-cells 0",
+        f"  H_0 = {homology[0]}    H_1 = {homology[1]}    H_n = 0, n >= 2",
+        "",
+        f"## 2-connected blocks with a cycle ({len(blocks)}), by size",
+        "",
+        "Every generator lies inside one block.  A near-tree has only small",
+        "blocks; a large block is the region where declarations form a mesh.",
+        "",
+    ]
+    lines.extend(f"{len(block):5d}  {', '.join(block)}" for block in blocks)
+    lines += ["", f"## Killed by deleting one declaration ({len(shortcuts)})", ""]
+    lines.extend(f"{below} -> {above}" for below, above in shortcuts)
+
+    for block in blocks:
+        remaining = [
+            cycle for cycle in _minimum_cycle_basis(graph.subgraph(block)) if owes_a_cell(cycle)
+        ]
+        lines += [
+            "",
+            f"## Owing a real 2-cell, in the block of {len(block)} ({len(remaining)})",
+            "",
+        ]
+        for cycle in sorted(remaining, key=lambda c: (len(c), c)):
+            lines.append(" -> ".join(cycle + cycle[:1]))
+    return "\n".join(lines) + "\n"
 
 
 def render_dot(declarations: list[CategoryDeclaration]) -> str:
@@ -574,6 +626,7 @@ def main() -> None:
             "foreign",
             "audit",
             "shape",
+            "cells",
             "dot",
             "json",
         ),
@@ -589,6 +642,7 @@ def main() -> None:
         "foreign": render_foreign,
         "audit": render_audit,
         "shape": render_shape,
+        "cells": render_cells,
         "dot": render_dot,
         "json": render_json,
     }[arguments.format](declarations)
