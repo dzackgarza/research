@@ -640,13 +640,16 @@ class EquivariantLattice(SageObject):
                 if candidate * self.isometry() == other.isometry() * candidate:
                     return candidate
             return None
-        if empty is Unknown:
-            raise NotImplementedError("the underlying indefinite isometry homset is not decided exactly")
+        assert empty is not Unknown, (
+            "equivariant-isometry search in the indefinite regime requires the underlying isometry Hom to be decided exactly"
+        )
 
         witness = homset.an_element()
-        if witness * self.isometry() == other.isometry() * witness:
-            return witness
-        raise NotImplementedError("the underlying lattices are isometric, but no exhaustive indefinite equivariant-isometry classifier is available")
+        assert witness * self.isometry() == other.isometry() * witness, (
+            "the represented indefinite equivariant-isometry path requires the selected underlying isometry witness to intertwine the equipped actions; "
+            "no exhaustive indefinite conjugacy classifier is selected"
+        )
+        return witness
 
     def equivariant_vector_orbit_representatives(self, square):
         r"""Return vector-orbit representatives under ``O(L,f)`` in the supported regime."""
@@ -801,6 +804,21 @@ class IsometryPrimitiveExtension:
         r"""Return ``rho_L(O(L,f)) <= O(A_L)``, the finite image of the centralizer."""
         return self.isometry.centralizer_discriminant_image()
 
+    def _full_discriminant_glue_data(self):
+        r"""Return the primitive glue data when both discriminant forms are glued in full."""
+        glue = self.glue()
+        invariant_form = self.invariant.discriminant_group()
+        coinvariant_form = self.coinvariant.discriminant_group()
+        glue_source = glue.domain()
+        glue_target = glue.codomain()
+        assert glue_source.cardinality() == invariant_form.cardinality(), (
+            "the represented discriminant conjugation requires the primitive extension to glue the full invariant discriminant form"
+        )
+        assert glue_target.cardinality() == coinvariant_form.cardinality(), (
+            "the represented discriminant conjugation requires the primitive extension to glue the full coinvariant discriminant form"
+        )
+        return glue, invariant_form, coinvariant_form, glue_source, glue_target
+
     @cached_method
     def coinvariant_extension_subgroup(self):
         r"""Return the coinvariant restriction image in the full-glue involution case.
@@ -817,22 +835,13 @@ class IsometryPrimitiveExtension:
         in ``O(L^-)``; it is not a separately represented copy of the ambient
         centralizer.
         """
-        if not self.acts_as_negation_on_coinvariants():
-            raise NotImplementedError("the coinvariant extension subgroup is currently represented for involutions")
+        assert self.acts_as_negation_on_coinvariants(), (
+            "the represented coinvariant extension subgroup is the involution case where the coinvariant action is -1"
+        )
 
-        glue = self.glue()
-        invariant_form = self.invariant.discriminant_group()
-        coinvariant_form = self.coinvariant.discriminant_group()
-        glue_source = glue.domain()
-        glue_target = glue.codomain()
-        glue_source.inclusion()
-        target_inclusion = glue_target.inclusion()
-        target_inclusion.codomain()
-
-        if glue_source.cardinality() != invariant_form.cardinality():
-            raise NotImplementedError("the represented primitive extension does not glue the full invariant discriminant form")
-        if glue_target.cardinality() != coinvariant_form.cardinality():
-            raise NotImplementedError("the represented primitive extension does not glue the full coinvariant discriminant form")
+        _glue, invariant_form, coinvariant_form, _glue_source, _glue_target = (
+            self._full_discriminant_glue_data()
+        )
 
         invariant_image = self.invariant.discriminant_image()
         coinvariant_orthogonal_group = coinvariant_form.O()
@@ -851,19 +860,12 @@ class IsometryPrimitiveExtension:
         hypothesis is exactly the one required by
         :meth:`coinvariant_extension_subgroup`.
         """
-        glue = self.glue()
-        invariant_form = self.invariant.discriminant_group()
-        coinvariant_form = self.coinvariant.discriminant_group()
-        glue_source = glue.domain()
-        glue_target = glue.codomain()
+        glue, invariant_form, coinvariant_form, glue_source, glue_target = (
+            self._full_discriminant_glue_data()
+        )
         source_inclusion = glue_source.inclusion()
         target_inclusion = glue_target.inclusion()
         twisted_coinvariant_form = target_inclusion.codomain()
-
-        if glue_source.cardinality() != invariant_form.cardinality():
-            raise NotImplementedError("conjugating the invariant discriminant action is currently represented only for full gluing")
-        if glue_target.cardinality() != coinvariant_form.cardinality():
-            raise NotImplementedError("conjugating the coinvariant discriminant action is currently represented only for full gluing")
 
         invariant_automorphism = invariant_form.O()(invariant_automorphism)
         images = {}
