@@ -650,6 +650,17 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
     for value in sorted(histogram):
         lines.append(f"  depth {value:2d}: {histogram[value]:4d} categories")
 
+    pieces = sorted(_graph(edges).connected_components(sort=True), key=len, reverse=True)
+    lines += [
+        "",
+        f"## Pieces apart from the largest ({len(pieces) - 1})",
+        "",
+        "A category here declares nothing the tree defines, or only categories",
+        "that declare nothing the tree defines.",
+        "",
+    ]
+    lines.extend(f"{len(piece):5d}  {', '.join(piece)}" for piece in pieces[1:])
+
     shortcuts = _shortcuts(declarations)
     lines += [
         "",
