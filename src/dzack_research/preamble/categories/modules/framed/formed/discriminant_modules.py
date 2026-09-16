@@ -364,14 +364,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 self.bilinear_value_module(),
             )
             normalization = formed.invariant_factor_form()
-            forward = (
-                normalization.forward()
-                * formed.equip_form_morphism()
-            )
-            inverse = (
-                formed.forget_form_morphism()
-                * normalization.inverse()
-            )
+            forward, inverse = _through_formed_copy(self, formed, normalization)
             return _torsion_form_isometry(
                 forward,
                 inverse,
@@ -626,14 +619,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 quadratic_values,
             )
             normalization = formed.invariant_factor_form()
-            forward = (
-                normalization.forward()
-                * formed.equip_form_morphism()
-            )
-            inverse = (
-                formed.forget_form_morphism()
-                * normalization.inverse()
-            )
+            forward, inverse = _through_formed_copy(self, formed, normalization)
             return _torsion_form_isometry(
                 forward,
                 inverse,
@@ -782,6 +768,30 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
                 raise TypeError("isotropy here requires a discriminant quadratic module")
             zero = ambient.quadratic_value_module().zero()
             return all(ambient.q(element) == zero for element in self.embedded_elements())
+
+
+def _through_formed_copy(module, formed, normalization):
+    r"""Read an isometry out of a formed object built on ``module`` as maps on ``module``.
+
+    ``formed`` is built on the data of ``module``, so a generator of
+    ``module`` reads in ``formed`` by coercion and the isometry's image of it
+    is a generator image of ``module -> normalized``; the inverse reads back
+    the same way.
+    """
+    normalized = normalization.forward().codomain()
+    forward = module.module_category().Mor(module, normalized)(
+        {
+            label: normalization.forward()(formed(module.module_generator(label)))
+            for label in module.module_generating_set()
+        }
+    )
+    inverse = normalized.module_category().Mor(normalized, module)(
+        {
+            label: module(normalization.inverse()(normalized.module_generator(label)))
+            for label in normalized.module_generating_set()
+        }
+    )
+    return forward, inverse
 
 
 def _element_key(module, element):

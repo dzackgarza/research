@@ -1103,23 +1103,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.base_ring()
 
         def unformed_module(self):
-            r"""Return the actual free module equipped with this lattice form."""
+            r"""Return the free module this lattice is built on: the datum its form was stated on."""
             return self._module
-
-        @cached_method
-        def forget_form_morphism(self):
-            r"""Return the canonical module identification from the lattice to its free module."""
-            module = self.unformed_module()
-            return self.module_category().Mor(self, module)(
-                {
-                    label: module.module_generator(label)
-                    for label in module.module_generating_set()
-                }
-            )
-
-        def equip_form_morphism(self):
-            r"""Return the selected framing that equips the free module with this form."""
-            return self.framing_morphism()
 
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
@@ -2284,9 +2269,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             # itself when it is the discriminant module and its bilinear
             # reading when the summand is even inside an odd L, so the classes
             # cross into the twist the same way in both parities.
-            second_forget = second_discriminant.forget_form_morphism()
             second_twist = second_discriminant.twist(-1)
-            target_images = {label: second_twist.equip_form_morphism()(second_forget(target_class)) for label, target_class in zip(labels, target_classes, strict=True)}
+            target_images = {label: second_twist(target_class) for label, target_class in zip(labels, target_classes, strict=True)}
 
             def target_inclusion(target):
                 return target.Mono(second_twist)(target_images, quadratic=quadratic)
@@ -2300,8 +2284,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 _subobject_inclusion_factory=target_inclusion,
             )
 
-            target_subgroup = second_discriminant.unformed_module().subobject_on(
-                tuple(second_forget(target_class) for target_class in target_classes)
+            second_unformed = second_discriminant.unformed_module()
+            target_subgroup = second_unformed.subobject_on(
+                tuple(second_unformed(target_class) for target_class in target_classes)
             )
             extension_index = first.sum(second).index()
             if source_form.cardinality() != extension_index:

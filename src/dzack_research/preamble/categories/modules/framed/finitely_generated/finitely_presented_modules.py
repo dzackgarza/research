@@ -1756,6 +1756,13 @@ class _GeneralPresentedModule:
             if value.parent() is self:
                 return value
             value = value._representative()
+        underlying = getattr(value, "underlying_element", None)
+        if callable(underlying):
+            # An element of a structured object built on the data of this
+            # module reads here as the element it is built on.
+            candidate = underlying()
+            if getattr(candidate, "parent", lambda: None)() is self:
+                return candidate
         return self.element_class(self, value)
 
     def zero(self):

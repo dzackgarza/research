@@ -871,8 +871,7 @@ class IsometryPrimitiveExtension:
         images = {}
         for label in coinvariant_form.module_generating_set():
             element = coinvariant_form.module_generator(label)
-            unformed = coinvariant_form.forget_form_morphism()(element)
-            twisted = twisted_coinvariant_form.equip_form_morphism()(unformed)
+            twisted = twisted_coinvariant_form(element)
             target_element = target_inclusion.lift(twisted)
             source_element = glue.inverse_morphism()(target_element)
             invariant_class = source_inclusion(source_element)
@@ -880,8 +879,7 @@ class IsometryPrimitiveExtension:
             moved_source = source_inclusion.lift(moved_invariant_class)
             moved_target = glue.forward()(moved_source)
             moved_twisted = target_inclusion(moved_target)
-            moved_unformed = twisted_coinvariant_form.forget_form_morphism()(moved_twisted)
-            images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
+            images[label] = coinvariant_form(moved_twisted)
         morphism = coinvariant_form.module_category().Mor(coinvariant_form, coinvariant_form)(images)
         return coinvariant_form.O()(morphism)
 
@@ -1020,11 +1018,12 @@ class IsometryPrimitiveExtension:
         itself, its bilinear reading when an even summand sits inside an odd
         ``L``, or the twist ``A_R(-1)``.  Polarizing and rescaling both leave
         the underlying map alone -- an isometry of ``q`` is an isometry of its
-        polar form and of any rescaling of either -- so the action is read by
-        forgetting the ambient form, applying the induced automorphism, and
-        equipping the ambient form again.
+        polar form and of any rescaling of either -- so the action is read on
+        the discriminant module the finite form was stated on, and the class
+        passes to and from it by coercion.
         """
-        return ambient.equip_form_morphism()(automorphism.discriminant_morphism()(ambient.forget_form_morphism()(element)))
+        module = ambient.unformed_module()
+        return ambient(automorphism.discriminant_morphism()(module(element)))
 
     def pair_preserves_glue_graph(self, invariant_part, coinvariant_part) -> bool:
         r"""Return whether ``(g_+, g_-)`` carries the graph of ``gamma`` onto itself.

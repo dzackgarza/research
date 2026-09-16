@@ -385,6 +385,13 @@ class Lattice(Parent, IndexedGenerators):
         r"""Return a lattice vector from finite coordinates or keyed support."""
         if isinstance(x, self.element_class) and x.parent() is self:
             return x
+        underlying = getattr(x, "underlying_element", None)
+        if callable(underlying):
+            # An element of a structured object built on the data of this
+            # lattice reads here as the element it is built on.
+            candidate = underlying()
+            if getattr(candidate, "parent", lambda: None)() is self:
+                return candidate
         if isinstance(x, (tuple, list)):
 
             size = self.module_generating_set().cardinality()
@@ -428,6 +435,10 @@ class Lattice(Parent, IndexedGenerators):
         def __init__(self, parent, vector) -> None:
             ModuleElement.__init__(self, parent)
             self._vector = vector
+
+        def underlying_element(self):
+            r"""This vector read in the free module the lattice is built on."""
+            return self._vector
 
         def _add_(self, other):
             return self.parent().element_class(self.parent(), self._vector + other._vector)

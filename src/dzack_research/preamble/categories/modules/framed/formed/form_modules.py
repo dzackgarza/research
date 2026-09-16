@@ -216,9 +216,6 @@ class FormedModuleMorphism(Morphism):
     def is_injective(self) -> bool:
         r"""Return whether the underlying module map is injective."""
         domain = self.domain()
-        codomain = self.codomain()
-        unformed_domain = domain.unformed_module()
-        unformed_codomain = codomain.unformed_module()
 
         if domain in Modules(domain.base_ring()).FinitelyPresented().Torsion():
             images = []
@@ -229,17 +226,7 @@ class FormedModuleMorphism(Morphism):
                 images.append(image)
             return True
 
-        if unformed_domain is not domain or unformed_codomain is not codomain:
-            unformed_morphism = (
-                codomain.forget_form_morphism()
-                * self.module_morphism()
-                * domain.equip_form_morphism()
-            )
-            return unformed_morphism.is_injective()
-
-        assert unformed_domain is not domain or unformed_codomain is not codomain, (
-            "injectivity of this formed morphism requires either finite-torsion enumeration or a represented unformed-module map"
-        )
+        return self.module_morphism().is_injective()
 
     def map_value(self, value):
         source_element = _value_as_module_element(self.domain(), value)
@@ -918,22 +905,14 @@ def _formed_module_base_change(self, ring_map):
     )
 
 
-class _FormModuleConstruction:
-    r"""The selected form and underlying module defining a formed module."""
-
-    def __init__(self, source_form, unformed_module) -> None:
-        self._source_form = source_form
-        self._unformed_module = unformed_module
-
-    def form(self):
-        return self._source_form
-
-    def unformed_module(self):
-        return self._unformed_module
-
-
 class FormModules(OwnedCategoryOverBaseRing):
-    r"""Modules over ``R`` equipped with a form."""
+    r"""Modules over ``R`` equipped with a form.
+
+    ``FormModules(R)(b)`` for a form ``b`` stated on ``M`` is the one entry:
+    the formed module is built on the data of ``M``, retains ``M`` as its
+    datum and answers ``unformed_module()`` with it, and elements pass
+    between the two by coercion, ``F(m)`` and ``M(f)``.
+    """
 
     def an_object(self):
         r"""The hyperbolic plane U."""
@@ -981,49 +960,33 @@ class FormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def __init__(self, source_form, unformed_module, **rest) -> None:
-            self._form_module_construction = _FormModuleConstruction(
-                source_form,
-                unformed_module,
-            )
+            self._preamble_form = source_form
+            self._preamble_unformed_module = unformed_module
             super().__init__(**rest)
 
-        @cached_method
         def form(self):
-            r"""Return the selected form datum on the unformed module."""
-            return self._form_module_construction.form()
+            r"""Return the selected form datum, stated on the unformed module."""
+            return self._preamble_form
 
         @cached_method
         def _formed_form(self):
-            r"""Transport the selected form to this structured module copy."""
-            if self.unformed_module() is self:
-                return self.form()
-            return self.form().pullback(self.forget_form_morphism())
+            r"""The selected form read on this module: its arguments coerce to the unformed module."""
+            form = self.form()
+            module = self.unformed_module()
+            if form.module() is self:
+                return form
+            if _is_quadratic_form(form):
+                return self.quadratic_map(
+                    self.value_module(),
+                    lambda element: form(module(element)),
+                )
+            return self.bilinear_forms(self.value_module())(
+                lambda left, right: form(module(left), module(right))
+            )
 
         def unformed_module(self):
-            r"""Return the module used to equip this represented formed object."""
-            return self._form_module_construction.unformed_module()
-
-        @cached_method
-        def forget_form_morphism(self):
-            r"""Return the canonical module identification from the formed copy."""
-            module = self.unformed_module()
-            return self.module_category().Mor(self, module)(
-                {
-                    label: module.module_generator(label)
-                    for label in self.module_generating_set()
-                }
-            )
-
-        @cached_method
-        def equip_form_morphism(self):
-            r"""Return the inverse canonical module identification into the formed copy."""
-            module = self.unformed_module()
-            return module.module_category().Mor(module, self)(
-                {
-                    label: self.module_generator(label)
-                    for label in self.module_generating_set()
-                }
-            )
+            r"""Return the module the form was stated on: the datum this module is built on."""
+            return self._preamble_unformed_module
 
         def pairing(self, left, right):
             return self.b(left, right)
@@ -1075,9 +1038,9 @@ class FormModules(OwnedCategoryOverBaseRing):
             if left not in self or right not in self:
                 raise TypeError("a form pairs two elements of one formed module")
             form = self.form()
-            if self.unformed_module() is not self:
-                forget = self.forget_form_morphism()
-                left, right = forget(left), forget(right)
+            if form.module() is not self:
+                module = self.unformed_module()
+                left, right = module(left), module(right)
             if _is_quadratic_form(form):
                 return form.b(left, right)
             return form(left, right)
@@ -1087,8 +1050,8 @@ class FormModules(OwnedCategoryOverBaseRing):
             if element not in self:
                 raise TypeError("the norm is defined on elements of this formed module")
             form = self.form()
-            if self.unformed_module() is not self:
-                element = self.forget_form_morphism()(element)
+            if form.module() is not self:
+                element = self.unformed_module()(element)
             if _is_quadratic_form(form):
                 return form(element)
             return form(element, element)
@@ -1300,7 +1263,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 two = ring(2)
                 zero = ring.zero()
                 unformed = self.unformed_module()
-                equip = self.equip_form_morphism()
 
                 def half(value):
                     value = ring(value)
@@ -1311,14 +1273,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                         )
                     return quotient
 
-                for generator in unformed.module_generators():
-                    equipped = equip(generator)
-                    half(self.b(equipped, equipped))
+                def half_norm(element):
+                    element = self(element)
+                    return half(self.b(element, element))
 
-                return unformed.equip_quadratic_form(
-                    ring,
-                    lambda element: half(self.b(equip(element), equip(element))),
-                )
+                for generator in unformed.module_generators():
+                    half_norm(generator)
+
+                return unformed.equip_quadratic_form(ring, half_norm)
 
             def algebraic_correlation_morphism(self):
 
@@ -1712,14 +1674,12 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 "changed quotient values belong to the specialized quadratic-form owner"
             )
             unformed = self.unformed_module()
-            equip = self.equip_form_morphism()
-            form = self._formed_form()
             return unformed.equip_bilinear_form(
                 self.value_module(),
                 lambda left, right: (
-                    form(equip(left) + equip(right))
-                    - form(equip(left))
-                    - form(equip(right))
+                    self.norm(self(left) + self(right))
+                    - self.norm(self(left))
+                    - self.norm(self(right))
                 ),
             )
 
@@ -2028,12 +1988,11 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     quadratic_form = self.form()
                     module = self.unformed_module()
 
-                    equip = self.equip_form_morphism()
                     associated = FormModules(module.base_ring())(
                         module.bilinear_forms(bilinear_values)(
                             lambda left, right: bilinear_values(
                                 value_module.lift(
-                                    quadratic_form.lift_pairing(equip(left), equip(right))
+                                    quadratic_form.lift_pairing(left, right)
                                 )
                             )
                         ),

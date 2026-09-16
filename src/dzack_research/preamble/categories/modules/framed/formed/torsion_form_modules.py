@@ -268,7 +268,7 @@ def _underlying_presented_module(form):
 
 
 def _underlying_element(form, element):
-    return form.forget_form_morphism()(element)
+    return form.unformed_module()(element)
 
 
 def _coordinate_rows(form, generators):
@@ -339,15 +339,13 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
 
     generators = tuple(form(generator) for generator in generators)
     unformed = form.unformed_module()
-    forget = form.forget_form_morphism()
-    unformed_generators = tuple(forget(generator) for generator in generators)
+    unformed_generators = tuple(unformed(generator) for generator in generators)
     underlying_subobject = unformed.subobject_on(unformed_generators)
     underlying_inclusion = underlying_subobject.inclusion()
 
     def ambient_image(label):
         underlying_generator = underlying_subobject.module_generator(label)
-        in_unformed = underlying_inclusion(underlying_generator)
-        return form.equip_form_morphism()(in_unformed)
+        return form(underlying_inclusion(underlying_generator))
 
     selected = tuple(
         ambient_image(label)
@@ -360,8 +358,7 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
         return source.Mono(form)(ambient_image, quadratic=quadratic)
 
     def lift_from_ambient(source, element):
-        element = element if element.parent() is form else form(element)
-        unformed_element = forget(element)
+        unformed_element = unformed(form(element))
         if underlying_inclusion.has_selected_lift():
             lifted = underlying_inclusion.lift(unformed_element)
         else:
@@ -375,7 +372,7 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
             )
             if lifted is None:
                 raise ValueError("the selected ambient element does not lie in this finite torsion subobject")
-        return source.equip_form_morphism()(lifted)
+        return source(lifted)
 
     return category.from_module(
         underlying_subobject,
@@ -863,14 +860,9 @@ def _twisted_module_morphism(module_morphism, twisted_source, twisted_target):
     underlying module.
     """
     source = module_morphism.domain()
-    target = module_morphism.codomain()
     return twisted_source.module_category().Mor(twisted_source, twisted_target)(
         {
-            label: twisted_target.equip_form_morphism()(
-                target.forget_form_morphism()(
-                    module_morphism(source.module_generator(label))
-                )
-            )
+            label: twisted_target(module_morphism(source.module_generator(label)))
             for label in twisted_source.module_generating_set()
         }
     )
@@ -1369,7 +1361,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
     module_isomorphism = _module_invariant_factor_form(module)
     normalized_module = module_isomorphism.codomain()
     preimages = tuple(
-        form.equip_form_morphism()(module_isomorphism.inverse()(generator))
+        form(module_isomorphism.inverse()(generator))
         for generator in normalized_module.module_generators()
     )
     if quadratic:
@@ -1394,20 +1386,16 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
             form.value_module(),
         )
 
-    forward_images = {}
-    for label in form.module_generating_set():
-        source_generator = form.module_generator(label)
-        unformed = form.forget_form_morphism()(source_generator)
-        normalized_unformed = module_isomorphism(unformed)
-        forward_images[label] = normalized.equip_form_morphism()(normalized_unformed)
+    forward_images = {
+        label: normalized(module_isomorphism(module(form.module_generator(label))))
+        for label in form.module_generating_set()
+    }
     forward = form.module_category().Mor(form, normalized)(forward_images)
 
-    inverse_images = {}
-    for label in normalized.module_generating_set():
-        normalized_generator = normalized.module_generator(label)
-        unformed = normalized.forget_form_morphism()(normalized_generator)
-        original_unformed = module_isomorphism.inverse()(unformed)
-        inverse_images[label] = form.equip_form_morphism()(original_unformed)
+    inverse_images = {
+        label: form(module_isomorphism.inverse()(normalized_module(normalized.module_generator(label))))
+        for label in normalized.module_generating_set()
+    }
     inverse = normalized.module_category().Mor(normalized, form)(inverse_images)
     return _torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
@@ -1433,15 +1421,20 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
             unformed_projection = self.presentation().cokernel_projection()
             if unformed_projection.codomain() is not self.unformed_module():
                 raise ArithmeticError("the retained cokernel presentation changed its quotient object")
-            return self.equip_form_morphism() * unformed_projection
+            cover = unformed_projection.domain()
+            return cover.module_category().Mor(cover, self)(
+                {
+                    label: self(unformed_projection(cover.module_generator(label)))
+                    for label in cover.module_generating_set()
+                }
+            )
 
     class ElementMethods:
         def coset_representative(self):
             r"""Return the selected lift of this class to the cokernel cover."""
             formed = self.parent()
             unformed = formed.unformed_module()
-            underlying = formed.forget_form_morphism()(self)
-            coordinates = unformed._framing_coordinates(underlying)
+            coordinates = unformed._framing_coordinates(unformed(self))
             cover = formed.cover()
             return cover.linear_combination(
                 {

@@ -241,6 +241,17 @@ class _SparseFreeModuleParent:
             candidate = underlying()
             if getattr(candidate, "parent", lambda: None)() is self:
                 return candidate
+        if isinstance(value, _SparseFreeModuleElement):
+            # The free functor on the inclusion of label sets: a structured
+            # object built on the data of this module (a formed copy, a
+            # presented cover) has a free module on the same labels, and its
+            # elements read here with the same coefficients.
+            labels = self.module_generating_set()
+            support = value.monomial_coefficients()
+            assert all(label in labels for label in support), (
+                f"{value!r} is supported on labels outside those of {self}"
+            )
+            return self.element_class(self, support)
         if isinstance(value, dict):
             labels = self.module_generating_set()
             ring = self.base_ring()
