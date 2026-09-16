@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     CategoryFunctorMorphism,
     CategoryObject,
     CommutativeSquare,
-    DiagramCategory,
     DirectedSystem,
     DirectSumCategory,
     DirectSumObjects,

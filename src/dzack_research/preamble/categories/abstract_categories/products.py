@@ -33,7 +33,7 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
-class DiagramCategory(_FunctorCategory):
+class _DiagramCategory(_FunctorCategory):
     r"""The functor category ``[J,C]`` of diagrams of one shape."""
 
     @staticmethod
@@ -56,11 +56,11 @@ class DiagramCategory(_FunctorCategory):
         return [Cat().Mor(self.index_category(), self.target_category())]
 
 
-class DirectedSystem(DiagramCategory):
+class DirectedSystem(_DiagramCategory):
     r"""A diagram category whose index category represents a directed order."""
 
 
-class InverseSystem(DiagramCategory):
+class InverseSystem(_DiagramCategory):
     r"""The diagram category ``[J^op,C]`` for inverse systems indexed by ``J``."""
 
     def __init__(self, index_category: Category, target_category: Category) -> None:
@@ -1543,7 +1543,6 @@ __all__ = [
     "BiproductCategory",
     "CoconeMorphism",
     "ConeMorphism",
-    "DiagramCategory",
     "DirectSumCategory",
     "DirectedSystem",
     "FiniteOrdinalCategory",

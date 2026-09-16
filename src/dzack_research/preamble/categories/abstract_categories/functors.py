@@ -545,11 +545,11 @@ class _LimitFunctor(Functor):
     r"""The selected limit functor ``[J,C] -> C`` for one represented shape."""
 
     def __init__(self, codomain: Category, index_category: Category) -> None:
-        from dzack_research.preamble.categories.abstract_categories.products import DiagramCategory
-
         self._index_category = index_category
         self._limits = codomain.Limits(index_category)
-        super().__init__(DiagramCategory(index_category, codomain), codomain)
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        super().__init__(Cat().Mor(index_category, codomain), codomain)
 
     def index_category(self) -> Category:
         return self._index_category
@@ -572,11 +572,11 @@ class _ColimitFunctor(Functor):
     r"""The selected colimit functor ``[J,C] -> C`` for one represented shape."""
 
     def __init__(self, codomain: Category, index_category: Category) -> None:
-        from dzack_research.preamble.categories.abstract_categories.products import DiagramCategory
-
         self._index_category = index_category
         self._colimits = codomain.Colimits(index_category)
-        super().__init__(DiagramCategory(index_category, codomain), codomain)
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        super().__init__(Cat().Mor(index_category, codomain), codomain)
 
     def index_category(self) -> Category:
         return self._index_category
