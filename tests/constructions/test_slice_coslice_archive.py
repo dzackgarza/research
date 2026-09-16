@@ -2,11 +2,8 @@ r"""Archived slice/coslice/subobject semantics on the current owned categories."
 
 from dzack_research.preamble.all import (
     ZZ,
-    FreeModule,
     Modules,
     Sets,
-    set_injection,
-    set_surjection,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -61,7 +58,7 @@ def test_coslice_retains_the_fixed_domain_and_identity_edge() -> None:
 
 
 def test_subobject_is_the_object_with_its_selected_monomorphism_into_the_fixed_base() -> None:
-    module = FreeModule(ZZ, 2)
+    module = ZZ.free_module(2)
     generator = module.module_generator(0)
     submodule = module.subobject_on((generator,))
     inclusion = submodule.inclusion()
@@ -78,8 +75,8 @@ def test_subobject_is_the_object_with_its_selected_monomorphism_into_the_fixed_b
 def test_superobjects_coverings_and_covered_objects_keep_distinct_arrow_classes() -> None:
     one = finite_ordered_set(("*",))
     points = finite_ordered_set(("a", "b"))
-    inclusion = set_injection(one, points, lambda _point: points[0])
-    quotient = set_surjection(points, one, lambda _point: one[0])
+    inclusion = Sets().Mono(one, points)(lambda _point: points[0])
+    quotient = Sets().Epi(points, one)(lambda _point: one[0])
 
     superobjects = Sets().Superobjects(one)
     covering_objects = Sets().CoveringObjects(one)
