@@ -9,6 +9,7 @@ from sage.structure.element import ModuleElement
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
 )
@@ -296,7 +297,9 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def __add__(self, other):
             r"""Return the sum fractional ideal ``I+J``."""
             if other not in FractionalIdeals(self.base_ring()):
-                return NotImplemented
+                if other not in Ideals(self.base_ring()):
+                    return NotImplemented
+                other = Ideals(self.base_ring()).extension_to_fraction_field()(other)
             return self.sum(other)
 
         def intersection(self, other):
@@ -340,7 +343,9 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def __mul__(self, other):
             r"""Return the product fractional ideal ``IJ``."""
             if other not in FractionalIdeals(self.base_ring()):
-                return NotImplemented
+                if other not in Ideals(self.base_ring()):
+                    return NotImplemented
+                other = Ideals(self.base_ring()).extension_to_fraction_field()(other)
             integral = (
                 self in Ideals(self.base_ring())
                 and other in Ideals(self.base_ring())
@@ -382,11 +387,12 @@ class Ideals(OwnedCategoryOverBaseRing):
         return "ideals"
 
     def super_categories(self):
+        return [CommutativeIdeals(self.base_ring())]
 
-        return [
-            FractionalIdeals(self.base_ring()),
-            CommutativeIdeals(self.base_ring()),
-        ]
+    @cached_method
+    def extension_to_fraction_field(self):
+        r"""The functor ``Ideals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""
+        return _FractionalIdealExtension(self)
 
     class ParentMethods:
         def ring(self):
@@ -409,6 +415,60 @@ class Ideals(OwnedCategoryOverBaseRing):
 
 
 
+
+
+def _regular_module_coefficient(regular_module, element):
+    r"""The scalar ``r`` with ``element = r * 1`` in a rank-one regular module."""
+    (label,) = tuple(regular_module.module_generating_set())
+    return regular_module.framing_coefficients(element).get(
+        label, regular_module.base_ring().zero()
+    )
+
+
+def _fraction_field_value(fractional_ideal, element):
+    r"""The element of ``Frac(R)`` that an element of a fractional ideal is."""
+    embedded = fractional_ideal.inclusion()(element).underlying_element()
+    return _regular_module_coefficient(
+        fractional_ideal.fraction_field().regular_module(), embedded
+    )
+
+
+class _FractionalIdealExtension(Functor):
+    r"""``Ideals(R) -> FractionalIdeals(R)``: an ideal as the ``R``-submodule of ``Frac(R)`` it spans."""
+
+    _faithful = True
+
+    def __init__(self, ideals) -> None:
+        super().__init__(ideals, FractionalIdeals(ideals.base_ring()))
+
+    def _apply_object(self, ideal):
+        ring = ideal.base_ring()
+        regular = ring.regular_module()
+        return ring.fractional_ideal(
+            *(
+                _regular_module_coefficient(regular, ideal.inclusion()(generator))
+                for generator in ideal.module_generators()
+            )
+        )
+
+    def _apply_morphism(self, morphism):
+        domain_ideal = morphism.domain()
+        codomain_ideal = morphism.codomain()
+        source = self.object_image(domain_ideal)
+        target = self.object_image(codomain_ideal)
+        codomain_regular = codomain_ideal.base_ring().regular_module()
+
+        def image(label):
+            value = _fraction_field_value(source, source.module_generator(label))
+            moved = codomain_ideal.inclusion()(morphism(domain_ideal(value)))
+            return target(_regular_module_coefficient(codomain_regular, moved))
+
+        return source.module_category().Mor(source, target)(
+            {label: image(label) for label in source.module_generating_set()}
+        )
+
+    def _repr_(self) -> str:
+        return f"Extension of ideals of {self.domain().base_ring()} to fractional ideals"
 
 
 class FractionalIdealInclusion(ModuleEmbedding):
