@@ -125,10 +125,9 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     def _call_(self, modulus=1):
         r"""Return ``Frac(R) / modulus*R`` when the selected engine supports it."""
         base_ring = self.base_ring()
-        if _engine_ring(base_ring) is not SageZZ:
-            raise NotImplementedError(
-                "the active native fraction-field quotient engine currently implements QQ / n ZZ"
-            )
+        assert _engine_ring(base_ring) is SageZZ, (
+            "the represented native fraction-field quotient engine implements QQ / n ZZ"
+        )
         return _from_qmodnz_backend(
             QmodnZ(_engine_element(base_ring, base_ring(modulus)))
         )
@@ -239,10 +238,9 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
         def divisibility_chain(self, index):
             r"""Return the chosen cofinal divisibility chain element ``d_index``."""
-            if _engine_ring(self.base_ring()) is not SageZZ:
-                raise NotImplementedError(
-                    "the active divisibility chain is the factorial chain over ZZ"
-                )
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                "the represented divisibility chain is the factorial chain over ZZ"
+            )
             return self.base_ring()(int(index) + 1).factorial()
 
         def _divisibility_chain_generator(self, label):
@@ -282,10 +280,10 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             countable framing.
             """
             classes = tuple(self(element) for element in module_generators)
-            if self.modulus().is_zero():
-                raise NotImplementedError(
-                    "a finitely generated submodule of the fraction field itself is free, not torsion"
-                )
+            assert not self.modulus().is_zero(), (
+                "the represented cyclic-subobject classification requires nonzero modulus; "
+                "a finitely generated submodule of the fraction field itself is free"
+            )
 
             field = self.fraction_field()
             values = tuple(self.lift(element) for element in classes) + (
