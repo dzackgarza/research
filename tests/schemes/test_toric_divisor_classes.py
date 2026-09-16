@@ -481,11 +481,14 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
     assert h0_line in LineBundleCohomologySpaces(QQ)
     assert h0_line.cohomology_scheme() is plane
     assert h0_line.line_bundle_cohomology_construction().scheme() is plane
+    assert h0_line.toric_line_bundle_cohomology_construction().scheme() is plane
     assert h0_line.cohomology_divisor() == line
     assert h0_line.cohomological_degree() == 0
     assert "_preamble_cohomology_scheme" not in h0_line.__dict__
     assert "_preamble_cohomology_divisor" not in h0_line.__dict__
     assert "_preamble_cohomological_degree" not in h0_line.__dict__
+    assert "_preamble_cohomology_weight_support" not in h0_line.__dict__
+    assert "_preamble_cohomology_weight_pieces" not in h0_line.__dict__
     assert h0_line.dimension() == 3
     assert h1_line.dimension() == 0
     assert h2_canonical.dimension() == 1

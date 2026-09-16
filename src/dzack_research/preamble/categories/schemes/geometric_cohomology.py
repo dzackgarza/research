@@ -37,6 +37,50 @@ from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.refine import refine
 
 
+class _ToricWeightCohomologyConstruction:
+    r"""The toric scheme, divisor, and character defining one weight complex."""
+
+    def __init__(self, scheme, divisor, weight) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._weight = weight
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def weight(self):
+        return self._weight
+
+
+class _ToricLineBundleCohomologyConstruction:
+    r"""The geometric and weight-sum data defining total toric cohomology."""
+
+    def __init__(self, scheme, divisor, degree, weight_support, weight_pieces) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._degree = int(degree)
+        self._weight_support = weight_support
+        self._weight_pieces = dict(weight_pieces)
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def degree(self):
+        return self._degree
+
+    def weight_support(self):
+        return self._weight_support
+
+    def weight_piece(self, weight):
+        return self._weight_pieces[weight]
+
+
 class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
     r"""Shifted reduced simplicial complexes computing one toric sheaf-cohomology weight."""
 
@@ -48,14 +92,17 @@ class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
         return [CochainComplexes(self.base_ring())]
 
     class ParentMethods:
+        def toric_weight_cohomology_construction(self):
+            return self._preamble_toric_weight_cohomology_construction
+
         def cohomology_scheme(self):
-            return self._preamble_geometric_cohomology_scheme
+            return self.toric_weight_cohomology_construction().scheme()
 
         def cohomology_divisor(self):
-            return self._preamble_geometric_cohomology_divisor
+            return self.toric_weight_cohomology_construction().divisor()
 
         def cohomology_weight(self):
-            return self._preamble_geometric_cohomology_weight
+            return self.toric_weight_cohomology_construction().weight()
 
         def comparison_description(self):
             return "H^i(X,O_X(D))_m is identified with shifted reduced simplicial cohomology H~^(i-1)(V_{D,m})"
@@ -76,12 +123,20 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
         return [LineBundleCohomologySpaces(self.base_ring())]
 
     class ParentMethods:
+        def toric_line_bundle_cohomology_construction(self):
+            construction = self.line_bundle_cohomology_construction()
+            if not isinstance(construction, _ToricLineBundleCohomologyConstruction):
+                raise TypeError(
+                    "geometric toric cohomology requires its selected weight-sum construction"
+                )
+            return construction
+
         def cohomology_weight_support(self):
-            return self._preamble_cohomology_weight_support
+            return self.toric_line_bundle_cohomology_construction().weight_support()
 
         def cohomology_weight_piece(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
-            return self._preamble_cohomology_weight_pieces[weight]
+            return self.toric_line_bundle_cohomology_construction().weight_piece(weight)
 
         def cohomology_weight_inclusion(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
@@ -458,9 +513,9 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
             name="Toric weight cohomology complex",
             extra_categories=(ToricWeightCohomologyComplexes(base),),
             extra_construction_data={
-                "geometric_cohomology_scheme": scheme,
-                "geometric_cohomology_divisor": divisor,
-                "geometric_cohomology_weight": weight,
+                "toric_weight_cohomology_construction": _ToricWeightCohomologyConstruction(
+                    scheme, divisor, weight
+                ),
             },
         )
     else:
@@ -480,9 +535,9 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
             name="Toric weight cohomology complex",
             extra_categories=(ToricWeightCohomologyComplexes(base),),
             extra_construction_data={
-                "geometric_cohomology_scheme": scheme,
-                "geometric_cohomology_divisor": divisor,
-                "geometric_cohomology_weight": weight,
+                "toric_weight_cohomology_construction": _ToricWeightCohomologyConstruction(
+                    scheme, divisor, weight
+                ),
             },
         )
     return complex_
@@ -537,11 +592,13 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
     construction_data = {
-        "cohomology_scheme": scheme,
-        "cohomology_divisor": divisor,
-        "cohomological_degree": degree,
-        "cohomology_weight_support": weights,
-        "cohomology_weight_pieces": pieces,
+        "_line_bundle_cohomology_construction": _ToricLineBundleCohomologyConstruction(
+            scheme,
+            divisor,
+            degree,
+            weights,
+            pieces,
+        ),
     }
     if weights.cardinality() == 0:
         total = base._fresh_free_module_on(
