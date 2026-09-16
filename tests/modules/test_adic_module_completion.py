@@ -1,6 +1,7 @@
 """Finite presented modules complete by scalar extension along the ring completion."""
 
 from dzack_research.preamble.all import (
+    Modules,
     QQ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -22,8 +23,10 @@ def test_finite_module_completion_is_the_same_selected_presentation_after_scalar
     ideal = ring.ideal(x)
 
     completed = module.adic_completion(ideal, precision=6)
+    adjunction = Modules(ring).base_change_adjunction(completed.completion_ring().completion_map())
 
     assert completed.is_adically_completed_module()
+    assert adjunction.left_adjoint()(module) is completed
     assert completed.completion_source_module() is module
     assert completed.completion_defining_ideal() is ideal
     assert completed.base_ring() is completed.completion_ring()

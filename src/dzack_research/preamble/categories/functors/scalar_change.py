@@ -43,6 +43,22 @@ class _ScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, module):
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            AdicCompletions,
+        )
+
+        if (
+            self._target_ring in AdicCompletions()
+            and self._target_ring.completion_map() is self.ring_map()
+        ):
+            return module.base_change(
+                self.ring_map(),
+                _extra_construction_data={
+                    "completion_source_module": module,
+                    "completion_defining_ideal": self._target_ring.ideal_of_definition(),
+                    "completion_ring": self._target_ring,
+                },
+            )
 
         if isinstance(module, RestrictedScalarsModuleView):
             if (
