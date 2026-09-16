@@ -27,6 +27,32 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class _CommutativeIdealConstruction:
+    r"""The selected generators, engine realization, and localization source of an ideal."""
+
+    def __init__(
+        self,
+        *,
+        ideal_generators=None,
+        engine_ideal=None,
+        localization_source_ideal=None,
+    ) -> None:
+        self._ideal_generators = (
+            None if ideal_generators is None else tuple(ideal_generators)
+        )
+        self._engine_ideal = engine_ideal
+        self._localization_source_ideal = localization_source_ideal
+
+    def ideal_generators(self):
+        return self._ideal_generators
+
+    def engine_ideal(self):
+        return self._engine_ideal
+
+    def localization_source_ideal(self):
+        return self._localization_source_ideal
+
+
 @cached_function
 def _localized_commutative_ideal(source_ideal, localization_ring):
     r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal.
@@ -107,22 +133,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             localization_source_ideal=None,
             **rest,
         ) -> None:
-            if ideal_generators is not None:
-                self._preamble_ideal_generators = tuple(ideal_generators)
-            if engine_ideal is not None:
-                self._preamble_engine_ideal = engine_ideal
-            # An ideal that arose as the extension of a source ideal along
-            # R -> S^{-1}R keeps that source ideal, and every other ideal has
-            # none.  The field is declared either way, so a reader of this
-            # class meets it here rather than at runtime.
-            self._preamble_localization_source_ideal = localization_source_ideal
+            self._ideal_construction = _CommutativeIdealConstruction(
+                ideal_generators=ideal_generators,
+                engine_ideal=engine_ideal,
+                localization_source_ideal=localization_source_ideal,
+            )
             super().__init__(**rest)
 
         def ring(self):
             return self.base_ring()
 
         def ideal_generators(self):
-            return self._preamble_ideal_generators
+            generators = self._ideal_construction.ideal_generators()
+            assert generators is not None, "a represented commutative ideal must retain its selected generators"
+            return generators
 
         def __eq__(self, other) -> bool:
             r"""Two ideals of one ring are equal when each contains the other.
@@ -173,7 +197,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return equal if op == op_EQ else not equal
 
         def _engine_ideal(self):
-            represented = getattr(self, "_preamble_engine_ideal", None)
+            represented = self._ideal_construction.engine_ideal()
             if represented is not None:
                 return represented
             engine = _engine_ring(self.ring())
@@ -404,7 +428,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
-            source_ideal = self._preamble_localization_source_ideal
+            source_ideal = self._ideal_construction.localization_source_ideal()
             if source_ideal is None:
                 raise NotImplementedError(
                     "contraction is currently represented for ideals selected as localization extensions"
@@ -516,7 +540,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            source_ideal = self._preamble_localization_source_ideal
+            source_ideal = self._ideal_construction.localization_source_ideal()
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
                 structure = ring.localization_submonoid().structure_data()
