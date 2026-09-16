@@ -20,17 +20,21 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ProjectiveModules,
     RestrictedScalarsModules,
 )
-from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
+from dzack_research.preamble.categories.rings.commutative_ideals import (
+    CommutativeIdeals,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedOrders,
     OwnedRings,
     _engine_element,
+    _engine_ring,
     _own_ring,
     _owned_ring,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
@@ -276,6 +280,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             r"""Return ``I+J`` inside the common fraction field."""
             if self.base_ring() is not other.base_ring():
                 raise ValueError("fractional-ideal sum requires the same base ring")
+            other = _in_fraction_field(self.base_ring(), other)
             integral = (
                 self in Ideals(self.base_ring())
                 and other in Ideals(self.base_ring())
@@ -296,16 +301,15 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         def __add__(self, other):
             r"""Return the sum fractional ideal ``I+J``."""
-            if other not in FractionalIdeals(self.base_ring()):
-                if other not in Ideals(self.base_ring()):
-                    return NotImplemented
-                other = Ideals(self.base_ring()).extension_to_fraction_field()(other)
+            if other not in FractionalIdeals(self.base_ring()) and other not in Ideals(self.base_ring()):
+                return NotImplemented
             return self.sum(other)
 
         def intersection(self, other):
             r"""Return ``I intersect J`` inside the common fraction field."""
             if self.base_ring() is not other.base_ring():
                 raise ValueError("fractional-ideal intersection requires the same base ring")
+            other = _in_fraction_field(self.base_ring(), other)
             integral = (
                 self in Ideals(self.base_ring())
                 and other in Ideals(self.base_ring())
@@ -342,10 +346,9 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         def __mul__(self, other):
             r"""Return the product fractional ideal ``IJ``."""
-            if other not in FractionalIdeals(self.base_ring()):
-                if other not in Ideals(self.base_ring()):
-                    return NotImplemented
-                other = Ideals(self.base_ring()).extension_to_fraction_field()(other)
+            if other not in FractionalIdeals(self.base_ring()) and other not in Ideals(self.base_ring()):
+                return NotImplemented
+            other = _in_fraction_field(self.base_ring(), other)
             integral = (
                 self in Ideals(self.base_ring())
                 and other in Ideals(self.base_ring())
@@ -431,6 +434,14 @@ def _fraction_field_value(fractional_ideal, element):
     return _regular_module_coefficient(
         fractional_ideal.fraction_field().regular_module(), embedded
     )
+
+
+def _in_fraction_field(ring, ideal):
+    r"""``ideal`` as a fractional ideal of ``ring``; an integral ideal is extended along ``R -> Frac(R)``."""
+    if ideal in FractionalIdeals(ring):
+        return ideal
+    assert ideal in Ideals(ring), f"{ideal} is not an ideal or fractional ideal of {ring}"
+    return Ideals(ring).extension_to_fraction_field()(ideal)
 
 
 class _FractionalIdealExtension(Functor):
