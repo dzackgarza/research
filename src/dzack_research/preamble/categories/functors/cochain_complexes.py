@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.modules.graded_modules import GradedModu
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-class CochainUnderlyingGradedModuleFunctor(Functor):
+class _CochainUnderlyingGradedModuleFunctor(Functor):
     r"""Forget the differential while retaining the same graded module."""
 
     def __init__(self, base_ring) -> None:
@@ -24,9 +24,7 @@ class CochainUnderlyingGradedModuleFunctor(Functor):
 
 @cached_function
 def _cochain_underlying_graded_module_functor(base_ring):
-    return CochainUnderlyingGradedModuleFunctor(base_ring)
+    return _CochainUnderlyingGradedModuleFunctor(base_ring)
 
 
-__all__ = [
-    "CochainUnderlyingGradedModuleFunctor",
-]
+__all__ = []

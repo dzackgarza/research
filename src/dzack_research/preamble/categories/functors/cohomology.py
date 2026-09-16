@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.modules.pure.modules import FinitelyPres
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-class CohomologyFunctor(Functor):
+class _CohomologyFunctor(Functor):
     r"""The degree-``p`` cohomology functor ``H^p : Coch_R -> Mod_R``."""
 
     def __init__(self, base_ring, degree) -> None:
@@ -65,7 +65,7 @@ class CohomologyFunctor(Functor):
         return f"H^{self.degree()} on cochain complexes over {self.base_ring()}"
 
 
-class DeRhamCohomologyFunctor(_CompositeFunctor):
+class _DeRhamCohomologyFunctor(_CompositeFunctor):
     r"""The literal composite ``H^p ∘ U_Coch ∘ DR_R``."""
 
     def __init__(self, base_ring, degree) -> None:
@@ -92,7 +92,7 @@ class DeRhamCohomologyFunctor(_CompositeFunctor):
         return f"H^{{{self.degree()}}}_dR(-/{self.base_ring()})"
 
 
-class CohomologyAlgebraFunctor(Functor):
+class _CohomologyAlgebraFunctor(Functor):
     r"""The graded cohomology-algebra functor ``H^*`` on represented DGAs."""
 
     def __init__(self, base_ring) -> None:
@@ -120,7 +120,7 @@ class CohomologyAlgebraFunctor(Functor):
         return f"graded cohomology algebra over {self.base_ring()}"
 
 
-class DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
+class _DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
     r"""The composite ``H^* ∘ DR_R``."""
 
     def __init__(self, base_ring) -> None:
@@ -139,28 +139,23 @@ class DeRhamCohomologyAlgebraFunctor(_CompositeFunctor):
 
 
 @cached_function
-def _cohomology_functor(base_ring, degree) -> CohomologyFunctor:
-    return CohomologyFunctor(base_ring, degree)
+def _cohomology_functor(base_ring, degree) -> _CohomologyFunctor:
+    return _CohomologyFunctor(base_ring, degree)
 
 
 @cached_function
-def _de_rham_cohomology_functor(base_ring, degree) -> DeRhamCohomologyFunctor:
-    return DeRhamCohomologyFunctor(base_ring, degree)
+def _de_rham_cohomology_functor(base_ring, degree) -> _DeRhamCohomologyFunctor:
+    return _DeRhamCohomologyFunctor(base_ring, degree)
 
 
 @cached_function
-def _cohomology_algebra_functor(base_ring) -> CohomologyAlgebraFunctor:
-    return CohomologyAlgebraFunctor(base_ring)
+def _cohomology_algebra_functor(base_ring) -> _CohomologyAlgebraFunctor:
+    return _CohomologyAlgebraFunctor(base_ring)
 
 
 @cached_function
-def _de_rham_cohomology_algebra_functor(base_ring) -> DeRhamCohomologyAlgebraFunctor:
-    return DeRhamCohomologyAlgebraFunctor(base_ring)
+def _de_rham_cohomology_algebra_functor(base_ring) -> _DeRhamCohomologyAlgebraFunctor:
+    return _DeRhamCohomologyAlgebraFunctor(base_ring)
 
 
-__all__ = [
-    "CohomologyFunctor",
-    "CohomologyAlgebraFunctor",
-    "DeRhamCohomologyFunctor",
-    "DeRhamCohomologyAlgebraFunctor",
-]
+__all__ = []

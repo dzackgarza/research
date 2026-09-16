@@ -180,21 +180,6 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
 )
 
 # Explicit redundant aliases below are public session exports, not private imports.
-from dzack_research.preamble.categories.functors.cochain_complexes import (
-    CochainUnderlyingGradedModuleFunctor as CochainUnderlyingGradedModuleFunctor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    CohomologyAlgebraFunctor as CohomologyAlgebraFunctor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    CohomologyFunctor as CohomologyFunctor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    DeRhamCohomologyAlgebraFunctor as DeRhamCohomologyAlgebraFunctor,
-)
-from dzack_research.preamble.categories.functors.cohomology import (
-    DeRhamCohomologyFunctor as DeRhamCohomologyFunctor,
-)
 from dzack_research.preamble.categories.functors.core import (
     Adjunction as Adjunction,
 )
@@ -206,15 +191,6 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
-)
-from dzack_research.preamble.categories.functors.de_rham import (
-    DegreeZeroDGAFunctor as DegreeZeroDGAFunctor,
-)
-from dzack_research.preamble.categories.functors.de_rham import (
-    DeRhamAdjunction as DeRhamAdjunction,
-)
-from dzack_research.preamble.categories.functors.de_rham import (
-    DeRhamFunctor as DeRhamFunctor,
 )
 from dzack_research.preamble.categories.functors.linear_constructions import (
     BiproductBifunctor as BiproductBifunctor,

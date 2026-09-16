@@ -66,7 +66,7 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
     )(image)
 
 
-class DeRhamFunctor(Functor):
+class _DeRhamFunctor(Functor):
     r"""``DR_R : CAlg_R -> SCDGA_R^{>=0}`` on represented affine algebras."""
 
     def __init__(self, base_ring) -> None:
@@ -91,7 +91,7 @@ class DeRhamFunctor(Functor):
         return f"Algebraic de Rham functor over {self.base_ring()}"
 
 
-class DegreeZeroDGAFunctor(Functor):
+class _DegreeZeroDGAFunctor(Functor):
     r"""Degree zero ``(-)^0 : SCDGA_R^{>=0} -> CAlg_R``."""
 
     def __init__(self, base_ring) -> None:
@@ -132,7 +132,7 @@ class DegreeZeroDGAFunctor(Functor):
         return f"Degree-zero DGA functor over {self.base_ring()}"
 
 
-class DeRhamAdjunction(Adjunction):
+class _DeRhamAdjunction(Adjunction):
     r"""The adjunction ``DR_R ⊣ (-)^0``.
 
     On the represented algebras the Hom-set bijection is the universal
@@ -141,7 +141,7 @@ class DeRhamAdjunction(Adjunction):
 
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
-        super().__init__(DeRhamFunctor(self._base_ring), DegreeZeroDGAFunctor(self._base_ring))
+        super().__init__(_DeRhamFunctor(self._base_ring), _DegreeZeroDGAFunctor(self._base_ring))
 
     def base_ring(self):
         return self._base_ring
@@ -164,22 +164,18 @@ class DeRhamAdjunction(Adjunction):
 
 
 @cached_function
-def _de_rham_functor(base_ring) -> DeRhamFunctor:
-    return DeRhamFunctor(base_ring)
+def _de_rham_functor(base_ring) -> _DeRhamFunctor:
+    return _DeRhamFunctor(base_ring)
 
 
 @cached_function
-def _degree_zero_dga_functor(base_ring) -> DegreeZeroDGAFunctor:
-    return DegreeZeroDGAFunctor(base_ring)
+def _degree_zero_dga_functor(base_ring) -> _DegreeZeroDGAFunctor:
+    return _DegreeZeroDGAFunctor(base_ring)
 
 
 @cached_function
-def _de_rham_adjunction(base_ring) -> DeRhamAdjunction:
-    return DeRhamAdjunction(base_ring)
+def _de_rham_adjunction(base_ring) -> _DeRhamAdjunction:
+    return _DeRhamAdjunction(base_ring)
 
 
-__all__ = [
-    "DeRhamAdjunction",
-    "DeRhamFunctor",
-    "DegreeZeroDGAFunctor",
-]
+__all__ = []
