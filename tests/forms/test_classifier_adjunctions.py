@@ -164,7 +164,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
         module_map,
         free_source,
     )
-    recovered = adjunction.hom_set_isomorphism_forward(transpose_inverse)
+    recovered = adjunction.hom_set_isomorphism_forward(transpose_inverse, source)
     _assert_module_maps_agree(recovered, module_map)
 
     # The universal value map is forced, not selected independently.

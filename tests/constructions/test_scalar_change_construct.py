@@ -115,7 +115,7 @@ def test_the_base_change_adjunction(ring_map) -> None:
     forward = extended.Mor(target_module)(
         {0: target_module.module_generator(0), 1: 2 * target_module.module_generator(0)}
     )
-    transposed = adjunction.hom_set_isomorphism_forward(forward)
+    transposed = adjunction.hom_set_isomorphism_forward(forward, module)
     assert transposed.domain() is module
     assert transposed(module.module_generator(1)) == restricted(2 * target_module.module_generator(0))
     assert adjunction.hom_set_isomorphism_inverse(transposed, target_module) == forward
@@ -189,6 +189,6 @@ def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring)
     assert adjunction.unit(module).domain() is module
     assert adjunction.counit(other).codomain() is other
     evaluation = tensored.Mor(other)({label: other.zero() for label in range(6)})
-    transposed = adjunction.hom_set_isomorphism_forward(evaluation)
+    transposed = adjunction.hom_set_isomorphism_forward(evaluation, module)
     assert transposed.domain() is module
     assert adjunction.hom_set_isomorphism_inverse(transposed, other) == evaluation

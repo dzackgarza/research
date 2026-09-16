@@ -58,7 +58,7 @@ def test_two_preimages_of_one_codomain_object_remain_distinct_presentations() ->
     source = DiscreteCategory(labels)
     target = finite_ordered_set((0, 1))
     functor = _ConstantPresentedSetFunctor(source, target)
-    image = ImageOfFunctor(functor)
+    image = functor.Image()
 
     left = image(source("left"))
     right = image(source("right"))
@@ -68,12 +68,7 @@ def test_two_preimages_of_one_codomain_object_remain_distinct_presentations() ->
     assert right.preimage() is source("right")
     assert left.underlying_image() is target
     assert right.underlying_image() is target
-    try:
-        functor.chosen_preimage(target)
-    except ValueError as error:
-        assert "multiple chosen preimages" in str(error)
-    else:
-        raise AssertionError("the raw functor provenance collapsed two presentations")
+    assert image is ImageOfFunctor(functor)
 
 
 def test_functor_image_homs_wrap_nonidentity_codomain_arrows_and_forget_them_faithfully() -> None:

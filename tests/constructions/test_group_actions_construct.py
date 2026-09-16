@@ -168,7 +168,9 @@ def test_frobenius_reciprocity_over_the_rationals() -> None:
     equivariant = induced.Mor(permutation)
     assert equivariant.zero().domain() is induced
     counit = adjunction.counit(permutation)
-    transposed = adjunction.hom_set_isomorphism_forward(counit)
+    transposed = adjunction.hom_set_isomorphism_forward(
+        counit, adjunction.right_adjoint()(permutation)
+    )
     assert transposed.domain() == adjunction.right_adjoint()(permutation)
     assert adjunction.hom_set_isomorphism_inverse(transposed, permutation) == counit
     restricted = Modules(ZZ[group]).restriction(subgroup)(permutation)

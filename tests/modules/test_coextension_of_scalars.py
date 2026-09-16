@@ -95,7 +95,7 @@ def test_restriction_is_left_adjoint_to_coextension() -> None:
     weights = restricted.module_category().Mor(restricted, target)(
         {label: (1 + int(labels.ranking_map()(label))) * target.module_generator(0) for label in labels}
     )
-    transposed = adjunction.hom_set_isomorphism_forward(weights)
+    transposed = adjunction.hom_set_isomorphism_forward(weights, free_line)
     assert transposed.domain() is free_line
     recovered = adjunction.hom_set_isomorphism_inverse(transposed, target)
     for label in labels:
@@ -136,7 +136,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     weights = forgotten.module_category().Mor(forgotten, target)(
         {0: target.module_generator(0), 1: 3 * target.module_generator(0)}
     )
-    transposed = adjunction.hom_set_isomorphism_forward(weights)
+    transposed = adjunction.hom_set_isomorphism_forward(weights, swapped)
     assert transposed.domain() is swapped
     recovered = adjunction.hom_set_isomorphism_inverse(transposed, target)
     for label in forgotten.module_generating_set():

@@ -201,8 +201,8 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     linear = source.module_category().Mor(source, target_underlying)(
         {0: target_underlying.from_realization(2 * target_generator)}
     )
-    extension = adjunction.hom_set_isomorphism_inverse(linear)
-    recovered = adjunction.hom_set_isomorphism_forward(extension)
+    extension = adjunction.hom_set_isomorphism_inverse(linear, target_algebra)
+    recovered = adjunction.hom_set_isomorphism_forward(extension, source)
     source_generator = source.module_generator(0)
     _assert_module_maps_agree(
         recovered,
@@ -212,7 +212,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
     free_source = free(source)
     x = free_source.algebra_generator(0)
-    reextended = adjunction.hom_set_isomorphism_inverse(recovered)
+    reextended = adjunction.hom_set_isomorphism_inverse(recovered, target_algebra)
     _assert_algebra_maps_agree(
         reextended,
         extension,
@@ -255,7 +255,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
             {0: smaller_module.module_generator(0)}
         )
     )
-    postcomposed = adjunction.hom_set_isomorphism_forward(algebra_map * extension)
+    postcomposed = adjunction.hom_set_isomorphism_forward(algebra_map * extension, source)
     transported = underlying(algebra_map) * recovered
     _assert_module_maps_agree(
         postcomposed,

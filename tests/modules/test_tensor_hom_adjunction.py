@@ -73,7 +73,7 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
         },
     )
     morphism = tensor_source.from_bilinear(beta)
-    transpose = adjunction.hom_set_isomorphism_forward(morphism)
+    transpose = adjunction.hom_set_isomorphism_forward(morphism, source)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
     _assert_module_maps_agree(recovered, morphism)
 

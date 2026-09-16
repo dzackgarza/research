@@ -120,29 +120,17 @@ class Functor(SageObject):
             )
         return self._record_object_image(obj, image)
 
-    def chosen_preimage(self, image: Parent | Map) -> Parent | Map:
-        r"""Return the unique source recorded for this exact functor image.
+    @cached_method
+    def Image(self):
+        r"""Return the category of functor outputs with an explicit chosen preimage."""
+        from dzack_research.preamble.categories.abstract_categories.functor_images import (
+            ImageOfFunctor,
+        )
 
-        Object and morphism images share the same provenance store, so reverse
-        lookup must inspect the corresponding half of each record rather than
-        silently treating every target as an object.
-        """
-        matches: list[Parent | Map] = []
-        for record in self._provenance.values():
-            if record.target_object is image and record.source_object is not None:
-                matches.append(record.source_object)
-            if record.target_morphism is image and record.source_morphism is not None:
-                matches.append(record.source_morphism)
-        if not matches:
-            raise ValueError(f"{image} has no chosen preimage recorded by {self}")
-        if len(matches) != 1:
-            raise ValueError(
-                f"{image} has multiple chosen preimages under {self}; state the source explicitly"
-            )
-        return matches[0]
+        return ImageOfFunctor(self)
 
     def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
-        r"""Use a provenance-validated exact image object for ``preimage``."""
+        r"""Use the stated exact object as this functor instance's forward image of ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError("an adopted functor image has endpoints outside the functor")
         return self._record_object_image(preimage, image)
@@ -327,11 +315,6 @@ class IdentityFunctor(Functor):
     def _apply_morphism(self, morphism: Map) -> Map:
         return morphism
 
-    def chosen_preimage(self, image: Parent) -> Parent:
-        if image not in self.domain():
-            raise ValueError(f"{image} is not an object of {self.domain()}")
-        return image
-
     def factors(self) -> tuple[()]:
         return ()
 
@@ -363,45 +346,13 @@ class _CategoryInclusionFunctor(Functor):
     def _apply_morphism(self, morphism: Map) -> Map:
         return morphism
 
-    def chosen_preimage(self, image: Parent) -> Parent:
-        if image not in self.domain():
-            raise ValueError(f"{image} is not in the included subcategory {self.domain()}")
-        return image
-
     def _repr_(self):
         return f"Inclusion {self.domain()} -> {self.codomain()}"
 
 
 
 class _CompositeFunctor(Functor):
-    r"""The composite ``second ∘ first``.
-
-    Unverified specimen: a factor can have more recorded preimages than the
-    composite. That does not change the composite's already selected image::
-
-        sage: from dzack_research.preamble.categories.abstract_categories.cat import Cat
-        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-        sage: labels = finite_ordered_set(("a", "b"))
-        sage: source = DiscreteCategory(labels)
-        sage: points = finite_ordered_set((0, 1))
-        sage: first = IdentityFunctor(source)
-        sage: second = Cat().Mor(source, Sets()).constant_functor(points)
-        sage: composite = first.then(second)
-        sage: composite(source("a")) is points
-        True
-        sage: second(source("b")) is points
-        True
-        sage: composite.chosen_preimage(points) is source("a")
-        True
-        sage: composite.adopt_object_image(source("a"), points) is points
-        True
-        sage: first(source("b")) is source("b")
-        True
-        sage: composite.adopt_object_image(source("b"), points) is points
-        True
-    """
+    r"""The composite ``second ∘ first`` with the ordinary cached forward action."""
 
     def __init__(self, first: Functor, second: Functor) -> None:
         if first.codomain() != second.domain():
@@ -416,15 +367,6 @@ class _CompositeFunctor(Functor):
     def _apply_morphism(self, morphism: Map) -> Map:
         return self._second(self._first(morphism))
 
-    def chosen_preimage(self, image: Parent) -> Parent:
-        # The composite may have seen fewer inputs than either factor.  Its
-        # own chosen preimages are authoritative; a factor's independent
-        # provenance must not introduce ambiguity into a recorded choice.
-        if any(record.target_object is image for record in self._provenance.values()):
-            return super().chosen_preimage(image)
-        middle = self._second.chosen_preimage(image)
-        return self._first.chosen_preimage(middle)
-
     def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError("an adopted composite image has endpoints outside the functor")
@@ -433,14 +375,12 @@ class _CompositeFunctor(Functor):
             if chosen is not image:
                 raise ValueError("the composite already selected a different image of this source")
             return chosen
-        middle = self._first._cached_object_image(preimage)
-        if middle is None:
-            middle = self._second.chosen_preimage(image)
-        target = self._second._cached_object_image(middle)
-        if target is not None and target is not image:
-            raise ValueError("the second factor already selected a different image of the intermediate object")
-        self._first.adopt_object_image(preimage, middle)
-        self._second.adopt_object_image(middle, image)
+        middle = self._first(preimage)
+        target = self._second(middle)
+        if target is not image:
+            raise ValueError(
+                "the supplied image is not the composite's selected forward image of this source"
+            )
         return super().adopt_object_image(preimage, image)
 
     def factors(self) -> tuple[Functor, ...]:
@@ -564,23 +504,25 @@ class Adjunction(SageObject):
     def hom_set_isomorphism_forward(
         self,
         morphism: Morphism,
-        source: Parent | None = None,
+        source: Parent,
     ) -> Morphism:
-        r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A``."""
-        if source is None:
-            source = self.left_adjoint().chosen_preimage(morphism.domain())
-        self.left_adjoint().adopt_object_image(source, morphism.domain())
+        r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A`` for the stated ``A``."""
+        if source not in self.left_adjoint().domain():
+            raise TypeError("the stated adjunction source is outside the left-adjoint domain")
+        if self.left_adjoint()(source) is not morphism.domain():
+            raise ValueError("the morphism domain is not the left-adjoint image of the stated source")
         return self.right_adjoint()(morphism) * self.unit(source)
 
     def hom_set_isomorphism_inverse(
         self,
         morphism: Morphism,
-        codomain: Parent | None = None,
+        codomain: Parent,
     ) -> Morphism:
-        r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)``."""
-        if codomain is None:
-            codomain = self.right_adjoint().chosen_preimage(morphism.codomain())
-        self.right_adjoint().adopt_object_image(codomain, morphism.codomain())
+        r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)`` for the stated ``B``."""
+        if codomain not in self.right_adjoint().domain():
+            raise TypeError("the stated adjunction codomain is outside the right-adjoint domain")
+        if self.right_adjoint()(codomain) is not morphism.codomain():
+            raise ValueError("the morphism codomain is not the right-adjoint image of the stated codomain")
         return self.counit(codomain) * self.left_adjoint()(morphism)
 
     def unit_transformation(self) -> NaturalTransformation:

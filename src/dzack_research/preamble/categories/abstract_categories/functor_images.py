@@ -171,10 +171,6 @@ class ImageOfFunctor(OwnedCategory):
 
     __call__ = object
 
-    def adopt(self, preimage, image):
-        self.functor().adopt_object_image(preimage, image)
-        return self.object(preimage)
-
     def __contains__(self, candidate) -> bool:
         return getattr(candidate, "category", lambda: None)() is self
 

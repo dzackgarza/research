@@ -261,7 +261,7 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
         algebra_map,
         codomain=target,
     )
-    recovered = adjunction.hom_set_isomorphism_forward(transpose)
+    recovered = adjunction.hom_set_isomorphism_forward(transpose, source)
     source_dr = adjunction.left_adjoint()(source)
 
     assert recovered(x) == algebra_map(x)

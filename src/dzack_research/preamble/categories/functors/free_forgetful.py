@@ -70,12 +70,9 @@ class _FreeForgetfulAdjunction(Adjunction):
     def hom_set_isomorphism_forward(self, morphism, source=None):
         r"""Transpose ``f:F_R(S)->M`` using ``F_R(S)``'s selected framing.
 
-        The generic provenance store correctly reports ambiguity when several
-        source objects have been recorded with one image.  A free module is
-        stronger data: its constructor retains the actual generating set ``S``.
-        That selected framing therefore determines the adjunction source even
-        when unrelated provenance records happen to share the same free-module
-        parent.
+        A free module retains the actual generating set ``S`` in its constructor-
+        owned framing.  That selected framing determines the adjunction source
+        without recovering a preimage from a reverse functor cache.
         """
         if source is None:
             source = morphism.domain().module_generating_set()

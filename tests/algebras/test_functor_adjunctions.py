@@ -67,11 +67,11 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     phi = extended_source.Mor(target)(
         {"x": target.algebra_generator("y")}
     )
-    transpose = adjunction.hom_set_isomorphism_forward(phi)
+    transpose = adjunction.hom_set_isomorphism_forward(phi, source)
     assert transpose(source.algebra_generator("x")) == restricted_target(
         target.algebra_generator("y")
     )
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose)
+    recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
     _assert_algebra_maps_agree(recovered, phi)
 
     # Check the inverse composite in the other direction as well, using the
@@ -79,8 +79,8 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     psi = source.Mor(restricted_target)(
         {"x": -restricted_target.algebra_generator(algebra_label)}
     )
-    inverse_transpose = adjunction.hom_set_isomorphism_inverse(psi)
-    recovered_psi = adjunction.hom_set_isomorphism_forward(inverse_transpose)
+    inverse_transpose = adjunction.hom_set_isomorphism_inverse(psi, target)
+    recovered_psi = adjunction.hom_set_isomorphism_forward(inverse_transpose, source)
     _assert_algebra_maps_agree(recovered_psi, psi)
 
 

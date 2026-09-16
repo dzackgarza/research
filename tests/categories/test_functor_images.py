@@ -1,5 +1,3 @@
-import pytest
-
 from dzack_research.preamble.all import (
     Cat,
     DiscreteCategory,
@@ -38,21 +36,19 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     assert carried(source.object_set()(0)) == target.object_set()(1)
 
 
-def test_functor_provenance_records_objects_and_morphisms_in_one_store() -> None:
+def test_functor_forward_cache_and_chosen_image_presentations_are_distinct_data() -> None:
     ring = __import__("dzack_research.preamble.all", fromlist=["ZZ"]).ZZ
     free = Sets().free_module_adjunction(ring).left_adjoint()
     source = Sets.Δ[0]
 
     image = free(source)
     assert free(source) is image
-    assert free.chosen_preimage(image) is source
 
     identity = Sets().Mor(source, source).identity()
     image_identity = free(identity)
     assert free(identity) is image_identity
-    assert free.chosen_preimage(image_identity) is identity
 
-    second_source = Sets.Δ[1]
-    free.adopt_object_image(second_source, image)
-    with pytest.raises(ValueError, match="multiple chosen preimages"):
-        free.chosen_preimage(image)
+    presented = free.Image()(source)
+    assert presented.preimage() is source
+    assert presented.underlying_image() is image
+    assert presented.constructing_functor() is free

@@ -110,7 +110,9 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     rendered(unit)
     assert unit.domain() is trivial
     assert counit.codomain() is permutation
-    transposed = adjunction.hom_set_isomorphism_forward(counit)
+    transposed = adjunction.hom_set_isomorphism_forward(
+        counit, adjunction.right_adjoint()(permutation)
+    )
     assert adjunction.hom_set_isomorphism_inverse(transposed, permutation) == counit
     if coefficients == "QQ":
         assert induced.character()(group.one()) == induced.module_rank()

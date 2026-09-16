@@ -78,7 +78,7 @@ def test_free_forgetful_adjunction_over_every_commutative_ring(commutative_ring)
     assert counit.is_surjective()
 
     phi = free.Mor(module)({0: module.module_generator(0), 1: 2 * module.module_generator(2)})
-    transpose = adjunction.hom_set_isomorphism_forward(phi)
+    transpose = adjunction.hom_set_isomorphism_forward(phi, labels)
     assert transpose(labels(1)) == 2 * module.module_generator(2)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose, module)
     assert recovered == phi
