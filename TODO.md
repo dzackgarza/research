@@ -695,7 +695,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** choose names such as `module_generators`, `group_generators`, `ideal_generators`, `lattice_basis`, `dual_module`, `dual_lattice`, `dual_sheaf`, etc. according to the actual codomain; remove aliases that preserve the ambiguous spelling and migrate every ordinary consumer in the same unit.
   **Acceptance:** each audited public name identifies what is generated/dualized/based without knowing the receiver's implementation class, and no banned bare alias remains on the public surface.
 
-- [ ] **`categorical-representation-convergence`**. **Needs:** none.
+- [x] **`categorical-representation-convergence`**. **Needs:** none.
   Collapse parallel representations of equivalent categorical/universal data into one authoritative representation (`ARC-14`, `STY-51`, `STY-54`).
   **Observed gap:** contravariant functors are independently modelled instead of ordinary functors from an opposite category; bifunctors duplicate product-domain functor machinery; adjunctions independently require unit, counit, and both Hom transposes.
   **Owners:** `Functor(C^op,D)`, functors out of product categories, natural transformations, adjunction/unit-counit data, and the common Hom/universal-construction calculus.
