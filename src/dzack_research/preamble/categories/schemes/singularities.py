@@ -112,6 +112,28 @@ class PlaneLinearRightEquivalence(SageObject):
         return f"Linear right-equivalence {self.source()} -> {self.target()}"
 
 
+class _ZariskiTangentConstruction(SageObject):
+    r"""The selected tangent space together with its ambient embedding."""
+
+    def __init__(self, singularity, tangent_space, ambient_tangent_space, embedding) -> None:
+        self._singularity = singularity
+        self._tangent_space = tangent_space
+        self._ambient_tangent_space = ambient_tangent_space
+        self._embedding = embedding
+
+    def singularity(self):
+        return self._singularity
+
+    def tangent_space(self):
+        return self._tangent_space
+
+    def ambient_tangent_space(self):
+        return self._ambient_tangent_space
+
+    def embedding(self):
+        return self._embedding
+
+
 class IsolatedHypersurfaceSingularity:
     r"""A hypersurface germ at the origin with finite Jacobian algebra."""
 
@@ -252,14 +274,14 @@ class IsolatedHypersurfaceSingularity:
         return ring.base_ring()._fresh_free_module_on(ring.algebra_generating_set())
 
     @cached_method
-    def zariski_tangent_space(self):
-        r"""Return ``ker(df_0)`` as a finite free vector space over the residue field.
+    def zariski_tangent_construction(self):
+        r"""Return the selected ``ker(df_0)`` together with its ambient embedding.
 
         For a hypersurface ``f=0`` at the coordinate origin, the Zariski
         tangent space is the kernel of the linear form whose coefficients are
-        the constant terms of the partial derivatives of ``f``.  Computing
-        that kernel in the selected field backend gives an actual basis, which
-        is retained by :meth:`zariski_tangent_embedding`.
+        the constant terms of the partial derivatives of ``f``.  The selected
+        backend basis and its inclusion are retained by this construction,
+        rather than attached to the output module as provenance fields.
         """
         ring = self.polynomial_ring()
         base = ring.base_ring()
@@ -271,26 +293,12 @@ class IsolatedHypersurfaceSingularity:
         differential = matrix(base_engine, 1, len(coefficients), coefficients)
         kernel_basis = tuple(differential.right_kernel().basis())
         labels = finite_ordered_set(range(len(kernel_basis)))
-        tangent = base._fresh_free_module_on(
-            labels,
-            _extra_construction_data={
-                "ambient_tangent_space": self.ambient_tangent_space(),
-                "ambient_coordinate_vectors": kernel_basis,
-                "source_singularity": self,
-            },
-        )
-        return tangent
-
-    @cached_method
-    def zariski_tangent_embedding(self):
-        r"""Return the represented inclusion ``T_0 X -> T_0 A^n``."""
-        tangent = self.zariski_tangent_space()
+        tangent = base._fresh_free_module_on(labels)
         ambient = self.ambient_tangent_space()
         ambient_labels = tuple(ambient.module_generating_set())
-        vectors = tangent._preamble_ambient_coordinate_vectors
 
         def image(label):
-            vector = vectors[int(label)]
+            vector = kernel_basis[int(label)]
             return ambient.linear_combination(
                 {
                     ambient_label: ambient.base_ring()._from_engine_element(coefficient)
@@ -299,7 +307,18 @@ class IsolatedHypersurfaceSingularity:
                 }
             )
 
-        return tangent.module_category().Mor(tangent, ambient)(image)
+        embedding = tangent.module_category().Mor(tangent, ambient)(image)
+        return _ZariskiTangentConstruction(self, tangent, ambient, embedding)
+
+    @cached_method
+    def zariski_tangent_space(self):
+        r"""Return ``ker(df_0)`` as a finite free vector space over the residue field."""
+        return self.zariski_tangent_construction().tangent_space()
+
+    @cached_method
+    def zariski_tangent_embedding(self):
+        r"""Return the represented inclusion ``T_0 X -> T_0 A^n``."""
+        return self.zariski_tangent_construction().embedding()
 
     def is_regular_at_origin(self) -> bool:
         r"""Return the hypersurface Jacobian criterion at the selected origin."""
