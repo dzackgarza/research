@@ -864,8 +864,6 @@ def NodalCubicNormalization():
         ((s**2 - t**2) * t, s * (s**2 - t**2), t**3),
     )
     normalization = curve.corestriction(ambient)
-    normalization._preamble_normalization_target = curve
-    normalization._preamble_normalization_source = line
     return normalization
 
 
@@ -960,9 +958,6 @@ class NodalCubicIntegralTopology(SageObject):
         source = self.normalization_fundamental_group()
         target = self.fundamental_group()
         induced = source.Mor(target)(())
-        induced._preamble_pointed_scheme_morphism = self.normalization_morphism()
-        induced._preamble_source_base_point = self.normalization_base_point()
-        induced._preamble_target_base_point = self.base_point()
         return induced
 
     @cached_method

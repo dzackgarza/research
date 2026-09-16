@@ -57,7 +57,6 @@ class CommutatorLieAlgebraFunctor(Functor):
         )
         result = Algebras(self.base_ring()).Lie()(module, commutator)
         refine(result, CommutatorLieAlgebras(self.base_ring()))
-        result._preamble_commutator_source_algebra = algebra
         return result
 
     def _apply_morphism(self, morphism):

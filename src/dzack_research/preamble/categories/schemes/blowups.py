@@ -139,7 +139,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             raised = hypersurface.homogeneous_defining_equations(source_ring)
             return self.source_coordinate_embedding()(next(iter(raised)))
 
-        def _closed_subscheme_from_graph_equations(self, equations, *, kind, source_subscheme=None):
+        def _closed_subscheme_from_graph_equations(self, equations, *, kind):
             r"""Cut a closed subobject of the blowup by equations in its graph ambient.
 
             The blowup itself is already the graph hypersurface inside the
@@ -164,8 +164,6 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
             nested._preamble_blowup_transform_kind = kind
             nested._preamble_blowup = self
-            if source_subscheme is not None:
-                nested._preamble_blowup_source_subscheme = source_subscheme
             return nested
 
         @cached_method
@@ -180,7 +178,6 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return self._closed_subscheme_from_graph_equations(
                 (equation,),
                 kind="inverse-image",
-                source_subscheme=hypersurface,
             )
 
         def total_transform(self, hypersurface):
@@ -188,7 +185,6 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return self._closed_subscheme_from_graph_equations(
                 (equation,),
                 kind="total",
-                source_subscheme=hypersurface,
             )
 
         def strict_transform(self, hypersurface):
@@ -200,7 +196,6 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             transform = self._closed_subscheme_from_graph_equations(
                 tuple(saturated.ideal_generators()),
                 kind="strict",
-                source_subscheme=hypersurface,
             )
             transform._preamble_blowup_saturated_ideal = saturated
             return transform
