@@ -29,20 +29,16 @@ def test_a_finite_set_and_its_constructions() -> None:
     assert 2 in three
     assert 4 not in three
     assert three.power_set().cardinality() == 8
-    assert PowerSet(three).cardinality() == 8
     assert three.product_with(two).cardinality() == 6
-    assert CartesianProductOfSets(three, two, three).cardinality() == 18
-    assert CoproductOfSets(three, two).cardinality() == 5
+    assert Sets().product((three, two, three)).cardinality() == 18
+    assert Sets().coproduct((three, two)).cardinality() == 5
     assert three.subsets_of_size(2).cardinality() == 3
-    assert SubsetsOfSize(three, 2).cardinality() == 3
-    assert FiniteSubsets(three).cardinality() == 8
     assert three.finite_subsets().cardinality() == 8
 
 
 def test_function_sets_between_finite_sets() -> None:
     three = _three()
     two = _two()
-    assert ExponentialOfSets(three, two).cardinality() == 9
     assert three.exponential(two).cardinality() == 9
     assert Sets().Mor(two, three).cardinality() == 9
     assert Sets().Mor(three, two).cardinality() == 8
@@ -77,12 +73,12 @@ def test_infinite_sets_and_their_constructions() -> None:
     assert RR.cardinality() == continuum
     assert RR in UncountableSets()
     assert NN.power_set().cardinality() == continuum
-    assert FiniteSubsets(NN).cardinality() == aleph0
-    assert CartesianProductOfSets(NN, NN).cardinality() == aleph0
-    assert CoproductOfSets(NN, _three()).cardinality() == aleph0
+    assert NN.finite_subsets().cardinality() == aleph0
+    assert Sets().product((NN, NN)).cardinality() == aleph0
+    assert Sets().coproduct((NN, _three())).cardinality() == aleph0
     assert NN.subsets_of_size(2).cardinality() == aleph0
-    assert ExponentialOfSets(NN, _two()).cardinality() == aleph0
-    assert ExponentialOfSets(_two(), NN).cardinality() == continuum
+    assert NN.exponential(_two()).cardinality() == aleph0
+    assert _two().exponential(NN).cardinality() == continuum
     assert Sets().Mor(NN, NN).cardinality() == continuum
     assert NN.condition_set(lambda n: n % 2 == 0).cardinality() == aleph0
     assert Sets.Δ[aleph0] is NN
@@ -134,7 +130,7 @@ def test_finite_ordinals_are_totally_ordered() -> None:
 
 def test_sets_of_sets() -> None:
     three = _three()
-    power = PowerSet(three)
+    power = three.power_set()
     element = power(Set((1, 2)))
     assert element in power
     assert element.cardinality() == 2
