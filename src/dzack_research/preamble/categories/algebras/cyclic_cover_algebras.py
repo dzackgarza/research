@@ -8,9 +8,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
     InvertibleSheaf,
@@ -255,7 +252,7 @@ class CyclicCoverAlgebra(SageObject):
                 CYCLIC_COVER_VARIABLE: source(unit) * source_z,
             }
         )
-        return Isomorphism(forward, inverse)
+        return algebras.Core().Mor(source, target)(forward, inverse)
 
     def _build_algebra_gluing_datum(self) -> AlgebraGluingDatum:
         charts = self.chart_index_set()

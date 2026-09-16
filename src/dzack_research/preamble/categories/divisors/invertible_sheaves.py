@@ -4,9 +4,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -38,7 +35,7 @@ def _rank_one_transition(source, target, unit):
     inverse = target.module_category().Mor(target, source)(
         lambda _label: source.scalar_multiple(inverse_unit, source_generator)
     )
-    return Isomorphism(forward, inverse)
+    return source.module_category().Core().Mor(source, target)(forward, inverse)
 
 
 class InvertibleSheaf(SageObject):
@@ -84,7 +81,7 @@ class InvertibleSheaf(SageObject):
 
         module = self.local_module(index)
         identity = module.module_category().Mor(module, module).identity()
-        return Isomorphism(identity, identity)
+        return module.module_category().Core().Mor(module, module)(identity, identity)
 
     def _extract_transition_unit(self, source_index, target_index):
         transition = self.gluing_datum().transition(source_index, target_index).forward()
@@ -270,7 +267,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
     def local_trivialization(self, index):
         module = self.local_module(index)
         identity = module.module_category().Mor(module, module).identity()
-        return Isomorphism(identity, identity)
+        return module.module_category().Core().Mor(module, module)(identity, identity)
 
     def associated_divisor(self):
         if self._associated_divisor is None:
@@ -442,7 +439,9 @@ def _section_base_change_comparison(source_sections, target_sections, ring_map, 
             source_by_exponents[target_exponents[label]]
         )
     )
-    return Isomorphism(forward, inverse)
+    return changed_source.module_category().Core().Mor(changed_source, target_sections)(
+        forward, inverse
+    )
 
 
 def _record_line_bundle_base_change(
@@ -685,7 +684,9 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
         identity = sections.module_category().Mor(sections, sections).identity()
-        return Isomorphism(identity, identity)
+        return sections.module_category().Core().Mor(sections, sections)(
+            identity, identity
+        )
 
     def compatible_section(self, section):
         r"""Dehomogenize one global section on the standard affine atlas.
@@ -1111,7 +1112,9 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
         identity = sections.module_category().Mor(sections, sections).identity()
-        return Isomorphism(identity, identity)
+        return sections.module_category().Core().Mor(sections, sections)(
+            identity, identity
+        )
 
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap

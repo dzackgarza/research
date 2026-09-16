@@ -24,9 +24,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
@@ -189,7 +186,7 @@ class HigherDirectImageSheaf(SageObject):
                 }
             )
         )
-        return Isomorphism(forward, inverse)
+        return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
 
     def singular_fiber_specialization(self, *_arguments):
         raise NotImplementedError(

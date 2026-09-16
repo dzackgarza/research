@@ -4,7 +4,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
     _isomorphism_from_known_inverse_pair,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -238,7 +237,9 @@ class AffineCodimensionOneChowComparison(SageObject):
         self._principal_to_cycles = principal_to_cycles
         self._chow_group = chow
         self._cycle_class_projection = cycle_class_projection
-        self._class_to_chow = Isomorphism(class_to_chow, chow_to_class)
+        self._class_to_chow = classes.module_category().Core().Mor(classes, chow)(
+            class_to_chow, chow_to_class
+        )
 
     def scheme(self):
         return self._scheme

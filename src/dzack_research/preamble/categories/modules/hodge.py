@@ -1,6 +1,5 @@
 r"""Determinant, Poincaré-duality, and Hodge constructions on finite free modules."""
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -73,8 +72,9 @@ def _volume_trivialization(module, forward, inverse):
         raise ValueError("the volume map must have type det(M) -> R")
     if inverse.domain() is not scalars or inverse.codomain() is not determinant:
         raise ValueError("the inverse volume map must have type R -> det(M)")
-    result = Isomorphism(forward, inverse)
-    if result not in Modules(module.base_ring()).Iso(determinant, scalars):
+    modules = Modules(module.base_ring())
+    result = modules.Core().Mor(determinant, scalars)(forward, inverse)
+    if result not in modules.Iso(determinant, scalars):
         raise ValueError("the stated maps do not define a module volume trivialization")
     return result
 
@@ -183,8 +183,9 @@ def _poincare_duality(module, volume, degree):
 
     forward = source.module_category().Mor(source, target)(forward_images)
     inverse = target.module_category().Mor(target, source)(inverse_images)
-    result = Isomorphism(forward, inverse)
-    if result not in Modules(module.base_ring()).Iso(source, target):
+    modules = Modules(module.base_ring())
+    result = modules.Core().Mor(source, target)(forward, inverse)
+    if result not in modules.Iso(source, target):
         raise ArithmeticError("the represented Poincaré maps failed to define an isomorphism")
     return result
 
@@ -233,8 +234,9 @@ def _correlation_isomorphism(metric):
             for label in dual.module_generating_set()
         }
     )
-    result = Isomorphism(forward, inverse)
-    if result not in Modules(metric.base_ring()).Iso(metric, dual):
+    modules = Modules(metric.base_ring())
+    result = modules.Core().Mor(metric, dual)(forward, inverse)
+    if result not in modules.Iso(metric, dual):
         raise ArithmeticError("the represented correlation failed to define an isomorphism")
     return result
 
@@ -264,10 +266,11 @@ def _hodge_star(metric, volume, degree):
     lower_metric = correlation.forward().exterior_power(degree)
     forward = poincare.forward() * raise_metric
     inverse = lower_metric * poincare.inverse()
-    result = Isomorphism(forward, inverse)
     source = metric.exterior_forms(degree)
     target = metric.exterior_forms(rank - degree)
-    if result not in Modules(metric.base_ring()).Iso(source, target):
+    modules = Modules(metric.base_ring())
+    result = modules.Core().Mor(source, target)(forward, inverse)
+    if result not in modules.Iso(source, target):
         raise ArithmeticError("the represented form Hodge maps failed to define an isomorphism")
     return result
 
