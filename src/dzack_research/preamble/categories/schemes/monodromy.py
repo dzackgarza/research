@@ -101,10 +101,9 @@ class IntegralLocalSystem(SageObject):
         return self._pointed_fundamental_group
 
     def stalk(self, point):
-        if point is not self.base_point():
-            raise NotImplementedError(
-                "this selected local-system model currently materializes the stalk at its chosen base point"
-            )
+        assert point is self.base_point(), (
+            "this selected local-system model materializes the stalk at its chosen base point"
+        )
         return self._stalk_module
 
     def monodromy_representation(self):
@@ -162,10 +161,9 @@ class HigherDirectImageSheaf(SageObject):
 
     def stalk_to_fiber_comparison(self, point):
         r"""Topological proper-base-change comparison at the selected smooth point."""
-        if point is not self.restriction_to_smooth_stratum().base_point():
-            raise NotImplementedError(
-                "the selected proper-base-change comparison is materialized at the chosen smooth base point"
-            )
+        assert point is self.restriction_to_smooth_stratum().base_point(), (
+            "the selected proper-base-change comparison is materialized at the chosen smooth base point"
+        )
         if not self.family_data().proper_base_change_hypotheses_hold(point):
             raise ValueError("topological proper base change hypotheses do not hold at this point")
         stalk = self.stalk(point)
@@ -187,11 +185,6 @@ class HigherDirectImageSheaf(SageObject):
             )
         )
         return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
-
-    def singular_fiber_specialization(self, *_arguments):
-        raise NotImplementedError(
-            "proper base change on the smooth stratum does not construct singular-fiber specialization or nearby/vanishing cycles"
-        )
 
     def _repr_(self) -> str:
         return f"R^{self.cohomological_degree()} of {self.family_morphism()} on {self.smooth_stratum()}"
@@ -334,10 +327,9 @@ class LegendreMonodromyFamily(SageObject):
         return self._pointed_pi_one
 
     def fiber_cohomology(self, point):
-        if point is not self.base_point():
-            raise NotImplementedError(
-                "the represented Legendre H^1 module is materialized at t=1/2"
-            )
+        assert point is self.base_point(), (
+            "the represented Legendre H^1 module is materialized at t=1/2"
+        )
         return self._fiber_h1
 
     def higher_direct_image(self):
@@ -370,11 +362,6 @@ class LegendreMonodromyFamily(SageObject):
 
     def stalk_to_fiber_comparison(self):
         return self.higher_direct_image().stalk_to_fiber_comparison(self.base_point())
-
-    def nearby_cycles(self):
-        raise NotImplementedError(
-            "the singular Legendre fiber requires a separately represented nearby/vanishing-cycle comparison"
-        )
 
     def _repr_(self) -> str:
         return f"Legendre monodromy family over {self.parameter_algebra()} with smooth stratum {self.smooth_stratum()}"

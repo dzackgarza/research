@@ -1,7 +1,5 @@
 """The Legendre family carries its higher direct image, local system and monodromy."""
 
-import pytest
-
 from dzack_research.preamble.categories.schemes.monodromy import (
     LegendreMonodromyFamily,
 )
@@ -59,10 +57,8 @@ def test_positive_loop_has_nonidentity_picard_lefschetz_monodromy_preserving_pai
     assert cohomology.pairing(action(alpha_dual), action(beta_dual)) == 1
 
 
-def test_singular_specialization_is_not_inferred_from_smooth_proper_base_change() -> None:
+def test_singular_specialization_is_not_claimed_by_the_smooth_local_system() -> None:
     data = LegendreMonodromyFamily()
 
-    with pytest.raises(NotImplementedError, match="nearby/vanishing cycles"):
-        data.higher_direct_image().singular_fiber_specialization(data.singular_fiber())
-    with pytest.raises(NotImplementedError, match="nearby/vanishing-cycle"):
-        data.nearby_cycles()
+    assert not hasattr(data.higher_direct_image(), "singular_fiber_specialization")
+    assert not hasattr(data, "nearby_cycles")
