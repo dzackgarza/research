@@ -422,10 +422,15 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
             return self._preamble_jet_residue_field
 
         def jet_coordinate_index(self):
-            index = getattr(self, "_preamble_jet_coordinate_index", None)
-            if index is None:
+            coordinates = tuple(self.jet_point().point_coordinates())
+            nonzero = tuple(
+                index
+                for index, coordinate in enumerate(coordinates)
+                if coordinate != self.base_ring().zero()
+            )
+            if len(nonzero) != 1:
                 raise ValueError("this jet condition was not selected at a coordinate point")
-            return index
+            return nonzero[0]
 
 
 class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
@@ -917,8 +922,6 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
             for monomial in source.module_generating_set()
         }
     )
-    evaluation._preamble_projective_point = point
-    evaluation._preamble_projective_point_chart_index = pivot
     return evaluation
 
 
@@ -939,8 +942,6 @@ def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index,
         point,
         jet_order,
     )
-    evaluation._preamble_projective_point_coordinate_index = coordinate_index
-    evaluation.codomain()._preamble_jet_coordinate_index = coordinate_index
     return evaluation
 
 
@@ -981,8 +982,6 @@ def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coo
         point,
         vanishing_order,
     )
-    result.imposed_jet_evaluation()._preamble_projective_point_coordinate_index = coordinate_index
-    result.imposed_jet_evaluation().codomain()._preamble_jet_coordinate_index = coordinate_index
     return result
 
 
