@@ -68,6 +68,13 @@ def index_rank_family(ranks):
     )
 
 
+def _owned_set_pair(first, second):
+    r"""Return ``(first, second)`` as an object of the categorical product ``Set x Set``."""
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    return Cat().product((Sets(), Sets()))(first, second)
+
+
 def _tensor_richcmp(left, right, op):
     r"""Compare finite tensors by variance, shape, and components.
 
@@ -371,27 +378,29 @@ class Tensor:
         """
         return TensorModule(self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks())
 
-    def index_modules(self):
-        r"""Return the contravariant and covariant index modules.
+    def contravariant_index_modules(self):
+        r"""Return the family of contravariant index modules."""
+        return self.tensor_space().contravariant_index_modules()
 
-        The first tuple is \(M_1,\ldots,M_p\); the second is
-        \(N_1,\ldots,N_q\), so the tensor space is
-        \(M_1\otimes\cdots\otimes M_p\otimes N_1^*\otimes\cdots\otimes N_q^*\).
-        """
-        return TensorModule(
-            self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks()
-        ).index_modules()
+    def covariant_index_modules(self):
+        r"""Return the family of covariant index modules."""
+        return self.tensor_space().covariant_index_modules()
+
+    def index_modules(self):
+        r"""Return the contravariant/covariant module families as an object of ``Set x Set``."""
+        return self.tensor_space().index_modules()
+
+    def contravariant_index_generating_sets(self):
+        r"""Return the selected generating sets of the contravariant index modules."""
+        return self.tensor_space().contravariant_index_generating_sets()
+
+    def covariant_index_generating_sets(self):
+        r"""Return the selected generating sets of the covariant index modules."""
+        return self.tensor_space().covariant_index_generating_sets()
 
     def tensor_indices(self):
-        r"""Return the generating set of each index module.
-
-        Integer coordinates \(0,\ldots,n-1\) when the index is \(R^n\).
-        A pairing on a named free module uses that module's generating
-        set, including \(\{e_i:i\in\mathbb N\}\) at infinite rank.
-        """
-        return TensorModule(
-            self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks()
-        ).tensor_indices()
+        r"""Return the two variance-indexed generating-set families as an object of ``Set x Set``."""
+        return self.tensor_space().tensor_indices()
 
     def components(self):
         r"""Return the finite rectangular component array of this tensor."""
@@ -1544,8 +1553,7 @@ class TensorModule(UniqueRepresentation, Parent):
     def _lower_index_ranks(self) -> tuple:
         return self._lower_ranks
 
-    def index_modules(self):
-        r"""Return the contravariant and covariant index modules \(R^{n_i}\)."""
+    def _index_modules_for(self, ranks):
         from sage.rings.semirings.non_negative_integer_semiring import NN
 
         def free_of_rank(rank):
@@ -1553,27 +1561,49 @@ class TensorModule(UniqueRepresentation, Parent):
                 return self.base_ring().free_module(NN)
             return self.base_ring().free_module(int(rank))
 
-        def modules_for(ranks):
-            slots = Sets.Δ[len(ranks) - 1]
-            return FiniteOrderedSets().from_indexed(
-                slots,
-                lambda slot: free_of_rank(ranks[int(slot)]),
-            )
+        slots = Sets.Δ[len(ranks) - 1]
+        return FiniteOrderedSets().from_indexed(
+            slots,
+            lambda slot: free_of_rank(ranks[int(slot)]),
+        )
 
-        return modules_for(self._upper_ranks), modules_for(self._lower_ranks)
+    def contravariant_index_modules(self):
+        r"""Return the family \(M_1,\ldots,M_p\) of contravariant index modules."""
+        return self._index_modules_for(self._upper_ranks)
+
+    def covariant_index_modules(self):
+        r"""Return the family \(N_1,\ldots,N_q\) of covariant index modules."""
+        return self._index_modules_for(self._lower_ranks)
+
+    def index_modules(self):
+        r"""Return the two variance module families as an object of ``Set x Set``."""
+        return _owned_set_pair(
+            self.contravariant_index_modules(),
+            self.covariant_index_modules(),
+        )
+
+    @staticmethod
+    def _index_generating_sets(modules):
+        return FiniteOrderedSets().from_indexed(
+            modules.index_set(),
+            lambda slot: modules[slot].module_generating_set(),
+            name="Tensor-index generating sets",
+        )
+
+    def contravariant_index_generating_sets(self):
+        r"""Return the generating-set family of the contravariant index modules."""
+        return self._index_generating_sets(self.contravariant_index_modules())
+
+    def covariant_index_generating_sets(self):
+        r"""Return the generating-set family of the covariant index modules."""
+        return self._index_generating_sets(self.covariant_index_modules())
 
     def tensor_indices(self):
-        r"""Return the owned generating set of each index module, slot by slot."""
-        upper_modules, lower_modules = self.index_modules()
-
-        def generating_sets(modules):
-            return FiniteOrderedSets().from_indexed(
-                modules.index_set(),
-                lambda slot: modules[slot].module_generating_set(),
-                name="Tensor-index generating sets",
-            )
-
-        return generating_sets(upper_modules), generating_sets(lower_modules)
+        r"""Return the two variance generating-set families as an object of ``Set x Set``."""
+        return _owned_set_pair(
+            self.contravariant_index_generating_sets(),
+            self.covariant_index_generating_sets(),
+        )
 
     def _element_constructor_(self, entries: tuple) -> _CoordinateTensor:
         shape = self._index_ranks()

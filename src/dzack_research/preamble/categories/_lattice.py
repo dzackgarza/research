@@ -63,6 +63,7 @@ from dzack_research.preamble.tensors.tensor import (
     TensorModule,
     _component_shape,
     _engine_component_matrix,
+    _owned_set_pair,
     _tensor_richcmp,
     tensor,
 )
@@ -557,15 +558,24 @@ class _PairingGram(ModuleElement, Tensor):
     def index_modules(self):
         return self.parent().index_modules()
 
-    def tensor_indices(self):
+    def contravariant_index_generating_sets(self):
+        r"""Return the empty contravariant index family of this covariant Gram tensor."""
+        return finite_ordered_set(())
+
+    def covariant_index_generating_sets(self):
+        r"""Return the two copies of the lattice's actual selected basis set."""
         keys = _basis_keys(self._module)
-        upper = finite_ordered_set(())
-        lower = FiniteOrderedSets().from_indexed(
+        return FiniteOrderedSets().from_indexed(
             finite_ordered_set((0, 1)),
             lambda _slot: keys,
             name="Gram-tensor index generating sets",
         )
-        return upper, lower
+
+    def tensor_indices(self):
+        return _owned_set_pair(
+            self.contravariant_index_generating_sets(),
+            self.covariant_index_generating_sets(),
+        )
 
     def _pairing_name(self) -> str:
         return "pairing"

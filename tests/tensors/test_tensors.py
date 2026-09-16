@@ -336,7 +336,9 @@ def test_tensor_space_records_index_modules() -> None:
     assert covector.tensor_space() is covector.parent()
     assert gram.tensor_type() == (NN**2)((0, 2))
     assert mixed.tensor_type() == (NN**2)((2, 0))
-    upper, lower = gram.index_modules()
+    index_modules = gram.index_modules()
+    upper, lower = index_modules
+    assert index_modules.first() is upper and index_modules.second() is lower
     assert upper.cardinality() == 0 and lower.cardinality() == 2
     assert int(lower[0].module_rank()) == 2
 
