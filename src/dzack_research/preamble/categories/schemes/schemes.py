@@ -1223,13 +1223,17 @@ class Schemes(OwnedCategoryOverBaseRing):
             base_ring = self.scheme_base_ring()
             if self not in AffineSchemes(base_ring):
                 raise NotImplementedError("distinguished-open structure-sheaf sections are represented for affine schemes")
+            is_distinguished_open = getattr(
+                distinguished_open,
+                "is_distinguished_open",
+                None,
+            )
+            inclusion = getattr(distinguished_open, "inclusion", None)
             if (
-                getattr(
-                    distinguished_open,
-                    "_preamble_distinguished_open_ambient",
-                    None,
-                )
-                is self
+                callable(is_distinguished_open)
+                and is_distinguished_open()
+                and callable(inclusion)
+                and inclusion().codomain() is self
             ):
                 return distinguished_open.coordinate_algebra()
             spectrum = self.underlying_space()
@@ -1822,9 +1826,11 @@ class AffineSchemes(_SchemePropertyCategory):
                 self,
                 localization_map,
             )
-            _install_scheme_subobject_construction(open_subscheme, inclusion)
-            open_subscheme._preamble_distinguished_open_ambient = self
-            open_subscheme._preamble_distinguished_open_element = element
+            _install_distinguished_open_construction(
+                open_subscheme,
+                inclusion,
+                element,
+            )
             self._preamble_distinguished_open_cache = (
                 *cache,
                 (element, open_subscheme),
@@ -4511,6 +4517,17 @@ class SchemeSubobjectConstruction:
         return self._inclusion
 
 
+class DistinguishedOpenConstruction(SchemeSubobjectConstruction):
+    r"""A selected principal open ``D(f) -> X`` with its defining element ``f``."""
+
+    def __init__(self, inclusion, element) -> None:
+        super().__init__(inclusion)
+        self._element = element
+
+    def distinguished_open_element(self):
+        return self._element
+
+
 def _install_scheme_subobject_construction(scheme, inclusion):
     r"""Install the one selected subobject arrow before ``scheme`` is exposed."""
     if inclusion.domain() is not scheme:
@@ -4521,6 +4538,20 @@ def _install_scheme_subobject_construction(scheme, inclusion):
             raise ValueError("this scheme already has a different selected subobject inclusion")
         return scheme
     scheme._scheme_subobject_construction = SchemeSubobjectConstruction(inclusion)
+    return scheme
+
+
+def _install_distinguished_open_construction(scheme, inclusion, element):
+    r"""Install the selected principal-open arrow and its defining element together."""
+    if inclusion.domain() is not scheme:
+        raise ValueError("a distinguished-open inclusion must start at the represented open subscheme")
+    existing = scheme.__dict__.get("_scheme_subobject_construction")
+    if existing is not None:
+        raise ValueError("this scheme already has a selected subobject construction")
+    scheme._scheme_subobject_construction = DistinguishedOpenConstruction(
+        inclusion,
+        element,
+    )
     return scheme
 
 
@@ -4940,12 +4971,15 @@ class OpenImmersions(_SchemeSubobjectsOf):
 
     class ParentMethods:
         def is_distinguished_open(self):
-            return getattr(self, "_preamble_distinguished_open_ambient", None) is self.inclusion().codomain()
+            construction = self.scheme_subobject_construction()
+            return callable(
+                getattr(construction, "distinguished_open_element", None)
+            )
 
         def distinguished_open_element(self):
             if not self.is_distinguished_open():
                 raise ValueError("this open immersion is not represented by one distinguished element")
-            return self._preamble_distinguished_open_element
+            return self.scheme_subobject_construction().distinguished_open_element()
 
         def corestriction(self, morphism):
             r"""The factorization ``T -> D(f)`` of a morphism ``T -> X`` landing in ``D(f)``.

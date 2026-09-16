@@ -48,3 +48,8 @@ def test_scheme_subobjects_retain_one_selected_inclusion_construction() -> None:
     assert closed.inclusion().codomain() is line
     assert opened.scheme_subobject_construction().inclusion() is opened.inclusion()
     assert opened.inclusion().codomain() is line
+    assert (
+        opened.scheme_subobject_construction().distinguished_open_element()
+        == opened.distinguished_open_element()
+        == x
+    )
