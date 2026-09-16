@@ -1569,7 +1569,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: from dzack_research.preamble.all import *
                 sage: Lattices(ZZ)(ZZ.free_module(2)).module_rank()
                 2
-                sage: Lattices(ZZ)(FreeModuleFunctor(ZZ)(NN)).module_rank()
+                sage: Lattices(ZZ)(ZZ.free_module(NN)).module_rank()
                 ℵ_0
             """
             return self._module.module_rank()

@@ -667,10 +667,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one, which is the base ring itself."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         base = _proper_restriction_base_ring(self.base_ring())
@@ -1658,10 +1655,7 @@ class FreeModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         return [
@@ -1681,10 +1675,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -1787,10 +1778,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one, presented by no relations."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         return [FinitelyGeneratedModules(self.base_ring())]
@@ -2297,10 +2285,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -2443,10 +2428,7 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one, which is projective."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     @classmethod
     def _repr_object_names(cls):
@@ -2495,10 +2477,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The free module of rank one, framed by its one generator."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+        return self.base_ring().free_module(1)
 
     def super_categories(self):
         return [Modules(self.base_ring())]

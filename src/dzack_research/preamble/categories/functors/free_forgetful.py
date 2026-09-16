@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class FreeModuleFunctor(Functor):
+class _FreeModuleFunctor(Functor):
     r"""``F_R : Set -> Mod_R``."""
 
     def __init__(self, base_ring) -> None:
@@ -32,7 +32,7 @@ class FreeModuleFunctor(Functor):
         return f"Free {self.base_ring()}-module functor"
 
 
-class UnderlyingSetFunctor(Functor):
+class _UnderlyingSetFunctor(Functor):
     r"""``U : Mod_R -> Set``; a module is already a set object."""
 
     def __init__(self, base_ring) -> None:
@@ -51,14 +51,14 @@ class UnderlyingSetFunctor(Functor):
         return f"Underlying-set functor on {self._base_ring}-modules"
 
 
-class FreeForgetfulAdjunction(Adjunction):
+class _FreeForgetfulAdjunction(Adjunction):
     r"""``F_R ⊣ U`` between sets and ``R``-modules."""
 
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            FreeModuleFunctor(self._base_ring),
-            UnderlyingSetFunctor(self._base_ring),
+            _FreeModuleFunctor(self._base_ring),
+            _UnderlyingSetFunctor(self._base_ring),
         )
 
     def unit(self, set_object):
@@ -91,15 +91,15 @@ class FreeForgetfulAdjunction(Adjunction):
 
 
 @cached_function
-def _free_module_functor(base_ring) -> FreeModuleFunctor:
-    return FreeModuleFunctor(base_ring)
+def _free_module_functor(base_ring) -> _FreeModuleFunctor:
+    return _FreeModuleFunctor(base_ring)
 
 
 @cached_function
-def _underlying_set_functor(base_ring) -> UnderlyingSetFunctor:
-    return UnderlyingSetFunctor(base_ring)
+def _underlying_set_functor(base_ring) -> _UnderlyingSetFunctor:
+    return _UnderlyingSetFunctor(base_ring)
 
 
 @cached_function
-def _free_forgetful_adjunction(base_ring) -> FreeForgetfulAdjunction:
-    return FreeForgetfulAdjunction(base_ring)
+def _free_forgetful_adjunction(base_ring) -> _FreeForgetfulAdjunction:
+    return _FreeForgetfulAdjunction(base_ring)

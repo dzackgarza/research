@@ -241,15 +241,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 from dzack_research.preamble.categories.functors.de_rham import (
     DeRhamFunctor as DeRhamFunctor,
 )
-from dzack_research.preamble.categories.functors.free_forgetful import (
-    FreeForgetfulAdjunction as FreeForgetfulAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_forgetful import (
-    FreeModuleFunctor as FreeModuleFunctor,
-)
-from dzack_research.preamble.categories.functors.free_forgetful import (
-    UnderlyingSetFunctor as UnderlyingSetFunctor,
-)
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFreeFormAdjunction as BilinearFreeFormAdjunction,
 )
