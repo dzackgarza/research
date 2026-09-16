@@ -3087,7 +3087,7 @@ def _affine_spectrum_from_owned_algebra(algebra, base):
     return scheme
 
 
-def Spec(ring_or_algebra, base_ring=None):
+def _affine_spectrum(ring_or_algebra, base_ring=None):
     r"""Return the category-owned affine scheme ``Spec(A)`` over its scalar base.
 
     If ``A`` is an owned commutative ``R``-algebra, the returned object lies in
@@ -4911,7 +4911,6 @@ __all__ = [
     "SchemeMorphism",
     "SeparatedSchemes",
     "SmoothSchemes",
-    "Spec",
 ]
 
 Schemes._MonoCategory = SchemeMonomorphisms

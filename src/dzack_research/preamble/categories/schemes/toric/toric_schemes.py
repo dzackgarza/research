@@ -78,7 +78,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
     Schemes,
     SmoothSchemes,
-    Spec,
     _has_scheme_placement,
     _categorical_scheme_morphism,
     _refine_scheme,
@@ -224,7 +223,7 @@ def _affine_chart(cone, base_ring):
     every construction that reaches it: the atlas a toric variety is glued from
     holds exactly the objects its ``affine_chart`` answers with.
     """
-    return Spec(_semigroup_algebra(cone, base_ring), base_ring=base_ring)
+    return (_semigroup_algebra(cone, base_ring)).affine_spectrum(base_ring=base_ring)
 
 
 def _face_localization(face, cone, base_ring):

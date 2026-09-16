@@ -71,7 +71,6 @@ from dzack_research.preamble.categories.schemes.group_schemes import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     AffineSchemes,
-    Spec,
     _affine_morphism_from_pullback,
     _affine_spec_morphism,
 )
@@ -126,7 +125,7 @@ def _local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
         chart_index = cover.chart_label(chart_index)
     local_base = _relative_cover_chart(cyclic_algebra, chart_index).coordinate_algebra()
     local_algebra = cyclic_algebra.local_algebra(chart_index)
-    local_scheme = Spec(local_algebra)
+    local_scheme = (local_algebra).affine_spectrum()
     group_scheme = AffineGroupSchemes(local_base).roots_of_unity(
         int(cyclic_algebra.degree())
     )
@@ -615,7 +614,7 @@ class CyclicCovers(OwnedCategory):
     def base_scheme(self):
         r"""Return ``X = Spec(A)`` as the terminal affine ``A``-scheme."""
         algebra = self.base_algebra()
-        return Spec(algebra, base_ring=algebra)
+        return (algebra).affine_spectrum(base_ring=algebra)
 
     def cover_degree(self):
         r"""Return ``n``, the degree of the covers in this category."""
@@ -666,7 +665,7 @@ class CyclicCovers(OwnedCategory):
         degree = self.cover_degree()
 
         cover_algebra = algebra.cyclic_cover_presentation(section, degree)
-        cover = Spec(cover_algebra)
+        cover = (cover_algebra).affine_spectrum()
         image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
         group_scheme = self.deck_group_scheme()
         product = cover.scheme_category().product((group_scheme.scheme(), cover))

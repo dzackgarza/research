@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorCategory,
     SchemeMorphism,
     Schemes,
-    Spec,
     _affine_structure_morphism_to_base,
     _fresh_affine_spectrum,
     _refine_scheme,
@@ -557,7 +556,7 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
         noun="scheme gluing chart embeddings",
     )
     scheme._preamble_identity_morphism = scheme.Mor(scheme).identity()
-    base_scheme = Spec(datum.base_ring(), base_ring=datum.base_ring())
+    base_scheme = (datum.base_ring()).affine_spectrum(base_ring=datum.base_ring())
     scheme._preamble_structure_morphism = scheme.Mor(base_scheme)(
         tuple(
             _affine_structure_morphism_to_base(chart, datum.base_ring())

@@ -660,7 +660,6 @@ from dzack_research.preamble.categories.schemes import (
     SliceCompositionFunctor,
     SlicePullbackFunctor,
     SmoothSchemes,
-    Spec,
     StructureSheaf,
     Surfaces,
     ToricFixedPointBlowups,
