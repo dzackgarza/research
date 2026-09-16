@@ -37,7 +37,16 @@ CATEGORY_BASES: frozenset[str] = frozenset(
     }
 )
 
-DECLARATION = "super_categories"
+DECLARATIONS = ("super_categories", "extra_super_categories")
+
+
+def _vertex(base: str, axioms: tuple[str, ...]) -> str:
+    """The graph vertex of a category with axioms: ``Base.Axiom1.Axiom2``, sorted.
+
+    Sage's ``Base().A().B()`` is the join of ``Base.A`` and ``Base.B``, one
+    category whichever order the axioms are applied in.
+    """
+    return ".".join((base, *sorted(axioms)))
 
 
 @dataclass(frozen=True)
@@ -48,6 +57,11 @@ class Supercategory:
     head: str
     resolved: str  # the head with any import alias followed back to its name
     origin: str  # "owned", "sage", or "expression"
+    axioms: tuple[str, ...] = ()
+
+    @property
+    def vertex(self) -> str:
+        return _vertex(self.resolved, self.axioms)
 
 
 @dataclass(frozen=True)
@@ -63,6 +77,13 @@ class CategoryDeclaration:
     declares: bool
     abstract: bool
     supercategories: tuple[Supercategory, ...] = field(default_factory=tuple)
+    axiom_of: str = ""  # for a nested axiom class, the category it refines
+
+    @property
+    def vertex(self) -> str:
+        if not self.axiom_of:
+            return self.name
+        return _vertex(self.axiom_of, tuple(self.qualified_name.split(".")[1:]))
 
     @property
     def heads(self) -> tuple[str, ...]:
@@ -77,8 +98,41 @@ class CategoryDeclaration:
 
 def _head(expression: str) -> str:
     """Return the name a supercategory expression applies or refers to."""
-    stripped = expression.split("(", 1)[0]
+    stripped = _without_axioms(expression).split("(", 1)[0]
     return stripped.rsplit(".", 1)[-1].strip()
+
+
+def _axiom_calls(expression: str) -> tuple[ast.expr, tuple[str, ...]]:
+    """Split ``Base(R).A().B()`` into the base expression and its axiom names.
+
+    An axiom is applied as a capitalised zero-argument method (Sage's
+    ``with_axiom`` accessors); anything else ends the chain.
+    """
+    try:
+        node: ast.expr = ast.parse(expression, mode="eval").body
+    except SyntaxError:
+        return ast.Name(id=expression), ()
+    axioms: list[str] = []
+    while (
+        isinstance(node, ast.Call)
+        and not node.args
+        and not node.keywords
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr[:1].isupper()
+    ):
+        axioms.append(node.func.attr)
+        node = node.func.value
+    return node, tuple(reversed(axioms))
+
+
+def _without_axioms(expression: str) -> str:
+    base, _ = _axiom_calls(expression)
+    return ast.unparse(base)
+
+
+def _axioms(expression: str) -> tuple[str, ...]:
+    _, axioms = _axiom_calls(expression)
+    return axioms
 
 
 def _summary(node: ast.ClassDef) -> str:
@@ -144,11 +198,14 @@ def _module_level_names(tree: ast.Module) -> set[str]:
     return bound
 
 
-def _declaration(node: ast.ClassDef) -> ast.FunctionDef | None:
-    for statement in node.body:
-        if isinstance(statement, ast.FunctionDef) and statement.name == DECLARATION:
-            return statement
-    return None
+def _declarations(node: ast.ClassDef) -> list[ast.FunctionDef]:
+    """The methods declaring supercategories: ``super_categories`` and, on an
+    axiom class, ``extra_super_categories`` (Sage adds the rest itself)."""
+    return [
+        statement
+        for statement in node.body
+        if isinstance(statement, ast.FunctionDef) and statement.name in DECLARATIONS
+    ]
 
 
 def _is_category(node: ast.ClassDef, known: set[str]) -> bool:
@@ -207,7 +264,7 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
         for scope, node in _classes(tree):
             if not _is_category(node, known):
                 continue
-            declaration = _declaration(node)
+            declaring = _declarations(node)
             declarations.append(
                 CategoryDeclaration(
                     name=node.name,
@@ -216,19 +273,22 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                     line=node.lineno,
                     bases=tuple(_head(ast.unparse(base)) for base in node.bases),
                     summary=_summary(node),
-                    declares=declaration is not None,
-                    abstract=declaration is not None and _is_abstract(declaration),
+                    declares=bool(declaring),
+                    abstract=any(_is_abstract(d) for d in declaring),
                     supercategories=tuple(
                         Supercategory(
                             expression=expression,
                             head=_head(expression),
                             resolved=_resolved(_head(expression), imported),
                             origin=_origin(_head(expression), imported, known),
+                            axioms=_axioms(expression),
                         )
-                        for expression in (
-                            _returned_supercategories(declaration) if declaration else ()
-                        )
+                        for declaration in declaring
+                        for expression in _returned_supercategories(declaration)
                     ),
+                    # A class nested in a category and based on CategoryWithAxiom
+                    # is that category with the axioms the nesting names.
+                    axiom_of=scope[0] if scope and scope[0] in known else "",
                 )
             )
     return declarations
@@ -406,14 +466,31 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
 def _declared_edges(
     declarations: list[CategoryDeclaration],
 ) -> set[tuple[str, str]]:
-    """Edges between categories this tree defines, self-declaration dropped."""
+    """Edges between categories this tree defines, self-declaration dropped.
+
+    An axiom category ``Base.A.B`` is the join of ``Base.A`` and ``Base.B``
+    (Sage's axiom semantics), so every axiom vertex, declared or merely named,
+    also declares each vertex with one axiom fewer.
+    """
     names = {d.name for d in declarations}
-    return {
-        (d.name, supercategory.resolved)
+    edges = {
+        (d.vertex, supercategory.vertex)
         for d in declarations
         for supercategory in d.supercategories
-        if supercategory.resolved in names and supercategory.resolved != d.name
+        if supercategory.resolved in names and supercategory.vertex != d.vertex
     }
+    axiom_vertices = {v for edge in edges for v in edge if "." in v} | {
+        d.vertex for d in declarations if d.axiom_of
+    }
+    for vertex in axiom_vertices:
+        base, *axioms = vertex.split(".")
+        for dropped in axioms:
+            edges.add((vertex, _vertex(base, tuple(a for a in axioms if a != dropped))))
+    return edges
+
+
+def _base_of(vertex: str) -> str:
+    return vertex.split(".", 1)[0]
 
 
 def _graph(edges: set[tuple[str, str]]) -> Graph:
@@ -537,10 +614,13 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
     shortcuts = _shortcuts(edges)
     dropped = {frozenset(edge) for edge in shortcuts}
 
-    def owes_a_cell(cycle: list[str]) -> bool:
-        return not any(
-            frozenset(pair) in dropped for pair in zip(cycle, cycle[1:] + cycle[:1])
-        )
+    def through_a_shortcut(cycle: list[str]) -> bool:
+        return any(frozenset(pair) in dropped for pair in zip(cycle, cycle[1:] + cycle[:1]))
+
+    def is_axiom_join(cycle: list[str]) -> bool:
+        # Every vertex is one base with a subset of its axioms: Sage computes
+        # this join, so the two routes are the same functor by construction.
+        return len({_base_of(v) for v in cycle}) == 1
 
     lines = [
         "Homology of the declaration graph.",
@@ -559,16 +639,21 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
     lines.extend(f"{below} -> {above}" for below, above in shortcuts)
 
     for block in blocks:
-        remaining = [
-            cycle for cycle in _minimum_cycle_basis(graph.subgraph(block)) if owes_a_cell(cycle)
+        basis = _minimum_cycle_basis(graph.subgraph(block))
+        joins = [c for c in basis if is_axiom_join(c)]
+        remaining = [c for c in basis if not is_axiom_join(c) and not through_a_shortcut(c)]
+        lines += [
+            "",
+            f"## Computed axiom joins, in the block of {len(block)} ({len(joins)})",
+            "",
         ]
+        lines.extend(" -> ".join(c + c[:1]) for c in sorted(joins, key=lambda c: (len(c), c)))
         lines += [
             "",
             f"## Owing a real 2-cell, in the block of {len(block)} ({len(remaining)})",
             "",
         ]
-        for cycle in sorted(remaining, key=lambda c: (len(c), c)):
-            lines.append(" -> ".join(cycle + cycle[:1]))
+        lines.extend(" -> ".join(c + c[:1]) for c in sorted(remaining, key=lambda c: (len(c), c)))
     return "\n".join(lines) + "\n"
 
 
