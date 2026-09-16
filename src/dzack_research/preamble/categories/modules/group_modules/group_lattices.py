@@ -13,6 +13,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeHomset,
     LatticeMorphism,
@@ -105,7 +106,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            Lattices(self.coefficient_ring()),
+            GObjects(self.acting_group(), Lattices(self.coefficient_ring())),
             ModulesOverGroupAlgebra(self.base_ring()),
         ]
 
