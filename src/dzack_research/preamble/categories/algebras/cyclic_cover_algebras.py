@@ -294,28 +294,13 @@ class CyclicCoverAlgebra(SageObject):
         return self._gluing_datum
 
     def sheaf(self) -> GluedAlgebraSheaf:
-        sheaf = getattr(self.gluing_datum(), "sheaf", None)
-        if sheaf is None:
-            raise NotImplementedError(
-                "finite-atlas cyclic-cover algebra sheaves are represented through their descent datum and relative spectrum"
-            )
-        return sheaf()
+        return self.gluing_datum().sheaf()
 
     def underlying_module_datum(self) -> ModuleGluingDatum:
-        operation = getattr(self.gluing_datum(), "underlying_module_datum", None)
-        if operation is None:
-            raise NotImplementedError(
-                "finite-atlas cyclic-cover underlying modules are read chartwise from the algebra descent"
-            )
-        return operation()
+        return self.gluing_datum().underlying_module_datum()
 
     def global_sections(self) -> CompatibleLocalAlgebraSections:
-        operation = getattr(self.gluing_datum(), "compatible_sections", None)
-        if operation is None:
-            raise NotImplementedError(
-                "finite-atlas cyclic-cover global algebra sections are not used to replace its nonaffine relative spectrum"
-            )
-        return operation()
+        return self.gluing_datum().compatible_sections()
 
     sections = global_sections
 

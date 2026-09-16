@@ -265,8 +265,9 @@ class GradedDirectSumModule(Parent):
         )
 
     def realize_module_generator(self, label):
-        if self._realize_generator is None:
-            raise NotImplementedError("this direct sum has no selected realization")
+        assert self._realize_generator is not None, (
+            "realize_module_generator requires a selected realization of this direct sum"
+        )
         label = self.module_generating_set()(label)
         return self._realize_generator(
             self.normalize_degree(label.summand_index()),
@@ -274,8 +275,9 @@ class GradedDirectSumModule(Parent):
         )
 
     def realized_object(self):
-        if self._realized_object is None:
-            raise NotImplementedError("this direct sum has no selected realization")
+        assert self._realized_object is not None, (
+            "realized_object requires a selected realization of this direct sum"
+        )
         return self._realized_object
 
     def realize(self, element):
@@ -292,10 +294,9 @@ class GradedDirectSumModule(Parent):
 
     def from_realization(self, element):
         r"""Decompose a realized element into its finite homogeneous support."""
-        if self._from_realization is None:
-            raise NotImplementedError(
-                "this direct sum has no selected inverse realization"
-            )
+        assert self._from_realization is not None, (
+            "from_realization requires a selected inverse realization of this direct sum"
+        )
         return self._from_realization(element)
 
     # A sparse free construction only needs to know which finite presented
