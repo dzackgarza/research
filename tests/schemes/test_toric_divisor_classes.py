@@ -232,8 +232,12 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
 
     assert system in CompleteLinearSystems(QQ)
     assert system.linear_system_scheme() is plane
+    assert system.complete_linear_system_construction().scheme() is plane
     assert system.linear_system_divisor() == line
     assert system.section_space() is sections
+    assert "_preamble_linear_system_scheme" not in system.__dict__
+    assert "_preamble_linear_system_divisor" not in system.__dict__
+    assert "_preamble_linear_system_section_space" not in system.__dict__
     assert system.projective_dimension() == 2
 
 
@@ -528,7 +532,11 @@ def test_imposed_double_point_sections_form_the_expected_projective_parameter_sp
     assert system.relative_dimension() == 6
     assert system.ambient_section_space().dimension() == 10
     assert system.constrained_section_space().dimension() == 7
+    assert system.constrained_section_space() is system.imposed_jet_evaluation().kernel()
     assert system.imposed_vanishing_order() == 2
+    assert "_preamble_ambient_section_space" not in system.__dict__
+    assert "_preamble_constrained_section_space" not in system.__dict__
+    assert "_preamble_imposed_jet_evaluation" not in system.__dict__
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
