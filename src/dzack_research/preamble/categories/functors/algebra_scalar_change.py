@@ -107,7 +107,7 @@ def _base_change_symmetric_element(algebra, element, target, ring_map):
     return target(result)
 
 
-class AlgebraScalarExtensionFunctor(Functor):
+class _AlgebraScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : Alg_R -> Alg_S`` along ``f : R -> S``.
 
     The functor is mathematical on all algebras.  The live object adapter is
@@ -223,7 +223,7 @@ class AlgebraScalarExtensionFunctor(Functor):
         return f"Algebra scalar extension along {self.ring_map()}"
 
 
-class AlgebraRestrictionOfScalarsFunctor(Functor):
+class _AlgebraRestrictionOfScalarsFunctor(Functor):
     r"""``Res_f : Alg_S -> Alg_R`` along ``f : R -> S``."""
 
     def __init__(self, ring_map) -> None:
@@ -271,14 +271,14 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
         return f"Algebra restriction of scalars along {self.ring_map()}"
 
 
-class AlgebraBaseChangeAdjunction(Adjunction):
+class _AlgebraBaseChangeAdjunction(Adjunction):
     r"""The represented algebra adjunction ``S tensor_R - ⊣ Res_f``."""
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
         super().__init__(
-            AlgebraScalarExtensionFunctor(ring_map),
-            AlgebraRestrictionOfScalarsFunctor(ring_map),
+            _AlgebraScalarExtensionFunctor(ring_map),
+            _AlgebraRestrictionOfScalarsFunctor(ring_map),
         )
 
     def unit(self, algebra):
@@ -301,12 +301,8 @@ class AlgebraBaseChangeAdjunction(Adjunction):
 
 
 @cached_function(key=lambda ring_map: id(ring_map))
-def _algebra_base_change_adjunction(ring_map) -> AlgebraBaseChangeAdjunction:
-    return AlgebraBaseChangeAdjunction(ring_map)
+def _algebra_base_change_adjunction(ring_map) -> _AlgebraBaseChangeAdjunction:
+    return _AlgebraBaseChangeAdjunction(ring_map)
 
 
-__all__ = [
-    "AlgebraBaseChangeAdjunction",
-    "AlgebraRestrictionOfScalarsFunctor",
-    "AlgebraScalarExtensionFunctor",
-]
+__all__ = []

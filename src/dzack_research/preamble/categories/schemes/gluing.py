@@ -2624,8 +2624,12 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
                 return cached
         overlap = datum.overlap(chart_index, other_index)
         ring_map = overlap.inclusion().coordinate_algebra_morphism()
-        from dzack_research.preamble.categories.functors.algebra_scalar_change import AlgebraScalarExtensionFunctor
-        algebra = AlgebraScalarExtensionFunctor(ring_map)(self.local_algebra(chart_index))
+        algebra = (
+            Algebras(ring_map.domain())
+            .Associative()
+            .Unital()
+            .scalar_extension(ring_map)(self.local_algebra(chart_index))
+        )
         self._pair_algebras.append((key, algebra))
         return algebra
 
@@ -2640,8 +2644,12 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
                 return cached
         triple = datum.triple_overlap(chart_index, *others)
         ring_map = triple.inclusion().coordinate_algebra_morphism()
-        from dzack_research.preamble.categories.functors.algebra_scalar_change import AlgebraScalarExtensionFunctor
-        algebra = AlgebraScalarExtensionFunctor(ring_map)(self.local_algebra(chart_index))
+        algebra = (
+            Algebras(ring_map.domain())
+            .Associative()
+            .Unital()
+            .scalar_extension(ring_map)(self.local_algebra(chart_index))
+        )
         self._triple_algebras.append((key, algebra))
         return algebra
 
@@ -2766,11 +2774,12 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
         target_pair = target_datum.pair_algebra(chart_index, other_index)
         overlap = datum.overlap(chart_index, other_index)
         ring_map = overlap.inclusion().coordinate_algebra_morphism()
-        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-            AlgebraScalarExtensionFunctor,
+        extended_map = (
+            Algebras(ring_map.domain())
+            .Associative()
+            .Unital()
+            .scalar_extension(ring_map)(local_map)
         )
-
-        extended_map = AlgebraScalarExtensionFunctor(ring_map)(local_map)
         extended_source = extended_map.domain()
         return _algebra_homset(source_pair, target_pair)(
             {
@@ -3636,11 +3645,12 @@ class AlgebraGluingDatum(Parent):
             chart_index,
             other_index,
         )
-        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-            AlgebraScalarExtensionFunctor,
+        extended_map = (
+            Algebras(ring_map.domain())
+            .Associative()
+            .Unital()
+            .scalar_extension(ring_map)(local_map)
         )
-
-        extended_map = AlgebraScalarExtensionFunctor(ring_map)(local_map)
         extended_source = extended_map.domain()
         return _algebra_homset(source, target)(
             {

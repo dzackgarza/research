@@ -314,10 +314,6 @@ class DistinguishedAffineCover(SageObject):
         r"""Return ``A_i|_{U_I}`` by algebra scalar extension along ``O(U_i) -> O(U_I)``."""
 
         from dzack_research.preamble.categories.algebras.algebras import Algebras
-        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-            AlgebraScalarExtensionFunctor,
-        )
-
         chart_index = self.chart_label(chart_index)
         chart = self.open(chart_index)
         chart_ring = chart.coordinate_algebra()
@@ -335,7 +331,7 @@ class DistinguishedAffineCover(SageObject):
                 return restricted
 
         ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
-        restricted = AlgebraScalarExtensionFunctor(ring_map)(algebra)
+        restricted = Algebras(chart_ring).Associative().Unital().scalar_extension(ring_map)(algebra)
         target_ring = target.coordinate_algebra()
         if restricted not in Algebras(target_ring).Associative().Unital():
             raise ArithmeticError(

@@ -192,15 +192,6 @@ from dzack_research.preamble.categories.functors.abelianization import (
 from dzack_research.preamble.categories.functors.algebra_modules import (
     AlgebraUnderlyingModuleFunctor as AlgebraUnderlyingModuleFunctor,
 )
-from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-    AlgebraBaseChangeAdjunction as AlgebraBaseChangeAdjunction,
-)
-from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-    AlgebraRestrictionOfScalarsFunctor as AlgebraRestrictionOfScalarsFunctor,
-)
-from dzack_research.preamble.categories.functors.algebra_scalar_change import (
-    AlgebraScalarExtensionFunctor as AlgebraScalarExtensionFunctor,
-)
 from dzack_research.preamble.categories.functors.cardinality import (
     CardinalityFunctor as CardinalityFunctor,
 )
