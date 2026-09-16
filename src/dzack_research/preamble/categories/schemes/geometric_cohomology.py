@@ -835,10 +835,10 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
 @cached_function
 def NodalCubic():
     r"""Return the rational nodal cubic ``y^2 z = x^2(x+z)`` in ``P^2``."""
-    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
     base = _own_ring(SageQQ)
-    plane = ProjectiveSpace(2, base, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
     ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")
@@ -851,11 +851,11 @@ def NodalCubic():
 @cached_function
 def NodalCubicNormalization():
     r"""Return the explicit normalization ``P^1 -> C`` of :func:`NodalCubic`."""
-    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
     curve = NodalCubic()
     plane = curve.inclusion().codomain()
-    line = ProjectiveSpace(1, curve.scheme_base_ring(), names=("s", "t"))
+    line = ProjectiveSpaces(curve.scheme_base_ring())(1, names=("s", "t"))
     ring = line.O(3).global_sections().homogeneous_coordinate_ring()
     s = ring.algebra_generator("s")
     t = ring.algebra_generator("t")
@@ -1014,10 +1014,10 @@ class NodalCubicIntegralTopology(SageObject):
 @cached_function
 def ProjectiveGeneralLinearGroup2():
     r"""Return ``PGL_2`` over ``QQ`` as ``P^3 - V(ad-bc)``."""
-    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
     base = _own_ring(SageQQ)
-    projective = ProjectiveSpace(3, base, names=("a", "b", "c", "d"))
+    projective = ProjectiveSpaces(base)(3, names=("a", "b", "c", "d"))
     sections = projective.O(2).global_sections()
     ring = sections.homogeneous_coordinate_ring()
     a = ring.algebra_generator("a")
