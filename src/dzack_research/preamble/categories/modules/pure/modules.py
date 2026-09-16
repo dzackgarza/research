@@ -53,7 +53,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
-    _proper_restriction_base_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -669,9 +668,6 @@ class Modules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
-        base = _proper_restriction_base_ring(self.base_ring())
-        if base is not None:
-            return [Modules(base)]
         return [AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):

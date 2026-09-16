@@ -126,11 +126,7 @@ class ModulesOverGroupAlgebra(Modules):
         return f"modules over {self.base_ring()}"
 
     def super_categories(self):
-        ring = self.coefficient_ring()
-        return [
-            Modules(ring),
-            GObjects(self.acting_group(), Modules(ring)),
-        ]
+        return [GObjects(self.acting_group(), Modules(self.coefficient_ring()))]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
