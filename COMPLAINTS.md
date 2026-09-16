@@ -102,6 +102,13 @@ inherits the abelian or monoidal structure its own documentation asserts, and
 `QuasiCoherentSheaves.__contains__` has to duck-type its argument rather than
 ask for a placement.
 
+**Required end state.** The five `Sets()` declarations named above are false
+and are not to be left standing while this entry exists; this record says why
+the correct node is missing, not that the substitute may stay. Build
+$\mathrm{Presh}$ and the descent subcategory and declare the sheaf categories
+into them, or leave `super_categories()` abstract at those five sites so they
+fail loudly rather than inheriting a false theorem.
+
 **Coverage boundary.** Read from source only: the declared category graph, the
 scheme and divisor subtrees named above, and their docstrings. No session was
 run. Whether any consumer additionally *depends* on the false `Sets()`

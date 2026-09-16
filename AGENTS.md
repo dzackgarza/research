@@ -1132,12 +1132,28 @@ never to the object. `Sets()` in such a row is the value category of some
 functor in the construction, leaked upward into the slot where the object's own
 category belongs.
 
-**When the honest supercategory does not exist in the tree, that absence is the
-finding.** Do not write down the nearest available category to fill the slot,
-and do not delete the row. Record the missing mathematics in `COMPLAINTS.md`
-under `DEV-59` with its dependency path, and state the consumer it blocks. A
-category declared into the wrong place is worse than a category with a gap
-recorded against it, because the gap is legible and the false claim is not.
+**A false declaration is never an admissible state, and recording it elsewhere
+does not make it one.** Filing the gap while the wrong supercategory stays in
+the source leaves every reader and every object inheriting the false theorem;
+the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
+ranking here in which the wrong claim is the better of two states.
+
+When the honest supercategory does not exist in the tree, there are two moves
+and nothing else:
+
+- **Build the missing category.** This is usually the answer, and it is
+  usually smaller than it looks, because the general construction is already
+  owned. Presheaves needed no new theory: `[C, D]` is the functor category and
+  `C^op` the opposite, both of which the tree has.
+- **Declare nothing.** `super_categories()` left abstract, so the category
+  cannot be used until its placement is known, is honest and fails loudly.
+  `OwnedCategoryOverBaseRing` already does this. A category that refuses to
+  construct is a working signal; one that constructs into the wrong place is a
+  silent wrong answer that propagates through everything it touches.
+
+Record the gap in `COMPLAINTS.md` under `DEV-59` as well, with its dependency
+path and the consumer it blocks. That is the record of *why* the node is
+missing -- never a licence to keep a substitute in the source while it stands.
 
 **Presheaves and sheaves are functor categories.** $\mathrm{Presh}(C) := [C,
 \mathbf{Set}]$, a functor $\mathrm{Cat} \to \mathrm{Cat}$; more generally
