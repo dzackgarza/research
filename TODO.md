@@ -766,7 +766,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** display the actual selected generator set/image, a bounded mathematically meaningful view for infinite sets, and any truly distinguishing chosen structure.  The object returned by `module_generators()` must look like module generators, not like the Python/category mechanism used to store them.
   **Acceptance:** finite free/lattice examples show their generator image (for example `{e_0, e_1}` or an equally informative owned-set rendering); infinite examples preserve laziness and expose the indexing mathematics without implementation taxonomy; no audited generator display is merely a renamed type.
 
-- [ ] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
+- [x] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
   **Goal:** Replace bare `gens`, `basis`, `dual`, and similar names with structure-qualified operations whose mathematical codomain is clear from the name itself.
   Remove public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified referent.
   **Observed gap:** current examples include fractional-ideal/lattice `gens`, lattice/isotropic `basis`, and six divisor/sheaf `dual()` methods.
