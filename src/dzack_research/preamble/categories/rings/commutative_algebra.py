@@ -1576,6 +1576,60 @@ class IdealExtensionData(SageObject):
         )
 
 
+class _AdicCompletionConstruction:
+    r"""The defining source, ideal, canonical map, and exact comparison data of an adic completion."""
+
+    def __init__(
+        self,
+        source,
+        defining_ideal,
+        precision,
+        *,
+        projection_lift=None,
+        arithmetic_mode="finite_precision",
+        map_kernel=None,
+    ) -> None:
+        self._source = source
+        self._defining_ideal = defining_ideal
+        self._precision = int(precision)
+        self._projection_lift = projection_lift
+        self._arithmetic_mode = arithmetic_mode
+        self._map_kernel = map_kernel
+        self._completion_map = None
+
+    def source(self):
+        return self._source
+
+    def defining_ideal(self):
+        return self._defining_ideal
+
+    def precision(self) -> int:
+        return self._precision
+
+    def projection_lift(self):
+        return self._projection_lift
+
+    def arithmetic_mode(self):
+        return self._arithmetic_mode
+
+    def map_kernel(self):
+        return self._map_kernel
+
+    def set_completion_map(self, morphism) -> None:
+        if self._completion_map is not None and self._completion_map is not morphism:
+            raise ValueError("this adic completion construction already has its canonical map")
+        self._completion_map = morphism
+
+    def completion_map_or_none(self):
+        return self._completion_map
+
+    def completion_map(self):
+        assert self._completion_map is not None, (
+            "an adic completion construction must acquire its canonical map during construction"
+        )
+        return self._completion_map
+
+
 class AdicCompletions(Category):
     r"""Adic completions equipped with source and ideal of definition."""
 
@@ -1607,10 +1661,10 @@ class AdicCompletions(Category):
 
     class ParentMethods:
         def completion_source(self):
-            return self._preamble_completion_source
+            return self._adic_completion_construction.source()
 
         def completion_map(self):
-            return self._preamble_completion_map
+            return self._adic_completion_construction.completion_map()
 
         @cached_method
         def ideal_extension(self):
@@ -1643,7 +1697,7 @@ class AdicCompletions(Category):
             computations.
             """
             source = self.completion_source()
-            represented = getattr(self, "_preamble_completion_map_kernel", None)
+            represented = self._adic_completion_construction.map_kernel()
             if represented is not None:
                 return represented
             zero = source.ideal(source.zero())
@@ -1679,7 +1733,7 @@ class AdicCompletions(Category):
             )
 
         def computation_precision(self):
-            return self._preamble_computation_precision
+            return self._adic_completion_construction.precision()
 
         @cached_method
         def adic_inverse_system(self):
@@ -1732,7 +1786,7 @@ class AdicCompletions(Category):
                 raise ValueError("an adic projection exponent is positive")
             target = self.adic_truncation(exponent)
             quotient_map = target.quotient_map()
-            projection_lift = getattr(self, "_preamble_projection_lift", None)
+            projection_lift = self._adic_completion_construction.projection_lift()
             if projection_lift is None:
                 raise NotImplementedError(
                     "this completion realization has no maintained finite-truncation map"
@@ -2116,8 +2170,14 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         formal_parameter_labels=None,
         extra_categories=(),
     ) -> None:
-        self._preamble_completion_source = source
-        self._preamble_ideal_of_definition = defining_ideal
+        self._adic_completion_construction = _AdicCompletionConstruction(
+            source,
+            defining_ideal,
+            precision,
+            projection_lift=projection_lift,
+            arithmetic_mode=arithmetic_mode,
+            map_kernel=completion_map_kernel,
+        )
         match formal_parameter_labels:
             case None:
                 self._preamble_formal_parameter_labels = None
@@ -2125,10 +2185,6 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 self._preamble_formal_parameter_labels = finite_ordered_set(
                     formal_parameter_labels
                 )
-        self._preamble_computation_precision = int(precision)
-        self._preamble_projection_lift = projection_lift
-        self._preamble_completion_arithmetic_mode = arithmetic_mode
-        self._preamble_completion_map_kernel = completion_map_kernel
         placements = [AdicCompletions(), *extra_categories]
         if source in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
@@ -2206,16 +2262,17 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 source_expression=selected,
             )
 
-        self._preamble_completion_map = source.Mor(self)._elementwise_with_engine(
+        completion_map = source.Mor(self)._elementwise_with_engine(
             completion_map_image,
             selected_engine_map,
         )
+        self._adic_completion_construction.set_completion_map(completion_map)
         if algebra_base is None or algebra_base is source:
-            self._preamble_structure_map = self._preamble_completion_map
+            self._preamble_structure_map = completion_map
         match (formal_base_is_local, defining_ideal_is_maximal):
             case (True, _):
                 formal_parameters = tuple(
-                    self._preamble_completion_map(
+                    completion_map(
                         source.algebra_generator(label)
                     )
                     for label in self._preamble_formal_parameter_labels
@@ -2227,7 +2284,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 )
                 self._preamble_residue_field = formal_base.residue_field()
             case (_, True):
-                self._preamble_maximal_ideal = self._preamble_completion_map.extension_of_ideal(
+                self._preamble_maximal_ideal = completion_map.extension_of_ideal(
                     defining_ideal
                 )
                 self._preamble_residue_field = source.residue_field_at(defining_ideal)
@@ -2235,7 +2292,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 pass
 
     def completion_arithmetic_mode(self):
-        return self._preamble_completion_arithmetic_mode
+        return self._adic_completion_construction.arithmetic_mode()
 
     def _completion_element(self, value, *, source_expression=None):
         if getattr(value, "parent", lambda: None)() is not self._engine:
@@ -2249,7 +2306,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     def _element_constructor_(self, value):
         if getattr(value, "parent", lambda: None)() is self:
             return value
-        completion_map = getattr(self, "_preamble_completion_map", None)
+        completion_map = self._adic_completion_construction.completion_map_or_none()
         if completion_map is None:
             return super()._element_constructor_(value)
         source = self.completion_source()
@@ -2260,13 +2317,13 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         return completion_map(selected)
 
     def zero(self):
-        completion_map = getattr(self, "_preamble_completion_map", None)
+        completion_map = self._adic_completion_construction.completion_map_or_none()
         if completion_map is None:
             return super().zero()
         return completion_map(self.completion_source().zero())
 
     def one(self):
-        completion_map = getattr(self, "_preamble_completion_map", None)
+        completion_map = self._adic_completion_construction.completion_map_or_none()
         if completion_map is None:
             return super().one()
         return completion_map(self.completion_source().one())
@@ -3118,10 +3175,8 @@ def _adic_completion_from_owned_data(source, defining, precision):
             bottom_completion.completion_map()
         )
         completion_engine = _engine_ring(bottom_completion)
-        bottom_projection_lift = getattr(
-            bottom_completion,
-            "_preamble_projection_lift",
-            None,
+        bottom_projection_lift = (
+            bottom_completion._adic_completion_construction.projection_lift()
         )
         if bottom_projection_lift is None:
             raise NotImplementedError(
