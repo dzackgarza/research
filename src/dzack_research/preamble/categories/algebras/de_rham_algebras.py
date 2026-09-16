@@ -14,6 +14,20 @@ from dzack_research.preamble.categories.algebras.restricted_graded_algebras impo
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
 
+class _DeRhamConstruction:
+    r"""The selected algebra and differential module defining its de Rham algebra."""
+
+    def __init__(self, source_algebra, kahler_differentials) -> None:
+        self._source_algebra = source_algebra
+        self._kahler_differentials = kahler_differentials
+
+    def source_algebra(self):
+        return self._source_algebra
+
+    def kahler_differentials(self):
+        return self._kahler_differentials
+
+
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The de Rham algebra of a finite dual-number presentation.
@@ -60,11 +74,14 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         return [StrictlyCommutativeDifferentialGradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def de_rham_construction(self):
+            return self._de_rham_construction
+
         def de_rham_source_algebra(self):
-            return self._preamble_de_rham_source_algebra
+            return self.de_rham_construction().source_algebra()
 
         def kahler_differentials(self):
-            return self._preamble_kahler_differentials
+            return self.de_rham_construction().kahler_differentials()
 
 
 def _de_rham_differential_on_extension(exterior_algebra, omega, universal_derivation, element):
@@ -101,8 +118,7 @@ class _DeRhamAlgebra(RestrictedGradedAlgebra):
     r"""The de Rham algebra with source and differential constructor-owned."""
 
     def __init__(self, algebra, exterior, omega, ring_map) -> None:
-        self._preamble_de_rham_source_algebra = algebra
-        self._preamble_kahler_differentials = omega
+        self._de_rham_construction = _DeRhamConstruction(algebra, omega)
         RestrictedGradedAlgebra.__init__(
             self,
             exterior,

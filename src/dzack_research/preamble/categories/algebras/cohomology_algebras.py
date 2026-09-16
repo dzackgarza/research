@@ -37,6 +37,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
+class _CohomologyAlgebraConstruction:
+    r"""The selected differential graded algebra defining one cohomology algebra."""
+
+    def __init__(self, source_dga) -> None:
+        self._source_dga = source_dga
+
+    def source_dga(self):
+        return self._source_dga
+
+
 class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return CohomologyAlgebraHomset
@@ -81,8 +91,11 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = CohomologyAlgebraHomCategoryConstruction
 
     class ParentMethods:
+        def cohomology_construction(self):
+            return self._cohomology_construction
+
         def source_dga(self):
-            return self._preamble_cohomology_source_dga
+            return self.cohomology_construction().source_dga()
 
 
 class CohomologyAlgebraElement(GradedDirectSumElement):
@@ -94,7 +107,7 @@ class _CohomologyAlgebra(GradedDirectSumModule):
     Element = CohomologyAlgebraElement
 
     def __init__(self, dga) -> None:
-        self._preamble_cohomology_source_dga = dga
+        self._cohomology_construction = _CohomologyAlgebraConstruction(dga)
         self._preamble_algebra_base_ring = dga.base_ring()
         extra_categories = [CohomologyAlgebras(dga.base_ring())]
         if dga in CommutativeDifferentialGradedAlgebras(dga.base_ring()):
@@ -110,7 +123,7 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         )
 
     def source_dga(self):
-        return self._preamble_cohomology_source_dga
+        return self._cohomology_construction.source_dga()
 
     def algebra_base_ring(self):
         return self.base_ring()
