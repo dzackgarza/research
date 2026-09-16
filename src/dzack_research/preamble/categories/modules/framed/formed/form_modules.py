@@ -236,8 +236,8 @@ class FormedModuleMorphism(Morphism):
             )
             return unformed_morphism.is_injective()
 
-        raise NotImplementedError(
-            "injectivity of this formed morphism has no represented unformed or finite-torsion decision procedure"
+        assert unformed_domain is not domain or unformed_codomain is not codomain, (
+            "injectivity of this formed morphism requires either finite-torsion enumeration or a represented unformed-module map"
         )
 
     def map_value(self, value):
@@ -429,10 +429,7 @@ class FormEmbeddingHomset(CategoricalHomset):
             values.module_category().Mor(values, values).identity(),
             quadratic=quadratic,
         )
-        try:
-            injective = embedding.is_injective()
-        except NotImplementedError:
-            injective = False
+        injective = embedding.is_injective()
         if injective is not True:
             raise ValueError("a form embedding requires an injective underlying module map")
         return embedding
@@ -1251,11 +1248,9 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
             cross terms need no further divisibility test because symmetry
             contributes them with the factor ``2`` in ``b(v,v)``.
             """
-            if not self.module_rank().is_finite():
-                raise NotImplementedError(
-                    "conversion of an even bilinear form to a quadratic form "
-                    "currently requires a finite framing"
-                )
+            assert self.module_rank().is_finite(), (
+                "conversion of an even bilinear form to a quadratic form requires a finite framing"
+            )
             ring = self.base_ring()
             two = ring(2)
             zero = ring.zero()
@@ -1341,11 +1336,10 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             different quotient ``K/R`` and is handled by its specialized
             discriminant-form owner instead.
             """
-            if self.value_module() is not self.base_ring():
-                raise NotImplementedError(
-                    "polarization with a changed value quotient belongs to the "
-                    "specialized quadratic-form owner"
-                )
+            assert self.value_module() is self.base_ring(), (
+                "generic quadratic-form polarization requires scalar-ring values; "
+                "changed quotient values belong to the specialized quadratic-form owner"
+            )
             unformed = self.unformed_module()
             equip = self.equip_form_morphism()
             form = self._formed_form()
