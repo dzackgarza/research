@@ -283,10 +283,9 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             if source not in self or target not in self:
                 raise ValueError("a transporter requires two points of the G-set")
             group = self.acting_group()
-            if group.is_finite() is not True:
-                raise NotImplementedError(
-                    "represented transporter search currently requires a finite acting group"
-                )
+            assert group.is_finite() is True, (
+                "represented transporter search requires a finite acting group"
+            )
             for group_element in group:
                 if self.act(group_element, source) == target:
                     return group_element
@@ -654,33 +653,6 @@ class Torsors(OwnedParameterizedCategory):
         def cardinality(self):
             r"""``|T| = |G|`` for a ``G``-torsor."""
             return self.acting_group().cardinality()
-
-        def transporter(self, source, target):
-            r"""Return the unique group element carrying ``source`` to ``target``.
-
-            The search is an exact finite backend; the torsor axioms provide
-            existence and uniqueness, not an additional certificate object.
-            """
-            group = self.acting_group()
-            if group.is_finite() is not True:
-                raise NotImplementedError(
-                    "represented torsor transport currently requires a finite acting group"
-                )
-            result = None
-            for group_element in group:
-                if self.act(group_element, source) != target:
-                    continue
-                if result is not None:
-                    raise AssertionError(
-                        "two group elements carry the same torsor point to the target; "
-                        "this action is not free"
-                    )
-                result = group_element
-            if result is None:
-                raise AssertionError(
-                    f"no group element moves {source} to {target}; this action is not transitive"
-                )
-            return result
 
 
 __all__ = [
