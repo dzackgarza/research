@@ -72,6 +72,27 @@ if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
 
 
+class AlgebraStructureConstruction:
+    r"""The selected scalar ring and structure morphism defining an algebra."""
+
+    def __init__(self, base_ring, structure_map=None) -> None:
+        self._base_ring = _owned_ring(base_ring)
+        self._structure_map = structure_map
+
+    def base_ring(self):
+        return self._base_ring
+
+    def set_structure_map(self, structure_map) -> None:
+        if structure_map.domain() is not self.base_ring():
+            raise ValueError("an algebra structure map must start at its selected scalar ring")
+        self._structure_map = structure_map
+
+    def structure_map(self, algebra):
+        if self._structure_map is None:
+            self._structure_map = _default_structure_map(self.base_ring(), algebra)
+        return self._structure_map
+
+
 class _ChosenAlgebraMultiplicationDatum:
     r"""The module, multiplication, and optional unit selected for an algebra.
 
@@ -135,7 +156,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             **rest,
         ) -> None:
             self._chosen_multiplication_datum = chosen_multiplication_datum
-            self._preamble_algebra_base_ring = algebra_base_ring
+            self._algebra_structure_construction = AlgebraStructureConstruction(algebra_base_ring)
             self._preamble_algebra_is_commutative = algebra_is_commutative
             super().__init__(**rest)
 
@@ -900,11 +921,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
             )
 
-        # The scalar ring an algebra was constructed over, when a level above
-        # declared one.  Declared here so a reader of this category sees the
-        # field, and so an algebra built by a route that states no base still
-        # answers below rather than failing to resolve the name.
-        _preamble_algebra_base_ring = None
+        def algebra_structure_construction(self):
+            r"""Return the selected scalar-structure datum when this algebra has one."""
+            return getattr(self, "_algebra_structure_construction", None)
 
         def algebra_base_ring(self):
             r"""Return the scalar ring this algebra is an algebra over.
@@ -921,9 +940,9 @@ class Algebras(OwnedCategoryOverBaseRing):
             structured object itself.  No assertion that a general algebra is
             a ring is made at this node.
             """
-            declared = self._preamble_algebra_base_ring
-            if declared is not None:
-                return declared
+            construction = self.algebra_structure_construction()
+            if construction is not None:
+                return construction.base_ring()
             host_base = self.base()
             if host_base is None or host_base is self:
                 return self
@@ -1205,7 +1224,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         if multiplication.codomain() is not module:
             raise ValueError("the multiplication must have the exact supplied module as codomain")
         structured = tensor_square.algebras().algebra(module, multiplication)
-        structured._preamble_algebra_base_ring = ring
+        structured._algebra_structure_construction = AlgebraStructureConstruction(ring)
         refine(structured, AlgebrasWithChosenMultiplication(ring))
         return structured
 
@@ -2545,7 +2564,11 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def _ring_morphism_defining_algebra_structure(self):
-            return self._preamble_structure_map
+            construction = self.algebra_structure_construction()
+            assert construction is not None, (
+                f"{self} is an owned algebra without selected scalar-structure data"
+            )
+            return construction.structure_map(self)
 
 
 class _OwnedAlgebraElement(_OwnedRingElement):
@@ -2577,6 +2600,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         base = _owned_ring(base_ring)
         for name, value in construction_data:
             setattr(self, name, value)
+        self._algebra_structure_construction = AlgebraStructureConstruction(base, structure_map)
         self._preamble_algebra_generating_set = None if labels is None else finite_ordered_set(labels)
         placement = [Algebras(base).Associative().Unital(), OwnedAlgebras(base)]
         if engine in SageCommutativeAlgebras(_engine_ring(base)):
@@ -2590,7 +2614,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             base=base,
             category=Cat().meet(tuple(placement)),
         )
-        self._preamble_structure_map = _default_structure_map(base, self) if structure_map is None else structure_map
         if labels is None:
             if generator_values is not None:
                 raise ValueError("an unframed algebra cannot carry framed generator values")
@@ -2709,8 +2732,8 @@ def _algebra_structure_view(ring, structure_map):
         raise ValueError("an algebra-structure view requires a ring map into the selected ring")
     base = _own_ring(structure_map.domain())
     view = _OwnedAlgebraParent(_engine_ring(selected_ring), base, None)
-    view._preamble_structure_map = base.Mor(view)(
-        lambda scalar: view(structure_map(base(scalar))),
+    view.algebra_structure_construction().set_structure_map(
+        base.Mor(view)(lambda scalar: view(structure_map(base(scalar))))
     )
     view._preamble_algebra_structure_ring = selected_ring
     return view

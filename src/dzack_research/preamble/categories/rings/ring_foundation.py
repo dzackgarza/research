@@ -703,16 +703,26 @@ class LocalizationRings(OwnedCategory):
                 fraction_field_realization=fraction_field_realization,
             )
             self._preamble_engine_ring = _engine_ring
-            if algebra_source is not None:
-                self._preamble_algebra_base_ring = algebra_source.base_ring()
             super().__init__(base=source.base_ring(), **rest)
 
             localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
             )
             self._localization_construction.set_localization_map(localization_map)
-            if algebra_source is not None:
-                self._preamble_structure_map = self.localization_map() * algebra_source.algebra_structure_morphism()
+
+        def algebra_base_ring(self):
+            algebra_source = self._localization_construction.algebra_source()
+            return (
+                algebra_source.base_ring()
+                if algebra_source is not None
+                else self.localization_source().base_ring()
+            )
+
+        def _ring_morphism_defining_algebra_structure(self):
+            algebra_source = self._localization_construction.algebra_source()
+            if algebra_source is None:
+                return self.localization_map()
+            return self.localization_map() * algebra_source.algebra_structure_morphism()
 
         def _selected_engine_ring(self):
             r"""Return the private realization that computes in this localization.
@@ -3050,7 +3060,6 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         placement = _owned_ring_category(engine, scalar_base=category_base)
         if category is not None:
             placement = Category.join((placement, category))
-        self._preamble_algebra_base_ring = base
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
 

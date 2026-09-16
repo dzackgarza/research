@@ -5,7 +5,10 @@ import operator
 from sage.categories.action import Action
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebraStructureConstruction,
+    FramedAlgebras,
+)
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -70,7 +73,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         self._ring_map = ring_map
         self._degree_zero_algebra = extension_algebra.base_ring()
         base = _owned_ring(ring_map.domain())
-        self._preamble_algebra_base_ring = base
+        self._algebra_structure_construction = AlgebraStructureConstruction(base)
         self._restricted_pieces = {}
 
         def piece(degree):
