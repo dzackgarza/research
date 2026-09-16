@@ -1,6 +1,10 @@
 """Owned ringed-space structure used by the scheme hierarchy."""
 
-from sage.misc.cachefunc import cached_method
+from itertools import combinations
+
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -11,7 +15,13 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.presheaves import (
+    Coverage,
+    CoveringFamilies,
+    CoveringFamily,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -177,20 +187,83 @@ def _localization_restriction_map(source, target):
 
 
 class DistinguishedAffineCovers(OwnedCategory):
-    r"""The owned category of represented distinguished affine covers."""
+    r"""Represented distinguished affine covering families.
+
+    With no parameter this is the catalogue containing every represented
+    distinguished affine cover.  ``DistinguishedAffineCovers(X)`` is its fibre
+    over one affine scheme ``X``; that fibre is a subcategory of covering
+    families in the category of represented open subobjects of ``X`` and is
+    the selected family category for the distinguished-affine coverage.
+    """
+
+    @staticmethod
+    @cached_function(
+        key=lambda cls, scheme=None: (
+            cls,
+            None if scheme is None else id(scheme),
+        )
+    )
+    def __classcall__(cls, scheme=None):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(scheme)
+        return typecall(cls, scheme)
+
+    def __init__(self, scheme=None) -> None:
+        self._scheme = scheme
+        super().__init__()
+
+    def scheme(self):
+        return self._scheme
+
+    def site_category(self):
+        scheme = self.scheme()
+        if scheme is None:
+            raise ValueError("the global cover catalogue has no single site category")
+        from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
+
+        return OpenImmersions(scheme)
+
+    def coverage(self):
+        scheme = self.scheme()
+        if scheme is None:
+            raise ValueError("the global cover catalogue does not select one coverage")
+        return distinguished_affine_coverage(scheme)
 
     def super_categories(self):
-        return [Objects()]
+        scheme = self.scheme()
+        if scheme is None:
+            return [Objects()]
+        return [
+            DistinguishedAffineCovers(),
+            CoveringFamilies(self.site_category()),
+        ]
 
-    def __contains__(self, candidate) -> bool:
-        return isinstance(candidate, DistinguishedAffineCover)
+    def an_object(self):
+        scheme = self.scheme()
+        if scheme is None:
+            scheme = RingedSpaces().an_object()
+        return scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "distinguished affine covers"
+    def _repr_object_names(self):
+        scheme = self.scheme()
+        if scheme is None:
+            return "distinguished affine covers"
+        return f"distinguished affine covering families on {scheme}"
 
 
-class DistinguishedAffineCover(SageObject):
+@cached_function(key=lambda scheme: id(scheme))
+def distinguished_affine_coverage(scheme) -> Coverage:
+    r"""The coverage selected by distinguished affine covering families on ``X``."""
+
+    category = DistinguishedAffineCovers(scheme)
+    return Coverage(
+        category.site_category(),
+        category,
+        name=f"Distinguished-affine coverage on {scheme}",
+    )
+
+
+class DistinguishedAffineCover(CoveringFamily):
     r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
 
     def _cache_key(self) -> int:
@@ -215,6 +288,24 @@ class DistinguishedAffineCover(SageObject):
         }
         self._restricted_modules = {}
         self._restricted_algebras = {}
+
+        category = DistinguishedAffineCovers(scheme)
+        site = category.site_category()
+        target = scheme.distinguished_open(algebra.one())
+        members = finite_indexed_family(
+            self._atlas,
+            lambda index: site.Mor(self.open(index), target)(),
+            name="Distinguished affine cover arrows",
+        )
+        overlaps = {}
+        for left_index, right_index in combinations(tuple(self._atlas), 2):
+            overlap = self.intersection(left_index, right_index)
+            overlaps[left_index, right_index] = (
+                overlap,
+                site.Mor(overlap, self.open(left_index))(),
+                site.Mor(overlap, self.open(right_index))(),
+            )
+        CoveringFamily.__init__(self, category, target, members, overlaps)
 
     def ambient_scheme(self):
         return self._scheme
@@ -735,6 +826,7 @@ __all__ = [
     "CoverRefinement",
     "DistinguishedAffineCover",
     "DistinguishedAffineCovers",
+    "distinguished_affine_coverage",
     "LocallyRingedSpaces",
     "QuasiCoherentSheaves",
     "RingedSpaces",

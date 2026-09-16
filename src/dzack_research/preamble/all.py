@@ -367,6 +367,8 @@ from dzack_research.preamble.categories.schemes import (
     Curves,
     CyclicCoverBaseChangeComparison,
     DistinguishedAffineCover,
+    DistinguishedAffineCovers,
+    distinguished_affine_coverage,
     FiberProductSchemes,
     FiniteGluedInvariantQuotient,
     GeometricFundamentalGroups,
