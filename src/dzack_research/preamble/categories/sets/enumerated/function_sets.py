@@ -19,10 +19,7 @@ from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
     EnumeratedSets,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
-    NN,
-    CountablyInfiniteSets,
-)
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -122,7 +119,7 @@ class EnumeratedByNaturals(OwnedCategory):
         return HermitePolynomials()
 
     def super_categories(self):
-        return [EnumeratedSets(), CountablyInfiniteSets()]
+        return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
         def index_set(self) -> Parent:
@@ -153,7 +150,7 @@ class EnumeratedByIntegers(OwnedCategory):
         return LaurentMonomials()
 
     def super_categories(self):
-        return [EnumeratedSets(), CountablyInfiniteSets()]
+        return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
         def index_set(self) -> Parent:

@@ -7,6 +7,7 @@ from itertools import count
 from typing import Any, Self, SupportsInt, TypeVar
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
@@ -46,6 +47,10 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 IndexT = TypeVar("IndexT")
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
+
+for _axiom in ("Countable", "Uncountable"):
+    if _axiom not in all_axioms:
+        all_axioms.add(_axiom)
 
 
 class _OwnedImageSet(Parent):
@@ -142,7 +147,7 @@ class EnumeratedSets(OwnedCategory):
         return finite_ordinal_set(2)
 
     def super_categories(self):
-        return [CountableSets()]
+        return [Sets().Countable()]
 
     class ParentMethods:
         @abstract_method
@@ -673,6 +678,14 @@ class Sets(OwnedCategory):
             r"""Return this category with the axiom that its objects are infinite."""
             return self._with_axiom("Infinite")
 
+        def Countable(self) -> Category:
+            r"""Return this category with the axiom that its objects are countable."""
+            return self._with_axiom("Countable")
+
+        def Uncountable(self) -> Category:
+            r"""Return this category with the axiom that its objects are uncountable."""
+            return self._with_axiom("Uncountable")
+
         def product(
             self,
             family: IndexedFamily | Iterable[Parent],
@@ -1020,15 +1033,6 @@ class Sets(OwnedCategory):
     def identity(self, set_object: Parent) -> OwnedSetMorphism:
         return self.Mor(set_object, set_object).identity()
 
-    def Countable(self) -> Category:
-        return CountableSets()
-
-    def CountablyInfinite(self) -> Category:
-        return CountablyInfiniteSets()
-
-    def Uncountable(self) -> Category:
-        return UncountableSets()
-
     def PartiallyOrdered(self) -> Category:
         return PartiallyOrderedSets()
 
@@ -1129,6 +1133,10 @@ class Sets(OwnedCategory):
             r"""The ordinal 2."""
             return finite_ordinal_set(2)
 
+        def extra_super_categories(self) -> list[Category]:
+            r"""A finite set is countable."""
+            return [Sets().Countable()]
+
         # Functors into finite G-sets, sited on their domain.
 
         def trivial_action(self, group: Parent) -> Functor:
@@ -1185,6 +1193,55 @@ class Sets(OwnedCategory):
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 return False
 
+    class Countable(CategoryWithAxiom):
+        r"""Sets whose cardinality is at most \(\aleph_0\)."""
+
+        def an_object(self) -> Parent:
+            r"""The natural numbers."""
+            return NN
+
+        def __contains__(self, candidate) -> bool:
+            if candidate not in Sets():
+                return False
+            try:
+                return cardinal(candidate.cardinality()).is_countable()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+        class Infinite(CategoryWithAxiom):
+            r"""Sets whose cardinality is \(\aleph_0\)."""
+
+            def an_object(self) -> Parent:
+                r"""The natural numbers."""
+                return NN
+
+            def __contains__(self, candidate) -> bool:
+                if candidate not in Sets():
+                    return False
+                try:
+                    return cardinal(candidate.cardinality()).is_countably_infinite()
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    return False
+
+    class Uncountable(CategoryWithAxiom):
+        r"""Sets whose cardinality exceeds \(\aleph_0\)."""
+
+        def an_object(self) -> Parent:
+            r"""The power set of the natural numbers."""
+            return NN.power_set()
+
+        def extra_super_categories(self) -> list[Category]:
+            r"""An uncountable set is infinite."""
+            return [Sets().Infinite()]
+
+        def __contains__(self, candidate) -> bool:
+            if candidate not in Sets():
+                return False
+            try:
+                return cardinal(candidate.cardinality()).is_uncountable()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
 
 def FiniteSets() -> Category:
     r"""The category of finite sets."""
@@ -1194,6 +1251,21 @@ def FiniteSets() -> Category:
 def InfiniteSets() -> Category:
     r"""The category of infinite sets."""
     return Sets().Infinite()
+
+
+def CountableSets() -> Category:
+    r"""The category of countable sets."""
+    return Sets().Countable()
+
+
+def CountablyInfiniteSets() -> Category:
+    r"""The category of countably infinite sets."""
+    return Sets().Countable().Infinite()
+
+
+def UncountableSets() -> Category:
+    r"""The category of uncountable sets."""
+    return Sets().Uncountable()
 
 
 def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Parent:
@@ -2621,12 +2693,11 @@ class NaturalNumberSets(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 
-        # Enumerated as well as countably infinite: the identity ranking
-        # is the chosen enumeration.  Declared by the category rather
-        # than joined for the one object.
+        # The identity ranking is the chosen enumeration.  Declared by the
+        # category rather than joined for the one object.
         return [
             EnumeratedSets(),
-            CountablyInfiniteSets(),
+            Sets().Infinite(),
             TotallyOrderedSets(),
             AdditiveMonoids(),
         ]
@@ -2773,63 +2844,6 @@ class Homsets(OwnedCategory):
     class ParentMethods:
         def is_endomorphism_set(self) -> bool:
             return self.domain() is self.codomain()
-
-
-class CountableSets(OwnedCategory):
-    r"""Sets equipped with a countable enumeration."""
-
-    def an_object(self) -> Parent:
-        r"""The natural numbers."""
-        return NN
-
-    def super_categories(self):
-        return [Sets()]
-
-    def __contains__(self, candidate) -> bool:
-        if candidate not in Sets():
-            return False
-        try:
-            return cardinal(candidate.cardinality()).is_countable()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
-
-
-class CountablyInfiniteSets(OwnedCategory):
-    r"""Countably infinite sets."""
-
-    def an_object(self) -> Parent:
-        r"""The natural numbers."""
-        return NN
-
-    def super_categories(self):
-        return [CountableSets(), InfiniteSets()]
-
-    def __contains__(self, candidate) -> bool:
-        if candidate not in Sets():
-            return False
-        try:
-            return cardinal(candidate.cardinality()).is_countably_infinite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
-
-
-class UncountableSets(OwnedCategory):
-    r"""Sets whose represented cardinal is provably uncountable."""
-
-    def an_object(self) -> Parent:
-        r"""The power set of the natural numbers, uncountable by Cantor's theorem."""
-        return NN.power_set()
-
-    def super_categories(self):
-        return [InfiniteSets()]
-
-    def __contains__(self, candidate) -> bool:
-        if candidate not in Sets():
-            return False
-        try:
-            return cardinal(candidate.cardinality()).is_uncountable()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
 
 
 class PartiallyOrderedSets(OwnedCategory):
