@@ -112,7 +112,7 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
     return algebra
 
 
-def _symmetric_algebra_on(base_ring, algebra_generating_set):
+def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
     base = _owned_ring(base_ring)
     if (
         algebra_generating_set in Sets()
@@ -135,10 +135,15 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set):
         FreeAlgebras(base),
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
+        construction_data=(
+            (("_preamble_free_algebra_source_module", source_module),)
+            if source_module is not None
+            else ()
+        ),
     )
 
 
-def _tensor_algebra_on(base_ring, algebra_generating_set):
+def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
     base = _owned_ring(base_ring)
     if (
         algebra_generating_set in Sets()
@@ -161,6 +166,11 @@ def _tensor_algebra_on(base_ring, algebra_generating_set):
         FreeAlgebras(base),
         GradedFreeAlgebras(base),
         TensorAlgebras(base),
+        construction_data=(
+            (("_preamble_free_algebra_source_module", source_module),)
+            if source_module is not None
+            else ()
+        ),
     )
 
 

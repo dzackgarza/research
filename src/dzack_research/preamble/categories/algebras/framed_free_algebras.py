@@ -41,11 +41,12 @@ def _tensor_algebra_of(module):
         return _sparse_tensor_algebra_of(module)
 
     base = module.base_ring()
-    presentation_ring = _tensor_algebra_on(base, module.module_generating_set())
-    algebra = _tensor_algebra_from_module_presentation(presentation_ring, module)
-    if algebra is presentation_ring:
-        algebra._preamble_free_algebra_source_module = module
-    return algebra
+    presentation_ring = _tensor_algebra_on(
+        base,
+        module.module_generating_set(),
+        source_module=module,
+    )
+    return _tensor_algebra_from_module_presentation(presentation_ring, module)
 
 
 def _symmetric_algebra_of(module):
@@ -62,9 +63,7 @@ def _symmetric_algebra_of(module):
         for row in range(relation_matrix.nrows())
         for column in range(relation_matrix.ncols())
     ):
-        algebra = _symmetric_algebra_on(base, labels)
-        algebra._preamble_free_algebra_source_module = module
-        return algebra
+        return _symmetric_algebra_on(base, labels, source_module=module)
 
     # Sage's univariate quotient constructor only accepts monic defining
     # polynomials.  A one-variable symmetric algebra with a torsion relation
@@ -80,9 +79,14 @@ def _symmetric_algebra_of(module):
             FreeAlgebras(base),
             GradedFreeAlgebras(base),
             SymmetricAlgebras(base),
+            construction_data=(("_preamble_free_algebra_source_module", module),),
         )
     else:
-        presentation_ring = _symmetric_algebra_on(base, labels)
+        presentation_ring = _symmetric_algebra_on(
+            base,
+            labels,
+            source_module=module,
+        )
 
 
     engine = _engine_ring(presentation_ring)
