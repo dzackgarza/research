@@ -1125,10 +1125,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the actual free module equipped with this lattice form."""
             return self._module
 
-        def framing_source(self):
-            r"""Return the retained free module whose canonical framing equips this lattice."""
-            return self.unformed_module()
-
         @cached_method
         def forget_form_morphism(self):
             r"""Return the canonical module identification from the lattice to its free module."""
@@ -1140,21 +1136,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 }
             )
 
-        @cached_method
         def equip_form_morphism(self):
-            r"""Return the inverse canonical identification equipping the free module with the form."""
-            module = self.unformed_module()
-            return module.module_category().Mor(module, self)(
-                {
-                    label: self.module_generator(label)
-                    for label in module.module_generating_set()
-                }
-            )
-
-        @cached_method
-        def framing_morphism(self):
-            r"""Return the canonical framing ``Free_R(S) -> L`` used by construction."""
-            return self.equip_form_morphism()
+            r"""Return the selected framing that equips the free module with this form."""
+            return self.framing_morphism()
 
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
@@ -1486,39 +1470,31 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return self.base_ring().matrix_space(size, size).from_rows(tuple(tuple(self.b(left, right) for right in selected) for left in selected))
             return self.algebraic_correlation_morphism().matrix()
 
-        def module_generating_set(self):
-            r"""Return the generating set of the actual underlying free module.
+        def basis_vector(self, position):
+            r"""Return the selected lattice basis vector at integer ``position``.
 
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).module_generating_set()
-                {e_0, e_1}
-                sage: Lattices(ZZ)(ZZ^NN).module_generating_set()
-                {e_i : i in NN} subset of SR
+            Positional basis access is a lattice convenience distinct from the
+            generic framing evaluation ``module_generator(label)``.  The basis
+            vector is still obtained through the selected framing epimorphism.
             """
-            return self.unformed_module().module_generating_set()
+            labels = self.module_generating_set()
+            label = labels[int(position)]
+            source = self.framing_source()
+            return self.framing_morphism()(source.module_generator(label))
 
-        def module_generator(self, index):
-            r"""Return the module generator indexed by ``index``.
+        def module_generator(self, label):
+            r"""Evaluate the selected framing, retaining archived positional syntax.
 
-            ``index`` is an element of the generating set, or an integer
-            position in that enumerated set.  The default generating set
-            is the formal symbols \(e_i\in\mathrm{SR}\).
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: I2 = Lattices(ZZ)(ZZ^2)
-                sage: I2.module_generator(0)
-                e_0
-                sage: I2.module_generator(0).to_tuple()
-                (1, 0)
+            Actual labels are evaluated directly through the generic framing.
+            An integer that is not itself a label is temporarily interpreted as
+            a basis position via :meth:`basis_vector`; the generator-lexicon
+            convergence pass owns removal of that archived ambiguity.
             """
-            keys = self.module_generating_set()
-            if index not in keys:
-                index = keys[int(index)]
-            return self.element_class(self, self._module.module_generator(index))
+            labels = self.module_generating_set()
+            if label not in labels:
+                return self.basis_vector(int(label))
+            source = self.framing_source()
+            return self.framing_morphism()(source.module_generator(label))
 
         def b(self, left, right):
             r"""Return the bilinear pairing \(b(v,w)\).

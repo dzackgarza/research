@@ -362,6 +362,15 @@ class Lattice(Parent, IndexedGenerators):
                 names, _basis_keys(module)
             )
         Parent.__init__(self, **parent_arguments)
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            _framing_morphism,
+        )
+
+        self._preamble_framing_morphism = _framing_morphism(
+            module,
+            self,
+            lambda label: self.element_class(self, module.module_generator(label)),
+        )
 
     def __call__(self, x):
         r"""Construct a lattice vector through the owned module representation."""
