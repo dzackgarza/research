@@ -620,7 +620,7 @@ Treat the pin as blocked, record it that way against the affected items in the o
   A mathematically incorrect expectation may change only under the exception in `AGENTS.md`, with the correction justified in its commit.
   **Acceptance:** the actual failed proposition is established and the affected downstream construction remains coherent.
 
-- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
+- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`, `research-sage-runtime`, `source-resolvable-imports`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
   **Goal:** Exercise the repaired preamble as a coherent live Sage mathematical session: import the public category/lattice language, regenerate its derived views, inspect research examples, and run final QC.
   **Fresh-session invariant:** before this node can close, a fresh live Sage process on the repository's active environment must execute `from dzack_research.preamble.all import *` successfully and expose at least the core `Cat` and `Lattices` entry points.
   Regenerate the preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with the live session; graph node counts are an inventory, not acceptance by themselves.
@@ -644,6 +644,12 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Owner:** the tracked `.envrc` runtime contract and the supported static Sage installation for this repository.
   **Deliver:** select the actual supported Sage executable in `.envrc` (or repair the intended installation at its stable path) without creating another temporary Sage distribution; preserve the repository's intended dependency/runtime semantics rather than treating any Python with a `sage` module as interchangeable.
   **Acceptance:** after source remediation has closed and terminal execution is authorized, the tracked environment launches Sage, preparses the repository's `.sage` inputs through the normal project route, and a fresh process reaches the `terminal-session` star-import invariant.  This node does not authorize running Sage while `architecture-remediation` remains open.
+
+- [ ] **`source-resolvable-imports`**. **Needs:** none.
+  **Goal:** Every intra-package import in `src/dzack_research/` names something its target module binds, so the session surface can import once the phase allows a run.
+  **Observed gap:** `just preamble-imports` (source-only, `utilities/import_audit.py`) lists 17 imports of names defined nowhere, all present before 2026-09-16: `DeRhamAlgebra` (the module defines `DeRhamAlgebras` and `_DeRhamAlgebra`) at algebras/cartan_calculus.py:9, functors/de_rham.py:7, modules/connections.py:19; `KahlerDifferentials` (the module defines `KahlerDifferentialModules`) at algebras/de_rham_algebras.py:8, algebras/derivations.py:375, modules/connections.py:21, schemes/schemes.py:1685; `_localized_modules` at functors/module_localization.py:8 and finitely_presented_modules.py:527; `ConstructionData` at modules/pure/function_modules.py:58; `NaturalNumber`, `NaturalNumbers` at sets/owned_sets.py:7; five lexicon names at lexicon/__init__.py:10.  Each is a consumer left behind by a rename or a retirement; several packages resolve names lazily through `_EXPORTS` tables and `__getattr__` (`STY-120`), which is how these stayed invisible.
+  **Deliver:** each consumer spells the name its module now binds, or the missing definition is restored at its owner where the rename lost mathematics; the lazy export tables are examined against `STY-120` as part of the same pass.
+  **Acceptance:** `just preamble-imports` exits zero.
 
 ### Categorical placement foundations
 

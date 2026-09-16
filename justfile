@@ -158,6 +158,10 @@ category-graph-svg:
     dot -Tsvg docs/declared-category-graph.dot -o docs/declared-category-graph.svg
     @echo "wrote docs/declared-category-graph.svg"
 
+# Intra-package imports that name nothing their module binds, read from source
+preamble-imports:
+    PYTHONPATH=src python3 -m dzack_research.utilities.import_audit src/dzack_research
+
 # Static architecture/complexity inventory for the live preamble
 preamble-complexity:
     PYTHONPATH=src python3 -m dzack_research.utilities.complexity_analysis src/dzack_research/preamble
