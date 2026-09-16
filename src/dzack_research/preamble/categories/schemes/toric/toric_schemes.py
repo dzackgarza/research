@@ -1608,11 +1608,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     for position, invariant in enumerate(invariants)
                 }
             )
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                FinitelyPresentedModule,
-            )
 
-            module = FinitelyPresentedModule(relation)
+            module = relation.cokernel()
             return ChowGroups(module.base_ring())(
                 module,
                 self,

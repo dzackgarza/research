@@ -420,19 +420,14 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
 
 def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
 
     ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
     free_target = ring.free_module(1)
     free_relations = ring.free_module(1)
-    module = FinitelyPresentedModule(
-        free_relations.module_category().Mor(free_relations, free_target)(
+    module = free_relations.module_category().Mor(free_relations, free_target)(
             {0: x * free_target.module_generator(0)}
-        )
-    )
+        ).cokernel()
 
     spectrum = ring.spectrum()
     generic = spectrum.generic_point()
@@ -473,9 +468,6 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
 
 def test_module_localization_is_first_class_and_fibers_factor_through_it() -> None:
     from dzack_research.preamble.all import LocalizedModules
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
 
     free = ZZ.free_module(1)
     generator = free.module_generator(0)
@@ -499,9 +491,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
         3, localized_free.module_generator(0)
     )
 
-    torsion = FinitelyPresentedModule(
-        free.module_category().Mor(free, free)({0: 6 * generator})
-    )
+    torsion = free.module_category().Mor(free, free)({0: 6 * generator}).cokernel()
     p5 = ZZ.spectrum()(5)
     torsion_at_two = torsion.localize_at_prime(p2)
     torsion_at_five = torsion.localize_at_prime(p5)
@@ -519,11 +509,9 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
     polynomial_free = polynomial.free_module(1)
-    quotient = FinitelyPresentedModule(
-        polynomial_free.module_category().Mor(polynomial_free, polynomial_free)(
+    quotient = polynomial_free.module_category().Mor(polynomial_free, polynomial_free)(
             {0: x * polynomial_free.module_generator(0)}
-        )
-    )
+        ).cokernel()
     origin = polynomial.spectrum()(polynomial.ideal(x))
     local_quotient = quotient.localize_at_prime(origin)
     fiber = quotient.fiber(origin)
@@ -532,9 +520,6 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
 
 
 def test_presented_module_localization_detects_inverted_annihilators() -> None:
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
 
     polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")
@@ -543,12 +528,8 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     localization = polynomial.localization(x)
     localize = localization.localization_functor()
 
-    killed = FinitelyPresentedModule(
-        free.module_category().Mor(free, free)({0: (x**2) * generator})
-    )
-    surviving = FinitelyPresentedModule(
-        free.module_category().Mor(free, free)({0: (x + polynomial.one()) * generator})
-    )
+    killed = free.module_category().Mor(free, free)({0: (x**2) * generator}).cokernel()
+    surviving = free.module_category().Mor(free, free)({0: (x + polynomial.one()) * generator}).cokernel()
     killed_local = localize(killed)
     surviving_local = localize(surviving)
 
@@ -568,12 +549,8 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     point = plane.spectrum()(plane.ideal(x_plane))
     localize_at_x = point.local_ring().localization_functor()
 
-    supported_at_x = FinitelyPresentedModule(
-        plane_free.module_category().Mor(plane_free, plane_free)({0: x_plane * plane_generator})
-    )
-    killed_away_from_x = FinitelyPresentedModule(
-        plane_free.module_category().Mor(plane_free, plane_free)({0: y_plane * plane_generator})
-    )
+    supported_at_x = plane_free.module_category().Mor(plane_free, plane_free)({0: x_plane * plane_generator}).cokernel()
+    killed_away_from_x = plane_free.module_category().Mor(plane_free, plane_free)({0: y_plane * plane_generator}).cokernel()
     supported_local = localize_at_x(supported_at_x)
     killed_local = localize_at_x(killed_away_from_x)
 
@@ -584,9 +561,7 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
 
     integer_free = ZZ.free_module(1)
     integer_generator = integer_free.module_generator(0)
-    torsion = FinitelyPresentedModule(
-        integer_free.module_category().Mor(integer_free, integer_free)({0: 6 * integer_generator})
-    )
+    torsion = integer_free.module_category().Mor(integer_free, integer_free)({0: 6 * integer_generator}).cokernel()
     at_two = ZZ.spectrum()(2).local_ring().localization_functor()(torsion)
     at_five = ZZ.spectrum()(5).local_ring().localization_functor()(torsion)
 
@@ -829,9 +804,6 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
 
 def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operations() -> None:
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
 
     ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
@@ -839,11 +811,9 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     local = origin.local_ring()
     free = local.free_module(1)
     generator = free.module_generator(0)
-    quotient = FinitelyPresentedModule(
-        free.module_category().Mor(free, free)(
+    quotient = free.module_category().Mor(free, free)(
             {0: free.scalar_multiple(local(x), generator)}
-        )
-    )
+        ).cokernel()
 
     assert quotient.minimal_number_of_generators() == 1
     assert quotient.minimal_number_of_generators() == quotient.residue_module().dimension()
