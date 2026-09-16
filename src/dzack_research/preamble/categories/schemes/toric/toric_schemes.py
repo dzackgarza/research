@@ -484,14 +484,9 @@ class RepresentedToricSchemes(OwnedCategory):
         return [LocallyRingedSpaces()]
 
     def __contains__(self, candidate) -> bool:
-        base_method = getattr(candidate, "scheme_base_ring", None)
-        if not callable(base_method):
-            return False
-        try:
-            base = base_method()
-            return candidate in ToricSchemes(base)
-        except (AssertionError, AttributeError, TypeError, ValueError):
-            return False
+        # Every toric scheme is placed in ``ToricSchemes(R)`` over its own base
+        # at construction, so membership here is that placement.
+        return _has_scheme_placement(candidate, ToricSchemes)
 
     @classmethod
     def _repr_object_names(cls):

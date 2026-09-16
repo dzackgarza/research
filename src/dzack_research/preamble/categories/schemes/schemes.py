@@ -892,13 +892,10 @@ def _has_scheme_placement(scheme, category_class) -> bool:
 def _placed_with_scheme_axiom(category, candidate, *, absolute: bool) -> bool:
     r"""Membership in an axiom category on ``Schemes``.
 
-    ``Schemes(R)`` declares ``Schemes(R_0)`` along ``Spec R -> Spec R_0``, and
-    Sage applies an axiom to every declared supercategory, so each axiom class
-    on ``Schemes`` declares its supercategories over its own base only.  A
-    property that descends that composite (``absolute``: affine, quasi-affine,
-    separated, integral, normal) is therefore read here over every lower base;
-    one stated relative to the base (finite type, smooth, projective,
-    quasi-projective) only over the stated one.
+    A property that descends ``Spec R -> Spec R_0`` (``absolute``: affine,
+    quasi-affine, separated, integral, normal) is read over every lower base
+    of the candidate; one stated relative to the base (finite type, smooth,
+    projective, quasi-projective) only over the stated one.
     """
     if candidate not in Schemes(category.base_ring()):
         return False
@@ -979,18 +976,14 @@ class Schemes(OwnedCategoryOverBaseRing):
         return f"schemes over {self.base_ring()}"
 
     def super_categories(self):
-        r"""A scheme over ``R`` is a scheme over the scalar base of ``R``.
+        r"""A scheme is a locally ringed space.
 
-        Composing ``X -> Spec R`` with ``Spec R -> Spec R_0`` for the structure
-        map ``R_0 -> R`` places every ``R``-scheme in ``Sch/R_0``.  Algebra
-        scalar restriction is represented by its own functor rather than by a
-        category inclusion, so no analogous ``Algebras(R) <= Algebras(R_0)``
-        edge is asserted here.
+        Restriction along ``Spec R -> Spec R_0`` is a functor obtained from
+        this category, never a supercategory declaration: Sage applies every
+        axiom along a declared edge, and finite type, smoothness and
+        projectivity do not descend that composite.
         """
-        base = _proper_restriction_base_ring(self.base_ring())
-        if base is None:
-            return [LocallyRingedSpaces()]
-        return [LocallyRingedSpaces(), Schemes(base)]
+        return [LocallyRingedSpaces()]
 
     def __contains__(self, candidate) -> bool:
         stated = getattr(candidate, "_preamble_scheme_base_ring", None)
@@ -1477,9 +1470,6 @@ class Schemes(OwnedCategoryOverBaseRing):
     class Separated(CategoryWithAxiom):
         r"""Schemes whose diagonal is a closed immersion."""
 
-        def super_categories(self):
-            return [Schemes(self.base_ring())]
-
         def __contains__(self, candidate) -> bool:
             return _placed_with_scheme_axiom(self, candidate, absolute=True)
 
@@ -1493,9 +1483,6 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     class FiniteType(CategoryWithAxiom):
         r"""Schemes of finite type over the base."""
-
-        def super_categories(self):
-            return [Schemes(self.base_ring())]
 
         def __contains__(self, candidate) -> bool:
             return _placed_with_scheme_axiom(self, candidate, absolute=False)
@@ -1513,9 +1500,6 @@ class Schemes(OwnedCategoryOverBaseRing):
     class Integral(CategoryWithAxiom):
         r"""Schemes that are reduced and irreducible."""
 
-        def super_categories(self):
-            return [Schemes(self.base_ring())]
-
         def __contains__(self, candidate) -> bool:
             return _placed_with_scheme_axiom(self, candidate, absolute=True)
 
@@ -1531,9 +1515,6 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     class Normal(CategoryWithAxiom):
         r"""Schemes whose local rings are integrally closed domains."""
-
-        def super_categories(self):
-            return [Schemes(self.base_ring())]
 
         def __contains__(self, candidate) -> bool:
             return _placed_with_scheme_axiom(self, candidate, absolute=True)
@@ -1555,9 +1536,6 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     class Smooth(CategoryWithAxiom):
         r"""Schemes smooth over the base."""
-
-        def super_categories(self):
-            return [Schemes(self.base_ring())]
 
         def __contains__(self, candidate) -> bool:
             return _placed_with_scheme_axiom(self, candidate, absolute=False)
@@ -1584,7 +1562,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             algebra = _own_ring(algebra)
             return _affine_spectrum_from_owned_algebra(algebra, self.base_ring())
 
-        def super_categories(self):
+        def extra_super_categories(self):
             # Quasi-affine as well: a scheme is an open subscheme of itself.
             return [Schemes(self.base_ring()).QuasiAffine()]
 
@@ -1862,7 +1840,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             return Algebras(ring).Associative().Unital().Commutative().spectrum()(Algebras(ring).Associative().Unital().Commutative().an_object())
 
-        def super_categories(self):
+        def extra_super_categories(self):
             return [Schemes(self.base_ring()).Separated()]
 
         def __contains__(self, candidate) -> bool:
@@ -1879,7 +1857,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""The projective line, which is projective."""
             return ProjectiveSpaces(self.base_ring())(1)
 
-        def super_categories(self):
+        def extra_super_categories(self):
             return [Schemes(self.base_ring()).Separated()]
 
         def __contains__(self, candidate) -> bool:
@@ -1896,7 +1874,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""The projective line."""
             return ProjectiveSpaces(self.base_ring())(1)
 
-        def super_categories(self):
+        def extra_super_categories(self):
             return [
                 Schemes(self.base_ring()).QuasiProjective(),
                 Schemes(self.base_ring()).FiniteType(),
