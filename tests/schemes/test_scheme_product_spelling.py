@@ -9,8 +9,8 @@ Neither reads an arity.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AffineSpace,
-    ProjectiveSpace,
+    AffineSpaces,
+    ProjectiveSpaces,
     Schemes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 
 
 def test_the_affine_plane_is_the_line_multiplied_by_the_line() -> None:
-    line = AffineSpace(1, ZZ)
+    line = AffineSpaces(ZZ)(1)
     plane = line.product_with(line)
 
     assert plane.relative_dimension() == 2
@@ -28,7 +28,7 @@ def test_the_affine_plane_is_the_line_multiplied_by_the_line() -> None:
 
 
 def test_the_quadric_surface_is_the_projective_line_multiplied_by_itself() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     quadric = line.product_with(line)
 
     assert quadric.relative_dimension() == 2
@@ -37,7 +37,7 @@ def test_the_quadric_surface_is_the_projective_line_multiplied_by_itself() -> No
 
 def test_the_category_takes_the_product_over_a_family_of_three_factors() -> None:
     r"""The same word one level up, over the index set rather than an arity."""
-    line = AffineSpace(1, QQ)
+    line = AffineSpaces(QQ)(1)
     space = Schemes(QQ).product((line, line, line))
 
     assert space.relative_dimension() == 3
@@ -45,7 +45,7 @@ def test_the_category_takes_the_product_over_a_family_of_three_factors() -> None
 
 def test_repeated_projective_factors_keep_their_named_projection_roles() -> None:
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     family = indexed_family(labels, lambda _label: line, name="Repeated projective factors")
 
     quadric = Schemes(QQ).product(family)
@@ -65,7 +65,7 @@ def test_repeated_projective_factors_keep_their_named_projection_roles() -> None
 def test_named_product_data_does_not_overwrite_an_earlier_product() -> None:
     first_labels = finite_ordered_set(("source", "target"))
     second_labels = finite_ordered_set(("domain", "codomain"))
-    line = AffineSpace(1, QQ)
+    line = AffineSpaces(QQ)(1)
     first_family = indexed_family(first_labels, lambda _label: line)
     second_family = indexed_family(second_labels, lambda _label: line)
 
@@ -81,7 +81,7 @@ def test_named_product_data_does_not_overwrite_an_earlier_product() -> None:
 
 def test_projective_product_cone_recovers_both_repeated_factor_legs() -> None:
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     family = indexed_family(labels, lambda _label: line)
     product = Schemes(QQ).product(family)
     identity = line.categorical_identity_morphism()

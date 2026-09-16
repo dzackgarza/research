@@ -8,14 +8,14 @@ tangential meeting from a transverse one.
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
+    AffineSpaces,
     ClosedEmbeddings,
     IntegralSchemes,
 )
 
 
 def _plane():
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     return plane, algebra, algebra.algebra_generator("x"), algebra.algebra_generator("y")
 

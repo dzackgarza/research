@@ -3,7 +3,7 @@ r"""Archive reconciliation for Picard arithmetic on a product of projective line
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     RationalPolyhedralFans,
     Schemes,
 )
@@ -19,7 +19,7 @@ ARCHIVE_RECONCILIATION = {
 
 def _product_of_lines():
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     return labels, Schemes(QQ).product(indexed_family(labels, lambda _label: line))
 
 

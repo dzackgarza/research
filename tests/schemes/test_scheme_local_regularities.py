@@ -1,10 +1,10 @@
 r"""Affine schemes delegate regularity to their represented local rings."""
 
-from dzack_research.preamble.all import QQ, AffineSpace
+from dzack_research.preamble.all import QQ, AffineSpaces
 
 
 def test_affine_plane_and_cusp_use_the_same_pointwise_regularity_owner() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")

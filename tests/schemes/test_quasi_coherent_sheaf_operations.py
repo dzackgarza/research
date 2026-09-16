@@ -8,14 +8,14 @@ zero on the open where that coordinate is a unit.
 """
 
 from dzack_research.preamble.all import (
-    AffineSpace,
+    AffineSpaces,
     QQ,
     QuasiCoherentSheaves,
 )
 
 
 def _line_and_multiplication():
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
     sheaves = QuasiCoherentSheaves(line)
@@ -28,7 +28,7 @@ def _line_and_multiplication():
 
 
 def test_the_sheaves_on_an_affine_scheme_are_the_category_equivalent_to_its_modules() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     sheaves = QuasiCoherentSheaves(line)
     module = algebra.free_module(2)
@@ -69,7 +69,7 @@ def test_multiplication_by_a_coordinate_has_zero_kernel_and_a_skyscraper_cokerne
 
 
 def test_the_tensor_product_of_two_free_sheaves_has_the_product_rank() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     sheaves = QuasiCoherentSheaves(line)
     rank_two = sheaves.associated_sheaf(algebra.free_module(2))

@@ -7,11 +7,11 @@ retains the distinguished element.  Nested distinguished opens retain their
 actual inclusion morphism as well.
 """
 
-from dzack_research.preamble.all import QQ, AffineSpace, OpenImmersions, Schemes
+from dzack_research.preamble.all import QQ, AffineSpaces, OpenImmersions, Schemes
 
 
 def test_distinguished_open_is_the_live_open_subobject_with_localized_algebra() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     x, _y = plane.coordinate_algebra().algebra_generators()
     open_x = plane.distinguished_open(x)
 
@@ -29,7 +29,7 @@ def test_distinguished_open_is_the_live_open_subobject_with_localized_algebra() 
 
 
 def test_nested_distinguished_open_retains_the_actual_open_immersion() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     x, y = plane.coordinate_algebra().algebra_generators()
     open_x = plane.distinguished_open(x)
     open_xy = plane.distinguished_open(x * y)

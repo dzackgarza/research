@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
 )
@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinem
 
 
 def _projective_line_with_redundant_overlap_chart():
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     coarse = line.glued_from_standard_charts().gluing_datum()
     left = coarse.chart(0)
     right = coarse.chart(1)

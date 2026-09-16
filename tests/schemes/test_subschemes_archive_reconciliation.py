@@ -10,11 +10,11 @@ These specimens retain the archive mathematics without reviving that wrapper.
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
+    AffineSpaces,
     ClosedEmbeddings,
     ClosedSubschemes,
     OpenImmersions,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
 )
 
@@ -26,7 +26,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_affine_equation_defined_subscheme_is_the_live_closed_subobject() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     x, y = plane.coordinate_ring().algebra_generators()
     parabola = plane.closed_subscheme(y - x**2)
 
@@ -43,7 +43,7 @@ def test_affine_equation_defined_subscheme_is_the_live_closed_subobject() -> Non
 
 
 def test_projective_hypersurface_retains_its_homogeneous_equation_and_embedding() -> None:
-    projective_plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    projective_plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     x, y, z = projective_plane.coordinate_ring().algebra_generators()
     conic = projective_plane.closed_subscheme(x * z - y**2)
 
@@ -57,7 +57,7 @@ def test_projective_hypersurface_retains_its_homogeneous_equation_and_embedding(
 
 
 def test_scheme_theoretic_intersection_is_cut_out_by_the_sum_of_equation_ideals() -> None:
-    affine = AffineSpace(2, QQ, names=("x", "y"))
+    affine = AffineSpaces(QQ)(2, names=("x", "y"))
     x, y = affine.coordinate_ring().algebra_generators()
     horizontal = affine.closed_subscheme(y)
     vertical = affine.closed_subscheme(x)
@@ -74,7 +74,7 @@ def test_scheme_theoretic_intersection_is_cut_out_by_the_sum_of_equation_ideals(
 
 
 def test_archived_open_subscheme_is_the_live_open_immersion_complement() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     x, y = plane.coordinate_ring().algebra_generators()
     parabola = plane.closed_subscheme(y - x**2)
     complement = parabola.open_complement()

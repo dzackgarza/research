@@ -4,7 +4,7 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     CoxRings,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     RationalPolyhedralFans,
     Schemes,
 )
@@ -20,7 +20,7 @@ ARCHIVE_RECONCILIATION = {
 
 def test_bidegree_four_section_ring_has_the_expected_first_two_graded_pieces() -> None:
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     product = Schemes(QQ).product(indexed_family(labels, lambda _label: line))
     bundle = product.O(4, 4)
     section_ring = bundle.section_ring()

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, AffineSpace, Schemes
+from dzack_research.preamble.all import QQ, AffineSpaces, Schemes
 from dzack_research.preamble.categories.schemes.covering_families import (
     RingedCoveringFamily,
 )
@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
 
 
 def _punctured_plane_covering_family():
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_algebra()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")

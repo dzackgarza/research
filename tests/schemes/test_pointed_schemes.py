@@ -1,11 +1,11 @@
-from dzack_research.preamble.all import AffineSpace, QQ, Schemes
+from dzack_research.preamble.all import AffineSpaces, QQ, Schemes
 
 
 def _origin_of_the_affine_line():
     r"""``Spec Q -> A^1_Q`` sending the coordinate to zero."""
     schemes = Schemes(QQ)
     base_scheme = schemes.base_scheme()
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     line_algebra = line.coordinate_algebra()
     base_algebra = base_scheme.coordinate_algebra()
     pullback = line_algebra.Mor(base_algebra)({"x": base_algebra.zero()})

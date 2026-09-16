@@ -1,11 +1,11 @@
 """Projective coordinate maps corestrict through closed subschemes by equations."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
 def test_cubic_parametrization_corestricts_to_its_projective_curve() -> None:
-    line = ProjectiveSpace(1, QQ, names=("s", "t"))
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    line = ProjectiveSpaces(QQ)(1, names=("s", "t"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     target_ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
     x = target_ring.algebra_generator("x")
     y = target_ring.algebra_generator("y")
@@ -27,8 +27,8 @@ def test_cubic_parametrization_corestricts_to_its_projective_curve() -> None:
 
 
 def test_projective_corestriction_evaluates_the_selected_point_through_same_coordinates() -> None:
-    line = ProjectiveSpace(1, QQ, names=("s", "t"))
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    line = ProjectiveSpaces(QQ)(1, names=("s", "t"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     target_ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
     x = target_ring.algebra_generator("x")
     y = target_ring.algebra_generator("y")

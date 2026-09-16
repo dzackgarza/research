@@ -4,10 +4,10 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
+    AffineSpaces,
     ClosedSubschemes,
     Curves,
-    ProjectiveSpace,
+    ProjectiveSpaces,
 )
 
 
@@ -25,7 +25,7 @@ def test_curve_without_ambient_uses_the_polynomial_framing() -> None:
 
 
 def test_curve_with_projective_ambient_retains_the_actual_closed_embedding() -> None:
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     coordinate_ring = plane.coordinate_ring()
     x = coordinate_ring.algebra_generator("x")
     y = coordinate_ring.algebra_generator("y")
@@ -38,7 +38,7 @@ def test_curve_with_projective_ambient_retains_the_actual_closed_embedding() -> 
 
 
 def test_curve_rejects_a_reducible_one_dimensional_closed_subscheme() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     coordinate_ring = plane.coordinate_ring()
     x = coordinate_ring.algebra_generator("x")
     y = coordinate_ring.algebra_generator("y")

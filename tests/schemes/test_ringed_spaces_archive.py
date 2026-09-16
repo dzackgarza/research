@@ -2,7 +2,7 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
+    AffineSpaces,
     LocallyRingedSpaces,
     LocalRings,
     RingedSpaces,
@@ -16,7 +16,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_ringed_space_structure_is_live_on_affine_schemes() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     sheaf = line.structure_sheaf()
 
     assert line in RingedSpaces()
@@ -27,7 +27,7 @@ def test_archived_ringed_space_structure_is_live_on_affine_schemes() -> None:
 
 
 def test_archived_locally_ringed_stalk_is_the_actual_point_local_ring() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
     point = line.underlying_space()(algebra.ideal(x))

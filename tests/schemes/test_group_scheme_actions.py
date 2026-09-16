@@ -6,7 +6,7 @@ from dzack_research.preamble.all import (
     QQ,
     AffineGroupSchemeActions,
     AffineGroupSchemes,
-    AffineSpace,
+    AffineSpaces,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 
 def _mu_two_scaling_action():
     mu_two = AffineGroupSchemes(QQ).roots_of_unity(2)
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     line_algebra = line.coordinate_algebra()
     x = line_algebra.algebra_generator("x")
     product = line.scheme_category().product((mu_two.scheme(), line))

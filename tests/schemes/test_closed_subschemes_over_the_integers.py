@@ -10,13 +10,13 @@ presentation is a separate question, asked only when the owned ideal is.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AffineSpace,
+    AffineSpaces,
     ClosedEmbeddings,
 )
 
 
 def _parabola_in_the_plane_over(ring):
-    plane = AffineSpace(2, ring, names=("x", "y"))
+    plane = AffineSpaces(ring)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")

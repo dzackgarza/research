@@ -2,7 +2,7 @@ from dzack_research.preamble.all import (
     AffineSchemes,
     AffineSpaces,
     OpenImmersions,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     QQ,
     Schemes,
 )
@@ -10,7 +10,7 @@ from dzack_research.preamble.all import (
 
 def test_the_standard_charts_of_a_projective_line_are_affine_lines_of_ratios() -> None:
     r"""``U_i = D_+(x_i) = Spec Q[x_k/x_i]``, affine ``1``-space on one ratio."""
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     charts = line.standard_affine_charts()
 
     assert int(charts.cardinality().finite_value()) == 2
@@ -25,7 +25,7 @@ def test_the_standard_charts_of_a_projective_line_are_affine_lines_of_ratios() -
 
 def test_a_standard_overlap_is_the_open_where_the_other_coordinate_is_invertible() -> None:
     r"""``U_0 cap U_1 = D(x_1/x_0)``, and ``x_1/x_0`` is a unit on it."""
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     chart = line.standard_affine_chart(0)
     overlap = line.standard_chart_overlap(0, 1)
     ratio = chart.coordinate_algebra().algebra_generator("x1_over_x0")
@@ -41,7 +41,7 @@ def test_a_standard_overlap_is_the_open_where_the_other_coordinate_is_invertible
 
 def test_the_projective_line_transition_inverts_the_ratio() -> None:
     r"""``phi_{10}`` sends ``x_0/x_1`` to ``(x_1/x_0)^{-1}``: the map ``t |-> 1/t``."""
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     transition = line.standard_chart_transition(0, 1)
     forward = transition.forward()
     source_overlap = line.standard_chart_overlap(0, 1)
@@ -71,7 +71,7 @@ def test_a_projective_plane_chart_change_divides_the_two_ratios() -> None:
     they meet.  Two charts alone cannot show it: it needs a third homogeneous
     coordinate to divide.
     """
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     forward = plane.standard_chart_transition(0, 2).forward()
     source_restriction = plane.standard_chart_overlap(
         0, 2
@@ -99,7 +99,7 @@ def test_the_projective_plane_is_the_scheme_glued_from_its_standard_atlas() -> N
     returns a scheme, so a chart change that were wrong in any one coordinate
     could not produce this object.
     """
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     glued = plane.glued_from_standard_charts()
 
     assert glued in Schemes(QQ)

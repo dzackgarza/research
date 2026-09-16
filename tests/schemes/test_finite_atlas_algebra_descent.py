@@ -1,6 +1,6 @@
 r"""Algebra descent across affine atlases with genuinely distinct overlap rings."""
 
-from dzack_research.preamble.all import QQ, AffineSpace
+from dzack_research.preamble.all import QQ, AffineSpaces
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasAlgebraGluingDatum,
     SemilinearAlgebraMorphism,
@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 
 
 def _punctured_line(name):
-    chart = AffineSpace(1, QQ, names=(name,))
+    chart = AffineSpaces(QQ)(1, names=(name,))
     coordinate = chart.coordinate_algebra().algebra_generator(name)
     return chart, coordinate
 

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
 )
@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
 
 
 def _projective_line_refinement():
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     coarse = line.glued_from_standard_charts().gluing_datum()
     left = coarse.chart(0)
     right = coarse.chart(1)
@@ -186,9 +186,9 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
 
 
 def _cusp_parametrization():
-    from dzack_research.preamble.all import AffineSpace, Algebras
+    from dzack_research.preamble.all import AffineSpaces, Algebras
 
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     algebra.algebra_generator("x")
     algebra.algebra_generator("y")

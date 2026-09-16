@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import ClosedEmbeddings, ProjectiveSpace, QQ, Schemes
+from dzack_research.preamble.all import ClosedEmbeddings, ProjectiveSpaces, QQ, Schemes
 
 
 def test_projective_closed_subscheme_is_a_scheme_before_its_inclusion_is_built() -> None:
-    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     x, y = line.gens()
 
     point = line.closed_subscheme(x - y)

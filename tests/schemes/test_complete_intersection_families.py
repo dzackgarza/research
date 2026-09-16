@@ -3,14 +3,14 @@
 from dzack_research.preamble.all import (
     QQ,
     ProjectiveCompleteIntersections,
-    ProjectiveSpace,
+    ProjectiveSpaces,
 )
 
 
 def _hesse_cubic_family():
     parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
-    plane = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
     sections = plane.O(3).global_sections()
     ring = sections.homogeneous_coordinate_ring()
     x = ring.algebra_generator("x")

@@ -2,9 +2,9 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    AffineSpace,
+    AffineSpaces,
     Curves,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     Surfaces,
     Varieties,
 )
@@ -17,10 +17,10 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_dimension_subtrees_are_live_full_subcategories() -> None:
-    affine_line = AffineSpace(1, QQ, names=("t",))
-    affine_plane = AffineSpace(2, QQ, names=("x", "y"))
-    projective_line = ProjectiveSpace(1, QQ)
-    projective_plane = ProjectiveSpace(2, QQ)
+    affine_line = AffineSpaces(QQ)(1, names=("t",))
+    affine_plane = AffineSpaces(QQ)(2, names=("x", "y"))
+    projective_line = ProjectiveSpaces(QQ)(1)
+    projective_plane = ProjectiveSpaces(QQ)(2)
 
     assert affine_line in Varieties(QQ)
     assert affine_line in Curves(QQ)
@@ -35,7 +35,7 @@ def test_archived_dimension_subtrees_are_live_full_subcategories() -> None:
 
 
 def test_reducible_dimension_one_scheme_is_not_promoted_to_an_archived_variety() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     x, y = plane.coordinate_ring().algebra_generators()
     reducible_curve = plane.closed_subscheme(x * y)
 

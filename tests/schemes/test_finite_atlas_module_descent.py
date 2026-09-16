@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, AffineSpace
+from dzack_research.preamble.all import QQ, AffineSpaces
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasModuleGluingMorphism,
@@ -15,8 +15,8 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 
 
 def _distinct_punctured_lines():
-    left = AffineSpace(1, QQ, names=("x",))
-    right = AffineSpace(1, QQ, names=("y",))
+    left = AffineSpaces(QQ)(1, names=("x",))
+    right = AffineSpaces(QQ)(1, names=("y",))
     x = left.coordinate_algebra().algebra_generator("x")
     y = right.coordinate_algebra().algebra_generator("y")
     left_overlap = left.distinguished_open(x)
@@ -55,7 +55,7 @@ def _distinct_punctured_lines():
 
 
 def _punctured_line(name):
-    chart = AffineSpace(1, QQ, names=(name,))
+    chart = AffineSpaces(QQ)(1, names=(name,))
     coordinate = chart.coordinate_algebra().algebra_generator(name)
     return chart, coordinate, chart.distinguished_open(coordinate)
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 
 def _doubled_origin_gluing():
-    from dzack_research.preamble.all import QQ, AffineSpace
+    from dzack_research.preamble.all import QQ, AffineSpaces
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-    chart = AffineSpace(1, QQ, names=("x",))
+    chart = AffineSpaces(QQ)(1, names=("x",))
     x = chart.coordinate_algebra().algebra_generator("x")
     punctured = chart.distinguished_open(x)
     identity = punctured.categorical_identity_morphism()
@@ -126,10 +126,10 @@ def test_maps_out_of_a_glued_scheme_are_exactly_compatible_chart_maps() -> None:
 
 
 def test_scheme_gluing_requires_an_actual_open_overlap() -> None:
-    from dzack_research.preamble.all import QQ, AffineSpace
+    from dzack_research.preamble.all import QQ, AffineSpaces
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-    chart = AffineSpace(1, QQ, names=("x",))
+    chart = AffineSpaces(QQ)(1, names=("x",))
     identity = chart.categorical_identity_morphism()
 
     try:
@@ -145,7 +145,7 @@ def test_scheme_gluing_requires_an_actual_open_overlap() -> None:
 
 
 def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> None:
-    from dzack_research.preamble.all import QQ, AffineSpace
+    from dzack_research.preamble.all import QQ, AffineSpaces
     from dzack_research.preamble.categories.schemes.schemes import (
         OpenImmersions,
         Schemes,
@@ -157,7 +157,7 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
         finite_indexed_family,
     )
 
-    chart = AffineSpace(1, QQ, names=("x",))
+    chart = AffineSpaces(QQ)(1, names=("x",))
     x = chart.coordinate_algebra().algebra_generator("x")
     punctured = chart.distinguished_open(x)
     overlap_identity = punctured.categorical_identity_morphism()
@@ -218,13 +218,13 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
 
 
 def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() -> None:
-    from dzack_research.preamble.all import QQ, AffineSpace
+    from dzack_research.preamble.all import QQ, AffineSpaces
     from dzack_research.preamble.categories.abstract_categories.hom_categories import (
         CategoricalIsomorphism,
     )
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-    chart = AffineSpace(1, QQ, names=("x",))
+    chart = AffineSpaces(QQ)(1, names=("x",))
     x = chart.coordinate_algebra().algebra_generator("x")
     punctured = chart.distinguished_open(x)
     scale_two = _scaled_punctured_line_isomorphism(chart, punctured, 2)
@@ -280,10 +280,10 @@ def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() ->
 
 
 def test_finite_affine_atlas_verifies_triple_overlap_domains() -> None:
-    from dzack_research.preamble.all import QQ, AffineSpace
+    from dzack_research.preamble.all import QQ, AffineSpaces
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-    chart = AffineSpace(1, QQ, names=("x",))
+    chart = AffineSpaces(QQ)(1, names=("x",))
     algebra = chart.coordinate_algebra()
     x = algebra.algebra_generator("x")
 
