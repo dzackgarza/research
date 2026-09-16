@@ -78,6 +78,56 @@ class _MultihomogeneousSectionSpaceConstruction(_HomogeneousSectionSpaceConstruc
         return self._coordinate_blocks[position]
 
 
+class _ProjectiveJetConstruction:
+    r"""The selected local construction defining one projective jet space."""
+
+    def __init__(
+        self,
+        line_bundle,
+        order,
+        point,
+        affine_chart,
+        spectrum_point,
+        local_quotient,
+    ) -> None:
+        self._line_bundle = line_bundle
+        self._order = order
+        self._point = point
+        self._affine_chart = affine_chart
+        self._spectrum_point = spectrum_point
+        self._local_quotient = local_quotient
+
+    def projective_space(self):
+        return self._line_bundle.projective_space()
+
+    def line_bundle(self):
+        return self._line_bundle
+
+    def order(self):
+        return self._order
+
+    def point(self):
+        return self._point
+
+    def affine_chart(self):
+        return self._affine_chart
+
+    def spectrum_point(self):
+        return self._spectrum_point
+
+    def stalk(self):
+        return self._local_quotient.quotient_source()
+
+    def maximal_ideal(self):
+        return self.stalk().maximal_ideal()
+
+    def local_quotient(self):
+        return self._local_quotient
+
+    def residue_field(self):
+        return self._spectrum_point.residue_field()
+
+
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective spaces ``|D| = P(H^0(X,O_X(D)))`` with their defining data."""
 
@@ -409,64 +459,48 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_jet_projective_space,
-            _preamble_jet_line_bundle,
-            _preamble_jet_order,
-            _preamble_jet_point,
-            _preamble_jet_affine_chart,
-            _preamble_jet_spectrum_point,
-            _preamble_jet_stalk,
-            _preamble_jet_maximal_ideal,
-            _preamble_jet_local_quotient,
-            _preamble_jet_residue_field,
-            **rest,
-        ) -> None:
-            self._preamble_jet_projective_space = _preamble_jet_projective_space
-            self._preamble_jet_line_bundle = _preamble_jet_line_bundle
-            self._preamble_jet_order = _preamble_jet_order
-            self._preamble_jet_point = _preamble_jet_point
-            self._preamble_jet_affine_chart = _preamble_jet_affine_chart
-            self._preamble_jet_spectrum_point = _preamble_jet_spectrum_point
-            self._preamble_jet_stalk = _preamble_jet_stalk
-            self._preamble_jet_maximal_ideal = _preamble_jet_maximal_ideal
-            self._preamble_jet_local_quotient = _preamble_jet_local_quotient
-            self._preamble_jet_residue_field = _preamble_jet_residue_field
+        def __init__(self, _projective_jet_construction, **rest) -> None:
+            if not isinstance(_projective_jet_construction, _ProjectiveJetConstruction):
+                raise TypeError("a projective jet space requires selected local construction data")
+            self._projective_jet_construction = _projective_jet_construction
             super().__init__(**rest)
 
+        def projective_jet_construction(self):
+            r"""Return the selected local datum defining this jet realization."""
+            return self._projective_jet_construction
+
         def jet_projective_space(self):
-            return self._preamble_jet_projective_space
+            return self.projective_jet_construction().projective_space()
 
         def jet_line_bundle(self):
-            return self._preamble_jet_line_bundle
+            return self.projective_jet_construction().line_bundle()
 
         def jet_homogeneous_degree(self):
             return self.jet_line_bundle().degree()
 
         def jet_order(self):
-            return self._preamble_jet_order
+            return self.projective_jet_construction().order()
 
         def jet_point(self):
-            return self._preamble_jet_point
+            return self.projective_jet_construction().point()
 
         def jet_affine_chart(self):
-            return self._preamble_jet_affine_chart
+            return self.projective_jet_construction().affine_chart()
 
         def jet_spectrum_point(self):
-            return self._preamble_jet_spectrum_point
+            return self.projective_jet_construction().spectrum_point()
 
         def jet_stalk(self):
-            return self._preamble_jet_stalk
+            return self.projective_jet_construction().stalk()
 
         def jet_maximal_ideal(self):
-            return self._preamble_jet_maximal_ideal
+            return self.projective_jet_construction().maximal_ideal()
 
         def jet_local_quotient(self):
-            return self._preamble_jet_local_quotient
+            return self.projective_jet_construction().local_quotient()
 
         def jet_residue_field(self):
-            return self._preamble_jet_residue_field
+            return self.projective_jet_construction().residue_field()
 
         def jet_coordinate_index(self):
             coordinates = tuple(self.jet_point().point_coordinates())
@@ -921,7 +955,6 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     stalk = spectrum_point.local_ring()
     maximal_ideal = stalk.maximal_ideal()
     local_quotient = stalk.quotient_ring(maximal_ideal.power(jet_order))
-    residue_field = spectrum_point.residue_field()
 
     _centered_ring, local_monomials, local_by_exponents = _centered_jet_basis(
         base,
@@ -933,16 +966,17 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
         finite_ordered_set(local_monomials),
         _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_jet_projective_space", projective_space),
-            ("_preamble_jet_line_bundle", line_bundle),
-            ("_preamble_jet_order", _own_ring(SageZZ)(jet_order)),
-            ("_preamble_jet_point", point),
-            ("_preamble_jet_affine_chart", chart),
-            ("_preamble_jet_spectrum_point", spectrum_point),
-            ("_preamble_jet_stalk", stalk),
-            ("_preamble_jet_maximal_ideal", maximal_ideal),
-            ("_preamble_jet_local_quotient", local_quotient),
-            ("_preamble_jet_residue_field", residue_field),
+            (
+                "_projective_jet_construction",
+                _ProjectiveJetConstruction(
+                    line_bundle,
+                    _own_ring(SageZZ)(jet_order),
+                    point,
+                    chart,
+                    spectrum_point,
+                    local_quotient,
+                ),
+            ),
         ),
     )
     source_construction = source.section_space_construction()

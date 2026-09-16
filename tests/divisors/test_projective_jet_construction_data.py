@@ -12,10 +12,24 @@ def test_projective_jet_space_consumes_its_selected_local_data() -> None:
     jet = evaluation.codomain()
 
     assert jet.jet_projective_space() is line
+    assert jet.projective_jet_construction().line_bundle() is bundle
     assert jet.jet_line_bundle() is bundle
     assert jet.jet_point() is point
     assert jet.jet_order() == 1
     assert jet.jet_local_quotient().base_ring() is jet.jet_stalk()
+    for old_name in (
+        "_preamble_jet_projective_space",
+        "_preamble_jet_line_bundle",
+        "_preamble_jet_order",
+        "_preamble_jet_point",
+        "_preamble_jet_affine_chart",
+        "_preamble_jet_spectrum_point",
+        "_preamble_jet_stalk",
+        "_preamble_jet_maximal_ideal",
+        "_preamble_jet_local_quotient",
+        "_preamble_jet_residue_field",
+    ):
+        assert old_name not in jet.__dict__
 
 
 def test_coordinate_role_is_derived_from_the_selected_jet_point() -> None:
