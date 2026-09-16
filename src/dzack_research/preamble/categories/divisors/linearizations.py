@@ -93,8 +93,9 @@ class _ProjectiveLineBundleLinearization(SageObject):
             raise ValueError("the projective action functor has the wrong scheme category")
         if scheme_action_functor.underlying_object() is not scheme:
             raise ValueError("the projective action functor acts on a different scheme")
-        if group.is_finite() is not True:
-            raise NotImplementedError("character-twist validation here currently requires a finite acting group")
+        assert group.is_finite() is True, (
+            "character-twist validation is represented here for a finite acting group"
+        )
 
         self._line_bundle = line_bundle
         self._scheme_action_functor = scheme_action_functor
@@ -213,15 +214,20 @@ class _ProjectiveLineBundleLinearization(SageObject):
         degree = int(degree)
         if degree < 0:
             raise ValueError("a coherent cohomology degree is nonnegative")
+        supported_h1 = (
+            int(self.projective_space().relative_dimension()) == 1
+            and degree == 1
+            and self.line_bundle().degree() >= 0
+        )
+        assert degree == 0 or supported_h1, (
+            "coherent cohomology actions are represented here on H^0 and on the vanishing H^1 "
+            "of nonnegative O(d) on P^1"
+        )
         if degree == 0:
             return self.section_group_module()
-        if int(self.projective_space().relative_dimension()) == 1 and degree == 1 and self.line_bundle().degree() >= 0:
-            base = self.section_scheme().scheme_base_ring()
-            zero = base._fresh_free_module_on(finite_ordered_set(()))
-            return Modules(base).trivial_action(self.acting_group())(zero)
-        raise NotImplementedError(
-            "this linearization currently represents coherent cohomology actions on H^0 and the vanishing H^1 of nonnegative O(d) on P^1"
-        )
+        base = self.section_scheme().scheme_base_ring()
+        zero = base._fresh_free_module_on(finite_ordered_set(()))
+        return Modules(base).trivial_action(self.acting_group())(zero)
 
     def equivariant_section_restriction(self, divisor):
         r"""Restrict sections equivariantly to an invariant eigensection divisor.
@@ -372,8 +378,9 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
             raise ValueError("the multiprojective action functor has the wrong scheme category")
         if scheme_action_functor.underlying_object() is not scheme:
             raise ValueError("the multiprojective action functor acts on a different scheme")
-        if int(group.order()) != 2:
-            raise NotImplementedError("the represented coordinate-weight specialization currently uses C2")
+        assert int(group.order()) == 2, (
+            "the represented coordinate-weight specialization is the C2 action"
+        )
         weights = getattr(scheme_action_functor, "_preamble_coordinate_weights", None)
         if weights is None or weights.index_set() is not scheme.factors().index_set():
             raise ValueError("the product action must retain coordinate weights on the exact factor index set")
@@ -448,9 +455,14 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         return sections.Mor(sections)(images)
 
     def coherent_cohomology_group_module(self, degree):
-        raise NotImplementedError(
-            "multiprojective higher coherent cohomology belongs to the general product-projective cohomology owner"
+        r"""Return the represented action on ``H^0`` of this multiprojective line bundle."""
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("a coherent cohomology degree is nonnegative")
+        assert degree == 0, (
+            "higher multiprojective coherent cohomology actions belong to the general product-projective cohomology owner"
         )
+        return self.section_group_module()
 
 
 @cached_function(

@@ -383,10 +383,10 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         return self.tensor_power(-1)
 
     def global_sections(self):
-        if self._section_space is None:
-            raise NotImplementedError(
-                "this finite-atlas line bundle has no selected global-section computation"
-            )
+        assert self._section_space is not None, (
+            "global sections are represented here only when this finite-atlas line bundle "
+            "carries a selected section-space computation"
+        )
         return self._section_space
 
     sections = global_sections
@@ -407,12 +407,6 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
     def sheaf(self):
         return self
-
-    def morphism_to(self, target, local_maps):
-        _ = target, local_maps
-        raise NotImplementedError(
-            "finite-atlas line-bundle morphisms require the common semilinear module-descent Hom"
-        )
 
     def _repr_(self):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
@@ -598,15 +592,13 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             raise ValueError("line-bundle pullback requires a morphism into the bundle's projective space")
         source = morphism.domain()
         base = source.scheme_base_ring()
-        if source not in ProductProjectiveSpaces(base):
-            raise NotImplementedError(
-                "projective-space line-bundle pullback is currently represented for product projections"
-            )
+        assert source in ProductProjectiveSpaces(base), (
+            "projective-space line-bundle pullback is represented here for product projections"
+        )
         label = getattr(morphism, "_preamble_product_projection_label", None)
-        if label is None:
-            raise NotImplementedError(
-                "projective-space line-bundle pullback is currently represented for product projections"
-            )
+        assert label is not None, (
+            "projective-space line-bundle pullback requires the selected product-projection role"
+        )
         labels = tuple(source.factors().index_set())
         label = source.factors().index_set()(label)
         if morphism is not source.projection(label):
@@ -743,10 +735,9 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             raise TypeError("section multiplication requires two projective-space line bundles")
         if other.projective_space() is not self.projective_space():
             raise ValueError("section multiplication requires one projective space")
-        if self.degree() < 0 or other.degree() < 0:
-            raise NotImplementedError(
-                "homogeneous-polynomial global sections are represented here in nonnegative degrees"
-            )
+        assert self.degree() >= 0 and other.degree() >= 0, (
+            "homogeneous-polynomial section multiplication is represented here in nonnegative degrees"
+        )
         target_bundle = self.tensor_product(other)
         left = self.global_sections()
         right = other.global_sections()
@@ -1244,11 +1235,10 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
 
     def is_ample(self) -> bool:
         r"""Return a theorem-backed positive ampleness decision from the ambient product."""
-        if self.ambient_line_bundle().is_ample():
-            return True
-        raise NotImplementedError(
-            "a non-ample ambient multiprojective bundle can restrict to an ample bundle; this regime needs a separate criterion"
+        assert self.ambient_line_bundle().is_ample(), (
+            "the represented restriction ampleness criterion requires an ample ambient multiprojective bundle"
         )
+        return True
 
     def canonical_isomorphism_to(self, target):
         r"""Return the canonical comparison with an equal-multidegree presentation on this scheme."""

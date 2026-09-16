@@ -108,10 +108,9 @@ class SectionRings(OwnedCategoryOverBaseRing):
 
         def section_multiplication(self, left_degree, right_degree):
             r"""Multiply sections in two graded pieces of a projective line-bundle ring."""
-            if getattr(self, "_preamble_section_line_bundle", None) is None:
-                raise NotImplementedError(
-                    "the represented module-level section multiplication here is selected for projective line-bundle section rings"
-                )
+            assert getattr(self, "_preamble_section_line_bundle", None) is not None, (
+                "module-level section multiplication is represented here for projective line-bundle section rings"
+            )
             left_degree = NN(left_degree)
             right_degree = NN(right_degree)
             left = self.graded_piece(left_degree)
@@ -140,10 +139,9 @@ class SectionRings(OwnedCategoryOverBaseRing):
         @cached_method
         def homogeneous_component_map(self, degree):
             r"""Return the map ``H^0(X,L^n) -> R(L)`` into the degree-``n`` component."""
-            if getattr(self, "_preamble_section_line_bundle", None) is None:
-                raise NotImplementedError(
-                    "the represented component map here is selected for projective line-bundle section rings"
-                )
+            assert getattr(self, "_preamble_section_line_bundle", None) is not None, (
+                "the represented homogeneous component map is selected for projective line-bundle section rings"
+            )
             degree = NN(degree)
             piece = self.graded_piece(degree)
             count = int(degree)
