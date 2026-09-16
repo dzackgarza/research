@@ -1,10 +1,8 @@
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.algebras import (
     Algebras,
-    DeRhamAlgebra,
     DifferentialGradedAlgebras,
     GradedCommutativeAlgebras,
-    KahlerDifferentials,
     StrictlyCommutativeDifferentialGradedAlgebras,
     StrictlyGradedCommutativeAlgebras,
 )

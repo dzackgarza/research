@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.group.groups import OwnedGroups, TopologicalGroups
 from dzack_research.preamble.categories.group.magmas import Magmas
 from dzack_research.preamble.categories.group.profinite.profinite_groups import ProfiniteGroups
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormedModules
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings, _own_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -38,7 +38,7 @@ def test_foundational_owned_graph_has_no_sage_mathematical_supercategory() -> No
         OwnedRings(),
         Modules(integers),
         Algebras(integers),
-        FormedModules(integers),
+        FormModules(integers),
     )
 
     for category in _semantic_supercategory_closure(*roots):

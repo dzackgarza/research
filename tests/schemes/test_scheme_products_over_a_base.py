@@ -10,14 +10,11 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineSchemes,
-    FiniteTypeSchemes,
+    Schemes,
     IntegralSchemes,
     NormalSchemes,
     ProductSchemes,
     ProjectiveSchemes,
-    QuasiAffineSchemes,
-    QuasiProjectiveSchemes,
-    SeparatedSchemes,
     SmoothSchemes,
     Surfaces,
 )
@@ -34,8 +31,8 @@ def test_the_product_of_two_projective_lines_is_a_projective_surface() -> None:
     quadric = line.scheme_category().product((line, line))
 
     assert quadric in ProjectiveSchemes(QQ)
-    assert quadric in FiniteTypeSchemes(QQ)
-    assert quadric in SeparatedSchemes(QQ)
+    assert quadric in Schemes(QQ).FiniteType()
+    assert quadric in Schemes(QQ).Separated()
     assert quadric in IntegralSchemes(QQ)
     assert quadric.relative_dimension() == 2
     assert quadric in Surfaces(QQ)
@@ -49,8 +46,8 @@ def test_a_product_of_affine_spaces_is_affine_of_the_summed_dimension() -> None:
     plane = line.scheme_category().product((line, line))
 
     assert plane in AffineSchemes(ZZ)
-    assert plane in QuasiAffineSchemes(ZZ)
-    assert plane in QuasiProjectiveSchemes(ZZ)
+    assert plane in Schemes(ZZ).QuasiAffine()
+    assert plane in Schemes(ZZ).QuasiProjective()
     assert plane.relative_dimension() == 2
     assert plane.projection(0).codomain() is line
     # Over Z the coordinate ring has one more Krull dimension than the fibre.
@@ -66,10 +63,10 @@ def test_a_mixed_affine_projective_product_retains_projections_and_exact_propert
     assert product.relative_dimension() == 2
     assert product.projection(0).codomain() is affine
     assert product.projection(1).codomain() is projective
-    assert product in SeparatedSchemes(QQ)
-    assert product in FiniteTypeSchemes(QQ)
+    assert product in Schemes(QQ).Separated()
+    assert product in Schemes(QQ).FiniteType()
     assert product in SmoothSchemes(QQ)
-    assert product in QuasiProjectiveSchemes(QQ)
+    assert product in Schemes(QQ).QuasiProjective()
     assert product in IntegralSchemes(QQ)
     assert product in NormalSchemes(QQ)
     assert product not in AffineSchemes(QQ)
@@ -132,5 +129,5 @@ def test_affine_line_times_plane_and_mixed_projective_affine_products_keep_dimen
     assert mixed.relative_dimension() == 4
     assert mixed.projection(0).codomain() is projective_surface
     assert mixed.projection(1).codomain() is affine_plane
-    assert mixed in QuasiProjectiveSchemes(QQ)
+    assert mixed in Schemes(QQ).QuasiProjective()
     assert mixed not in AffineSchemes(QQ)

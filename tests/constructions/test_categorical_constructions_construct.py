@@ -271,7 +271,7 @@ def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
 
 def test_direct_sum_objects_know_their_summands() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    assert lattice in DirectSumObjects()
+    assert lattice in DirectSumObjects(Lattices(ZZ))
     assert lattice.number_of_summands() == 2
     assert lattice.summands().cardinality() == 2
     assert lattice.summand(0).module_rank() == 2

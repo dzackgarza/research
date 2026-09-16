@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.algebras import (
     CohomologyAlgebras,
-    DeRhamAlgebra,
     StrictlyGradedCommutativeAlgebras,
 )
 

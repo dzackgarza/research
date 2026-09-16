@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     RR,
     Algebras,
     C,
-    FormedModules,
     FormModules,
     Lp,
     PairedModules,
@@ -209,10 +208,9 @@ def test_lebesgue_space_places_formulas_and_callables() -> None:
 
     assert space in VectorSpaces(RR)
     assert space in SymmetricBilinearFormModules(RR)
-    assert space in FormedModules(RR)
+    assert space in FormModules(RR)
     assert space in PairedModules(RR)
     assert Lp(1) not in FormModules(RR)
-    assert Lp(1) not in FormedModules(RR)
     assert space.integrability_exponent() == 2
     assert space(gaussian)(0) == 1
     assert space(bump)(0) == 1
@@ -268,10 +266,9 @@ def test_sequence_space_places_formulas_and_callables() -> None:
     assert space is ell(2, RR)
     assert space in VectorSpaces(RR)
     assert space in SymmetricBilinearFormModules(RR)
-    assert space in FormedModules(RR)
+    assert space in FormModules(RR)
     assert space in PairedModules(RR)
     assert ell(1) not in FormModules(RR)
-    assert ell(1) not in FormedModules(RR)
     assert space.integrability_exponent() == 2
     assert space.domain() is NN
     assert geometric(0) == 1
@@ -300,7 +297,7 @@ def test_holder_pairs_ell_p_with_its_conjugate() -> None:
     assert ell(2).pairing_module() is ell(2)
     assert holder is ell(1).pairing_module()
     assert holder in PairedModules(RR)
-    assert holder not in FormedModules(RR)
+    assert holder not in FormModules(RR)
     assert holder.pairing(decaying, bounded) == RR(2)
     try:
         ell(3) * ell(3)

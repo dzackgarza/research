@@ -1,7 +1,7 @@
 from dzack_research.preamble.all import (
     Set,
     ZZ,
-    FormedModules,
+    FormModules,
     Groups,
     Lattices,
     Modules,
@@ -79,5 +79,5 @@ def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> Non
     assert formed_coinvariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[-2]])
     assert module_coinvariants.module_rank() == 1
     assert module_coinvariants in Modules(ZZ)
-    assert module_coinvariants not in FormedModules(ZZ)
-    assert formed_coinvariants in FormedModules(ZZ)
+    assert module_coinvariants not in FormModules(ZZ)
+    assert formed_coinvariants in FormModules(ZZ)

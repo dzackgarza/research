@@ -1,6 +1,9 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
-from sage.misc.cachefunc import cached_function
+from sage.matrix.constructor import matrix
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.abc import Order as SageNumberFieldOrder
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
@@ -16,8 +19,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
-    OwnedIntegralDomains,
-    PrincipalIdealDomains,
+    OwnedRings,
     _engine_element,
     _engine_quotient_cover_ideal,
     _engine_ring,
@@ -124,6 +126,15 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         except (AttributeError, TypeError):
             return False
         return candidate in self.subobject_category()
+
+    @cached_method
+    def extension_to_fraction_field(self):
+        r"""The functor ``CommutativeIdeals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""
+        from dzack_research.preamble.categories.modules.fractional_ideals import (
+            _FractionalIdealExtension,
+        )
+
+        return _FractionalIdealExtension(self)
 
     class ParentMethods:
         def __init__(
@@ -344,7 +355,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             match method:
                 case None:
                     ring = self.ring()
-                    assert ring in PrincipalIdealDomains(), (
+                    assert ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(), (
                         "ideal colon without an engine quotient operation requires the owned PID fallback"
                     )
                     numerator = _pid_principal_ideal_generator(self)
@@ -389,7 +400,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             match method:
                 case None:
                     ring = self.ring()
-                    assert ring in PrincipalIdealDomains(), (
+                    assert ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(), (
                         "ideal saturation without an engine operation requires the owned PID fallback"
                     )
 
@@ -591,7 +602,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self.ring().quotient_ring(self)
 
         def syzygy_matrix(self):
-            from sage.matrix.constructor import matrix
 
             backend = self._engine_ideal()
             selected = tuple(backend.gens())
@@ -707,6 +717,8 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
         syzygies = backend.syzygy_module()
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         engine = _engine_ring(ring)
+        if isinstance(engine, SageNumberFieldOrder):
+            return _order_ideal_syzygy_rows(engine, selected)
         try:
             cover = engine.cover_ring()
             defining = engine.defining_ideal()
@@ -731,6 +743,39 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
     return tuple(
         tuple(syzygies[position, column] for column in range(syzygies.ncols()))
         for position in range(syzygies.nrows())
+    )
+
+
+def _order_ideal_syzygy_rows(order, selected):
+    r"""Return relation rows for the generators of an ideal of a number-field order.
+
+    ``O`` is free of finite rank over ``ZZ`` on the engine's integral basis
+    ``b_1..b_n``, so ``ker(O^k -> O, (a_i) |-> sum a_i g_i)`` is the integer
+    left kernel of the ``nk x n`` matrix whose rows are the ``ZZ``-coordinates
+    of the products ``g_i b_j``; each kernel basis vector, read in blocks of
+    ``n``, is one relation ``(a_1, ..., a_k)`` in ``O``.
+    """
+    basis = tuple(order(element) for element in order.basis())
+    rank = len(basis)
+    images = matrix(
+        SageZZ,
+        [
+            [SageZZ(coordinate) for coordinate in order.coordinates(order(generator) * element)]
+            for generator in selected
+            for element in basis
+        ],
+    )
+    return tuple(
+        tuple(
+            sum(
+                coefficient * element
+                for coefficient, element in zip(
+                    relation[position * rank : (position + 1) * rank], basis, strict=True
+                )
+            )
+            for position in range(len(selected))
+        )
+        for relation in images.left_kernel().basis()
     )
 
 
@@ -849,7 +894,7 @@ def _commutative_ideal(source, generators):
     selected = tuple(backend.gens())
     syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
     if syzygy_rows is None:
-        assert source in OwnedIntegralDomains() and len(selected) == 1, (
+        assert source in OwnedRings().Commutative().NoZeroDivisors() and len(selected) == 1, (
             "ideal construction without a syzygy backend requires one principal generator in an integral domain"
         )
 

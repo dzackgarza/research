@@ -18,13 +18,12 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
     ProductSchemes,
     Schemes,
     _affine_morphism_from_pullback,
@@ -53,9 +52,7 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     r"""Affine group schemes over ``Spec(R)``, represented by their structure maps."""
 
     def super_categories(self):
-        # A group object is structured data over a scheme.  Forgetting that
-        # structure is a functor, not a category inclusion.
-        return [Objects()]
+        return [Schemes(self.base_ring()).Affine()]
 
     def _repr_object_names(self):
         return f"affine group schemes over {self.base_ring()}"
@@ -88,8 +85,8 @@ class AffineGroupScheme(Parent):
         self._unit = unit
         self._inverse = inverse
         base = category.base_ring()
-        if scheme not in AffineSchemes(base):
-            raise TypeError("an affine group scheme requires an affine carrier over its base")
+        if scheme not in Schemes(base).Affine():
+            raise TypeError("an affine group scheme requires an affine scheme over its base")
         square = multiplication.domain()
         if not _product_has_factors(square, (scheme, scheme)) or multiplication.codomain() is not scheme:
             raise ValueError("group multiplication must be a morphism G x_S G -> G")
@@ -247,7 +244,7 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
         return self._group_scheme
 
     def super_categories(self):
-        return [Objects()]
+        return [Schemes(self.group_scheme().base_ring()).Affine()]
 
     def _repr_object_names(self):
         return f"affine schemes acted on by {self.group_scheme()}"
@@ -274,7 +271,7 @@ class AffineGroupSchemeAction(Parent):
         group = category.group_scheme()
         self._group_scheme = group
         base = group.base_ring()
-        if scheme not in AffineSchemes(base):
+        if scheme not in Schemes(base).Affine():
             raise TypeError("an affine group-scheme action requires an affine scheme over the group base")
         if scheme.base_scheme() is not group.base_scheme():
             raise ValueError("the group scheme and acted scheme must have the same represented base")

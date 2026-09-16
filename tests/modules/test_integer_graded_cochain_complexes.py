@@ -1,7 +1,4 @@
 from dzack_research.preamble.all import GF, ZZ
-from dzack_research.preamble.categories.algebras import (
-    DeRhamAlgebra,
-)
 from dzack_research.preamble.categories.modules import (
     CochainComplexes,
 )

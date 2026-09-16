@@ -11,6 +11,7 @@ from functools import wraps
 from weakref import WeakValueDictionary
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.morphism import Morphism, SetMorphism
@@ -93,6 +94,12 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
+
+# Finite generation reuses Sage's axiom for it, ``FinitelyGeneratedAsMagma``.
+# Finite presentation is qualified as Sage qualifies that one: an axiom name
+# is global, and ``FinitelyPresented`` is Sage's module axiom.
+if "FinitelyPresentedAsGroup" not in all_axioms:
+    all_axioms.add("FinitelyPresentedAsGroup")
 
 # --------------------------------------------------------------------------
 # Engine crossings.  These are the only sites that read the Sage group behind
@@ -526,10 +533,10 @@ def _owned_group_category(engine) -> Category:
         categories.append(OwnedAbelianGroups())
     if finiteness is False:
         categories.append(OwnedInfiniteGroups())
-    if not finite and _is_finitely_generated_witness(engine):
-        categories.append(OwnedFinitelyGeneratedGroups())
-    if not finite and _is_finitely_presented_witness(engine):
-        categories.append(OwnedFinitelyPresentedGroups())
+    if _is_finitely_generated_witness(engine):
+        categories.append(OwnedGroups().FinitelyGeneratedAsMagma())
+    if _is_finitely_presented_witness(engine):
+        categories.append(OwnedGroups().FinitelyPresentedAsGroup())
     if _has_chosen_generators(engine):
         categories.append(GroupsWithChosenFiniteGeneratingSet())
     if _has_chosen_presentation(engine):
@@ -1879,6 +1886,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
 
+        def FinitelyGeneratedAsMagma(self) -> Category:
+            r"""Return this category with the axiom that some finite subset generates."""
+            return self._with_axiom("FinitelyGeneratedAsMagma")
+
+        def FinitelyGenerated(self) -> Category:
+            r"""Sage's shorthand for :meth:`FinitelyGeneratedAsMagma`."""
+            return self.FinitelyGeneratedAsMagma()
+
+        def FinitelyPresentedAsGroup(self) -> Category:
+            r"""Return this category with the axiom that some finite presentation exists."""
+            return self._with_axiom("FinitelyPresentedAsGroup")
+
+        def FinitelyPresented(self) -> Category:
+            r"""Shorthand for :meth:`FinitelyPresentedAsGroup`."""
+            return self.FinitelyPresentedAsGroup()
+
         # Functors out of ``Grp``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
 
@@ -2161,7 +2184,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return Unknown
 
         def is_finitely_generated(self):
-            if self in OwnedFinitelyGeneratedGroups():
+            if self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return True
             return Unknown
 
@@ -2179,7 +2202,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return Unknown
 
         def is_finitely_presented(self):
-            return True if self in OwnedFinitelyPresentedGroups() else Unknown
+            return True if self in OwnedGroups().FinitelyPresentedAsGroup() else Unknown
 
         def is_arithmetic_group(self):
             match self:
@@ -2195,8 +2218,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 if basis_cardinality == cardinal(0):
                     return cardinal(1)
                 return Cardinalities().supremum(aleph(0), basis_cardinality)
-            if self in OwnedInfiniteGroups() and self in OwnedFinitelyGeneratedGroups():
-                # A finitely generated group is countable.
+            if self in OwnedInfiniteGroups() and self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return aleph(0)
             assert False, "cardinality is defined for every group, but the current exact computation requires a finite group or a represented infinite finitely generated group"
 
@@ -2355,6 +2377,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @classmethod
         def _repr_object_names(cls):
             return "finite groups"
+
+        def extra_super_categories(self) -> list[Category]:
+            r"""The multiplication table is a finite presentation."""
+            return [OwnedGroups().FinitelyPresentedAsGroup()]
 
         class ParentMethods:
             def is_finite(self):
@@ -2541,6 +2567,40 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finite(self):
                 return False
 
+    class FinitelyGeneratedAsMagma(CategoryWithAxiom):
+        r"""Groups admitting some finite generating set."""
+
+        def an_object(self):
+            r"""The cyclic group of order two."""
+            return OwnedGroups().C(2)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "finitely generated groups"
+
+        class ParentMethods:
+            def is_finitely_generated(self):
+                return True
+
+    class FinitelyPresentedAsGroup(CategoryWithAxiom):
+        r"""Groups admitting some finite presentation."""
+
+        def an_object(self):
+            r"""The cyclic group of order two."""
+            return OwnedGroups().C(2)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "finitely presented groups"
+
+        def extra_super_categories(self) -> list[Category]:
+            r"""The generating set of a finite presentation is finite."""
+            return [OwnedGroups().FinitelyGeneratedAsMagma()]
+
+        class ParentMethods:
+            def is_finitely_presented(self):
+                return True
+
 
 class TopologicalGroups(OwnedCategory):
     r"""Owned groups equipped with a represented compatible topology."""
@@ -2553,34 +2613,15 @@ class TopologicalGroups(OwnedCategory):
             return True
 
 
-class OwnedFinitelyGeneratedGroups(OwnedCategory):
-    """Groups admitting some finite generating set."""
-
-    def an_object(self):
-        r"""The cyclic group of order two, generated by one element."""
-        return OwnedGroups().C(2)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely generated groups"
-
-    def super_categories(self):
-        return [OwnedGroups()]
-
-    class ParentMethods:
-        def is_finitely_generated(self):
-            return True
-
-
 class GroupsWithChosenFiniteGeneratingSet(OwnedCategory):
-    """Finitely generated groups carrying a chosen finite generating set."""
+    """Finitely generated groups with a chosen finite generating set."""
 
     def an_object(self):
         r"""The cyclic group of order two, with its chosen generator."""
         return OwnedGroups().C(2)
 
     def super_categories(self):
-        return [OwnedFinitelyGeneratedGroups()]
+        return [OwnedGroups().FinitelyGeneratedAsMagma()]
 
     class ParentMethods:
         @cached_method
@@ -2676,34 +2717,18 @@ class PermutationGroups(OwnedCategory):
             return bool(_engine_group(self).is_transitive())
 
 
-class OwnedFinitelyPresentedGroups(OwnedCategory):
-    """Finitely presented groups, as a property of the group."""
-
-    def an_object(self):
-        r"""The cyclic group of order two."""
-        return OwnedGroups().C(2)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely presented groups"
-
-    def super_categories(self):
-        return [OwnedFinitelyGeneratedGroups()]
-
-    class ParentMethods:
-        def is_finitely_presented(self):
-            return True
-
-
 class GroupsWithChosenFinitePresentation(OwnedCategory):
-    """Groups carrying a chosen finite presentation."""
+    """Finitely presented groups with a chosen finite presentation."""
 
     def an_object(self):
         r"""The cyclic group of order two, with its chosen presentation."""
         return OwnedGroups().C(2)
 
     def super_categories(self):
-        return [OwnedFinitelyPresentedGroups(), GroupsWithChosenFiniteGeneratingSet()]
+        return [
+            OwnedGroups().FinitelyPresentedAsGroup(),
+            GroupsWithChosenFiniteGeneratingSet(),
+        ]
 
     class ParentMethods:
         def presenting_free_group(self):
@@ -2879,8 +2904,16 @@ def _coxeter_presentation(coxeter_matrix, names=None):
 
 
 Groups = groups = OwnedGroups
-FinitelyGeneratedGroups = OwnedFinitelyGeneratedGroups
-FinitelyPresentedGroups = OwnedFinitelyPresentedGroups
+
+
+def FinitelyGeneratedGroups():
+    r"""The category of finitely generated groups."""
+    return OwnedGroups().FinitelyGeneratedAsMagma()
+
+
+def FinitelyPresentedGroups():
+    r"""The category of finitely presented groups."""
+    return OwnedGroups().FinitelyPresentedAsGroup()
 
 
 def FiniteGroups():
@@ -2910,3 +2943,5 @@ OwnedFiniteGroups = FiniteGroups
 OwnedInfiniteGroups = InfiniteGroups
 OwnedAbelianGroups = AbelianGroups
 OwnedFiniteAbelianGroups = FiniteAbelianGroups
+OwnedFinitelyGeneratedGroups = FinitelyGeneratedGroups
+OwnedFinitelyPresentedGroups = FinitelyPresentedGroups

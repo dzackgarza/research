@@ -8,11 +8,16 @@ of ``G``-objects is a morphism of ``C`` commuting with the two actions, so
 conjugation.  The forgetful functor to ``C`` is evaluation at the one object
 of ``BG``.
 
-The category of ``G``-sets is ``GObjects(G, Sets())``, and ``Modules(R[G])`` refines
-``GObjects(G, Modules(R))``.  The generic constructor takes the actual functor
-``BG -> C``.  Represented specializations may retain their concrete carrier,
-but expose that same functor through ``action_functor()``; their private
-elementwise action data are only a realization of the categorical action.
+The category of ``G``-sets is ``GObjects(G, Sets())``.  ``Modules(R[G])`` is
+equivalent to ``GObjects(G, Modules(R))``, and an ``R[G]``-module is not an
+object of it by inheritance: ``Modules(R[G]).restriction_along_group_inclusion()``
+sends an ``R[G]``-module to its action ``G -> Aut_R(M)``,
+``Modules(R[G]).linearization()`` extends a ``G``-action ``R``-linearly, and
+``Modules(R[G]).linearization_equivalence()`` is the adjunction between them.
+The generic constructor takes the actual functor ``BG -> C``.  Represented
+specializations may retain their concrete underlying object, but expose that
+same functor through ``action_functor()``; their private elementwise action
+data are only a realization of the categorical action.
 """
 
 from sage.categories.category import Category
@@ -186,13 +191,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         return self._category
 
     def super_categories(self):
-        # G-objects are not a subcategory of C: forgetting an action is a
-        # functor, not an inclusion.  Concrete represented specializations
-        # (finite G-sets, R[G]-modules, affine G-schemes) separately list both
-        # this category and their underlying concrete category as supers.
-        from dzack_research.preamble.categories.abstract_categories.objects import Objects
-
-        return [Objects()]
+        return [self.underlying_category()]
 
     def _repr_object_names(self):
         return f"{self.acting_group()}-objects in {self.underlying_category()._repr_object_names()}"
@@ -298,7 +297,10 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             case Schemes():
                 return AffineGSchemes(self.acting_group(), category.base_ring()).an_object()
         assert category.is_subcategory(Modules(category.base_ring())), f"no owned constructor equips an object of {category} with a group action"
-        return Modules(category.base_ring()).trivial_action(self.acting_group())(sample)
+        ring = category.base_ring()
+        group = self.acting_group()
+        trivial = Modules(ring).trivial_action(group)(sample)
+        return Modules(ring[group]).restriction_along_group_inclusion()(trivial)
 
     class ParentMethods:
         def __init__(self, acting_group, action, underlying_category, **rest) -> None:

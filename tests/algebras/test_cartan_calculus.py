@@ -1,9 +1,6 @@
 from sage.categories.homset import Homset
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras import (
-    DeRhamAlgebra,
-)
 from dzack_research.preamble.categories.modules import Modules
 from dzack_research.static_types import (
     d as static_d,

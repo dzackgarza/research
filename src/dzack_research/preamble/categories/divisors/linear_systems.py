@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProductProjectiveSpaces,
-    ProjectiveSchemes,
     ProjectiveSpaces,
     Schemes,
     _refine_scheme,
@@ -191,7 +190,7 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         return "complete linear systems"
 
     def super_categories(self):
-        return [ProjectiveSchemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
         def complete_linear_system_construction(self):
@@ -448,7 +447,7 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
         return "projective linear systems"
 
     def super_categories(self):
-        return [ProjectiveSchemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
         def projective_linear_system_construction(self):
@@ -583,7 +582,7 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return "linear systems with imposed multiplicity"
 
     def super_categories(self):
-        return [ProjectiveSchemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
         def imposed_multiplicity_construction(self):

@@ -5,15 +5,12 @@ from dzack_research.preamble.all import (
     AffineSchemes,
     AffineSpaces,
     FiberProductSchemes,
-    FiniteTypeSchemes,
     IntegralSchemes,
     NormalSchemes,
     ProjectiveSchemes,
     ProjectiveSpaces,
     QuadraticField,
-    QuasiProjectiveSchemes,
     Schemes,
-    SeparatedSchemes,
     SmoothSchemes,
     Algebras,
 )
@@ -171,9 +168,9 @@ def test_projective_space_base_change_is_the_selected_nonaffine_pullback() -> No
     assert changed in FiberProductSchemes(field)
     assert changed in ProjectiveSpaces(field)
     assert changed in ProjectiveSchemes(field)
-    assert changed in QuasiProjectiveSchemes(field)
-    assert changed in SeparatedSchemes(field)
-    assert changed in FiniteTypeSchemes(field)
+    assert changed in Schemes(field).QuasiProjective()
+    assert changed in Schemes(field).Separated()
+    assert changed in Schemes(field).FiniteType()
     assert changed in SmoothSchemes(field)
     assert changed in IntegralSchemes(field)
     assert changed in NormalSchemes(field)

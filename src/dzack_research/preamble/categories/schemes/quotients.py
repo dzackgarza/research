@@ -45,7 +45,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
-    AffineSchemes,
     Schemes,
     _affine_morphism_from_pullback,
     _evaluate_polynomial_in_algebra,
@@ -222,7 +221,7 @@ class AffineQuotientFunctor(Functor):
         base = _own_ring(base_ring)
         self._group = group
         self._base_ring = base
-        Functor.__init__(self, GObjects(group, Schemes(base)), AffineSchemes(base))
+        Functor.__init__(self, GObjects(group, Schemes(base)), Schemes(base).Affine())
 
     def acting_group(self):
         return self._group

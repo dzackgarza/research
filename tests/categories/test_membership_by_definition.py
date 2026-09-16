@@ -7,8 +7,6 @@ supercategories: nothing has to be put into an intersection to be in it.
 """
 
 from dzack_research.preamble.all import (
-    FinitelyGeneratedFormModules,
-    FinitelyGeneratedFreeFormModules,
     FormModules,
     FramedFreeModules,
     FreeFormModules,
@@ -31,8 +29,8 @@ def test_the_hyperbolic_plane_is_a_free_form_module() -> None:
 def test_the_hyperbolic_plane_is_a_finitely_generated_free_form_module() -> None:
     hyperbolic_plane = Lattices(ZZ)("U")
 
-    assert hyperbolic_plane in FinitelyGeneratedFormModules(ZZ)
-    assert hyperbolic_plane in FinitelyGeneratedFreeFormModules(ZZ)
+    assert hyperbolic_plane in FormModules(ZZ).FinitelyGenerated()
+    assert hyperbolic_plane in FreeFormModules(ZZ).FinitelyGenerated()
 
 
 def test_a_module_over_a_field_is_a_vector_space_over_it() -> None:

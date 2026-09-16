@@ -10,13 +10,8 @@ answers, so nothing is placed and no property is asserted twice.
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
-    FiniteTypeSchemes,
-    IntegralSchemes,
-    ProjectiveSchemes,
     ProjectiveSpaces,
     Schemes,
-    SeparatedSchemes,
-    SmoothSchemes,
 )
 from dzack_research.preamble.refine import refine
 
@@ -32,20 +27,15 @@ class Varieties(OwnedCategoryOverBaseRing):
         return f"varieties over {self.base_ring()}"
 
     def super_categories(self):
-        return [
-            Schemes(self.base_ring()),
-            IntegralSchemes(self.base_ring()),
-            SeparatedSchemes(self.base_ring()),
-            FiniteTypeSchemes(self.base_ring()),
-        ]
+        return [Schemes(self.base_ring()).Integral().Separated().FiniteType()]
 
     def __contains__(self, candidate) -> bool:
         r"""Membership is the three hypotheses, each read off the scheme itself."""
         base = self.base_ring()
         return (
-            candidate in IntegralSchemes(base)
-            and candidate in SeparatedSchemes(base)
-            and candidate in FiniteTypeSchemes(base)
+            candidate in Schemes(base).Integral()
+            and candidate in Schemes(base).Separated()
+            and candidate in Schemes(base).FiniteType()
         )
 
 
@@ -160,7 +150,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
             remains distinct from normalization/geometric-genus algorithms.
             """
             base = self.scheme_base_ring()
-            assert self in ProjectiveSchemes(base), (
+            assert self in Schemes(base).Projective(), (
                 "arithmetic genus here requires a represented projective curve"
             )
             if self in ProjectiveSpaces(base):
@@ -198,13 +188,13 @@ class Curves(_DimensionSubcategoryOfVarieties):
             normalization/geometric-integrality construction.
             """
             base = self.scheme_base_ring()
-            assert self in ProjectiveSchemes(base), (
+            assert self in Schemes(base).Projective(), (
                 "geometric genus here requires a represented projective curve"
             )
             normalization = getattr(self, "_preamble_curve_normalization_data", None)
             if normalization is not None:
                 return normalization.geometric_genus()
-            assert self in SmoothSchemes(base), (
+            assert self in Schemes(base).Smooth(), (
                 "geometric genus of a singular curve requires selected normalization data, not the arithmetic genus"
             )
             return self.arithmetic_genus()

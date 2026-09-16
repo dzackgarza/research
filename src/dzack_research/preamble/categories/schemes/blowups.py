@@ -26,9 +26,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
-    ProjectiveSchemes,
     ProjectiveSpaces,
-    SmoothSchemes,
+    Schemes,
     _categorical_scheme_morphism,
     _install_scheme_subobject_construction,
     _native_projective_closed_subscheme,
@@ -144,7 +143,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         return f"projective-plane point blowups over {self.base_ring()}"
 
     def super_categories(self):
-        return [ProjectiveSchemes(self.base_ring()), SmoothSchemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Projective().Smooth()]
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)

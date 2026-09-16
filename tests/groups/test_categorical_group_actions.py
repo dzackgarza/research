@@ -124,8 +124,7 @@ def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics(
         return vector if group_element == group.one() else -vector
 
     representation = Modules(QQ[group])(line, sign_action)
-    category = GObjects(group, Modules(QQ))
-    equivariant = category.Mor(representation, representation)
+    equivariant = Modules(QQ[group]).Mor(representation, representation)
     doubling = equivariant(
         {"e": 2 * representation.module_generator("e")}
     )

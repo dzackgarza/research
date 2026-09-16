@@ -143,6 +143,10 @@ class OwnedParameterizedCategory(OwnedCategory):
         r"""Return the category this family's parameter ranges over."""
 
     def __init__(self, parameter: Parent) -> None:
+        # Stored before it is checked: a family over a base-relative category
+        # (Cox rings over the toric schemes of the scheme's own base) states
+        # its parameter category in terms of the parameter.
+        self._owned_parameter = parameter
         declared = self.parameter_category
         if declared is not NotImplemented:
             ranges_over = declared()
@@ -150,7 +154,6 @@ class OwnedParameterizedCategory(OwnedCategory):
                 f"{type(self).__name__} is parameterized by an object of "
                 f"{ranges_over}, and {parameter} is not one"
             )
-        self._owned_parameter = parameter
         super().__init__()
 
     def parameter(self) -> Parent:

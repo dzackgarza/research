@@ -11,16 +11,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    OwnedCategory,
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
-from dzack_research.preamble.categories.algebras.kahler_differentials import (
-    KahlerDifferentials,
-)
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
@@ -49,27 +43,6 @@ class ModuleConnectionConstruction:
         return self._source_connection
 
 
-class CommutativeAlgebraParameters(OwnedCategory):
-    r"""The parameter domain of module categories with algebraic connection."""
-
-    def an_object(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-        return Algebras(_own_ring(SageZZ)).Associative().Unital().Commutative().an_object()
-
-    def super_categories(self):
-        return [Objects()]
-
-    def __contains__(self, candidate) -> bool:
-        try:
-            ring = candidate.base_ring()
-        except (AttributeError, TypeError):
-            return False
-        return candidate in Algebras(ring).Associative().Unital().Commutative()
-
-
 class ModulesWithConnection(OwnedParameterizedCategory):
     r"""Modules over ``A`` equipped with an ``A/R``-connection."""
 
@@ -95,7 +68,8 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         return self.base()
 
     def parameter_category(self):
-        return CommutativeAlgebraParameters()
+        r"""The commutative algebras over the parameter's own base."""
+        return Algebras(self.parameter().base_ring()).Associative().Unital().Commutative()
 
     def super_categories(self):
 
@@ -199,7 +173,8 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
         return self.base()
 
     def parameter_category(self):
-        return CommutativeAlgebraParameters()
+        r"""The commutative algebras over the parameter's own base."""
+        return Algebras(self.parameter().base_ring()).Associative().Unital().Commutative()
 
     def super_categories(self):
         return [ModulesWithConnection(self.algebra())]
@@ -884,7 +859,6 @@ class ConnectionDeRhamModule:
 
 
 __all__ = [
-    "CommutativeAlgebraParameters",
     "Connection",
     "ConnectionDeRhamDifferential",
     "ConnectionDeRhamModule",

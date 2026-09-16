@@ -1592,8 +1592,11 @@ def _initialize_module_hom_parent(
     ``Hom_{R[G]}`` must not subclass ``Hom_R`` as Python classes merely because
     they have ``Hom_R`` as a categorical supercategory.
     """
-    ring = _owned_ring(domain.base_ring())
-    assert codomain in domain.module_category(), f"{codomain} is not placed as a module over {ring}"
+    modules = hom_family.base_category()
+    ring = modules.base_ring()
+    assert domain in modules and codomain in modules, (
+        f"a Hom of {modules} has two of its objects as endpoints; got {domain} and {codomain}"
+    )
     parent._preamble_base_ring = ring if ring in OwnedRings().Commutative() else ring.ring_center()
     parent._preamble_algebra_base_ring = parent._preamble_base_ring
     placement = domain.module_category()._hom_parent_placement(

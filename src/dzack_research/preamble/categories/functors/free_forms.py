@@ -4,10 +4,10 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    FinitelyPresentedBilinearFormModules,
-    FinitelyPresentedQuadraticFormModules,
+    BilinearFormModules,
     FormedModuleMorphism,
     FormModules,
+    QuadraticFormModules,
     _represented_value_module,
     _value_as_module_element,
 )
@@ -49,7 +49,7 @@ class _BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
         ring = _owned_ring(base_ring)
         self._base_ring = ring
         super().__init__(
-            FinitelyPresentedBilinearFormModules(ring),
+            BilinearFormModules(ring).FinitelyPresented(),
             FinitelyPresentedModules(ring),
         )
 
@@ -65,7 +65,7 @@ class _QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
         ring = _owned_ring(base_ring)
         self._base_ring = ring
         super().__init__(
-            FinitelyPresentedQuadraticFormModules(ring),
+            QuadraticFormModules(ring).FinitelyPresented(),
             FinitelyPresentedModules(ring),
         )
 
@@ -84,7 +84,7 @@ class _FreeBilinearFormFunctor(Functor):
         self._base_ring = ring
         super().__init__(
             FinitelyPresentedModules(ring),
-            FinitelyPresentedBilinearFormModules(ring),
+            BilinearFormModules(ring).FinitelyPresented(),
         )
 
     def base_ring(self):
@@ -127,7 +127,7 @@ class _FreeQuadraticFormFunctor(Functor):
         self._base_ring = ring
         super().__init__(
             FinitelyPresentedModules(ring),
-            FinitelyPresentedQuadraticFormModules(ring),
+            QuadraticFormModules(ring).FinitelyPresented(),
         )
 
     def base_ring(self):

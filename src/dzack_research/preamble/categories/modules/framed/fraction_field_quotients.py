@@ -21,11 +21,11 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presented_module_from_morphism,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    TorsionModules,
-    _torsion_module_presented_by_matrix,
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    Modules,
     _refine_finitely_presented_torsion_module,
+    _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -344,7 +344,7 @@ def _owned_fraction_field_quotient(engine: QmodnZ) -> Parent:
     base_ring = _own_ring(SageZZ)
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():
-        placement.append(TorsionModules(base_ring))
+        placement.append(Modules(base_ring).Torsion())
     return _object_of(Category.join(placement), engine=engine)
 
 

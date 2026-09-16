@@ -13,18 +13,23 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeHomset,
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.lattices import (
-    FiniteRankLattices,
     Lattices,
     RootLattices,
 )
-from dzack_research.preamble.categories.modules.group_modules.group_modules import _equip_action
-from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    ModulesOverGroupAlgebra,
+    _equip_action,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -110,12 +115,28 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return f"lattices over {self.base_ring()}"
 
     def super_categories(self):
-        return [
-            Lattices(self.coefficient_ring()),
-            Modules(self.base_ring()),
-        ]
+        r"""``Modules(R[G])`` alone; ``G``-objects in ``Lattices(R)`` are reached by :meth:`restriction_along_group_inclusion`."""
+        return [ModulesOverGroupAlgebra(self.base_ring())]
 
     _HomCategory = GroupLatticeHomCategoryConstruction
+
+    # The equivalence ``Lattices(R[G]) ~ GObjects(G, Lattices(R))``, in the
+    # same two directions as for modules over the group algebra.
+
+    @cached_method
+    def restriction_along_group_inclusion(self):
+        r"""``Lattices(R[G]) -> GObjects(G, Lattices(R))``, the action ``G -> O(L)`` of a lattice over ``R[G]``."""
+        return _RestrictionAlongGroupInclusionLatticeFunctor(self.base_ring())
+
+    @cached_method
+    def linearization(self):
+        r"""``GObjects(G, Lattices(R)) -> Lattices(R[G])``, the ``R``-linear extension of an action by isometries."""
+        return _LatticeLinearizationFunctor(self.base_ring())
+
+    @cached_method
+    def linearization_equivalence(self):
+        r"""Linearization left adjoint to restriction along ``G -> R[G]``, with invertible unit and counit."""
+        return _LatticeLinearizationEquivalence(self.base_ring())
 
     def an_object(self):
         r"""The hyperbolic plane with the swap of its two isotropic generators."""
@@ -288,7 +309,7 @@ def _group_lattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
 
     base_ring = lattice.base_ring()
-    assert lattice in FiniteRankLattices(base_ring)
+    assert lattice in Lattices(base_ring).FinitelyGenerated()
     source_group_module = _equip_action(lattice, group_or_action, action)
     group = source_group_module.group()
 
@@ -315,10 +336,134 @@ def _group_lattice(lattice, group_or_action, action=None):
     return result
 
 
+def _lattice_morphism_by_labels(source, target, image):
+    r"""The lattice morphism ``source -> target`` sending the generator at ``label`` to ``image(label)``."""
+    return Lattices(source.base_ring()).Mor(source, target)(image)
+
+
+class _RestrictionAlongGroupInclusionLatticeFunctor(Functor):
+    r"""``Lattices(R[G]) -> GObjects(G, Lattices(R))``: the action ``G -> O(L)`` of a lattice over ``R[G]``."""
+
+    _faithful = True
+
+    def __init__(self, group_algebra) -> None:
+        lattices = Lattices(group_algebra)
+        self._group = lattices.acting_group()
+        self._coefficient_lattices = Lattices(lattices.coefficient_ring())
+        super().__init__(lattices, GObjects(self._group, self._coefficient_lattices))
+
+    def _apply_object(self, lattice):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            GroupActionFunctor,
+        )
+
+        endomorphisms = self._coefficient_lattices.Mor(lattice, lattice)
+        return self.codomain()(
+            GroupActionFunctor(
+                self._group,
+                self._coefficient_lattices,
+                lattice,
+                lambda group_element: endomorphisms.elementwise(lattice.action_of(group_element)),
+            )
+        )
+
+    def _apply_morphism(self, morphism):
+        source = self.object_image(morphism.domain())
+        target = self.object_image(morphism.codomain())
+        component = _lattice_morphism_by_labels(
+            morphism.domain(),
+            morphism.codomain(),
+            lambda label: morphism(morphism.domain().module_generator(label)),
+        )
+        return self.codomain().Mor(source, target)(lambda _obj: component)
+
+    def _repr_(self):
+        return f"Restriction of {self.domain()} along {self._group} -> {self.domain().base_ring()}"
+
+
+class _LatticeLinearizationFunctor(Functor):
+    r"""``GObjects(G, Lattices(R)) -> Lattices(R[G])``: the ``R``-linear extension of an action by isometries."""
+
+    _faithful = True
+
+    def __init__(self, group_algebra) -> None:
+        lattices = Lattices(group_algebra)
+        self._group = lattices.acting_group()
+        self._coefficient_lattices = Lattices(lattices.coefficient_ring())
+        super().__init__(GObjects(self._group, self._coefficient_lattices), lattices)
+
+    def _apply_object(self, acted):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _action_functor_of,
+        )
+
+        action = _action_functor_of(acted, self._group, self._coefficient_lattices)
+        point = action.domain().an_object()
+        arrows = action.domain().Mor(point, point)
+        return self.codomain()(
+            action(point),
+            lambda group_element, vector: action(arrows(group_element))(vector),
+        )
+
+    def _apply_morphism(self, arrow):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _underlying_equivariant_arrow,
+        )
+
+        source = self.object_image(arrow.domain())
+        target = self.object_image(arrow.codomain())
+        component = _underlying_equivariant_arrow(arrow, self._group, self._coefficient_lattices)
+        codomain_lattice = component.codomain()
+        return self.codomain().Mor(source, target)(
+            lambda label: target.linear_combination(
+                codomain_lattice.framing_coefficients(
+                    component(component.domain().module_generator(label))
+                )
+            )
+        )
+
+    def _repr_(self):
+        return f"Linearization of {self._group}-actions on lattices over {self._coefficient_lattices.base_ring()}"
+
+
+class _LatticeLinearizationEquivalence(Adjunction):
+    r"""``GObjects(G, Lattices(R)) ~ Lattices(R[G])``, linearization left adjoint to restriction along ``G -> R[G]``.
+
+    Unit and counit send each chosen generator to the generator with the same
+    label, so both are isomorphisms.
+    """
+
+    def __init__(self, group_algebra) -> None:
+        super().__init__(
+            _LatticeLinearizationFunctor(group_algebra),
+            _RestrictionAlongGroupInclusionLatticeFunctor(group_algebra),
+        )
+
+    def unit(self, acted):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _action_functor_of,
+        )
+
+        linearized = self.left_adjoint()(acted)
+        lattices = self.right_adjoint().codomain().underlying_category()
+        action = _action_functor_of(acted, self.right_adjoint().codomain().acting_group(), lattices)
+        source = action(action.domain().an_object())
+        component = _lattice_morphism_by_labels(source, linearized, linearized.module_generator)
+        return self.left_adjoint().domain().Mor(acted, self.right_adjoint()(linearized))(
+            lambda _obj: component
+        )
+
+    def counit(self, lattice):
+        relinearized = self.left_adjoint()(self.right_adjoint()(lattice))
+        return self.right_adjoint().domain().Mor(relinearized, lattice)(lattice.module_generator)
+
+    def _repr_(self):
+        return f"Linearization equivalence {self.left_adjoint().domain()} <-> {self.left_adjoint().codomain()}"
+
 
 __all__ = [
     "GroupLatticeHomCategoryConstruction",
-    "GroupLatticeMorphism",
     "GroupLatticeHomset",
+    "GroupLatticeMorphism",
     "LatticesOverGroupAlgebra",
 ]

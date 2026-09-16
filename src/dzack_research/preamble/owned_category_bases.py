@@ -358,7 +358,7 @@ class HomCategoryConstruction(
         ``super().__init__`` runs off the end into ``object``.  This states
         the missing edge once for every category using this backend.
         """
-        from dzack_research.preamble.categories.sets.owned_sets import Sets
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         owned_sets = Sets()
         categorical_hom = self.base_category().HomCategory()

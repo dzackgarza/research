@@ -34,9 +34,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-    StrictlyGradedCommutativeAlgebras,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -756,8 +753,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return "free algebras"
 
     def super_categories(self):
-
-        return [Algebras(self.base_ring()).Associative().Unital()]
+        return [FramedAlgebras(self.base_ring())]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -1117,11 +1113,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return "symmetric algebras"
 
     def super_categories(self):
-
-        return [
-            GradedAlgebras(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
-        ]
+        return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
         # The module a construction selected to build this algebra on, as on
@@ -1241,8 +1233,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         return "alternating algebras"
 
     def super_categories(self):
-
-        return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
+        return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 
@@ -1425,11 +1416,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return "divided power algebras"
 
     def super_categories(self):
-
-        return [
-            GradedAlgebras(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
-        ]
+        return [GradedAlgebras(self.base_ring()).Commutative()]
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 

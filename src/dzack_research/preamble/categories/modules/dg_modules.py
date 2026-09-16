@@ -1,74 +1,10 @@
 r"""Graded modules and differential graded modules over a represented DGA."""
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    OwnedCategory,
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-
-
-class GradedAlgebraParameters(OwnedCategory):
-    r"""The parameter domain of categories of modules over graded algebras.
-
-    This is the disjoint union, over represented base rings and grading
-    monoids, of the fiber categories ``GradedAlgebras(R,M)``.  It is a
-    parameter domain rather than a new Hom theory between different fibers.
-    """
-
-    def an_object(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-        return GradedAlgebras(_own_ring(SageZZ)).an_object()
-
-    def super_categories(self):
-        return [Objects()]
-
-    def __contains__(self, candidate) -> bool:
-        try:
-            ring = candidate.base_ring()
-            monoid = candidate.grading_monoid()
-        except (AttributeError, TypeError):
-            return False
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
-
-        return candidate in GradedAlgebras(ring, monoid)
-
-
-class DifferentialGradedAlgebraParameters(OwnedCategory):
-    r"""The parameter domain of categories of modules over DG algebras."""
-
-    def an_object(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-            DifferentialGradedAlgebras,
-        )
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-        return DifferentialGradedAlgebras(_own_ring(SageZZ)).an_object()
-
-    def super_categories(self):
-        return [GradedAlgebraParameters()]
-
-    def __contains__(self, candidate) -> bool:
-        try:
-            ring = candidate.base_ring()
-        except (AttributeError, TypeError):
-            return False
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-            DifferentialGradedAlgebras,
-        )
-
-        return candidate in DifferentialGradedAlgebras(ring)
 
 
 class GradedAlgebraModules(OwnedParameterizedCategory):
@@ -86,7 +22,13 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
         return self.base()
 
     def parameter_category(self):
-        return GradedAlgebraParameters()
+        r"""The graded algebras over the parameter's own base and grading monoid."""
+        from dzack_research.preamble.categories.algebras.graded_algebras import (
+            GradedAlgebras,
+        )
+
+        algebra = self.parameter()
+        return GradedAlgebras(algebra.base_ring(), algebra.grading_monoid())
 
     def super_categories(self):
 
@@ -124,7 +66,12 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
         return self.base()
 
     def parameter_category(self):
-        return DifferentialGradedAlgebraParameters()
+        r"""The differential graded algebras over the parameter's own base."""
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+            DifferentialGradedAlgebras,
+        )
+
+        return DifferentialGradedAlgebras(self.parameter().base_ring())
 
     def super_categories(self):
 
@@ -153,8 +100,6 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
 
 
 __all__ = [
-    "DifferentialGradedAlgebraParameters",
     "DifferentialGradedModules",
-    "GradedAlgebraParameters",
     "GradedAlgebraModules",
 ]

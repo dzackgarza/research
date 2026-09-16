@@ -4,7 +4,6 @@ from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentialModules,
-    KahlerDifferentials,
 )
 
 

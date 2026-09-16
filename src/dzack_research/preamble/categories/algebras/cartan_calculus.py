@@ -6,7 +6,6 @@ contractions and Lie derivatives are actual graded derivations of the existing
 de Rham DGA.
 """
 
-from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     GradedDerivation,

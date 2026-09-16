@@ -4,10 +4,12 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
-from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    FormModules,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
+)
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     _forms_are_isomorphic,
     _p_adic_jordan_decomposition,
     _p_adic_jordan_form,
@@ -16,9 +18,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    FinitelyPresentedTorsionModules,
-)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     Zmod,
@@ -64,7 +64,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [FinitelyPresentedTorsionModules(self.base_ring())]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
@@ -741,7 +741,7 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         return "discriminant submodules"
 
     def super_categories(self):
-        return [FinitelyPresentedTorsionModules(self.base_ring())]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
 
     class ParentMethods:
         def __init__(
@@ -824,7 +824,7 @@ def _discriminant_subgroup(ambient, generators):
         if invariant > 1
     )
     categories = (
-        FinitelyPresentedTorsionModules(ring),
+        Modules(ring).FinitelyPresented().Torsion(),
         DiscriminantSubmodules(ring),
     )
     construction_data = {
@@ -832,7 +832,7 @@ def _discriminant_subgroup(ambient, generators):
         "discriminant_engine_subgroup": engine_subgroup,
     }
     if invariants:
-        prototype = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics(invariants)
+        prototype = Modules(ring).FinitelyPresented().Torsion().direct_sum_of_cyclics(invariants)
         ambient_generators = tuple(
             ambient._from_smith_engine_element(generator)
             for generator in engine_subgroup.smith_form_gens()

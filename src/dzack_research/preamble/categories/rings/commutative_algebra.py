@@ -42,15 +42,8 @@ from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
-    OwnedArtinianRings,
     OwnedCategoryOverBaseRing,
-    OwnedCompleteLocalRings,
-    OwnedFields,
-    OwnedIntegralDomains,
-    OwnedLocalRings,
-    OwnedNoetherianRings,
     OwnedRings,
-    PrincipalIdealDomains,
     _engine_element,
     _engine_krull_dimension,
     _engine_quotient_cover_ideal,
@@ -266,7 +259,7 @@ class PrimeSpectra(OwnedCategory):
             """
 
             ring = self.parent().ring()
-            assert ring in OwnedIntegralDomains(), (
+            assert ring in OwnedRings().Commutative().NoZeroDivisors(), (
                 f"the dimension formula that computes height here needs {ring} to be "
                 "an integral domain"
             )
@@ -276,8 +269,8 @@ class PrimeSpectra(OwnedCategory):
                 else ring
             )
             assert (
-                ring in PrincipalIdealDomains()
-                or finite_type_source.base_ring() in OwnedFields()
+                ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals()
+                or finite_type_source.base_ring() in OwnedRings().Division().Commutative()
             ), (
                 f"the dimension formula that computes height here needs {ring} to be "
                 "a principal ideal domain or finitely generated over a field, which is "
@@ -412,7 +405,7 @@ class PrimeSpectra(OwnedCategory):
         def cardinality(self):
             r"""Return the exact number of prime points in supported finite spectra."""
             ring = self.ring()
-            if ring in OwnedFields():
+            if ring in OwnedRings().Division().Commutative():
                 return cardinal(1)
             engine = _engine_ring(ring)
             if isinstance(engine, IntegerModRing_generic):
@@ -844,7 +837,7 @@ class QuotientRings(OwnedCategory):
                 if not defining.is_zero():
                     return cardinal(SageZZ(defining.norm()))
             source = self.quotient_source()
-            if source in PrincipalIdealDomains() and source in OwnedLocalRings():
+            if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals() and source in OwnedRings().Commutative().Local():
                 valuations = []
                 for generator in self.defining_ideal().ideal_generators():
                     backend = _engine_ring_value(source, generator)
@@ -1011,7 +1004,7 @@ class QuotientRings(OwnedCategory):
         @cached_method
         def total_quotient_ring(self):
             r"""Return the total quotient ring of this supported reduced affine quotient."""
-            if self in OwnedIntegralDomains():
+            if self in OwnedRings().Commutative().NoZeroDivisors():
                 return self.fraction_field()
             if not self.is_reduced():
                 raise NotImplementedError(
@@ -1025,7 +1018,7 @@ class QuotientRings(OwnedCategory):
         @cached_method
         def total_quotient_map(self):
             r"""Return the canonical injection ``A -> Q(A)`` in the supported reduced case."""
-            if self in OwnedIntegralDomains():
+            if self in OwnedRings().Commutative().NoZeroDivisors():
                 return self.fraction_field_map()
             components = tuple(self.irreducible_components())
             fields = tuple(component.fraction_field() for component in components)
@@ -1408,7 +1401,7 @@ class PrimeLocalizations(OwnedCategory):
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
-        return [LocalizationRings(), OwnedLocalRings()]
+        return [LocalizationRings(), OwnedRings().Commutative().Local()]
 
     class ElementMethods:
         def is_unit(self):
@@ -1480,7 +1473,7 @@ class PrimeLocalizations(OwnedCategory):
             which has none, still has a residue field at every point.
             """
             quotient = self.localization_source().quotient_ring(self.localized_prime())
-            if quotient in OwnedFields():
+            if quotient in OwnedRings().Division().Commutative():
                 return quotient
             return quotient.fraction_field()
 
@@ -1711,7 +1704,7 @@ class AdicCompletions(Category):
                 return zero
             if square == defining:
                 return defining
-            if source in OwnedIntegralDomains():
+            if source in OwnedRings().Commutative().NoZeroDivisors():
                 return zero
             raise NotImplementedError(
                 "the kernel of this completion map requires an exact computation of intersection I^n"
@@ -1728,7 +1721,7 @@ class AdicCompletions(Category):
 
         def is_flat_over_source(self) -> bool:
             r"""Return flatness of ``A^`` over ``A`` in the Noetherian regime."""
-            if self.completion_source() in OwnedNoetherianRings():
+            if self.completion_source() in OwnedRings().Noetherian():
                 return True
             raise NotImplementedError(
                 "flatness of adic completion is asserted here only for a represented Noetherian source"
@@ -1760,7 +1753,7 @@ class AdicCompletions(Category):
         def adic_artin_truncation(self, exponent):
             r"""Return ``A/I^exponent`` after requiring it to be Artinian."""
             quotient = self.adic_truncation(exponent)
-            if quotient not in OwnedArtinianRings():
+            if quotient not in OwnedRings().Artinian():
                 raise ValueError(
                     "this adic quotient has not been established to have finite length"
                 )
@@ -1852,7 +1845,7 @@ class AdicCompletions(Category):
             """
             source = self.completion_source()
             maximal = self.ideal_of_definition()
-            if source not in OwnedNoetherianRings():
+            if source not in OwnedRings().Noetherian():
                 raise TypeError("the maximal-adic localization comparison requires a Noetherian source")
             if not bool(maximal.is_maximal()):
                 raise TypeError("the localization/completion isomorphism here is maximal-adic")
@@ -2188,8 +2181,8 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     formal_parameter_labels
                 )
         placements = [AdicCompletions(), *extra_categories]
-        if source in OwnedNoetherianRings():
-            placements.append(OwnedNoetherianRings())
+        if source in OwnedRings().Noetherian():
+            placements.append(OwnedRings().Noetherian())
         formal_base = algebra_base
         match formal_base:
             case None:
@@ -2199,11 +2192,11 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 formal_base = _own_ring(formal_base)
                 formal_base_is_local = (
                     formal_parameter_labels is not None
-                    and formal_base in OwnedLocalRings()
+                    and formal_base in OwnedRings().Commutative().Local()
                 )
                 formal_base_is_complete_local = (
                     formal_parameter_labels is not None
-                    and formal_base in OwnedCompleteLocalRings()
+                    and formal_base in OwnedRings().Commutative().Local().Complete()
                 )
 
         # A formal-power-series specialization knows the quotient by its
@@ -2216,7 +2209,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         # nonmaximal.
         if formal_parameter_labels is not None and formal_base is not None:
             defining_ideal_is_maximal = (
-                True if formal_base in OwnedFields() else None
+                True if formal_base in OwnedRings().Division().Commutative() else None
             )
         else:
             try:
@@ -2230,9 +2223,9 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             formal_base_is_local,
         ):
             case (True, _, _) | (_, True, _):
-                placements.append(OwnedCompleteLocalRings())
+                placements.append(OwnedRings().Commutative().Local().Complete())
             case (_, _, True):
-                placements.append(OwnedLocalRings())
+                placements.append(OwnedRings().Commutative().Local())
             case _:
                 pass
         _OwnedAlgebraParent.__init__(
@@ -2427,7 +2420,7 @@ def _quotient_ring(source, defining_ideal):
                 quotient_engine = None
 
     dimension = None
-    if quotient_engine is not None and source in OwnedNoetherianRings():
+    if quotient_engine is not None and source in OwnedRings().Noetherian():
         try:
             dimension = _engine_krull_dimension(quotient_engine)
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -2459,12 +2452,12 @@ def _quotient_ring(source, defining_ideal):
             quotient_engine._refine_category_(SageIntegralDomains())
 
     placements = []
-    if source in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
+    if source in OwnedRings().Noetherian():
+        placements.append(OwnedRings().Noetherian())
     if quotient_is_field:
-        placements.append(OwnedFields())
+        placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
-        placements.append(OwnedIntegralDomains())
+        placements.append(OwnedRings().Commutative().NoZeroDivisors())
     if quotient_engine is not None:
         try:
             if bool(quotient_engine.is_finite()):
@@ -2472,7 +2465,7 @@ def _quotient_ring(source, defining_ideal):
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             pass
     if dimension == 0:
-        placements.append(OwnedArtinianRings())
+        placements.append(OwnedRings().Artinian())
 
     return _object_of(
         Category.join((QuotientRings(), Algebras(source).Associative().Unital().Commutative(), *placements)),
@@ -2553,7 +2546,7 @@ def _localization_size_placements(source, submonoid):
     """
     if source in FiniteSets():
         return (FiniteSets(),)
-    if source not in OwnedIntegralDomains():
+    if source not in OwnedRings().Commutative().NoZeroDivisors():
         return ()
     contains_zero = _generated_submonoid_contains_zero_in_domain(source, submonoid)
     if contains_zero is not False:
@@ -2750,13 +2743,13 @@ def _finite_generated_localization(source, submonoid):
                 all_units = False
             localization_engine = engine_bottom if all_units else None
     placements = list(_localization_size_placements(source, submonoid))
-    if source in PrincipalIdealDomains():
-        placements.append(PrincipalIdealDomains())
+    if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     else:
-        if source in OwnedIntegralDomains():
-            placements.append(OwnedIntegralDomains())
-        if source in OwnedNoetherianRings():
-            placements.append(OwnedNoetherianRings())
+        if source in OwnedRings().Commutative().NoZeroDivisors():
+            placements.append(OwnedRings().Commutative().NoZeroDivisors())
+        if source in OwnedRings().Noetherian():
+            placements.append(OwnedRings().Noetherian())
     base = source.base_ring()
     algebra_source = (
         source
@@ -2783,7 +2776,7 @@ def _finite_generated_localization(source, submonoid):
 @cached_function
 def _nonzero_element_submonoid(source):
     r"""Return the represented multiplicative submonoid ``R - {0}`` of a domain."""
-    if source not in OwnedIntegralDomains():
+    if source not in OwnedRings().Commutative().NoZeroDivisors():
         raise ValueError("the nonzero elements form this localization submonoid only for a domain")
     return source.predicate_submonoid(
         lambda element: element != source.zero(),
@@ -2794,11 +2787,11 @@ def _nonzero_element_submonoid(source):
 
 def _fraction_field_localization(source, submonoid):
     r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
-    if source not in OwnedIntegralDomains():
+    if source not in OwnedRings().Commutative().NoZeroDivisors():
         raise ValueError("fraction-field localization requires an integral domain")
     if submonoid.structure_data().get("kind") != "nonzero_elements":
         raise ValueError("fraction-field localization requires the nonzero-element submonoid")
-    if source in OwnedFields():
+    if source in OwnedRings().Division().Commutative():
         return source
 
     engine = _engine_ring(source)
@@ -2807,9 +2800,9 @@ def _fraction_field_localization(source, submonoid):
     )
     fraction_engine = engine.fraction_field()
     field = _own_ring(fraction_engine)
-    placements = [OwnedIntegralDomains(), OwnedFields()]
-    if source in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
+    placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
+    if source in OwnedRings().Noetherian():
+        placements.append(OwnedRings().Noetherian())
     return _object_of(
         Category.join((LocalizationRings(), *placements)),
         source=source,
@@ -2995,7 +2988,7 @@ def _quotient_completion_comparison(source_quotient, source_ideal, *, precision=
     if source_quotient not in QuotientRings():
         raise TypeError("quotient/completion compatibility starts from a represented quotient ring")
     source = source_quotient.quotient_source()
-    if source not in OwnedNoetherianRings():
+    if source not in OwnedRings().Noetherian():
         raise TypeError("the represented quotient/completion comparison requires a Noetherian source")
     source_ideal = _owned_ideal(source, source_ideal)
     quotient_map = source_quotient.quotient_map()
@@ -3074,7 +3067,7 @@ def _residue_field_at(source, ideal):
     if not bool(defining.is_maximal()):
         raise ValueError("a residue field is the quotient by a maximal ideal")
     quotient = source.quotient_ring(defining)
-    if quotient not in OwnedFields():
+    if quotient not in OwnedRings().Division().Commutative():
         raise ArithmeticError("the quotient by a maximal ideal was not returned as a field")
     return quotient
 
@@ -3095,14 +3088,14 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     if prime_ideal is None:
         raise ValueError("prime-complement localization requires its represented prime ideal")
     placements = list(_localization_size_placements(source, submonoid))
-    if source in PrincipalIdealDomains():
-        placements.append(PrincipalIdealDomains())
+    if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+        placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     else:
-        if source in OwnedNoetherianRings():
-            placements.append(OwnedNoetherianRings())
-        if source in OwnedIntegralDomains():
-            placements.append(OwnedIntegralDomains())
-    if source in OwnedIntegralDomains():
+        if source in OwnedRings().Noetherian():
+            placements.append(OwnedRings().Noetherian())
+        if source in OwnedRings().Commutative().NoZeroDivisors():
+            placements.append(OwnedRings().Commutative().NoZeroDivisors())
+    if source in OwnedRings().Commutative().NoZeroDivisors():
         fraction_field = source.fraction_field()
         fraction_engine = _engine_ring(fraction_field)
     else:
@@ -3369,7 +3362,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
         completed_ideal_generators=completed_ideal_generators,
         projection_lift=projection_lift,
         arithmetic_mode="exact_lazy",
-        completion_map_kernel=zero_ideal if source in OwnedIntegralDomains() else None,
+        completion_map_kernel=zero_ideal if source in OwnedRings().Commutative().NoZeroDivisors() else None,
         algebra_base=algebra_base,
         formal_parameter_labels=formal_parameter_labels,
         extra_categories=extra_categories,
@@ -3497,12 +3490,12 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
             defining_ideal,
         )
         placements = [QuotientRings()]
-        if base in OwnedNoetherianRings():
-            placements.append(OwnedNoetherianRings())
-        if base in OwnedArtinianRings():
-            placements.append(OwnedArtinianRings())
-        if base in OwnedLocalRings():
-            placements.append(OwnedLocalRings())
+        if base in OwnedRings().Noetherian():
+            placements.append(OwnedRings().Noetherian())
+        if base in OwnedRings().Artinian():
+            placements.append(OwnedRings().Artinian())
+        if base in OwnedRings().Commutative().Local():
+            placements.append(OwnedRings().Commutative().Local())
         _OwnedAlgebraParent.__init__(
             self,
             engine,
@@ -3516,7 +3509,7 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
             engine.coerce_map_from(_engine_ring(polynomial)),
         )
         self._quotient_construction.set_quotient_map(quotient_map)
-        if base in OwnedLocalRings():
+        if base in OwnedRings().Commutative().Local():
             epsilon_bar = self._from_engine_element(engine.gen())
             self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
                 self,

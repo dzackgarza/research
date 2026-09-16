@@ -8,12 +8,13 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     _module_subobject_spanning_with_structure,
     _span_basis_elements,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -50,11 +51,11 @@ class IsotypicCharacter:
     __repr__ = _repr_
 
 
-class IsotypicDecompositions(OwnedCategory):
-    r"""Submodules equipped with their selected isotypic summands."""
+class IsotypicDecompositions(OwnedCategoryOverBaseRing):
+    r"""Submodules of an ``R``-module equipped with their selected isotypic summands."""
 
     def super_categories(self):
-        return [DirectSumObjects()]
+        return [DirectSumObjects(Modules(self.base_ring()))]
 
     class ParentMethods:
         _derived_construction_parameters = frozenset({"summands"})
@@ -275,7 +276,7 @@ def _isotypic_decomposition(module):
     return _module_subobject_spanning_with_structure(
         coefficient_module,
         basis,
-        extra_categories=(IsotypicDecompositions(),),
+        extra_categories=(IsotypicDecompositions(coefficient_module.base_ring()),),
         extra_construction_data={
             "isotypic_characters": characters,
             "isotypic_components": components,

@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-    CommutativeDifferentialGradedAlgebras,
     Differential,
     DifferentialGradedAlgebras,
 )
@@ -76,12 +75,12 @@ def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_z
     field = GF(2)
     dga = field.free_module(("x",)).symmetric_algebra()
     dga._preamble_differential = Differential(dga, lambda _element: dga.zero())
-    refine(dga, CommutativeDifferentialGradedAlgebras(field))
+    refine(dga, DifferentialGradedAlgebras(field).Supercommutative())
     x = dga.algebra_generator("x")
 
     assert x.degree() == 1
     assert x * x != dga.zero()
-    assert dga in CommutativeDifferentialGradedAlgebras(field)
+    assert dga in DifferentialGradedAlgebras(field).Supercommutative()
     assert dga not in StrictlyGradedCommutativeAlgebras(field)
 
     cohomology = dga.cohomology_algebra()

@@ -515,6 +515,7 @@ Never write these terms in code, issues, docs, comments, memories, or doctrine; 
 | **"ambient"** as free-standing data ("the ambient", "shared ambient", "shared span/coordinates", `ambient=`/`in_ambient=` parameters, stored `_ambient` state) | pervasive — Sage back-porting; issue #100's own original body; re-emitted in doctrine prose 2026-07-11 | a subobject is the pair `(A, f: A ↪ B)`: its ambient **is** `f.codomain()`; rational/real constructions live in the **base-changed parent** `L ⊗ R'`, named by its functor |
 | bare **"generators"** (also "defining generators", generators as `tuple`/`list`, `len(generators)`) | 3+ — ruled 2026-08-06 (names must state the structure); re-emitted 2026-08-08 as "defining generators"; re-emitted 2026-08-11 ("discussed ad nauseum") | **`group_generators`**, **`module_generators`**, **`algebra_generators`** — the name states the structure; a generating set is a **set** with a **cardinality**, never a sequence with a length |
 | bare **"dual"** (one method named `dual`, a stored `_dual`) | ruled 2026-08-06 ("there are many possible duals"); re-emitted in later API drafts | **`dual_module`**, **`dual_lattice`**, **`dual_group`** — every dual names which duality functor produced it |
+| **"Hom"** as the owned spelling (`X.Hom(Y)`, `C.Homs().Of(X, Y)`, "homset", "Hom endpoint") | ruled in `CONTRIBUTING.md` (*`Mor` is the only spelling the preamble universe ever uses*); 59 public sites in 24 files on 2026-09-16; re-emitted the same day in orchestration briefs while the ruling was loaded | **`X.Mor(Y)`**, always on the object, never freestanding; `Hom` names Sage's construction and appears only inside a private adapter that calls Sage |
 
 **Graduation rule:** when a drift term already carrying a dictionary row is emitted a *second* time, it graduates to this index — the repetition is the evidence of a strong prior.
 Diagnose new drift by principle first (generative failure model P1–P6); this index is only for proven repeat offenders.
@@ -783,6 +784,12 @@ Call counts remain legitimate as **diagnosis**: they locate a recursion, name th
 function that repeats, and prove a cascade exists. Use them to say what is
 happening, never to say how expensive it is.
 
+A claim about *why* something is slow is held to the same standard as a claim
+about how slow it is. A named cause with no measurement behind it is fabrication
+unless it is written as a hypothesis in words that cannot be read as a result.
+`DEV-62` owns the rule; *Every task is an instrument* below owns the moment it
+applies.
+
 # What optimization is for (always-on)
 
 The dominating concerns are legibility, auditability by a mathematician,
@@ -810,7 +817,9 @@ mathematics. That is the tell that it was waste.
 Genuine hot paths may later need `case`/`match` dispatch or caching. That is a
 design change: propose it and discuss it explicitly first. Reaching for a cache,
 or for a literature constant in place of a computation, before finding out *why*
-something is slow, is not optimization — it is hiding the defect.
+something is slow, is not optimization — it is hiding the defect. Reaching for a
+different library is the same move with a worse consequence: it also deletes
+the site where the cost would have been measured (`ENG-07`, `ENG-08`).
 
 **Test specimens are small by default.** A proof of correctness for invariants,
 coinvariants, or \(O(L)\) does not need \(E_8\), a K3 lattice, or an Enriques
@@ -818,6 +827,63 @@ lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
 combinations; their orthogonal groups are finite and their invariants and
 coinvariants are quick. Reach for a large specimen only when the claim is about
 that specimen.
+
+# Every task is an instrument; the product is a map of Sage (always-on)
+
+Nothing built here is an end. A tool that prints its view, a category that
+constructs, a cell that reproduces a table: each is an instrument, and the
+result in front of you is worth orders of magnitude less than what producing it
+teaches about the engine underneath. The product is a durable map of Sage's
+ecosystem -- which spelling of an operation to route through, what it demands,
+what it returns, where it is absent, where it is wrong, where it is correct and
+unaffordable at research size -- encoded as one owned name per operation and
+written down in `TRAPS.md`. An owned name with no such finding behind it is a
+rename. `CONTRIBUTING.md` states the philosophy under *The artifacts are
+instruments; the product is a map of Sage*; `ENG-07`, `ENG-08`, `DEV-62` and
+`DEV-63` are the reviewable rules. This section binds at the moment of
+friction.
+
+**Friction with Sage is the datum, and it halts the task.** A slow call, a
+rejected input, or a wrong-shaped result is the most informative event the task
+can produce. The sequence, in order, before any other edit:
+
+1. Isolate the engine. Build the same specimen -- same order, same shape -- in
+   Sage with no preamble in the process.
+2. Measure. Wall time against the size parameter, at more than one size.
+3. Search inside Sage. The method's `algorithm=` choices, the backends Sage
+   ships, a different constructor, the sibling module. Read the source.
+4. Record. The `TRAPS.md` row, with the command, the specimen, the version and
+   the numbers, in this turn.
+5. Only then choose the route the owned name delegates to.
+
+Hand-rolling the routine, swapping the library, adding a cache, or deleting the
+call that exposed the cost before step 4 exists is banned. Each closes the task
+and empties the map: nothing is learned about the Sage routine's speed, its
+output convention, its input demands, or its failure modes, and the search for
+the Sage-internal answer is abandoned exactly where it would have paid. The
+escalation ladder -- Sage native, then the backends Sage ships, then ownership
+under an audit trail -- is the research protocol, and a rung teaches only if
+you stand on it. This holds for repository tooling as much as for preamble
+mathematics: a tool that reads the tree is computing on the same graph Sage
+walks to join and linearize the preamble's categories, so its cost curve is
+also a cost model for session import and refinement.
+
+**A sentence about the engine with no measurement behind it is fabrication.**
+"It is slow because it is MILP-backed." "Sage's startup is the cost." "The
+native method cannot take this input." Each has the grammar of a finding, and
+that grammar is what makes it fraud rather than error: an error is a
+measurement that came out wrong; this is a story standing where a measurement
+should be. It ends the search, it borrows authority from sounding like a
+mechanism, it is trusted forever once written down, and it is lazy, because
+the measurement usually costs a second. Write the probe, or write "untested" in
+words that cannot be mistaken for a result. The first two claims above were
+both asserted here on 2026-09-16, both unmeasured, both wrong: the slow call
+was in the library that had just been swapped in to avoid Sage.
+
+**A correction halts action.** When the user is correcting the model of the
+work, stop running things. Every command executed under the old model is one
+more result to unwind, and a library swap made while the correction was still
+arriving destroyed the measurement the correction was about.
 
 # Repository layout
 
@@ -1110,6 +1176,253 @@ This governs the rules below:
 - Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
 - Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
+
+# A missing foundation parks the work that found it (always-on)
+
+Research work meets missing foundations constantly. The move is always the
+same, and it is not a judgment call:
+
+1. **Park** the node you are on. It is not abandoned and not deferred; it is
+   waiting on something that was just discovered to be underneath it.
+2. **Build the DAG of what it needs**, down to what already exists, and
+   terminating at the node you were doing.
+3. **Add the edges**, so the parked node now `Needs:` the foundation.
+4. **Take a ready node** from the bottom of what you just built.
+
+You never proceed past an observed mathematical deficiency. Not with a note
+attached, not with a substitute in place, not with a `TODO` at the site. The
+work is genuinely blocked, and the blockage is a discovery about the shape of
+the problem rather than an obstacle to route around.
+
+**The failure this prevents has a specific shape: recording the gap and
+continuing.** Filing the deficiency in `COMPLAINTS.md` and leaving the work
+queue untouched produces a document that describes the hole and a queue that
+still schedules work over it. It feels like diligence -- the observation was
+real, it was written down carefully, and the note is true. What makes it a
+failure is that the DAG, which is the thing that actually selects work, was
+never told. Nothing downstream changes, and the next worker inherits the same
+queue and walks into the same hole.
+
+So the test, applied before continuing past anything you have just called
+missing:
+
+> **Which node's `Needs` list changed?**
+
+If the answer is none, the foundation was observed and not acted on.
+
+`COMPLAINTS.md` records *why* the node is owed, with its dependency path and
+evidence, under `DEV-59`. `TODO.md` schedules it. The two are not substitutes,
+and the complaint is never the whole response.
+
+**Scope is a real question, and it is answered by the DAG, not by scoping the
+mathematics down.** The prerequisite chain terminates at what exists, so a
+foundation whose own prerequisites are already present is a short chain, and
+one that is not is a long one. Discovering the chain is long is information
+about the problem. It is never a reason to declare the original node ready,
+nor to weaken it so that the foundation is no longer required.
+
+# A supercategory declaration is a mathematical claim (always-on)
+
+`super_categories()` states that **every object of this category is an object
+of those**. It is a theorem about the objects, not a slot to fill so that
+construction proceeds, and it is read by inheritance: an object receives the
+operations of everything its category declares.
+
+So a declaration that is merely *available* is a false theorem installed where
+nobody looks for one. The recurring shape is `Sets()` written where the objects
+are not sets:
+
+- a **sheaf** on a space $X$ is a functor on $\mathrm{Open}(X)$, so it is an
+  object of a functor category;
+- a **ringed space** is a space together with a sheaf of rings;
+- a **manifold** is a locally ringed space;
+- a **log pair** is a scheme together with a divisor.
+
+None of these has an underlying set that its category could be declaring, and
+where one *does* exist the declaration still belongs to the forgetful functor,
+never to the object. `Sets()` in such a row is the value category of some
+functor in the construction, leaked upward into the slot where the object's own
+category belongs.
+
+**A false declaration is never an admissible state, and recording it elsewhere
+does not make it one.** Filing the gap while the wrong supercategory stays in
+the source leaves every reader and every object inheriting the false theorem;
+the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
+ranking here in which the wrong claim is the better of two states.
+
+When the honest supercategory does not exist in the tree, there are two moves
+and nothing else:
+
+- **Build the missing category.** This is usually the answer, and it is
+  usually smaller than it looks, because the general construction is already
+  owned. Presheaves needed no new theory: `[C, D]` is the functor category and
+  `C^op` the opposite, both of which the tree has.
+- **Declare nothing.** `super_categories()` left abstract, so the category
+  cannot be used until its placement is known, is honest and fails loudly.
+  `OwnedCategoryOverBaseRing` already does this. A category that refuses to
+  construct is a working signal; one that constructs into the wrong place is a
+  silent wrong answer that propagates through everything it touches.
+
+Record the gap in `COMPLAINTS.md` under `DEV-59` as well, with its dependency
+path and the consumer it blocks. That is the record of *why* the node is
+missing -- never a licence to keep a substitute in the source while it stands.
+
+**Presheaves and sheaves are functor categories.** $\mathrm{Presh}(C) := [C,
+\mathbf{Set}]$, a functor $\mathrm{Cat} \to \mathrm{Cat}$; more generally
+$(C, D) \mapsto [C, D]$ is a bifunctor $\mathrm{Cat} \times \mathrm{Cat} \to
+\mathrm{Cat}$, which is the same construction the tree already owns as its
+functor category. Sheaves on $C$ are the full subcategory of $\mathrm{Presh}(C)$
+cut out by descent for a coverage. Stating them this way is what makes the
+passage to stacks and $\infty$-stacks a change of value category rather than a
+new theory (`https://ncatlab.org/nlab/show/infinity-stack`). Any sheaf-like
+category -- quasi-coherent sheaves, invertible sheaves, structure sheaves,
+sheaves of modules or of algebras -- is placed under that construction, never
+under `Sets()`.
+
+## Reading the declarations
+
+The declared graph is read out of the source with `ast`, so it never imports
+the preamble and answers while that tree is mid-refactor and does not load.
+The graph theory is Sage's -- homology, minimum cycle basis, transitive
+reduction -- so the recipes run under Sage's own interpreter:
+
+```bash
+just category-graph                     # every category, and what it declares
+just category-graph by-supercategory    # each supercategory, and who claims it
+just category-graph foreign             # owned categories declaring a Sage category
+just category-graph shape               # breadth, depth, shortcut declarations
+just category-graph cells               # homology, and the cycles owing a 2-cell
+just category-graph-svg                 # the literal graph, rendered
+```
+
+The `by-supercategory` view is the audit surface: a large group under one
+heading is one mathematical claim made many times over, and reading the members
+together is how a member that does not belong becomes visible. Run it after any
+change to a category's placement, and read the group the change lands in rather
+than the single row it adds. `just category-graph audit` reports what needs no
+reading of the objects: a name declared as a supercategory and defined nowhere,
+a declaration computed from a local expression so the edge is not stated at
+all, a category declaring its own name, and cycles.
+
+The live survey (`just preamble-megadoc`) answers a different question -- what a
+session *does* -- and its `supers` field is empty for parameterized categories,
+so it must never be read as evidence that a declaration is absent.
+
+## Every declaration is the immediate one, and factoring is mandatory
+
+Declaring `C -> D` asserts a forgetful functor $U : C \to D$. The rule is that
+$U$ must be **atomic**: one step of structure, not a composite.
+
+> **The factorization test.** Ask, from the mathematics alone: is there a
+> category $A$ with $C \to A \to D$, where $A$ is a well-defined category that
+> can own operations? If yes, the declaration `C -> D` is wrong and must be
+> replaced by `C -> A`. **This holds when $A$ does not exist in the tree.**
+> Then $A$ is what you build.
+
+Run the test on the mathematics, never on the code. Reading the category list
+first and picking the nearest available node inverts the whole thing: it makes
+the current contents of the tree decide what is true, so every gap becomes
+permanent the moment something is declared across it. Name the categories the
+objects actually pass through, and only then find out which of them exist.
+
+The bar for $A$ is that it is a real category with a definition and operations
+of its own -- convex bodies, topological spaces, labelled graphs, modules.
+Inventing a node so that a rule is technically satisfied is the over-compliance
+failure this repository bans everywhere else: a category with no mathematical
+referent is worse than the unfactored edge, because the edge is at least
+visibly wrong. If the intermediate has no name in the literature, that is a
+signal to check the notion, not licence to coin one.
+
+## The shape the graph is converging on
+
+**A near-tree: high depth, low breadth.** Depth is what atomic declarations
+produce -- a long chain from a leaf to `Sets()`, each step adding exactly one
+structure, every operation inherited from the level that owns it. Breadth at a
+node is how many categories declare it directly, and it is the diagnostic:
+
+| Reading | What it means |
+| --- | --- |
+| High breadth at a node | The intermediate categories between it and its claimants are missing. Breadth counts unfactored edges. |
+| High breadth at `Sets()` | The worst case: the claim that those objects share nothing but their points. |
+| A short path from a leaf to `Sets()` | Structure is being restated at the leaf instead of inherited. Expect duplicated operations, and look for them. |
+| A category declaring two or more levels up | A shortcut edge. It duplicates a path that already exists and adds a loop that carries no information. |
+
+Breadth at `Sets()` is never zero: some objects are sets with structure and
+belong there. The question is never the count, it is whether each member's own
+definition puts it there.
+
+## $\pi_1$, and what is actually being minimized
+
+The declared graph is a 1-dimensional complex: a 0-cell per category, a 1-cell
+per declaration, and no higher cells. So $H_1$ is the whole cycle space,
+nothing bounds, and $\pi_1$ is free of rank $E - V + C$. A generator is a pair
+of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
+functors that the graph asserts are equal, and **the 2-cell that would fill it
+is that assertion\'s proof**. The complex has none. Nothing checks that assertion: Sage
+computes a C3 linearization, so a diamond that does *not* commute never raises
+-- it silently selects one route, and the object's inherited operations are
+whichever the ordering picked. **Each generator is a coherence obligation and a
+site where method resolution can quietly return the wrong answer.**
+
+`just category-graph cells` computes the homology and a minimum cycle basis, so
+each generator is a short readable square rather than a wandering path. An
+axiom category is a vertex of its own, `Modules.FinitelyGenerated.Torsion`,
+whether it is a nested class or only named in a declaration, and it declares
+each vertex with one axiom fewer; that is Sage's join, so a generator lying
+inside one base's axiom lattice is listed as a computed join, not as a cell
+owed. Every
+generator lies inside one 2-connected block, and the view lists the blocks
+first: a near-tree has only small ones, so a block of a hundred categories is
+the region where declarations mesh, and it is the finding, never something to
+route around. The view then
+separates the generators killed by deleting one declaration -- where one route
+is a single edge and the other a path with the same endpoints, so the two
+composites are the same functor -- from those owing a real cell. The first kind
+are unearned: they add a cycle and no reachability, and removing them costs
+nothing, which is why keeping the transitive reduction is minimizing $\pi_1$.
+
+**The trap.** Taken raw, "minimize $\pi_1$" favours the graph this section
+exists to prevent. A star is a tree, so thirty categories each declaring only
+`Sets()` has rank zero; you can drive $\pi_1$ to zero by deleting every
+intermediate category, and a single point is perfectly coherent. The criterion
+is therefore **minimal $\pi_1$ among graphs that state every true forgetful
+functor and only immediate ones**. Factoring an edge through a new category adds
+one vertex and one edge and leaves the rank unchanged, so building the missing
+mathematics is free by this measure. The rank rises only where a genuine join
+appears, and that loop is wanted, because it is a real theorem.
+
+Genuine multiple inheritance is real -- $\mathbf{Z}$ is a ring and a module and
+a monoid. Those diamonds are **computed**, as joins and axioms, so that
+commutativity follows from the join construction instead of being asserted
+again at every site that happens to need it.
+
+## Red flags
+
+Each is observable in the declaration itself, with no judgment of intent:
+
+- `Sets()` declared by a category whose own docstring describes a structured
+  object -- a sheaf, a space, a pair, a complex, a matrix, a diagram.
+- A declaration naming a category two or more levels above the one being
+  declared.
+- A supercategory chosen because it is what the tree has, rather than what the
+  objects pass through. The tell is a declaration that nobody could derive from
+  the category's own definition.
+- A supercategory added so that construction proceeds, or so that one inherited
+  method becomes reachable. Placement is a theorem about the objects; it is not
+  a way to obtain a method.
+- A leaf implementing an operation that a category on its path already owns.
+  That is evidence the path is missing, and the fix is the path, not the leaf.
+- Any node whose breadth grew in the change you are about to commit.
+
+A category declaring itself over a lower base, `Modules(R)` declaring
+`Modules(S)` along `S -> R`, is a red flag of its own kind. Restriction of
+scalars is a functor obtained from the category, never a declaration: Sage
+applies every axiom of a category to every declared supercategory
+(`CategoryWithAxiom.super_categories` joins `category._with_axiom_as_tuple(axiom)`
+over the base's supercategories, category_with_axiom.py), so the declared
+edge would make `Modules(QQ).FinitelyGenerated()` a subcategory of
+`Modules(ZZ).FinitelyGenerated()`, a false theorem for every property stated
+relative to the base. Ruled 2026-09-16; `TRAPS.md` holds the engine fact.
 
 # Mathematical ontology (always-on)
 
@@ -1484,6 +1797,63 @@ Rules distilled from preamble work on direct-sum coordinates, embeddings, and co
 **Invariant and coinvariant lattices, and inclusions, are computed on the lattice.** There is no "eigenlattice": the notions are the invariant lattice, the coinvariant lattice, and the isotypic components. Invariant/coinvariant lattices and primitive inclusions (`invariant_lattice`, `coinvariant_lattice`, `coinvariant_inclusion`) are category methods on `IntegralLattices`; the coinvariant is $(L^G)^{\perp L}$. Catalogue must not ship helpers that take a named lattice plus an involution and assert kernel rank or Gram agreement — that certifies a guess, it does not construct. Named literature embeddings *use* the generic interface; they do not reimplement it.
 
 **Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
+
+# Declaring a category: the questions answered before writing (always-on)
+
+The tree this morning held thirty categories declaring `Sets()`, twenty-one
+declaring `Objects()`, a block of 135 categories meshed by hand-written
+property combinations, four notions each under two names, restriction of
+scalars declared as a supercategory on three bases, and a diamond whose two
+routes landed on different objects. None of it was a wrong object; all of it
+was a wrong belief about what a declaration says. `CONTRIBUTING.md` codes
+`CAT-15` to `CAT-27`, `DEV-64` and `DEV-65` state the rules with the artifact
+each one came from, and *Contributing a category: the procedure* there is the
+full order of work, from the definition in the field's words through the
+survey of the tree to the delivery of every consumer. This section is the
+short form asked before any declaration is written; no declaration is written
+until each question has an answer in the commit body.
+
+1. **What are the objects?** Write the definition in one sentence, in the
+   field's words. If it names a chosen datum ("with a chosen basis", "with a
+   differential"), this is a data subcategory. If it names only a property
+   ("Noetherian", "finitely generated", "separated"), this is an axiom on its
+   base and there is no class to write (`CAT-17`, `CAT-18`).
+2. **Does it exist?** `just category-graph by-supercategory` for the parent it
+   would declare; `rg` the nouns of the definition across `categories/`; the
+   specification files for the name they use. If it exists, extend or retire
+   into the owner; never a second class (`CAT-22`).
+3. **What is the underlying object, over the same parameters?** An object of
+   this category with the added structure forgotten, base and parameters
+   untouched, is an object of exactly one category one step down. That is the
+   declaration, and the only one (`CAT-15`, `CAT-16`). If the honest parent is
+   not in the tree, build it or declare nothing; `Sets()` and `Objects()` are
+   never placeholders.
+4. **Is anything in the list a change of base or parameter?** Restriction of
+   scalars, base change, an ideal to its fractional ideal, an `R[G]`-module to
+   a `G`-object over `R`: each is a functor obtained from the category by a
+   named method, never an entry in the list (`CAT-16`). Sage applies every
+   axiom along a declared edge, so such an entry is a false theorem for every
+   relative property.
+5. **Does the list create a second route to anything?** Write both composites.
+   Same category twice: delete the shortcut. Computed join: fine. Different
+   objects: the entry is false (`CAT-21`).
+6. **Is it a construction on a category?** Then it takes that category as a
+   parameter and declares it; its instances do not declare the base again
+   (`CAT-20`).
+7. **Is every entry an expression a reader can resolve?** Names and
+   parameters only; no locals, no `supers + [...]`, no method calls on `self`
+   that compute a category (`CAT-24`).
+8. **What does the graph say?** `just category-graph shape` and `cells`
+   before and after; the delta goes in the commit body, and a grown block or a
+   grown breadth is the finding (`CAT-25`).
+
+Banned outright, each observed and removed on 2026-09-16: `Sets()` or
+`Objects()` declared because the real parent is missing; a class named for a
+combination of properties; a class for a property that Sage's axiom mechanism
+states; a `super_categories` override on an axiom class; a category declaring
+its own name over a lower base; `__contains__` deciding membership by a
+predicate, a base tower or an attribute probe; a declaration computed from a
+local variable; a second class for a notion the tree already owns.
 
 # Categorical organization model (always-on)
 

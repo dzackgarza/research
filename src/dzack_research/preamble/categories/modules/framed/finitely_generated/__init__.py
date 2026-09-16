@@ -8,7 +8,7 @@ _EXPORTS = {'FinitelyGeneratedFreeModules': ('dzack_research.preamble.categories
                               'FinitelyPresentedModules'),
  'ModulesWithChosenFinitePresentation': ('dzack_research.preamble.categories.modules.pure.modules',
                                          'ModulesWithChosenFinitePresentation'),
- 'FinitelyPresentedTorsionModules': ('dzack_research.preamble.categories.modules.pure.torsion_modules',
+ 'FinitelyPresentedTorsionModules': ('dzack_research.preamble.categories.modules.pure.modules',
                                      'FinitelyPresentedTorsionModules'),
 }
 

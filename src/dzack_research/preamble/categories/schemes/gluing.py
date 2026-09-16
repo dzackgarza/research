@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     DistinguishedAffineCovers,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
     OpenImmersions,
     SchemeMorCategory,
     SchemeMorphism,
@@ -598,7 +597,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
 
     def __init__(self, schemes, left_chart, right_chart, transition) -> None:
         base = schemes.base_ring()
-        if left_chart not in AffineSchemes(base) or right_chart not in AffineSchemes(base):
+        if left_chart not in Schemes(base).Affine() or right_chart not in Schemes(base).Affine():
             raise TypeError("the represented two-chart gluing currently requires affine charts")
         if not isinstance(transition, CategoricalIsomorphism):
             raise TypeError("scheme gluing requires a represented overlap isomorphism")
@@ -807,7 +806,7 @@ class _FiniteSchemeGluingDatum(SageObject):
         self._schemes = schemes
         self._charts = _finite_chart_family(charts)
         for chart in self.charts():
-            if chart not in AffineSchemes(self.base_ring()):
+            if chart not in Schemes(self.base_ring()).Affine():
                 raise TypeError("finite scheme gluing currently requires affine charts")
 
         pair_indices = finite_ordered_set(

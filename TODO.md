@@ -645,6 +645,79 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** select the actual supported Sage executable in `.envrc` (or repair the intended installation at its stable path) without creating another temporary Sage distribution; preserve the repository's intended dependency/runtime semantics rather than treating any Python with a `sage` module as interchangeable.
   **Acceptance:** after source remediation has closed and terminal execution is authorized, the tracked environment launches Sage, preparses the repository's `.sage` inputs through the normal project route, and a fresh process reaches the `terminal-session` star-import invariant.  This node does not authorize running Sage while `architecture-remediation` remains open.
 
+### Categorical placement foundations
+
+A `super_categories()` return states that every object of the category is an object of those.
+Thirty categories declare `Sets()`; `just category-graph by-supercategory` lists the group.
+Some members are sets with structure and belong there.
+Others are not sets at all, and declare `Sets()` because the category their objects belong to is not in the tree.
+These nodes build the missing categories rather than leaving the false declarations standing.
+
+- [ ] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
+  **Goal:** Own a coverage on a category and the sheaf condition it defines, so that sheaves on \(C\) are the full subcategory of \(\mathrm{Presh}(C, D)\) cut out by descent.
+  **Observed gap:** the descent condition exists in exactly one situation and as gluing data rather than as a definition: `DistinguishedAffineCover.glue_modules` assembles a module sheaf from charts and transition isomorphisms.  Nothing states the condition a presheaf must satisfy.
+  **Owners:** the coverage on \(C\), the descent diagram it produces for a covering family, and the full subcategory of the presheaf category.
+  A full subcategory of the presheaf category places its objects through the presheaf category's own construction, and today `_FunctorCategory` builds its objects as objects of `Arr(Cat)` (cat.py, `_object_on`), so nothing can be placed under it until the functor category owns its objects; that is the edge to the two placement nodes.
+  **Deliver:** the sheaf condition as an equalizer over a covering family, the resulting full subcategory, and the existing affine gluing re-expressed as an instance of it rather than a parallel implementation.
+  The gluing-data categories are placed by that instance: `DistinguishedAffineCovers` (schemes/ringed_spaces.py) is the category of covering families of an affine scheme under the coverage, and `ModuleGluingData(cover)` and `AlgebraGluingData(cover)` (schemes/gluing.py) are the descent-data categories of that covering family; all three declare `Objects()` today and decide membership by `isinstance`.
+  **Separating cases:** a presheaf that fails descent on a two-element cover, and the same presheaf on the trivial coverage where it passes.  Keep the coverage a parameter: the reason for stating it this way is that stacks change the value category, not the condition.
+  **Acceptance:** a presheaf and a sheaf on the same site are distinguished by the construction rather than by the caller's assertion; the affine module-gluing route returns an object of the sheaf category.
+
+- [ ] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
+  **Goal:** Place every sheaf in the tree as an object of the sheaf category, and declare the sheaf-bearing categories into the categories their own definitions name.
+  **Observed gap:** `QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`) and `RingedSpaces` (`:642`) both declare `Sets()`.  A quasi-coherent sheaf is an \(\mathcal{O}_X\)-module and a ringed space is \((X, \mathcal{O}_X)\); neither is a set.  `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and `HigherDirectImageSheaf` are plain `SageObject`s, so none inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents, and `__contains__` has to duck-type its argument for want of a placement.
+  **Owners:** the sheaf category from `sheaf-descent-subcategory`; the ringed space as a space together with its sheaf of rings; the affine equivalence with \(\mathbf{Mod}_A\) already implemented as `module_category`/`associated_sheaf`/`global_sections`.
+  **Deliver:** the sheaves become objects with placements; the two categories declare their real supercategories; `QuasiCoherentSheaves.__contains__` asks for a placement instead of probing for an attribute.  Retain the affine equivalence and the Stacks Tag 01I8 statement it cites --- this node changes where the objects live, not what they are.
+  **Acceptance:** the abelian and monoidal operations `QuasiCoherentSheaves` documents are reached through its declared supercategories rather than restated on it; no sheaf in the tree is outside the category graph.
+
+- [ ] **`algebras-are-modules`**. **Needs:** none.
+  **Goal:** An algebra built by `Algebras(R)(module, multiplication)` is a module object constructed through `Modules(R)`, so it answers its module operations by inheritance.
+  **Observed gap:** `Algebras(R)` declares `Modules(R)`, but `Algebras._call_` (`algebras/algebras.py`) returns an object of the arrow category \(\mathrm{Arr}(\mathbf{Mod}_R)\) whose module is its `target_object()`, so `Algebras.ParentMethods` forwards `zero`, `module_generating_set`, `module_generator`, `module_rank`, `scalar_multiple`, `_selected_module_coefficients`, `__contains__` and `_element_constructor_` through `underlying_module()` behind an exact-module guard, and `AlgebrasWithChosenMultiplication.ElementMethods` wraps one module element.  The threaded route exists for associative multiplications only: `_algebra_from_multiplication` rebuilds the module through `_module_presented_by_multiplication` with the multiplication as construction data, received by `AssociativeAlgebrasWithChosenMultiplication.ParentMethods.__init__`.
+  **Owners:** `Algebras(R)._call_`; `AlgebrasWithChosenMultiplication`, which takes the threaded `__init__` and the multiplication transport from its associative refinement; `_equip_unit`, which transports the unit along the equipping map; the algebra Hom classes selected by `GeneralAlgebraHomCategoryConstruction`.
+  **Deliver:** `Algebras(R)(module, m)` constructs through the presented-module route for every bilinear `m`, associative or not; the forwarding block, the wrapper element class, the exact-module guard and the arrow-object branches of the algebra Hom classes are deleted with it; `underlying_module()` remains the functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) obtained from its category.
+  **Acceptance:** an algebra answers its module operations through `Modules(R)`; no operation `Modules(R)` provides is defined a second time in the algebra subtree.
+
+- [ ] **`arrow-category-placement`**. **Needs:** none.
+  **Goal:** `_ArrowCategory` is an object of `Cat`, which is what its own definition \(\mathrm{Arr}(C) = \mathrm{Fun}([1], C)\) says it is.
+  **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Objects()`, the root, so an arrow object inherits nothing from the functor category its definition names.  The functor category's own objects are built as objects of `Arr(Cat)` (`cat.py`, `_FunctorCategory._object_on`), so the two constructions currently define each other; one must become primary before `Arr(C)` can be declared into `[1] \to C`.
+  **Owners:** `Cat`, and the owned functor category.
+  **Acceptance:** the arrow category is reached as the functor category \([1] \to C\) rather than declared alongside it; its placement is in `Cat`.
+
+- [ ] **`geometric-space-placement`**. **Needs:** `sheaf-object-placement`.
+  **Goal:** The spaces, pairs and convex bodies in the `Sets()` group declare the categories their own definitions name.
+  **Observed gap:** the enumerated table in [COMPLAINTS.md](COMPLAINTS.md) lists each with its docstring and the category it should be declared into.  `TopologicalManifolds` needs a category of topological spaces, which is absent.  `LogPairs` is a scheme with a divisor.  `HyperbolicSpaces`, `HyperbolicPolyhedra` and `PositiveConeComponents` are subspaces and projectivizations of \(L \otimes \mathbf{R}\).  `ConvexPolytopes` and `RationalPolyhedralCones` are convex bodies and cones in \(L \otimes \mathbf{Q}\).
+  **Deliver:** per member, the correct declaration, or the missing category built, or `super_categories()` left abstract so the category refuses to construct.  Decide each against the definition it states, not by a rule applied across the group.
+  **Acceptance:** none of these categories declares a supercategory its own definition contradicts.
+
+- [ ] **`combinatorial-object-placement`**. **Needs:** none.
+  **Goal:** The combinatorial members of the `Sets()` group declare the categories their own definitions name.
+  **Observed gap:** `RegularPolytopes` are "abstract polytopes", which are graded posets, and `PartiallyOrderedSets` already exists.  `CoxeterDiagrams` ("a symmetric matrix of vertex angles") and `ProjectiveWeightedGraphs` ("finite graphs or digraphs with weights") need a category of graphs, which is absent.  `WeylChamberComplexes` ("locally finite chamber systems") needs chamber systems.  `VinbergInvariantMatrices` ("symmetric matrices") belongs to a matrix space over its coefficient ring.
+  **Undecided:** `CharacterSets` calls itself a category of sets while \(\mathrm{Char}(G)\) carries a ring structure.  Whether the category is of the sets or of the rings is a decision this node surfaces rather than settles.
+  **Acceptance:** none of these categories declares a supercategory its own definition contradicts, and the one undecided member is recorded as a decision rather than left as a false declaration.
+
+- [ ] **`group-objects-construction`**. **Needs:** none.
+  **Goal:** Own group objects in a category with finite products, \(\mathrm{Grp}(C)\), as a construction parameterized by \(C\) and declaring \(C\) (`CAT-20`), so that affine group schemes are `Grp(Schemes(R).Affine())` and their actions are objects of the category of \(G\)-objects for a group object \(G\).
+  **Observed gap:** `AffineGroupSchemes` and `AffineGroupSchemeActions` (schemes/group_schemes.py:55, :249) declare `AffineSchemes(R)` directly, the true but non-immediate parent, because `GObjects(G, C)` takes an owned abstract group (group/g_objects.py:174), not a group object of \(C\).
+  **Owners:** the owned product construction on `Cat` objects; `GObjects`, which should be the case of a discrete group object.
+  **Acceptance:** an affine group scheme is placed through the group-object construction; the two scheme categories declare it and nothing two levels up; `GObjects(G, C)` is its restriction to constant group objects.
+
+- [ ] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
+  **Goal:** Every category-of-categories construction is an object of `Cat`: `_FunctorCategory`, `_OppositeCategory`, `_ProductCategory`, `ClassifyingCategory`, `DiscreteCategory`, `ImageOfFunctor`, alongside `HomCategories` (done, 61bd8c65) and `_ArrowCategory`.
+  **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
+  **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
+
+- [ ] **`membership-by-placement`**. **Needs:** none.
+  **Goal:** No `__contains__` decides membership by a predicate (`CAT-23`).
+  **Observed gap:** `Schemes.__contains__` answers lower-base membership by walking the candidate ring's base tower (schemes/schemes.py), so `X in Schemes(ZZ)` is true for a QQ-scheme that inherits nothing from it; `Sets.Countable.Infinite` decides membership by cardinality (a6078850); `QuasiCoherentSheaves.__contains__` duck-types (owned by `sheaf-object-placement`).
+  **Acceptance:** each such membership is answered by placement at construction or through the functor of `CAT-16`; the predicates are gone.
+
+- [ ] **`mor-spelling-convergence`**. **Needs:** none.
+  **Goal:** `X.Mor(Y)` is the only spelling of a category of morphisms in the preamble universe (CONTRIBUTING, *`Mor` is the only spelling the preamble universe ever uses*; AGENTS.md banned-language index). `Hom` names Sage's construction and occurs only inside a private adapter that calls Sage.
+  **Observed gap:** 59 public `Hom`/`Homs()` spellings in 24 files under `src/dzack_research/preamble/` on 2026-09-16, beside 1014 `Mor` spellings; 373 definitions whose names contain `hom` (`HomCategories`, `_hom_endpoint`, `module_homset`, ...), which realize the owned `Mor` constructions under Sage's name. The conversion was started once and interrupted (CONTRIBUTING `DEV-48`).
+  **Owners:** the owned `Mor` construction on each category and the Hom-category types it generates; the private Sage boundary that constructs Sage's `Hom` for computation.
+  **Deliver:** every public spelling becomes `X.Mor(Y)`; every owned definition named for Sage's construction is renamed for the owned construction it realizes, or moved behind the adapter if it is the Sage call; the conversion is carried through the whole tree before any run (`DEV-48`).
+  **Acceptance:** `rg '\.Hom\(|\bHoms\(\)' src/dzack_research/preamble` finds only adapter sites that call Sage; the expectation subtrees' `Mor` spellings resolve.
+
 ### Owner API and construction data
 
 - [x] **`owner-api-convergence`**. **Needs:** none.
@@ -681,7 +754,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 - [ ] **`refinement-convergence`**. **Needs:** `owned-provenance-data`.
   **Goal:** Construct objects with all structure implied or selected by their defining data, reserving later refinement for genuinely new mathematical facts proved after construction.
   Eliminate runtime refinement as a second ordinary construction mechanism under `ARC-13`, `STY-08`, and `OWN-02`--`03`.
-  **Observed gap:** 49 `refine(...)` call sites remain; ring and scheme constructors still install standard structure or `_preamble_scheme_*` state after object allocation.
+  **Observed gap:** 49 `refine(...)` call sites remain; ring and scheme constructors still install standard structure or `_preamble_scheme_*` state after object allocation.  Added 2026-09-16 (d0bc6903): `OwnedOrders` is now the join of `Algebras(ZZ)`'s finite-generation axiom with the Noetherian domains, and because the integers are themselves an order while `Algebras(ZZ)` needs them, `_owned_integers` refines the constructed integers into `OwnedOrders` after construction and `OwnedOrders.super_categories` reads an engine view of ZZ to avoid re-entering that refinement (`CAT-24`).  The initial ring's placement in the algebras over itself is a construction-time fact to state once, not a post-construction refinement.
   **Deliver:** standard structure that follows from defining data is present when the object is constructed; selected structure is passed explicitly through its constructor/functor; later `refine` remains only for a genuinely new mathematical fact proved after construction.  Remove call-history/import-order dependence from inherited operations.
   **Acceptance:** representative ring, scheme, module and functor-image constructions have identical mathematical category/operations regardless of which accessor is called first or import order; every surviving runtime refinement names the later theorem/chosen datum that justifies it rather than repairing incomplete initialization.
 
@@ -792,7 +865,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
-- [ ] **`architecture-remediation`**. **Needs:** `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `mor-spelling-convergence`, `group-objects-construction`, `cat-valued-placement`, `membership-by-placement`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `algebras-are-modules`, `arrow-category-placement`, `geometric-space-placement`, `combinatorial-object-placement`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
   **Goal:** Converge the twenty complaint-derived architecture repairs into one coherent mathematical API before any final runtime/session claim is accepted.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.

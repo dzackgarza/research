@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
-    _proper_restriction_base_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -65,6 +64,12 @@ from dzack_research.preamble.refine import refine
 
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
+
+# Qualified as Sage qualifies ``FinitelyGeneratedAsMagma``: an axiom name is
+# global and propagates to every declared supercategory defining it, and a
+# finitely presented algebra is not a finitely presented module.
+if "FinitelyPresentedAsAlgebra" not in all_axioms:
+    all_axioms.add("FinitelyPresentedAsAlgebra")
 
 
 class _ChosenAlgebraMultiplicationDatum:
@@ -119,10 +124,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         return "associative algebras with chosen multiplication"
 
     def super_categories(self):
-        return [
-            AlgebrasWithChosenMultiplication(self.base_ring()),
-            Algebras(self.base_ring()).Associative(),
-        ]
+        return [AlgebrasWithChosenMultiplication(self.base_ring()).Associative()]
 
     class ParentMethods:
         def __init__(
@@ -660,10 +662,6 @@ class Algebras(OwnedCategoryOverBaseRing):
     This is the algebra node.  Its datum is a morphism
     \(m:A\otimes_R A\to A\); associativity, a chosen two-sided unit,
     commutativity, and the Lie identities are refinements above this node.
-    The relation to ``Modules(R)`` is therefore the forgetful functor, not a
-    category inclusion: the algebra object retains the exact supplied module
-    as its carrier rather than turning that module into another category
-    object in place.
     """
 
     def an_object(self):
@@ -675,10 +673,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        base = _proper_restriction_base_ring(self.base_ring())
-        if base is not None:
-            return [Algebras(base)]
-        return [Sets()]
+        return [Modules(self.base_ring())]
 
     def underlying_module(self):
         r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
@@ -848,15 +843,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return self.underlying_module().module_generating_set()
 
         def module_rank(self):
-            r"""Return the rank of the underlying ``R``-module when represented.
-
-            ``Alg_R`` is not implemented as a subcategory of ``Mod_R``: the
-            forgetful functor retains the exact carrier module.  Rank is
-            therefore read from that carrier rather than from the arrow object
-            used to retain the multiplication.  In particular ``R[G]`` has
-            module rank ``|G|`` for finite ``G`` without making the algebra
-            object itself a module-category object.
-            """
+            r"""Return the rank of the module under ``Alg_R -> Mod_R``."""
             return self.underlying_module().module_rank()
 
         def module_generator(self, label):
@@ -1267,6 +1254,31 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             _HomCategory = AlgebraHomCategoryConstruction
 
+            class SubcategoryMethods:
+                def FinitelyPresentedAsAlgebra(self):
+                    r"""Return the refinement whose objects admit a finite algebra presentation."""
+                    return self._with_axiom("FinitelyPresentedAsAlgebra")
+
+            class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
+                r"""Algebras that admit a finite algebra presentation.
+
+                A property: the presentation exists and none is chosen.
+                ``AlgebrasWithChosenFinitePresentation`` is the data category.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "finitely presented algebras"
+
+                def an_object(self):
+                    r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
+                    presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
+                    return presentation.quotient_by_relations(("x^2",))
+
+                class ParentMethods:
+                    def is_finitely_presented(self) -> bool:
+                        return True
+
             def _call_(self, algebra_or_module, multiplication=None, unit=None):
                 if algebra_or_module in Algebras(self.base_ring()):
                     algebra = algebra_or_module
@@ -1295,9 +1307,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 @classmethod
                 def _repr_object_names(cls):
                     return "commutative algebras"
-
-                def extra_super_categories(self):
-                    return [Algebras(self.base_ring()).Commutative()]
 
                 def an_object(self):
                     modules = Modules(self.base_ring())
@@ -1375,6 +1384,13 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _repr_object_names(cls):
             return "Lie algebras"
 
+        def an_object(self):
+            r"""``gl_2(R)``: the two-by-two matrix algebra under the commutator."""
+            ring = self.base_ring()
+            return Algebras(ring).Associative().commutator_lie_algebra()(
+                MatrixAlgebras(ring).an_object()
+            )
+
         def _call_(self, module, multiplication=None):
             if module in Algebras(self.base_ring()):
                 algebra = module
@@ -1433,6 +1449,8 @@ class Algebras(OwnedCategoryOverBaseRing):
 # Register the nested refinement explicitly so ``Algebras(R).Lie()`` is a
 # category-with-axiom rather than an inference through Sage's built-in names.
 Algebras.__dict__["Lie"]._base_category_class_and_axiom = (Algebras, "Lie")
+
+FinitelyPresentedAlgebras = Algebras.Associative.Unital.FinitelyPresentedAsAlgebra
 
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
@@ -1624,11 +1642,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
-        # gl_n(R) is M_n(R) under the commutator, which arrives with the
-        # associative algebras above: nothing here is special to matrices.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital(),
             FramedAlgebras(self.base_ring()),
         ]
 
@@ -1680,26 +1695,6 @@ def _refine_matrix_algebra(homset):
     if homset not in MatrixAlgebras(ring):
         raise TypeError("a finite-free endomorphism Hom over a commutative ring must be constructed in its canonical matrix-algebra category")
     return homset
-
-
-class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras that admit a finite algebra presentation."""
-
-    def an_object(self):
-        r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
-        return presentation.quotient_by_relations(("x^2",))
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely presented algebras"
-
-    def super_categories(self):
-        return [Algebras(self.base_ring()).Associative().Unital()]
-
-    class ParentMethods:
-        def is_finitely_presented(self) -> bool:
-            return True
 
 
 class _SelectedFiniteAlgebraPresentation:
@@ -1762,7 +1757,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            FinitelyPresentedAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().FinitelyPresentedAsAlgebra(),
             FramedAlgebras(self.base_ring()),
         ]
 

@@ -4,8 +4,6 @@ from importlib import import_module as _import_module
 
 _EXPORTS = {'EnumeratedSets': ('dzack_research.preamble.categories.sets.enumerated.enumerated_sets',
                     'EnumeratedSets'),
- 'InfiniteEnumeratedSets': ('dzack_research.preamble.categories.sets.enumerated.enumerated_sets',
-                            'InfiniteEnumeratedSets'),
  'FourierCharacters': ('dzack_research.preamble.categories.sets.enumerated.fourier_characters',
                        'FourierCharacters'),
  'EnumeratedByIntegers': ('dzack_research.preamble.categories.sets.enumerated.function_sets',
@@ -27,7 +25,6 @@ __all__ = ['EnumeratedByIntegers',
  'FourierCharacters',
  'FunctionEnumeratedSets',
  'HermitePolynomials',
- 'InfiniteEnumeratedSets',
  'LaurentMonomials',
  'SincTranslates']
 

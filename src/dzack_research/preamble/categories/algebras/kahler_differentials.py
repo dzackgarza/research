@@ -10,8 +10,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FinitelyPresentedModules,
-    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -64,8 +62,8 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         ``KahlerDifferentialModules(A)`` is a category of ``A``-modules, so
         the parameter and the source algebra are definitionally the same
         object.  Localization and conormal-sequence realizations are private
-        branches of this constructor; :func:`KahlerDifferentials` is notebook
-        notation for this operation rather than another factory.
+        branches of this constructor; ``A.kahler_differentials()`` is the
+        algebra's spelling of it.
         """
         if algebra is not self.base_ring():
             raise ValueError(
@@ -83,11 +81,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-
-        return [
-            FinitelyPresentedModules(self.base_ring()),
-            FramedModules(self.base_ring()),
-        ]
+        return [ModulesWithChosenFinitePresentation(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, kahler_construction, **rest) -> None:

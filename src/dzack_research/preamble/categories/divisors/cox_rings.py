@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-    RepresentedToricSchemes,
+    ToricSchemes,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -34,7 +34,8 @@ class CoxRings(OwnedParameterizedCategory):
         OwnedParameterizedCategory.__init__(self, scheme)
 
     def parameter_category(self):
-        return RepresentedToricSchemes()
+        r"""The toric schemes over the parameter's own base."""
+        return ToricSchemes(self.parameter().scheme_base_ring())
 
     def scheme(self):
         return self.base()

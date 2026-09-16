@@ -42,7 +42,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
     OwnedCategory,
 )
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
@@ -69,10 +68,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    NormalSchemes,
     SchemeMorphism,
     Schemes,
-    SmoothSchemes,
     _has_scheme_placement,
     _categorical_scheme_morphism,
     _refine_scheme,
@@ -470,35 +467,6 @@ def _glued_toric_scheme(fan, base_ring):
     )
 
 
-class RepresentedToricSchemes(OwnedCategory):
-    r"""Represented toric schemes over arbitrary represented base rings.
-
-    This is the parameter domain for constructions such as ``CoxRings(X)``.
-    It does not recognize toric structure from coordinates: membership asks
-    the existing base-specific ``ToricSchemes(k)`` placement of ``X``.
-    """
-
-    def an_object(self):
-        return ToricSchemes(_own_ring(SageQQ)).an_object()
-
-    def super_categories(self):
-        return [Objects()]
-
-    def __contains__(self, candidate) -> bool:
-        base_method = getattr(candidate, "scheme_base_ring", None)
-        if not callable(base_method):
-            return False
-        try:
-            base = base_method()
-            return candidate in ToricSchemes(base)
-        except (AssertionError, AttributeError, TypeError, ValueError):
-            return False
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "represented toric schemes over arbitrary bases"
-
-
 class ToricSchemes(OwnedCategoryOverBaseRing):
     r"""Toric varieties over the stated base field, each equipped with its fan."""
 
@@ -516,7 +484,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             Varieties(self.base_ring()),
-            NormalSchemes(self.base_ring()),
+            Schemes(self.base_ring()).Normal(),
         ]
 
     def __contains__(self, candidate) -> bool:
@@ -1836,7 +1804,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None):
     dimension = int(fan.dimension())
     placements = [ToricSchemes(base)]
     if fan.is_smooth():
-        placements.append(SmoothSchemes(base))
+        placements.append(Schemes(base).Smooth())
     if dimension == 1:
         placements.append(Curves(base))
     if dimension == 2:
@@ -1844,4 +1812,4 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None):
     return _refine_scheme(scheme, base, placements)
 
 
-__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes"]
+__all__ = ["ToricSchemeMorphism", "ToricSchemes"]

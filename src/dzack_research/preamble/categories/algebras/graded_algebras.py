@@ -1,5 +1,6 @@
 """Algebras graded by a monoid."""
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -29,7 +30,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
 )
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
+
+# Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
+# the Koszul sign rule in which every odd-degree element squares to zero.
+if "Alternating" not in all_axioms:
+    all_axioms.add("Alternating")
 
 
 def _homogeneous_degree(element):
@@ -192,16 +199,23 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return algebra
 
     @staticmethod
-    def __classcall__(cls, base_ring, grading_monoid=None):
-        monoid = _require_grading_monoid(grading_monoid)
-        return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, monoid)
+    def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
+        r"""``GradedAlgebras(R, M, parity)``: the grading datum is that of ``GradedModules``."""
+        graded_modules = GradedModules(base_ring, grading_monoid, parity)
+        return OwnedCategoryOverBaseRing.__classcall__(
+            cls, graded_modules.base_ring(), graded_modules
+        )
 
-    def __init__(self, base_ring, grading_monoid: Parent) -> None:
-        self._grading_monoid = grading_monoid
+    def __init__(self, base_ring, graded_modules: Parent) -> None:
+        self._graded_modules = graded_modules
         super().__init__(base_ring)
 
     def grading_monoid(self) -> Parent:
-        return self._grading_monoid
+        return self._graded_modules.grading_monoid()
+
+    def parity_homomorphism(self):
+        r"""Return the parity ``M -> ZZ/2`` stated with the grading."""
+        return self._graded_modules.parity_homomorphism()
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
@@ -209,13 +223,71 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):
-        return (super()._make_named_class_key(name), self.grading_monoid())
+        return (super()._make_named_class_key(name), self._graded_modules)
 
     def super_categories(self):
+        return [
+            Algebras(self.base_ring()).Associative().Unital(),
+            self._graded_modules,
+        ]
 
-        graded_modules = GradedModules(self.base_ring(), self.grading_monoid())
-        algebra = Algebras(self.base_ring()).Associative().Unital()
-        return [algebra, graded_modules]
+    class SubcategoryMethods:
+        def Supercommutative(self):
+            r"""Return the refinement satisfying the Koszul sign rule."""
+            return self._with_axiom("Supercommutative")
+
+    class Supercommutative(CategoryWithAxiom):
+        r"""Graded algebras with ``xy = (-1)^(eps(p) eps(q)) yx`` on homogeneous elements.
+
+        ``eps`` is the parity stated with the grading, so a grading that
+        recorded none has no supercommutative refinement.  Sage's
+        ``Supercommutative`` axiom states the same rule for ``ZZ/2``-gradings.
+        """
+
+        def __init__(self, base_category) -> None:
+            base_category.parity_homomorphism()
+            super().__init__(base_category)
+
+        def grading_monoid(self) -> Parent:
+            return self._base_category.grading_monoid()
+
+        def parity_homomorphism(self):
+            r"""Return the parity ``M -> ZZ/2`` the Koszul sign is read through."""
+            return self._base_category.parity_homomorphism()
+
+        def an_object(self):
+            r"""The identity-degree rank-one algebra, where the sign rule is vacuous."""
+            algebra = self._base_category.an_object()
+            refine(algebra, Algebras(self.base_ring()).Commutative())
+            refine(algebra, self)
+            return algebra
+
+        class SubcategoryMethods:
+            def Alternating(self):
+                r"""Return the refinement whose odd-degree elements square to zero."""
+                return self._with_axiom("Alternating")
+
+        class Alternating(CategoryWithAxiom):
+            r"""Supercommutative graded algebras with ``x^2 = 0`` for ``eps(deg x) = 1``.
+
+            Bourbaki, Algebra III §4.9, "alternating graded algebra"; Sage's
+            ``commutative_dga`` calls the differential graded case strictly
+            commutative.  The condition is independent of the sign rule over
+            rings with 2-torsion.
+            """
+
+            def grading_monoid(self) -> Parent:
+                return self._base_category.grading_monoid()
+
+            def parity_homomorphism(self):
+                r"""Return the parity ``M -> ZZ/2`` odd degree is read through."""
+                return self._base_category.parity_homomorphism()
+
+            def an_object(self):
+                r"""The identity-degree rank-one algebra, where odd-square conditions are vacuous."""
+                algebra = self._base_category.an_object()
+                refine(algebra, self)
+                return algebra
 
     class ParentMethods:
         def restrict_scalars(self, ring_map):

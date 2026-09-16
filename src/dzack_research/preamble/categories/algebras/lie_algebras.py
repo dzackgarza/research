@@ -10,8 +10,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedRings,
-    _proper_restriction_base_ring,
 )
 
 
@@ -105,37 +103,10 @@ class LieAlgebraHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = LieAlgebraHomset
 
 
-class LieAlgebras(OwnedCategoryOverBaseRing):
-    r"""Lie algebras over a commutative owned base ring."""
-
-    def an_object(self):
-        r"""``End_R(Free_R([2]))`` with the commutator bracket."""
-        from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
-
-        return MatrixAlgebras(self.base_ring()).an_object()
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "Lie algebras"
-
-    def super_categories(self):
-        ring = self.base_ring()
-        if ring not in OwnedRings().Commutative():
-            raise TypeError("a Lie algebra here is over a commutative base ring")
-
-        # A Lie algebra over R is one over any ring R restricts to, exactly as
-        # an associative algebra is, so the two towers have the same shape.
-        base = _proper_restriction_base_ring(ring)
-        if base is not None:
-            return [Algebras(ring).Lie(), LieAlgebras(base)]
-        return [Algebras(ring).Lie()]
-
-    class ParentMethods:
-        def bracket(self, left, right):
-            return self.product(left, right)
+LieAlgebras = Algebras.Lie
 
 
-class CommutatorLieAlgebras(LieAlgebras):
+class CommutatorLieAlgebras(OwnedCategoryOverBaseRing):
     r"""Associative algebras read as Lie algebras under \([x,y]=xy-yx\).
 
     The bracket is stated by
@@ -152,16 +123,16 @@ class CommutatorLieAlgebras(LieAlgebras):
     direction is the functor, not an edge.
     """
 
+    def an_object(self):
+        r"""``gl_2(R)``, the commutator Lie algebra of the two-by-two matrices."""
+        return Algebras(self.base_ring()).Lie().an_object()
+
     @classmethod
     def _repr_object_names(cls):
         return "commutator Lie algebras"
 
     def super_categories(self):
-        ring = self.base_ring()
-        base = _proper_restriction_base_ring(ring)
-        if base is not None:
-            return [LieAlgebras(ring), CommutatorLieAlgebras(base)]
-        return [LieAlgebras(ring)]
+        return [Algebras(self.base_ring()).Lie()]
 
 
 __all__ = [

@@ -9,9 +9,8 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     Curves,
-    FiniteTypeSchemes,
+    Schemes,
     IntegralSchemes,
-    SeparatedSchemes,
     Surfaces,
     Varieties,
 )
@@ -41,8 +40,8 @@ def test_the_affine_plane_is_a_surface_and_the_lines_are_curves() -> None:
 
     # The three hypotheses are each of them separately necessary.
     assert line in IntegralSchemes(QQ)
-    assert line in SeparatedSchemes(QQ)
-    assert line in FiniteTypeSchemes(QQ)
+    assert line in Schemes(QQ).Separated()
+    assert line in Schemes(QQ).FiniteType()
 
 
 def test_the_integrality_hypothesis_excludes_a_reducible_subscheme() -> None:
@@ -65,8 +64,8 @@ def test_the_finite_type_hypothesis_excludes_the_spectrum_of_a_function_field() 
     point = (rational_functions).affine_spectrum(base_ring=QQ)
 
     assert point in IntegralSchemes(QQ)
-    assert point in SeparatedSchemes(QQ)
-    assert point not in FiniteTypeSchemes(QQ)
+    assert point in Schemes(QQ).Separated()
+    assert point not in Schemes(QQ).FiniteType()
     assert point not in Varieties(QQ)
 
 

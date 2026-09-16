@@ -831,15 +831,17 @@ class OrdinalSemirings(OwnedCategory):
     _HomCategory = OrdinalSemiringHomCategoryConstruction
 
     def __init__(self) -> None:
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedSemirings
+
         # Sage semiring classes provide Python arithmetic plumbing only; they
         # are not mathematical ancestors in the owned graph.
-        # Objects as well: the owned root is where an object's host
-        # initialization lives, so a class built without it cannot construct.
-        self._super_categories_for_classes = [Objects(), Semirings().Commutative()]
+        self._super_categories_for_classes = [OwnedSemirings(), Semirings().Commutative()]
         super().__init__()
 
     def super_categories(self):
-        return [Objects()]
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedSemirings
+
+        return [OwnedSemirings()]
 
     def Mor(
         self,

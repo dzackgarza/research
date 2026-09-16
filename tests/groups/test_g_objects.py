@@ -1,4 +1,4 @@
-r"""One category of ``G``-objects in ``C``; ``G``-sets and ``R[G]``-modules specialize it.
+r"""One category of ``G``-objects in ``C``; ``G``-sets specialize it, and ``R[G]``-modules reach it by restriction along ``G -> R[G]``.
 
 A ``G``-action on ``X`` in ``C`` is a group morphism ``G -> Aut_C(X)``; an
 equivariant morphism is a morphism of ``C`` commuting with the actions.  The
@@ -72,7 +72,8 @@ def test_equivariant_maps_of_g_sets_are_the_set_maps_commuting_with_the_actions(
 
 def test_the_regular_representation_is_a_g_object_in_modules() -> None:
     group, representation = _regular_representation(QQ)
-    assert representation in GObjects(group, Modules(QQ))
+    as_g_object = Modules(QQ[group]).restriction_along_group_inclusion()(representation)
+    assert as_g_object in GObjects(group, Modules(QQ))
     assert representation in Modules(QQ[group])
     assert representation.acting_group() is group
     coefficient_module = representation.scalar_restriction()
@@ -93,7 +94,7 @@ def test_the_regular_representation_is_a_g_object_in_modules() -> None:
 
 def test_equivariant_module_maps_commute_with_the_actions() -> None:
     group, representation = _regular_representation(QQ)
-    equivariant = GObjects(group, Modules(QQ)).Mor(representation, representation)
+    equivariant = Modules(QQ[group]).Mor(representation, representation)
     unit = representation.module_generator(group.one())
     total = sum(representation.module_generator(label) for label in group)
     averaging = equivariant({label: total for label in group})

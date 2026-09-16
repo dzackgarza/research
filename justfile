@@ -140,6 +140,28 @@ preamble-megadoc:
     PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
         -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
 
+# Every declared category and its declared supercategories, read from source
+# without importing it -- so it answers on a tree that does not currently load.
+# FORMAT: table (default), by-supercategory, foreign, audit, shape, cells, dot, json.
+category-graph format="table":
+    # The graph theory is Sage's, so this runs under Sage's interpreter,
+    # resolved the way `preamble-megadoc` resolves it.
+    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
+    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
+    sage_launcher="$(readlink -f "$sage_launcher")"; \
+    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
+        -m dzack_research.utilities.category_graph --format {{format}}
+
+# The declared category graph as a rendered image, for reading the shape of it
+category-graph-svg:
+    just category-graph dot > docs/declared-category-graph.dot
+    dot -Tsvg docs/declared-category-graph.dot -o docs/declared-category-graph.svg
+    @echo "wrote docs/declared-category-graph.svg"
+
+# Intra-package imports that name nothing their module binds, read from source
+preamble-imports:
+    PYTHONPATH=src python3 -m dzack_research.utilities.import_audit src/dzack_research
+
 # Static architecture/complexity inventory for the live preamble
 preamble-complexity:
     PYTHONPATH=src python3 -m dzack_research.utilities.complexity_analysis src/dzack_research/preamble

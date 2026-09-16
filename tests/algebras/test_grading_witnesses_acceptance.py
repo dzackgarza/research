@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     NN,
     ZZ,
     GradedAlgebras,
-    GradedCommutativeAlgebras,
     GradedModules,
     Modules,
     StrictlyGradedCommutativeAlgebras,
@@ -49,7 +48,7 @@ def test_noninteger_graded_algebra_witness_inherits_its_graded_module_structure(
 def test_graded_commutative_witness_retains_the_stated_parity() -> None:
     grading = Zmod(2)
     parity = grading.Mor(grading).identity()
-    category = GradedCommutativeAlgebras(ZZ, grading, parity)
+    category = GradedAlgebras(ZZ, grading, parity).Supercommutative()
     strict = StrictlyGradedCommutativeAlgebras(ZZ, grading, parity)
 
     algebra = category.an_object()

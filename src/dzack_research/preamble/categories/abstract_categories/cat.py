@@ -288,7 +288,7 @@ class Cat(CategoryPacketMethods, Category):
         """
 
         _hom_endpoint = CategoryPacketMethods._hom_endpoint
-        _category_packet = CategoryPacketMethods._category_packet
+        category_packet = CategoryPacketMethods.category_packet
         HomCategory = CategoryPacketMethods.HomCategory
         EndCategory = CategoryPacketMethods.EndCategory
         MonoCategory = CategoryPacketMethods.MonoCategory
@@ -700,6 +700,28 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return _OppositeCategory(self)
+
+        def presheaves(self, value_category: Category | None = None) -> Category:
+            r"""Return \(\mathrm{Presh}(C, D) = [C^{op}, D]\), with \(D = \mathbf{Set}\) by default.
+
+            The functor category itself, not a new class: presheaves are its
+            objects and natural transformations its morphisms.  Sheaves on
+            \(C\) for a coverage are a full subcategory of this one.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            if value_category is None:
+                value_category = Sets()
+            return Cat().Mor(self.opposite(), value_category)
+
+        def yoneda_embedding(self):
+            r"""Return \(y: C \to [C^{op}, \mathbf{Set}]\), \(X \mapsto \mathrm{Mor}_C(-, X)\)."""
+            from dzack_research.preamble.categories.abstract_categories.presheaves import (
+                _YonedaEmbedding,
+            )
+
+            return _YonedaEmbedding(self)
+
         def Core(self) -> Category:
             r"""Return the maximal groupoid inside this category."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -875,6 +897,28 @@ class Cat(CategoryPacketMethods, Category):
         members = tuple(categories)
         assert members, "the join of no categories is not represented"
         return Category.meet(members)
+
+    def presheaves(self, category: Category, value_category: Category | None = None) -> Category:
+        r"""The presheaf bifunctor on objects: \((C, D) \mapsto [C^{op}, D]\).
+
+        ``Cat`` is not an object of itself here, so the bifunctor
+        \(\mathbf{Cat}^{op} \times \mathbf{Cat} \to \mathbf{Cat}\) is stated by its two
+        actions: this one on objects and :meth:`presheaf_transport` on arrows.
+        """
+        return category.presheaves(value_category)
+
+    def presheaf_transport(self, site_functor: Functor, value_functor: Functor) -> Functor:
+        r"""The presheaf bifunctor on arrows.
+
+        For \(F: C' \to C\) and \(G: D \to D'\), the functor
+        \([C^{op}, D] \to [C'^{op}, D']\) sending \(P \mapsto G \circ P \circ F^{op}\)
+        and a natural transformation \(\eta\) to \(G \eta F^{op}\).
+        """
+        from dzack_research.preamble.categories.abstract_categories.presheaves import (
+            _PresheafTransport,
+        )
+
+        return _PresheafTransport(site_functor, value_functor)
 
     def product(self, factors: Iterable[Category]) -> Category:
         r"""Return $\prod_{i \in I} C_i$, the product of a family of categories.

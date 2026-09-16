@@ -1,5 +1,6 @@
 """Modules graded by a monoid."""
 
+from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
@@ -24,6 +25,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    Zmod,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -48,6 +50,66 @@ def _grading_identity(monoid: Parent | None):
     if monoid in AdditiveMonoids():
         return monoid.zero()
     return monoid.one()
+
+
+class _ParityKey:
+    r"""A chosen parity morphism as a category parameter.
+
+    A chosen morphism has identity semantics as a parameter of a categorical
+    construction, as a functor does; the key is interned on that identity.
+    """
+
+    def __init__(self, morphism) -> None:
+        self._morphism = morphism
+
+    def morphism(self):
+        return self._morphism
+
+
+@cached_function(key=lambda parity: id(parity))
+def _parity_key(parity):
+    return _ParityKey(parity)
+
+
+@cached_function
+def _integer_parity():
+    r"""The reduction ``ZZ -> ZZ/2``, the canonical parity of the integer grading."""
+    integers = _own_ring(SageZZ)
+    parity_target = Zmod(2)
+    return integers.Mor(parity_target)(parity_target)
+
+
+@cached_function
+def _two_parity():
+    r"""The identity of ``ZZ/2``, the canonical parity of a grading by ``ZZ/2``."""
+    two = Zmod(2)
+    return two.Mor(two)(lambda degree: degree)
+
+
+def _grading_parity(grading_monoid, parity=None):
+    r"""Return the parity homomorphism ``M -> ZZ/2`` of the grading, or ``None``.
+
+    The parity is part of the grading datum: a monoid admits many
+    homomorphisms to ``ZZ/2``, so it is chosen and stated with the monoid.
+    ``ZZ`` is graded with reduction mod 2 and ``ZZ/2`` with the identity unless
+    another is stated; every other monoid records the parity it is given and
+    none otherwise, and a construction that reads the parity (the Koszul sign
+    of a supercommutative product) refuses a grading that recorded none.
+    """
+    parity_target = Zmod(2)
+    if parity is None:
+        if grading_monoid is _own_ring(SageZZ):
+            return _integer_parity()
+        if grading_monoid is parity_target:
+            return _two_parity()
+        return None
+    assert parity.domain() is grading_monoid, (
+        "the parity homomorphism is defined on the grading monoid"
+    )
+    assert parity.codomain() is parity_target, (
+        f"a parity is a monoid morphism into {parity_target}"
+    )
+    return parity
 
 
 def _concentrated_graded_module(base_ring, grading_monoid=None):
@@ -167,16 +229,37 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return _concentrated_graded_module(self.base_ring(), self.grading_monoid())
 
     @staticmethod
-    def __classcall__(cls, base_ring, grading_monoid=None):
-        monoid = _require_grading_monoid(grading_monoid)
-        return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, monoid)
+    def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
+        r"""``GradedModules(R, M, parity)``: the grading is ``M`` with its parity ``M -> ZZ/2``.
 
-    def __init__(self, base_ring, grading_monoid: Parent) -> None:
+        The parity is canonical for ``ZZ`` (reduction) and ``ZZ/2`` (the
+        identity) and stated explicitly for any other monoid; see
+        :func:`_grading_parity`.
+        """
+        monoid = _require_grading_monoid(grading_monoid)
+        selected_parity = _grading_parity(monoid, parity)
+        return OwnedCategoryOverBaseRing.__classcall__(
+            cls,
+            base_ring,
+            monoid,
+            None if selected_parity is None else _parity_key(selected_parity),
+        )
+
+    def __init__(self, base_ring, grading_monoid: Parent, parity_key) -> None:
         self._grading_monoid = grading_monoid
+        self._parity_key = parity_key
         super().__init__(base_ring)
 
     def grading_monoid(self) -> Parent:
         return self._grading_monoid
+
+    def parity_homomorphism(self):
+        r"""Return the stated parity ``M -> ZZ/2`` of the grading."""
+        assert self._parity_key is not None, (
+            f"{self.grading_monoid()} is a grading monoid with no canonical parity "
+            f"homomorphism to {Zmod(2)}; state the parity with the grading"
+        )
+        return self._parity_key.morphism()
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
@@ -187,7 +270,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):
-        return (super()._make_named_class_key(name), self.grading_monoid())
+        return (super()._make_named_class_key(name), self.grading_monoid(), self._parity_key)
 
     def super_categories(self):
 
@@ -207,6 +290,16 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 except AttributeError:
                     continue
                 return monoid
+            raise TypeError(f"{self} is not in a graded module category")
+
+        def parity_homomorphism(self):
+            r"""Return the parity ``M -> ZZ/2`` stated with this module's grading."""
+            for cat in self.category().all_super_categories(proper=False):
+                try:
+                    parity = cat.parity_homomorphism
+                except AttributeError:
+                    continue
+                return parity()
             raise TypeError(f"{self} is not in a graded module category")
 
         def combine_degrees(self, left, right):

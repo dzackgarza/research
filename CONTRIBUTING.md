@@ -378,6 +378,42 @@ elapsed time alone does not prove reinvention. Returning repeatedly to local
 repairs while retaining the same bypass is not a forward trajectory merely
 because each repair is individually substantive.
 
+### The artifacts are instruments; the product is a map of Sage
+
+Every task in this repository is a means. A tool that prints its view, a
+category that constructs, a notebook cell that reproduces a table: each is an
+instrument, and the result it produces is worth very little next to what
+producing it teaches about the engine underneath. The product of the work is a
+durable map of Sage's ecosystem: which spelling of an operation to route
+through, what it demands of its input, what it returns, where it is absent,
+where it is present and wrong, and where it is present, correct, and
+unaffordable at the size the research runs at. The preamble encodes that map as
+one owned name per operation, and every owned name is a place where somebody
+found out what Sage does there. Without that finding an owned name is a rename.
+
+This inverts the ordinary cost model. The route that feels cheap, which is to
+close the task in front of you by whatever works, yields nothing: the task
+closes and the map gains no entry. The route that feels expensive, which is to
+stay inside Sage when it resists, find out why, find the keyword, the backend
+or the constructor that answers, and write down what was found, is the one that
+pays, and it pays long after the task is forgotten. Friction with the engine is
+therefore the most informative event a task can produce. A slow call, a rejected
+input, a wrong-shaped result: each is a fact about Sage that the map does not
+yet hold. Going around it costs nothing visible and destroys the only thing the
+task was for.
+
+Two moves throw the knowledge away, and both feel like progress from the
+inside. Hand-rolling the algorithm closes the task while leaving the engine's
+own routine unexamined: nothing is learned about its speed, its output
+convention, its input demands, or its failure modes. Pivoting to a second
+library at the first bump leaves the ecosystem the project is mapping, so the
+search for the Sage-internal answer is abandoned exactly where it would have
+paid, and the dependency surface fragments. The escalation ladder, Sage native,
+then the backends Sage ships, then ownership under an audit trail, is not a
+convenience ordering. It is the research protocol, and a rung teaches only if
+you stand on it. `ENG-07` and `ENG-08` make this reviewable; `DEV-62` says what
+counts as a finding and `DEV-63` says where a finding lands.
+
 ### Interactive discovery is the user-facing consequence
 
 The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations they own.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
@@ -1378,6 +1414,102 @@ These are examples of the general policies `OWN-15` through `OWN-21`, not an
 exhaustive blacklist.  When a new instance has the same generator, repair the
 construction owner; do not mint a narrower exception or a detector for the one
 spelling that happened to expose it.
+
+### Contributing a category: the procedure
+
+This is the order of work for adding, moving, splitting or retiring a category.
+It exists because the declared graph read on 2026-09-16 was the sum of locally
+defensible edits: thirty categories under `Sets()`, a hand-meshed block of 135,
+four notions each under two names, restriction of scalars declared on three
+bases, a diamond through two different objects.  None of those was wrong at the
+moment it was written, from where its author stood.  The procedure moves the
+author to where the errors are visible, which is the mathematics first and the
+whole graph second, and it makes each step leave evidence in the commit body.
+
+**How the graph drifts, so that the steps below read as remedies.**  A
+category is minted where a consumer needs it and named from that vantage, so
+one notion acquires a second name (`FormedModules` beside `FormModules`).  A
+property is written as a class because a class is what the language offers,
+and then a class per combination follows, so a product of independent axes
+becomes a mesh of hand-declared diamonds (`FinitelyPresentedQuadraticFormModules`).
+A supercategory is chosen because it makes construction succeed or a method
+resolve, so `Sets()` and `Objects()` become placeholders and `Schemes` is
+declared beside `QuasiAffineSchemes` for safety.  A functor across a base is
+declared as an inclusion because both are true sentences (`Modules(R) ->
+Modules(S)`).  A consumer is left behind by a rename, and a lazy export table is
+added so the package still imports, which hides the dangling import for a year.
+Each step is local, each is defensible, and the disorder is only visible in
+aggregate, which is why the instrument runs on every declaration change.
+
+1. **State the notion in the field's words, with no implementation names.**
+   Objects, morphisms, the defining datum, the hypotheses, and the reference
+   that defines it (Stacks tag, Bourbaki chapter, the paper).  Apply
+   [mathematical dependency tracing](#mathematical-dependency-tracing): the
+   categories the definition passes through, down to ones the tree must own,
+   each a real category with a literature name.  Do not open the tree yet;
+   reading the tree first makes its current contents decide what is true.
+2. **Classify every level of that chain.**  A property of the objects with no
+   chosen datum is an axiom on the base that first states it (`CAT-17`).  A
+   chosen datum is a data subcategory, a class that declares the axiom it
+   truncates to.  A construction on a category (G-objects, direct-sum
+   decompositions, arrows, presheaves) is parameterized by that category and
+   declares it (`CAT-20`).  An object constructor is the category applied to
+   the object's data and is not a category at all.  A combination of
+   properties is a join and gets no class (`CAT-18`).
+3. **Survey the tree, level by level.**  `just category-graph by-supercategory`
+   for the parent each level would declare; `just category-graph json` with
+   `jq` for who owns an operation; `rg` on the nouns of each definition across
+   `categories/`; the expectation files under `tests/constructions/`,
+   `tests/user_simulations/` and `tests/conftest.py` for the names the
+   specification uses.  Record each level as: exists; exists under another
+   name, which is retired into the owner (`CAT-22`); or missing.
+4. **Reuse axioms before naming any.**  `sage.categories.category_with_axiom.all_axioms`
+   and the base's nested axiom classes first.  A new name is the reference
+   text's word, registered once; a property relative to a different structure
+   is qualified in Sage's idiom (`FinitelyPresentedAsAlgebra`) so that it does
+   not collide with the module meaning (`CAT-19`).  Two established names is a
+   choice, not coining.
+5. **Build what is missing from the top down.**  The deepest missing
+   intermediate category first, declaring its one immediate parent, then the
+   next, then the leaf.  A leaf written before its intermediates is a leaf that
+   declares two levels up, and that edge is never removed later.
+6. **Wire the leaf onto the deepest existing node.**  Its declaration is the
+   most specific category the tree can spell, as a join where it is one:
+   `Schemes(R).Affine().FiniteType().Smooth()`, not `AffineSchemes(R)` beside a
+   list of properties the join already composes.  One entry, unless the object
+   is genuinely two structures at once (a ring and a module), in which case
+   write both and say in the commit body why the two routes are the same
+   functor (`CAT-21`).
+7. **Keep every change of base or parameter out of the list.**  Restriction of
+   scalars, base change, the passage from an ideal to a fractional ideal or from
+   an `R[G]`-module to a `G`-object over `R`: each is a functor obtained from
+   the category by a method named for the construction (`CAT-16`).  Sage
+   applies every axiom along a declared edge, so such an entry is a false
+   theorem for every relative property.
+8. **Write the declaration as expressions a reader can resolve** (`CAT-24`):
+   names and parameters, no locals, no method calls on `self` that compute a
+   category.  `extra_super_categories` on an axiom class states a genuine
+   implication over the same base and nothing Sage's join already supplies.
+9. **Read the graph before and after** (`CAT-25`): `shape`, `cells`, `audit`,
+   and `just preamble-imports`.  The breadth of the target does not grow, no
+   shortcut appears, no piece splits off, and any new generator owing a cell is
+   named in the commit body with the theorem that fills it.
+10. **Deliver the consequences in the same commit.**  Consumers of a retired or
+    renamed name are rewritten (`CAT-26`); a name the specification requires
+    survives as a thin function returning the category (`CAT-27`); the TODO
+    node the change delivers is removed with its edges; the delta from step 9
+    is in the body.
+11. **When the honest parent is not in the tree, stop and say so.**  Build it
+    if steps 1 to 5 defined it; otherwise leave `super_categories` abstract so
+    the category refuses to construct, and record the missing category in
+    `COMPLAINTS.md` with its dependency path and in `TODO.md` as a node the
+    consumer needs.  Never a placeholder, never a mechanism that makes the
+    construction proceed (`DEV-65`).
+
+The procedure in one line: define, classify, survey, reuse, build top-down,
+wire to the deepest node, keep functors out of the list, write resolvable
+expressions, read the graph, deliver the consequences, and stop where the
+mathematics is missing.
 
 ## Corrective implementation style guide (`STY-*`)
 
@@ -4359,6 +4491,16 @@ The same rule applies to free objects, quotients, localizations, scalar restrict
 
 A stronger object may of course use a distinct parent so that two choices of added structure remain distinct.  That does not make its underlying object fictitious: the distinct structured parent must still retain and reuse the actual weaker object and the canonical comparison maps.
 
+#### `STY-191`: Comment or docstring teaches standard mathematics -> state the convention, cite the source, delete the lesson
+
+The reader of this repository's source is a mathematician.  A comment or docstring states what the reader cannot supply from the code and their own training: the convention chosen where several exist (reduced or unreduced homology, left or right action, which duality functor), an engine's input demand or output shape (with its `TRAPS.md` row), the hypothesis under which a criterion applies, and the citation.  It never derives, motivates, or teaches the mathematics the code uses.
+
+**Bad:** a docstring explaining that a graph is a 1-dimensional complex, that \(H_1\) is therefore the whole cycle space, and that \(\pi_1\) is free of rank \(E - V + C\), above a function that calls `minimum_cycle_basis`.
+
+**Preferred:** "Sage returns reduced homology, so \(H_0\) has rank one less than the number of components." followed by the call.
+
+The test: delete the paragraph and ask whether a mathematician reading the code loses anything they could not supply.  If not, it was a lesson.  A derivation that genuinely belongs somewhere belongs in the docs book or a cited source, and the code cites it.
+
 ### Review rule for new imperative code
 
 Before accepting a new global helper, explicit `for`/`while`, mutable accumulator, cache, registry, runtime probe, or bespoke data structure, check the catalogue above and answer:
@@ -5141,6 +5283,136 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the defining structural functor `C -> H` together with classifier `H.A -> H` yields `C.A = C x_H H.A` and its projection; ancestor routes are compositions of those canonical maps.  No extra named node or graph-search witness is required.
 
+#### `CAT-15`: A Supercategory Declaration Is a Theorem, Never a Route to a Method
+
+- **Rule**: `super_categories()` returns the categories that every object of this one is an object of, by the definition in the docstring, over the same parameters.  Nothing else goes in the list: not the category whose `__init__` makes construction succeed, not the one that owns a method the leaf wants, not `Sets()` or `Objects()` as a root because the real parent is not in the tree yet.  When the honest parent does not exist, build it or leave the declaration abstract so the category refuses to construct (AGENTS.md, *A supercategory declaration is a mathematical claim*).
+
+- **Rationale**: Sage reads the list by inheritance, so every entry installs the target's operations and axioms on every object and every descendant.  An entry chosen for convenience is a false theorem that every later reader inherits and that no test can see, because each object still answers.  On 2026-09-16 thirty categories declared `Sets()`, among them sheaves, ringed spaces, pairings, arrow categories and a semiring, and twenty-one declared `Objects()`; nothing was wrong with any of their objects, only with what had been claimed about them.
+
+- **Violation Example**: `PairedModules -> OwnedSets()` because a pairing needs a parent; `OrdinalSemirings -> Objects()` for a semiring; `AffineGroupSchemes -> Objects()` with a comment that forgetting the group structure "is a functor, not an inclusion"; `Algebras -> Sets()` for modules with a multiplication.
+
+- **Correct Example**: `OrdinalSemirings -> OwnedSemirings()`; `Algebras(R) -> Modules(R)`; `AffineGroupSchemes -> AffineSchemes(R)`; a pairing left undeclared until the comma category over the tensor functor exists, with the missing construction recorded.
+
+#### `CAT-16`: Structure Forgotten in Place Is a Declaration; a Change of Base or Parameter Is a Functor
+
+- **Rule**: Declare `C -> D` exactly when an object of `C`, with the structure `C` adds forgotten and every parameter unchanged, is an object of `D`: an `R`-algebra is an `R`-module, an affine group scheme over `S` is an affine scheme over `S`.  Never declare a relation whose objects change base or parameter: restriction of scalars along `S -> R`, base change of a scheme, the passage from an `R[G]`-module to a `G`-object over `R`, from an ideal to the fractional ideal it generates.  Each of those is a functor obtained from its category by a method named for the construction, with its preservation theorems stated on the functor.
+
+- **Rationale**: the two are easy to confuse because both are forgetful and both are true sentences.  They differ in what inheritance does with them.  In place, the inherited operations and axioms are the object's own.  Across a base, Sage applies every axiom of the source to the target (`CategoryWithAxiom.super_categories`, category_with_axiom.py), so `Modules(QQ).FinitelyGenerated()` would inherit `Modules(ZZ).FinitelyGenerated()`, and `Modules(R[G]).FinitelyGenerated()` the R-module property, both false.  The tree had it backwards in both directions: `Algebras` refused the in-place declaration and made the cross-base one.
+
+- **Violation Example**: `Modules(R) -> Modules(S)` for a restriction base; `Schemes(R) -> Schemes(ZZ)`; `Modules(R[G]) -> GObjects(G, Modules(R))`; `Ideals -> FractionalIdeals`; the `Algebras` docstring reasoning that the relation to modules "is the forgetful functor, not a category inclusion" and declaring `Sets` instead.
+
+- **Correct Example**: `Algebras(R) -> Modules(R)`, and `Modules(S).restriction_of_scalars(f)` for `f: S -> R` returning the functor with its image category; `Schemes(R).base_change_functor(ring_map)`; `CommutativeIdeals(R).extension_to_fraction_field()`; `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence with both directions.
+
+#### `CAT-17`: A Property Is an Axiom on Its Base; a Chosen Datum Is a Subcategory Class That Declares the Axiom
+
+- **Rule**: Before writing a class for "the `X`s that are `P`", decide whether `P` is a property of the objects or a chosen datum.  A property (finitely generated, torsion, free, Noetherian, separated, symmetric, countable) is a nested `class P(CategoryWithAxiom)` on the base that first defines it, with a `SubcategoryMethods` accessor and, for a new name, one `all_axioms` registration; there is no standalone class.  A chosen datum (a framing, a presentation, a chosen multiplication, a differential, an augmentation, an enumeration, an order, a Koszul parity) is a class, and it declares the axiom category of the property it truncates to.  The crossing from property to datum is one named method that computes the datum once (AGENTS.md, *Property subcategories vs data subcategories*).  A property with more than one established name in the literature takes the reference text's name; choosing between Bourbaki's "alternating" and Sage's "strictly commutative" is not coining, and a property class kept "because no axiom was coined" is this rule violated, not respected.
+
+- **Rationale**: a property is the propositional truncation of the datum ("some finite framing exists"), so the two are one notion at two levels, and the class-per-notion instinct writes them as unrelated siblings.  Sage's axiom mechanism exists so that properties compose without classes; a hand-written property class cannot be joined with another and must restate every diamond.
+
+- **Violation Example**: `class FinitelyPresentedModules(...)` beside `class ModulesWithChosenFinitePresentation(...)` with no declaration between them; `OwnedNoetherianRings`, `SeparatedSchemes`, `InfiniteEnumeratedSets` as classes; a `GradedCommutativeAlgebras(R, M, parity)` class whose parity was a category parameter, so that a parameterless axiom could not later state it.
+
+- **Correct Example**: `OwnedRings.Noetherian`, `Schemes.Separated`, `Modules.FinitelyPresented` as nested axiom classes; `ModulesWithChosenFinitePresentation(R) -> Modules(R).FinitelyPresented(), FramedModules(R)`; the parity as part of the grading datum on `GradedModules`, read by the `Supercommutative` axiom.
+
+#### `CAT-18`: No Class Is Named for a Combination of Properties; Joins Are Computed
+
+- **Rule**: The category of objects with properties `P` and `Q` is spelled `Base().P().Q()`, and Sage constructs it as the join.  Writing a class for the combination is banned, whatever its docstring says, and so is writing a class for one property on a subcategory that is itself one property.  A combination that needs operations of its own puts them on the nested join class Sage already provides for it (`class Q` nested inside `class P`), never on a new top-level class.
+
+- **Rationale**: the product of independent property axes, flattened into names, is what produced the block of 135 categories: every square in it was the same diamond declared twice, and every new axis multiplied the classes.  Computed joins are also the only place where the commutativity of the diamond is a theorem of the mechanism rather than an assertion at each site.
+
+- **Violation Example**: `FinitelyPresentedQuadraticFormModules`, `FinitelyGeneratedFreeFormModules`, `OwnedCompleteLocalRings`, `CommutativeDifferentialGradedAlgebras`, `StrictlyCommutativeDifferentialGradedAlgebras` as classes, each declaring two parents.
+
+- **Correct Example**: `FormModules(R).FinitelyPresented()`, `OwnedRings().Commutative().Local().Complete()`, `DifferentialGradedAlgebras(R).Supercommutative()`; a name the specification requires kept as a thin function returning that join.
+
+#### `CAT-19`: An Axiom Name Is Global and Means What Its Defining Base Means
+
+- **Rule**: Sage applies an axiom to every subcategory of the base that defines it, with that base's meaning, and it walks declared supercategories to find the definition.  So an axiom named `FinitelyGenerated` on `Modules` means "finitely generated as a module" on every algebra, lattice and group module too.  A property that is relative to a different structure gets a qualified name in Sage's own idiom (`FinitelyGeneratedAsMagma`, `FinitelyPresentedAsAlgebra`), registered once.  Before adding a name, check `sage.categories.category_with_axiom.all_axioms` and reuse Sage's when the meaning matches.
+
+- **Rationale**: two bases defining the same axiom name with different meanings make one of them false on every category that declares both, and the falsehood is silent because the join still constructs.
+
+- **Violation Example**: a `FinitelyPresented` axiom on `Algebras.Associative.Unital` while `Modules` defines `FinitelyPresented`, so that `R[x]` claims a finitely presented underlying module; a `Free` axiom on algebras meaning "free algebra".
+
+- **Correct Example**: `FinitelyPresentedAsAlgebra` on the unital associative algebras and `FinitelyPresented` on modules; `Complete` nested under `OwnedRings.Commutative.Local` so that it means complete as a local ring.
+
+#### `CAT-20`: A Construction on a Category Is Parameterized by It and Declares It
+
+- **Rule**: A category whose objects are objects of `C` with added structure or selected data (`G`-objects of `C`, objects of `C` with a chosen direct-sum decomposition, arrows of `C`, presheaves on `C`) takes `C` as a parameter and declares `C` as its immediate supercategory.  Its instances then reach `C` through it; an instance does not declare `C` a second time.
+
+- **Rationale**: the construction is a functor of `C`, and forgetting the added structure lands in `C` itself.  Declaring `Objects()` instead makes every instance restate the base, and hides that the construction is one thing across all `C`.
+
+- **Violation Example**: `GObjects(G, C) -> Objects()` with `FiniteGSets` declaring `EnumeratedSets` itself and `ModulesOverGroupAlgebra` declaring `AdditiveGroups`; `DirectSumObjects -> Objects()` unparameterized, with `BiproductModules` declaring `Modules` beside it.
+
+- **Correct Example**: `GObjects(G, C) -> C`; `DirectSumObjects(C) -> C` once the specification's spelling admits the parameter.
+
+#### `CAT-21`: A Second Route Between Two Categories Is an Obligation, and a Route Through Different Objects Is Banned
+
+- **Rule**: Before adding a declaration that creates a second path from `C` to some `D`, write down both composites of forgetful functors and why they are the same functor.  If they agree because one is an axiom join Sage computes, the edge is fine.  If they agree because a category on one route is the same category as one on the other, delete the edge: it is a shortcut (`just category-graph shape` lists them) and adds a cycle with no reachability.  If they do not agree, the declaration is false: the two routes send an object to different objects of `D`.
+
+- **Rationale**: Sage resolves a diamond by C3 linearization and never checks that it commutes; the object's inherited operations are whichever route the ordering picked.  A shortcut edge is a redundant assertion; a non-commuting one is a wrong answer waiting for the method that exposes it.
+
+- **Violation Example**: `Ideals -> FractionalIdeals` beside `Ideals -> CommutativeIdeals`, both reaching `ModuleSubobjects`, one as a subobject of `R` and the other of `Frac R`; `AffineSchemes -> Schemes, SeparatedSchemes, QuasiAffineSchemes` when `QuasiAffineSchemes` declares the first two; `OwnedFields -> OwnedIntegralDomains` beside `OwnedPrincipalIdealDomains`.
+
+- **Correct Example**: `AffineSchemes -> QuasiAffineSchemes` alone; `Ideals` retired into `CommutativeIdeals`, with the fractional ideal a functor image; a lattice declaring `FreeFormModules` and the symmetric axiom, both routes to `Modules(R)` being the same forgetful functor through a computed join.
+
+#### `CAT-22`: One Notion Has One Category; a Duplicate Is Retired Into Its Owner
+
+- **Rule**: Before minting a category, search for its owner: `just category-graph by-supercategory` for the parent it would declare, `rg` on the nouns of its definition across `categories/`, and the specification files for the name they use.  A category whose definition matches an existing one is not written; if it already exists, it is retired into the owner, its non-duplicate operations moved to the owner at the weakest sufficient structure (`OWN-18`), and its consumers rewritten.  A name the specification requires survives only as a thin function returning the owner.
+
+- **Rationale**: duplicates arise when a category is minted where a consumer needs it and named from that vantage.  Each duplicate is a second authority for one notion, and the graph then holds diamonds that are the same category twice.
+
+- **Violation Example**: `FormedModules` ("modules with a bilinear form") beside `FormModules`; `InfiniteEnumeratedSets` beside `CountablyInfiniteSets`; `Ideals` beside `CommutativeIdeals`; a `LieAlgebras` class beside the `Lie` axiom on `Algebras`.
+
+- **Correct Example**: `FormModules` with the parent-level `q(v) = b(v, v)` moved onto `BilinearFormModules`; `LieAlgebras` as the name of `Algebras.Lie`; `CountablyInfiniteSets` as the name of the join of `Countable` and `Infinite`.
+
+#### `CAT-23`: Membership Is Placement, Never a Predicate Computed at Runtime
+
+- **Rule**: `x in C` is decided by the category `x` was placed in at construction and by the declared graph.  A `__contains__` that walks a ring's base tower, probes an attribute, or evaluates a property of the candidate is banned: it answers a membership question the graph does not state, and it answers it differently from inheritance.  Where a wider membership is true (a QQ-scheme is a ZZ-scheme), it is reached through the functor of `CAT-16`, not by a predicate.
+
+- **Rationale**: a predicate membership makes `x in C` true while `x` has none of `C`'s operations, so the two meanings of membership diverge exactly where a consumer relies on them agreeing.
+
+- **Violation Example**: `Schemes.__contains__` answering lower-base membership by the candidate ring's base tower; `RepresentedToricSchemes.__contains__` probing `getattr(candidate, "scheme_base_ring", None)`; `QuasiCoherentSheaves.__contains__` duck-typing for want of a placement.
+
+- **Correct Example**: `x in Schemes(R)` true because `x` was constructed in `Schemes(R)` or a declared subcategory; a candidate over a lower base admitted through `base_change_functor`.
+
+#### `CAT-24`: Every Declaration Is an Expression the Reader Can Resolve
+
+- **Rule**: the entries of `super_categories()` and `extra_super_categories()` are category expressions built from names and parameters (`Modules(self.base_ring())`, `Schemes(R).Projective()`), never local variables, `supers + [...]`, `self.base_category().ArrowCategory()`, or anything a reader must execute to learn.  The declared graph is read from source; a declaration only a running session can evaluate is an edge the graph cannot state and the audit cannot check.
+
+- **Rationale**: the audit's "declared from a local expression" list held twenty-six categories whose placement was invisible to every reader and every review.
+
+- **Violation Example**: `algebra = Algebras(...).Associative().Unital(); return [algebra, graded_modules]`; `return supers or [Objects()]`; `return [self.base_category().ArrowCategory()]`.
+
+- **Correct Example**: `return [Algebras(self.base_ring()).Associative().Unital(), GradedModules(self.base_ring(), self.grading_monoid())]`.
+
+#### `CAT-25`: A Declaration Change Is Read on the Graph Before and After
+
+- **Rule**: Any edit to a `super_categories()` or `extra_super_categories()` return, any new category, and any retirement is preceded and followed by `just category-graph shape` and `just category-graph cells`, and the change is judged on their delta: the breadth of the target must not grow, the shortcut list must not gain an entry, the list of generators owing a 2-cell must not gain one that is not a genuine join stated in the commit body, and the largest 2-connected block must not grow.  A grown block is the finding, never a cost to route around.
+
+- **Rationale**: the invariant this architecture asks for, deep and narrow with computed joins, is a property of the whole graph, and every local edge is defensible on its own.  Nobody saw thirty-one declarations into `Sets` or a block of 135 categories until the graph was rendered.
+
+- **Violation Example**: adding a supercategory because the leaf needed a method, without looking at who else declares that target; retiring a class and leaving its consumers to a later reader.
+
+- **Correct Example**: the commit body of a declaration change quotes the before and after of `shape` (declarations, longest chain) and `cells` (H_1 rank, largest block, count owing a cell), and names each edge as shortcut, false, or new-and-immediate.
+
+#### `CAT-26`: A Retirement or Rename Rewrites Its Consumers in the Same Delivery
+
+- **Rule**: When a category is retired into its owner, renamed, or moved between modules, every consumer of the old name is rewritten in the delivery commit: source, the session surface `preamble/all.py` and the package export tables, and every test outside the expectation subtrees (a test's claim is preserved and only its spelling changes; a claim with no surviving spelling is reported, never deleted).  `just preamble-imports` exits zero before the commit.  Notebooks under `computations/notebooks/` are the user's; a notebook that names the old spelling is reported with its cell, not edited.
+
+- **Rationale**: a consumer left behind is invisible while the tree cannot be run, and a lazy export table added so the package still imports hides it indefinitely; on 2026-09-16 the import audit found seventeen such imports, all older than that day, including `DeRhamAlgebra` and `KahlerDifferentials`, names no module had defined for months.  The consumer sweep that followed the axiom passes touched two source files and fourteen test files that the passes had each reported as "outside my tree".
+
+- **Violation Example**: retiring `FormedModules` and leaving five tests importing it; renaming `DeRhamAlgebras` and leaving five modules importing `DeRhamAlgebra`; adding `_EXPORTS` with `__getattr__` so the package imports while a name in the table no longer exists.
+
+- **Correct Example**: the retirement of `Ideals` rewrites `test_fractional_ideals_archive.py` to `CommutativeIdeals(ZZ).extension_to_fraction_field()(I) in FractionalIdeals(ZZ)`, restating the same claim, in the commit that retires the class.
+
+#### `CAT-27`: A Name the Specification Requires Survives as a Thin Function, Never as a Class With a Body
+
+- **Rule**: When a class becomes an axiom category or a join and the expectation files name the class, the name survives as a function of the same parameters returning that category (`def OwnedFields(): return OwnedRings().Division().Commutative()`), or as the axiom class itself under its plural name.  It never survives as a class with its own body, methods, or `super_categories`: a second implementation under the old name is the duplicate `CAT-22` retires.  Operations the retired class owned move to the axiom class at the weakest sufficient structure (`OWN-18`); a join category holds no methods, so an operation a join needs is placed on the nested join class Sage generates or on the data class that consumes the datum.
+
+- **Rationale**: the specification is written blind and its names are the contract; the implementation meets the contract by resolving the name to the right category, not by keeping the old class alive beside the new one.
+
+- **Violation Example**: `OwnedOrders` kept as a class "because a join holds no methods" while also declaring the join, so the name is both the join and a second class over it.
+
+- **Correct Example**: `StrictlyCommutativeDifferentialGradedAlgebras(R)` returning `DifferentialGradedAlgebras(R).Supercommutative().Alternating()`; `PrimeFields` as the plural name of `OwnedRings.Division.Commutative.Prime`.
+
 #### `CAT-02`: Property Categories Do Not Manufacture Chosen Data
 
 - **Rule**: Distinguish a property from a chosen witness of that property.
@@ -5675,6 +5947,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: implement local orbit/stabilizer enumeration without checking GAP; write polynomial syzygy/Groebner logic instead of Singular; implement lattice/form equivalence from scratch while Oscar/Hecke/Indefinite.jl/Sage already provide an exact route.
 
 - **Correct Example**: identify the owned operation first, inspect the capability map/upstream documentation, add the narrow backend crossing, and return the owned result.  If no mature implementation actually exists, record that concrete gap and only then design the smallest source-grounded algorithm the project deliberately chooses to own.
+
+#### `ENG-07`: Friction With the Engine Is the Datum; It Is Never Routed Around
+
+- **Rule**: When a Sage route is slow, rejects an input, or returns a result of the wrong shape, the task changes at that point.  Before any other edit: isolate the engine from the preamble on a specimen of the same order and shape; measure the cost as wall time against the size parameter, at more than one size; search inside Sage for the alternate route (the method's `algorithm=` choices, a backend Sage ships reached through Sage's own interface, a different constructor, a sibling module), reading the source; and record what was found under `DEV-63`.  Only then choose the route the owned name delegates to.  Replacing the library, hand-rolling the routine, adding a cache, or deleting the call that exposed the cost before that record exists is banned, whatever the size of the tool and whether or not the code is preamble mathematics.
+
+- **Rationale**: A gap in Sage has three kinds, absent, present and wrong, and present but unaffordable, and the owned name exists to absorb whichever one is found.  The measurement is the admission ticket: `ENG-06` lets the preamble own an algorithm only on a demonstrated gap, so discarding the measurement forecloses the one route by which the project could ever legitimately take the computation on.  The finding is also the most durable thing the task can produce: it does not expire, it does not depend on the state of the tree, and it costs a researcher's afternoon to rediscover every time it is lost.  See *The artifacts are instruments; the product is a map of Sage* under the design philosophy.
+
+- **Observed**: the declared-category-graph tool, 2026-09-16.  The first version hand-rolled a spanning forest and a cycle basis where `Graph.minimum_cycle_basis` exists; the second, on a speed complaint, replaced Sage's graph library with `networkx`.  Neither examined the Sage routine.  The result was zero knowledge of `Graph.minimum_cycle_basis`, `longest_path`, or `SimplicialComplex.homology` on the one graph that Sage itself traverses to join and linearize the preamble's own categories, and the swap would have left the tool looking fine while the fact stayed hidden.  The measurement is scheduled as the TODO node `category-graph-engine`.
+
+- **Violation Example**: `import networkx` added to a module because a Sage call felt slow; a depth-first search written in place of the Sage routine because a Sage constructor rejected the input as given; a `cached_method` added to a slow path before anyone found out why it is slow; a slow view deleted from a tool so that the tool passes.
+
+- **Correct Example**: build a Sage graph of the same order and shape with no preamble in the process, time the call at three sizes, read the method's source for its `algorithm=` choices, record the curve and the chosen route in `TRAPS.md`, and route the owned operation through that spelling.  If the route is unaffordable at every size the research uses, that record is the `ENG-06` gap, and owning the algorithm becomes a decision the project can now make.
+
+#### `ENG-08`: A Second Engine Is Adopted Only on a Recorded Measurement
+
+- **Rule**: The Sage ecosystem is searched to exhaustion before any computation leaves it: Sage's own spelling, then the backends Sage ships and reaches through its own interface (GAP through `libgap`, PARI, Singular, its graph and numerical backends).  A library outside that ecosystem is adopted for an operation only when a `DEV-63` record shows the Sage route absent, wrong, or unaffordable at the sizes the research uses, and the adoption is recorded beside that measurement with the route it replaces.  `ENG-03` and `ENG-05` say which engines are acceptable; this rule says when a change of engine is.
+
+- **Rationale**: The preamble routes one name to one computation so that the researcher never learns there was a choice.  That works only when the choice was made on evidence and written down.  An engine swapped in to dodge an unmeasured cost is a second computation path with no reason attached, and it removes the site at which the Sage fact would have been measured.  The fragmentation is also real: two graph libraries in one tree are two sets of input conventions, two output shapes, and two homes for the same defect.
+
+- **Violation Example**: replacing `sage.graphs.graph.Graph` with `networkx.Graph` in a tool because one view was slow, with no timing of the Sage call; adding `sympy` for a factorization Sage's rings already perform; a justfile recipe that installs a package to run a computation Sage's own interpreter already provides.
+
+- **Correct Example**: measure the Sage route first; if a shipped backend answers, select it through Sage's own keyword and record that; if nothing inside the ecosystem answers, record the gap with its measurement, then adopt the outside library under `ENG-05` with the record cited at the crossing.
 
 
 
@@ -6635,6 +6929,48 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: reconcile the ledger against the repository, record the
   claim for the selected node, author and commit under that claim, then
   release the claim with the delivered state reflected in the ledger.
+
+#### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
+
+- **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, `COMPLAINTS.md`, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.
+
+- **Rationale**: Such a sentence does four things.  It terminates the search: a named cause closes the question, and the story then stands between the reader and the measurement.  It borrows authority from plausibility: reciting a mechanism that would explain the observation feels, from the inside, identical to having found it, and the reader cannot tell the difference.  It counterfeits the project's currency: the product here is empirical knowledge of Sage (`ENG-07`), so an unmeasured engine claim is forged coin in the one denomination that matters, and it is trusted permanently because nobody re-derives a recorded fact.  And it is lazy in the literal sense: the measurement usually costs a second.  A false row in `TRAPS.md` is more expensive than an empty file for exactly the reason a true row is valuable.
+
+- **Observed**: 2026-09-16, the same tool as `ENG-07`.  Two causes were asserted in the register of findings: that a Sage path method is MILP-backed and its cycle enumeration explodes, "those are the cost"; then that Sage's interpreter startup was the cost.  Neither had been timed.  When timing happened, the interpreter started in a fraction of a second (`TRAPS.md` holds the current numbers), and the slow call was in the library that had just been swapped in to avoid the Sage one.  Both claims pointed away from the truth, and either, recorded, would have steered every later reader off a Sage route that was never measured.
+
+- **Violation Example**: "it is slow because it is MILP-backed"; "Sage's startup dominates"; "the native method cannot take this input" with no reproduction; a `TRAPS.md` row with no command; a docstring that explains a workaround by a property of the engine nobody checked.
+
+- **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs each, the version, the command; or the sentence "I have not measured this", followed by the measurement.
+
+#### `DEV-63`: Measured Engine Facts Have One Durable Owner
+
+- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  `COMPLAINTS.md` keeps the unresolved need under `DEV-59` and is emptied on delivery; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
+
+- **Rationale**: The fact is the product (`ENG-07`) and it has no other home.  A commit body is found only by someone who already suspects the commit; a conversation is gone; a docstring at one site is invisible to the next site that meets the same engine.  One ledger, read before any engine route is chosen, is what turns one measurement into every later rediscovery avoided.
+
+- **Violation Example**: a measurement quoted in a reply and nowhere else; a workaround committed with the engine fact only in the commit body; a cost recorded as a `COMPLAINTS.md` gap and deleted when the consumer was delivered, taking the fact with it.
+
+- **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs, the version, the command, and the consequence for per-invocation tooling.
+
+#### `DEV-64`: A Sage Mechanism Is Read in Its Source Before It Is Worked Around
+
+- **Rule**: Before overriding, wrapping, or routing around any behaviour of Sage's category framework (`super_categories`, `extra_super_categories`, `_with_axiom`, joins, C3 ordering, `__contains__`, `refine`, dynamic classes), open the method in `sage/categories/` and state its contract in one sentence, with the file.  The workaround is then written against that contract or not at all, and the contract goes to `TRAPS.md` if it is a fact nobody in the tree had written down.
+
+- **Rationale**: the mechanism has a design and the design is usually the answer.  The tree's history shows the alternative: `super_categories` overridden on every axiom class to stop an inheritance that one deleted edge stops; `refine` and `setattr` as construction; `NotImplementedError` as an abstract contract; `__contains__` as a predicate.  Each was a workaround for a mechanism whose actual behaviour, ten lines of source away, made it unnecessary or wrong.
+
+- **Violation Example**: writing `def super_categories(self): return [Schemes(self.base_ring())]` on nine axiom classes to block axiom descent along a base-restriction edge, instead of reading why the descent happens and removing the edge.
+
+- **Correct Example**: reading `CategoryWithAxiom.super_categories` (category_with_axiom.py) and `Category._with_axiom_as_tuple` (category.py), recording that an axiom is applied along every declared supercategory, and ruling that base-restriction edges are functors (AGENTS.md, *Red flags*; `TRAPS.md`).
+
+#### `DEV-65`: An Obstruction Met While Changing a Declaration Is a Finding, Never a Mechanism
+
+- **Rule**: When a declaration change meets an obstruction (a construction that cannot proceed, an object that must be in a category that does not yet exist when it is built, a Sage behaviour that a plain declaration triggers), the change stops there and the obstruction becomes a node in `TODO.md` with its dependency path, or a question to the owner.  It is never resolved by a runtime mechanism: not `refine` after construction, not a declaration that reads an engine object, not a `super_categories` override on an axiom class, not a membership predicate, not a placeholder supercategory.  The same rule binds an agent working one subtree under a brief: the report names the obstruction with the file and line, and the brief's owner decides.
+
+- **Rationale**: every one of those mechanisms was tried on 2026-09-16 by an agent that had the policy in front of it, because from inside a subtree the mechanism is the shortest path to a passing view: nine `super_categories` overrides to block axiom descent that one deleted edge stops; the integers refined into `OwnedOrders` after construction, with a declaration reading an engine view of ZZ to avoid re-entry; a base-free category pointed two levels up for want of the node it needed.  Each would have been invisible to the next reader and each restated at the leaf a fact that belongs to the owner.  The obstruction is the information; the mechanism destroys it.
+
+- **Violation Example**: `def super_categories(self): return [Schemes(self.base_ring())]` on every scheme axiom; `_owned_integers` refining ZZ into a category whose declaration needs ZZ; `RepresentedToricSchemes -> LocallyRingedSpaces` because no base-free scheme category exists.
+
+- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in `COMPLAINTS.md` and scheduled in `TODO.md`.
 
 
 * * *

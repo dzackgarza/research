@@ -3,7 +3,6 @@ r"""The de Rham functor and notation use the category-owned construction."""
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.de_rham_algebras import (
-    DeRhamAlgebra,
     DeRhamAlgebras,
 )
 

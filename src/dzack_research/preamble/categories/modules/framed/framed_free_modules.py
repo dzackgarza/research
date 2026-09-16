@@ -7,7 +7,6 @@ from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
-from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -20,11 +19,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
-    FinitelyGeneratedFreeModules,
     FramedModules,
-    FreeModules,
+    FreeResolution,
     Modules,
     ModuleSubobjects,
+    ModulesWithChosenFinitePresentation,
     VectorSpaces,
     _refine_matrix_hom,
 )
@@ -47,8 +46,13 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
 def _finitely_generated_free_placement(ring, module_generating_set):
@@ -62,7 +66,7 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         finite = False
     if finite:
-        categories.append(FinitelyGeneratedFreeModules(ring))
+        categories.append(FramedFreeModules(ring).FinitelyGenerated())
     return categories
 
 
@@ -352,7 +356,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
+        return [Modules(self.base_ring()).Free(), FramedModules(self.base_ring())]
 
     class ParentMethods:
         def _fresh_free_module_on(self, labels, **options):
@@ -493,6 +497,148 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             transported by the same canonical ring map.
             """
             return self.base_change(self.base_ring().fraction_field_map())
+
+    class FinitelyGenerated(CategoryWithAxiom):
+        r"""Free modules framed by a finite basis."""
+
+        def an_object(self):
+            r"""The free module of rank one."""
+            return self.base_ring().free_module(1)
+
+        def extra_super_categories(self):
+            return [ModulesWithChosenFinitePresentation(self.base_ring())]
+
+        def kernel_arrow_functor(self):
+            r"""Return the kernel functor on the finite-free arrow category."""
+            from dzack_research.preamble.categories.functors.linear_constructions import (
+                _kernel_arrow_functor,
+            )
+
+            return _kernel_arrow_functor(self.base_ring())
+
+        class ParentMethods:
+            def _fresh_free_module_on(self, labels, **options):
+                constructor = self.__dict__.get("_preamble_free_module_constructor")
+                if constructor is None:
+                    raise NotImplementedError("this finite free module has no selected free-module constructor")
+                return constructor(labels, **options)
+
+            def _represented_vector_space_dimension(self):
+                return self.module_rank()
+
+            def _represented_vector_space_basis_generator_labels(self):
+                return self.module_generating_set()
+
+            def is_zero(self) -> bool:
+                r"""Return whether this finite free module is the zero module.
+
+                A finite free module is zero exactly when every vector in its
+                chosen basis is the additive identity; this also handles the zero
+                coefficient ring without replacing the basis by a rank heuristic.
+                """
+                return all(generator == self.zero() for generator in self.module_generators())
+
+            def _selected_presentation_rows(self):
+                return ()
+
+            def fitting_ideal(self, index):
+                r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
+
+                A free module is presented by no relations, so its relation matrix
+                has no rows and the ideal of its ``(n - i)``-minors is zero while a
+                minor of positive size is asked for and the unit ideal once none
+                is.  The general minor computation has no matrix to read here, so
+                the same formula is stated directly.
+                """
+                ring = self.base_ring()
+                rank = int(self.number_of_module_generators())
+                return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
+
+            def _represented_kernel_of_morphism(self, morphism):
+                if morphism.domain() is not self:
+                    return NotImplemented
+                try:
+                    codomain_is_zero = morphism.codomain().is_zero()
+                except NotImplementedError:
+                    codomain_is_zero = False
+                if codomain_is_zero:
+                    return self.whole_subobject()
+                try:
+                    coordinate_matrix = morphism.matrix()
+                    coordinate_generators = coordinate_matrix._kernel_spanning_family()
+                except (AttributeError, NotImplementedError):
+                    return NotImplemented
+
+                source_labels = tuple(self.module_generating_set())
+                coordinate_domain = coordinate_matrix.domain()
+                coordinate_labels = tuple(coordinate_domain.module_generating_set())
+                if len(source_labels) != len(coordinate_labels):
+                    raise ArithmeticError(
+                        "the coordinate kernel changed the source framing rank"
+                    )
+
+                def transport(coordinate_vector):
+                    coefficients = coordinate_domain.framing_coefficients(coordinate_vector)
+                    return self.linear_combination(
+                        {
+                            source_label: coefficients[coordinate_label]
+                            for source_label, coordinate_label in zip(
+                                source_labels, coordinate_labels, strict=True
+                            )
+                            if coordinate_label in coefficients
+                        }
+                    )
+
+                generators = finite_indexed_family(
+                    coordinate_generators.index_set(),
+                    lambda index: transport(coordinate_generators[index]),
+                    name=f"Kernel spanning family in {self}",
+                )
+                return self.subobject_on(generators)
+
+            def _same_presentation_module(
+                self,
+                labels,
+                *,
+                _extra_categories=(),
+                _extra_construction_data=None,
+            ):
+                return self._fresh_free_module_on(
+                    labels,
+                    _extra_categories=tuple(_extra_categories),
+                    _extra_construction_data=_extra_construction_data,
+                )
+
+            def free_resolution(self, steps=None):
+                r"""A free module is its own resolution, in degree zero alone.
+
+                The number of steps a caller is willing to compute does not enter:
+                the identity already resolves a free module, so the same resolution
+                answers however far it is asked to go.
+                """
+                _ = steps
+                return self._identity_resolution()
+
+            @cached_method
+            def _identity_resolution(self):
+                zero = self._fresh_free_module_on(finite_ordered_set(()))
+                degrees = Sets.Δ[0]
+                return FreeResolution(
+                    self,
+                    degrees,
+                    indexed_family(degrees, lambda degree: self, name="Free resolution terms"),
+                    indexed_family(
+                        Sets.Δ[-1],
+                        lambda degree: None,
+                        name="Free resolution differentials",
+                    ),
+                    self.module_category().Mor(self, self).identity(),
+                    zero,
+                )
+
+            @cached_method
+            def dual_module(self):
+                return self._fresh_free_module_on(self.module_generating_set())
 
 
 class _SparseFramedFreeModules(OwnedCategoryOverBaseRing):
