@@ -2,7 +2,7 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AffineSpace,
+    AffineSpaces,
     Algebras,
     Groups,
     Lattices,
@@ -103,7 +103,7 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
 
 
 def test_join_hom_keeps_the_most_specific_inherited_arrow_theory() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     x = line.coordinate_algebra().algebra_generator("x")
     open_x = line.distinguished_open(x)
 

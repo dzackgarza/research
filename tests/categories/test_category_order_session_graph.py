@@ -9,7 +9,7 @@ import json
 import sys
 
 from dzack_research.preamble.all import (
-    AffineSpace,
+    AffineSpaces,
     Lattices,
     QQ,
     ZZ,
@@ -30,7 +30,7 @@ def category_key(obj):
 
 
 def affine_open():
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     ring = line.coordinate_ring()
     x = ring.algebra_generator("x")
     open_x = line.distinguished_open(x)
