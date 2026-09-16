@@ -2570,6 +2570,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
             return indexed_family(
                 self.module_generating_set(),
                 self.module_generator,
+                name="Module generators",
             )
 
         def module_generator_morphism(self):

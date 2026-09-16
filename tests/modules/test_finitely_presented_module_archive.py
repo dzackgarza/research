@@ -55,6 +55,9 @@ def test_selected_presentation_retains_its_quotient_map_as_the_module_framing() 
     assert module.framing_source() is free
     assert module.presentation_projection() is framing
     assert module.module_generator("x") == framing(free.module_generator("x"))
+    displayed = repr(module.module_generators())
+    assert displayed.startswith("Module generators: [")
+    assert "Indexed family" not in displayed
 
 
 def test_hermite_and_smith_normalizations_are_distinct_constructions() -> None:

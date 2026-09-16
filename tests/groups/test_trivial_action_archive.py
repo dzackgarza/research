@@ -29,6 +29,9 @@ def test_archived_trivial_action_is_the_live_functor_on_a_nonidentity_lattice_ma
     acted_negation = trivial(negation)
 
     assert acted.is_trivial_action()
+    displayed = repr(acted.module_generators())
+    assert displayed.startswith("Coefficient-module generators: [")
+    assert "Indexed family" not in displayed
     assert acted_negation.domain() is acted
     assert acted_negation.codomain() is acted
     for label in labels:

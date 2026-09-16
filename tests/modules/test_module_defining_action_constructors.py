@@ -262,6 +262,9 @@ def test_free_duality_retains_the_selected_framing_and_action() -> None:
 
     assert dual.module_generating_set() is module.module_generating_set()
     assert dual.framing_object().arrow().codomain() is dual
+    displayed = repr(dual.module_generators())
+    assert displayed.startswith("Module generators over ")
+    assert "Indexed family" not in displayed
     label = NN(3)
     element = dual.module_generator(label)
     assert dual.scalar_action()(ZZ(-2))(element) == dual.scalar_multiple(
