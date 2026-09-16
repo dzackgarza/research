@@ -743,7 +743,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** each specialization inherits or composes the general framing datum and introduces only genuinely stronger mathematics.  A lattice may provide lattice-specific structure on its generators only when that returned object actually has extra lattice semantics; otherwise its module generators are the same module-theoretic image inherited from the underlying free module.
   **Acceptance:** one framing authority supplies source, selected epi, generator set and generator evaluation across the audited descendants; specialization methods that remain have a documented stronger codomain/operation and are not renamings of the generic result.
 
-- [ ] **`owned-provenance-data`**. **Needs:** none.
+- [x] **`owned-provenance-data`**. **Needs:** none.
   **Goal:** Represent chosen source maps, presentations, base changes, completions, and comparison morphisms as first-class construction data instead of hidden `_preamble_*` provenance attributes.
   Replace hidden `_preamble_*source*`, functor-preimage, coordinate-morphism, and provenance side channels with first-class construction data (`CON-05`, `STY-07`, `OWN-03`--`05`).
   **Observed gap:** the audit found 108 attachment/provenance sites across 32 files, including functor-image preimages, de Rham/Kahler/cohomology source attributes, coordinate-algebra morphisms, completion sources and base-change sources.
