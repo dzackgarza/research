@@ -72,6 +72,27 @@ class SheafObjects(OwnedParameterizedCategory):
         return _TerminalSheaf(self.space())
 
 
+class SheafedSpaces(OwnedCategory):
+    r"""Represented spaces equipped with a chosen sheaf.
+
+    The topological-space ancestor is intentionally not guessed here: the
+    repository does not yet own that category, and ``geometric-space-placement``
+    is the node that introduces it.  This category records the independent
+    sheaf-bearing structure now, so a ringed space is no longer declared as a
+    set merely because the space category is absent.
+    """
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "sheafed spaces"
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        return RingedSpaces().an_object()
+
+
 class _TerminalSheaf(Parent):
     r"""The terminal one-section sheaf on a represented base space.
 
@@ -949,7 +970,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
         return "ringed spaces"
 
     def super_categories(self):
-        return [Objects()]
+        return [SheafedSpaces()]
 
     def LocallyRinged(self):
         return LocallyRingedSpaces()
@@ -1025,5 +1046,6 @@ __all__ = [
     "RingedSpaces",
     "SchemeUnderlyingSpace",
     "SheafObjects",
+    "SheafedSpaces",
     "StructureSheaf",
 ]

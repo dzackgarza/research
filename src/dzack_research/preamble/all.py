@@ -417,6 +417,7 @@ from dzack_research.preamble.categories.schemes import (
     Schemes,
     SchemeUnderlyingSpace,
     SheafObjects,
+    SheafedSpaces,
     SideDecoration,
     SmoothSchemes,
     StructureSheaf,
