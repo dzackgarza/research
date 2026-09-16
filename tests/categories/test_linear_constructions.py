@@ -2,7 +2,6 @@ from dzack_research.preamble.all import (
     ZZ,
     BiproductBifunctor,
     CokernelArrowFunctor,
-    DualizationFunctor,
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
@@ -31,7 +30,7 @@ def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> 
     f = m.module_category().Mor(m, n)({"x": u + 2 * v, "y": 3 * u - v})
     g = n.module_category().Mor(n, p)({"u": 2 * r + s, "v": r - 4 * s})
 
-    dual = DualizationFunctor(ZZ)
+    dual = FinitelyGeneratedFreeModules(ZZ).dualization()
     f_dual = dual(f)
     assert f_dual(dual(n).module_generator("u")) == (
         dual(m).module_generator("x") + 3 * dual(m).module_generator("y")

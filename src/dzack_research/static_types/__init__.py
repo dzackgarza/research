@@ -717,16 +717,12 @@ def dual_module(module):
 
 def dualize_module_morphism(morphism):
     """Apply the live contravariant finite-free dualization functor."""
-    from dzack_research.preamble.categories.functors.linear_constructions import DualizationFunctor
-
-    return DualizationFunctor(morphism.domain().base_ring())(morphism)
+    return morphism.domain().module_category().dualization()(morphism)
 
 
 def double_dual_morphism(module):
     """Return the live finite-free biduality morphism ``M -> M**``."""
-    from dzack_research.preamble.categories.functors.linear_constructions import DualizationFunctor
-
-    return DualizationFunctor(module.base_ring()).double_dual_morphism(module)
+    return module.module_category().dualization().double_dual_morphism(module)
 
 
 def module_action(structure, scalar, element):
