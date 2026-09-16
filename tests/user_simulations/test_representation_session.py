@@ -30,7 +30,7 @@ COEFFICIENTS = {"QQ": lambda: QQ, "ZZ": lambda: ZZ, "GF(2)": lambda: GF(2), "GF(
 
 def _permutation_module(ring, group, degree):
     points = tuple(range(1, degree + 1))
-    module = FreeModule(ring, degree)
+    module = ring.free_module(degree)
 
     def act(g, vector):
         return module.Mor(module)({label: module.module_generator(int(g(points[label])) - 1) for label in range(degree)})(vector)
@@ -97,7 +97,7 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     assert restricted.group() is subgroup
     assert restricted.module_rank() == degree
     assert restricted.module_invariants().module_rank() >= 1
-    trivial = Modules(ring).trivial_action(subgroup)(FreeModule(ring, 1))
+    trivial = Modules(ring).trivial_action(subgroup)(ring.free_module(1))
     induced = Modules(ZZ[subgroup]).induction(group)(trivial)
     coinduced = Modules(ZZ[subgroup]).coinduction(group)(trivial)
     rendered(induced)

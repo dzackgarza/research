@@ -111,7 +111,7 @@ def test_a_finite_group_session(name) -> None:
 
     # The permutation representation over ZZ, QQ and GF(2), with invariants.
     for ring in (ZZ, QQ, GF(2)):
-        module = FreeModule(ring, degree)
+        module = ring.free_module(degree)
 
         def permutation(h, module=module, action=action):
             return module.Mor(module)(

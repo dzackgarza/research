@@ -21,9 +21,9 @@ def rendered(obj) -> str:
 
 DOMAINS = {
     "ZZ": (lambda: ZZ, 6, 4, 2),
-    "QQ[x]": (lambda: PolynomialRing(QQ, "x"), None, None, None),
+    "QQ[x]": (lambda: QQ.polynomial_ring("x"), None, None, None),
     "ZZ[i]": (lambda: QuadraticField(-1, "i").ring_of_integers(), 6, 4, 2),
-    "GF(5)[t]": (lambda: PolynomialRing(GF(5), "t"), None, None, None),
+    "GF(5)[t]": (lambda: GF(5).polynomial_ring("t"), None, None, None),
 }
 
 
@@ -79,8 +79,8 @@ def test_a_homological_algebra_session(name) -> None:
     assert torsion.tensor_product(other).cardinality() == ring.quotient_ring(ring.ideal(ring(g))).cardinality()
 
     # A three-term complex with known cohomology.
-    line = FreeModule(ring, 1)
-    plane = FreeModule(ring, 2)
+    line = ring.free_module(1)
+    plane = ring.free_module(2)
     inclusion = line.Mor(plane)({0: ring(n) * plane.module_generator(0)})
     projection = plane.Mor(line)({0: line.zero(), 1: line.module_generator(0)})
     complex_ = CochainComplexes(ring)({0: line, 1: plane, 2: line}, {0: inclusion, 1: projection})

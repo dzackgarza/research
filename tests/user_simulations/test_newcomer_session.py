@@ -87,7 +87,7 @@ def test_a_newcomer_does_finite_group_theory(n) -> None:
 @pytest.mark.parametrize("field_name", ["QQ", "GF(5)", "GF(7)"])
 def test_a_newcomer_does_plane_curves(field_name) -> None:
     k = {"QQ": QQ, "GF(5)": GF(5), "GF(7)": GF(7)}[field_name]
-    R = PolynomialRing(k, ("x", "y"))
+    R = k.polynomial_ring(("x", "y"))
     x, y = R.gens()
     E = Curves(k).from_equation(y**2 - x**3 - x)
     rendered(E)
@@ -153,7 +153,7 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
 
 
 def test_a_newcomer_does_commutative_algebra() -> None:
-    R = PolynomialRing(QQ, ("x", "y", "z"))
+    R = QQ.polynomial_ring(("x", "y", "z"))
     x, y, z = R.gens()
     I = R.ideal(x * y, y * z, x * z)
     rendered(I)

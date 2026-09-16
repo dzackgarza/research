@@ -20,8 +20,8 @@ def rendered(obj) -> str:
 
 DOMAINS = {
     "ZZ": lambda: ZZ,
-    "QQ[x]": lambda: PolynomialRing(QQ, "x"),
-    "GF(5)[t]": lambda: PolynomialRing(GF(5), "t"),
+    "QQ[x]": lambda: QQ.polynomial_ring("x"),
+    "GF(5)[t]": lambda: GF(5).polynomial_ring("t"),
     "ZZ[i]": lambda: QuadraticField(-1, "i").ring_of_integers(),
     "ZZ_3": lambda: Zp(3),
     "ZZ_(5)": lambda: ZZ.localize_at_prime(5),
@@ -35,7 +35,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     fractions = ring.fraction_field()
 
     # A free module, elements, a submodule spanned by three vectors.
-    module = FreeModule(ring, 3)
+    module = ring.free_module(3)
     rendered(module)
     e0, e1, e2 = module.module_generator(0), module.module_generator(1), module.module_generator(2)
     v = 2 * e0 + 4 * e1
@@ -119,8 +119,8 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert resolution.term(2).module_rank() == 0
 
     # A short cochain complex 0 -> R -> R^2 -> R -> 0 and its cohomology.
-    line = FreeModule(ring, 1)
-    plane = FreeModule(ring, 2)
+    line = ring.free_module(1)
+    plane = ring.free_module(2)
     d0 = line.Mor(plane)({0: 2 * plane.module_generator(0) + 2 * plane.module_generator(1)})
     d1 = plane.Mor(line)({0: line.module_generator(0), 1: -line.module_generator(0)})
     complex_ = CochainComplexes(ring)({0: line, 1: plane, 2: line}, {0: d0, 1: d1})
