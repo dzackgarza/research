@@ -1213,13 +1213,17 @@ under `Sets()`.
 
 ## Reading the declarations
 
-The declared graph is generated from source, without importing the tree, so it
-answers while the preamble is mid-refactor and does not load:
+The declared graph is read out of the source with `ast`, so it never imports
+the preamble and answers while that tree is mid-refactor and does not load.
+The graph theory is Sage's -- homology, minimum cycle basis, transitive
+reduction -- so the recipes run under Sage's own interpreter:
 
 ```bash
 just category-graph                     # every category, and what it declares
 just category-graph by-supercategory    # each supercategory, and who claims it
 just category-graph foreign             # owned categories declaring a Sage category
+just category-graph shape               # breadth, depth, shortcut declarations
+just category-graph cells               # homology, and the cycles owing a 2-cell
 just category-graph-svg                 # the literal graph, rendered
 ```
 
@@ -1281,17 +1285,24 @@ definition puts it there.
 
 ## $\pi_1$, and what is actually being minimized
 
-For the declared graph, $\pi_1$ is free of rank $E - V + C$. A generator is a
-pair of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
-functors that the graph asserts are equal. Nothing checks that assertion: Sage
+The declared graph is a 1-dimensional complex: a 0-cell per category, a 1-cell
+per declaration, and no higher cells. So $H_1$ is the whole cycle space,
+nothing bounds, and $\pi_1$ is free of rank $E - V + C$. A generator is a pair
+of distinct paths $C \rightsquigarrow D$, hence two composites of forgetful
+functors that the graph asserts are equal, and **the 2-cell that would fill it
+is that assertion\'s proof**. The complex has none. Nothing checks that assertion: Sage
 computes a C3 linearization, so a diamond that does *not* commute never raises
 -- it silently selects one route, and the object's inherited operations are
 whichever the ordering picked. **Each generator is a coherence obligation and a
 site where method resolution can quietly return the wrong answer.**
 
-Shortcut edges are unearned generators: they add a loop while adding no
-reachability, so removing them costs nothing. Keeping the transitive reduction
-is minimizing $\pi_1$.
+`just category-graph cells` computes the homology and a minimum cycle basis, so
+each generator is a short readable square rather than a wandering path. It
+separates the generators killed by deleting one declaration -- where one route
+is a single edge and the other a path with the same endpoints, so the two
+composites are the same functor -- from those owing a real cell. The first kind
+are unearned: they add a cycle and no reachability, and removing them costs
+nothing, which is why keeping the transitive reduction is minimizing $\pi_1$.
 
 **The trap.** Taken raw, "minimize $\pi_1$" favours the graph this section
 exists to prevent. A star is a tree, so thirty categories each declaring only
