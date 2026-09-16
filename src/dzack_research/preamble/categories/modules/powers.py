@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -623,8 +622,7 @@ def _presented_degree_power(
 
     if module in FramedFreeModules(ring):
         if extra_categories or extra_construction_data:
-            return FreshFreeModuleOn(
-                ring,
+            return ring._fresh_free_module_on(
                 labels,
                 _extra_categories=extra_categories,
                 _extra_construction_data=extra_construction_data,

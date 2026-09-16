@@ -6,9 +6,6 @@ from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.localizations import (
     _localized_module,
 )
@@ -809,8 +806,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
     }
     presentation = getattr(changed, "presentation", None)
     if presentation is None:
-        return FreshFreeModuleOn(
-            target,
+        return target._fresh_free_module_on(
             changed.module_generating_set(),
             _subobject_ambient=ambient_module,
             _subobject_generator_images=generator_images,
@@ -852,8 +848,7 @@ def _commutative_ideal(source, generators):
         generator = selected[0]
         ambient_module = source.regular_module()
         if generator == engine.zero():
-            ideal = FreshFreeModuleOn(
-                source,
+            ideal = source._fresh_free_module_on(
                 Sets.Δ[-1],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={},
@@ -866,8 +861,7 @@ def _commutative_ideal(source, generators):
                 },
             )
         else:
-            ideal = FreshFreeModuleOn(
-                source,
+            ideal = source._fresh_free_module_on(
                 Sets.Δ[0],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={

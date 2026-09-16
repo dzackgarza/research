@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.base_change import (
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    FreshFreeModuleOn,
     _module_subobject_constructor_data,
     _span_basis_elements,
 )
@@ -1652,7 +1651,7 @@ def _form_module(
         "_extra_construction_data": construction_data,
     }
     if is_free:
-        return FreshFreeModuleOn(base_ring, labels, **common)
+        return base_ring._fresh_free_module_on(labels, **common)
     if is_presented:
         return _presented_module_from_morphism(module.presentation(), **common)
     raise TypeError(

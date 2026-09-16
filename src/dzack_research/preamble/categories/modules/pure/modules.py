@@ -2786,12 +2786,7 @@ class RestrictedScalarsModuleView(Parent):
         )
         realize_owned_category(self)
         if self._preamble_module_generating_set is not None:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreshFreeModuleOn,
-            )
-
-            self._preamble_framing_source = FreshFreeModuleOn(
-                base_ring,
+            self._preamble_framing_source = base_ring._fresh_free_module_on(
                 self._preamble_module_generating_set,
             )
             self._preamble_framing_morphism = None
@@ -3290,15 +3285,10 @@ def _module_tensor_product_with_data(
     tensor_labels = _tensor_label_set(factors)
 
     if represented_free:
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
-
         construction_data = {"tensor_factors": factors}
         if extra_construction_data is not None:
             construction_data.update(extra_construction_data)
-        return FreshFreeModuleOn(
-            ring,
+        return ring._fresh_free_module_on(
             tensor_labels,
             _extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
             _extra_construction_data=construction_data,
@@ -3816,10 +3806,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
             ring = self.parent().base_ring()
             if ring in LocalizationRings():
-                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                    FreshFreeModuleOn,
-                )
-
                 source_ring = ring.localization_source()
                 row_labels = self.parent().row_index_set()
                 column_labels = self.parent().column_index_set()
@@ -3851,8 +3837,8 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                         cleared_row.append(numerator * multiplier)
                     cleared_rows.append(tuple(cleared_row))
 
-                source_domain = FreshFreeModuleOn(source_ring, column_labels)
-                source_codomain = FreshFreeModuleOn(source_ring, row_labels)
+                source_domain = source_ring._fresh_free_module_on(column_labels)
+                source_codomain = source_ring._fresh_free_module_on(row_labels)
                 source_map = source_domain.module_category().Mor(source_domain, source_codomain).from_rows(
                     tuple(cleared_rows)
                 )

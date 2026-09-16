@@ -13,9 +13,6 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -151,7 +148,7 @@ def _affine_geometric_cohomology_complex(sheaf, cover=None):
             raise NotImplementedError("the represented contracted Cech comparison currently requires unit charts D(1)")
     module = sheaf.global_sections()
     base = module.base_ring()
-    zero = FreshFreeModuleOn(base, finite_ordered_set(()))
+    zero = base._fresh_free_module_on(finite_ordered_set(()))
     construction_data = {"geometric_sheaf": sheaf}
     if cover is not None:
         construction_data["geometric_cover"] = cover
@@ -546,8 +543,7 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
         "cohomology_weight_pieces": pieces,
     }
     if weights.cardinality() == 0:
-        total = FreshFreeModuleOn(
-            base,
+        total = base._fresh_free_module_on(
             finite_ordered_set(()),
             _extra_categories=(ToricGeometricLineBundleCohomologySpaces(base),),
             _extra_construction_data=construction_data,
@@ -618,11 +614,10 @@ class _QuarticK3IntegralTopology(SageObject):
         if degree == 2:
             return self.middle_cohomology_lattice()
         if degree in (0, 4):
-            return FreshFreeModuleOn(
-                integers,
+            return integers._fresh_free_module_on(
                 finite_ordered_set((f"H{degree}",)),
             )
-        return FreshFreeModuleOn(integers, finite_ordered_set(()))
+        return integers._fresh_free_module_on(finite_ordered_set(()))
 
     @cached_method
     def cup_product(self, left_degree, right_degree):
@@ -814,8 +809,7 @@ def _free_integral_topology_group(
 ):
     integers = _own_ring(SageZZ)
     category = IntegralSingularCohomologyGroups(integers) if category is None else category
-    return FreshFreeModuleOn(
-        integers,
+    return integers._fresh_free_module_on(
         finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
         _extra_categories=(category,),
         _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization, theory),
@@ -1145,8 +1139,7 @@ def _toric_integral_singular_cohomology(scheme, degree):
         "topological_realization_description": "complex analytic realization under the selected QQ-to-CC embedding",
     }
     if degree % 2:
-        return FreshFreeModuleOn(
-            integers,
+        return integers._fresh_free_module_on(
             finite_ordered_set(()),
             _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
             _extra_construction_data=construction_data,

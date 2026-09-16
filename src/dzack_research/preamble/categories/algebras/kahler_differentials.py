@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.algebras.derivations import (
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presented_module_from_morphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FramedModules,
@@ -324,8 +321,7 @@ def _construct_kahler_differentials(algebra):
             )
 
         conormal_morphism = conormal_module.module_category().Mor(conormal_module, ambient_differentials)(conormal_image)
-        relation_module = FreshFreeModuleOn(
-            algebra,
+        relation_module = algebra._fresh_free_module_on(
             conormal_module.module_generating_set(),
         )
         relation_map = relation_module.module_category().Mor(relation_module, ambient_differentials)(conormal_morphism.module_generator_images().value)
@@ -341,8 +337,7 @@ def _construct_kahler_differentials(algebra):
             },
         )
     else:
-        omega = FreshFreeModuleOn(
-            algebra,
+        omega = algebra._fresh_free_module_on(
             differential_labels,
             _extra_categories=(KahlerDifferentialModules(algebra),),
             _extra_construction_data={"source_algebra": algebra},

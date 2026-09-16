@@ -2484,9 +2484,6 @@ def _presented_module_from_morphism(
     # though it were the local ring itself (which would make nonunits in the
     # maximal ideal invertible and corrupt cokernels/equality).
     if base_ring in LocalizationRings():
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
         from dzack_research.preamble.categories.modules.localizations import _localized_module
 
         source_ring = base_ring.localization_source()
@@ -2505,8 +2502,8 @@ def _presented_module_from_morphism(
             source_rows.append(tuple(cleared))
 
         source_relation_labels = Sets.Δ[len(source_rows) - 1]
-        source_relations = FreshFreeModuleOn(source_ring, source_relation_labels)
-        source_generators = FreshFreeModuleOn(source_ring, labels)
+        source_relations = source_ring._fresh_free_module_on(source_relation_labels)
+        source_generators = source_ring._fresh_free_module_on(labels)
         source_presentation = source_relations.module_category().Mor(source_relations, source_generators)(
             {
                 relation_label: source_generators.linear_combination(

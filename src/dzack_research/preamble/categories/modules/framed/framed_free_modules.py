@@ -188,8 +188,7 @@ class _SparseFreeModuleParent:
     ) -> None:
         ring = _owned_ring(base_ring)
         labels = module_generating_set
-        self._preamble_free_module_constructor = lambda new_labels, **options: FreshFreeModuleOn(
-            ring,
+        self._preamble_free_module_constructor = lambda new_labels, **options: ring._fresh_free_module_on(
             new_labels,
             **options,
         )
@@ -429,8 +428,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             free = FramedFreeModules(self.base_ring())
             if not all(factor in free for factor in factors):
                 return NotImplemented
-            return FreshFreeModuleOn(
-                self.base_ring(),
+            return self.base_ring()._fresh_free_module_on(
                 labels,
                 _biproduct_factors=factors,
                 _extra_categories=extra_categories,
@@ -484,8 +482,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
 
             target_ring = _base_change_codomain(self, ring_map)
-            return FreshFreeModuleOn(
-                target_ring,
+            return target_ring._fresh_free_module_on(
                 self.module_generating_set(),
                 _extra_construction_data=_extra_construction_data,
             )
