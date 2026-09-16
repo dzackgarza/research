@@ -42,10 +42,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import (
-    finite_indexed_family,
-    indexed_family,
-)
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.refine import refine
 
 
@@ -626,32 +623,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
         def integral_basis(self):
             return self.module_generators()
 
-        @cached_method
-        def module_generating_set(self):
-
-            engine = _engine_ring(self)
-            if engine is SageZZ:
-                return finite_ordered_set((0,))
-            return finite_ordered_set(range(int(engine.rank())))
-
-        def module_generator(self, label):
-            labels = self.module_generating_set()
-            if label not in labels:
-                raise ValueError(f"{label!r} is not a module-generator label")
-            engine = _engine_ring(self)
-            if engine is SageZZ:
-                return self._from_engine_element(SageZZ.one())
-            return self._from_engine_element(engine.basis()[labels.ranking_map()(label)])
-
-        @cached_method
-        def module_generators(self):
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                
-            )
-
         def module_rank(self):
             engine = _engine_ring(self)
             return cardinal(1 if engine is SageZZ else engine.rank())
@@ -669,16 +640,48 @@ def _refine_number_field_view(field):
     return _owned_number_field_view(_engine_ring(field))
 
 
+def _order_basis_labels(engine):
+    r"""Return the selected integral-basis labels of one order engine."""
+    if engine is SageZZ:
+        return finite_ordered_set((0,))
+    return finite_ordered_set(range(int(engine.rank())))
+
+
+def _order_basis_element(order, labels, label):
+    r"""Return one selected integral-basis element through the owned order view."""
+    if label not in labels:
+        raise ValueError(f"{label!r} is not an integral-basis label")
+    engine = _engine_ring(order)
+    if engine is SageZZ:
+        return order._from_engine_element(SageZZ.one())
+    return order._from_engine_element(engine.basis()[labels.ranking_map()(label)])
+
+
 @cached_function
 def _owned_order_view(engine):
     r"""The selected-integral-basis view of one engine order.
 
     One engine has one owned ring, so the view refines that ring in place
-    rather than constructing a second parent on the same engine.
+    rather than constructing a second parent on the same engine.  The selected
+    integral basis is installed once as the generic framing epimorphism
+    ``F_Z(S) -> O``; public module generators are projections of that arrow.
     """
     if not (engine is SageZZ or isinstance(engine, SageNumberFieldOrder)):
         raise TypeError("the selected integral-basis view requires a number-field order")
-    return refine(_owned_engine_ring(engine), OrdersWithChosenIntegralBasis())
+    order = refine(_owned_engine_ring(engine), OrdersWithChosenIntegralBasis())
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        _framing_morphism,
+    )
+
+    integers = _own_ring(SageZZ)
+    labels = _order_basis_labels(engine)
+    source = integers.free_module(labels)
+    order._preamble_framing_morphism = _framing_morphism(
+        source,
+        order,
+        lambda label: _order_basis_element(order, labels, label),
+    )
+    return order
 
 
 @cached_function

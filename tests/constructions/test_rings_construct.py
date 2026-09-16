@@ -687,6 +687,13 @@ def test_ring_of_integers_of_every_number_field(number_field) -> None:
     assert order.fraction_field() is field
     assert order.module_rank() == field.degree()
     assert order.integral_basis().cardinality() == cardinal(field.degree())
+    framing = order.framing_morphism()
+    assert framing.codomain() is order
+    assert order.framing_source() is framing.domain()
+    for label in order.module_generating_set():
+        assert order.module_generator(label) == framing(
+            order.framing_source().module_generator(label)
+        )
     assert order.cardinality() == aleph0
     assert (order in PrincipalIdealDomains()) == (field.class_number() == 1)
 
