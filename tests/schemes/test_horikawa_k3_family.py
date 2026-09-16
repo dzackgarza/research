@@ -125,6 +125,10 @@ def test_branch_linear_system_and_double_cover_form_one_composite_construction()
     assert system.is_basepoint_free()
     assert system.associated_morphism().domain() is family.base_surface()
     assert member.cyclic_algebra().degree() == 2
+    assert member.cyclic_algebra().branch_power() is branch_bundle
+    branch_local = member.cyclic_algebra().branch_section().parent()
+    assert branch_local.gluing_datum().line_bundle() is branch_bundle
+    assert "_preamble_line_bundle" not in branch_local.__dict__
     assert cover.domain() is member.scheme()
     assert cover.codomain() is family.base_surface()
     assert member.scheme().relative_dimension() == family.base_surface().relative_dimension()

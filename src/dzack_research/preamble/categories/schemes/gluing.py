@@ -4514,6 +4514,18 @@ class _FiniteAtlasModulePullbackFunctor(SageObject):
         return FiniteAtlasInverseImageModuleMorphism(source, target, morphism)
 
 
+class _FiniteAtlasLineBundleModuleGluingDatum(FiniteAtlasModuleGluingDatum):
+    r"""Module descent whose defining source is one finite-atlas line bundle."""
+
+    def __init__(self, line_bundle, local_modules, transitions) -> None:
+        self._line_bundle = line_bundle
+        super().__init__(line_bundle.gluing_datum(), local_modules, transitions)
+
+    def line_bundle(self):
+        r"""Return the line bundle whose rank-one descent this datum represents."""
+        return self._line_bundle
+
+
 def _line_bundle_transition_images(line_bundle, source_index, target_index):
     unit = line_bundle.transition_unit(source_index, target_index)
 
@@ -4552,8 +4564,8 @@ def _finite_atlas_line_bundle_module_sheaf(line_bundle):
         )
         for source_index, target_index in datum.transition_index_set()
     }
-    return FiniteAtlasModuleGluingDatum(
-        datum, local_modules, transitions
+    return _FiniteAtlasLineBundleModuleGluingDatum(
+        line_bundle, local_modules, transitions
     ).sheaf()
 
 
