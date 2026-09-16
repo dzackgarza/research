@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.refine import refine
 
 
-class AbelianizationFunctor(Functor):
+class _AbelianizationFunctor(Functor):
     r"""``G -> G/[G,G] : Grp -> Ab``."""
 
     def __init__(self) -> None:
@@ -103,7 +103,7 @@ class AbelianizationFunctor(Functor):
         return "Abelianization functor"
 
 
-class AbelianGroupInclusionFunctor(Functor):
+class _AbelianGroupInclusionFunctor(Functor):
     r"""The full inclusion ``Ab -> Grp``."""
 
     def __init__(self) -> None:
@@ -119,11 +119,11 @@ class AbelianGroupInclusionFunctor(Functor):
         return "Inclusion of abelian groups into groups"
 
 
-class AbelianizationAdjunction(Adjunction):
+class _AbelianizationAdjunction(Adjunction):
     r"""``(-)^ab ⊣ i``."""
 
     def __init__(self) -> None:
-        super().__init__(AbelianizationFunctor(), AbelianGroupInclusionFunctor())
+        super().__init__(_AbelianizationFunctor(), _AbelianGroupInclusionFunctor())
 
     def unit(self, group):
         return self.left_adjoint().quotient_projection(group)
@@ -156,17 +156,13 @@ class AbelianizationAdjunction(Adjunction):
 
 
 @cached_function
-def _abelianization_functor() -> AbelianizationFunctor:
-    return AbelianizationFunctor()
+def _abelianization_functor() -> _AbelianizationFunctor:
+    return _AbelianizationFunctor()
 
 
 @cached_function
-def _abelianization_adjunction() -> AbelianizationAdjunction:
-    return AbelianizationAdjunction()
+def _abelianization_adjunction() -> _AbelianizationAdjunction:
+    return _AbelianizationAdjunction()
 
 
-__all__ = [
-    "AbelianGroupInclusionFunctor",
-    "AbelianizationAdjunction",
-    "AbelianizationFunctor",
-]
+__all__ = []

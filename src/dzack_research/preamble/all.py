@@ -180,15 +180,6 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
 )
 
 # Explicit redundant aliases below are public session exports, not private imports.
-from dzack_research.preamble.categories.functors.abelianization import (
-    AbelianGroupInclusionFunctor as AbelianGroupInclusionFunctor,
-)
-from dzack_research.preamble.categories.functors.abelianization import (
-    AbelianizationAdjunction as AbelianizationAdjunction,
-)
-from dzack_research.preamble.categories.functors.abelianization import (
-    AbelianizationFunctor as AbelianizationFunctor,
-)
 from dzack_research.preamble.categories.functors.cardinality import (
     CardinalityFunctor as CardinalityFunctor,
 )

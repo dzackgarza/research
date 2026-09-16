@@ -11,7 +11,6 @@ import pytest
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 NULLARY_FUNCTORS = {
-    "AbelianizationFunctor": (AbelianizationFunctor, lambda: Groups.S(3), AbelianGroups),
     "CardinalityFunctor": (CardinalityFunctor, lambda: Sets.Δ[2], None),
     "FinitePowerSetFunctor": (FinitePowerSetFunctor, lambda: Sets.Δ[2], Sets),
     "RingOfIntegersFunctor": (RingOfIntegersFunctor, lambda: QQ, OwnedOrders),
