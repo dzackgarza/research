@@ -527,17 +527,24 @@ class ModulesOverGroupAlgebra(Modules):
         # asserting that it is an R[G]-basis.
 
         def module_generating_set(self):
+            r"""Return the retained coefficient-module framing labels.
+
+            This is the selected ``R``-framing transported with the group
+            action, not a claim that these labels form an ``R[G]``-basis.
+            """
             if self._is_the_regular_module():
                 return super().module_generating_set()
             return self.unacted_module().module_generating_set()
 
         def module_generator(self, label):
+            r"""Transport one retained coefficient-module generator into this action."""
             if self._is_the_regular_module():
                 return super().module_generator(label)
             return self.equip_action_morphism()(self.unacted_module().module_generator(label))
 
         @cached_method
         def module_generators(self):
+            r"""Return the finite family obtained from the retained coefficient framing."""
             return finite_indexed_family(
                 self.module_generating_set(),
                 self.module_generator,

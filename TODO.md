@@ -662,7 +662,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Separating cases:** a framed quotient whose selected generators satisfy relations, a framed free module where the epi is an isomorphism, and a framing with labels that are not positional integers.  Do not silently strengthen every framing to a basis or ordered enumeration.
   **Acceptance:** generic framed modules plus the first framed-free and presented-module consumers retain one actual framing object; no public framing accessor allocates a new free module or reconstructs a morphism from stored label metadata.
 
-- [ ] **`framing-specialization-convergence`**. **Needs:** `framing-primary-epi`.
+- [x] **`framing-specialization-convergence`**. **Needs:** `framing-primary-epi`.
   Remove duplicated framing/generator implementations from lattice, fractional-ideal, presented-module, framed-free, group-module, restricted-scalar, matrix-module, and number-field specializations (`OWN-14`, `STY-154`).
   **Observed gap:** the audit found nine independent `module_generators()` implementations and several descendant-specific framing reconstructions.
   **Deliver:** each specialization inherits or composes the general framing datum and introduces only genuinely stronger mathematics.  A lattice may provide lattice-specific structure on its generators only when that returned object actually has extra lattice semantics; otherwise its module generators are the same module-theoretic image inherited from the underlying free module.
