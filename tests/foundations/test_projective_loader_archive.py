@@ -8,7 +8,7 @@ of the live contract.
 """
 
 from dzack_research.preamble.all import (
-    ADELogPair,
+    ADELogPairs,
     CompleteLinearSystems,
     CyclicCoverAlgebra,
     ProductProjectiveSpaces,
@@ -35,6 +35,6 @@ def test_projective_framework_constructions_are_direct_public_imports() -> None:
         ProductProjectiveSpaces,
         CompleteLinearSystems,
         CyclicCoverAlgebra,
-        ADELogPair,
+        ADELogPairs,
     ):
         assert callable(constructor)

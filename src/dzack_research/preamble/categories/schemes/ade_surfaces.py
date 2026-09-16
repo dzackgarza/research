@@ -609,17 +609,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             )
 
 
-def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
-    r"""Compatibility spelling for ``ADELogPairs(base_ring)(...)``."""
-    return ADELogPairs(_own_ring(base_ring))(
-        dynkin_letter,
-        dynkin_rank,
-        variant=variant,
-        affine=affine,
-    )
-
-
-__all__ = ["ADELogPair", "ADELogPairs", "SideDecoration"]
+__all__ = ["ADELogPairs", "SideDecoration"]
 
 
 class AT21ToricADEPair(SageObject):
@@ -1138,20 +1128,9 @@ class AT21ADEDoubleCover(SageObject):
         return f"AT21 double cover of {self.base_pair()}"
 
 
-def AT21ADEPair(dynkin_letter, dynkin_rank, base_ring, *, variant="pure", affine=False):
-    r"""Compatibility spelling for ``ADELogPairs(base_ring).at21(...)``."""
-    return ADELogPairs(_own_ring(base_ring)).at21(
-        dynkin_letter,
-        dynkin_rank,
-        variant=variant,
-        affine=affine,
-    )
-
 __all__ = [
-    "ADELogPair",
     "ADELogPairs",
     "AT21ADEDoubleCover",
-    "AT21ADEPair",
     "AT21ToricADEPair",
     "SideDecoration",
 ]

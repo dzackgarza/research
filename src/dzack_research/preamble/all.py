@@ -583,7 +583,6 @@ from dzack_research.preamble.categories.rational_lattices import (
     RationalLattices as RationalLattices,
 )
 from dzack_research.preamble.categories.schemes import (
-    ADELogPair,
     ADELogPairs,
     AffineGroupSchemeActions,
     AffineGroupSchemes,
@@ -597,7 +596,6 @@ from dzack_research.preamble.categories.schemes import (
     AffineSpecFunctor,
     AnalyticDiscFamily,
     AT21ADEDoubleCover,
-    AT21ADEPair,
     AT21ToricADEPair,
     ClosedEmbeddings,
     ClosedSubschemes,
