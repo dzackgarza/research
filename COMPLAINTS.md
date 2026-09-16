@@ -66,7 +66,6 @@ Reading each member against the definition in its own docstring separates the gr
 
 | Category | Its own definition | The category that should be declared | Source |
 | --- | --- | --- | --- |
-| `_ArrowCategory` | "the category ``Arr(C)=Fun([1],C)``" | an object of `Cat`; a functor category | `abstract_categories/arrow_categories.py:156` |
 | `QuasiCoherentSheaves` | "quasi-coherent ``O_X``-modules on one scheme ``X``" | sheaves of `O_X`-modules | `schemes/ringed_spaces.py:541` |
 | `RingedSpaces` | "ringed spaces ``(X,O_X)``" | a space together with a sheaf of rings | `schemes/ringed_spaces.py:642` |
 | `TopologicalManifolds` | "finite-dimensional topological manifolds" | topological spaces | `manifolds.py:151` |

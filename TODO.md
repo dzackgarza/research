@@ -677,7 +677,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** `Algebras(R)(module, m)` constructs through the presented-module route for every bilinear `m`, associative or not; the forwarding block, the wrapper element class, the exact-module guard and the arrow-object branches of the algebra Hom classes are deleted with it; `underlying_module()` remains the functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) obtained from its category.
   **Acceptance:** an algebra answers its module operations through `Modules(R)`; no operation `Modules(R)` provides is defined a second time in the algebra subtree.
 
-- [ ] **`arrow-category-placement`**. **Needs:** none.
+- [x] **`arrow-category-placement`**. **Needs:** none.
   **Goal:** `_ArrowCategory` is an object of `Cat`, which is what its own definition \(\mathrm{Arr}(C) = \mathrm{Fun}([1], C)\) says it is.
   **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Objects()`, the root, so an arrow object inherits nothing from the functor category its definition names.  The functor category's own objects are built as objects of `Arr(Cat)` (`cat.py`, `_FunctorCategory._object_on`), so the two constructions currently define each other; one must become primary before `Arr(C)` can be declared into `[1] \to C`.
   **Owners:** `Cat`, and the owned functor category.
