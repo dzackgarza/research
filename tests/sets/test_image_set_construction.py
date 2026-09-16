@@ -72,7 +72,7 @@ def test_infinite_noninjective_image_is_owned_without_inventing_decidability() -
     assert repr(image) == f"Image of {NN} under {parity}"
     try:
         image.cardinality()
-    except NotImplementedError:
-        pass
+    except AssertionError as error:
+        assert "noninjective image" in str(error)
     else:
         raise AssertionError("noninjective infinite image cardinality was guessed")

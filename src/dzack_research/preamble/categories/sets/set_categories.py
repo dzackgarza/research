@@ -78,8 +78,9 @@ class _OwnedImageSet(Parent):
         return self._map
 
     def inverse_on_image(self):
-        if self._inverse is None:
-            raise NotImplementedError("this image construction has no selected inverse on its image")
+        assert self._inverse is not None, (
+            "inverse_on_image requires a selected inverse for this image construction"
+        )
         return self._inverse
 
     def is_injective_image(self) -> bool:
@@ -88,11 +89,10 @@ class _OwnedImageSet(Parent):
     def cardinality(self):
         if self.is_injective_image():
             return cardinal(self.source_set().cardinality())
-        if self.source_set() in FiniteSets():
-            return cardinal(len(tuple(self)))
-        raise NotImplementedError(
-            "cardinality of this noninjective infinite image is not determined by the represented data"
+        assert self.source_set() in FiniteSets(), (
+            "cardinality of a noninjective image requires a finite source or additional represented image data"
         )
+        return cardinal(len(tuple(self)))
 
     def _finite_values(self):
         values = []
@@ -105,11 +105,10 @@ class _OwnedImageSet(Parent):
     def __iter__(self):
         if self.source_set() in FiniteSets():
             return iter(self._finite_values())
-        if self.is_injective_image() and self.source_set() in EnumeratedSets():
-            return (self.image_map()(source) for source in self.source_set())
-        raise NotImplementedError(
-            "enumerating a noninjective infinite image requires additional decidable image data"
+        assert self.is_injective_image() and self.source_set() in EnumeratedSets(), (
+            "enumerating an infinite image requires an injective represented map from an enumerated source"
         )
+        return (self.image_map()(source) for source in self.source_set())
 
     def __contains__(self, element) -> bool:
         if self._inverse is not None:
@@ -119,11 +118,10 @@ class _OwnedImageSet(Parent):
             except (TypeError, ValueError):
                 return False
             return self.image_map()(source) == element
-        if self.source_set() in FiniteSets():
-            return any(element == value for value in self._finite_values())
-        raise NotImplementedError(
-            "membership in this infinite image is not decidable from the represented data"
+        assert self.source_set() in FiniteSets(), (
+            "membership in an infinite image requires a selected inverse-on-image decision procedure"
         )
+        return any(element == value for value in self._finite_values())
 
     def _element_constructor_(self, element):
         if element not in self:
@@ -459,9 +457,12 @@ class OwnedSetMorphism(SetMorphism):
             case (True, True):
                 pass
             case _:
-                raise NotImplementedError(
-                    "the represented inverse search requires finite enumerated endpoints"
-                )
+                assert (
+                    domain in FiniteSets()
+                    and domain in EnumeratedSets()
+                    and codomain in FiniteSets()
+                    and codomain in EnumeratedSets()
+                ), "the represented inverse search requires finite enumerated endpoints"
         match (self.is_injective(), self.is_surjective()):
             case (True, True):
                 pass
@@ -835,13 +836,10 @@ class Sets(OwnedCategory):
             target = left_morphism.codomain()
             if source not in self or target not in self:
                 raise TypeError("a set coequalizer requires set-valued endpoints")
-            if (
-                not cardinal(source.cardinality()).is_finite()
-                or not cardinal(target.cardinality()).is_finite()
-            ):
-                raise NotImplementedError(
-                    "the represented set coequalizer currently requires finite sets"
-                )
+            assert (
+                cardinal(source.cardinality()).is_finite()
+                and cardinal(target.cardinality()).is_finite()
+            ), "the represented set coequalizer requires finite sets"
 
             source_points = tuple(source)
             target_points = tuple(target)
@@ -1424,8 +1422,9 @@ class SetInclusion(OwnedSetMorphism):
         return self.domain()
 
     def characteristic_morphism(self) -> SetMorphism:
-        if self._characteristic_morphism is None:
-            raise NotImplementedError("this subobject has no represented decidable characteristic morphism")
+        assert self._characteristic_morphism is not None, (
+            "characteristic_morphism requires a represented decidable subset predicate"
+        )
         return self._characteristic_morphism
 
     def __contains__(self, member) -> bool:
@@ -1463,9 +1462,10 @@ class SetInclusion(OwnedSetMorphism):
         if self._finite_members is not None:
             return all(member in other for member in self._finite_members)
         base = self.codomain()
-        if base in FiniteEnumeratedSets():
-            return all(member not in self or member in other for member in base)
-        raise NotImplementedError("this subset relation has no represented decision procedure")
+        assert base in FiniteEnumeratedSets(), (
+            "subset comparison requires a finite enumerated base or an explicitly finite source subset"
+        )
+        return all(member not in self or member in other for member in base)
 
     def union(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
