@@ -33,7 +33,6 @@ CATEGORY_BASES: frozenset[str] = frozenset(
         "OwnedCategoryBase",
         "OwnedCategoryOverBaseRing",
         "OwnedParameterizedCategory",
-        "_SchemePropertyCategory",
     }
 )
 
@@ -474,20 +473,38 @@ def _declared_edges(
     also declares each vertex with one axiom fewer.
     """
     names = {d.name for d in declarations}
-    edges = {
+    return {
         (d.vertex, supercategory.vertex)
         for d in declarations
         for supercategory in d.supercategories
         if supercategory.resolved in names and supercategory.vertex != d.vertex
     }
-    axiom_vertices = {v for edge in edges for v in edge if "." in v} | {
+
+
+def _axiom_edges(
+    declarations: list[CategoryDeclaration], declared: set[tuple[str, str]]
+) -> set[tuple[str, str]]:
+    """The edges Sage's join supplies: each axiom vertex declares every vertex
+    with one axiom fewer, down to the base.  These are computed, not written."""
+    pending = {v for edge in declared for v in edge if "." in v} | {
         d.vertex for d in declarations if d.axiom_of
     }
-    for vertex in axiom_vertices:
+    edges: set[tuple[str, str]] = set()
+    while pending:
+        vertex = pending.pop()
         base, *axioms = vertex.split(".")
         for dropped in axioms:
-            edges.add((vertex, _vertex(base, tuple(a for a in axioms if a != dropped))))
+            below = _vertex(base, tuple(a for a in axioms if a != dropped))
+            if (vertex, below) not in edges:
+                edges.add((vertex, below))
+                if "." in below:
+                    pending.add(below)
     return edges
+
+
+def _all_edges(declarations: list[CategoryDeclaration]) -> set[tuple[str, str]]:
+    declared = _declared_edges(declarations)
+    return declared | _axiom_edges(declarations, declared)
 
 
 def _base_of(vertex: str) -> str:
@@ -502,10 +519,16 @@ def _digraph(edges: set[tuple[str, str]]) -> DiGraph:
     return DiGraph(sorted(edges))
 
 
-def _shortcuts(edges: set[tuple[str, str]]) -> list[tuple[str, str]]:
-    """Declarations a longer declared path already gives."""
-    reduction = set(_digraph(edges).transitive_reduction().edges(labels=False))
-    return sorted(edges - reduction)
+def _shortcuts(declarations: list[CategoryDeclaration]) -> list[tuple[str, str]]:
+    """Written declarations a longer path already gives.
+
+    The reduction runs over the written and the computed edges together, so a
+    computed edge parallel to a written path is never reported: Sage's join
+    drops it itself.
+    """
+    declared = _declared_edges(declarations)
+    reduction = set(_digraph(_all_edges(declarations)).transitive_reduction().edges(labels=False))
+    return sorted(declared - reduction)
 
 
 def _chains_above(directed: DiGraph) -> dict[str, int]:
@@ -559,7 +582,7 @@ def _blocks(graph: Graph) -> list[list[str]]:
 
 def render_shape(declarations: list[CategoryDeclaration]) -> str:
     """Breadth, depth and shortcuts.  The intended shape is deep and narrow."""
-    edges = _declared_edges(declarations)
+    edges = _all_edges(declarations)
     directed = _digraph(edges)
     breadth = directed.in_degree(labels=True)
     depth = _chains_above(directed)
@@ -591,7 +614,7 @@ def render_shape(declarations: list[CategoryDeclaration]) -> str:
     for value in sorted(histogram):
         lines.append(f"  depth {value:2d}: {histogram[value]:4d} categories")
 
-    shortcuts = _shortcuts(edges)
+    shortcuts = _shortcuts(declarations)
     lines += [
         "",
         f"## Shortcut declarations, dropped by the transitive reduction ({len(shortcuts)})",
@@ -608,11 +631,11 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
     to be the same composite of forgetful functors; nothing in the source
     proves it.  Homology is unreduced (Sage's default is reduced).
     """
-    edges = _declared_edges(declarations)
+    edges = _all_edges(declarations)
     graph = _graph(edges)
     homology = SimplicialComplex([list(edge) for edge in edges]).homology(reduced=False)
     blocks = _blocks(graph)
-    shortcuts = _shortcuts(edges)
+    shortcuts = _shortcuts(declarations)
     dropped = {frozenset(edge) for edge in shortcuts}
 
     def through_a_shortcut(cycle: list[str]) -> bool:
