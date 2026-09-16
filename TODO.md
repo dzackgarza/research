@@ -188,80 +188,9 @@ Paths in this section are relative to `src/dzack_research/preamble/categories/`.
 
 ### Localization specializations through one construction
 
-- [x] **`localization`**. **Needs:** none.
-  Route fraction fields and their maps through the existing localization owner, and close the affected specialization paths.
-  **Owners:** `rings/ring_foundation.py::OwnedRings.ParentMethods.fraction_field`, `OwnedIntegralDomains.ParentMethods.fraction_field_map`, `rings/commutative_algebra.py::_localization_at_submonoid`, and the existing submonoid, ring Hom, and module-localization owners.
-  **Observed gap:** see the [localization complaint](COMPLAINTS.md#localization-must-define-its-fraction-field-specialization) for the inspected specialization bypass and mathematical dependency trace.
-  Preserve the existing general localization and element/prime routes.
-  **Decision:** the domain's nonzero-element submonoid defines this specialization.
-  The private Sage fraction-field operation remains a computational realization, but raising must establish that localization datum, its source map, and its universal factorization.
-  Selecting the fraction-field realization must not call the public fraction-field method again during construction.
-  **Integration:** extend the existing submonoid dispatch with this represented case, not a second localization class or a finite enumeration of nonzero elements.
-  Review field inputs, prime complements, element-generated submonoids, and the number-field specialization against the same declaration.
-  Preserve canonical field identities while retaining the map from each original source; do not attach source-dependent state to a shared field singleton.
-  **Required consumer:** module scalar extension along the resulting fraction map uses the existing module-localization/scalar-change functor.
-  Inspect every caller of the changed fraction-field and localization-map contracts and adjust dependent callers in this unit, without rebuilding unaffected local algebra.
-  **First specimen:** the fraction field of `ZZ` and its source morphism, with numerator/denominator interpretation and the induced map of a module.
-  **Separating specimens:** `ZZ[1/2]` and `ZZ_(3)` retain different unit behavior from `QQ`; a ring with zero divisors requires its total quotient-ring operation, not the fraction-field operation.
-  Locality is justified for prime localization, not for all submonoids.
-  **Acceptance:** direct owned construction, the fraction-field method, and scalar-change consumption establish the same semantic contract and comparison maps.
-  Source review confirms the retained maintained arithmetic and absence of a bypass; specimens exercise owned elements, submonoids, and morphism endpoints.
-  Follow the [construction factorizations](CONTRIBUTING.md#required-construction-factorizations), `OWN-02`, `OWN-07`, and `OWN-10`; do not infer constructor convergence from equality of printed rings or impose a general submonoid-equality algorithm.
-
 ### Completion objects and finite approximations
 
-- [x] **`module-completion`**. **Needs:** none.
-  Make finite-module completion consume the corrected ring completion and construct its functorial maps.
-  **Owner:** `modules/framed/finitely_generated/finitely_presented_modules.py`, module scalar change, and the existing ring completion owner.
-  **Reuse:** use the existing scalar-change functor on the supplied module presentation and its morphisms.
-  Resolve any missing coefficient transport at that owner.
-  Module completion must not implement another tensor product, relation reducer, or precision convention independent of the ring completion.
-  **Decision:** use `M tensor_R R_hat` as completion for finite modules over a Noetherian ring, with the canonical comparison to the inverse limit and exactness justified by [Stacks 00MA](https://stacks.math.columbia.edu/tag/00MA). Keep the general completion definition separate from that theorem; finite presentation alone does not authorize every Noetherian exactness claim.
-  **Deliver:** the completed module, canonical map into its scalar restriction, completed nonidentity morphisms, and `M_hat -> M/I^n M` with transitions.
-  Preserve the selected presentation and transport maps without treating its framing as a basis.
-  **First specimen:** multiplication by `x` on the free rank-one module over `QQ[x]` remains injective after `(x)`-adic completion.
-  Multiplication by `x` on `QQ[x]/(x^N)` has a nonzero kernel.
-  **Acceptance:** the implementation distinguishes those maps and realizes the completed exact sequence with cokernel `QQ`. Repeat the free-module construction over `QQ[x,y]` completed at `(x,y)`, so the multivariable route cannot escape the same obligation.
-  Also use a free-plus-torsion module; an already annihilated torsion example alone cannot test completion.
-
-- [x] **`quotient-completion`**. **Needs:** `module-completion`. Implement quotient/completion comparisons with hypotheses and actual maps.
-  **Owner:** ring quotient, module quotient, and completion functors.
-  **Decision:** in the Noetherian finite regime, construct the comparison between completing a quotient and quotienting the completion by the extended ideal/submodule.
-  Derive it through completed maps and cokernels.
-  Retain closure requirements outside that regime; do not identify a quotient by an arbitrary nonclosed submodule with a completed quotient.
-  **Specimen:** complete `QQ[x,y]/(xy)` at `(x,y)` by both supported routes.
-  Match the images of `x,y`, their product, projections to several orders, and the maps from the original algebra.
-  **Acceptance:** an explicit comparison isomorphism, not matching dimensions or a pair of parents with similar printed equations.
-
-- [x] **`completion-comparisons`**. **Needs:** `quotient-completion`, `local-module-maps`. Define the supported localization/completion and base-change comparisons before formal-family consumers use them.
-  **Decision:** there is no unrestricted rule that completion commutes with localization or arbitrary scalar extension.
-  State the source and target of each proposed comparison and the theorem making it an isomorphism.
-  For a Noetherian algebra at a chosen maximal ideal, use the appropriate maximal-adic local comparison.
-  For other localizations retain only the maps actually supplied by the topology.
-  **Separating example:** `QQ[[t]][1/t]` is nonzero, whereas completing `QQ[t,1/t]` with respect to the extended ideal `(t)=(1)` gives zero.
-  **Acceptance:** no general localization functor or family method silently identifies these constructions; a formal generic fiber is not obtained by relabeling a finite truncation.
-
 ### Local algebra extensions
-
-- [x] **`normalization`**. **Needs:** none.
-  Extend normalization and local-length operations beyond the represented integral affine and selected plane-curve regimes needed below.
-  **Owners:** `rings/commutative_algebra.py`, `rings/commutative_ideals.py`, their normalization adapter, and `schemes/singularities.py`. **Deliver:** total quotient rings for supported reduced rings, regular-element tests, normalization maps componentwise when required, conductor ideals, height-one valuations, and finite local lengths with residue-field degree accounted for.
-  Preserve minimal primes, components, and support.
-  **Decision:** normalization is a ring/scheme map, not a selected polynomial normal form; a list of normalized components is not yet the glued normalization.
-  Local invariants name a point; global delta cannot be substituted for delta at that point.
-  **Acceptance:** a reducible reduced curve, a singular integral curve, and a nonrational closed point exercise the required maps and local lengths.
-  Reuse the existing integral normalization and local `deltaLoc` operations.
-  **Capability question:** which operation in the existing Singular normalization adapter supplies the reduced/componentwise case, conductor, and comparison maps?
-  Inspect the corresponding OSCAR/Macaulay2 operations only for obligations the current adapter cannot discharge.
-  Retain that choice at the adapter; extend its raising of ideals, components, and maps rather than implementing local normalization, factorization, or length algorithms in the scheme consumer.
-
-- [x] **`local-module-maps`**. **Needs:** none.
-  Extend local homomorphisms and local-module operations only at their shared owners when these consumers require a new supported coefficient regime.
-  **Owners:** ring Hom, prime localization, localized ideals and module presentations.
-  **Preserve:** `QQ[x]_(x)` has nonunit `x` and unit `1+x`; `QQ[x,y]/(xy)` localized at `(x,y)` retains zero divisors; localizing `QQ[x]/(x)` by `x` yields the zero module.
-  **Deliver:** ideal extension/contraction, residue maps, maximal-ideal compatibility, and direct-map kernels through the existing exact algorithms, including nonreduced coefficients where supported.
-  **Acceptance:** transported maps and directly constructed local maps agree through their comparison morphisms.
-  A fraction-field computation cannot supply a local-ring unit, kernel, or vanishing claim without the required faithful comparison.
 
 ## Architecture before dependent implementation
 
@@ -271,28 +200,6 @@ These are targeted remaining contracts and preservation obligations, not a resta
 
 ### Constructor and ownership convergence
 
-- [x] **`constructor-data`**. **Needs:** none.
-  Complete constructor-contract discovery and close the remaining variadic/opaque defining-data boundaries.
-  **Owners:** the common `object_of` construction path, generated category contracts, typed parameterized categories, and surviving functors.
-  **Deliver:** named mathematical parameter domains and required data for ordinary construction, adopted runtime realizations, Hom construction and property refinement.
-  Specializations fulfill inherited accessors before returning their objects.
-  **Boundary decision:** a private runtime realization still receives complete owned defining data through the common constructor; adoption is not a public raw-engine input form.
-  Inspect inherited zero/one, empty families, component access, and scalar actions as well as the newly declared accessor.
-  Keep presentation changes explicit through maps, not mutations of retained data.
-  **Decision:** retain the exact supplied module when equipping distinct algebra structures; chosen multiplication/action/presentation is new structure, not a property mutation.
-  Refinement cannot overwrite another structure.
-  **Acceptance:** source-backed public signatures and constructor examples cover an algebra and a module over the same object, a noncommutative regular module action into additive endomorphisms, and two multiplications on one supplied module.
-  Generic owners do not import their new descendants.
-  Keep general class/functor compilation at `sage-categories`, not here.
-
-- [x] **`general-modules`**. **Needs:** none.
-  Extend general module contracts outside the current finite presentation algorithms without weakening their mathematical domains.
-  **Owners:** `categories/modules/general_modules.py`, module Homs, rank functions, framings, and scalar-change functors.
-  **Deliver:** additive-group ownership for general supplied modules; source-backed linearity algorithms where decidable; broader PID/Smith/ Hermite support when an engine theorem applies; and infinite-cardinal rank where represented.
-  **Decision:** fiber rank, locally constant finite-projective rank, and generic rank over a domain are separate notions.
-  A finitely generated or finitely presented property supplies no chosen framing by itself.
-  **Acceptance:** a nonfree module, a nonconstant rank function, an infinite indexing set, and an unsupported callable equality problem retain their correct interfaces and computational frontier.
-
 ## Covering families and sheaves
 
 **Integration route for this workstream:** the covering-family owner constructs the geometric descent datum; local kernels, cokernels, tensor products, restriction, and scalar change use the existing module/algebra owners.
@@ -300,38 +207,6 @@ At the first unsupported local computation, determine whether its established Sa
 Repair that adapter once.
 Research a sheaf-level package for the specified geometric category when it can supply a larger operation; do not assume a finite-category presheaf package computes arbitrary scheme sheaves.
 Keep the exact missing comparison or descent datum with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
-
-- [x] **`affine-descent`**. **Needs:** none.
-  Extend module and algebra descent from one distinguished affine cover to covering families with distinct overlap rings.
-  **Owners:** `categories/schemes/gluing.py`, `categories/schemes/affine_covers.py`, and `categories/divisors/invertible_sheaves.py`. **Current boundary:** `ModuleGluingDatum` obtains both transition endpoints through one cover's `restricted_module`/intersection path.
-  **Decision:** use the two overlap open immersions and their isomorphism.
-  Transport the module on the other chart along that isomorphism's ring pullback before comparing or composing local maps.
-  Reuse the finite scheme gluing's triple-overlap transport.
-  **First specimen:** a nontrivial invertible sheaf on the standard two-chart cover of `P^1`, then its refinement to three charts.
-  **Acceptance:** actual inverse and triple-cocycle equations in the correct Homs, glued nonidentity morphisms, and explicit refinement comparisons.
-  Isomorphic overlap rings are not silently identical parents.
-  [Stacks 01JA](https://stacks.math.columbia.edu/tag/01JA) supplies the scheme gluing maps and compatibility requirements.
-
-- [x] **`general-descent`**. **Needs:** `affine-descent`. Extend the same covering-family owner to non-affine overlaps and to the corresponding locally ringed-space and manifold atlases.
-  The locally ringed-space part retains non-affine overlaps, both embeddings, and affine-refinement comparison maps; manifold atlas owners retain topological, finite-`C^k`, and smooth coordinate changes.
-  **Deliver:** an affine refinement of a represented non-affine overlap, comparison maps between refinements, and local-to-global gluing independent of the chosen refinement.
-  Include smooth, topological, and `C^k` atlas maps at their respective owners.
-  **Decision:** a covering family is not necessarily a distinguished cover of one affine scheme.
-  It must not acquire a fictitious global coordinate ring.
-  **Acceptance:** the punctured-plane/overlap construction and refinement diagrams retain chart labels and both embeddings; non-affine global sections do not replace the whole space by their spectrum.
-
-- [x] **`sheaf-operations`**. **Needs:** `general-descent`. Implement sheaf kernels, cokernels, tensor products, local presentations and stalk comparisons through the existing module operations.
-  **Owner:** module sheaves and their descent morphisms.
-  **Deliver:** restrictions of each construction, comparison to chartwise constructions, and the induced maps at stalks.
-  **Decision:** use the sheaf category in which the construction exists.
-  Taking a cokernel of global sections is not in general the global sections of the sheaf cokernel; taking an inverse limit of sections is not automatically an exact sheaf construction.
-  **Acceptance:** a nonzero map of sheaves with nontrivial kernel/cokernel and a refinement comparison; equality tests live at the responsible module/Hom owner rather than in a new sheaf-level coordinate algorithm.
-
-- [x] **`sheaf-functors`**. **Needs:** `sheaf-operations`. Construct inverse image, direct image and module pullback along represented scheme morphisms with their correct categories and variance.
-  **Decision:** inverse image of a sheaf and tensoring by the target structure sheaf are distinct steps of module pullback.
-  Preserve the structural ring map and canonical comparison morphisms.
-  **Deliver:** functor actions on nonidentity maps, identities, composition, and the applicable adjunction unit/counit.
-  **Acceptance:** a nontrivial base change of an invertible sheaf agrees via a constructed comparison with pulling back its transition data.
 
 ## Divisors and relative geometry
 
@@ -346,83 +221,9 @@ Do not make an engine's affine or toric specialization the public definition of 
 
 ### Shared complex and DGA integration
 
-- [x] **`complexes`**. **Needs:** none.
-  Complete the remaining coefficient-ring computation boundary without replacing the owned cycle/boundary quotient by an abstract homology group.
-  **Owners:** module kernels/images/cokernels and the common cochain/cohomology owners.
-  The represented complex itself now supports integer degrees, finite support with known zero outside it, and lazy indexed families over all `ZZ`. **Current maintained boundary:** finite free kernels use Sage matrix `right_kernel`; PID presentation normalization uses the backend `smith_form`; polynomial-presentation kernels over a field use Singular `modulo` and `lift`. `Cycles`, `Boundaries`, and `Cohomology` compose those operations while retaining the inclusion, boundary-in-cycles map, quotient projection, representatives, coefficients and induced functor maps.
-  Sage `ChainComplex.homology` was inspected: it supplies abstract groups and optional cycle generators, but not those full owned comparison maps, so a second whole-complex computation is not selected.
-  **Remaining capability:** complexes of finitely presented modules over rings outside the existing PID and polynomial-over-a-field adapters.
-  CAP/homalg's ModulePresentationsForCAP, FreydCategoriesForCAP, and ComplexesAndFilteredObjectsForCAP are listed only as computation references and are not provisioned in this repository.
-  Provision and inspect the maintained operation before adding any local reduction (`ENG-06`). **First remaining specimen:** over `R=ZZ[x]`, represent the two-term map `R^2 -> R`, `(a,b) |-> 2a+xb`, and retain both the syzygy inclusion generated by `(-x,2)` and the quotient projection onto `R/(2,x)`, together with a nonidentity induced map.
-  This ring deliberately lies outside the currently represented PID/Singular-field regimes.
-  **Construction decisions:** homological resolutions keep their augmentation and degree convention explicitly; cochain complexes use degree `+1`. A finite computational window, if introduced by a provider, must contain both incoming and outgoing maps required by a requested degree and must never declare the uncomputed complement to be zero.
-  **Acceptance:** the remaining coefficient regime returns owned presentations, cycle/boundary inclusions, quotient maps, representatives and induced maps via a maintained provider; no new local chain-reduction algorithm is introduced.
-
-- [x] **`dga-cohomology`**. **Needs:** `complexes`. Make the existing DGA/cohomology-algebra routes consume that same complex contract and preserve only the algebraic refinements the source justifies.
-  **Owners:** `categories/algebras/differential_graded_algebras.py`, `categories/algebras/cohomology_algebras.py`, graded algebras and derivations, and `categories/functors/cohomology.py`. **Preserve:** the existing descended multiplication through cycle representatives and `class_of_cycle`, and the induced map from a DGA morphism.
-  Review `CohomologyAlgebras.super_categories`, which currently declares strict graded commutativity, against every admitted source DGA. Place the result in the general graded algebra category and add only justified refinements; characteristic and parity hypotheses must not disappear during raising.
-  **Computation selection:** inspect Sage's [commutative DGA operations](https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/commutative_dga.html) for cocycles, coboundaries, cohomology, representatives, and products in the represented degree range.
-  Use them for the supported commutative case; inspect the applicable maintained algebra/module operations for other DGAs rather than relabeling them commutative.
-  Decide the exact basis/presentation correspondence at the adapter.
-  Do not build a second cohomology solver or multiply chosen normal forms without the quotient comparison.
-  **Deliver:** inherited underlying module, grading, differential, self-module action, unit when required, multiplication, and nonidentity DGA morphisms through their immediate owners.
-  Zero boundary degrees and lazy homogeneous pieces follow the same component contract as ordinary complexes.
-  **Specimens:** degree-zero cohomology of a nonnegative unital DGA; a nonzero boundary representing the zero class; multiplication after changing a cycle representative by a boundary; and a source-backed noncommutative DGA that must not acquire graded commutativity.
-  Retain the applicable characteristic-two distinction between sign conventions and additional square-zero relations.
-  **Acceptance:** forgetting multiplication gives the same complex construction and cohomology modules, with comparison maps if a representation changed.
-  Products and induced maps compose through those owned modules.
-  Source review establishes inherited data and computational reuse; numerical agreement alone cannot remove this item (`OWN-03`, `OWN-07`, `OWN-09`, `OWN-12`).
-
 ### Toric integration before geometric extensions
 
-- [x] **`toric-cohomology`**. **Needs:** `complexes`. Consolidate toric cohomology's existing maintained computations inside declared private adapters and complete raising through the shared constructors.
-  **Owners:** `categories/schemes/geometric_cohomology.py`'s `ToricWeightCohomologyComplex` and `ToricLineBundleCohomology`, the existing toric-divisor/fan adapters, and the common complex/module owners above.
-  **Starting point:** these functions already use Sage's `_sheaf_complex`, `_sheaf_cohomology_support`, and simplicial chain-complex construction.
-  Keep that algorithmic reuse.
-  They also call another object's engine accessor and attach geometric data after constructing a complex/module; those paths must satisfy `OWN-03`, `OWN-05`, `OWN-06`, and `OWN-07`. **Capability decision:** first compare the documented public [toric-divisor cohomology operation](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/divisor.html) with the required weight complex, cycle quotient and induced maps.
-  Its returned vector spaces are not sufficient evidence of these correspondences.
-  Use the public computation where adequate; any necessary upstream private helper is confined to the declared toric adapter with its source-backed contract.
-  Check [Klyachko bundle/sheaf complexes](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/sheaf/klyachko.html) for the equivariant generalization's actual inputs and outputs, not by name.
-  **Deliver:** owned weight/index objects, augmented and shifted differential data, cycle and boundary maps, and the total cohomology construction with its summand inclusions/projections.
-  Construct the scheme/divisor/weight datum through the category initializer before exposure.
-  An empty support and a zero group retain the same defining data and scalar action as a nonzero result.
-  **Missing-map question:** which upstream geometric maps or established complexes supply the requested nonidentity sheaf/restriction/refinement map?
-  Obtain and raise that map, then let the shared cohomology functor act.
-  Equal weights or dimensions do not define it.
-  Preserve explicit completeness, coefficient, and Cartier/Weil hypotheses at their relevant operations.
-  **First specimen:** take a divisor with nonzero higher cohomology from the cited Sage toric-divisor examples, retaining the stated fan, coefficients and weight.
-  Construct an owned weight class with its representative, inclusion and quotient image, then its inclusion into total cohomology.
-  The first induced map is multiplication by `2` on that line bundle over `QQ`, transported through its complex; it must act as multiplication by `2` on the nonzero class.
-  Add zero-support and boundary-degree cases.
-  Non-scalar geometric and refinement comparisons remain with the extension items; this scalar specimen does not discharge them.
-  Acceptance compares actual maps, not only a Betti-number list.
-  **Acceptance:** geometry consumes owned complexes and cohomology; the adapter retains existing maintained toric computations; all returned constituents and later arithmetic remain owned.
-  Source review covers every affected constructor and private call, with the missing integration recorded at its owner.
-  Do not recreate toric cohomology or declare its whole implementation absent.
-
 ### Geometric and equivariant extensions
-
-- [x] **`geometric-cohomology`**. **Needs:** `toric-cohomology`, `sheaf-functors`. Extend geometric cohomology from the current toric weight complexes to the required non-toric schemes and sheaves.
-  **Owners:** `categories/schemes/geometric_cohomology.py`, sheaf descent, and existing cochain complexes.
-  **Dependency and reuse:** consume the common complex/cohomology route above.
-  The new geometric work is the justified complex, augmentation and functorial comparison.
-  Inspect the appropriate maintained sheaf-cohomology operation for the chosen non-toric presentation before assembling a complex locally; retain an existing resolution or Cech construction when it supplies the full datum.
-  The unresolved capability is the non-toric complex and maps, not another kernel, syzygy, chain-reduction, or cohomology implementation.
-  **Deliver:** a geometrically justified complex with its augmentation/ comparison, induced nonidentity maps, and actual cohomology modules.
-  State which cover computes the theory and why it is acyclic or otherwise sufficient.
-  **Decision:** a complex merely having the expected dimensions is not a geometric cohomology construction.
-  Refining a cover produces a comparison on complexes and cohomology, not an assertion that two output ranks agree.
-  **Acceptance:** a non-toric coherent-cohomology computation and a refinement comparison preserve maps and functoriality.
-
-- [x] **`tor-ext`**. **Needs:** `dga-cohomology`. Extend the existing Tor/Ext functoriality to both arguments and the resolutions needed by geometric consumers.
-  **Owners:** module resolutions, chain maps, derived functors, and DGA multiplication at the algebra owner.
-  **Computation decision:** inspect the current resolution/derived-module adapter and the applicable Singular, Macaulay2, OSCAR or homalg operations for lifts and resolution comparisons as well as modules.
-  The owned functor provides variance and composition; the private adapter supplies maintained resolution computations.
-  Repair missing lift transport at that owner, not in each Ext, Tor, intersection, and geometric consumer independently.
-  **Deliver:** the unresolved argument's induced maps, correct covariance/ contravariance, comparisons between chosen resolutions, and cohomology independence through the appropriate chain-homotopy argument.
-  **Decision:** no unsupported bound may turn a prefix of a resolution into a complete resolution.
-  Do not require equal chain lifts when only their induced cohomology maps are canonical.
-  **Acceptance:** nonidentity maps in each argument and two chosen lifts; products use a multiplication compatible with the differential and descend to cycles modulo boundaries.
 
 ## Families and singularities
 
@@ -431,30 +232,6 @@ Formal consumers use the completed object and its inverse system, never their ow
 Local classification uses the existing singularity/normalization adapters.
 Before implementing a new local recognition rule, identify the maintained algorithm for the specified equivalence relation and whether it returns coordinate maps.
 For analytic comparisons, monodromy and nearby/vanishing cycles, identify the precise source construction and available implementation first; names shared with algebraic operations do not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
-
-- [x] **`dvr-families`**. **Needs:** `localization`, `completion-comparisons`. Extend `categories/schemes/families.py` to DVR bases through the existing scheme slice and scalar-change constructions.
-  **Dependencies:** local algebra; corrected completion only for the completed base-change portion.
-  **Deliver:** spectra of DVRs, generic and special fibers via fraction and residue maps, the completed-base family, and maps comparing the two routes to its special fiber.
-  **Decision:** the family is its morphism `X -> S`. Flatness, properness and smoothness are additional properties, not consequences of naming it a family.
-  Use torsion-freeness for the relevant module over a DVR only with the theorem's actual hypotheses; do not transplant it to arbitrary bases.
-  **First specimen:** `xy=t` over `QQ[t]_(t)`, its generic fiber and nodal special fiber, followed by base change to `QQ[[t]]`. **Acceptance:** the same parameter map controls equations, differentials, fibers and flatness; a scalar-killed comparison detects nonflatness.
-  Completion precision is absent from exact flatness and fiber claims.
-
-- [x] **`formal-families`**. **Needs:** `completion-comparisons`, `sheaf-functors`. Construct formal neighborhoods and formal families as formal objects, retaining their algebraic comparisons.
-  **Dependencies:** corrected ring/module completion and continuous maps.
-  **Decision:** distinguish `Spec(A_hat)`, the formal spectrum, and the system of infinitesimal thickenings.
-  Their point sets and categories are not interchangeable.
-  An infinitesimal thickening is one finite stage.
-  **Deliver:** the selected ideal of definition, compatible thickenings, formal restrictions, and morphisms justified by the topology.
-  **Acceptance:** changing the finite computational order refines information without changing the formal object; compatible truncation data is connected to the completed algebra by actual maps.
-
-- [x] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`. Extend local singularity classification beyond selected coordinate normal-form recognition.
-  **Owners:** `categories/schemes/singularities.py`, pointed local rings, completions, and established singularity algorithms.
-  **Decision:** regularity and smoothness over a base differ; name which is decided.
-  A normal-form label requires the appropriate equivalence and, when constructed, its coordinate-change morphism.
-  Matching Milnor/Tjurina numbers alone is not a classification theorem.
-  **Deliver:** supported coordinate changes, the correct equivalence notion, Jacobian/Fitting ideals under their hypotheses, and smooth/nonsmooth loci with the selected scheme structure.
-  **Acceptance:** the same singularity in non-normal-form coordinates, a nearby non-equivalent example where invariants do not suffice, and a nonperfect-base case that separates regularity from smoothness.
 
 ## Geometric research applications
 
@@ -476,60 +253,6 @@ Do not rebuild a lattice/group algorithm because its output needs an owned morph
 If an actual algorithmic gap remains, name it and apply `ENG-06` before implementation.
 Bridge repairs and codec additions belong at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`).
 
-- [x] **`transporters`**. **Needs:** none.
-  Finish rational-integral transporters and cosets through the required external arithmetic operations.
-  **Owners:** rational matrix groups, lattice stabilizers, `categories/orthogonal_quotients.py`, and `sage-indefinite-port`. **Deliver:** integral transporter between commensurable lattices and the remaining external arithmetic lifting theorem.
-  Finite-character right-coset transversals and stabilizer double cosets now return live orthogonal-group lifts with explicit coset orientation.
-  **Decision:** finite reduction computes the stated arithmetic object only after proving the invariant-lattice/denominator and lifting hypotheses.
-  An arbitrary rational matrix group need not admit the required finite reduction.
-  Specify the cases, rather than silently bounding denominators.
-  **Acceptance:** lift each representative/transporter to an actual rational or integral morphism, verify its action on the lattice, and retain exact stabilizer inclusions and coset orientation.
-
-- [x] **`centralizers`**. **Needs:** `transporters`. Extend centralizers from involutions to higher finite-order isometries and their equivariant orbits.
-  **Deliver:** cyclotomic primary subspaces, their integral intersections, gluing subgroup, compatible isometry groups, and lifts to the full lattice.
-  Account for the extra algebra/hermitian structure required on a cyclotomic component.
-  **Decision:** the finite discriminant image is not the full arithmetic centralizer; independent isometries of the components need not preserve the gluing.
-  Keep the commuting square with the distinguished isometry.
-  **Acceptance:** a finite-order example with a nontrivial cyclotomic component and nontrivial gluing, plus decorated sublattice/flag orbit representatives and transporter morphisms.
-
-- [x] **`reduction-complexes`**. **Needs:** `transporters`. Complete exact rational polyhedral and reduction-complex constructions.
-  **Owners:** existing polytope/cone, pairing-configuration, and lattice-action owners; Normaliz, cddlib, PPL or the existing bridge computes polyhedra.
-  **Deliver:** facets, extreme rays, incidences and face stabilizers; reduction cells and adjacent-cell morphisms; Lorentzian perfect-domain traversal and marked nonzero-norm vector transport.
-  **Decision:** use the retained pairing and exact rational inequalities, not a floating-point picture or only a canonized incidence graph.
-  **Acceptance:** adjacent cells share the actual face, their transporter sends one cell to the other, and the group-generation/completeness argument distinguishes a full domain from a finite exploration prefix.
-
-- [x] **`witt-recursion`**. **Needs:** `parabolic-gluing`. Implement higher-Witt-index recursion and the `2U` Eichler construction through the existing isometry, discriminant and transporter owners.
-  **Deliver:** complete the source-defined subgroup beyond the represented two `SL_2(ZZ)` actions, Eichler transformations, canonical `O(K)` lifts and finite covering representatives: supply the remaining discriminant lifts, recursive stabilizers, transporter completion to the full orthogonal group, and recursive lattice equivalence.
-  **Decision:** state evenness/integrality conditions for every transformation.
-  A subgroup generated so far is not the full orthogonal group until the generation theorem applies.
-  A covering family is not automatically a set of distinct orbit representatives.
-  **Acceptance:** explicit action morphisms and a completeness argument, with each recursive step decreasing the parameter its termination proof uses.
-
-- [x] **`parabolic-gluing`**. **Needs:** `transporters`. Replace heuristic parabolic constructions by exact integral gluing.
-  **Owners:** isotropic reductions, group actions and arithmetic groups.
-  **Deliver:** the rational Witt decomposition with integral sublattices, unipotent kernel, gluing-preserving Levi image, lift obstructions and supported lifts, and the corresponding exact sequence.
-  Construct the inductive flag-orbit double cosets in the actual image of the parabolic, not automatically in the whole orthogonal group of the reduction.
-  **Decision:** primitive means the quotient by the submodule is torsion-free; a primitive vector can have pairing divisibility greater than one.
-  Distinguish vectors, their rank-one sublattices, rational planes, and saturated integral sublattices throughout.
-  **Acceptance:** a non-unimodular example where gluing restricts the Levi action, plus line/plane incidence with actual embeddings and transporters.
-
-- [x] **`chambers`**. **Needs:** none.
-  Finish the remaining Coxeter-poset and number-field Vinberg operations.
-  **Owners:** `categories/coxeter_diagrams.py`, Vinberg invariants and the reflection-engine adapter.
-  **Deliver:** maximal elliptic/parabolic subdiagram posets and the number-field root computation in its valid arithmetic regimes.
-  The exact root-half-space chamber, dominant cone, positive-cone projectivization, Weyl group and lazy chamber complex are already delivered at their owners.
-  **Decision:** retain root-to-diagram maps and exact edge/vertex weights; bounded search is not a nonreflectivity proof.
-  Reuse projectively weighted graph objects and the current Vinberg/edge-walk implementations.
-  The number-field operation remains a provider obligation rather than an integer algorithm with coerced coefficients.
-  **Acceptance:** sourced finite, affine, noncrystallographic and hyperbolic literature examples distinguish the asserted regimes, and a supported totally-real number-field example returns roots over its actual integer ring.
-
-- [x] **`arithmetic-applications`**. **Needs:** `witt-recursion`, `centralizers`, `reduction-complexes`. Assemble the three arithmetic research constructions with their maps.
-  **Lorentzian:** `U + E8(-1)`, its orthogonal/component groups, cusp orbit, cusp stabilizer, unipotent radical and map onto the definite reduction group.
-  **Higher Witt index:** `U + U(2) + E8(-2)`, with its represented line/plane orbits, stabilizers, full-orthogonal Tits-building incidence, and generic character-defined subgroup cusp/flag splitting with actual subgroup transporters, obtained by left-adjusting a full-orthogonal witness by the target stabilizer inside the finite character quotient; instantiate the intended `H <= O(A_L)` and retain the resulting application maps.
-  **Equivariant:** the K3 lattice with an Enriques involution, its integral invariant/anti-invariant decomposition and gluing, full centralizer, polarization stabilizer intersection, and anti-invariant isotropic orbits.
-  **Acceptance:** actual inclusions, projections, group maps and transporters, not a table of expected invariants.
-  Their execution belongs to T.
-
 ## Framework transfer and organization
 
 ### Organization findings
@@ -550,33 +273,13 @@ It is not a reason to postpone source-level ownership review until every downstr
 
 ### Terminal T was entered; complaint remediation has reopened required source work
 
-The repository already entered terminal T and the checked `terminal-reference`, `terminal-execution`, and `terminal-repairs` nodes retain the evidence they established at their recorded revisions.  The later source audit in `COMPLAINTS.md`, however, found mandatory architectural violations that were not represented in the old DAG.  Those findings are now promoted into the required [complaint-driven architecture remediation](#complaint-driven-architecture-remediation) workstream below.
+The repository already entered terminal T; `terminal-reference`, `terminal-execution` and `terminal-repairs` are delivered, and the evidence they established is in their delivery commits.  The later source audit in `COMPLAINTS.md`, however, found mandatory architectural violations that were not represented in the old DAG.  Those findings are now promoted into the required [complaint-driven architecture remediation](#complaint-driven-architecture-remediation) workstream below.
 
 The phase rule therefore applies again while `architecture-remediation` is open: do not use Sage/tests/QC/notebooks to drive source authoring in that workstream.  Bank the corrected constructions and the specimens that will falsify them, then return to terminal execution.  The prior terminal evidence is not discarded, but it cannot certify source that changed afterward.
 
-`terminal-session` is the re-entry boundary.  It depends on both the already-completed `terminal-repairs` work and the new `architecture-remediation` convergence node.  Once both hold, regenerate the live reference/graph as needed, execute the final public session/notebook surface, and run the prescribed final QC against the repaired architecture.
+`terminal-session` is the re-entry boundary.  It depends on the delivered `terminal-repairs` work and on the `architecture-remediation` convergence node.  Once both hold, regenerate the live reference/graph as needed, execute the final public session/notebook surface, and run the prescribed final QC against the repaired architecture.
 
 This keeps the two roles distinct: source-level architecture remediation is driven by the observed construction contract, while terminal execution decides whether the repaired public mathematics actually works.  Do not use a previously green terminal run to waive a newly observed source defect, and do not use an architectural audit finding as if it were already a runtime failure.
-
-- [x] **`terminal-reference`**. **Needs:** none.
-  *Required implementation and transfer are finished.* They mean the twenty-eight implementation nodes checked off in this file — `toric-cohomology`, `tor-ext`, `witt-recursion`, `arithmetic-applications` and the rest — and every one is closed.
-  `optional-database` and `optional-engine` are optional by name and gate nothing.
-  A repair you discover from here does not reopen that condition; if it did, the condition could never be met, because there is always one more repair to find.
-  Generate the preamble reference and category/functor graph from the integrated source, then read them against the intended objects, maps and inherited operations.
-  **Acceptance:** documentation describes that source and exposes the mathematical contracts.
-  Generation success alone is not a correctness claim.
-  Compare the integrated constructor, adapter, export and consumer contracts with `OWN-01` through `OWN-14`, including source-reviewed work no longer in this queue.
-  Use the completed units' commits to locate evidence, then inspect the affected live routes after integration.
-  Missing mandatory architecture is new concrete repair work at its owner, not a documentation rewrite declaring the weaker implementation acceptable.
-  Do not turn this comparison into a source-policing test or a count of engine imports.
-
-- [x] **`terminal-execution`**. **Needs:** `terminal-reference`. Execute the prescribed public-construction and mathematical suites in the terminal verification phase through the existing project recipes.
-  **Scope:** expectation subtrees, ring/module/algebra/action contracts, completion versus truncation, geometric constructions and comparisons, transferred framework consumers, and the valid archive/literature specimens.
-  Include the permitted construction-order/session tests on the integrated tree and notebook checks through `japi`. **Acceptance:** each claimed behavior is exercised through the actual public path.
-  An unverified assertion, suite count, or backend-only test is not proof of the corresponding construction.
-  Include the new localization/fraction-field route, genuine completion and its projections, shared complex and DGA boundary degrees, integral torsion, representative-independent products, toric weight-to-total maps, lazy owned constituents, and the nonidentity maps recorded with each integration unit.
-  Reuse existing proof surfaces and preserve independent mathematical expected results.
-  Engine call counts, mocked delegation, and checks of private helper spellings do not prove these obligations.
 
 ### The sage-categories pin is unresolvable, and the cause is in that repository
 
@@ -588,39 +291,7 @@ Do not work around it by switching to a filesystem path dependency.
 That hides a publication gap that affects every consumer, and the declared route between these projects is GitHub.
 Treat the pin as blocked, record it that way against the affected items in the observed failure set, and carry on with the 36 collection errors, which are this repository's own and are repairable here.
 
-- [x] **`terminal-repairs`**. **Needs:** `terminal-execution`. Repair the mathematical owners exposed by terminal verification and establish the originally required behavior.
-  **Observed terminal failure set (2026-09-13):** `terminal-reference` now generates `docs/preamble-megadoc.md` and the 327-category/94-functor preamble graph from a live Sage session.
-  The declared `just graph` route is reproducible from committed `scripts/build_graph.py`. The 36 collection errors caused by missing public `preamble.all` construction names are also repaired and pinned by a direct public-import regression; collection now passes those former failures and reaches the independently blocked `sage-categories` import.
-  `just test-push` cannot resolve the declared `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`. A direct Sage 3.12 collection against the current local upstream checkout now collects 19,702 tests and reaches one upstream-only syntax error in `sage_categories/cat/category.py`. The archived Nikulin genus specimen no longer imports the retired `integrallattice` package path: it imports `Genus` from the live lattice owner.
-  Remaining observed collection repairs are duplicate test-module basenames, group-algebra commutativity reaching an `OwnedArrowCategory` parent, and the missing `OwnedCategoryOverBaseRing` session export.
-  A fresh category-suite execution then exposed a distinct group-Hom admission defect: an automorphism in `Aut(G)` was rejected as a morphism of `Grp` while checking abelianization-unit naturality.
-  The group Hom owner now corestricts same-endpoint structured group homomorphisms through their retained GAP map; the abelianization naturality regression passes.
-  The next category-suite failure was an obsolete assertion that `Modules(R[G])` is literally a subcategory of `Modules(R)`. The retained architecture correctly makes restriction along `R -> R[G]` a functor; the specimen now exercises that object/morphism restriction and keeps genuine form/lattice subcategory inclusions separate.
-  Continuing the category suite exposed Hom admission rebuilding stronger structured arrows in a weaker Hom category; fixed Hom objects now accept same-endpoint arrows along the declared subcategory edge instead of re-verifying their presentation.
-  This subsumes the earlier group-automorphism special case and lets the free-algebra functor reach its next independent arithmetic assertion.
-  The archived wide-subcategory specimen also now uses the represented fixed-Hom object's explicit arrow object rather than incorrectly identifying that object with its underlying map; corestriction from a more specific core similarly retains the same forward and inverse arrows while changing the represented Hom parent.
-  The construction-order session regression no longer reads Sage's private `_cmp_key` representation (a method on current join categories); it now compares the existing structural category-graph signature that the owned ordering itself is defined from.
-  A toric construction then exposed join categories inheriting both an ordinary Hom and its stricter subobject Hom; fixed-Hom selection now removes inherited super-Homs and keeps the unique minimal arrow theory, while still rejecting genuinely incomparable Hom constructions.
-  Generic `G`-objects then exposed two representation-boundary defects: Hom inheritance attempted to reuse a supercategory Hom whose endpoints that supercategory did not admit, and functor admission bypassed `GObjects.Mor` for represented action functors.
-  Hom selection now inherits only from endpoint-admitting supercategories, the generic functor check uses each category's public `Mor` selector, and a `BG -> Set` action is wrapped as the represented functor-category object; the nontrivial `C2` swap action and its equivariant endomorphism pass.
-  A concrete acted object is now forgotten before forming `Mor_C`: in particular an `R[G]`-module contributes its retained coefficient module to `Mod_R` rather than being incorrectly used as an `R`-module endpoint itself.
-  The sign-module equivariant doubling map and its naturality square pass.
-  Predicate subgroup specializations now thread the inherited `Subgroups(G)` datum as `supergroup=G` through the construction contract instead of hiding it behind a duplicate `containing_group` name; regular-action point stabilizers again construct with their actual ambient group.
-  Finite `G`-set orbit and fixed-point functors are cached by the source category, so repeated `X.orbits()` calls retain one quotient object and orbit-indexed stabilizer families keep that exact index set.
-  Character inner products now use the identity `conjugate(chi(g)) = chi(g^{-1})` inside the character/group owners instead of requiring a nonexistent generic complex-conjugation method on owned cyclotomic scalars; direct-sum irreducible constituents are recovered again.
-  The default absolute Galois realization is now canonical per owned base field: repeated `AbsoluteGaloisGroup(K)` and `K.absolute_galois_group()` calls retain the same chosen closure/embedding object, while explicitly supplied realization data still construct their stated choice.
-  Finite automorphism groups now enumerate through their retained GAP automorphism group and compose inside the same `Aut(G)` parent; `Aut(C8)` consequently exhibits all four involutions and `Aut(V4)` retains its noncommutative order-six multiplication.
-  Kernels of finite represented group morphisms now take their order from GAP's exact kernel, and GAP subgroups of `Aut(G)` return through the automorphism-group subgroup constructor rather than a nonexistent Sage-group crossing; the conjugation maps for `S3` and `S6` recover the expected inner images.
-  A fresh 2026-09-14 `just test-universe` run reports 485 proof-surface diagnostics.
-  Per `DEV-34` and `DEV-49`, that aggregate is a review input, not the `terminal-repairs` denominator or scheduling queue: this node advances only from concrete failed propositions exposed by the prescribed terminal public/session executions.
-  The two recorded session/notebook failures are no longer active.
-  The preamble startup-display item was already cleared by a live `just sage-init-check`; on 2026-09-14 the main `H0_O_P1xP1_4_4.ipynb` setup cell was then executed in a fresh Sage kernel from the integrated tree and passed the projective framework's idempotent-installation regression with 209 registered patches and `unregistered external methods = {}`. Keep rechecking session failures against the live tree before treating a historical record as current.
-  Preserve these propositions and repair their owners; do not edit expectations merely to reduce this list.
-  **Decision:** do not weaken expectations to match an implementation, filter required failures, infer false from missing algorithms, or turn the failure list into unrelated architectural work.
-  A mathematically incorrect expectation may change only under the exception in `AGENTS.md`, with the correction justified in its commit.
-  **Acceptance:** the actual failed proposition is established and the affected downstream construction remains coherent.
-
-- [ ] **`terminal-session`**. **Needs:** `terminal-repairs`, `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
+- [ ] **`terminal-session`**. **Needs:** `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
   **Goal:** Exercise the repaired preamble as a coherent live Sage mathematical session: import the public category/lattice language, regenerate its derived views, inspect research examples, and run final QC.
   **Fresh-session invariant:** before this node can close, a fresh live Sage process on the repository's active environment must execute `from dzack_research.preamble.all import *` successfully and expose at least the core `Cat` and `Lattices` entry points.
   Regenerate the preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with the live session; graph node counts are an inventory, not acceptance by themselves.
@@ -653,30 +324,6 @@ Some members are sets with structure and belong there.
 Others are not sets at all, and declare `Sets()` because the category their objects belong to is not in the tree.
 These nodes build the missing categories rather than leaving the false declarations standing.
 
-- [x] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
-  **Goal:** Own a coverage on a category and the sheaf condition it defines, so that sheaves on \(C\) are the full subcategory of \(\mathrm{Presh}(C, D)\) cut out by descent.
-  **Observed gap:** the descent condition exists in exactly one situation and as gluing data rather than as a definition: `DistinguishedAffineCover.glue_modules` assembles a module sheaf from charts and transition isomorphisms.  Nothing states the condition a presheaf must satisfy.
-  **Owners:** the coverage on \(C\), the descent diagram it produces for a covering family, and the full subcategory of the presheaf category.
-  A full subcategory of the presheaf category places its objects through the presheaf category's own construction, and today `_FunctorCategory` builds its objects as objects of `Arr(Cat)` (cat.py, `_object_on`), so nothing can be placed under it until the functor category owns its objects; that is the edge to the two placement nodes.
-  **Deliver:** the sheaf condition as an equalizer over a covering family, the resulting full subcategory, and the existing affine gluing re-expressed as an instance of it rather than a parallel implementation.
-  The gluing-data categories are placed by that instance: `DistinguishedAffineCovers` (schemes/ringed_spaces.py) is the category of covering families of an affine scheme under the coverage, and `ModuleGluingData(cover)` and `AlgebraGluingData(cover)` (schemes/gluing.py) are the descent-data categories of that covering family; all three declare `Objects()` today and decide membership by `isinstance`.
-  **Separating cases:** a presheaf that fails descent on a two-element cover, and the same presheaf on the trivial coverage where it passes.  Keep the coverage a parameter: the reason for stating it this way is that stacks change the value category, not the condition.
-  **Acceptance:** a presheaf and a sheaf on the same site are distinguished by the construction rather than by the caller's assertion; the affine module-gluing route returns an object of the sheaf category.
-
-- [x] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
-  **Goal:** Place every sheaf in the tree as an object of the sheaf category, and declare the sheaf-bearing categories into the categories their own definitions name.
-  **Observed gap:** `QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`) and `RingedSpaces` (`:642`) both declare `Sets()`.  A quasi-coherent sheaf is an \(\mathcal{O}_X\)-module and a ringed space is \((X, \mathcal{O}_X)\); neither is a set.  `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and `HigherDirectImageSheaf` are plain `SageObject`s, so none inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents, and `__contains__` has to duck-type its argument for want of a placement.
-  **Owners:** the sheaf category from `sheaf-descent-subcategory`; the ringed space as a space together with its sheaf of rings; the affine equivalence with \(\mathbf{Mod}_A\) already implemented as `module_category`/`associated_sheaf`/`global_sections`.
-  **Deliver:** the sheaves become objects with placements; the two categories declare their real supercategories; `QuasiCoherentSheaves.__contains__` asks for a placement instead of probing for an attribute.  Retain the affine equivalence and the Stacks Tag 01I8 statement it cites --- this node changes where the objects live, not what they are.
-  **Acceptance:** the abelian and monoidal operations `QuasiCoherentSheaves` documents are reached through its declared supercategories rather than restated on it; no sheaf in the tree is outside the category graph.
-
-- [x] **`algebras-are-modules`**. **Needs:** none.
-  **Goal:** An algebra built by `Algebras(R)(module, multiplication)` is a module object constructed through `Modules(R)`, so it answers its module operations by inheritance.
-  **Observed gap:** `Algebras(R)` declares `Modules(R)`, but `Algebras._call_` (`algebras/algebras.py`) returns an object of the arrow category \(\mathrm{Arr}(\mathbf{Mod}_R)\) whose module is its `target_object()`, so `Algebras.ParentMethods` forwards `zero`, `module_generating_set`, `module_generator`, `module_rank`, `scalar_multiple`, `_selected_module_coefficients`, `__contains__` and `_element_constructor_` through `underlying_module()` behind an exact-module guard, and `AlgebrasWithChosenMultiplication.ElementMethods` wraps one module element.  The threaded route exists for associative multiplications only: `_algebra_from_multiplication` rebuilds the module through `_module_presented_by_multiplication` with the multiplication as construction data, received by `AssociativeAlgebrasWithChosenMultiplication.ParentMethods.__init__`.
-  **Owners:** `Algebras(R)._call_`; `AlgebrasWithChosenMultiplication`, which takes the threaded `__init__` and the multiplication transport from its associative refinement; `_equip_unit`, which transports the unit along the equipping map; the algebra Hom classes selected by `GeneralAlgebraHomCategoryConstruction`.
-  **Deliver:** `Algebras(R)(module, m)` constructs through the presented-module route for every bilinear `m`, associative or not; the forwarding block, the wrapper element class, the exact-module guard and the arrow-object branches of the algebra Hom classes are deleted with it; `underlying_module()` remains the functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) obtained from its category.
-  **Acceptance:** an algebra answers its module operations through `Modules(R)`; no operation `Modules(R)` provides is defined a second time in the algebra subtree.
-
 - [ ] **`algebra-structure-morphism-constructor`**. **Needs:** none.
   **Goal:** One canonical constructor for `Algebras(R)`, taking the defining datum of an \(R\)-algebra: an additive group with a biadditive multiplication \(A\) together with the structure morphism \(\rho\in\operatorname{Hom}_{\mathbf{Rings}}(R, Z(A))\), where \(Z(A)\) is the centroid of \(A\) -- the additive endomorphisms commuting with left and right multiplication (Mathlib `CentroidHom`, `Mathlib/Algebra/Ring/CentroidHom.lean`), which is the centre when \(A\) is unital associative.  No unit, associativity or commutativity is assumed: those are axioms above the node, and a Lie bracket is the multiplication of its algebra.  Every other constructor computes \(\rho\) from its own data and routes into this one, which constructs the underlying \(R\)-module (the additive group of \(A\) with \(r\cdot a=\rho(r)(a)\)), stores the multiplication tensor \(m\colon A\otimes_R A\to A\), and is what the forgetful functor sends \(A\) to.
   **Observed gap:** the tree has parallel independent constructors.  `Algebras(R)(M, m)` builds a second module on the generating set of \(M\) and retains \(M\) as a "multiplication source" with an identification map (`_ChosenAlgebraMultiplicationDatum`, `multiplication_source_module`, `from_multiplication_source`, `to_multiplication_source`, `AlgebrasWithChosenMultiplication`; `algebras/algebras.py`), none of which names mathematics: the algebra is \(M\) with structure, and \(\rho\) is computable from \((M, m)\) as the scalar action of \(M\), which lands in the centroid exactly because \(m\) is bilinear.  `_own_algebra(structure_map)` and `AlgebraStructureConstruction` hold a structure map as a side attribute of an engine-backed ring rather than as the constructor's datum, and only for associative unital algebras.  The algebra Hom decides multiplicativity of a supplied linear map by a finite-framing assertion; on non-finitary data the decision is theorem-backed or stated as a hypothesis, never asserted impossible.
@@ -700,10 +347,16 @@ These nodes build the missing categories rather than leaving the false declarati
 
 - [ ] **`closure-verification-2026-09-16`**. **Needs:** none.
   **Goal:** Every node checked on 2026-09-16 is re-verified against its own acceptance statement, and a node whose acceptance does not hold is unchecked with its remaining delta written as the node.
-  **Observed gap:** eight nodes were checked that day by commits with empty bodies (`e0f3aaf8`, `93483130`, `04e2e735`, `2ba4cf2d`, `1a3a5ba1`, `8d19fc96`, `d8128029`, `0d458d7e`).  Two acceptances are falsified by count at `HEAD`: `owned-provenance-data` (side-attribute assignments `x._preamble_* = ` numbered 327 before and after its closing commit, 326 now, in 62 files) and `membership-by-placement` (29 `__contains__` bodies still decide by `isinstance`).  The two falsified nodes are unchecked in this file with their remaining delta; the other six are unverified, not known to hold.
-  **Owners:** each checked node's own acceptance statement.
+  **Observed gap:** eight nodes were checked that day by commits with empty bodies (`e0f3aaf8`, `93483130`, `04e2e735`, `2ba4cf2d`, `1a3a5ba1`, `8d19fc96`, `d8128029`, `0d458d7e`).  Two acceptances are falsified by count at `HEAD`: `owned-provenance-data` (side-attribute assignments `x._preamble_* = ` numbered 327 before and after its closing commit, 326 now, in 62 files) and `membership-by-placement` (29 `__contains__` bodies still decide by `isinstance`).  The two falsified nodes stand in this file as open nodes with their remaining delta; the other six are unverified, not known to hold.
+  **Owners:** the acceptance statement each closing commit claimed; per `DEV-50` the delivered nodes are removed from this file, so those statements are carried here:
+  - `ambiguous-generator-names`: each audited public name identifies what is generated/dualized/based without knowing the receiver's implementation class, and no banned bare alias remains on the public surface.
+  - `arrow-category-placement`: the arrow category is reached as the functor category \([1] \to C\) rather than declared alongside it; its placement is in `Cat`.
+  - `cat-valued-placement`: one construction is primary, and every one of these categories is placed in `Cat` by it.
+  - `memoization-convergence`: repeated construction with identical defining data retains the documented identity; genuinely different choices remain distinct; no audited theory keeps a parallel identity dictionary.
+  - `sheaf-descent-subcategory`: a presheaf and a sheaf on the same site are distinguished by the construction rather than by the caller's assertion; the affine module-gluing route returns an object of the sheaf category.
+  - `sheaf-object-placement`: the abelian and monoidal operations `QuasiCoherentSheaves` documents are reached through its declared supercategories rather than restated on it; no sheaf in the tree is outside the category graph.
   **Deliver:** per node, the acceptance re-run against the tree and recorded in the commit body; falsified nodes unchecked and rewritten from the current state.
-  **Acceptance:** no checked node in this file has an acceptance statement the tree contradicts.
+  **Acceptance:** for each of the six, the acceptance statement above is re-run against the tree and the result recorded in the commit body; a falsified one is re-filed as an open node with its remaining delta.
 
 - [ ] **`objects-through-categories-scheme-gluing`**. **Needs:** none.
   **Goal:** Every object of this subtree is an object of its category, constructed through that category's one entry (`CON-16`) and threaded through its immediate supercategory, so that the runtime root alone realizes `Parent`/`Element`; the side attributes, probes and exception branches those hand-assembled parents needed become construction data, placement questions and `case`/`match` on placement or asserted frontiers (`POLICY.NO_EXCEPTION_CONTROL_FLOW`).
@@ -803,13 +456,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** each occurrence replaced by the object it names (the underlying set or module, the target object of an arrow, `Mor`).
   **Acceptance:** `rg -w carrier src/dzack_research/preamble` and the `.Hom(` search are empty outside engine adapters.
 
-- [x] **`arrow-category-placement`**. **Needs:** none.
-  **Goal:** `_ArrowCategory` is an object of `Cat`, which is what its own definition \(\mathrm{Arr}(C) = \mathrm{Fun}([1], C)\) says it is.
-  **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Objects()`, the root, so an arrow object inherits nothing from the functor category its definition names.  The functor category's own objects are built as objects of `Arr(Cat)` (`cat.py`, `_FunctorCategory._object_on`), so the two constructions currently define each other; one must become primary before `Arr(C)` can be declared into `[1] \to C`.
-  **Owners:** `Cat`, and the owned functor category.
-  **Acceptance:** the arrow category is reached as the functor category \([1] \to C\) rather than declared alongside it; its placement is in `Cat`.
-
-- [ ] **`geometric-space-placement`**. **Needs:** `sheaf-object-placement`.
+- [ ] **`geometric-space-placement`**. **Needs:** none.
   **Goal:** The spaces, pairs and convex bodies in the `Sets()` group declare the categories their own definitions name.
   **Observed gap:** the enumerated table in [COMPLAINTS.md](COMPLAINTS.md) lists each with its docstring and the category it should be declared into.  `TopologicalManifolds` needs a category of topological spaces, which is absent.  `LogPairs` is a scheme with a divisor.  `HyperbolicSpaces`, `HyperbolicPolyhedra` and `PositiveConeComponents` are subspaces and projectivizations of \(L \otimes \mathbf{R}\).  `ConvexPolytopes` and `RationalPolyhedralCones` are convex bodies and cones in \(L \otimes \mathbf{Q}\).
   **Deliver:** per member, the correct declaration, or the missing category built, or `super_categories()` left abstract so the category refuses to construct.  Decide each against the definition it states, not by a rule applied across the group.
@@ -827,11 +474,6 @@ These nodes build the missing categories rather than leaving the false declarati
   **Owners:** the owned product construction on `Cat` objects; `GObjects`, which should be the case of a discrete group object.
   **Acceptance:** an affine group scheme is placed through the group-object construction; the two scheme categories declare it and nothing two levels up; `GObjects(G, C)` is its restriction to constant group objects.
 
-- [x] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
-  **Goal:** Every category-of-categories construction is an object of `Cat`: `_FunctorCategory`, `_OppositeCategory`, `_ProductCategory`, `ClassifyingCategory`, `DiscreteCategory`, `ImageOfFunctor`, alongside `HomCategories` (done, 61bd8c65) and `_ArrowCategory`.
-  **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
-  **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
-
 - [ ] **`membership-by-placement`**. **Needs:** `objects-through-categories-scheme-gluing`, `objects-through-categories-schemes`, `objects-through-categories-groups`, `objects-through-categories-divisors`, `objects-through-categories-abstract-categories`, `objects-through-categories-rings`, `objects-through-categories-modules`, `objects-through-categories-algebras`, `objects-through-categories-lattice-files`, `objects-through-categories-functions-sets-tensors`.
   **Goal:** No `__contains__` decides membership by a predicate (`CAT-23`).
   **Observed gap:** checked on 2026-09-16 by an empty-bodied commit (`1a3a5ba1`) while 29 `__contains__` bodies still decide by `isinstance` (`abstract_cat.py` 4, `abstract_hom_categories.py` 3, `abstract_functors.py` 3, `abstract_products.py` 2, `abstract_arrow_categories.py` 2, `schemes/gluing.py` 2, one each in fifteen more files).  The original base-tower case: `Schemes.__contains__` answers lower-base membership by walking the candidate ring's base tower (schemes/schemes.py), so `X in Schemes(ZZ)` is true for a QQ-scheme that inherits nothing from it; `Sets.Countable.Infinite` decides membership by cardinality (a6078850); `QuasiCoherentSheaves.__contains__` duck-types (owned by `sheaf-object-placement`).
@@ -845,29 +487,6 @@ These nodes build the missing categories rather than leaving the false declarati
   **Acceptance:** `rg '\.Hom\(|\bHoms\(\)' src/dzack_research/preamble` finds only adapter sites that call Sage; the expectation subtrees' `Mor` spellings resolve.
 
 ### Owner API and construction data
-
-- [x] **`owner-api-convergence`**. **Needs:** none.
-  Remove the public/global operation language forbidden by `ARC-12`, `API-07`, `STY-01`--`04`, and `OWN-02`.
-  **Observed gap:** `preamble.all` still exports construction verbs such as products, coproducts, tensor products, kernels/cokernels, pushouts, localizations, completions, and quotients as free functions; the audit also found 261 exported owner-in-argument functions across 107 files.
-  **Owners:** the actual category/object/morphism/Hom/functor that determines each operation; `preamble.all` is only the session aggregator and must not become a second operation registry.
-  **Deliver:** migrate every ordinary source/notebook/test consumer of each removed global to the mathematical owner spelling; retain notation only when it delegates to that owner.  Delete compatibility exports rather than preserving aliases whose only purpose is the old route.
-  **Non-goal:** do not mechanically turn every module-level function into a method.  A genuine constructor whose inputs do not already contain its mathematical owner may remain a constructor; decide by the operation's mathematics, not syntax.
-  **Acceptance:** a source/export audit finds no free-standing public operation whose owner is already supplied as an argument; `from dzack_research.preamble.all import *` exposes mathematical objects/categories and deliberate session vocabulary but not a duplicate operation catalogue; the negative test surface needed by `ownership-test-contract` can distinguish the removed route.
-
-
-- [x] **`framing-primary-epi`**. **Needs:** none.
-  Rebuild framed-module construction around the selected epimorphism `Free_R(S) -> M` as the defining datum required by `CON-11`, `OWN-03`, `ARC-20`, and `STY-152`.
-  **Observed gap:** generic framing currently stores a generating set/function and reconstructs `Free_R(S)` and the generator map later when `framing_morphism()` is queried.
-  **Owners:** generic framed modules, the free-module functor/unit, and the represented module morphism/Hom owner.
-  **Deliver:** construction receives or canonically constructs the actual owned source `Free_R(S)` and selected epi before the framed module is exposed; the indexing set is the free source's defining set, and `module_generator(s)` is the image of its free generator.  `framing_source()`, `module_generating_set()`, `module_generator()`, and `framing_morphism()` are projections of that one datum.
-  **Separating cases:** a framed quotient whose selected generators satisfy relations, a framed free module where the epi is an isomorphism, and a framing with labels that are not positional integers.  Do not silently strengthen every framing to a basis or ordered enumeration.
-  **Acceptance:** generic framed modules plus the first framed-free and presented-module consumers retain one actual framing object; no public framing accessor allocates a new free module or reconstructs a morphism from stored label metadata.
-
-- [x] **`framing-specialization-convergence`**. **Needs:** `framing-primary-epi`.
-  Remove duplicated framing/generator implementations from lattice, fractional-ideal, presented-module, framed-free, group-module, restricted-scalar, matrix-module, and number-field specializations (`OWN-14`, `STY-154`).
-  **Observed gap:** the audit found nine independent `module_generators()` implementations and several descendant-specific framing reconstructions.
-  **Deliver:** each specialization inherits or composes the general framing datum and introduces only genuinely stronger mathematics.  A lattice may provide lattice-specific structure on its generators only when that returned object actually has extra lattice semantics; otherwise its module generators are the same module-theoretic image inherited from the underlying free module.
-  **Acceptance:** one framing authority supplies source, selected epi, generator set and generator evaluation across the audited descendants; specialization methods that remain have a documented stronger codomain/operation and are not renamings of the generic result.
 
 - [ ] **`owned-provenance-data`**. **Needs:** `objects-through-categories-scheme-gluing`, `objects-through-categories-schemes`, `objects-through-categories-groups`, `objects-through-categories-divisors`, `objects-through-categories-abstract-categories`, `objects-through-categories-rings`, `objects-through-categories-modules`, `objects-through-categories-algebras`, `objects-through-categories-lattice-files`, `objects-through-categories-functions-sets-tensors`.
   **Goal:** Represent chosen source maps, presentations, base changes, completions, and comparison morphisms as first-class construction data instead of hidden `_preamble_*` provenance attributes.
@@ -886,33 +505,7 @@ These nodes build the missing categories rather than leaving the false declarati
 
 ### Public vocabulary, representations, and codomains
 
-- [x] **`generator-lexicon`**. **Needs:** `framing-specialization-convergence`.
-  Remove implementation-role display language such as `"Module-generator family"`, `"Free-module generator family"`, `"Presented-module generator family"`, and `"Lattice-generator family"` (`LEX-01`, `LEX-04`).
-  **Observed gap:** public displays currently describe an `IndexedFamily`/refinement role instead of the mathematical set or its image.
-  **Deliver:** display the actual selected generator set/image, a bounded mathematically meaningful view for infinite sets, and any truly distinguishing chosen structure.  The object returned by `module_generators()` must look like module generators, not like the Python/category mechanism used to store them.
-  **Acceptance:** finite free/lattice examples show their generator image (for example `{e_0, e_1}` or an equally informative owned-set rendering); infinite examples preserve laziness and expose the indexing mathematics without implementation taxonomy; no audited generator display is merely a renamed type.
-
-- [x] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
-  **Goal:** Replace bare `gens`, `basis`, `dual`, and similar names with structure-qualified operations whose mathematical codomain is clear from the name itself.
-  Remove public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified referent.
-  **Observed gap:** current examples include fractional-ideal/lattice `gens`, lattice/isotropic `basis`, and six divisor/sheaf `dual()` methods.
-  **Deliver:** choose names such as `module_generators`, `group_generators`, `ideal_generators`, `lattice_basis`, `dual_module`, `dual_lattice`, `dual_sheaf`, etc. according to the actual codomain; remove aliases that preserve the ambiguous spelling and migrate every ordinary consumer in the same unit.
-  **Acceptance:** each audited public name identifies what is generated/dualized/based without knowing the receiver's implementation class, and no banned bare alias remains on the public surface.
-
-- [x] **`categorical-representation-convergence`**. **Needs:** none.
-  Collapse parallel representations of equivalent categorical/universal data into one authoritative representation (`ARC-14`, `STY-51`, `STY-54`).
-  **Observed gap:** contravariant functors are independently modelled instead of ordinary functors from an opposite category; bifunctors duplicate product-domain functor machinery; adjunctions independently require unit, counit, and both Hom transposes.
-  **Owners:** `Functor(C^op,D)`, functors out of product categories, natural transformations, adjunction/unit-counit data, and the common Hom/universal-construction calculus.
-  **Deliver:** choose the standard categorical datum at each site and mechanically derive equivalent views.  Compatibility accessors may expose a mathematically distinct view only when computed from the authoritative datum; subclasses must not prove mutually determining data twice.
-  **Acceptance:** constructing one representation determines the others, round-trips agree by construction, and no audited categorical object can be made internally inconsistent by supplying incompatible equivalent data.
-
-- [x] **`owned-product-codomains`**. **Needs:** `categorical-representation-convergence`.
-  Replace public bare tuple/list products with elements of the appropriate owned product (`CON-15`, `SET-01`, `CAT-08`).
-  **Observed gap:** commutative-square components, naturality-square morphisms, and tensor index-module/index pairs currently return Python tuples.
-  **Deliver:** identify the index set and factor family for each operation, construct or reuse the corresponding owned product, and return its element.  Preserve named projections/components so callers do not unpack storage positions to recover mathematics.
-  **Acceptance:** the audited public signatures contain no bare Python tuple/list return for mathematical product data; component access factors through the owned product/projections and works for the stated index object rather than only a hard-coded pair.
-
-- [ ] **`mathematical-return-types`**. **Needs:** `owner-api-convergence`, `framing-specialization-convergence`, `refinement-convergence`, `categorical-representation-convergence`, `owned-product-codomains`.
+- [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`.
   **Goal:** State public API codomains in mathematical terms—sets, categories, refinements, morphism spaces—rather than framework-universal `Parent`, `Element`, or ad hoc `Any`.
   Replace framework-universal public return annotations (`Parent`, `Element`, `CategoryObject`, and ad hoc `Any`) with mathematical codomains under `LEX-12`--`15`.
   **Observed gap:** the audit counted 261 framework-universal return annotations, including functor images, cardinalities and scheme operations.
@@ -936,33 +529,14 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** implement the operation at its proper owner when mathematics is available; otherwise make the genuine abstract contract explicit or delete/move a method that is not defined at that layer.  Use `...` in Sage abstract bodies as required by policy.
   **Acceptance:** each audited method has a successful mathematical implementation path or is an honest abstract declaration; no unconditional failure/pass body remains behind a public mathematical promise.
 
-- [x] **`group-module-scalar-change-convergence`**. **Needs:** `categorical-representation-convergence`.
-  Make group-module scalar extension/restriction one construction whose object and morphism actions are owned once (`STY-54`, `OWN-09`, `OWN-14`).
-  **Observed gap:** object-level `base_change` transports the action while `GroupModuleScalarExtensionFunctor` separately owns morphism transport and construction knowledge.
-  **Deliver:** select the mathematical owner (normally the scalar-change functor/construction); make the convenience object method delegate to it or vice versa, with one retained source/target ring map, group action and induced morphism law.
-  **Acceptance:** object and morphism transport are two actions of the same retained functor/construction, not parallel algorithms, and a nonidentity group-module map commutes with scalar change through that one owner.
-
-- [x] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
-  **Goal:** Give constructions such as de Rham algebras, Kähler differentials, cohomology, and absolute Galois groups one shared identity/caching mechanism keyed by their defining mathematical data.
-  Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism (`STY-55`, `DEV-12`, `OWN-10`).
-  **Observed gap:** five independent dictionaries encode construction identity and lifetime.
-  **Deliver:** after chosen provenance is first-class, use the appropriate shared unique-representation/cached-function/cached-method owner keyed by the defining mathematical data.  Do not cache by display strings or backend handles and do not use a cache to invent identity between different chosen presentations.
-  **Acceptance:** repeated construction with identical defining data retains the documented identity; genuinely different choices remain distinct; no audited theory keeps a parallel identity dictionary.
-
-- [ ] **`singular-kernel-delegation`**. **Needs:** `framing-primary-epi`, `assertion-frontiers`.
+- [ ] **`singular-kernel-delegation`**. **Needs:** `assertion-frontiers`.
   **Goal:** Delegate finitely presented module kernel/syzygy computation to a maintained Sage/Singular operation through one adapter, then raise the result to the owned kernel object, inclusion, and presentation.
   Replace `_singular_presentation_kernel`'s long Python orchestration with a maintained Singular/Sage operation behind one owned adapter crossing (`ENG-01`--`03`, `STY-57`--`59`, `OWN-08`).
   **Observed gap:** current code manually builds matrices, lifts coefficients, invokes Singular `modulo`, reconstructs relations and recovers lifts across roughly 170 lines.
   **Deliver:** identify the exact maintained kernel/syzygy/presentation operation that returns enough data to reconstruct the owned kernel inclusion and selected presentation.  Keep representation conversion at the adapter boundary; do not reproduce the standard algorithm in Python around lower-level Singular calls.
   **Acceptance:** a nontrivial finitely presented module morphism obtains its kernel object, inclusion and presentation through one maintained-engine computation and raises every constituent to owned mathematics; unsupported coefficient regimes stop at the declared frontier rather than falling back to the old orchestration.
 
-- [x] **`torsion-action-delegation`**. **Needs:** none.
-  Route torsion-form orbit/stabilizer computation through the general owned action/G-set infrastructure, with GAP private beneath that owner (`ENG-01`, `STY-40`--`42`, `BND-01`--`02`).
-  **Observed gap:** torsion-form modules contain both a hand-written orbit traversal and direct `libgap.Orbit`/`Stabilizer` calls.
-  **Deliver:** represent the relevant finite action once, expose orbit/stabilizer through the action/G-set owner, and let that owner select GAP where appropriate.  The torsion-form layer supplies the mathematical set/action and consumes owned orbit/stabilizer objects; it does not own traversal or GAP calls.
-  **Acceptance:** representative torsion-form subobject orbits/stabilizers agree with the retained action, return through the general owned action API, and the torsion-form subtree contains no independent orbit engine.
-
-- [ ] **`imperative-algorithm-cleanup`**. **Needs:** `group-module-scalar-change-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`.
+- [ ] **`imperative-algorithm-cleanup`**. **Needs:** `singular-kernel-delegation`.
   **Goal:** Replace generic local traversal, grouping, multiplication, and accumulation code with standard mathematical operations or mature dependency owners, retaining loops only when they are genuinely theory-specific algorithms.
   Remove the remaining guide-catalogued imperative algorithms only after their larger duplicated owners have converged.
   **Observed gap:** examples include bilinear nested accumulation, duplicate free-algebra target multiplication loops, divided-power coefficient loops, absolute-Galois append/filter construction, `setdefault(...).append(...)` grouping, and bespoke `frontier`/`seen` traversals in lattice/action code.
@@ -971,27 +545,21 @@ These nodes build the missing categories rather than leaving the false declarati
 
 ### Public interaction and proof surfaces
 
-- [ ] **`coordinate-firewall`**. **Needs:** `framing-specialization-convergence`.
+- [ ] **`coordinate-firewall`**. **Needs:** none.
   **Goal:** Confine coordinates and raw matrices/vectors to explicitly chosen finite framings or presentations; ordinary lattice/module/morphism interaction should remain semantic.
   Close ordinary public coordinate/storage escape hatches that bypass semantic owners (`ARC-18`, `API-02`, `DEV-40`).
   **Observed gap:** lattice elements expose `to_list`/`to_tuple`/`to_vector`, tensor elements expose raw `components()`/`list()`, and module morphisms expose matrix storage as ordinary public interaction; the canonical notebook teaches these routes.
   **Deliver:** keep explicit coordinate views only on the selected finite framing/presentation object where coordinates are mathematically part of that chosen datum.  Ordinary element/morphism APIs route through owned operations, Homs and universal constructions; downstream research code migrates before the old hatches are removed.
   **Acceptance:** a user cannot bypass the semantic object merely by calling an equally public raw-storage method; the retained finite-coordinate boundary names the framing/presentation that makes the coordinates meaningful and distinguishes it from unframed/infinite cases.
 
-- [x] **`ownership-test-contract`**. **Needs:** `owner-api-convergence`.
-  Replace the compatibility behavior in `tests/conftest.py` and old-global test consumers with behavioral proof of the owner API (`DEV-06`, `DEV-37`, `DEV-43`, `STY-118`, `STY-125`).
-  **Observed gap:** the harness claims global operations are absent but uses `setdefault` injections that leave existing forbidden exports untouched; 135 old-global call sites and 51 star-importing test files mean a green suite can coexist with the violation.
-  **Deliver:** remove the compatibility injection, migrate tests to the owner spelling, add a negative public-surface assertion that fails when a forbidden owner-in-argument global is exported, and keep mathematical expectations independent of implementation helper names.
-  **Acceptance:** the old global route makes the relevant test fail, while the owner route exercises the same mathematical construction; no test harness mutation silently supplies or preserves the API being removed.
-
-- [ ] **`canonical-notebook-contract`**. **Needs:** `owner-api-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `categorical-representation-convergence`, `coordinate-firewall`.
+- [ ] **`canonical-notebook-contract`**. **Needs:** `coordinate-firewall`.
   **Goal:** Turn the canonical notebook into an executable research narrative organized by mathematical questions and witnesses, using the same final public API expected from ordinary users.
   Repair the canonical notebook to satisfy `NB-01`--`05`, `ARC-07`, `LEX-10`, and `DEV-40` after the public APIs it teaches have converged.
   **Observed gap:** 30/51 code cells are unexecuted, committed failure output remains, several mathematical claims occur only in prose, section headings are implementation tours, and examples use old globals/ambiguous generator APIs/raw constructors and coordinate paths.
   **Deliver:** organize sections by mathematical questions; express claims as computations/assertions/witness displays; use the same owner-method/Hom/functor/session syntax expected from ordinary researchers; remove stale output and compatibility-layer examples.  Preserve useful research content rather than turning the notebook into a policy demonstration.
   **Acceptance:** every substantive claim in the audited notebook is executable or visibly witnessed, no committed traceback remains, and no example depends on an API prohibited by the upstream remediation nodes.  Actual execution is deferred to `terminal-session`.
 
-- [ ] **`architecture-remediation`**. **Needs:** `mor-spelling-convergence`, `group-objects-construction`, `cat-valued-placement`, `membership-by-placement`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `algebras-are-modules`, `algebra-structure-morphism-constructor`, `engine-algebras-through-the-structure-constructor`, `structured-module-constructors-route-through-the-datum`, `closure-verification-2026-09-16`, `objects-through-categories-scheme-gluing`, `objects-through-categories-schemes`, `objects-through-categories-groups`, `objects-through-categories-divisors`, `objects-through-categories-abstract-categories`, `objects-through-categories-rings`, `objects-through-categories-modules`, `objects-through-categories-algebras`, `objects-through-categories-lattice-files`, `objects-through-categories-functions-sets-tensors`, `probe-and-exception-residue`, `inherited-operations-not-restated`, `construction-datum-classification`, `banned-language-residue`, `arrow-category-placement`, `geometric-space-placement`, `combinatorial-object-placement`, `owner-api-convergence`, `framing-primary-epi`, `framing-specialization-convergence`, `generator-lexicon`, `ambiguous-generator-names`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `categorical-representation-convergence`, `group-module-scalar-change-convergence`, `memoization-convergence`, `singular-kernel-delegation`, `torsion-action-delegation`, `imperative-algorithm-cleanup`, `owned-product-codomains`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`, `ownership-test-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `mor-spelling-convergence`, `group-objects-construction`, `membership-by-placement`, `algebra-structure-morphism-constructor`, `engine-algebras-through-the-structure-constructor`, `structured-module-constructors-route-through-the-datum`, `closure-verification-2026-09-16`, `objects-through-categories-scheme-gluing`, `objects-through-categories-schemes`, `objects-through-categories-groups`, `objects-through-categories-divisors`, `objects-through-categories-abstract-categories`, `objects-through-categories-rings`, `objects-through-categories-modules`, `objects-through-categories-algebras`, `objects-through-categories-lattice-files`, `objects-through-categories-functions-sets-tensors`, `probe-and-exception-residue`, `inherited-operations-not-restated`, `construction-datum-classification`, `banned-language-residue`, `geometric-space-placement`, `combinatorial-object-placement`, `owned-provenance-data`, `refinement-convergence`, `assertion-frontiers`, `placeholder-stubs`, `singular-kernel-delegation`, `imperative-algorithm-cleanup`, `mathematical-return-types`, `coordinate-firewall`, `canonical-notebook-contract`.
   **Goal:** Converge the twenty complaint-derived architecture repairs into one coherent mathematical API before any final runtime/session claim is accepted.
   This is the convergence/scheduling node for the complaint-derived workstream, not another implementation pass.
   **Acceptance:** each of the twenty audit findings has either been repaired at its mathematical owner and removed from `COMPLAINTS.md`, or has exposed a genuinely independent residual obligation that exists as its own DAG child with explicit acceptance and is therefore added to this node's `Needs`.  No finding is closed by changing a count, hiding a name, adding a wrapper, or weakening a public mathematical claim.  All source-level specimens needed to falsify the repaired contracts are banked for terminal execution.
@@ -1028,10 +596,6 @@ These nodes build the missing categories rather than leaving the false declarati
 ## Optional research consumers
 
 These are not prerequisites for the required mathematics, complaint remediation, terminal verification, or convergence audits.
-
-- [x] **`optional-display`**. **Needs:** none.
-  Add further notebook/rich-display examples only for a named research question using live objects.
-  Use existing polygon, Three.js, and diagram rendering owners; do not install implicit global display hooks.
 
 - [ ] **`optional-database`**. **Needs:** `terminal-session`. Add a database/classification example when it supplies data needed by research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or Fanography.
   **Goal:** Add a research database adapter only for a concrete mathematical query whose data materially benefits a live research workflow.

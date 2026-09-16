@@ -57,6 +57,8 @@ Read [COMPLAINTS.md](COMPLAINTS.md) for observed foundational gaps and papercuts
 relevant to the construction. It records unmet needs, not completed work or a
 substitute architecture.
 
+When the owner calls a move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external: look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
+
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
 Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasoning effort.
