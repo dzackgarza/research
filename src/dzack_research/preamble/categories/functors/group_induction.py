@@ -100,7 +100,7 @@ def _finite_coset_sum(module, representatives):
     framing.  Presentation rows are generated directly from this product; no
     Python pair family or block-row list is a mathematical object.
     """
-    module = module.unacted_module()
+    module = module.unformed_module()
     source_labels = module.module_generating_set()
     labels = _coset_sum_labels(representatives, source_labels)
     source_relations = _presentation_matrix(module)
@@ -157,7 +157,7 @@ class _RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
         return self._inclusion
 
     def _apply_object(self, group_module):
-        coefficient_module = group_module.unacted_module()
+        coefficient_module = group_module.unformed_module()
         restricted = _equip_action(
             coefficient_module,
             self.subgroup(),

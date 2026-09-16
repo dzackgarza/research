@@ -169,7 +169,7 @@ def _split_irreducible_characters(module):
 def _central_projector(module, character: IsotypicCharacter):
     r"""Return the central idempotent as an owned matrix endomorphism."""
     group = module.group()
-    coefficient_module = module.unacted_module()
+    coefficient_module = module.unformed_module()
     base_ring = module.coefficient_ring()
     engine_ring = _engine_ring(base_ring)
 
@@ -211,7 +211,7 @@ def _central_projector(module, character: IsotypicCharacter):
 
 
 def _kernel_subobject_of_matrix(module, matrix):
-    coefficient_module = module.unacted_module()
+    coefficient_module = module.unformed_module()
     labels = tuple(coefficient_module.module_generating_set())
     images = {
         source_label: coefficient_module.linear_combination(
@@ -240,7 +240,7 @@ def _isotypic_component(module, character):
     if selected is None:
         raise ValueError(f"{character!r} is not an irreducible-character index for this module")
     projector = _central_projector(module, selected)
-    coefficient_module = module.unacted_module()
+    coefficient_module = module.unformed_module()
     base_ring = module.coefficient_ring()
     relation = projector - projector.parent().identity()
     if _engine_ring(base_ring) is SageZZ:
@@ -264,7 +264,7 @@ def _isotypic_component(module, character):
 
 def _isotypic_decomposition(module):
     r"""Return ``⊕ M_chi -> M`` over the characters present in ``M``."""
-    coefficient_module = module.unacted_module()
+    coefficient_module = module.unformed_module()
     characters = tuple(module.isotypic_characters())
     components = tuple(module.isotypic_component(character) for character in characters)
     spanning = tuple(

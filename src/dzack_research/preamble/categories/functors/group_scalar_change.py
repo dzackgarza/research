@@ -21,18 +21,6 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-def _unacted_module(group_module):
-    return group_module.unacted_module()
-
-
-def _forget_action_element(group_module, element):
-    return group_module.forget_action_morphism()(element)
-
-
-def _equip_action_element(group_module, element):
-    return group_module.equip_action_morphism()(element)
-
-
 class _GroupModuleScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : R[G]-Mod -> S[G]-Mod`` along one scalar map."""
 
@@ -58,9 +46,9 @@ class _GroupModuleScalarExtensionFunctor(Functor):
 
     def _apply_object(self, group_module):
         r"""Transport one ``R[G]``-module through this coefficient scalar extension."""
-        unacted = group_module.unacted_module()
+        unformed = group_module.unformed_module()
         scalar_extension = self._underlying_scalar_extension()
-        changed_module = scalar_extension(unacted)
+        changed_module = scalar_extension(unformed)
         if group_module.is_trivial_action():
             return _trivial_action(changed_module, self.group())
 
@@ -107,28 +95,17 @@ class _GroupModuleRestrictionOfScalarsFunctor(Functor):
         return self._restriction
 
     def _apply_object(self, group_module):
-        unacted_extension = _unacted_module(group_module)
-        unacted_restricted = self._underlying_restriction()(unacted_extension)
+        unformed = group_module.unformed_module()
+        restricted = self._underlying_restriction()(unformed)
 
         def action(group_element, vector):
-            acted_source = _equip_action_element(
-                group_module,
-                vector.underlying_element(),
-            )
             acted_image = group_module.act(
                 group_element,
-                acted_source,
+                group_module(vector.underlying_element()),
             )
-            return unacted_restricted.wrap(
-                _forget_action_element(group_module, acted_image)
-            )
+            return restricted.wrap(unformed(acted_image))
 
-        return _equip_action(
-            unacted_restricted,
-            self.group(),
-            action,
-            _action_is_trivial=group_module.is_trivial_action(),
-        )
+        return _equip_action(restricted, self.group(), action)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -168,7 +145,7 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
         extended = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(extended)
         underlying = self._underlying_adjunction()
-        source_module = group_module.unacted_module()
+        source_module = group_module.unformed_module()
         unit = underlying.unit(source_module)
         return group_module.Mor(restricted)._from_equivariant_images(
             unit,
@@ -179,7 +156,7 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
         restricted = self.right_adjoint()(group_module)
         extended = self.left_adjoint()(restricted)
         underlying = self._underlying_adjunction()
-        target_module = group_module.unacted_module()
+        target_module = group_module.unformed_module()
         counit = underlying.counit(target_module)
         return extended.Mor(group_module)._from_equivariant_images(
             counit,

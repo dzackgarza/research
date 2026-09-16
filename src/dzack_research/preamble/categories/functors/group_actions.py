@@ -203,25 +203,23 @@ def _augmentation_data(ring_map):
 def _invariant_element(group_module, invariant_module, element):
     r"""Read an invariant-module element inside ``group_module``."""
     if group_module.is_trivial_action():
-        return group_module.equip_action_morphism()(element)
-    return invariant_module.inclusion()(element)
+        return group_module(element)
+    return group_module(invariant_module.inclusion()(element))
 
 
 def _lift_to_invariants(group_module, invariant_module, element):
     r"""Lift a known invariant element from ``group_module``."""
+    module = group_module.unformed_module()
     if group_module.is_trivial_action():
-        return group_module.forget_action_morphism()(element)
-    return invariant_module.inclusion().lift(
-        group_module.forget_action_morphism()(element)
-    )
+        return module(element)
+    return invariant_module.inclusion().lift(module(element))
 
 
 def _coinvariant_projection(group_module, coinvariants, element):
+    module = group_module.unformed_module()
     if group_module.is_trivial_action():
-        return group_module.forget_action_morphism()(element)
-    return coinvariants.presentation_projection()(
-        group_module.forget_action_morphism()(element)
-    )
+        return module(element)
+    return coinvariants.presentation_projection()(module(element))
 
 
 class _TrivialActionFunctor(_RestrictionOfScalarsFunctor):
@@ -334,7 +332,7 @@ class _TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
             lambda label: _invariant_element(
                 group_module,
                 invariants,
-                trivial.forget_action_morphism()(trivial.module_generator(label)),
+                invariants(trivial.module_generator(label)),
             )
         )
 
@@ -351,21 +349,12 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     def unit(self, group_module):
         coinvariants = self.left_adjoint()(group_module)
         trivial = self.right_adjoint()(coinvariants)
-        if group_module.is_trivial_action():
-            return group_module.Mor(trivial)(
-                lambda label: trivial.equip_action_morphism()(
-                    group_module.forget_action_morphism()(
-                        group_module.module_generator(label)
-                    )
-                )
-            )
-        projection = coinvariants.presentation_projection()
         return group_module.Mor(trivial)(
-            lambda label: trivial.equip_action_morphism()(
-                projection(
-                    group_module.forget_action_morphism()(
-                        group_module.module_generator(label)
-                    )
+            lambda label: trivial(
+                _coinvariant_projection(
+                    group_module,
+                    coinvariants,
+                    group_module.module_generator(label),
                 )
             )
         )

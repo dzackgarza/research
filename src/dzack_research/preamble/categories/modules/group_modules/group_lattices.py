@@ -33,16 +33,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class GroupLatticeConstruction:
-    r"""The selected acted module whose action is transported to a lattice."""
-
-    def __init__(self, source_group_module) -> None:
-        self._source_group_module = source_group_module
-
-    def source_group_module(self):
-        return self._source_group_module
-
-
 class GroupLatticeMorphism(LatticeMorphism):
     r"""A form-preserving equivariant morphism of lattices with one group action."""
 
@@ -153,12 +143,9 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
-        def group_lattice_construction(self):
-            r"""Return the selected acted-module construction defining this group lattice."""
-            return self._preamble_group_lattice_construction
-
         def source_group_module(self):
-            return self.group_lattice_construction().source_group_module()
+            r"""The ``R[G]``-module built on the lattice this action was stated on."""
+            return self._preamble_source_group_module
 
         def group(self):
             return self.source_group_module().group()
@@ -185,8 +172,9 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         def is_trivial_action(self) -> bool:
             return self.source_group_module().is_trivial_action()
 
-        def unacted_module(self):
-            return self.source_group_module().unacted_module()
+        def unformed_module(self):
+            r"""The lattice this action was stated on, as ``Modules(R[G])`` answers it."""
+            return self.source_group_module().unformed_module()
 
         @cached_method
         def action(self):
@@ -318,9 +306,7 @@ def _group_lattice(lattice, group_or_action, action=None):
         module_generators=lattice.module_generating_set(),
     )
     extra_categories = [Lattices(base_ring[group])]
-    construction_data = [
-        ("group_lattice_construction", GroupLatticeConstruction(source_group_module))
-    ]
+    construction_data = [("source_group_module", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
         construction_data.append(("cartan_type", lattice.cartan_type()))
