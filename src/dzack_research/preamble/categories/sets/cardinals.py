@@ -232,8 +232,9 @@ class Cardinalities(OwnedCategory):
 
         def is_finite(self) -> bool:
             expression = self.expression()
-            if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-                raise NotImplementedError("finiteness of an arbitrary indexed cardinal family is not decidable")
+            assert not isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)), (
+                "finiteness is not selected for an arbitrary indexed cardinal family"
+            )
             return isinstance(expression, _FiniteCardinal)
 
         def is_infinite(self) -> bool:
@@ -251,8 +252,9 @@ class Cardinalities(OwnedCategory):
 
         def is_uncountable(self) -> bool:
             expression = self.expression()
-            if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-                raise NotImplementedError("countability of an arbitrary indexed cardinal family is not decidable")
+            assert not isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)), (
+                "countability is not selected for an arbitrary indexed cardinal family"
+            )
             if self.is_finite() or self.is_countably_infinite():
                 return False
             if isinstance(expression, _SupremumCardinal):

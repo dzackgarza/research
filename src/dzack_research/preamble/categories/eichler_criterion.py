@@ -573,10 +573,10 @@ class TwoUEichlerModel(SageObject):
 
         def lift(generator):
             witness = lattice.O().discriminant_lift(generator)
-            if witness is None:
-                raise NotImplementedError(
-                    "the represented orthogonal-group generators do not surject onto O(A_L)"
-                )
+            assert witness is not None, (
+                "discriminant-generator lifting requires the represented map O(L) -> O(A_L) "
+                "to be surjective on the selected generators"
+            )
             if witness.discriminant_morphism() != generator:
                 raise ArithmeticError("a discriminant lift induces the wrong finite-form automorphism")
             return witness
