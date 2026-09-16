@@ -280,14 +280,13 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             characteristic zero makes normality equivalent to smoothness.
             """
             base = self.scheme_base_ring()
-            if base not in OwnedFields():
-                raise NotImplementedError(
-                    "normality of a complete-intersection family is not inferred from its relative equations; inspect the selected fibre or total space separately"
-                )
-            if int(_engine_ring(base).characteristic()) != 0:
-                raise NotImplementedError(
-                    "the represented complete-intersection normality criterion currently requires characteristic zero"
-                )
+            assert base in OwnedFields(), (
+                "the represented complete-intersection normality criterion applies to a selected field fibre, "
+                "not a relative family inferred only from its equations"
+            )
+            assert int(_engine_ring(base).characteristic()) == 0, (
+                "the represented complete-intersection normality criterion requires characteristic zero"
+            )
             dimension = int(self.expected_dimension())
             if dimension == 0:
                 return bool(self.is_smooth())
