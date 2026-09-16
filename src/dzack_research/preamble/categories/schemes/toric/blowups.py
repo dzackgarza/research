@@ -8,6 +8,28 @@ from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhe
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
 
 
+class _ToricFixedPointBlowupConstruction:
+    r"""The selected star-subdivision datum defining one toric point blowup."""
+
+    def __init__(self, source, blowdown, center_cone, exceptional_ray) -> None:
+        self._source = source
+        self._blowdown = blowdown
+        self._center_cone = center_cone
+        self._exceptional_ray = exceptional_ray
+
+    def source(self):
+        return self._source
+
+    def blowdown(self):
+        return self._blowdown
+
+    def center_cone(self):
+        return self._center_cone
+
+    def exceptional_ray(self):
+        return self._exceptional_ray
+
+
 class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
     r"""Smooth toric surfaces obtained by blowing up one torus-fixed point.
 
@@ -31,28 +53,31 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
     def __contains__(self, candidate) -> bool:
         return (
             candidate in ToricSchemes(self.base_ring())
-            and getattr(candidate, "_preamble_blowup_source", None) is not None
-            and getattr(candidate, "_preamble_exceptional_ray", None) is not None
+            and getattr(candidate, "_preamble_blowup_construction", None) is not None
         )
 
     class ParentMethods:
         def is_toric_fixed_point_blowup(self) -> bool:
             return True
 
+        def blowup_construction(self):
+            r"""Return the selected star-subdivision datum defining this blowup."""
+            return self._preamble_blowup_construction
+
         def blowup_source(self):
-            return self._preamble_blowup_source
+            return self.blowup_construction().source()
 
         def blowup_morphism(self):
-            return self._preamble_blowup_morphism
+            return self.blowup_construction().blowdown()
 
         blowdown = blowup_morphism
 
         def blowup_center_cone(self):
             r"""Return the maximal source-fan cone indexing the blown-up fixed point."""
-            return self._preamble_blowup_center_cone
+            return self.blowup_construction().center_cone()
 
         def exceptional_ray(self):
-            return self._preamble_exceptional_ray
+            return self.blowup_construction().exceptional_ray()
 
         def exceptional_divisor(self):
             return self.torus_invariant_prime_divisor(self.exceptional_ray())
@@ -183,10 +208,12 @@ def _toric_fixed_point_blowup(surface, center_cone):
     if exceptional is None:
         raise ArithmeticError("the star-subdivision ray is absent from the refined fan")
 
-    blowup._preamble_blowup_source = surface
-    blowup._preamble_blowup_morphism = blowdown
-    blowup._preamble_blowup_center_cone = center_cone
-    blowup._preamble_exceptional_ray = exceptional
+    blowup._preamble_blowup_construction = _ToricFixedPointBlowupConstruction(
+        surface,
+        blowdown,
+        center_cone,
+        exceptional,
+    )
     return _refine_scheme(blowup, base, [ToricFixedPointBlowups(base)])
 
 
