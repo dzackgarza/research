@@ -320,7 +320,6 @@ def test_module_descent_morphisms_have_identities_and_compose_chartwise() -> Non
 def test_presented_local_modules_descend_with_their_relations() -> None:
     from dzack_research.preamble.all import (
         QQ,
-        FinitelyPresentedModule,
         FinitelyPresentedModules,
         Spec,
     )
@@ -342,16 +341,14 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
         relations = ring.free_module(finite_ordered_set(("r",)))
         generators = ring.free_module(finite_ordered_set(("e",)))
         local_modules.append(
-            FinitelyPresentedModule(
-                relations.module_category().Mor(relations, generators)(
+            relations.module_category().Mor(relations, generators)(
                     {
                         "r": generators.scalar_multiple(
                             relation_value,
                             generators.module_generator("e"),
                         )
                     }
-                )
-            )
+                ).cokernel()
         )
     local_modules = tuple(local_modules)
 

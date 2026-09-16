@@ -3,7 +3,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedModule,
     ProjectiveSpace,
     QuadraticField,
     Spec,
@@ -24,11 +23,9 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import Weil
 def _cyclic_module(order):
     generators = ZZ.free_module(1)
     relations = ZZ.free_module(1)
-    return FinitelyPresentedModule(
-        relations.Mor(generators)(
+    return relations.Mor(generators)(
             {0: ZZ(order) * generators.module_generator(0)}
-        )
-    )
+        ).cokernel()
 
 
 def test_projective_space_over_a_field_has_the_hyperplane_picard_generator() -> None:

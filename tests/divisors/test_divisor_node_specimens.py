@@ -3,7 +3,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedModule,
     ProjectiveSpace,
     QuadraticField,
     Spec,
@@ -21,11 +20,9 @@ def _zero_class_group(scheme):
 def _cyclic_module(order):
     generators = ZZ.free_module(1)
     relations = ZZ.free_module(1)
-    return FinitelyPresentedModule(
-        relations.Mor(generators)(
+    return relations.Mor(generators)(
             {0: ZZ(order) * generators.module_generator(0)}
-        )
-    )
+        ).cokernel()
 
 
 def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
