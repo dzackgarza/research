@@ -219,28 +219,31 @@ class SectionRings(OwnedCategoryOverBaseRing):
 
 
 def _section_exponent_data(section_space):
-    homogeneous = getattr(section_space, "_preamble_homogeneous_exponents", None)
-    if homogeneous is not None:
-        return {
-            monomial: tuple(int(value) for value in exponents)
-            for monomial, exponents in homogeneous.items()
-        }
-    multihomogeneous = getattr(
-        section_space,
-        "_preamble_multihomogeneous_exponents",
-        None,
-    )
-    if multihomogeneous is not None:
+    selected = getattr(section_space, "section_space_construction", None)
+    if not callable(selected):
+        raise NotImplementedError(
+            "this section module has no selected polynomial-section presentation"
+        )
+    construction = selected()
+    labels = tuple(section_space.module_generating_set())
+    if callable(getattr(section_space, "multidegree", None)):
         return {
             monomial: tuple(
                 int(value)
-                for block in blocks
+                for block in construction.exponents_of(monomial)
                 for value in block
             )
-            for monomial, blocks in multihomogeneous.items()
+            for monomial in labels
+        }
+    if callable(getattr(section_space, "homogeneous_degree", None)):
+        return {
+            monomial: tuple(
+                int(value) for value in construction.exponents_of(monomial)
+            )
+            for monomial in labels
         }
     raise NotImplementedError(
-        "this section module does not retain homogeneous exponent data"
+        "this section module is not a represented polynomial section space"
     )
 
 

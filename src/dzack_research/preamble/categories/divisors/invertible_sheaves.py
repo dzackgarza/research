@@ -419,10 +419,9 @@ class _LineBundleBaseChangeDatum:
     later as provenance.
     """
 
-    def __init__(self, source_bundle, ring_map, exponent_attribute) -> None:
+    def __init__(self, source_bundle, ring_map) -> None:
         self._source_bundle = source_bundle
         self._ring_map = ring_map
-        self._exponent_attribute = exponent_attribute
 
     def source_bundle(self):
         return self._source_bundle
@@ -440,29 +439,30 @@ class _LineBundleBaseChangeDatum:
             source_sections,
             target_sections,
             self.ring_map(),
-            self._exponent_attribute,
         )
 
 
-def _section_base_change_comparison(source_sections, target_sections, ring_map, exponent_attribute):
-    r"""Compare scalar extension of an exponent-framed section module with the target one."""
+def _section_base_change_comparison(source_sections, target_sections, ring_map):
+    r"""Compare scalar extension of two selected polynomial-section presentations."""
     changed_source = source_sections.base_change(ring_map)
-    source_exponents = getattr(source_sections, exponent_attribute)
-    target_exponents = getattr(target_sections, exponent_attribute)
+    source_construction = source_sections.section_space_construction()
+    target_construction = target_sections.section_space_construction()
     source_by_exponents = {
-        exponents: label for label, exponents in source_exponents.items()
+        source_construction.exponents_of(label): label
+        for label in source_sections.module_generating_set()
     }
     target_by_exponents = {
-        exponents: label for label, exponents in target_exponents.items()
+        target_construction.exponents_of(label): label
+        for label in target_sections.module_generating_set()
     }
     forward = changed_source.module_category().Mor(changed_source, target_sections)(
         lambda label: target_sections.module_generator(
-            target_by_exponents[source_exponents[label]]
+            target_by_exponents[source_construction.exponents_of(label)]
         )
     )
     inverse = target_sections.module_category().Mor(target_sections, changed_source)(
         lambda label: changed_source.module_generator(
-            source_by_exponents[target_exponents[label]]
+            source_by_exponents[target_construction.exponents_of(label)]
         )
     )
     return changed_source.module_category().Core().Mor(changed_source, target_sections)(
@@ -696,7 +696,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         sections = self.global_sections()
         section = sections(section)
         coefficients = sections.framing_coefficients(section)
-        exponent_data = sections._preamble_multihomogeneous_exponents
+        section_construction = sections.section_space_construction()
         atlas = self.gluing_datum()
         product = self.projective_product()
         factors = product.factors()
@@ -711,7 +711,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             local_coefficient = chart_ring.zero()
             for monomial, coefficient in coefficients.items():
                 term = scalar_map(coefficient)
-                blocks = exponent_data[monomial]
+                blocks = section_construction.exponents_of(monomial)
                 for label, block in zip(factor_labels, blocks, strict=True):
                     position = positions[label]
                     selected = choice[position]
@@ -746,19 +746,20 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         left = self.global_sections()
         right = other.global_sections()
         target = target_bundle.global_sections()
-        left_exponents = left._preamble_homogeneous_exponents
-        right_exponents = right._preamble_homogeneous_exponents
+        left_construction = left.section_space_construction()
+        right_construction = right.section_space_construction()
+        target_construction = target.section_space_construction()
         target_by_exponents = {
-            exponents: monomial
-            for monomial, exponents in target._preamble_homogeneous_exponents.items()
+            target_construction.exponents_of(monomial): monomial
+            for monomial in target.module_generating_set()
         }
 
         def product(left_monomial, right_monomial):
             exponents = tuple(
                 left_power + right_power
                 for left_power, right_power in zip(
-                    left_exponents[left_monomial],
-                    right_exponents[right_monomial],
+                    left_construction.exponents_of(left_monomial),
+                    right_construction.exponents_of(right_monomial),
                     strict=True,
                 )
             )
@@ -774,11 +775,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def base_change(self, ring_map):
         changed_space = self.projective_space().base_change(ring_map)
-        datum = _LineBundleBaseChangeDatum(
-            self,
-            ring_map,
-            "_preamble_homogeneous_exponents",
-        )
+        datum = _LineBundleBaseChangeDatum(self, ring_map)
         return type(self)(
             changed_space,
             self.degree(),
@@ -1126,19 +1123,20 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         left = self.global_sections()
         right = other.global_sections()
         target = target_bundle.global_sections()
-        left_exponents = left._preamble_multihomogeneous_exponents
-        right_exponents = right._preamble_multihomogeneous_exponents
+        left_construction = left.section_space_construction()
+        right_construction = right.section_space_construction()
+        target_construction = target.section_space_construction()
         target_by_exponents = {
-            exponents: monomial
-            for monomial, exponents in target._preamble_multihomogeneous_exponents.items()
+            target_construction.exponents_of(monomial): monomial
+            for monomial in target.module_generating_set()
         }
 
         def product(left_monomial, right_monomial):
             exponents = tuple(
                 tuple(a + b for a, b in zip(left_block, right_block, strict=True))
                 for left_block, right_block in zip(
-                    left_exponents[left_monomial],
-                    right_exponents[right_monomial],
+                    left_construction.exponents_of(left_monomial),
+                    right_construction.exponents_of(right_monomial),
                     strict=True,
                 )
             )
@@ -1154,11 +1152,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def base_change(self, ring_map):
         changed_product = self.projective_product().base_change(ring_map)
-        datum = _LineBundleBaseChangeDatum(
-            self,
-            ring_map,
-            "_preamble_multihomogeneous_exponents",
-        )
+        datum = _LineBundleBaseChangeDatum(self, ring_map)
         return type(self)(
             changed_product,
             tuple(

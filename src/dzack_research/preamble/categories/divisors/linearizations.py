@@ -500,13 +500,17 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
                 lambda section: sections.scalar_multiple(scalar_twist, section),
                 verify_linearity=False,
             )
-        exponents = sections._preamble_multihomogeneous_exponents
+        section_construction = sections.section_space_construction()
         factor_labels = tuple(self.projective_product().factors().index_set())
         weights = self.coordinate_weights()
         images = {}
         for monomial in sections.module_generating_set():
             weight = base.one()
-            for factor_label, block in zip(factor_labels, exponents[monomial], strict=True):
+            for factor_label, block in zip(
+                factor_labels,
+                section_construction.exponents_of(monomial),
+                strict=True,
+            ):
                 factor_weights = weights[factor_label]
                 for coordinate_weight, exponent in zip(factor_weights, block, strict=True):
                     if exponent:
