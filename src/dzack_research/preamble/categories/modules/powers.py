@@ -122,8 +122,7 @@ class _PowerModuleParentMethods:
         inclusion = self.Mono(algebra)(lambda label: algebra.from_graded_piece(
                 degree,
                 self.module_generator(label),
-            ), verify_linearity=False)
-        inclusion._preamble_lift = self._lift_from_ambient_power_algebra
+            ), verify_linearity=False, lift=self._lift_from_ambient_power_algebra)
         self.register_conversion(
             SetMorphism(
                 Sets().Mor(algebra, self),

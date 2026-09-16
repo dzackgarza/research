@@ -771,16 +771,10 @@ class ModulesOverGroupAlgebra(Modules):
             equivariant_inclusion = acted.Mor(self)(
                 lambda label: self.equip_action_morphism()(
                     inclusion(submodule.module_generator(label))
-                )
-            )
-            # The original subobject inclusion owns the exact lift.  Preserve
-            # that lift on the equivariant reading so every later restriction
-            # uses the same represented subobject rather than solving a second
-            # coordinate problem.
-            equivariant_inclusion._preamble_lift = (
-                lambda element: acted.equip_action_morphism()(
+                ),
+                lift=lambda element: acted.equip_action_morphism()(
                     inclusion.lift(self.forget_action_morphism()(element))
-                )
+                ),
             )
             return equivariant_inclusion
 
@@ -1007,6 +1001,7 @@ class GroupModuleMorphism(ModuleMorphism):
         elementwise=False,
         verify_linearity=True,
         verify_equivariance=True,
+        lift=None,
     ) -> None:
         underlying = _coefficient_morphism_from_images(
             parent,
@@ -1022,6 +1017,7 @@ class GroupModuleMorphism(ModuleMorphism):
             ),
             elementwise=True,
             verify_linearity=False,
+            lift=lift,
         )
         if verify_equivariance and parent.is_equivariant(self) is not True:
             raise ValueError("the stated module map is not G-equivariant")
@@ -1159,10 +1155,10 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
             for generator in group.group_generators()
         )
 
-    def _element_constructor_(self, images):
-        if isinstance(images, GroupModuleMorphism) and images.parent() is self:
+    def _element_constructor_(self, images, *, lift=None):
+        if isinstance(images, GroupModuleMorphism) and images.parent() is self and lift is None:
             return images
-        return self.element_class(self, images)
+        return self.element_class(self, images, lift=lift)
 
     def _from_equivariant_images(
         self,

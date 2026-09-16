@@ -362,8 +362,7 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
     def lift_from_ambient(source, element):
         element = element if element.parent() is form else form(element)
         unformed_element = forget(element)
-        custom = underlying_inclusion.__dict__.get("_preamble_lift")
-        if custom is not None:
+        if underlying_inclusion.has_selected_lift():
             lifted = underlying_inclusion.lift(unformed_element)
         else:
             lifted = next(

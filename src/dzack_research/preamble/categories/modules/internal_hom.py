@@ -182,10 +182,15 @@ def _internal_hom_model_data(homset):
                 "_preamble_subobject_verify_linearity",
                 True,
             ),
+            lift=(
+                None
+                if model.__dict__.get("_preamble_subobject_lift") is None
+                else lambda element: model.__dict__["_preamble_subobject_lift"](
+                    model,
+                    element,
+                )
+            ),
         )
-        lift = model.__dict__.get("_preamble_subobject_lift")
-        if lift is not None:
-            inclusion._preamble_lift = lambda element: lift(model, element)
 
     relation_matrix = _presentation_matrix(model)
     presentation = (

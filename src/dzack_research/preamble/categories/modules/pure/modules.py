@@ -1970,10 +1970,15 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
                         "_preamble_subobject_verify_linearity",
                         True,
                     ),
+                    lift=(
+                        None
+                        if self.__dict__.get("_preamble_subobject_lift") is None
+                        else lambda element: self.__dict__["_preamble_subobject_lift"](
+                            self,
+                            element,
+                        )
+                    ),
                 )
-            lift = self.__dict__.get("_preamble_subobject_lift")
-            if lift is not None:
-                inclusion._preamble_lift = lambda element: lift(self, element)
             return inclusion
 
         def ambient_module(self):
