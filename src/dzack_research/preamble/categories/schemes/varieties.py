@@ -160,10 +160,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
             remains distinct from normalization/geometric-genus algorithms.
             """
             base = self.scheme_base_ring()
-            if self not in ProjectiveSchemes(base):
-                raise NotImplementedError(
-                    "arithmetic genus here requires a represented projective curve"
-                )
+            assert self in ProjectiveSchemes(base), (
+                "arithmetic genus here requires a represented projective curve"
+            )
             if self in ProjectiveSpaces(base):
                 return 0
             defining_ideal = self.defining_ideal_owned()
@@ -199,17 +198,15 @@ class Curves(_DimensionSubcategoryOfVarieties):
             normalization/geometric-integrality construction.
             """
             base = self.scheme_base_ring()
-            if self not in ProjectiveSchemes(base):
-                raise NotImplementedError(
-                    "geometric genus here requires a represented projective curve"
-                )
+            assert self in ProjectiveSchemes(base), (
+                "geometric genus here requires a represented projective curve"
+            )
             normalization = getattr(self, "_preamble_curve_normalization_data", None)
             if normalization is not None:
                 return normalization.geometric_genus()
-            if self not in SmoothSchemes(base):
-                raise NotImplementedError(
-                    "geometric genus of a singular curve requires its normalization, not the arithmetic genus"
-                )
+            assert self in SmoothSchemes(base), (
+                "geometric genus of a singular curve requires selected normalization data, not the arithmetic genus"
+            )
             return self.arithmetic_genus()
 
         def genus(self):

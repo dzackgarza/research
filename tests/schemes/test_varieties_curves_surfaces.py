@@ -103,8 +103,8 @@ def test_singular_plane_cubic_keeps_arithmetic_genus_separate_from_geometric_gen
     assert cusp.arithmetic_genus() == 1
     try:
         cusp.geometric_genus()
-    except NotImplementedError:
-        pass
+    except AssertionError as error:
+        assert "normalization" in str(error)
     else:
         raise AssertionError(
             "a singular curve must not identify geometric genus with arithmetic genus"
