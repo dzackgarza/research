@@ -1795,6 +1795,60 @@ Rules distilled from preamble work on direct-sum coordinates, embeddings, and co
 
 **Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
 
+# Declaring a category: the questions answered before writing (always-on)
+
+The tree this morning held thirty categories declaring `Sets()`, twenty-one
+declaring `Objects()`, a block of 135 categories meshed by hand-written
+property combinations, four notions each under two names, restriction of
+scalars declared as a supercategory on three bases, and a diamond whose two
+routes landed on different objects. None of it was a wrong object; all of it
+was a wrong belief about what a declaration says. `CONTRIBUTING.md` codes
+`CAT-15` to `CAT-25` and `DEV-64` state the rules with the artifact each one
+came from. This section is the order in which the questions are asked, and no
+declaration is written until each has an answer in the commit body.
+
+1. **What are the objects?** Write the definition in one sentence, in the
+   field's words. If it names a chosen datum ("with a chosen basis", "with a
+   differential"), this is a data subcategory. If it names only a property
+   ("Noetherian", "finitely generated", "separated"), this is an axiom on its
+   base and there is no class to write (`CAT-17`, `CAT-18`).
+2. **Does it exist?** `just category-graph by-supercategory` for the parent it
+   would declare; `rg` the nouns of the definition across `categories/`; the
+   specification files for the name they use. If it exists, extend or retire
+   into the owner; never a second class (`CAT-22`).
+3. **What is the underlying object, over the same parameters?** An object of
+   this category with the added structure forgotten, base and parameters
+   untouched, is an object of exactly one category one step down. That is the
+   declaration, and the only one (`CAT-15`, `CAT-16`). If the honest parent is
+   not in the tree, build it or declare nothing; `Sets()` and `Objects()` are
+   never placeholders.
+4. **Is anything in the list a change of base or parameter?** Restriction of
+   scalars, base change, an ideal to its fractional ideal, an `R[G]`-module to
+   a `G`-object over `R`: each is a functor obtained from the category by a
+   named method, never an entry in the list (`CAT-16`). Sage applies every
+   axiom along a declared edge, so such an entry is a false theorem for every
+   relative property.
+5. **Does the list create a second route to anything?** Write both composites.
+   Same category twice: delete the shortcut. Computed join: fine. Different
+   objects: the entry is false (`CAT-21`).
+6. **Is it a construction on a category?** Then it takes that category as a
+   parameter and declares it; its instances do not declare the base again
+   (`CAT-20`).
+7. **Is every entry an expression a reader can resolve?** Names and
+   parameters only; no locals, no `supers + [...]`, no method calls on `self`
+   that compute a category (`CAT-24`).
+8. **What does the graph say?** `just category-graph shape` and `cells`
+   before and after; the delta goes in the commit body, and a grown block or a
+   grown breadth is the finding (`CAT-25`).
+
+Banned outright, each observed and removed on 2026-09-16: `Sets()` or
+`Objects()` declared because the real parent is missing; a class named for a
+combination of properties; a class for a property that Sage's axiom mechanism
+states; a `super_categories` override on an axiom class; a category declaring
+its own name over a lower base; `__contains__` deciding membership by a
+predicate, a base tower or an attribute probe; a declaration computed from a
+local variable; a second class for a notion the tree already owns.
+
 # Categorical organization model (always-on)
 
 How the preamble's category tree is organized, and where new content goes.

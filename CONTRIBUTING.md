@@ -5187,6 +5187,116 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the defining structural functor `C -> H` together with classifier `H.A -> H` yields `C.A = C x_H H.A` and its projection; ancestor routes are compositions of those canonical maps.  No extra named node or graph-search witness is required.
 
+#### `CAT-15`: A Supercategory Declaration Is a Theorem, Never a Route to a Method
+
+- **Rule**: `super_categories()` returns the categories that every object of this one is an object of, by the definition in the docstring, over the same parameters.  Nothing else goes in the list: not the category whose `__init__` makes construction succeed, not the one that owns a method the leaf wants, not `Sets()` or `Objects()` as a root because the real parent is not in the tree yet.  When the honest parent does not exist, build it or leave the declaration abstract so the category refuses to construct (AGENTS.md, *A supercategory declaration is a mathematical claim*).
+
+- **Rationale**: Sage reads the list by inheritance, so every entry installs the target's operations and axioms on every object and every descendant.  An entry chosen for convenience is a false theorem that every later reader inherits and that no test can see, because each object still answers.  On 2026-09-16 thirty categories declared `Sets()`, among them sheaves, ringed spaces, pairings, arrow categories and a semiring, and twenty-one declared `Objects()`; nothing was wrong with any of their objects, only with what had been claimed about them.
+
+- **Violation Example**: `PairedModules -> OwnedSets()` because a pairing needs a parent; `OrdinalSemirings -> Objects()` for a semiring; `AffineGroupSchemes -> Objects()` with a comment that forgetting the group structure "is a functor, not an inclusion"; `Algebras -> Sets()` for modules with a multiplication.
+
+- **Correct Example**: `OrdinalSemirings -> OwnedSemirings()`; `Algebras(R) -> Modules(R)`; `AffineGroupSchemes -> AffineSchemes(R)`; a pairing left undeclared until the comma category over the tensor functor exists, with the missing construction recorded.
+
+#### `CAT-16`: Structure Forgotten in Place Is a Declaration; a Change of Base or Parameter Is a Functor
+
+- **Rule**: Declare `C -> D` exactly when an object of `C`, with the structure `C` adds forgotten and every parameter unchanged, is an object of `D`: an `R`-algebra is an `R`-module, an affine group scheme over `S` is an affine scheme over `S`.  Never declare a relation whose objects change base or parameter: restriction of scalars along `S -> R`, base change of a scheme, the passage from an `R[G]`-module to a `G`-object over `R`, from an ideal to the fractional ideal it generates.  Each of those is a functor obtained from its category by a method named for the construction, with its preservation theorems stated on the functor.
+
+- **Rationale**: the two are easy to confuse because both are forgetful and both are true sentences.  They differ in what inheritance does with them.  In place, the inherited operations and axioms are the object's own.  Across a base, Sage applies every axiom of the source to the target (`CategoryWithAxiom.super_categories`, category_with_axiom.py), so `Modules(QQ).FinitelyGenerated()` would inherit `Modules(ZZ).FinitelyGenerated()`, and `Modules(R[G]).FinitelyGenerated()` the R-module property, both false.  The tree had it backwards in both directions: `Algebras` refused the in-place declaration and made the cross-base one.
+
+- **Violation Example**: `Modules(R) -> Modules(S)` for a restriction base; `Schemes(R) -> Schemes(ZZ)`; `Modules(R[G]) -> GObjects(G, Modules(R))`; `Ideals -> FractionalIdeals`; the `Algebras` docstring reasoning that the relation to modules "is the forgetful functor, not a category inclusion" and declaring `Sets` instead.
+
+- **Correct Example**: `Algebras(R) -> Modules(R)`, and `Modules(S).restriction_of_scalars(f)` for `f: S -> R` returning the functor with its image category; `Schemes(R).base_change_functor(ring_map)`; `CommutativeIdeals(R).extension_to_fraction_field()`; `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence with both directions.
+
+#### `CAT-17`: A Property Is an Axiom on Its Base; a Chosen Datum Is a Subcategory Class That Declares the Axiom
+
+- **Rule**: Before writing a class for "the `X`s that are `P`", decide whether `P` is a property of the objects or a chosen datum.  A property (finitely generated, torsion, free, Noetherian, separated, symmetric, countable) is a nested `class P(CategoryWithAxiom)` on the base that first defines it, with a `SubcategoryMethods` accessor and, for a new name, one `all_axioms` registration; there is no standalone class.  A chosen datum (a framing, a presentation, a chosen multiplication, a differential, an augmentation, an enumeration, an order, a Koszul parity) is a class, and it declares the axiom category of the property it truncates to.  The crossing from property to datum is one named method that computes the datum once (AGENTS.md, *Property subcategories vs data subcategories*).
+
+- **Rationale**: a property is the propositional truncation of the datum ("some finite framing exists"), so the two are one notion at two levels, and the class-per-notion instinct writes them as unrelated siblings.  Sage's axiom mechanism exists so that properties compose without classes; a hand-written property class cannot be joined with another and must restate every diamond.
+
+- **Violation Example**: `class FinitelyPresentedModules(...)` beside `class ModulesWithChosenFinitePresentation(...)` with no declaration between them; `OwnedNoetherianRings`, `SeparatedSchemes`, `InfiniteEnumeratedSets` as classes; a `GradedCommutativeAlgebras(R, M, parity)` class whose parity was a category parameter, so that a parameterless axiom could not later state it.
+
+- **Correct Example**: `OwnedRings.Noetherian`, `Schemes.Separated`, `Modules.FinitelyPresented` as nested axiom classes; `ModulesWithChosenFinitePresentation(R) -> Modules(R).FinitelyPresented(), FramedModules(R)`; the parity as part of the grading datum on `GradedModules`, read by the `Supercommutative` axiom.
+
+#### `CAT-18`: No Class Is Named for a Combination of Properties; Joins Are Computed
+
+- **Rule**: The category of objects with properties `P` and `Q` is spelled `Base().P().Q()`, and Sage constructs it as the join.  Writing a class for the combination is banned, whatever its docstring says, and so is writing a class for one property on a subcategory that is itself one property.  A combination that needs operations of its own puts them on the nested join class Sage already provides for it (`class Q` nested inside `class P`), never on a new top-level class.
+
+- **Rationale**: the product of independent property axes, flattened into names, is what produced the block of 135 categories: every square in it was the same diamond declared twice, and every new axis multiplied the classes.  Computed joins are also the only place where the commutativity of the diamond is a theorem of the mechanism rather than an assertion at each site.
+
+- **Violation Example**: `FinitelyPresentedQuadraticFormModules`, `FinitelyGeneratedFreeFormModules`, `OwnedCompleteLocalRings`, `CommutativeDifferentialGradedAlgebras`, `StrictlyCommutativeDifferentialGradedAlgebras` as classes, each declaring two parents.
+
+- **Correct Example**: `FormModules(R).FinitelyPresented()`, `OwnedRings().Commutative().Local().Complete()`, `DifferentialGradedAlgebras(R).Supercommutative()`; a name the specification requires kept as a thin function returning that join.
+
+#### `CAT-19`: An Axiom Name Is Global and Means What Its Defining Base Means
+
+- **Rule**: Sage applies an axiom to every subcategory of the base that defines it, with that base's meaning, and it walks declared supercategories to find the definition.  So an axiom named `FinitelyGenerated` on `Modules` means "finitely generated as a module" on every algebra, lattice and group module too.  A property that is relative to a different structure gets a qualified name in Sage's own idiom (`FinitelyGeneratedAsMagma`, `FinitelyPresentedAsAlgebra`), registered once.  Before adding a name, check `sage.categories.category_with_axiom.all_axioms` and reuse Sage's when the meaning matches.
+
+- **Rationale**: two bases defining the same axiom name with different meanings make one of them false on every category that declares both, and the falsehood is silent because the join still constructs.
+
+- **Violation Example**: a `FinitelyPresented` axiom on `Algebras.Associative.Unital` while `Modules` defines `FinitelyPresented`, so that `R[x]` claims a finitely presented underlying module; a `Free` axiom on algebras meaning "free algebra".
+
+- **Correct Example**: `FinitelyPresentedAsAlgebra` on the unital associative algebras and `FinitelyPresented` on modules; `Complete` nested under `OwnedRings.Commutative.Local` so that it means complete as a local ring.
+
+#### `CAT-20`: A Construction on a Category Is Parameterized by It and Declares It
+
+- **Rule**: A category whose objects are objects of `C` with added structure or selected data (`G`-objects of `C`, objects of `C` with a chosen direct-sum decomposition, arrows of `C`, presheaves on `C`) takes `C` as a parameter and declares `C` as its immediate supercategory.  Its instances then reach `C` through it; an instance does not declare `C` a second time.
+
+- **Rationale**: the construction is a functor of `C`, and forgetting the added structure lands in `C` itself.  Declaring `Objects()` instead makes every instance restate the base, and hides that the construction is one thing across all `C`.
+
+- **Violation Example**: `GObjects(G, C) -> Objects()` with `FiniteGSets` declaring `EnumeratedSets` itself and `ModulesOverGroupAlgebra` declaring `AdditiveGroups`; `DirectSumObjects -> Objects()` unparameterized, with `BiproductModules` declaring `Modules` beside it.
+
+- **Correct Example**: `GObjects(G, C) -> C`; `DirectSumObjects(C) -> C` once the specification's spelling admits the parameter.
+
+#### `CAT-21`: A Second Route Between Two Categories Is an Obligation, and a Route Through Different Objects Is Banned
+
+- **Rule**: Before adding a declaration that creates a second path from `C` to some `D`, write down both composites of forgetful functors and why they are the same functor.  If they agree because one is an axiom join Sage computes, the edge is fine.  If they agree because a category on one route is the same category as one on the other, delete the edge: it is a shortcut (`just category-graph shape` lists them) and adds a cycle with no reachability.  If they do not agree, the declaration is false: the two routes send an object to different objects of `D`.
+
+- **Rationale**: Sage resolves a diamond by C3 linearization and never checks that it commutes; the object's inherited operations are whichever route the ordering picked.  A shortcut edge is a redundant assertion; a non-commuting one is a wrong answer waiting for the method that exposes it.
+
+- **Violation Example**: `Ideals -> FractionalIdeals` beside `Ideals -> CommutativeIdeals`, both reaching `ModuleSubobjects`, one as a subobject of `R` and the other of `Frac R`; `AffineSchemes -> Schemes, SeparatedSchemes, QuasiAffineSchemes` when `QuasiAffineSchemes` declares the first two; `OwnedFields -> OwnedIntegralDomains` beside `OwnedPrincipalIdealDomains`.
+
+- **Correct Example**: `AffineSchemes -> QuasiAffineSchemes` alone; `Ideals` retired into `CommutativeIdeals`, with the fractional ideal a functor image; a lattice declaring `FreeFormModules` and the symmetric axiom, both routes to `Modules(R)` being the same forgetful functor through a computed join.
+
+#### `CAT-22`: One Notion Has One Category; a Duplicate Is Retired Into Its Owner
+
+- **Rule**: Before minting a category, search for its owner: `just category-graph by-supercategory` for the parent it would declare, `rg` on the nouns of its definition across `categories/`, and the specification files for the name they use.  A category whose definition matches an existing one is not written; if it already exists, it is retired into the owner, its non-duplicate operations moved to the owner at the weakest sufficient structure (`OWN-18`), and its consumers rewritten.  A name the specification requires survives only as a thin function returning the owner.
+
+- **Rationale**: duplicates arise when a category is minted where a consumer needs it and named from that vantage.  Each duplicate is a second authority for one notion, and the graph then holds diamonds that are the same category twice.
+
+- **Violation Example**: `FormedModules` ("modules with a bilinear form") beside `FormModules`; `InfiniteEnumeratedSets` beside `CountablyInfiniteSets`; `Ideals` beside `CommutativeIdeals`; a `LieAlgebras` class beside the `Lie` axiom on `Algebras`.
+
+- **Correct Example**: `FormModules` with the parent-level `q(v) = b(v, v)` moved onto `BilinearFormModules`; `LieAlgebras` as the name of `Algebras.Lie`; `CountablyInfiniteSets` as the name of the join of `Countable` and `Infinite`.
+
+#### `CAT-23`: Membership Is Placement, Never a Predicate Computed at Runtime
+
+- **Rule**: `x in C` is decided by the category `x` was placed in at construction and by the declared graph.  A `__contains__` that walks a ring's base tower, probes an attribute, or evaluates a property of the candidate is banned: it answers a membership question the graph does not state, and it answers it differently from inheritance.  Where a wider membership is true (a QQ-scheme is a ZZ-scheme), it is reached through the functor of `CAT-16`, not by a predicate.
+
+- **Rationale**: a predicate membership makes `x in C` true while `x` has none of `C`'s operations, so the two meanings of membership diverge exactly where a consumer relies on them agreeing.
+
+- **Violation Example**: `Schemes.__contains__` answering lower-base membership by the candidate ring's base tower; `RepresentedToricSchemes.__contains__` probing `getattr(candidate, "scheme_base_ring", None)`; `QuasiCoherentSheaves.__contains__` duck-typing for want of a placement.
+
+- **Correct Example**: `x in Schemes(R)` true because `x` was constructed in `Schemes(R)` or a declared subcategory; a candidate over a lower base admitted through `base_change_functor`.
+
+#### `CAT-24`: Every Declaration Is an Expression the Reader Can Resolve
+
+- **Rule**: the entries of `super_categories()` and `extra_super_categories()` are category expressions built from names and parameters (`Modules(self.base_ring())`, `Schemes(R).Projective()`), never local variables, `supers + [...]`, `self.base_category().ArrowCategory()`, or anything a reader must execute to learn.  The declared graph is read from source; a declaration only a running session can evaluate is an edge the graph cannot state and the audit cannot check.
+
+- **Rationale**: the audit's "declared from a local expression" list held twenty-six categories whose placement was invisible to every reader and every review.
+
+- **Violation Example**: `algebra = Algebras(...).Associative().Unital(); return [algebra, graded_modules]`; `return supers or [Objects()]`; `return [self.base_category().ArrowCategory()]`.
+
+- **Correct Example**: `return [Algebras(self.base_ring()).Associative().Unital(), GradedModules(self.base_ring(), self.grading_monoid())]`.
+
+#### `CAT-25`: A Declaration Change Is Read on the Graph Before and After
+
+- **Rule**: Any edit to a `super_categories()` or `extra_super_categories()` return, any new category, and any retirement is preceded and followed by `just category-graph shape` and `just category-graph cells`, and the change is judged on their delta: the breadth of the target must not grow, the shortcut list must not gain an entry, the list of generators owing a 2-cell must not gain one that is not a genuine join stated in the commit body, and the largest 2-connected block must not grow.  A grown block is the finding, never a cost to route around.
+
+- **Rationale**: the invariant this architecture asks for, deep and narrow with computed joins, is a property of the whole graph, and every local edge is defensible on its own.  Nobody saw thirty-one declarations into `Sets` or a block of 135 categories until the graph was rendered.
+
+- **Violation Example**: adding a supercategory because the leaf needed a method, without looking at who else declares that target; retiring a class and leaving its consumers to a later reader.
+
+- **Correct Example**: the commit body of a declaration change quotes the before and after of `shape` (declarations, longest chain) and `cells` (H_1 rank, largest block, count owing a cell), and names each edge as shortcut, false, or new-and-immediate.
+
 #### `CAT-02`: Property Categories Do Not Manufacture Chosen Data
 
 - **Rule**: Distinguish a property from a chosen witness of that property.
@@ -6725,6 +6835,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: a measurement quoted in a reply and nowhere else; a workaround committed with the engine fact only in the commit body; a cost recorded as a `COMPLAINTS.md` gap and deleted when the consumer was delivered, taking the fact with it.
 
 - **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs, the version, the command, and the consequence for per-invocation tooling.
+
+#### `DEV-64`: A Sage Mechanism Is Read in Its Source Before It Is Worked Around
+
+- **Rule**: Before overriding, wrapping, or routing around any behaviour of Sage's category framework (`super_categories`, `extra_super_categories`, `_with_axiom`, joins, C3 ordering, `__contains__`, `refine`, dynamic classes), open the method in `sage/categories/` and state its contract in one sentence, with the file.  The workaround is then written against that contract or not at all, and the contract goes to `TRAPS.md` if it is a fact nobody in the tree had written down.
+
+- **Rationale**: the mechanism has a design and the design is usually the answer.  The tree's history shows the alternative: `super_categories` overridden on every axiom class to stop an inheritance that one deleted edge stops; `refine` and `setattr` as construction; `NotImplementedError` as an abstract contract; `__contains__` as a predicate.  Each was a workaround for a mechanism whose actual behaviour, ten lines of source away, made it unnecessary or wrong.
+
+- **Violation Example**: writing `def super_categories(self): return [Schemes(self.base_ring())]` on nine axiom classes to block axiom descent along a base-restriction edge, instead of reading why the descent happens and removing the edge.
+
+- **Correct Example**: reading `CategoryWithAxiom.super_categories` (category_with_axiom.py) and `Category._with_axiom_as_tuple` (category.py), recording that an axiom is applied along every declared supercategory, and ruling that base-restriction edges are functors (AGENTS.md, *Red flags*; `TRAPS.md`).
 
 
 * * *
