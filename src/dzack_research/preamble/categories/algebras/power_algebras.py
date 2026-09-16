@@ -179,8 +179,9 @@ class PowerAlgebra(GradedDirectSumModule):
         value = self(value)
         if value == self.zero():
             return value
-        if not value.is_homogeneous() or value.degree() != 1:
-            raise NotImplementedError("the represented canonical divided-power operation is currently evaluated on degree-one elements")
+        assert value.is_homogeneous() and value.degree() == 1, (
+            "the represented canonical divided-power operation is evaluated on homogeneous degree-one elements"
+        )
         return self.from_component(
             exponent,
             self.free_source_module().divided_power_element(

@@ -88,10 +88,10 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             the conjugation orbit of its representative.
             """
             group = self.group()
-            if group not in FiniteGroups():
-                raise NotImplementedError(
-                    "the conjugacy-class-sum basis of the group-algebra center is materialized here only for finite groups"
-                )
+            assert group in FiniteGroups(), (
+                "the represented conjugacy-class-sum basis of a group-algebra center "
+                "requires a finite group"
+            )
             module = self.underlying_module()
             class_sums = finite_ordered_set(
                 [

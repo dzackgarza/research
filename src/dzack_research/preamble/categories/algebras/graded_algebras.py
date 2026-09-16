@@ -283,13 +283,14 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                 presentation = self.presentation_ring()
                 representative = self.lift_to_presentation(element)
             backend = _engine_element(presentation, representative)
-            try:
-                homogeneous = backend.is_homogeneous()
-                degree = backend.degree()
-            except AttributeError as error:
-                raise NotImplementedError(
-                    "this graded algebra has no represented homogeneous-degree backend"
-                ) from error
+            is_homogeneous = getattr(backend, "is_homogeneous", None)
+            degree_function = getattr(backend, "degree", None)
+            assert callable(is_homogeneous) and callable(degree_function), (
+                "homogeneous degree is represented here when the graded-algebra backend exposes "
+                "homogeneity and degree operations"
+            )
+            homogeneous = is_homogeneous()
+            degree = degree_function()
             if not homogeneous:
                 raise ValueError("the algebra element is not homogeneous")
             return self.grading_monoid()(int(degree))
