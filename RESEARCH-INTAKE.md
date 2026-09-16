@@ -31,8 +31,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Monodromy groups/reps + π1/H1 + CW + graded | User note 2026-09-15 | Semantic `π1(X,x)`, `H1^sing`, monodromy groups/reps; CW complexes with sphere homotopy DB; `ZZ^n`-graded complexes / spectral sequences | `categories/topology/` / `categories/homotopy/` + `categories/graded/` | Proposed — see note below |
 | Periods (Lairez) — creative telescoping | https://github.com/lairez/periods | Periods of rational integrals: Picard-Fuchs operators via Griffiths-Dwork / Rham-Koszul | `categories/schemes/periods.py` / `categories/Dmodules/` + `categories/rings/completions.py` | Proposed — see intake below |
 | p-curvature | User note 2026-09-15 | `p`-curvature of a connection in characteristic `p` (`ψ_p: T_{X/S} → End(E)`) | `categories/connections/p_curvature.py` + `categories/characteristic_p/` | Proposed — see note below |
-| Zeta of varieties / Weil conjectures (concrete cases) | User note 2026-09-15 | `Z(X/F_q,T)` for `X/F_q`; closed forms via explicit `|X(F_{q^r})|` for `A^n, P^n, Gr(k,n)`, some curves; verify Weil (rationality, functional equation, RH) | `categories/zeta/zeta.py` + `categories/varieties/point_counts.py` | Proposed — see note below |
-| Lefschetz trace operationalized (Frob) | User note 2026-09-15 | Operationalize `N_r = Σ (-1)^i Tr(Frob^r \| H^i_{c,ét}(Q_ℓ))` — compute `Tr(Frob)` on étale cohomology | `categories/etale/trace_formula.py` + `categories/etale/frobenius.py` | Proposed — see note below |
+| Zeta of varieties / Weil conjectures (concrete cases) | User note 2026-09-15 | `Z(X/F_q,T)` for `X/F_q`; closed forms via explicit `|X(F_{q^r})|` for `A^n, P^n, Gr(k,n)`, some curves; verify Weil (rationality, functional equation, RH) via graded `H^*_{c,ét} : GrMod` with `H^*.graded_piece(i)=H^i_{c,ét}` | `categories/zeta/zeta.py` + `categories/varieties/point_counts.py` | Proposed — see note below |
+| Lefschetz trace operationalized (Frob) | User note 2026-09-15 | Operationalize `N_r = Σ (-1)^i Tr(Frob^r \| H^*_{c,ét}(Q_ℓ).graded_piece(i))` — compute `Tr(Frob)` on graded `H^*_{c,ét} : GrMod` | `categories/etale/trace_formula.py` + `categories/etale/frobenius.py` | Proposed — see note below |
 | HH(A) — Hochschild homology | User note 2026-09-15 | Hochschild homology `HH_*(A)` for (dg) algebras `A`; complex `C(A)`, `HH = H_*(C)`, HKR, etc. | `categories/homology/hochschild.py` + `categories/algebras/dg_algebras.py` | Proposed — see note below |
 | Gauss-Manin + six functors + R f_* | User note 2026-09-15 | Gauss-Manin connection, six-functor formalism for sheaves, derived functors (esp. `R f_*`) | `categories/functors/gauss_manifold.py` + `categories/sheaves/six_functors.py` + `categories/derived/` | Proposed — see note below |
 | Étale / ℓ-adic and Galois cohomology via sites — honest and operationalized, computable in some cases | User note 2026-09-16 | Honest `Q_ℓ`, `H^*_ét : GrMod`, `H^*(Gal,-) : GrMod` as specialization of site cohomology with `H^*.graded_piece(i)=H^i`; Grothendieck topologies, sites, sieves, covering families — operationalized and computable in some cases (finite-type `X/F_q` with finite affine/étale cover, lisse `Q_ℓ` via `Z/ℓ^n` system, comparison via `RΓ` as effective `Ch`, MW/rigid adapter when needed) | `categories/topology/sites.py` + `categories/etale/` + `categories/galois/` | Proposed — see note below |
@@ -429,15 +429,15 @@ Need to work with zeta functions of varieties over `F_q`, and at least for (some
   * `Gr(k,n): |Gr(k,n)(F_{q^r})| = Gaussian binomial  [n choose k]_{q^r}` with `q`-factorial formula → `Z = ∏_{i=0}^{k(n-k)} 1/(1-q^i T)^{c_i}` with explicit `c_i` or product of `q`-integers; closed via `q`-binomial rationality
   * Some curves: `A^1` minus `n` points, elliptic curve `E: y^2 = x^3+ax+b` with `|E(F_{q^r})| = q^r+1 - α^r - \bar α^r` (`α\bar α = q`), hyperelliptic of low genus where `L`-polynomial is known; at least need interface `Curve.point_count(r)` that is exact and `Z`-rational.
 
-* Must get closed forms: `Z(X,T) = ∏_{i=0}^{2 dim X} P_i(T)^{(-1)^{i+1}}` with `P_i(T) = det(1 - T·Frob | H^i_{c,ét}(X_{\bar F_q}, Q_ℓ)) ∈ Z[T]`, `P_0 = 1-T`, `P_{2n}=1-q^n T` for connected `X`. Construction is `X → (N_r = |X(F_{q^r})|) → Z = exp` with rational reconstruction (compare coefficients `N_r` with `log Z` expansion), not numeric `exp`.
+* Must get closed forms: `Z(X,T) = ∏_{i=0}^{2 dim X} P_i(T)^{(-1)^{i+1}}` with `P_i(T) = det(1 - T·Frob | H^*_{c,ét}(X_{\bar F_q}, Q_ℓ).graded_piece(i)) ∈ Z[T]` (`H^*_{c,ét} : GrMod` with `H^*.graded_piece(i)=H^i_{c,ét}`), `P_0 = 1-T`, `P_{2n}=1-q^n T` for connected `X`. Construction is `X → (N_r = |X(F_{q^r})|) → Z = exp` with rational reconstruction (compare coefficients `N_r` with `log Z` expansion), not numeric `exp`.
 
 * Must verify all Weil conjectures for these concrete `X` and return certificates, not just claim:
   * (W1) Rationality: `Z ∈ Q(T)` — check `Z` is rational function with `Z ∈ 1+T·Z[[T]]`
   * (W2) Functional equation: `Z(X, 1/(q^n T)) = ± q^{nχ/2} T^{χ} Z(X,T)` with `χ = Σ (-1)^i b_i`, `n=dim X`; verify as identity in `Q(T)`
   * (W3) Riemann hypothesis: `P_i(T)=∏(1-α_{ij} T)` with `|α_{ij}| = q^{w/2}` for `w=i` (purity) — verify by factoring `P_i` over `C` and checking `|α| = q^{i/2}` via `QQbar` absolute value, or via `ℓ`-adic weights. For concrete cases this is checkable: `P_i` split with known roots `q^{j}` or Weil numbers `α, \bar α`.
-  * (W4) Betti numbers: `deg P_i = b_i = dim H^i_{ét}` — compare with known `b_i` from `ℓ`-adic cohomology (e.g. `b_i(P^n)=1` for even `i≤2n` else `0`; `b_i(Gr)` via Schubert cells).
+   * (W4) Betti numbers: `deg P_i = b_i = dim H^*_{c,ét}.graded_piece(i)` — compare with known `b_i` from `ℓ`-adic graded `H^*_{c,ét} : GrMod` (e.g. `b_i(P^n)=1` for even `i≤2n` else `0`; `b_i(Gr)` via Schubert cells).
 
-* Requires: site cohomology `RΓ_c(X_{ét}, Q_ℓ)` from six-functor `R f_!` already noted, trace formula `N_r = Σ (-1)^i Tr(Frob^r | H^i_c)`, and the comparison `Z = ∏ det(1-T·Frob|H^i_c)^{(-1)^{i+1}}`. The same `R f_!` and `Q_ℓ` owners above must supply `H^i_c` and `Frob` action.
+* Requires: site cohomology `RΓ_c(X_{ét}, Q_ℓ)` from six-functor `R f_!` already noted, trace formula `N_r = Σ (-1)^i Tr(Frob^r | H^*_c.graded_piece(i))` with `H^*_c : GrMod`, and the comparison `Z = ∏ det(1-T·Frob|H^*_c.graded_piece(i))^{(-1)^{i+1}}`. The same `R f_!` and `Q_ℓ` owners above must supply `H^*_c : GrMod` and `Frob` action on each `graded_piece(i)`.
 
 Intended owners: `categories/zeta/zeta.py` (`Variety.zeta(): Q(T)` via `N_r`), `categories/varieties/point_counts.py` (`X.point_count(r): NN` exact for `A^n`, `P^n`, `Gr(k,n)`, some curves), `categories/etale/weil.py` (`WeilVerification` with `rationality`, `functional_equation`, `rh_roots`, `betti` checks). Not a free `zeta_via_brute_force(X,q)` — `X.zeta()` on the variety object in `Sch/F_q` with `Q_ℓ`-cohomology behind the same site, and `Z.verify_weil()` returning certificates for the concrete families.
 
@@ -458,20 +458,20 @@ To state `W(X/F_q)` you need these as categories/functors — not `q=5`, `X=P^2`
   where `N_r = |X(F_{q^r})|`. This is definition of `Z`, element `Z : Q[[T]]`. Rationality `Z ∈ Q(T)` is first Weil statement.
 
 **Cohomology (to state factorisation)**
-* Site `X_ét : Sites` and `ℓ≠p`, `Q_ℓ : Fields` as before; `Sh(X_ét,Q_ℓ) : AbCat` and derived `RΓ_c = R(p_!) : D(Sh) → D(Vect_{Q_ℓ})` for `p: X→Spec F_q` (proper-support pushforward from six functors). Object `H^i_{c,ét}(X_{\bar F_q}, Q_ℓ) = H^i(RΓ_c(Q_ℓ)) : Vect_{Q_ℓ}` finite-dimensional, with continuous `Gal(\bar F_q/F_q)`-action; `Fr_q` acts as `Frob : H^i_c → H^i_c`
+* Site `X_ét : Sites` and `ℓ≠p`, `Q_ℓ : Fields` as before; `Sh(X_ét,Q_ℓ) : AbCat` and derived `RΓ_c = R(p_!) : D(Sh) → D(Vect_{Q_ℓ})` for `p: X→Spec F_q` (proper-support pushforward from six functors). Object `H^*_{c,ét}(X_{\bar F_q}, Q_ℓ) = H^*(RΓ_c(Q_ℓ)) : GrMod_{Q_ℓ}` with `H^*_{c,ét}.graded_piece(i)=H^i_{c,ét}=H^i(RΓ_c) : Vect_{Q_ℓ}` finite-dimensional, with continuous `Gal(\bar F_q/F_q)`-action; `Fr_q` acts as `Frob : H^*_c.graded_piece(i) → H^*_c.graded_piece(i)`
 * Grothendieck-Lefschetz trace formula (must exist to link counting to cohomology):
   ```
-  N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^i_{c} )
+  N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^*_c.graded_piece(i) )  with H^*_c : GrMod
   ```
-  Without `R f_!` and `Tr` this is not statable.
+  Without `R f_!` and `Tr` on the graded `H^*_c` this is not statable.
 
 **Factorisation and statements**
 * From trace, `Z` factors as
   ```
-  Z(X,T)= ∏_{i=0}^{2n} P_i(T)^{(-1)^{i+1}},  P_i(T)=det(1-T·Fr_q | H^i_c) ∈ Z[T] : Poly(Z)
+  Z(X,T)= ∏_{i=0}^{2n} P_i(T)^{(-1)^{i+1}},  P_i(T)=det(1-T·Fr_q | H^*_c.graded_piece(i)) ∈ Z[T] : Poly(Z)  with H^*_c : GrMod
   ```
-  Need `Poly(Z) → Q(T)` and `deg P_i = b_i = dim H^i_c : NN` (fourth Weil/Betti). This is rationality refinement.
-* Functional equation needs Poincaré duality for `H^i_c` (`f^! Q_ℓ ≅ Q_ℓ(n)[2n]`) and `f_! ⊣ f^!` :
+  Need `Poly(Z) → Q(T)` and `deg P_i = b_i = dim H^*_c.graded_piece(i) : NN` (fourth Weil/Betti). This is rationality refinement.
+* Functional equation needs Poincaré duality for `H^*_c` (`f^! Q_ℓ ≅ Q_ℓ(n)[2n]`) and `f_! ⊣ f^!` on graded `H^*_c`:
   ```
   Z(X, 1/(q^n T)) = ± q^{nχ/2} T^{χ} Z(X,T),  χ=Σ(-1)^i b_i : ZZ
   ```
@@ -485,17 +485,17 @@ To state `W(X/F_q)` you need these as categories/functors — not `q=5`, `X=P^2`
 
 Need a way to operationalize the Lefschetz trace formula, especially on étale cohomology for the trace of Frobenius.
 
-Need `Tr(Frob^r | H^i_{c,ét}(X_{\bar F_q}, Q_ℓ)) : Q_ℓ` as computable morphism on the cohomology object, not a formal symbol. Formula
+Need `Tr(Frob^r | H^*_{c,ét}(X_{\bar F_q}, Q_ℓ).graded_piece(i)) : Q_ℓ` as computable morphism on the graded cohomology `H^*_{c,ét} : GrMod`, not a formal symbol. Formula
 ```
-N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^i_{c}(X_{\bar F_q}, Q_ℓ) )
+N_r = Σ_{i=0}^{2n} (-1)^i Tr( Fr_q^r | H^*_{c}.graded_piece(i) )  with H^*_c : GrMod
 ```
-must be executable: from `X : Sch/F_q` produce `H^i_c : Vect_{Q_ℓ}` with `Frob : End(H^i_c)` (via `X_ét`, `RΓ_c = R(p_!)`, `Q_ℓ(n)`), compute its trace via `Vect_{Q_ℓ}` linear algebra, and compare with `|X(F_{q^r})| : NN` (finite-set count). This is the bridge between counting and cohomology that makes `Z(X,T)=∏ P_i(T)^{(-1)^{i+1}}` effective, where `P_i(T)=det(1 - T·Frob | H^i_c)`.
+must be executable: from `X : Sch/F_q` produce graded `H^*_c : GrMod` with `H^*_c.graded_piece(i)=H^i_c : Vect_{Q_ℓ}` and `Frob : End(H^*_c.graded_piece(i))` (via `X_ét`, `RΓ_c = R(p_!)`, `Q_ℓ(n)`), compute its trace via `Vect_{Q_ℓ}` linear algebra, and compare with `|X(F_{q^r})| : NN` (finite-set count). This is the bridge between counting and cohomology that makes `Z(X,T)=∏ P_i(T)^{(-1)^{i+1}}` effective, where `P_i(T)=det(1 - T·Frob | H^*_c.graded_piece(i))`.
 
-Requires: `Frob : X_{\bar F_q} → X_{\bar F_q}` as `Fr_q × id` on `X×_{F_q}\bar F_q`, its action `Frob^*: H^i_c → H^i_c` via functoriality of `RΓ_c`, and `Tr: End(V) → Q_ℓ` on `Vect_{Q_ℓ}` (finite-dimensional). Operationalization means: when `H^i_c` is presented (e.g. via known cell decomposition for `A^n, P^n, Gr` or via Monsky-Washnitzer / crystalline `RΓ_c` with Frobenius lift for general `X`), actually return matrix `M_i = Frob|_{H^i_c} : Mat_{b_i}(Q_ℓ)` and compute `Tr(M_i^r)`, `det(1 - T M_i)` exactly in `Z[T]`. Not a placeholder `trace_of_frob` stub.
+Requires: `Frob : X_{\bar F_q} → X_{\bar F_q}` as `Fr_q × id` on `X×_{F_q}\bar F_q`, its action `Frob^*: H^*_c.graded_piece(i) → H^*_c.graded_piece(i)` via functoriality of `RΓ_c` on graded `H^*_c : GrMod`, and `Tr: End(V) → Q_ℓ` on `Vect_{Q_ℓ}` (finite-dimensional). Operationalization means: when `H^*_c : GrMod` is presented (e.g. via known cell decomposition for `A^n, P^n, Gr` or via Monsky-Washnitzer / crystalline `RΓ_c` with Frobenius lift for general `X`), actually return matrix `M_i = Frob|_{H^*_c.graded_piece(i)} : Mat_{b_i}(Q_ℓ)` and compute `Tr(M_i^r)`, `det(1 - T M_i)` exactly in `Z[T]`. Not a placeholder `trace_of_frob` stub.
 
-For concrete families (`A^n, P^n, Gr(k,n)` and some curves) the trace is already known from explicit `P_i`: e.g. `Tr(Frob|H^{2j}(P^n))=q^j`, otherwise `0`; for `Gr`, `Tr` is `q^{something}` via Schubert. The operational trace must reproduce those `N_r` via the sum, certifying the formula for those `X`. For general `X`, the trace is the computational content of Monsky-Washnitzer / rigid cohomology `H^i_{MW}` with Frobenius lift, behind the same `RΓ_c` interface — private adapter, but `X.etale_cohomology(i)` and `Frob.matrix()` stay owned.
+For concrete families (`A^n, P^n, Gr(k,n)` and some curves) the trace is already known from explicit `P_i`: e.g. `Tr(Frob|H^*_c.graded_piece(2j))=q^j`, otherwise `0`; for `Gr`, `Tr` is `q^{something}` via Schubert. The operational trace must reproduce those `N_r` via the sum, certifying the formula for those `X`. For general `X`, the trace is the computational content of Monsky-Washnitzer / rigid cohomology `H^*_{MW}: GrMod` with Frobenius lift, behind the same `RΓ_c` interface — private adapter, but `X.etale_cohomology(Q_ell) : GrMod` with `H^*.graded_piece(i)` and `Frob.matrix()` stay owned.
 
-Intended owners: `categories/etale/trace_formula.py` (`LefschetzTrace` with `Tr(Frob^r|H^i_c)` and `N_r = Σ (-1)^i Tr`), `categories/etale/frobenius.py` (`Frobenius : End(H^i_c)` as `RΓ_c(Fr_q)`), `categories/etale/monsky_washnitzer.py` (private MW adapter for general `X` when `RΓ_c` not yet known). Not a free `trace_frobenius(X)` — `X.etale_cohomology_c(i, Q_ell).frobenius().trace(r)` on the cohomology object, with `X.point_count(r)` on the variety object for comparison.
+Intended owners: `categories/etale/trace_formula.py` (`LefschetzTrace` with `Tr(Frob^r|H^*_c.graded_piece(i))` and `N_r = Σ (-1)^i Tr`), `categories/etale/frobenius.py` (`Frobenius : End(H^*_c.graded_piece(i))` as `RΓ_c(Fr_q)` on graded `H^*_c`), `categories/etale/monsky_washnitzer.py` (private MW adapter for general `X` when `RΓ_c` not yet known). Not a free `trace_frobenius(X)` — `X.etale_cohomology_c(Q_ell) : GrMod` with `X.etale_cohomology_c(Q_ell).graded_piece(i).frobenius().trace(r)` on the graded cohomology, with `X.point_count(r)` on the variety object for comparison; do not add `etale_cohomology_c(i, Q_ell)` returning bare `H^i`.
 
 ## Desired capability: HH(A) — Hochschild homology — note 2026-09-15
 
