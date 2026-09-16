@@ -2387,9 +2387,13 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def class_group(self):
             return self.divisor_class_theory().class_group()
 
+        def homogeneous_coordinate_generators(self):
+            r"""Return the selected homogeneous coordinate generators of this projective space."""
+            return self.O(1).global_sections().homogeneous_coordinate_ring().algebra_generators()
+
         def hyperplane(self, index=0):
             r"""Return the coordinate hyperplane ``V(x_index)``."""
-            return self.closed_subscheme(self.gens()[int(index)])
+            return self.closed_subscheme(tuple(self.homogeneous_coordinate_generators())[int(index)])
 
         def basic_open(self, homogeneous_element):
             r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""

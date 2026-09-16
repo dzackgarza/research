@@ -5,7 +5,7 @@ from dzack_research.preamble.all import NN, QQ, ProjectiveCompleteIntersections,
 
 def _quartic():
     space = ProjectiveSpaces(QQ)(3)
-    x0, x1, x2, x3 = space.gens()
+    x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
     return ProjectiveCompleteIntersections(space.scheme_base_ring())(
         space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
     )

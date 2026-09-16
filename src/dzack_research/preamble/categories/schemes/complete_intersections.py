@@ -98,7 +98,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)
-        x, y, z = plane.gens()
+        x, y, z = plane.homogeneous_coordinate_generators()
         return self(plane.closed_subscheme(x * z - y**2))
 
     def _call_(self, subscheme):

@@ -33,7 +33,7 @@ def test_affine_space_retains_trivial_picard_class_groups_and_basic_opens() -> N
 
 def test_projective_space_retains_fan_divisor_classes_hyperplanes_and_basic_opens() -> None:
     plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
-    x, _y, _z = plane.gens()
+    x, _y, _z = plane.homogeneous_coordinate_generators()
     theory = plane.divisor_class_theory()
     hyperplane = plane.hyperplane(0)
     opened = plane.basic_open(x)

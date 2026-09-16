@@ -3,7 +3,7 @@ from dzack_research.preamble.all import ClosedEmbeddings, ProjectiveSpaces, QQ, 
 
 def test_projective_closed_subscheme_is_a_scheme_before_its_inclusion_is_built() -> None:
     line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
-    x, y = line.gens()
+    x, y = line.homogeneous_coordinate_generators()
 
     point = line.closed_subscheme(x - y)
 
