@@ -23,7 +23,6 @@ from sage.structure.category_object import CategoryObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    HomCategoryConstruction,
     _MonoCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -724,7 +723,7 @@ class SchemeMorCategory(CategoricalHomset):
             self._engine_homset = _SageScheme._Hom_(domain, codomain)
         except TypeError:
             self._engine_homset = None
-        CategoricalHomset.__init__(self, HomCategoryConstruction(schemes), domain, codomain)
+        CategoricalHomset.__init__(self, schemes.HomCategory(), domain, codomain)
 
     def _engine_homset_crossing(self):
         r"""Return the private Sage Homset these morphisms are computed in."""

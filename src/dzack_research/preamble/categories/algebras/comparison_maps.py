@@ -3,10 +3,7 @@ r"""Canonical comparison morphisms among tensor, symmetric, exterior, and divide
 from sage.arith.misc import factorial
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
+from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalHomset
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.power_algebras import (
     PowerAlgebraElement,
@@ -46,7 +43,7 @@ class ConstructionAlgebraHomset(CategoricalHomset):
             raise ValueError("construction algebra maps require one common base ring")
         CategoricalHomset.__init__(
             self,
-            HomCategoryConstruction(Algebras(domain.base_ring()).Associative().Unital()),
+            Algebras(domain.base_ring()).Associative().Unital().HomCategory(),
             domain,
             codomain,
         )

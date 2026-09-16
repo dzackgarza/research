@@ -31,7 +31,6 @@ from sage.symbolic.ring import SR
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -277,7 +276,7 @@ class LebesgueModuleHomset(CategoricalHomset):
     def __init__(self, domain, codomain) -> None:
         CategoricalHomset.__init__(
             self,
-            HomCategoryConstruction(Modules(domain.base_ring())),
+            Modules(domain.base_ring()).HomCategory(),
             domain,
             codomain,
         )

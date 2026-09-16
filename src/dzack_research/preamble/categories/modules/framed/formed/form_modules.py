@@ -700,7 +700,7 @@ class FiberedFormedModuleHomset(CategoricalHomset):
         # total category of the formed-module fibration, not in one fibre.
         CategoricalHomset.__init__(
             self,
-            HomCategoryConstruction(FormedModules(domain.value_module())),
+            FormedModules(domain.value_module()).HomCategory(),
             domain,
             codomain,
         )

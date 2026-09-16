@@ -125,7 +125,7 @@ class CategoryFunctorHomset(CategoricalHomset):
     ) -> None:
         self._category_of_categories = category_of_categories
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(category_of_categories), domain, codomain
+            self, category_of_categories.HomCategory(), domain, codomain
         )
 
     def category_of_categories(self) -> Cat:

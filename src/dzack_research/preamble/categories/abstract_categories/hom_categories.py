@@ -1551,7 +1551,6 @@ class AutCategoryConstruction(_AutCategoryOf):
 
 __all__ = [
     "AutCategoryConstruction",
-    "CategoryPacket",
     "CategoryPacketMethods",
     "CategoricalHomset",
     "CategoricalIsomorphism",

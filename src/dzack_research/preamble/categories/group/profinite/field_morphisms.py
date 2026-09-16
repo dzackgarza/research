@@ -18,7 +18,6 @@ from sage.rings.qqbar import AlgebraicField_common
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -193,7 +192,7 @@ class _ExactFieldHomset(CategoricalHomset):
 
     def __init__(self, domain, codomain) -> None:
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(OwnedFields()), domain, codomain
+            self, OwnedFields().HomCategory(), domain, codomain
         )
 
     def _element_constructor_(self, datum):

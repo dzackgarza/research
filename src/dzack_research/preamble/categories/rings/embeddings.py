@@ -8,7 +8,6 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
@@ -204,7 +203,7 @@ class OrderHomset(CategoricalHomset):
 
     def __init__(self, domain, codomain) -> None:
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(OwnedOrders()), domain, codomain
+            self, OwnedOrders().HomCategory(), domain, codomain
         )
 
     def _element_constructor_(self, field_embedding):
