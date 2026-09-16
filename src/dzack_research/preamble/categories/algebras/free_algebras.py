@@ -1117,11 +1117,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return "symmetric algebras"
 
     def super_categories(self):
-
-        return [
-            GradedAlgebras(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
-        ]
+        return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
         # The module a construction selected to build this algebra on, as on
@@ -1425,11 +1421,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return "divided power algebras"
 
     def super_categories(self):
-
-        return [
-            GradedAlgebras(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
-        ]
+        return [GradedAlgebras(self.base_ring()).Commutative()]
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 

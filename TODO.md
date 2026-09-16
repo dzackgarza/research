@@ -677,10 +677,10 @@ These nodes build the missing categories rather than leaving the false declarati
   **Acceptance:** the abelian and monoidal operations `QuasiCoherentSheaves` documents are reached through its declared supercategories rather than restated on it; no sheaf in the tree is outside the category graph.
 
 - [ ] **`algebras-are-modules`**. **Needs:** none.
-  **Goal:** `Algebras(R)` declares `Modules(R)`, so an algebra inherits its module operations rather than restating them.
-  **Observed gap:** `algebras/algebras.py:630` defines the category as "``R``-modules equipped with one bilinear multiplication" and then declares `Sets()`.  The module structure an algebra is defined to have is not inherited, and the multiplication is the only thing the declaration admits it has.
-  **Owners:** `Algebras(R)`, and the module category it is built over.
-  **Deliver:** the declaration, and the removal of whatever module-level operation `Algebras` or its descendants restate because the inheritance was absent.
+  **Goal:** An algebra built by `Algebras(R)(module, multiplication)` is a module object constructed through `Modules(R)`, so it answers its module operations by inheritance.
+  **Observed gap:** `Algebras(R)` declares `Modules(R)`, but `Algebras._call_` (`algebras/algebras.py`) returns an object of the arrow category \(\mathrm{Arr}(\mathbf{Mod}_R)\) whose module is its `target_object()`, so `Algebras.ParentMethods` forwards `zero`, `module_generating_set`, `module_generator`, `module_rank`, `scalar_multiple`, `_selected_module_coefficients`, `__contains__` and `_element_constructor_` through `underlying_module()` behind an exact-module guard, and `AlgebrasWithChosenMultiplication.ElementMethods` wraps one module element.  The threaded route exists for associative multiplications only: `_algebra_from_multiplication` rebuilds the module through `_module_presented_by_multiplication` with the multiplication as construction data, received by `AssociativeAlgebrasWithChosenMultiplication.ParentMethods.__init__`.
+  **Owners:** `Algebras(R)._call_`; `AlgebrasWithChosenMultiplication`, which takes the threaded `__init__` and the multiplication transport from its associative refinement; `_equip_unit`, which transports the unit along the equipping map; the algebra Hom classes selected by `GeneralAlgebraHomCategoryConstruction`.
+  **Deliver:** `Algebras(R)(module, m)` constructs through the presented-module route for every bilinear `m`, associative or not; the forwarding block, the wrapper element class, the exact-module guard and the arrow-object branches of the algebra Hom classes are deleted with it; `underlying_module()` remains the functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) obtained from its category.
   **Acceptance:** an algebra answers its module operations through `Modules(R)`; no operation `Modules(R)` provides is defined a second time in the algebra subtree.
 
 - [ ] **`arrow-category-placement`**. **Needs:** none.

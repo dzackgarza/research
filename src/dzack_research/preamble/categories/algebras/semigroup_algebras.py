@@ -22,10 +22,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         return self(((1,),), names=("t",))
 
     def super_categories(self):
-        return [
-            Algebras(self.base_ring()).Associative().Unital().Commutative(),
-            AlgebrasWithChosenFinitePresentation(self.base_ring()),
-        ]
+        return [AlgebrasWithChosenFinitePresentation(self.base_ring()).Commutative()]
 
     @classmethod
     def _repr_object_names(cls):

@@ -212,10 +212,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self.grading_monoid())
 
     def super_categories(self):
-
-        graded_modules = GradedModules(self.base_ring(), self.grading_monoid())
-        algebra = Algebras(self.base_ring()).Associative().Unital()
-        return [algebra, graded_modules]
+        return [
+            Algebras(self.base_ring()).Associative().Unital(),
+            GradedModules(self.base_ring(), self.grading_monoid()),
+        ]
 
     class ParentMethods:
         def restrict_scalars(self, ring_map):

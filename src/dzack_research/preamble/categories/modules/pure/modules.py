@@ -3945,18 +3945,15 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             Algebras,
         )
 
-        # End_R(F) is a ring under composition and linear over the base, and a
-        # map preserving everything it is preserves both -- which is what an
-        # associative algebra morphism is.  ``MatrixSpaces`` states only the
-        # linear half and ``OwnedRings`` only the multiplicative half, so
-        # neither supplies the Hom; this is where both first hold at once.
+        # ``MatrixSpaces`` states only the linear half; the ring structure of
+        # End_R(F) under composition arrives with the associative unital
+        # algebras.
         return [
             MatrixSpaces(self.base_ring()),
-            OwnedRings(),
             Algebras(self.base_ring()).Associative().Unital(),
         ]
 
-    # The three above state three different morphisms, so this names which of
+    # The two above state two different morphisms, so this names which of
     # them End_R(F) means: the one that preserves everything it is.
     _HomCategory = AssociativeAlgebraHomCategoryConstruction
 

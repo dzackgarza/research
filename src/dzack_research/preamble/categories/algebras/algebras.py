@@ -92,10 +92,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         return "associative algebras with chosen multiplication"
 
     def super_categories(self):
-        return [
-            AlgebrasWithChosenMultiplication(self.base_ring()),
-            Algebras(self.base_ring()).Associative(),
-        ]
+        return [AlgebrasWithChosenMultiplication(self.base_ring()).Associative()]
 
     class ParentMethods:
         def __init__(
@@ -633,10 +630,6 @@ class Algebras(OwnedCategoryOverBaseRing):
     This is the algebra node.  Its datum is a morphism
     \(m:A\otimes_R A\to A\); associativity, a chosen two-sided unit,
     commutativity, and the Lie identities are refinements above this node.
-    The relation to ``Modules(R)`` is therefore the forgetful functor, not a
-    category inclusion: the algebra object retains the exact supplied module
-    as its carrier rather than turning that module into another category
-    object in place.
     """
 
     def an_object(self):
@@ -650,8 +643,8 @@ class Algebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         base = _proper_restriction_base_ring(self.base_ring())
         if base is not None:
-            return [Algebras(base)]
-        return [Sets()]
+            return [Algebras(base), Modules(self.base_ring())]
+        return [Modules(self.base_ring())]
 
     def underlying_module(self):
         r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
@@ -821,15 +814,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return self.underlying_module().module_generating_set()
 
         def module_rank(self):
-            r"""Return the rank of the underlying ``R``-module when represented.
-
-            ``Alg_R`` is not implemented as a subcategory of ``Mod_R``: the
-            forgetful functor retains the exact carrier module.  Rank is
-            therefore read from that carrier rather than from the arrow object
-            used to retain the multiplication.  In particular ``R[G]`` has
-            module rank ``|G|`` for finite ``G`` without making the algebra
-            object itself a module-category object.
-            """
+            r"""Return the rank of the module under ``Alg_R -> Mod_R``."""
             return self.underlying_module().module_rank()
 
         def module_generator(self, label):
@@ -1594,11 +1579,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
-        # gl_n(R) is M_n(R) under the commutator, which arrives with the
-        # associative algebras above: nothing here is special to matrices.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital(),
             FramedAlgebras(self.base_ring()),
         ]
 
