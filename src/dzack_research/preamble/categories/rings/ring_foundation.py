@@ -2000,9 +2000,7 @@ class OwnedFields(OwnedCategory):
     def super_categories(self):
         return [
             OwnedDivisionRings(),
-            OwnedIntegralDomains(),
             OwnedPrincipalIdealDomains(),
-            OwnedNoetherianRings(),
             OwnedArtinianRings(),
             OwnedLocalRings(),
         ]
