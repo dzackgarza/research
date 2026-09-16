@@ -1274,7 +1274,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             except ValueError:
                 return None
 
-            return DirectSumObjects().verify_decomposition(self, factors)
+            return DirectSumObjects(self.lattice_category()).verify_decomposition(self, factors)
 
         def is_decomposable(self):
             return self.decomposition() is not None
@@ -3338,7 +3338,10 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             BiproductModules,
         )
 
-        return [Lattices(self.base_ring()), BiproductModules(self.base_ring())]
+        return [
+            DirectSumObjects(Lattices(self.base_ring())),
+            BiproductModules(self.base_ring()),
+        ]
 
     class ParentMethods:
         def _biproduct_factor_position(self, index):

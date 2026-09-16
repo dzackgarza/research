@@ -1,11 +1,22 @@
-r"""Objects equipped with a chosen finite direct-sum decomposition."""
+r"""Objects of a category with a chosen finite direct-sum decomposition.
+
+For a category ``C`` with finite biproducts, an object of ``DirectSumObjects(C)``
+is an object ``X`` of ``C`` together with a chosen indexed family of summands
+whose biproduct in ``C`` is ``X``.  The injections and projections of that
+decomposition are morphisms of ``C``, so the notion is relative to ``C``: an
+orthogonal decomposition of a lattice is a decomposition in ``Lattices(R)``,
+and the decomposition of its underlying module is its image in
+``Modules(R)``.  Forgetting the choice lands in ``C`` itself, which is the one
+declaration this construction makes.
+"""
 
 from collections.abc import Iterable
 from typing import TypeVar
 
+from sage.categories.category import Category
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -15,22 +26,30 @@ LabelT = TypeVar("LabelT")
 
 
 class DirectSumObjects(OwnedCategory):
-    r"""Objects carrying a selected ordered family of direct summands."""
+    r"""Objects of ``C`` carrying a selected ordered family of direct summands."""
+
+    @staticmethod
+    def __classcall__(cls, base_category: Category):
+        return Category.__classcall__(cls, base_category)
+
+    def __init__(self, base_category: Category) -> None:
+        self._base_category = base_category
+        OwnedCategory.__init__(self)
+
+    def base_category(self) -> Category:
+        r"""The category ``C`` in which the biproducts are taken."""
+        return self._base_category
+
+    def _repr_object_names(self):
+        return f"objects of {self.base_category()._repr_object_names()} with a chosen direct-sum decomposition"
 
     def an_object(self) -> Parent:
-        r"""``R (+) R`` over the integers, decomposed into its two summands."""
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        ring = _own_ring(SageZZ)
-        summand = ring.free_module(finite_ordinal_set(1))
-        return Modules(ring).biproduct([summand, summand])
+        r"""``X (+) X`` for an object ``X`` of ``C``, decomposed into its two summands."""
+        witness = self.base_category().an_object()
+        return self.base_category().biproduct((witness, witness))
 
     def super_categories(self):
-        return [Objects()]
+        return [self.base_category()]
 
     def verify_decomposition(
         self,

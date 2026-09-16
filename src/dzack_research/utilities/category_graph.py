@@ -57,10 +57,14 @@ class Supercategory:
     resolved: str  # the head with any import alias followed back to its name
     origin: str  # "owned", "sage", or "expression"
     axioms: tuple[str, ...] = ()
+    parameters: tuple[str, ...] = ()  # category-valued arguments, as vertices
 
     @property
     def vertex(self) -> str:
-        return _vertex(self.resolved, self.axioms)
+        head = self.resolved
+        if self.parameters:
+            head = f"{head}({', '.join(self.parameters)})"
+        return _vertex(head, self.axioms)
 
 
 @dataclass(frozen=True)
@@ -132,6 +136,29 @@ def _without_axioms(expression: str) -> str:
 def _axioms(expression: str) -> tuple[str, ...]:
     _, axioms = _axiom_calls(expression)
     return axioms
+
+
+def _category_parameters(
+    expression: str, imported: dict[str, tuple[str, str]], known: set[str]
+) -> tuple[str, ...]:
+    """The arguments of a declaration that are themselves categories, as vertices.
+
+    ``GObjects(G, Sets())`` and ``DirectSumObjects(Lattices(R))`` are
+    constructions on a category (`CAT-20`): one category per parameter, each
+    declaring that parameter.  The parameter is the vertex of the argument,
+    with its axioms, so ``DirectSumObjects(Modules(R).FinitelyGenerated())``
+    is a vertex of its own.
+    """
+    base, _ = _axiom_calls(expression)
+    if not isinstance(base, ast.Call):
+        return ()
+    parameters: list[str] = []
+    for argument in base.args:
+        text = ast.unparse(argument)
+        head = _resolved(_head(text), imported)
+        if head in known:
+            parameters.append(_vertex(head, _axioms(text)))
+    return tuple(parameters)
 
 
 def _summary(node: ast.ClassDef) -> str:
@@ -252,6 +279,7 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef) and _is_category(node, known):
                     known.add(node.name)
+    category_classes = set(known)
     # A category name is also bound by a factory function or a rebinding, so
     # those count as defined when a declaration names them.
     for _, tree in parsed:
@@ -281,6 +309,9 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                             resolved=_resolved(_head(expression), imported),
                             origin=_origin(_head(expression), imported, known),
                             axioms=_axioms(expression),
+                            parameters=_category_parameters(
+                                expression, imported, category_classes
+                            ),
                         )
                         for declaration in declaring
                         for expression in _returned_supercategories(declaration)
@@ -473,12 +504,28 @@ def _declared_edges(
     also declares each vertex with one axiom fewer.
     """
     names = {d.name for d in declarations}
-    return {
+    # A construction whose own declaration is its parameter (``return
+    # [self.base_category()]``) declares nothing the reader can name at the
+    # class; each instance ``H(P)`` declares ``P``.
+    parameterized = {
+        d.name
+        for d in declarations
+        if d.supercategories and all(s.origin == "expression" for s in d.supercategories)
+    }
+    edges = {
         (d.vertex, supercategory.vertex)
         for d in declarations
         for supercategory in d.supercategories
         if supercategory.resolved in names and supercategory.vertex != d.vertex
     }
+    edges |= {
+        (supercategory.vertex, parameter)
+        for d in declarations
+        for supercategory in d.supercategories
+        if supercategory.resolved in parameterized
+        for parameter in supercategory.parameters
+    }
+    return edges
 
 
 def _axiom_edges(
@@ -755,9 +802,11 @@ def render_dot(declarations: list[CategoryDeclaration]) -> str:
         '  node [shape=box, fontname="Inter"];',
     ]
     for declaration in sorted(declarations, key=lambda d: d.qualified_name):
-        for head in declaration.heads:
+        for supercategory in declaration.supercategories:
+            head = supercategory.head
             style = "" if head in declared else ' [style=dashed, color="#b45309"]'
-            lines.append(f'  "{declaration.qualified_name}" -> "{head}"{style};')
+            target = supercategory.vertex if head in declared else head
+            lines.append(f'  "{declaration.qualified_name}" -> "{target}"{style};')
     lines.append("}")
     return "\n".join(lines) + "\n"
 

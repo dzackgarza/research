@@ -3439,7 +3439,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             DirectSumObjects,
         )
 
-        return [Modules(self.base_ring()), DirectSumObjects()]
+        return [DirectSumObjects(Modules(self.base_ring()))]
 
     class ParentMethods:
         _derived_construction_parameters = frozenset({"summands"})

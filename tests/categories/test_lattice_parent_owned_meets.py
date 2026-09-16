@@ -25,5 +25,5 @@ def test_lattice_biproduct_retains_owned_direct_sum_placement() -> None:
     biproduct = plane + plane
 
     assert biproduct in Lattices(integers)
-    assert biproduct in DirectSumObjects()
+    assert biproduct in DirectSumObjects(Lattices(integers))
     assert biproduct.summands().cardinality() == 2
