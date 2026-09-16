@@ -91,15 +91,13 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         def elements(self):
             r"""Return all elements through the private finite Smith workspace."""
 
-            if _engine_ring(self.base_ring()) is not SageZZ:
-                raise NotImplementedError(
-                    "finite enumeration is currently the ZZ torsion specialization"
-                )
+            assert _engine_ring(self.base_ring()) is SageZZ, (
+                "finite torsion enumeration is represented here in the ZZ Smith specialization"
+            )
             engine = self._smith_engine()
-            if engine is None:
-                raise NotImplementedError(
-                    "finite torsion enumeration requires the represented Smith workspace"
-                )
+            assert engine is not None, (
+                "finite torsion enumeration requires the represented Smith workspace"
+            )
             positions = Sets.Δ[int(engine.cardinality()) - 1]
             return FiniteOrderedSets().from_indexed(
                 positions,
@@ -122,10 +120,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         define an object of the torsion category.
         """
         ring = self.base_ring()
-        if ring not in PrincipalIdealDomains():
-            raise NotImplementedError(
-                "direct sums of cyclic torsion modules require a represented PID"
-            )
+        assert ring in PrincipalIdealDomains(), (
+            "direct sums of cyclic torsion modules require a represented PID"
+        )
         orders = tuple(ring(order) for order in orders)
         if any(order == ring.zero() for order in orders):
             raise ValueError("a cyclic torsion summand requires a nonzero relation scalar")
@@ -153,10 +150,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         group on those selected generators, found inside the finite box cut out
         by their individual orders and reduced to Hermite row normal form.
         """
-        if _engine_ring(self.base_ring()) is not SageZZ:
-            raise NotImplementedError(
-                "finite abelian groups are currently crossed to ZZ-torsion modules"
-            )
+        assert _engine_ring(self.base_ring()) is SageZZ, (
+            "finite abelian groups are represented here as ZZ-torsion modules"
+        )
         if not group.is_finite():
             raise ValueError("a torsion-module crossing requires a finite group")
         additive = group.category().is_subcategory(CommutativeAdditiveGroups())
@@ -175,11 +171,10 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             )
         orders = tuple(int(generator.order()) for generator in generators)
         search_size = prod(orders)
-        if search_size > 10**6:
-            raise NotImplementedError(
-                "the selected generator-order box is too large for exact relation enumeration; "
-                "supply a finite presentation instead"
-            )
+        assert search_size <= 10**6, (
+            "exact relation enumeration uses the selected generator-order box only up to size 10^6; "
+            "larger groups require a represented finite presentation"
+        )
 
         if additive:
             identity = group.zero()
