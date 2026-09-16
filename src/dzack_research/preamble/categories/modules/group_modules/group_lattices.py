@@ -55,10 +55,9 @@ class GroupLatticeHomset(LatticeHomset):
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
-        if group.is_finitely_generated() is not True:
-            raise NotImplementedError(
-                "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
-            )
+        assert group.is_finitely_generated() is True, (
+            "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
+        )
         domain = self.domain()
         codomain = self.codomain()
         for group_generator in group.group_generators():
@@ -207,8 +206,9 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             codomain is the unformed underlying module.
             """
             group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError("constructing an invariant lattice requires a chosen finite group generating set")
+            assert group.is_finitely_generated() is True, (
+                "constructing an invariant lattice requires a chosen finite group generating set"
+            )
             generators = tuple(group.group_generators())
             if not generators:
                 return self.subobject_on(self.module_generators())
