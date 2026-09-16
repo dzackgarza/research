@@ -75,6 +75,24 @@ class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
         return GroupModuleHomset
 
 
+class _GroupModuleConstruction:
+    r"""The coefficient module and selected group action defining an ``R[G]``-module."""
+
+    def __init__(self, unacted_module, source_action, action_is_trivial=False) -> None:
+        self._unacted_module = unacted_module
+        self._source_action = source_action
+        self._action_is_trivial = bool(action_is_trivial)
+
+    def unacted_module(self):
+        return self._unacted_module
+
+    def source_action(self):
+        return self._source_action
+
+    def action_is_trivial(self) -> bool:
+        return self._action_is_trivial
+
+
 class ModulesOverGroupAlgebra(Modules):
     r"""``Modules(R[G])``: the modules over a group algebra.
 
@@ -335,9 +353,11 @@ class ModulesOverGroupAlgebra(Modules):
             action_is_trivial=False,
             **rest,
         ) -> None:
-            self._preamble_unacted_module = unacted_module
-            self._preamble_source_group_action = source_action
-            self._preamble_action_is_trivial = bool(action_is_trivial)
+            self._group_module_construction = _GroupModuleConstruction(
+                unacted_module,
+                source_action,
+                action_is_trivial,
+            )
 
             coefficient_endomorphisms = Modules(unacted_module.base_ring()).Mor(
                 unacted_module,
@@ -411,7 +431,7 @@ class ModulesOverGroupAlgebra(Modules):
                         }
                     )
                 )
-            source_action = self._preamble_source_group_action
+            source_action = self._group_module_construction.source_action()
             return Sets().Mor(self.group(), endomorphisms)(
                 lambda group_element: endomorphisms.elementwise(
                     lambda vector: _apply_action(source_action, group_element, vector),
@@ -463,7 +483,7 @@ class ModulesOverGroupAlgebra(Modules):
             """
             if self._is_the_regular_module():
                 return bool(self.group().cardinality() == 1)
-            if self._preamble_action_is_trivial:
+            if self._group_module_construction.action_is_trivial():
                 return True
 
             group = self.group()
@@ -500,7 +520,7 @@ class ModulesOverGroupAlgebra(Modules):
             r"""Return the exact coefficient restriction on which ``G`` acts."""
             if self._is_the_regular_module():
                 return self
-            return self._preamble_unacted_module
+            return self._group_module_construction.unacted_module()
 
         scalar_restriction = unacted_module
 
