@@ -34,6 +34,20 @@ from dzack_research.preamble.categories.sets.set_categories import (
 _LOGGER = logging.getLogger(__name__)
 
 
+class _CompletedModuleMorphismDatum(SageObject):
+    r"""The selected source morphism and completion defining a completed map."""
+
+    def __init__(self, source_morphism, completion) -> None:
+        self._source_morphism = source_morphism
+        self._completion = completion
+
+    def source_morphism(self):
+        return self._source_morphism
+
+    def completion(self):
+        return self._completion
+
+
 class ModuleCokernelCompletionComparison(SageObject):
     r"""The finite-module comparison ``coker(f)^ ~= coker(f^)``."""
 
@@ -680,13 +694,14 @@ class ModuleMorphism(Morphism):
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
-        completion_source = getattr(
+        completion_datum = getattr(
             self,
-            "_preamble_adic_completion_source_morphism",
+            "_preamble_adic_completion_datum",
             None,
         )
-        if completion_source is not None:
-            completion = self._preamble_adic_completion_ring
+        if completion_datum is not None:
+            completion_source = completion_datum.source_morphism()
+            completion = completion_datum.completion()
             if not completion.is_flat_over_source():
                 raise ArithmeticError("the retained completion map was expected to be flat over its Noetherian source")
             from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -1172,8 +1187,10 @@ class ModuleMorphism(Morphism):
         extension.adopt_object_image(self.domain(), source)
         extension.adopt_object_image(self.codomain(), target)
         completed = extension(self)
-        completed._preamble_adic_completion_source_morphism = self
-        completed._preamble_adic_completion_ring = completion
+        completed._preamble_adic_completion_datum = _CompletedModuleMorphismDatum(
+            self,
+            completion,
+        )
         return completed
 
     def completion_cokernel_comparison(self, ideal, *, precision=20):
@@ -1249,13 +1266,14 @@ class ModuleMorphism(Morphism):
     @cached_method
     def cokernel(self):
         r"""Return the selected quotient ``codomain(self) / image(self)``."""
-        completion_source = getattr(
+        completion_datum = getattr(
             self,
-            "_preamble_adic_completion_source_morphism",
+            "_preamble_adic_completion_datum",
             None,
         )
-        if completion_source is not None:
-            completion = self._preamble_adic_completion_ring
+        if completion_datum is not None:
+            completion_source = completion_datum.source_morphism()
+            completion = completion_datum.completion()
             source_cokernel = completion_source.cokernel()
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
