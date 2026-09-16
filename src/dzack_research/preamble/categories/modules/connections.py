@@ -18,6 +18,9 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
@@ -26,6 +29,18 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+class ModuleConnectionConstruction:
+    r"""The selected connection from which a structured module is transported."""
+
+    def __init__(self, source_connection) -> None:
+        if not isinstance(source_connection, Connection):
+            raise TypeError("a module-connection construction starts from a Connection")
+        self._source_connection = source_connection
+
+    def source_connection(self):
+        return self._source_connection
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -83,20 +98,25 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         categories = [self]
         if connection.is_flat():
             categories.append(ModulesWithFlatConnection(algebra))
+        construction = ModuleConnectionConstruction(connection)
         return algebra._fresh_free_module_on(
             source.module_generating_set(),
             _extra_categories=tuple(categories),
-            _extra_construction_data={"source_connection": connection},
+            _extra_construction_data={"connection_construction": construction},
         )
 
     class ParentMethods:
-        def __init__(self, source_connection, **rest) -> None:
-            self._preamble_source_connection = source_connection
+        def __init__(self, connection_construction, **rest) -> None:
+            self._connection_construction = connection_construction
             super().__init__(**rest)
+
+        def connection_construction(self):
+            r"""Return the selected connection construction defining this module."""
+            return self._connection_construction
 
         @cached_method
         def connection(self):
-            source_connection = self._preamble_source_connection
+            source_connection = self.connection_construction().source_connection()
             transported_target = self.connections().target_module()
             omega = source_connection.one_forms()
 
@@ -291,11 +311,11 @@ class Connection(Element):
             return cached
         self.parent().restricted_source_module()
         target = self.parent().restricted_target_module()
-        morphism = self.parent().arrow_set().elementwise(
-            lambda element: target(self(element.underlying_element()))
+        morphism = ConnectionUnderlyingLinearMorphism(
+            self.parent().arrow_set(),
+            self,
+            lambda element: target(self(element.underlying_element())),
         )
-        morphism._preamble_is_connection = True
-        morphism._preamble_connection = self
         self._preamble_underlying_linear_morphism = morphism
         return morphism
 
@@ -377,6 +397,17 @@ class Connection(Element):
         return ConnectionDeRhamModule(self)
 
 
+class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
+    r"""The selected underlying linear morphism of one algebraic connection."""
+
+    def __init__(self, parent, connection, function) -> None:
+        self._connection = connection
+        super().__init__(parent, function, elementwise=True)
+
+    def connection(self):
+        return self._connection
+
+
 class ConnectionSpace(RestrictedHomCategoryParent):
     Element = Connection
 
@@ -454,11 +485,11 @@ class ConnectionSpace(RestrictedHomCategoryParent):
                 or generator_images.codomain() is not self.restricted_target_module()
             ):
                 raise ValueError("the linear map has the wrong connection endpoints")
-            connection = getattr(generator_images, "_preamble_connection", None)
-            if connection is None:
+            if not isinstance(generator_images, ConnectionUnderlyingLinearMorphism):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a connection by this backend"
                 )
+            connection = generator_images.connection()
             if connection.parent() is self:
                 return connection
             return self(lambda label: connection.generator_image(label))
@@ -475,7 +506,7 @@ class ConnectionCategoryConstruction(_RestrictedHomCategoryOf):
         return ConnectionSpace
 
     def accepts(self, arrow) -> bool:
-        return getattr(arrow, "_preamble_connection", None) is not None
+        return isinstance(arrow, ConnectionUnderlyingLinearMorphism)
 
 
 @cached_function(key=lambda module: id(module))
@@ -501,10 +532,15 @@ class ConnectionMorphism(Element):
 
     def __init__(self, parent, images, *, verify_horizontality=True) -> None:
         Element.__init__(self, parent)
-        self._underlying_morphism = parent.arrow_set()(images)
+        underlying = parent.arrow_set()(images)
+        self._underlying_morphism = underlying
         if verify_horizontality:
             self._check_connection_square()
-        self._underlying_morphism._preamble_connection_morphism = self
+        self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
+            parent.arrow_set(),
+            self,
+            underlying,
+        )
 
     def domain(self):
         return self.parent().domain_object()
@@ -550,6 +586,30 @@ class ConnectionMorphism(Element):
                 )
 
 
+class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
+    r"""The selected underlying module morphism of one horizontal map."""
+
+    def __init__(self, parent, connection_morphism, underlying) -> None:
+        self._connection_morphism = connection_morphism
+        source = parent.domain()
+        if source.is_framed():
+            super().__init__(
+                parent,
+                lambda label: underlying(source.module_generator(label)),
+                verify_linearity=False,
+            )
+        else:
+            super().__init__(
+                parent,
+                lambda element: underlying(element),
+                elementwise=True,
+                verify_linearity=False,
+            )
+
+    def connection_morphism(self):
+        return self._connection_morphism
+
+
 class ConnectionHomset(RestrictedHomCategoryParent):
     Element = ConnectionMorphism
 
@@ -579,10 +639,10 @@ class ConnectionHomset(RestrictedHomCategoryParent):
     def _element_constructor_(self, images):
         if isinstance(images, ConnectionMorphism) and images.parent() is self:
             return images
-        if isinstance(images, Morphism):
-            tagged = getattr(images, "_preamble_connection_morphism", None)
-            if tagged is not None and tagged.parent() is self:
-                return tagged
+        if isinstance(images, HorizontalConnectionUnderlyingMorphism):
+            structured = images.connection_morphism()
+            if structured.parent() is self:
+                return structured
         return ConnectionMorphism(self, images)
 
     def identity(self):
@@ -602,7 +662,7 @@ class ConnectionMorphismCategoryConstruction(_RestrictedHomCategoryOf):
         return ConnectionHomset
 
     def accepts(self, arrow) -> bool:
-        return getattr(arrow, "_preamble_connection_morphism", None) is not None
+        return isinstance(arrow, HorizontalConnectionUnderlyingMorphism)
 
 
 

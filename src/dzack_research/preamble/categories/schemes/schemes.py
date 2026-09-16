@@ -135,10 +135,46 @@ def _elements_determining_maps_out_of(algebra, base):
     return None
 
 
+class SchemeConeMorphismConstruction:
+    r"""The selected universal-cone target and legs defining an induced map."""
+
+    def __init__(self, target, legs) -> None:
+        self._target = target
+        self._legs = legs
+
+    def target(self):
+        return self._target
+
+    def legs(self):
+        return self._legs
+
+    def image_of(self, image):
+        r"""Return ``image`` with this cone construction established at construction."""
+        if isinstance(image, _RepresentedAffineSchemeMorphism):
+            return _RepresentedAffineSchemeMorphism(
+                image.parent(),
+                image.coordinate_algebra_morphism(),
+                cone_construction=self,
+            )
+        if type(image) is SchemeMorphism:
+            return SchemeMorphism(
+                image.native_morphism(),
+                homset=image.parent(),
+                pullback=image._coordinate_pullback,
+                cone_construction=self,
+                point_coordinates=image._point_coordinates,
+            )
+        raise TypeError(
+            "the selected universal cone requires a represented affine or native scheme morphism"
+        )
+
+
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
     _coordinate_pullback = None
+    _cone_construction = None
+    _point_coordinates = None
 
     def __init__(
         self,
@@ -148,8 +184,12 @@ class SchemeMorphism(Morphism):
         codomain=None,
         homset=None,
         pullback=None,
+        cone_construction=None,
+        point_coordinates=None,
     ) -> None:
         self._native_morphism = native_morphism
+        self._cone_construction = cone_construction
+        self._point_coordinates = point_coordinates
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
         if pullback is not None:
@@ -169,8 +209,17 @@ class SchemeMorphism(Morphism):
                 raise ValueError("the stated scheme-morphism codomain disagrees with its Hom")
         Morphism.__init__(self, homset)
 
+    def cone_construction(self):
+        r"""Return the selected universal-cone datum defining this map, if any."""
+        return self._cone_construction
+
     def native_morphism(self):
-        return self._native_morphism
+        native = getattr(self, "_native_morphism", None)
+        assert native is not None, (
+            "a native Sage scheme-morphism crossing requires a selected native representative; "
+            "this categorical morphism is represented intrinsically instead"
+        )
+        return native
 
     def domain(self):
         return self.parent().domain() if self._preamble_domain_override is None else self._preamble_domain_override
@@ -180,7 +229,7 @@ class SchemeMorphism(Morphism):
 
     def point_coordinates(self):
         r"""Return the selected owned coordinate family when this morphism is a represented point."""
-        coordinates = getattr(self, "_preamble_point_coordinates", None)
+        coordinates = self._point_coordinates
         if coordinates is None:
             raise ValueError("this scheme morphism was not constructed from selected point coordinates")
         return coordinates
@@ -205,20 +254,20 @@ class SchemeMorphism(Morphism):
             if structure.codomain() is self.codomain():
                 return structure
 
-        projection_label = getattr(
-            self,
-            "_preamble_product_projection_label",
-            None,
+        projection_label = None
+        projection_domain = self.domain()
+        projection_base = projection_domain.scheme_base_ring()
+        if projection_domain in ProductSchemes(projection_base):
+            try:
+                projection_label = projection_domain.projection_label(self)
+            except ValueError:
+                pass
+        cone_construction = other.cone_construction()
+        product_cone_target = (
+            None if cone_construction is None else cone_construction.target()
         )
-        product_cone_target = getattr(
-            other,
-            "_preamble_product_cone_target",
-            None,
-        )
-        product_cone_legs = getattr(
-            other,
-            "_preamble_product_cone_legs",
-            None,
+        product_cone_legs = (
+            None if cone_construction is None else cone_construction.legs()
         )
         if (
             projection_label is not None
@@ -227,21 +276,16 @@ class SchemeMorphism(Morphism):
         ):
             return product_cone_legs[projection_label]
 
-        fiber_projection_index = getattr(
-            self,
-            "_preamble_fiber_projection_index",
-            None,
-        )
-        fiber_cone_target = getattr(
-            other,
-            "_preamble_fiber_product_cone_target",
-            None,
-        )
-        fiber_cone_legs = getattr(
-            other,
-            "_preamble_fiber_product_cone_legs",
-            None,
-        )
+        fiber_projection_index = None
+        if projection_domain in FiberProductSchemes(projection_base):
+            for index, projection in enumerate(
+                projection_domain.fiber_product_projections()
+            ):
+                if self is projection:
+                    fiber_projection_index = index
+                    break
+        fiber_cone_target = product_cone_target
+        fiber_cone_legs = product_cone_legs
         if (
             fiber_projection_index is not None
             and fiber_cone_target is self.domain()
@@ -302,11 +346,10 @@ class SchemeMorphism(Morphism):
             if self.domain() in ProductProjectiveSpaces(base):
                 factors = self.domain().factors()
                 stored_points = getattr(native_point, "_points", None)
-                factor_label = getattr(
-                    self,
-                    "_preamble_product_projection_label",
-                    None,
-                )
+                try:
+                    factor_label = self.domain().projection_label(self)
+                except ValueError:
+                    factor_label = None
                 if stored_points is not None and factor_label is not None:
                     labels = tuple(factors.index_set())
                     for position, label in enumerate(labels):
@@ -393,8 +436,9 @@ class SchemeMorphism(Morphism):
         domain = self.domain()
         base = domain.scheme_base_ring()
         if domain in ProductProjectiveSpaces(base):
-            target = getattr(self, "_preamble_product_cone_target", None)
-            legs = getattr(self, "_preamble_product_cone_legs", None)
+            construction = self.cone_construction()
+            target = None if construction is None else construction.target()
+            legs = None if construction is None else construction.legs()
             if target is domain and legs is not None:
                 equations = []
                 for label in domain.factors().index_set():
@@ -654,12 +698,13 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
 class _RepresentedAffineSchemeMorphism(SchemeMorphism):
     r"""An affine scheme morphism carried exactly by its coordinate pullback."""
 
-    def __init__(self, parent, pullback) -> None:
+    def __init__(self, parent, pullback, *, cone_construction=None) -> None:
         Morphism.__init__(self, parent)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
         self._coordinate_pullback = pullback
         self._native_realization = None
+        self._cone_construction = cone_construction
 
     def native_morphism(self):
         if self._native_realization is None:
@@ -713,17 +758,19 @@ def _categorical_scheme_morphism(
     domain=None,
     codomain=None,
     pullback=None,
+    point_coordinates=None,
 ):
     if isinstance(native_morphism, SchemeMorphism):
-        if domain is None and codomain is None and pullback is None:
+        if domain is None and codomain is None and pullback is None and point_coordinates is None:
             return native_morphism
         native_morphism = native_morphism.native_morphism()
-    if domain is not None or codomain is not None or pullback is not None:
+    if domain is not None or codomain is not None or pullback is not None or point_coordinates is not None:
         return SchemeMorphism(
             native_morphism,
             domain=domain,
             codomain=codomain,
             pullback=pullback,
+            point_coordinates=point_coordinates,
         )
     key = id(native_morphism)
     cached = _SCHEME_MORPHISM_WRAPPERS.get(key)
@@ -925,6 +972,7 @@ def _refine_scheme_morphism(
     domain=None,
     codomain=None,
     pullback=None,
+    point_coordinates=None,
 ):
     r"""Return the native morphism in the Hom of its stated owned schemes."""
     base = _own_ring(base_ring)
@@ -939,6 +987,7 @@ def _refine_scheme_morphism(
         domain=domain,
         codomain=codomain,
         pullback=pullback,
+        point_coordinates=point_coordinates,
     )
 
 
@@ -1217,13 +1266,17 @@ class Schemes(OwnedCategoryOverBaseRing):
             base_ring = self.scheme_base_ring()
             if self not in Schemes(base_ring).Affine():
                 raise NotImplementedError("distinguished-open structure-sheaf sections are represented for affine schemes")
+            is_distinguished_open = getattr(
+                distinguished_open,
+                "is_distinguished_open",
+                None,
+            )
+            inclusion = getattr(distinguished_open, "inclusion", None)
             if (
-                getattr(
-                    distinguished_open,
-                    "_preamble_distinguished_open_ambient",
-                    None,
-                )
-                is self
+                callable(is_distinguished_open)
+                and is_distinguished_open()
+                and callable(inclusion)
+                and inclusion().codomain() is self
             ):
                 return distinguished_open.coordinate_algebra()
             spectrum = self.underlying_space()
@@ -1393,18 +1446,18 @@ class Schemes(OwnedCategoryOverBaseRing):
                             )
                         }
                     )
-            wrapped = _refine_scheme_morphism(
+            selected_coordinates = finite_family(
+                owned_coordinates,
+                name=f"Selected coordinates of point on {self}",
+            )
+            return _refine_scheme_morphism(
                 point,
                 base,
                 domain=point_domain,
                 codomain=self,
                 pullback=pullback,
+                point_coordinates=selected_coordinates,
             )
-            wrapped._preamble_point_coordinates = finite_family(
-                owned_coordinates,
-                name=f"Selected coordinates of point on {self}",
-            )
-            return wrapped
 
         def projective_morphism_from_coordinates(self, target, coordinates):
             r"""Return the projective morphism defined by a basepoint-free coordinate family.
@@ -1652,8 +1705,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                 return self.coordinate_algebra()
 
             def closed_subscheme(self, *equations):
-
-                equations = tuple(equations[0]) if len(equations) == 1 and isinstance(equations[0], (tuple, list)) else tuple(equations)
+                equations = (
+                    tuple(equations[0])
+                    if len(equations) == 1 and isinstance(equations[0], (tuple, list))
+                    else tuple(equations)
+                )
                 algebra = self.coordinate_algebra()
                 quotient_operation = getattr(
                     algebra,
@@ -1661,9 +1717,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                     None,
                 )
                 if quotient_operation is None:
-                    raise NotImplementedError("a closed affine subscheme requires a represented polynomial presentation of its coordinate algebra")
+                    raise NotImplementedError(
+                        "a closed affine subscheme requires a represented polynomial presentation of its coordinate algebra"
+                    )
                 quotient, quotient_map = quotient_operation(equations)
-                subscheme = (quotient).affine_spectrum(base_ring=self.scheme_base_ring())
+                subscheme = quotient.affine_spectrum(base_ring=self.scheme_base_ring())
                 spec_inclusion = _affine_spec_morphism(quotient_map)
                 inclusion = _categorical_scheme_morphism(
                     spec_inclusion.native_morphism(),
@@ -1671,7 +1729,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                     codomain=self,
                     pullback=quotient_map,
                 )
-                subscheme._preamble_inclusion = inclusion
+                _install_scheme_subobject_construction(subscheme, inclusion)
                 return _refine_closed_subscheme(
                     subscheme,
                     self,
@@ -1770,10 +1828,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                 localized = algebra.localization(element)
                 localization_map = localized.localization_map()
                 base = self.scheme_base_ring()
-                canonical_ambient = (algebra).affine_spectrum(base_ring=base)
+                canonical_ambient = algebra.affine_spectrum(base_ring=base)
                 if self is canonical_ambient:
                     open_subscheme = _refine_scheme(
-                        (localized).affine_spectrum(base_ring=base),
+                        localized.affine_spectrum(base_ring=base),
                         base,
                         (OpenImmersions(self),),
                     )
@@ -1788,9 +1846,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                     self,
                     localization_map,
                 )
-                open_subscheme._preamble_inclusion = inclusion
-                open_subscheme._preamble_distinguished_open_ambient = self
-                open_subscheme._preamble_distinguished_open_element = element
+                _install_distinguished_open_construction(
+                    open_subscheme,
+                    inclusion,
+                    element,
+                )
                 self._preamble_distinguished_open_cache = (
                     *cache,
                     (element, open_subscheme),
@@ -1907,33 +1967,16 @@ class Schemes(OwnedCategoryOverBaseRing):
                     if len(equations) == 1 and isinstance(equations[0], (tuple, list))
                     else tuple(equations)
                 )
-                engine_equations = []
-                retain_owned_equations = True
-                ambient_engine = self.coordinate_ring()
-                ambient_variables = tuple(ambient_engine.gens())
-                for equation in equations:
-                    if not equation.is_homogeneous():
-                        raise ValueError(
-                            f"{equation} is not homogeneous, so it cuts out no closed subscheme of {self}"
-                        )
-                    parent = getattr(equation, "parent", lambda: None)()
-                    try:
-                        backend = _engine_element(parent, equation)
-                    except (AttributeError, TypeError, ValueError):
-                        backend = equation
-                        retain_owned_equations = False
-                    engine_equations.append(
-                        _copy_polynomial_by_exponents(
-                            backend,
-                            ambient_engine,
-                            ambient_variables,
-                        )
-                    )
-                return _refine_closed_subscheme(
-                    self.subscheme(tuple(engine_equations)),
+                subscheme, retained_equations = _native_projective_closed_subscheme(
                     self,
-                    defining_equations=equations if retain_owned_equations else None,
+                    equations,
                 )
+                return _refine_closed_subscheme(
+                    subscheme,
+                    self,
+                    defining_equations=retained_equations,
+                )
+
 
 
 def AffineSchemes(base_ring):
@@ -2255,6 +2298,37 @@ class AffineGSchemes(OwnedCategory):
             introduced.
             """
             return self.factor_through_affine_quotient(family_morphism)
+
+
+def _native_projective_closed_subscheme(ambient, equations):
+    r"""Cut out ``equations`` in a projective scheme without selecting its subobject arrow."""
+    equations = tuple(equations)
+    engine_equations = []
+    retain_owned_equations = True
+    ambient_engine = ambient.coordinate_ring()
+    ambient_variables = tuple(ambient_engine.gens())
+    for equation in equations:
+        if not equation.is_homogeneous():
+            raise ValueError(
+                f"{equation} is not homogeneous, so it cuts out no closed subscheme of {ambient}"
+            )
+        parent = getattr(equation, "parent", lambda: None)()
+        try:
+            backend = _engine_element(parent, equation)
+        except (AttributeError, TypeError, ValueError):
+            backend = equation
+            retain_owned_equations = False
+        engine_equations.append(
+            _copy_polynomial_by_exponents(
+                backend,
+                ambient_engine,
+                ambient_variables,
+            )
+        )
+    return (
+        ambient.subscheme(tuple(engine_equations)),
+        equations if retain_owned_equations else None,
+    )
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
@@ -2699,6 +2773,15 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
             r"""Return the projections indexed by the same set as :meth:`factors`."""
             return self._preamble_product_projections
 
+        def projection_label(self, projection):
+            r"""Return the factor label selected by one of this product's projections."""
+            if projection.domain() is not self:
+                raise ValueError("a product projection must have this product as its domain")
+            for label in self.factors().index_set():
+                if projection is self.projection(label):
+                    return label
+            raise ValueError("this morphism is not one of the selected product projections")
+
         def from_product_cone(self, legs):
             r"""Return the unique represented map into this selected product.
 
@@ -2815,8 +2898,7 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                     "a general map into a glued mixed scheme product is not yet represented"
                 )
 
-            cone._preamble_product_cone_target = self
-            cone._preamble_product_cone_legs = legs
+            cone = SchemeConeMorphismConstruction(self, legs).image_of(cone)
             for factor_label in factor_labels:
                 if self.projection(factor_label) * cone != legs[factor_label]:
                     raise ArithmeticError(
@@ -3719,9 +3801,6 @@ def _install_scheme_product_data(product, factors, projections):
                 return projection_values[position]
         raise KeyError(label)
 
-    for position, label in enumerate(labels):
-        projection_values[position]._preamble_product_projection_label = label
-
     product._preamble_product_factors = factors
     product._preamble_product_projections = indexed_family(
         factors.index_set(),
@@ -4037,6 +4116,44 @@ def _scheme_product(*schemes):
     return _install_scheme_product_data(product, factors, projections)
 
 
+class SchemeFiberProductConstruction:
+    r"""The selected cospan, projections, and realization of one scheme pullback."""
+
+    def __init__(
+        self,
+        cospan,
+        projections,
+        *,
+        algebra_pushout=None,
+        scheme_factorization=None,
+        cocone_factorization=None,
+    ) -> None:
+        self._cospan = tuple(cospan)
+        self._projections = tuple(projections)
+        if len(self._cospan) != 2 or len(self._projections) != 2:
+            raise ValueError("a represented scheme fiber product has two cospan legs and two projections")
+        if self._cospan[0].codomain() is not self._cospan[1].codomain():
+            raise ValueError("the selected fiber-product cospan must have one common codomain")
+        self._algebra_pushout = algebra_pushout
+        self._scheme_factorization = scheme_factorization
+        self._cocone_factorization = cocone_factorization
+
+    def cospan(self):
+        return self._cospan
+
+    def projections(self):
+        return self._projections
+
+    def algebra_pushout(self):
+        return self._algebra_pushout
+
+    def scheme_factorization(self):
+        return self._scheme_factorization
+
+    def cocone_factorization(self):
+        return self._cocone_factorization
+
+
 class FiberProductSchemes(OwnedCategoryOverBaseRing):
     r"""Schemes equipped as selected pullbacks of one represented cospan."""
 
@@ -4048,15 +4165,55 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Schemes(self.base_ring())]
 
+    def _install_construction(
+        self,
+        scheme,
+        cospan,
+        projections,
+        *,
+        algebra_pushout=None,
+        scheme_factorization=None,
+        cocone_factorization=None,
+    ):
+        r"""Equip ``scheme`` with its selected pullback construction before exposure."""
+        if scheme not in Schemes(self.base_ring()):
+            raise TypeError("a fiber-product construction must stay over its selected base ring")
+        construction = SchemeFiberProductConstruction(
+            cospan,
+            projections,
+            algebra_pushout=algebra_pushout,
+            scheme_factorization=scheme_factorization,
+            cocone_factorization=cocone_factorization,
+        )
+        left_projection, right_projection = construction.projections()
+        left_map, right_map = construction.cospan()
+        if left_projection.domain() is not scheme or right_projection.domain() is not scheme:
+            raise ValueError("the selected fiber-product projections must start at the constructed scheme")
+        if left_projection.codomain() is not left_map.domain() or right_projection.codomain() is not right_map.domain():
+            raise ValueError("the selected fiber-product projections have the wrong cospan endpoints")
+        existing = scheme.__dict__.get("_fiber_product_construction")
+        if existing is not None and existing is not construction:
+            raise ValueError("this scheme already carries a selected fiber-product construction")
+        scheme._fiber_product_construction = construction
+        if scheme not in self:
+            return _refine_scheme(scheme, self.base_ring(), [self])
+        return scheme
+
     class ParentMethods:
+        def fiber_product_construction(self):
+            r"""Return the selected pullback construction defining this scheme."""
+            construction = self.__dict__.get("_fiber_product_construction")
+            assert construction is not None, f"{self} has no selected fiber-product construction"
+            return construction
+
         def fiber_product_cospan(self):
-            return self._preamble_fiber_product_cospan
+            return self.fiber_product_construction().cospan()
 
         def fiber_product_base(self):
             return self.fiber_product_cospan()[0].codomain()
 
         def fiber_product_projections(self):
-            return self._preamble_fiber_product_projections
+            return self.fiber_product_construction().projections()
 
         def left_projection(self):
             return self.fiber_product_projections()[0]
@@ -4074,23 +4231,19 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
             if right_map.codomain() is not right_projection.codomain():
                 raise ValueError("the right pullback-cone map has the wrong codomain")
 
-            scheme_factorization = getattr(
-                self,
-                "_preamble_fiber_product_scheme_factorization",
-                None,
-            )
+            construction = self.fiber_product_construction()
+            scheme_factorization = construction.scheme_factorization()
             if scheme_factorization is not None:
                 factorization = scheme_factorization(left_map, right_map)
             else:
                 left_pullback = left_map.coordinate_algebra_morphism()
                 right_pullback = right_map.coordinate_algebra_morphism()
-                selected_factorization = getattr(
-                    self,
-                    "_preamble_fiber_product_cocone_factorization",
-                    None,
-                )
+                selected_factorization = construction.cocone_factorization()
                 if selected_factorization is None:
-                    algebra_pushout = self._preamble_fiber_product_algebra_pushout
+                    algebra_pushout = construction.algebra_pushout()
+                    assert algebra_pushout is not None, (
+                        "this fiber-product construction has no represented algebra pushout or selected factorization"
+                    )
                     induced = algebra_pushout.from_pushout_cocone(
                         left_pullback,
                         right_pullback,
@@ -4103,12 +4256,10 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
                     induced,
                 )
 
-            factorization._preamble_fiber_product_cone_target = self
-            factorization._preamble_fiber_product_cone_legs = (
-                left_map,
-                right_map,
-            )
-            return factorization
+            return SchemeConeMorphismConstruction(
+                self,
+                (left_map, right_map),
+            ).image_of(factorization)
 
 
 def _quotient_base_change_pushout(left_pullback, right_pullback):
@@ -4267,11 +4418,6 @@ def _projective_space_scalar_base_change(left_map, right_map):
             if projective_on_left
             else (scalar_projection, projective_projection)
         )
-        for index, projection in enumerate(projections):
-            projection._preamble_fiber_projection_index = index
-        changed._preamble_fiber_product_cospan = (left_map, right_map)
-        changed._preamble_fiber_product_projections = projections
-
         def factor(left_cone_map, right_cone_map):
             projective_cone_map = (
                 left_cone_map if projective_on_left else right_cone_map
@@ -4295,11 +4441,11 @@ def _projective_space_scalar_base_change(left_map, right_map):
                 projective_cone_map,
             )
 
-        changed._preamble_fiber_product_scheme_factorization = factor
-        return _refine_scheme(
+        return FiberProductSchemes(target_base)._install_construction(
             changed,
-            target_base,
-            [FiberProductSchemes(target_base)],
+            (left_map, right_map),
+            projections,
+            scheme_factorization=factor,
         )
     return None
 
@@ -4376,16 +4522,13 @@ def _scheme_fiber_product(left_map, right_map):
         right,
         right_pushout_map,
     )
-    product._preamble_fiber_product_cospan = (left_map, right_map)
-    product._preamble_fiber_product_algebra_pushout = algebra_pushout
-    if cocone_factorization is not None:
-        product._preamble_fiber_product_cocone_factorization = cocone_factorization
-    product._preamble_fiber_product_projections = (
-        left_projection,
-        right_projection,
+    product = FiberProductSchemes(base_ring)._install_construction(
+        product,
+        (left_map, right_map),
+        (left_projection, right_projection),
+        algebra_pushout=algebra_pushout,
+        cocone_factorization=cocone_factorization,
     )
-    left_projection._preamble_fiber_projection_index = 0
-    right_projection._preamble_fiber_projection_index = 1
     return product
 
 
@@ -4404,13 +4547,69 @@ class _SchemeSubobjectsOf(OwnedParameterizedCategory):
         return [Schemes(base_object.scheme_base_ring()).SubobjectCategory(base_object)]
 
     class ParentMethods:
+        def scheme_subobject_construction(self):
+            r"""Return the selected monomorphism that defines this subobject."""
+            construction = self.__dict__.get("_scheme_subobject_construction")
+            assert construction is not None, f"{self} has no selected scheme-subobject construction"
+            return construction
+
         def inclusion(self):
             r"""Return the chosen monomorphism representing this subobject.
 
             A subobject of ``X`` is the pair ``(Z, i: Z -> X)``, so the scheme
             it sits inside is ``i.codomain()`` and is never separate data.
             """
-            return self._preamble_inclusion
+            return self.scheme_subobject_construction().inclusion()
+
+
+class SchemeSubobjectConstruction:
+    r"""The selected monomorphism ``i: Z -> X`` defining one scheme subobject."""
+
+    def __init__(self, inclusion) -> None:
+        if not isinstance(inclusion, SchemeMorphism):
+            raise TypeError("a scheme subobject is defined by an owned scheme morphism")
+        self._inclusion = inclusion
+
+    def inclusion(self):
+        return self._inclusion
+
+
+class DistinguishedOpenConstruction(SchemeSubobjectConstruction):
+    r"""A selected principal open ``D(f) -> X`` with its defining element ``f``."""
+
+    def __init__(self, inclusion, element) -> None:
+        super().__init__(inclusion)
+        self._element = element
+
+    def distinguished_open_element(self):
+        return self._element
+
+
+def _install_scheme_subobject_construction(scheme, inclusion):
+    r"""Install the one selected subobject arrow before ``scheme`` is exposed."""
+    if inclusion.domain() is not scheme:
+        raise ValueError("a scheme-subobject inclusion must start at the represented subobject")
+    existing = scheme.__dict__.get("_scheme_subobject_construction")
+    if existing is not None:
+        if existing.inclusion() is not inclusion:
+            raise ValueError("this scheme already has a different selected subobject inclusion")
+        return scheme
+    scheme._scheme_subobject_construction = SchemeSubobjectConstruction(inclusion)
+    return scheme
+
+
+def _install_distinguished_open_construction(scheme, inclusion, element):
+    r"""Install the selected principal-open arrow and its defining element together."""
+    if inclusion.domain() is not scheme:
+        raise ValueError("a distinguished-open inclusion must start at the represented open subscheme")
+    existing = scheme.__dict__.get("_scheme_subobject_construction")
+    if existing is not None:
+        raise ValueError("this scheme already has a selected subobject construction")
+    scheme._scheme_subobject_construction = DistinguishedOpenConstruction(
+        inclusion,
+        element,
+    )
+    return scheme
 
 
 def _distinguished_overlap_transition(
@@ -4599,8 +4798,6 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     source.Mor(self),
                     coordinates,
                 )
-                factor._preamble_projective_corestriction_ambient_morphism = morphism
-                factor._preamble_projective_corestriction_closed_subscheme = self
                 return factor
             raise NotImplementedError(
                 "the represented closed corestriction currently supports affine maps or retained projective-coordinate maps into projective space"
@@ -4747,9 +4944,12 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     base,
                     [OpenImmersions(codomain), Schemes(base).QuasiProjective()],
                 )
-                opened._preamble_inclusion = _OpenComplementInclusion(
-                    opened.Mor(codomain),
-                    self,
+                _install_scheme_subobject_construction(
+                    opened,
+                    _OpenComplementInclusion(
+                        opened.Mor(codomain),
+                        self,
+                    ),
                 )
                 opened._preamble_open_complement_closed_subscheme = self
                 return opened
@@ -4774,7 +4974,12 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     for left, right in combinations(tuple(indices), 2)
                 },
             )
-            glued._preamble_inclusion = glued.Mor(codomain)({index: chart.inclusion() for index, chart in charts.items()})
+            _install_scheme_subobject_construction(
+                glued,
+                glued.Mor(codomain)(
+                    {index: chart.inclusion() for index, chart in charts.items()}
+                ),
+            )
             return _refine_scheme(glued, base, [OpenImmersions(codomain)])
 
 
@@ -4823,12 +5028,15 @@ class OpenImmersions(_SchemeSubobjectsOf):
 
     class ParentMethods:
         def is_distinguished_open(self):
-            return getattr(self, "_preamble_distinguished_open_ambient", None) is self.inclusion().codomain()
+            construction = self.scheme_subobject_construction()
+            return callable(
+                getattr(construction, "distinguished_open_element", None)
+            )
 
         def distinguished_open_element(self):
             if not self.is_distinguished_open():
                 raise ValueError("this open immersion is not represented by one distinguished element")
-            return self._preamble_distinguished_open_element
+            return self.scheme_subobject_construction().distinguished_open_element()
 
         def corestriction(self, morphism):
             r"""The factorization ``T -> D(f)`` of a morphism ``T -> X`` landing in ``D(f)``.
@@ -4904,10 +5112,12 @@ class SchemeMonomorphisms(_MonoCategoryOf):
         source = arrow.domain()
         if source in ClosedEmbeddings(codomain) or source in OpenImmersions(codomain):
             return True
-        open_image = arrow.__dict__.get("_preamble_open_image")
-        open_image_isomorphism = arrow.__dict__.get("_preamble_open_image_isomorphism")
-        if open_image is None or open_image_isomorphism is None:
+        open_image_accessor = getattr(arrow, "open_image", None)
+        chart_isomorphism_accessor = getattr(arrow, "chart_isomorphism", None)
+        if not callable(open_image_accessor) or not callable(chart_isomorphism_accessor):
             return False
+        open_image = open_image_accessor()
+        open_image_isomorphism = chart_isomorphism_accessor()
         return open_image in OpenImmersions(codomain) and open_image_isomorphism.forward().domain() is source and open_image_isomorphism.forward().codomain() is open_image
 
 
@@ -4921,24 +5131,24 @@ def _refine_closed_subscheme(
     base = codomain.scheme_base_ring()
     if defining_equations is not None:
         subscheme._preamble_defining_equations = tuple(defining_equations)
-    native_inclusion = (
-        subscheme.embedding_morphism()
-        if getattr(subscheme, "_preamble_inclusion", None) is None
-        else None
-    )
+    construction = subscheme.__dict__.get("_scheme_subobject_construction")
+    native_inclusion = subscheme.embedding_morphism() if construction is None else None
     if subscheme not in Schemes(base):
         # The inclusion is an arrow in ``Sch/base``.  Establish that endpoint
         # before asking the owned scheme Hom to construct the arrow.  Capture
         # Sage's native embedding first: refining the endpoint changes its Hom
         # category, but not the underlying closed immersion being retained.
         _refine_scheme(subscheme, base)
-    if getattr(subscheme, "_preamble_inclusion", None) is None:
+    if construction is None:
         # The subobject is the arrow, so a route that did not build one takes
         # the native embedding, retargeted at the stated codomain.
-        subscheme._preamble_inclusion = _categorical_scheme_morphism(
-            native_inclusion,
-            domain=subscheme,
-            codomain=codomain,
+        _install_scheme_subobject_construction(
+            subscheme,
+            _categorical_scheme_morphism(
+                native_inclusion,
+                domain=subscheme,
+                codomain=codomain,
+            ),
         )
     return _refine_scheme(
         subscheme,

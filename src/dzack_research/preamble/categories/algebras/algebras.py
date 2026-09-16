@@ -72,6 +72,33 @@ if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
 
 
+class _ChosenAlgebraMultiplicationDatum:
+    r"""The module, multiplication, and optional unit selected for an algebra.
+
+    This is the construction datum from which the represented algebra is
+    transported.  Keeping the three pieces together prevents the transported
+    algebra from depending on independent hidden ``source`` attributes.
+    """
+
+    def __init__(self, source_module, multiplication, unit) -> None:
+        if multiplication.codomain() is not source_module:
+            raise ValueError(
+                "a chosen algebra multiplication must land in its selected source module"
+            )
+        self._source_module = source_module
+        self._multiplication = multiplication
+        self._unit = unit
+
+    def source_module(self):
+        return self._source_module
+
+    def multiplication(self):
+        return self._multiplication
+
+    def unit(self):
+        return self._unit
+
+
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Associative algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
 
@@ -102,16 +129,12 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(
             self,
-            multiplication_source_module,
-            source_multiplication,
+            chosen_multiplication_datum,
             algebra_base_ring,
             algebra_is_commutative,
-            source_algebra_unit=None,
             **rest,
         ) -> None:
-            self._preamble_multiplication_source_module = multiplication_source_module
-            self._preamble_source_multiplication = source_multiplication
-            self._preamble_source_algebra_unit = source_algebra_unit
+            self._chosen_multiplication_datum = chosen_multiplication_datum
             self._preamble_algebra_base_ring = algebra_base_ring
             self._preamble_algebra_is_commutative = algebra_is_commutative
             super().__init__(**rest)
@@ -120,17 +143,21 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             r"""Whether the chosen multiplication commutes, decided at construction."""
             return self._preamble_algebra_is_commutative
 
+        def chosen_multiplication_datum(self):
+            r"""Return the selected source presentation of this multiplication."""
+            return self._chosen_multiplication_datum
+
         def multiplication_source_module(self):
             r"""Return the exact supplied module that was equipped with multiplication."""
-            return self._preamble_multiplication_source_module
+            return self.chosen_multiplication_datum().source_module()
 
         def source_multiplication(self):
             r"""Return the multiplication originally supplied on the source module."""
-            return self._preamble_source_multiplication
+            return self.chosen_multiplication_datum().multiplication()
 
         def source_algebra_unit(self):
             r"""Return the selected source-module unit, or ``None`` when none was supplied."""
-            return self._preamble_source_algebra_unit
+            return self.chosen_multiplication_datum().unit()
 
         @cached_method
         def _multiplication_transport_maps(self):
@@ -1330,10 +1357,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                     selected = self.__dict__.get("_preamble_algebra_unit")
                     if selected is not None:
                         return self(selected)
-                    source = self.__dict__.get("_preamble_multiplication_source_module")
-                    source_unit = self.__dict__.get("_preamble_source_algebra_unit")
-                    if source is None:
+                    chosen_multiplications = AssociativeAlgebrasWithChosenMultiplication(
+                        self.algebra_base_ring()
+                    )
+                    if self not in chosen_multiplications:
                         return super().one()
+                    source = self.multiplication_source_module()
+                    source_unit = self.source_algebra_unit()
                     if source_unit is None:
                         source_unit = source.one()
                     _forget, equip = self._multiplication_transport_maps()
@@ -2821,13 +2851,16 @@ def _algebra_from_multiplication(
     if commutative and unital:
         placement.append(Algebras(ring).Associative().Unital().Commutative())
     placement.extend(extra_categories)
+    chosen_multiplication_datum = _ChosenAlgebraMultiplicationDatum(
+        module,
+        multiplication,
+        unit,
+    )
     return _module_presented_by_multiplication(
         module,
         extra_categories=tuple(placement),
         extra_construction_data={
-            "multiplication_source_module": module,
-            "source_multiplication": multiplication,
-            "source_algebra_unit": unit,
+            "chosen_multiplication_datum": chosen_multiplication_datum,
             "algebra_base_ring": ring,
             "algebra_is_commutative": bool(commutative),
             **(extra_construction_data or {}),

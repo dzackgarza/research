@@ -7,6 +7,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.number_fields import NumberFields
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
@@ -82,18 +83,12 @@ class AbsoluteGaloisGroupElement(Element):
                 "an absolute Galois element requires a globally exact action"
             )
 
+    @cached_method
     def as_morphism(self):
-        cached = self.__dict__.get("_preamble_underlying_field_morphism")
-        if cached is not None:
-            return cached
         field_endomorphisms = self.parent().arrow_set()
         if self._exact_action is not None:
-            morphism = field_endomorphisms(self._exact_action._engine_morphism_crossing())
-        else:
-            morphism = field_endomorphisms.elementwise(lambda element: self(element))
-        morphism._preamble_absolute_galois_element = self
-        self._preamble_underlying_field_morphism = morphism
-        return morphism
+            return field_endomorphisms(self._exact_action._engine_morphism_crossing())
+        return field_endomorphisms.elementwise(lambda element: self(element))
 
     underlying_field_morphism = as_morphism
 

@@ -138,7 +138,14 @@ class StructureSheaf(SageObject):
 
 
 def _is_distinguished_open_of(open_subscheme, ambient) -> bool:
-    return getattr(open_subscheme, "_preamble_distinguished_open_ambient", None) is ambient
+    is_distinguished_open = getattr(open_subscheme, "is_distinguished_open", None)
+    inclusion = getattr(open_subscheme, "inclusion", None)
+    return (
+        callable(is_distinguished_open)
+        and is_distinguished_open()
+        and callable(inclusion)
+        and inclusion().codomain() is ambient
+    )
 
 
 def _localization_restriction_map(source, target):

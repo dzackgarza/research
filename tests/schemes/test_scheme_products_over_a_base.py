@@ -88,9 +88,13 @@ def test_terminal_affine_factor_retains_the_selected_product_without_algebra_fra
         == line.coordinate_algebra().Mor(line.coordinate_algebra()).identity()
     )
 
-    cone = product.from_product_cone(
-        (line.categorical_identity_morphism(), line.structure_morphism())
-    )
+    identity = line.categorical_identity_morphism()
+    structure = line.structure_morphism()
+    cone = product.from_product_cone((identity, structure))
+    construction = cone.cone_construction()
+    assert construction.target() is product
+    assert construction.legs()[0] is identity
+    assert construction.legs()[1] is structure
     assert product.projection(0) * cone == line.categorical_identity_morphism()
     assert product.projection(1) * cone == line.structure_morphism()
 

@@ -2206,15 +2206,8 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             if completion.completion_source() is not ring:
                 raise ValueError("the completion has the wrong source ring for this module")
-            ideal = completion.ideal_of_definition()
-            return self.base_change(
-                completion.completion_map(),
-                _extra_construction_data={
-                    "completion_source_module": self,
-                    "completion_defining_ideal": ideal,
-                    "completion_ring": completion,
-                },
-            )
+            adjunction = Modules(ring).base_change_adjunction(completion.completion_map())
+            return adjunction.left_adjoint()(self)
 
         def is_adically_completed_module(self) -> bool:
             return self._completion_construction is not None
@@ -2243,7 +2236,10 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             source = self.completion_source_module()
             ring_map = self.completion_ring().completion_map()
             adjunction = Modules(source.base_ring()).base_change_adjunction(ring_map)
-            adjunction.left_adjoint().adopt_object_image(source, self)
+            if adjunction.left_adjoint()(source) is not self:
+                raise ArithmeticError(
+                    "the selected completed module is not the scalar-extension image of its retained source"
+                )
             return adjunction.unit(source)
 
         @cached_method

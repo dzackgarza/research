@@ -17,6 +17,7 @@ def test_pgl2_is_the_projective_determinant_complement_with_zmod2_cohomology() -
     assert topology.scheme() is scheme
     assert torsion in IntegralSingularCohomologyGroups(ZZ)
     assert torsion.topological_scheme() is scheme
+    assert torsion.integral_topological_cohomology_construction().scheme() is scheme
     assert torsion.cohomological_degree() == 2
     assert torsion.cardinality() == 2
     assert topology.integral_cohomology(0).module_rank() == 1

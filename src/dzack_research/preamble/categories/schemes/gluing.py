@@ -44,6 +44,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_structure_morphism_to_base,
     _fresh_affine_spectrum,
+    _install_scheme_subobject_construction,
     _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -163,12 +164,6 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     def chart_index(self):
         return self._chart_index
 
-    def native_morphism(self):
-        raise NotImplementedError(
-            "the chart-image inclusion is represented by the glued-scheme construction, "
-            "not by one affine native morphism"
-        )
-
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, _GluedSchemeOpenInclusion)
@@ -203,8 +198,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         self._preamble_codomain_override = None
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
-        self._preamble_open_image = open_image
-        self._preamble_open_image_isomorphism = chart_isomorphism
+        self._open_image = open_image
         self._chart_isomorphism = chart_isomorphism
 
     def gluing_datum(self):
@@ -214,19 +208,13 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return self._chart_index
 
     def open_image(self):
-        return self._preamble_open_image
+        return self._open_image
 
     def chart_isomorphism(self):
         return self._chart_isomorphism
 
     def open_inclusion(self):
         return self.open_image().inclusion()
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "the canonical chart embedding is represented by the glued-scheme construction, "
-            "not by one affine native morphism"
-        )
 
     def __mul__(self, other):
         if not isinstance(other, SchemeMorphism):
@@ -295,11 +283,6 @@ class _GluedSchemeChartMap(SchemeMorphism):
 
     def gluing_datum(self):
         return self.chart_embedding().gluing_datum()
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "a map through one glued chart is represented by that chart factorization"
-        )
 
     def __mul__(self, other):
         if not isinstance(other, SchemeMorphism):
@@ -385,11 +368,6 @@ class _GluedSchemeMorphism(SchemeMorphism):
         return self.local_maps()[
             self.domain().gluing_datum().normalize_chart_index(index)
         ]
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "this morphism is represented by its compatible maps on the glued affine charts"
-        )
 
     def _verify_overlap_compatibility(self) -> None:
         datum = self.domain().gluing_datum()
@@ -516,7 +494,7 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
             datum,
             index,
         )
-        chart_image._preamble_inclusion = open_inclusion
+        _install_scheme_subobject_construction(chart_image, open_inclusion)
         identity_pullback = algebra.Mor(algebra).identity()
         chart_forward = schemes.Mor(chart, chart_image)(identity_pullback)
         chart_inverse = schemes.Mor(chart_image, chart)(identity_pullback)
@@ -1763,10 +1741,9 @@ class SemilinearAlgebraMorphism(SageObject):
             lambda scalar: morphism(source_structure(scalar)),
         )
         target_scalars = self.target().base_ring()
-        if target_scalars not in LocalizationRings():
-            raise NotImplementedError(
-                "semilinear algebra factorization is represented here when the target scalars are a localization"
-            )
+        assert target_scalars in LocalizationRings(), (
+            "semilinear algebra factorization is represented here when the target scalars are a localization"
+        )
         localization_source = target_scalars.localization_source()
         source_scalars = self.source().base_ring()
         localization_steps = []
@@ -2443,11 +2420,10 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
             index: self.local_map(index).kernel()
             for index in datum.chart_indices()
         }
-        if any(kernel.is_free() is not True for kernel in local_kernels.values()):
-            raise NotImplementedError(
-                "finite-atlas kernel descent currently requires locally free represented kernels; "
-                "factorization through a general finitely presented kernel belongs to local-module-maps"
-            )
+        assert all(kernel.is_free() is True for kernel in local_kernels.values()), (
+            "finite-atlas kernel descent requires locally free represented kernels; "
+            "general finitely presented kernel factorization belongs to local-module-maps"
+        )
 
         def kernel_transition(source_index, target_index):
             source_kernel = local_kernels[source_index]
@@ -4537,6 +4513,18 @@ class _FiniteAtlasModulePullbackFunctor(SageObject):
         return FiniteAtlasInverseImageModuleMorphism(source, target, morphism)
 
 
+class _FiniteAtlasLineBundleModuleGluingDatum(FiniteAtlasModuleGluingDatum):
+    r"""Module descent whose defining source is one finite-atlas line bundle."""
+
+    def __init__(self, line_bundle, local_modules, transitions) -> None:
+        self._line_bundle = line_bundle
+        super().__init__(line_bundle.gluing_datum(), local_modules, transitions)
+
+    def line_bundle(self):
+        r"""Return the line bundle whose rank-one descent this datum represents."""
+        return self._line_bundle
+
+
 def _line_bundle_transition_images(line_bundle, source_index, target_index):
     unit = line_bundle.transition_unit(source_index, target_index)
 
@@ -4575,8 +4563,8 @@ def _finite_atlas_line_bundle_module_sheaf(line_bundle):
         )
         for source_index, target_index in datum.transition_index_set()
     }
-    return FiniteAtlasModuleGluingDatum(
-        datum, local_modules, transitions
+    return _FiniteAtlasLineBundleModuleGluingDatum(
+        line_bundle, local_modules, transitions
     ).sheaf()
 
 
@@ -4735,6 +4723,7 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
     and their inclusions glue to one closed immersion into ``glued_scheme``.
     """
     from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedEmbeddings,
         ClosedSubschemes,
         Schemes,
         _refine_scheme,
@@ -4788,9 +4777,13 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
             for index in indices
         }
     )
-    glued._preamble_inclusion = inclusion
+    _install_scheme_subobject_construction(glued, inclusion)
     glued._preamble_local_closed_subschemes = local_closed
-    return _refine_scheme(glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(
+        glued,
+        base,
+        (ClosedEmbeddings(glued_scheme), ClosedSubschemes(base)),
+    )
 
 
 def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
@@ -4804,6 +4797,7 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
     local on the target for this finite affine cover.
     """
     from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedEmbeddings,
         ClosedSubschemes,
         Schemes,
         _refine_scheme,
@@ -4860,14 +4854,17 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
             for index in indices
         }
     )
-    fixed_glued._preamble_inclusion = inclusion
-    fixed_glued._preamble_chartwise_fixed_automorphisms = automorphisms
+    _install_scheme_subobject_construction(fixed_glued, inclusion)
     fixed_glued._preamble_local_fixed_subschemes = finite_indexed_family(
         indices,
         lambda index: local_fixed[index],
         name="Affine charts of the glued fixed subscheme",
     )
-    return _refine_scheme(fixed_glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(
+        fixed_glued,
+        base,
+        (ClosedEmbeddings(glued_scheme), ClosedSubschemes(base)),
+    )
 
 
 __all__ = [

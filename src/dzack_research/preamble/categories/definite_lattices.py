@@ -269,8 +269,6 @@ def _reduction_from_transformation(lattice, basis_map):
     else:
         reduced = lattice.lattice_category()(reduced_gram)
     isometry = reduced.Isom(lattice)(images)
-    reduced._preamble_lll_isometry = isometry
-    reduced._preamble_lll_change_of_basis = basis_map
     return LatticeReduction(lattice, reduced, isometry, basis_map)
 
 

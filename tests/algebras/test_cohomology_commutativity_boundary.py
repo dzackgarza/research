@@ -140,6 +140,10 @@ def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> N
     derivation = GradedDerivation(algebra.graded_derivations(algebra, shift=0), euler)
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
+    underlying = derivation.underlying_linear_morphism()
 
+    assert underlying.derivation() is derivation
+    assert underlying.degree_shift() == 0
+    assert derivation.parent()(underlying) is derivation
     assert algebra.homogeneous_degree(derivation(x)) == 1
     assert derivation(x * y) == algebra(ZZ(2)) * x * y

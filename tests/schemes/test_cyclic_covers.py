@@ -111,6 +111,10 @@ def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
     product = action.domain()
 
     assert cover in CyclicCovers(algebra, 2)
+    assert cover.affine_cyclic_cover_construction().branch_section() == cover.branch_section()
+    assert "_preamble_cyclic_branch_section" not in cover.__dict__
+    assert "_preamble_cyclic_cover_degree" not in cover.__dict__
+    assert "_preamble_deck_group_scheme_action" not in cover.__dict__
     assert cover.invariant_algebra() is algebra
     assert cover.affine_quotient() is (algebra).affine_spectrum(base_ring=algebra)
     assert quotient_morphism.domain() is cover

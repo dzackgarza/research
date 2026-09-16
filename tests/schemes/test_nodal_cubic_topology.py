@@ -30,6 +30,8 @@ def test_nodal_cubic_ordinary_and_resolution_cohomology_are_distinct_selected_th
     assert resolution_h1.module_rank() == 0
     assert ordinary_h1.cohomology_topology() == "ordinary singular cohomology"
     assert resolution_h1.cohomology_topology() == "resolution cohomology via normalization"
+    assert ordinary_h1.integral_topological_cohomology_construction().scheme() is topology.scheme()
+    assert resolution_h1.integral_topological_cohomology_construction().scheme() is topology.scheme()
 
 
 def test_normalization_pullback_is_the_actual_induced_map_and_kills_the_node_loop() -> None:

@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
     _fresh_affine_spectrum,
     _affine_spec_morphism,
+    _install_distinguished_open_construction,
 )
 
 
@@ -65,13 +66,16 @@ def _relative_overlap(datum, source_index, target_index):
         extra_categories=(OpenImmersions(ambient),),
     )
     inclusion = _affine_morphism_from_pullback(overlap, ambient, pullback)
-    overlap._preamble_inclusion = inclusion
-    overlap._preamble_distinguished_open_ambient = ambient
     source_base = cover.open(source_index).coordinate_algebra()
     ambient_element = cover.defining_element(target_index)
     source_element = source_base.localization_map()(ambient_element)
-    overlap._preamble_distinguished_open_element = local.algebra_structure_morphism()(
+    defining_element = local.algebra_structure_morphism()(
         source_element
+    )
+    _install_distinguished_open_construction(
+        overlap,
+        inclusion,
+        defining_element,
     )
     cache[key] = overlap
     datum._preamble_relative_overlap_cache = cache
@@ -120,13 +124,16 @@ def _finite_atlas_relative_overlap(datum, source_index, target_index):
         extra_categories=(OpenImmersions(ambient),),
     )
     inclusion = _affine_morphism_from_pullback(overlap, ambient, pullback)
-    overlap._preamble_inclusion = inclusion
-    overlap._preamble_distinguished_open_ambient = ambient
     base_element = atlas.overlap(
         source_index, target_index
     ).distinguished_open_element()
-    overlap._preamble_distinguished_open_element = local.algebra_structure_morphism()(
+    defining_element = local.algebra_structure_morphism()(
         atlas.chart(source_index).coordinate_algebra()(base_element)
+    )
+    _install_distinguished_open_construction(
+        overlap,
+        inclusion,
+        defining_element,
     )
     cache[key] = overlap
     datum._preamble_relative_overlap_cache = cache
@@ -177,8 +184,6 @@ def _finite_atlas_relative_spectrum(datum):
         raise ArithmeticError(
             "the finite-atlas relative-Spec structure map does not restrict to its local chart maps"
         )
-    glued._preamble_relative_spec_algebra_datum = datum
-    glued._preamble_relative_spec_morphism = structure
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
 
@@ -217,8 +222,6 @@ def _relative_spectrum(datum):
         for index in indices
     ):
         raise ArithmeticError("the relative-Spec structure map does not restrict to its affine chart maps")
-    glued._preamble_relative_spec_algebra_datum = datum
-    glued._preamble_relative_spec_morphism = structure
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
 

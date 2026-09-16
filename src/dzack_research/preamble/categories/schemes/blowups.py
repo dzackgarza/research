@@ -29,6 +29,8 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
     _categorical_scheme_morphism,
+    _install_scheme_subobject_construction,
+    _native_projective_closed_subscheme,
     _refine_closed_subscheme,
     _refine_scheme,
 )
@@ -207,11 +209,18 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             equations = tuple(equations)
             ambient = self.graph_ambient_product()
             combined = (self.graph_relation(), *equations)
-            nested = ambient.closed_subscheme(combined)
-            nested._preamble_inclusion = _categorical_scheme_morphism(
-                nested.embedding_morphism(),
-                domain=nested,
-                codomain=self,
+            nested, _retained = _native_projective_closed_subscheme(
+                ambient,
+                combined,
+            )
+            nested = _refine_scheme(nested, self.scheme_base_ring())
+            _install_scheme_subobject_construction(
+                nested,
+                _categorical_scheme_morphism(
+                    nested.embedding_morphism(),
+                    domain=nested,
+                    codomain=self,
+                ),
             )
             nested = _refine_closed_subscheme(
                 nested,
@@ -284,14 +293,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             module = _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
-            return PicardGroups()(
-                module,
-                scheme=self,
-                construction_data={
-                    "blowup_hyperplane_label": "H",
-                    "blowup_exceptional_label": "E",
-                },
-            )
+            return PicardGroups()(module, scheme=self)
 
         def hyperplane_picard_class(self):
             return self.picard_group().module_generator("H")

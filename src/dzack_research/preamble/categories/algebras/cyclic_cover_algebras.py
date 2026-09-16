@@ -108,7 +108,12 @@ class CyclicCoverAlgebra(SageObject):
             ) from error
 
         if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-            branch_power = getattr(branch_parent, "_preamble_line_bundle", None)
+            try:
+                branch_power = branch_datum.line_bundle()
+            except AttributeError as error:
+                raise ValueError(
+                    "a finite-atlas cyclic branch must come from a represented line-bundle power"
+                ) from error
             if not isinstance(branch_power, FiniteAtlasInvertibleSheaf):
                 raise ValueError(
                     "a finite-atlas cyclic branch must come from a represented line-bundle power"

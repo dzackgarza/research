@@ -154,9 +154,13 @@ class HorikawaK3Family(SageObject):
     @cached_method
     def default_branch_section(self):
         sections = self.branch_section_space()
+        construction = sections.section_space_construction()
         by_exponents = {
-            tuple(tuple(value for value in block) for block in exponents): monomial
-            for monomial, exponents in sections._preamble_multihomogeneous_exponents.items()
+            tuple(
+                tuple(value for value in block)
+                for block in construction.exponents_of(monomial)
+            ): monomial
+            for monomial in sections.module_generating_set()
         }
         one = self.base_ring().one()
         section = sections.linear_combination(

@@ -61,6 +61,10 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
 
     assert structured is not module
     assert structured in ModulesWithConnection(algebra)
+    assert structured.connection_construction().source_connection() is zero_connection
+    underlying_connection = zero_connection.underlying_linear_morphism()
+    assert underlying_connection.connection() is zero_connection
+    assert zero_space(underlying_connection) is zero_connection
     assert structured.connection().parent() is structured.connections()
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()
@@ -71,6 +75,8 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert horizontal_maps.arrow_set() is module_morphisms
     assert module_morphisms in horizontal_maps.super_categories()
     assert identity.as_morphism().parent() is module_morphisms
+    assert identity.as_morphism().connection_morphism() is identity
+    assert horizontal_maps(identity.as_morphism()) is identity
     assert identity.as_morphism() in horizontal_maps
     assert identity(structured.module_generator("e")) == structured.module_generator("e")
 

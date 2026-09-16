@@ -101,7 +101,6 @@ class _FreeBilinearFormFunctor(Functor):
                 lambda left, right: classifier.pure_tensor(left, right)
             )
         )
-        formed._preamble_form_classifier = classifier
         return formed
 
     def _apply_morphism(self, morphism):
@@ -143,7 +142,6 @@ class _FreeQuadraticFormFunctor(Functor):
         formed = FormModules(module.base_ring())(
             module.quadratic_map(classifier, classifier.quadratic)
         )
-        formed._preamble_form_classifier = classifier
         return formed
 
     def _apply_morphism(self, morphism):

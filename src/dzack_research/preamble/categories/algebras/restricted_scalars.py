@@ -34,6 +34,34 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 _RESTRICTED_SCALAR_ALGEBRAS = {}
 
 
+class _RestrictedScalarsConstruction:
+    r"""The scalar map and selected generator roles defining a restriction."""
+
+    def __init__(
+        self,
+        algebra,
+        ring_map,
+        restricted_scalar_labels,
+        restricted_algebra_labels,
+    ) -> None:
+        self._algebra = algebra
+        self._ring_map = ring_map
+        self._restricted_scalar_labels = restricted_scalar_labels
+        self._restricted_algebra_labels = restricted_algebra_labels
+
+    def algebra_over_extension(self):
+        return self._algebra
+
+    def ring_map(self):
+        return self._ring_map
+
+    def restricted_scalar_generator_labels(self):
+        return self._restricted_scalar_labels
+
+    def restricted_algebra_generator_labels(self):
+        return self._restricted_algebra_labels
+
+
 class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
     r"""``R``-algebras obtained by restricting an algebra along ``R -> S``."""
 
@@ -60,22 +88,31 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def restricted_scalars_construction(self):
+            return self._restricted_scalars_construction
+
         def ring_map(self):
             r"""Return the selected scalar map ``R -> S``."""
-            return self._preamble_ring_map
+            return self.restricted_scalars_construction().ring_map()
 
         def algebra_over_extension(self):
             r"""Return the original ``S``-algebra before scalar restriction."""
-            return self._preamble_extension_algebra
+            return self.restricted_scalars_construction().algebra_over_extension()
 
         def extension_ring(self):
             return self.algebra_over_extension().base_ring()
 
         def restricted_scalar_generator_labels(self):
-            return self._preamble_restricted_scalar_generator_labels
+            return (
+                self.restricted_scalars_construction()
+                .restricted_scalar_generator_labels()
+            )
 
         def restricted_algebra_generator_labels(self):
-            return self._preamble_restricted_algebra_generator_labels
+            return (
+                self.restricted_scalars_construction()
+                .restricted_algebra_generator_labels()
+            )
 
 
 class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
@@ -93,10 +130,12 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         presentation_data=None,
     ) -> None:
         base_ring = _owned_ring(ring_map.domain())
-        self._preamble_extension_algebra = algebra
-        self._preamble_ring_map = ring_map
-        self._preamble_restricted_scalar_generator_labels = restricted_scalar_labels
-        self._preamble_restricted_algebra_generator_labels = restricted_algebra_labels
+        self._restricted_scalars_construction = _RestrictedScalarsConstruction(
+            algebra,
+            ring_map,
+            restricted_scalar_labels,
+            restricted_algebra_labels,
+        )
 
         categories = [RestrictedScalarsAlgebras(base_ring)]
         if presentation_data is not None:

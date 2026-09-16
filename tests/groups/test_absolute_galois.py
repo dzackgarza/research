@@ -94,6 +94,9 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert not isinstance(group, Homset)
     assert field_endomorphisms in group.super_categories()
     assert frobenius.as_morphism().parent() is field_endomorphisms
+    assert frobenius.as_morphism() is frobenius.as_morphism()
+    assert "_preamble_underlying_field_morphism" not in frobenius.__dict__
+    assert "_preamble_absolute_galois_element" not in frobenius.as_morphism().__dict__
     assert frobenius in group
     assert frobenius.as_morphism() in group
 

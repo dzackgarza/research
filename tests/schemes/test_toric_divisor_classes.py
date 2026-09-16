@@ -232,8 +232,12 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
 
     assert system in CompleteLinearSystems(QQ)
     assert system.linear_system_scheme() is plane
+    assert system.complete_linear_system_construction().scheme() is plane
     assert system.linear_system_divisor() == line
     assert system.section_space() is sections
+    assert "_preamble_linear_system_scheme" not in system.__dict__
+    assert "_preamble_linear_system_divisor" not in system.__dict__
+    assert "_preamble_linear_system_section_space" not in system.__dict__
     assert system.projective_dimension() == 2
 
 
@@ -245,7 +249,7 @@ def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordina
 
     assert morphism.domain() is plane
     assert morphism.codomain() is system
-    assert morphism._preamble_linear_system_divisor == line
+    assert morphism.codomain().linear_system_divisor() == line
     assert len(morphism.native_morphism().defining_polynomials()) == 3
 
 
@@ -359,7 +363,10 @@ def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> No
         group = plane.chow_group(degree)
         assert group in ChowGroups(ZZ)
         assert group.chow_scheme() is plane
+        assert group.cycle_degree_construction().scheme() is plane
         assert group.cycle_dimension() == degree
+        assert "_preamble_chow_scheme" not in group.__dict__
+        assert "_preamble_cycle_dimension" not in group.__dict__
         assert group.module_rank() == 1
         assert group.invariant_factors().cardinality() == 1
         assert group.invariant_factors()[0] == ZZ.zero()
@@ -373,7 +380,10 @@ def test_projective_plane_invariant_curves_surject_onto_the_chow_group() -> None
 
     assert cycles in TorusInvariantCycleGroups(ZZ)
     assert cycles.cycle_scheme() is plane
+    assert cycles.cycle_degree_construction().scheme() is plane
     assert cycles.cycle_dimension() == 1
+    assert "_preamble_cycle_scheme" not in cycles.__dict__
+    assert "_preamble_cycle_dimension" not in cycles.__dict__
     assert cycles.module_rank() == 3
     assert projection.is_surjective()
     images = tuple(projection(cycles.module_generator(ray)) for ray in rays)
@@ -394,6 +404,9 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     labels = tuple(cox.algebra_generating_set())
 
     assert cox in CoxRings(plane)
+    assert cox.cox_ring_construction().scheme() is plane
+    assert "_preamble_cox_scheme" not in cox.__dict__
+    assert "_preamble_cox_rays" not in cox.__dict__
     assert cox.grading_monoid() is plane.class_group()
     first_degree = cox.generator_degree(labels[0])
     assert first_degree == plane.divisor_class(_prime_divisors(plane)[0])
@@ -424,6 +437,9 @@ def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces
     assert ring in SectionRings(QQ)
     assert ring.section_scheme() is plane
     assert ring.section_divisor() == line
+    assert "_preamble_section_scheme" not in ring.__dict__
+    assert "_preamble_section_divisor" not in ring.__dict__
+    assert "_preamble_section_semigroup_generators" not in ring.__dict__
     assert all(ring.generator_degree(label) == 1 for label in labels)
     assert ring.graded_piece(1).module_rank() == 3
     assert ring.graded_piece(2).module_rank() == 6
@@ -464,8 +480,15 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
 
     assert h0_line in LineBundleCohomologySpaces(QQ)
     assert h0_line.cohomology_scheme() is plane
+    assert h0_line.line_bundle_cohomology_construction().scheme() is plane
+    assert h0_line.toric_line_bundle_cohomology_construction().scheme() is plane
     assert h0_line.cohomology_divisor() == line
     assert h0_line.cohomological_degree() == 0
+    assert "_preamble_cohomology_scheme" not in h0_line.__dict__
+    assert "_preamble_cohomology_divisor" not in h0_line.__dict__
+    assert "_preamble_cohomological_degree" not in h0_line.__dict__
+    assert "_preamble_cohomology_weight_support" not in h0_line.__dict__
+    assert "_preamble_cohomology_weight_pieces" not in h0_line.__dict__
     assert h0_line.dimension() == 3
     assert h1_line.dimension() == 0
     assert h2_canonical.dimension() == 1
@@ -486,7 +509,7 @@ def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel(
     assert restriction.codomain().dimension() == 3
     assert restriction.kernel().dimension() == 3
     assert restriction.cokernel().is_zero()
-    assert restriction._preamble_closed_subscheme.inclusion().codomain() is projective_plane
+    assert restriction.codomain().section_scheme().inclusion().codomain() is projective_plane
 
 
 def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:
@@ -522,7 +545,11 @@ def test_imposed_double_point_sections_form_the_expected_projective_parameter_sp
     assert system.relative_dimension() == 6
     assert system.ambient_section_space().dimension() == 10
     assert system.constrained_section_space().dimension() == 7
+    assert system.constrained_section_space() is system.imposed_jet_evaluation().kernel()
     assert system.imposed_vanishing_order() == 2
+    assert "_preamble_ambient_section_space" not in system.__dict__
+    assert "_preamble_constrained_section_space" not in system.__dict__
+    assert "_preamble_imposed_jet_evaluation" not in system.__dict__
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:

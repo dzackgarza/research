@@ -29,6 +29,9 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     _restricted_scalars_view,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     _engine_element,
@@ -258,11 +261,11 @@ class Derivation(ModuleElement):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")
         if cached is not None:
             return cached
-        morphism = self.parent().arrow_set().elementwise(
-            lambda element: self.restricted_codomain()(self(element))
+        morphism = DerivationUnderlyingLinearMorphism(
+            self.parent().arrow_set(),
+            self,
+            lambda element: self.restricted_codomain()(self(element)),
         )
-        morphism._preamble_is_derivation = True
-        morphism._preamble_derivation = self
         self._preamble_underlying_linear_morphism = morphism
         return morphism
 
@@ -308,6 +311,17 @@ class Derivation(ModuleElement):
             )
         )
         return equal if op == op_EQ else not equal
+
+
+class DerivationUnderlyingLinearMorphism(ModuleMorphism):
+    r"""The selected underlying linear morphism of one algebra derivation."""
+
+    def __init__(self, parent, derivation, function) -> None:
+        self._derivation = derivation
+        super().__init__(parent, function, elementwise=True)
+
+    def derivation(self):
+        return self._derivation
 
     def __rmul__(self, scalar):
         return self.parent().algebra_multiple(scalar, self)
@@ -477,12 +491,15 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 or generator_images.codomain() is not self.restricted_target_module()
             ):
                 raise ValueError("the linear map has the wrong derivation endpoints")
-            if not getattr(generator_images, "_preamble_is_derivation", False):
+            if not isinstance(generator_images, DerivationUnderlyingLinearMorphism):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a derivation by this backend"
                 )
+            selected = generator_images.derivation()
+            if selected.parent() is self:
+                return selected
             generator_images = {
-                label: generator_images(self.algebra().algebra_generator(label)).underlying_element()
+                label: selected.generator_image(label)
                 for label in self.generator_labels()
             }
         return Derivation(self, generator_images)
@@ -528,7 +545,7 @@ class DerivationCategoryConstruction(_RestrictedHomCategoryOf):
         return DerivationSpace
 
     def accepts(self, arrow) -> bool:
-        return getattr(arrow, "_preamble_derivation", None) is not None
+        return isinstance(arrow, DerivationUnderlyingLinearMorphism)
 
 
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
@@ -591,13 +608,11 @@ class GradedDerivation(ModuleElement):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")
         if cached is not None:
             return cached
-        morphism = self.parent().arrow_set().elementwise(
+        morphism = GradedDerivationUnderlyingLinearMorphism(
+            self.parent().arrow_set(),
+            self,
             lambda element: self(element),
-            verify_linearity=False,
         )
-        morphism._preamble_is_graded_derivation = True
-        morphism._preamble_graded_derivation = self
-        morphism._preamble_degree_shift = self.degree_shift()
         self._preamble_underlying_linear_morphism = morphism
         return morphism
 
@@ -660,6 +675,24 @@ class GradedDerivation(ModuleElement):
                     return False
         return True
 
+
+class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
+    r"""The selected underlying linear morphism of one graded derivation."""
+
+    def __init__(self, parent, derivation, function) -> None:
+        self._derivation = derivation
+        super().__init__(
+            parent,
+            function,
+            elementwise=True,
+            verify_linearity=False,
+        )
+
+    def derivation(self):
+        return self._derivation
+
+    def degree_shift(self):
+        return self.derivation().degree_shift()
 
 
 class GradedDerivationSpace(RestrictedHomCategoryParent):
@@ -728,14 +761,16 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         if isinstance(function, Morphism):
             if function.domain() is not self.algebra() or function.codomain() is not self.target():
                 raise ValueError("the linear map has the wrong graded-derivation endpoints")
-            derivation = getattr(function, "_preamble_graded_derivation", None)
             if (
-                derivation is None
-                or getattr(function, "_preamble_degree_shift", None) != self.degree_shift()
+                not isinstance(function, GradedDerivationUnderlyingLinearMorphism)
+                or function.degree_shift() != self.degree_shift()
             ):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
                 )
+            derivation = function.derivation()
+            if derivation.parent() is self:
+                return derivation
             return GradedDerivation(self, lambda element: derivation(element))
         return GradedDerivation(self, function)
 
@@ -782,8 +817,8 @@ class GradedDerivationCategoryConstruction(_RestrictedHomCategoryOf):
 
     def accepts(self, arrow) -> bool:
         return (
-            getattr(arrow, "_preamble_graded_derivation", None) is not None
-            and getattr(arrow, "_preamble_degree_shift", None) == self.degree_shift()
+            isinstance(arrow, GradedDerivationUnderlyingLinearMorphism)
+            and arrow.degree_shift() == self.degree_shift()
         )
 
 

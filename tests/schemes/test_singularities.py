@@ -42,10 +42,17 @@ def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> N
 
     tangent = smooth.zariski_tangent_space()
     embedding = smooth.zariski_tangent_embedding()
+    construction = smooth.zariski_tangent_construction()
 
     assert tangent.module_rank() == 1
     assert smooth.is_regular_at_origin()
     assert not smooth.is_singular_at_origin()
+    assert construction.singularity() is smooth
+    assert construction.tangent_space() is tangent
+    assert construction.ambient_tangent_space() is smooth.ambient_tangent_space()
+    assert construction.embedding() is embedding
+    assert "_preamble_ambient_coordinate_vectors" not in tangent.__dict__
+    assert "_preamble_source_singularity" not in tangent.__dict__
     assert embedding.domain() is tangent
     assert embedding.codomain() is smooth.ambient_tangent_space()
 

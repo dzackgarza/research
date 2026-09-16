@@ -72,9 +72,13 @@ def test_sign_eigensection_has_invariant_zero_divisor_and_isotypic_piece() -> No
     sign_character = lambda element: QQ.one() if element == group.one() else -QQ.one()
     divisor = trivial.eigensection_divisor(alternating, sign_character)
     decomposition = trivial.isotypic_decomposition()
+    construction = trivial.eigensection_divisor_construction(divisor)
 
     assert divisor.inclusion().codomain() is trivial.projective_space()
     assert trivial.is_eigensection_divisor(divisor)
+    assert construction.linearization() is trivial
+    assert construction.section() == alternating
+    assert construction.character() is sign_character
     assert trivial.is_eigensection(alternating, sign_character)
     assert decomposition.nontrivial_components()
     assert trivial.section_group_module().act(
@@ -127,6 +131,9 @@ def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> 
     bundle = product.O(1, 1)
     action = product.c2_diagonal_sign_action()
     linearized = bundle.linearize(action, lambda _element: QQ.one())
+    construction = linearized.coordinate_action_construction()
 
     assert linearized.line_bundle() is bundle
     assert linearized.section_scheme() is product
+    assert construction.coordinate_weights() is linearized.coordinate_weights()
+    assert construction.local_automorphisms().index_set() is product.standard_affine_atlas().chart_index_set()

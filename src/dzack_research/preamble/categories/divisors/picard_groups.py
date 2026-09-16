@@ -6,6 +6,35 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.owned_category_bases import Category
 
 
+class _PicardGroupConstruction:
+    r"""The selected scheme defining one represented Picard group."""
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+
+class _ProjectivePicardConstruction(_PicardGroupConstruction):
+    r"""The projective-bundle decomposition defining a represented Picard group."""
+
+    def __init__(self, scheme, base_picard_group, hyperplane_factor, biproduct) -> None:
+        super().__init__(scheme)
+        self._base_picard_group = base_picard_group
+        self._hyperplane_factor = hyperplane_factor
+        self._biproduct = biproduct
+
+    def base_picard_group(self):
+        return self._base_picard_group
+
+    def hyperplane_factor(self):
+        return self._hyperplane_factor
+
+    def biproduct(self):
+        return self._biproduct
+
+
 class PicardGroups(Category):
     def an_object(self):
         return _divisor_role_specimen(self)
@@ -37,43 +66,48 @@ class PicardGroups(Category):
             scheme=scheme,
         )
 
-    def _call_(self, module, scheme=None, construction_data=None):
+    def _call_(self, module, scheme=None, construction=None):
         if module not in self.super_categories()[0]:
             raise TypeError("a Picard group must carry its quotient framing")
-        data = dict(construction_data or {})
-        if scheme is not None:
-            data["picard_scheme"] = scheme
+        if construction is None and scheme is not None:
+            construction = _PicardGroupConstruction(scheme)
+        if construction is not None and scheme is not None and construction.scheme() is not scheme:
+            raise ValueError("the selected Picard construction is attached to a different scheme")
         return _module_in_role(
             module,
             self,
             "a Picard group requires a represented framed-module presentation",
-            construction_data=data or None,
+            construction_data=(
+                None
+                if construction is None
+                else {"_picard_group_construction": construction}
+            ),
         )
 
     class ParentMethods:
-        def picard_scheme(self):
-            scheme = getattr(self, "_preamble_picard_scheme", None)
-            if scheme is None:
+        def picard_group_construction(self):
+            construction = getattr(self, "_picard_group_construction", None)
+            if construction is None:
                 raise TypeError("this Picard-group role has no selected scheme")
-            return scheme
+            return construction
+
+        def picard_scheme(self):
+            return self.picard_group_construction().scheme()
+
+        def _projective_picard_construction(self):
+            construction = self.picard_group_construction()
+            if not isinstance(construction, _ProjectivePicardConstruction):
+                raise TypeError("this Picard group has no selected projective-bundle decomposition")
+            return construction
 
         def projective_base_picard_group(self):
-            base = getattr(self, "_preamble_projective_base_picard_group", None)
-            if base is None:
-                raise TypeError("this Picard group has no selected projective-bundle decomposition")
-            return base
+            return self._projective_picard_construction().base_picard_group()
 
         def projective_hyperplane_factor(self):
-            factor = getattr(self, "_preamble_projective_hyperplane_factor", None)
-            if factor is None:
-                raise TypeError("this Picard group has no selected O(1) factor")
-            return factor
+            return self._projective_picard_construction().hyperplane_factor()
 
         def projective_picard_biproduct(self):
-            decomposition = getattr(self, "_preamble_projective_picard_biproduct", None)
-            if decomposition is None:
-                raise TypeError("this Picard group has no selected projective-bundle decomposition")
-            return decomposition
+            return self._projective_picard_construction().biproduct()
 
         def _from_projective_biproduct(self, element):
             decomposition = self.projective_picard_biproduct()

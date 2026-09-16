@@ -37,17 +37,36 @@ def _complete_intersection_base_supported(base) -> bool:
 
 
 class _CompleteIntersectionBaseChange(SageObject):
-    r"""The selected source and projection defining one scalar base change."""
+    r"""The selected source and scalar map defining one scalar base change."""
 
-    def __init__(self, source, projection) -> None:
+    def __init__(self, source, ring_map) -> None:
         self._source = source
-        self._projection = projection
+        self._ring_map = ring_map
+        if ring_map.domain() is not source.scheme_base_ring():
+            raise ValueError(
+                "a complete-intersection base-change datum starts at the source scalar base"
+            )
 
     def source(self):
         return self._source
 
-    def projection(self):
-        return self._projection
+    def ring_map(self):
+        return self._ring_map
+
+    def projection(self, changed):
+        r"""Return the projection from the selected base change to its source."""
+        if changed.scheme_base_ring() is not self.ring_map().codomain():
+            raise ValueError(
+                "the changed complete intersection has the wrong scalar base for this datum"
+            )
+        changed_ambient = changed.complete_intersection_ambient()
+        ambient_projection = changed_ambient.left_projection()
+        into_source_ambient = ambient_projection * changed.inclusion()
+        return _categorical_scheme_morphism(
+            into_source_ambient.native_morphism(),
+            domain=changed,
+            codomain=self.source(),
+        )
 
 
 class _CompleteIntersectionAdjunctionComparison(SageObject):
@@ -115,7 +134,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         x, y, z = plane.homogeneous_coordinate_generators()
         return self(plane.closed_subscheme(x * z - y**2))
 
-    def _call_(self, subscheme):
+    def _call_(self, subscheme, *, base_change_datum=None):
         r"""Place a projective closed subscheme with its selected regular sequence."""
         base = subscheme.scheme_base_ring()
         if base is not self.base_ring():
@@ -147,6 +166,14 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         subscheme._preamble_complete_intersection_degrees = tuple(
             int(equation.degree()) for equation in equations
         )
+        if (
+            base_change_datum is not None
+            and base_change_datum.ring_map().codomain() is not base
+        ):
+            raise ValueError(
+                "the complete-intersection base-change datum has the wrong target scalar base"
+            )
+        subscheme._complete_intersection_base_change_datum = base_change_datum
         return _refine_scheme(subscheme, base, [self])
 
     def _repr_object_names(self):
@@ -190,11 +217,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return self.structure_morphism()
 
         def base_change_datum(self):
-            datum = getattr(
-                self,
-                "_preamble_complete_intersection_base_change",
-                None,
-            )
+            datum = self._complete_intersection_base_change_datum
             if datum is None:
                 raise ValueError("this complete intersection was not selected as a scalar base change")
             return datum
@@ -203,7 +226,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return self.base_change_datum().source()
 
         def base_change_projection(self):
-            return self.base_change_datum().projection()
+            return self.base_change_datum().projection(self)
 
         def base_change(self, ring_map):
             r"""Base-change this complete-intersection family through its defining sections."""
@@ -238,20 +261,11 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                     changed_bundle.global_sections().homogeneous_polynomial(target_section)
                 )
 
-            changed = ProjectiveCompleteIntersections(ring_map.codomain())(
-                changed_ambient.closed_subscheme(tuple(changed_equations))
+            datum = _CompleteIntersectionBaseChange(self, ring_map)
+            return ProjectiveCompleteIntersections(ring_map.codomain())(
+                changed_ambient.closed_subscheme(tuple(changed_equations)),
+                base_change_datum=datum,
             )
-            ambient_projection = changed_ambient.left_projection()
-            into_source_ambient = ambient_projection * changed.inclusion()
-            projection = _categorical_scheme_morphism(
-                into_source_ambient.native_morphism(),
-                domain=changed,
-                codomain=self,
-            )
-            changed._preamble_complete_intersection_base_change = (
-                _CompleteIntersectionBaseChange(self, projection)
-            )
-            return changed
 
         def adjunction_twist_degree(self):
             r"""Return ``sum(d_i) - n - 1`` in ``K_X = O_X(sum d_i-n-1)``.

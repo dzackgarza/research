@@ -1,6 +1,7 @@
 from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.categories.manifolds import (
+    ComplexManifolds,
     DifferentiableManifolds,
     SmoothManifolds,
     TopologicalManifolds,
@@ -60,3 +61,18 @@ def test_smooth_atlas_is_a_differentiable_and_topological_atlas() -> None:
     assert transition.regularity() == "smooth"
     assert transition.forward_expressions() == (source.coordinate(0) + 3,)
     assert transition.inverse_expressions() == (target.coordinate(0) - 3,)
+
+
+def test_holomorphic_map_retains_its_selected_chart_presentation() -> None:
+    line = ComplexManifolds().affine_space(1, name="C")
+    chart = line.atlas()["standard"]
+    z = chart.coordinate(0)
+
+    square = line.holomorphic_polynomial_map(line, (z**2,))
+    presentation = square.presentation()
+
+    assert presentation.coordinate_expressions() == (z**2,)
+    assert presentation.source_chart_label() == "standard"
+    assert presentation.target_chart_label() == "standard"
+    assert square.source_chart() is chart
+    assert square.target_chart() is chart

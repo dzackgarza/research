@@ -53,6 +53,7 @@ from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
 from dzack_research.preamble.categories.divisors.chow_groups import (
     ChowGroups,
     TorusInvariantCycleGroups,
+    _CycleDegreeConstruction,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
@@ -1266,7 +1267,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 domain=self,
                 codomain=system,
             )
-            result._preamble_linear_system_divisor = divisor
             return result
 
         def weight_cohomology_complex(self, divisor, weight):
@@ -1584,8 +1584,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.fan().cones(cone_dimension),
                 _extra_categories=(TorusInvariantCycleGroups(_integers()),),
                 _extra_construction_data=(
-                    ("_preamble_cycle_scheme", self),
-                    ("_preamble_cycle_dimension", cycle_dimension),
+                    (
+                        "_cycle_degree_construction",
+                        _CycleDegreeConstruction(self, cycle_dimension),
+                    ),
                 ),
             )
 

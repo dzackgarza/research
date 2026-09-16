@@ -37,6 +37,151 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class _HomogeneousSectionSpaceConstruction:
+    r"""The selected homogeneous-coordinate presentation of one section space."""
+
+    def __init__(self, scheme, degree, coordinate_ring, monomial_exponents) -> None:
+        self._scheme = scheme
+        self._degree = degree
+        self._coordinate_ring = coordinate_ring
+        self._monomial_exponents = dict(monomial_exponents)
+
+    def scheme(self):
+        return self._scheme
+
+    def degree(self):
+        return self._degree
+
+    def coordinate_ring(self):
+        return self._coordinate_ring
+
+    def exponents_of(self, monomial):
+        return self._monomial_exponents[monomial]
+
+
+class _MultihomogeneousSectionSpaceConstruction(_HomogeneousSectionSpaceConstruction):
+    r"""The selected multiprojective coordinate presentation of one section space."""
+
+    def __init__(
+        self,
+        scheme,
+        degree,
+        coordinate_ring,
+        monomial_exponents,
+        coordinate_blocks,
+    ) -> None:
+        super().__init__(scheme, degree, coordinate_ring, monomial_exponents)
+        self._coordinate_blocks = coordinate_blocks
+
+    def coordinate_block(self, position):
+        return self._coordinate_blocks[position]
+
+
+class _ProjectiveJetConstruction:
+    r"""The selected local construction defining one projective jet space."""
+
+    def __init__(
+        self,
+        line_bundle,
+        order,
+        point,
+        affine_chart,
+        spectrum_point,
+        local_quotient,
+    ) -> None:
+        self._line_bundle = line_bundle
+        self._order = order
+        self._point = point
+        self._affine_chart = affine_chart
+        self._spectrum_point = spectrum_point
+        self._local_quotient = local_quotient
+
+    def projective_space(self):
+        return self._line_bundle.projective_space()
+
+    def line_bundle(self):
+        return self._line_bundle
+
+    def order(self):
+        return self._order
+
+    def point(self):
+        return self._point
+
+    def affine_chart(self):
+        return self._affine_chart
+
+    def spectrum_point(self):
+        return self._spectrum_point
+
+    def stalk(self):
+        return self._local_quotient.quotient_source()
+
+    def maximal_ideal(self):
+        return self.stalk().maximal_ideal()
+
+    def local_quotient(self):
+        return self._local_quotient
+
+    def residue_field(self):
+        return self._spectrum_point.residue_field()
+
+
+class _CompleteLinearSystemConstruction:
+    r"""The represented scheme, divisor, and section space defining ``|D|``."""
+
+    def __init__(self, scheme, divisor, section_space) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._section_space = section_space
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def section_space(self):
+        return self._section_space
+
+
+class _ProjectiveLinearSystemConstruction:
+    r"""The selected section embedding defining one projective linear system."""
+
+    def __init__(self, line_bundle, section_embedding, base_locus) -> None:
+        self._line_bundle = line_bundle
+        self._section_embedding = section_embedding
+        self._base_locus = base_locus
+
+    def line_bundle(self):
+        return self._line_bundle
+
+    def selected_section_space(self):
+        return self._section_embedding.domain()
+
+    def section_embedding(self):
+        return self._section_embedding
+
+    def base_locus(self):
+        return self._base_locus
+
+
+class _ImposedMultiplicityConstruction:
+    r"""The jet-evaluation kernel defining an imposed-multiplicity system."""
+
+    def __init__(self, evaluation) -> None:
+        self._evaluation = evaluation
+
+    def ambient_section_space(self):
+        return self._evaluation.domain()
+
+    def constrained_section_space(self):
+        return self._evaluation.kernel()
+
+    def evaluation(self):
+        return self._evaluation
+
+
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective spaces ``|D| = P(H^0(X,O_X(D)))`` with their defining data."""
 
@@ -48,14 +193,17 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
+        def complete_linear_system_construction(self):
+            return self._complete_linear_system_construction
+
         def linear_system_scheme(self):
-            return self._preamble_linear_system_scheme
+            return self.complete_linear_system_construction().scheme()
 
         def linear_system_divisor(self):
-            return self._preamble_linear_system_divisor
+            return self.complete_linear_system_construction().divisor()
 
         def section_space(self):
-            return self._preamble_linear_system_section_space
+            return self.complete_linear_system_construction().section_space()
 
         def projective_dimension(self):
             return self.relative_dimension()
@@ -78,28 +226,32 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_section_scheme,
-            _preamble_homogeneous_degree,
-            _preamble_homogeneous_coordinate_ring,
-            _preamble_homogeneous_exponents,
-            **rest,
-        ) -> None:
-            self._preamble_section_scheme = _preamble_section_scheme
-            self._preamble_homogeneous_degree = _preamble_homogeneous_degree
-            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
-            self._preamble_homogeneous_exponents = _preamble_homogeneous_exponents
+        def __init__(self, _section_space_construction, **rest) -> None:
+            if not isinstance(
+                _section_space_construction,
+                _HomogeneousSectionSpaceConstruction,
+            ) or isinstance(
+                _section_space_construction,
+                _MultihomogeneousSectionSpaceConstruction,
+            ):
+                raise TypeError(
+                    "a homogeneous section space requires homogeneous construction data"
+                )
+            self._section_space_construction = _section_space_construction
             super().__init__(**rest)
 
+        def section_space_construction(self):
+            r"""Return the selected coordinate presentation defining this section space."""
+            return self._section_space_construction
+
         def section_scheme(self):
-            return self._preamble_section_scheme
+            return self.section_space_construction().scheme()
 
         def homogeneous_degree(self):
-            return self._preamble_homogeneous_degree
+            return self.section_space_construction().degree()
 
         def homogeneous_coordinate_ring(self):
-            return self._preamble_homogeneous_coordinate_ring
+            return self.section_space_construction().coordinate_ring()
 
         def homogeneous_polynomial(self, section):
             r"""Return the homogeneous polynomial represented by ``section``."""
@@ -125,7 +277,10 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             engine_base = _engine_ring(base)
             by_exponents = {
                 tuple(exponents): monomial
-                for monomial, exponents in self._preamble_homogeneous_exponents.items()
+                for monomial in self.module_generating_set()
+                for exponents in (
+                    self.section_space_construction().exponents_of(monomial),
+                )
             }
             coefficients = {}
             for exponent, coefficient in engine(backend).monomial_coefficients().items():
@@ -154,20 +309,18 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             pulled_bundle = source_scheme.O(self.homogeneous_degree()).pullback(morphism)
             target = pulled_bundle.global_sections()
             product = morphism.domain()
-            label = getattr(morphism, "_preamble_product_projection_label", None)
-            assert label is not None, (
-                "homogeneous section pullback is represented here for the selected product-projection role"
-            )
+            label = product.projection_label(morphism)
             labels = tuple(product.factors().index_set())
             label = product.factors().index_set()(label)
-            source_exponents = self._preamble_homogeneous_exponents
+            source_construction = self.section_space_construction()
+            target_construction = target.section_space_construction()
             target_by_exponents = {
-                tuple(tuple(block) for block in exponents): monomial
-                for monomial, exponents in target._preamble_multihomogeneous_exponents.items()
+                tuple(tuple(block) for block in target_construction.exponents_of(monomial)): monomial
+                for monomial in target.module_generating_set()
             }
 
             def target_exponents(monomial):
-                selected = tuple(source_exponents[monomial])
+                selected = tuple(source_construction.exponents_of(monomial))
                 blocks = []
                 for factor_label in labels:
                     factor = product.factors()[factor_label]
@@ -227,30 +380,29 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_section_scheme,
-            _preamble_multihomogeneous_degree,
-            _preamble_homogeneous_coordinate_ring,
-            _preamble_multihomogeneous_exponents,
-            _preamble_multihomogeneous_block_offsets,
-            **rest,
-        ) -> None:
-            self._preamble_section_scheme = _preamble_section_scheme
-            self._preamble_multihomogeneous_degree = _preamble_multihomogeneous_degree
-            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
-            self._preamble_multihomogeneous_exponents = _preamble_multihomogeneous_exponents
-            self._preamble_multihomogeneous_block_offsets = _preamble_multihomogeneous_block_offsets
+        def __init__(self, _section_space_construction, **rest) -> None:
+            if not isinstance(
+                _section_space_construction,
+                _MultihomogeneousSectionSpaceConstruction,
+            ):
+                raise TypeError(
+                    "a multihomogeneous section space requires multiprojective construction data"
+                )
+            self._section_space_construction = _section_space_construction
             super().__init__(**rest)
 
+        def section_space_construction(self):
+            r"""Return the selected coordinate presentation defining this section space."""
+            return self._section_space_construction
+
         def section_scheme(self):
-            return self._preamble_section_scheme
+            return self.section_space_construction().scheme()
 
         def multidegree(self):
-            return self._preamble_multihomogeneous_degree
+            return self.section_space_construction().degree()
 
         def homogeneous_coordinate_ring(self):
-            return self._preamble_homogeneous_coordinate_ring
+            return self.section_space_construction().coordinate_ring()
 
         @cached_method
         def factor_coordinate_embedding(self, factor_label):
@@ -272,7 +424,7 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             factor = factors[factor_label]
             source = factor.O(1).global_sections().homogeneous_coordinate_ring()
             target = self.homogeneous_coordinate_ring()
-            start, stop = self._preamble_multihomogeneous_block_offsets[position]
+            start, stop = self.section_space_construction().coordinate_block(position)
             source_labels = tuple(source.algebra_generating_set())
             target_labels = tuple(target.algebra_generating_set())
             if stop - start != len(source_labels):
@@ -298,8 +450,11 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
+        def projective_linear_system_construction(self):
+            return self._projective_linear_system_construction
+
         def line_bundle(self):
-            return self._preamble_linear_system_line_bundle
+            return self.projective_linear_system_construction().line_bundle()
 
         def ambient_section_space(self):
             return self.line_bundle().global_sections()
@@ -308,10 +463,10 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             return self.relative_dimension()
 
         def selected_section_space(self):
-            return self._preamble_selected_section_space
+            return self.projective_linear_system_construction().selected_section_space()
 
         def section_embedding(self):
-            return self._preamble_section_embedding
+            return self.projective_linear_system_construction().section_embedding()
 
         def selected_sections(self):
             embedding = self.section_embedding()
@@ -331,7 +486,7 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             )
 
         def base_locus(self):
-            return self._preamble_base_locus
+            return self.projective_linear_system_construction().base_locus()
 
         def is_basepoint_free(self) -> bool:
             return self.base_locus().is_empty()
@@ -364,70 +519,59 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_jet_projective_space,
-            _preamble_jet_line_bundle,
-            _preamble_jet_order,
-            _preamble_jet_point,
-            _preamble_jet_affine_chart,
-            _preamble_jet_spectrum_point,
-            _preamble_jet_stalk,
-            _preamble_jet_maximal_ideal,
-            _preamble_jet_local_quotient,
-            _preamble_jet_residue_field,
-            **rest,
-        ) -> None:
-            self._preamble_jet_projective_space = _preamble_jet_projective_space
-            self._preamble_jet_line_bundle = _preamble_jet_line_bundle
-            self._preamble_jet_order = _preamble_jet_order
-            self._preamble_jet_point = _preamble_jet_point
-            self._preamble_jet_affine_chart = _preamble_jet_affine_chart
-            self._preamble_jet_spectrum_point = _preamble_jet_spectrum_point
-            self._preamble_jet_stalk = _preamble_jet_stalk
-            self._preamble_jet_maximal_ideal = _preamble_jet_maximal_ideal
-            self._preamble_jet_local_quotient = _preamble_jet_local_quotient
-            self._preamble_jet_residue_field = _preamble_jet_residue_field
+        def __init__(self, _projective_jet_construction, **rest) -> None:
+            if not isinstance(_projective_jet_construction, _ProjectiveJetConstruction):
+                raise TypeError("a projective jet space requires selected local construction data")
+            self._projective_jet_construction = _projective_jet_construction
             super().__init__(**rest)
 
+        def projective_jet_construction(self):
+            r"""Return the selected local datum defining this jet realization."""
+            return self._projective_jet_construction
+
         def jet_projective_space(self):
-            return self._preamble_jet_projective_space
+            return self.projective_jet_construction().projective_space()
 
         def jet_line_bundle(self):
-            return self._preamble_jet_line_bundle
+            return self.projective_jet_construction().line_bundle()
 
         def jet_homogeneous_degree(self):
             return self.jet_line_bundle().degree()
 
         def jet_order(self):
-            return self._preamble_jet_order
+            return self.projective_jet_construction().order()
 
         def jet_point(self):
-            return self._preamble_jet_point
+            return self.projective_jet_construction().point()
 
         def jet_affine_chart(self):
-            return self._preamble_jet_affine_chart
+            return self.projective_jet_construction().affine_chart()
 
         def jet_spectrum_point(self):
-            return self._preamble_jet_spectrum_point
+            return self.projective_jet_construction().spectrum_point()
 
         def jet_stalk(self):
-            return self._preamble_jet_stalk
+            return self.projective_jet_construction().stalk()
 
         def jet_maximal_ideal(self):
-            return self._preamble_jet_maximal_ideal
+            return self.projective_jet_construction().maximal_ideal()
 
         def jet_local_quotient(self):
-            return self._preamble_jet_local_quotient
+            return self.projective_jet_construction().local_quotient()
 
         def jet_residue_field(self):
-            return self._preamble_jet_residue_field
+            return self.projective_jet_construction().residue_field()
 
         def jet_coordinate_index(self):
-            index = getattr(self, "_preamble_jet_coordinate_index", None)
-            if index is None:
+            coordinates = tuple(self.jet_point().point_coordinates())
+            nonzero = tuple(
+                index
+                for index, coordinate in enumerate(coordinates)
+                if coordinate != self.base_ring().zero()
+            )
+            if len(nonzero) != 1:
                 raise ValueError("this jet condition was not selected at a coordinate point")
-            return index
+            return nonzero[0]
 
 
 class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
@@ -441,14 +585,17 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
+        def imposed_multiplicity_construction(self):
+            return self._imposed_multiplicity_construction
+
         def ambient_section_space(self):
-            return self._preamble_ambient_section_space
+            return self.imposed_multiplicity_construction().ambient_section_space()
 
         def constrained_section_space(self):
-            return self._preamble_constrained_section_space
+            return self.imposed_multiplicity_construction().constrained_section_space()
 
         def imposed_jet_evaluation(self):
-            return self._preamble_imposed_jet_evaluation
+            return self.imposed_multiplicity_construction().evaluation()
 
         def imposed_vanishing_order(self):
             return self.imposed_jet_evaluation().codomain().jet_order()
@@ -500,10 +647,15 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(HomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_section_scheme", projective_scheme),
-            ("_preamble_homogeneous_degree", degree),
-            ("_preamble_homogeneous_coordinate_ring", ring),
-            ("_preamble_homogeneous_exponents", exponent_data),
+            (
+                "_section_space_construction",
+                _HomogeneousSectionSpaceConstruction(
+                    projective_scheme,
+                    degree,
+                    ring,
+                    exponent_data,
+                ),
+            ),
         ),
     )
     return space
@@ -581,11 +733,16 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_section_scheme", projective_product),
-            ("_preamble_multihomogeneous_degree", multidegree),
-            ("_preamble_homogeneous_coordinate_ring", ring),
-            ("_preamble_multihomogeneous_exponents", exponent_data),
-            ("_preamble_multihomogeneous_block_offsets", tuple(block_offsets)),
+            (
+                "_section_space_construction",
+                _MultihomogeneousSectionSpaceConstruction(
+                    projective_product,
+                    multidegree,
+                    ring,
+                    exponent_data,
+                    tuple(block_offsets),
+                ),
+            ),
         ),
     )
 
@@ -620,14 +777,15 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
         degree,
         coordinate_names=target_names,
     )
-    source_exponents = source._preamble_homogeneous_exponents
+    source_construction = source.section_space_construction()
+    target_construction = target.section_space_construction()
     target_by_exponents = {
-        exponents: monomial
-        for monomial, exponents in target._preamble_homogeneous_exponents.items()
+        tuple(target_construction.exponents_of(monomial)): monomial
+        for monomial in target.module_generating_set()
     }
 
     def image(monomial):
-        exponents = source_exponents[monomial]
+        exponents = source_construction.exponents_of(monomial)
         if exponents[coordinate_index]:
             return target.zero()
         restricted = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
@@ -639,7 +797,6 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
             for monomial in source.module_generating_set()
         }
     )
-    restriction._preamble_closed_subscheme = hyperplane
     return restriction
 
 
@@ -780,10 +937,11 @@ def _projective_linear_system(line_bundle, sections):
     )
     base_locus = scheme.closed_subscheme(polynomials)
     system = ProjectiveSpaces(base)(len(sections) - 1)
-    system._preamble_linear_system_line_bundle = line_bundle
-    system._preamble_selected_section_space = selected
-    system._preamble_section_embedding = embedding
-    system._preamble_base_locus = base_locus
+    system._projective_linear_system_construction = _ProjectiveLinearSystemConstruction(
+        line_bundle,
+        embedding,
+        base_locus,
+    )
     return _refine_scheme(system, base, [ProjectiveLinearSystems(base)])
 
 
@@ -861,7 +1019,6 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     stalk = spectrum_point.local_ring()
     maximal_ideal = stalk.maximal_ideal()
     local_quotient = stalk.quotient_ring(maximal_ideal.power(jet_order))
-    residue_field = spectrum_point.residue_field()
 
     _centered_ring, local_monomials, local_by_exponents = _centered_jet_basis(
         base,
@@ -873,23 +1030,24 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
         finite_ordered_set(local_monomials),
         _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_jet_projective_space", projective_space),
-            ("_preamble_jet_line_bundle", line_bundle),
-            ("_preamble_jet_order", _own_ring(SageZZ)(jet_order)),
-            ("_preamble_jet_point", point),
-            ("_preamble_jet_affine_chart", chart),
-            ("_preamble_jet_spectrum_point", spectrum_point),
-            ("_preamble_jet_stalk", stalk),
-            ("_preamble_jet_maximal_ideal", maximal_ideal),
-            ("_preamble_jet_local_quotient", local_quotient),
-            ("_preamble_jet_residue_field", residue_field),
+            (
+                "_projective_jet_construction",
+                _ProjectiveJetConstruction(
+                    line_bundle,
+                    _own_ring(SageZZ)(jet_order),
+                    point,
+                    chart,
+                    spectrum_point,
+                    local_quotient,
+                ),
+            ),
         ),
     )
-    source_exponents = source._preamble_homogeneous_exponents
+    source_construction = source.section_space_construction()
     nonpivot = tuple(index for index in range(dimension + 1) if index != pivot)
 
     def image(monomial):
-        homogeneous_exponents = source_exponents[monomial]
+        homogeneous_exponents = source_construction.exponents_of(monomial)
         local_powers = tuple(homogeneous_exponents[index] for index in nonpivot)
         coefficients = {}
         choices = tuple(
@@ -919,8 +1077,6 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
             for monomial in source.module_generating_set()
         }
     )
-    evaluation._preamble_projective_point = point
-    evaluation._preamble_projective_point_chart_index = pivot
     return evaluation
 
 
@@ -941,8 +1097,6 @@ def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index,
         point,
         jet_order,
     )
-    evaluation._preamble_projective_point_coordinate_index = coordinate_index
-    evaluation.codomain()._preamble_jet_coordinate_index = coordinate_index
     return evaluation
 
 
@@ -955,9 +1109,9 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
         raise ValueError("the imposed condition leaves no nonzero section to projectivize")
     base = line_bundle.projective_space().scheme_base_ring()
     parameter_space = ProjectiveSpaces(base)(dimension - 1)
-    parameter_space._preamble_ambient_section_space = evaluation.domain()
-    parameter_space._preamble_constrained_section_space = constrained
-    parameter_space._preamble_imposed_jet_evaluation = evaluation
+    parameter_space._imposed_multiplicity_construction = _ImposedMultiplicityConstruction(
+        evaluation
+    )
     return _refine_scheme(
         parameter_space,
         base,
@@ -983,8 +1137,6 @@ def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coo
         point,
         vanishing_order,
     )
-    result.imposed_jet_evaluation()._preamble_projective_point_coordinate_index = coordinate_index
-    result.imposed_jet_evaluation().codomain()._preamble_jet_coordinate_index = coordinate_index
     return result
 
 
@@ -1004,9 +1156,11 @@ def _complete_linear_system(scheme, divisor, section_space):
     if dimension == 0:
         raise ValueError("the empty linear system has no represented projective space")
     system = ProjectiveSpaces(base)(dimension - 1)
-    system._preamble_linear_system_scheme = scheme
-    system._preamble_linear_system_divisor = divisor
-    system._preamble_linear_system_section_space = section_space
+    system._complete_linear_system_construction = _CompleteLinearSystemConstruction(
+        scheme,
+        divisor,
+        section_space,
+    )
     return _refine_scheme(system, base, [CompleteLinearSystems(base)])
 
 

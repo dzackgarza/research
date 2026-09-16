@@ -37,6 +37,50 @@ from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.refine import refine
 
 
+class _ToricWeightCohomologyConstruction:
+    r"""The toric scheme, divisor, and character defining one weight complex."""
+
+    def __init__(self, scheme, divisor, weight) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._weight = weight
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def weight(self):
+        return self._weight
+
+
+class _ToricLineBundleCohomologyConstruction:
+    r"""The geometric and weight-sum data defining total toric cohomology."""
+
+    def __init__(self, scheme, divisor, degree, weight_support, weight_pieces) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._degree = int(degree)
+        self._weight_support = weight_support
+        self._weight_pieces = dict(weight_pieces)
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def degree(self):
+        return self._degree
+
+    def weight_support(self):
+        return self._weight_support
+
+    def weight_piece(self, weight):
+        return self._weight_pieces[weight]
+
+
 class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
     r"""Shifted reduced simplicial complexes computing one toric sheaf-cohomology weight."""
 
@@ -48,14 +92,17 @@ class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
         return [CochainComplexes(self.base_ring())]
 
     class ParentMethods:
+        def toric_weight_cohomology_construction(self):
+            return self._preamble_toric_weight_cohomology_construction
+
         def cohomology_scheme(self):
-            return self._preamble_geometric_cohomology_scheme
+            return self.toric_weight_cohomology_construction().scheme()
 
         def cohomology_divisor(self):
-            return self._preamble_geometric_cohomology_divisor
+            return self.toric_weight_cohomology_construction().divisor()
 
         def cohomology_weight(self):
-            return self._preamble_geometric_cohomology_weight
+            return self.toric_weight_cohomology_construction().weight()
 
         def comparison_description(self):
             return "H^i(X,O_X(D))_m is identified with shifted reduced simplicial cohomology H~^(i-1)(V_{D,m})"
@@ -76,12 +123,20 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
         return [LineBundleCohomologySpaces(self.base_ring())]
 
     class ParentMethods:
+        def toric_line_bundle_cohomology_construction(self):
+            construction = self.line_bundle_cohomology_construction()
+            if not isinstance(construction, _ToricLineBundleCohomologyConstruction):
+                raise TypeError(
+                    "geometric toric cohomology requires its selected weight-sum construction"
+                )
+            return construction
+
         def cohomology_weight_support(self):
-            return self._preamble_cohomology_weight_support
+            return self.toric_line_bundle_cohomology_construction().weight_support()
 
         def cohomology_weight_piece(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
-            return self._preamble_cohomology_weight_pieces[weight]
+            return self.toric_line_bundle_cohomology_construction().weight_piece(weight)
 
         def cohomology_weight_inclusion(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
@@ -220,6 +275,30 @@ class _AffineCoverRefinementCohomologyComparison(SageObject):
 
     def cohomology_map(self):
         return self._cohomology_map
+
+
+class _IntegralTopologicalCohomologyConstruction:
+    r"""The selected realization and degree defining one integral cohomology group."""
+
+    def __init__(self, scheme, degree, theory, realization) -> None:
+        self._scheme = scheme
+        self._degree = int(degree)
+        self._theory = theory
+        self._realization = realization
+
+    def scheme(self):
+        return self._scheme
+
+    def degree(self):
+        return self._degree
+
+    def theory(self):
+        return self._theory
+
+    def realization_description(self):
+        return self._realization
+
+
 class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral cohomology groups of a specified topological realization/theory."""
 
@@ -235,34 +314,39 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedModules(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            topological_scheme,
-            topological_cohomological_degree,
-            topological_cohomology_theory,
-            topological_realization_description,
-            **rest,
-        ) -> None:
-            self._preamble_topological_scheme = topological_scheme
-            self._preamble_topological_cohomological_degree = int(topological_cohomological_degree)
-            self._preamble_topological_cohomology_theory = topological_cohomology_theory
-            self._preamble_topological_realization_description = topological_realization_description
+        def __init__(self, _integral_topological_cohomology_construction, **rest) -> None:
+            if not isinstance(
+                _integral_topological_cohomology_construction,
+                _IntegralTopologicalCohomologyConstruction,
+            ):
+                raise TypeError(
+                    "integral topological cohomology requires selected realization data"
+                )
+            self._integral_topological_cohomology_construction = (
+                _integral_topological_cohomology_construction
+            )
             super().__init__(**rest)
 
+        def integral_topological_cohomology_construction(self):
+            return self._integral_topological_cohomology_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.integral_topological_cohomology_construction().scheme()
 
         def cohomological_degree(self):
-            return self._preamble_topological_cohomological_degree
+            return self.integral_topological_cohomology_construction().degree()
 
         def cohomology_coefficients(self):
             return self.base_ring()
 
         def cohomology_topology(self):
-            return self._preamble_topological_cohomology_theory
+            return self.integral_topological_cohomology_construction().theory()
 
         def realization_description(self):
-            return self._preamble_topological_realization_description
+            return (
+                self.integral_topological_cohomology_construction()
+                .realization_description()
+            )
 
 
 class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
@@ -298,6 +382,38 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
         return [IntegralSingularCohomologyGroups(self.base_ring())]
 
 
+class _GeometricFundamentalGroupConstruction:
+    r"""The pointed realization defining one represented fundamental group."""
+
+    def __init__(self, scheme, base_point, realization) -> None:
+        self._scheme = scheme
+        self._base_point = base_point
+        self._realization = realization
+
+    def scheme(self):
+        return self._scheme
+
+    def base_point(self):
+        return self._base_point
+
+    def realization_description(self):
+        return self._realization
+
+
+class _ToricFundamentalGroupConstruction:
+    r"""The toric realization and fixed-point cone defining one fundamental group."""
+
+    def __init__(self, scheme, base_point_cone) -> None:
+        self._scheme = scheme
+        self._base_point_cone = base_point_cone
+
+    def scheme(self):
+        return self._scheme
+
+    def base_point_cone(self):
+        return self._base_point_cone
+
+
 class GeometricFundamentalGroups(Category):
     r"""Pointed fundamental groups of specified complex scheme realizations."""
 
@@ -309,22 +425,28 @@ class GeometricFundamentalGroups(Category):
         return [OwnedGroups()]
 
     class ParentMethods:
+        def geometric_fundamental_group_construction(self):
+            return self._preamble_geometric_fundamental_group_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.geometric_fundamental_group_construction().scheme()
 
         def base_point(self):
-            return self._preamble_topological_base_point
+            return self.geometric_fundamental_group_construction().base_point()
 
         def realization_description(self):
-            return self._preamble_topological_realization_description
+            return (
+                self.geometric_fundamental_group_construction()
+                .realization_description()
+            )
 
 
 def _equip_geometric_fundamental_group(group, scheme, base_point, realization):
     if base_point.codomain() is not scheme:
         raise ValueError("a pointed fundamental group requires a point of its scheme")
-    group._preamble_topological_scheme = scheme
-    group._preamble_topological_base_point = base_point
-    group._preamble_topological_realization_description = realization
+    group._preamble_geometric_fundamental_group_construction = (
+        _GeometricFundamentalGroupConstruction(scheme, base_point, realization)
+    )
     return refine(group, GeometricFundamentalGroups())
 
 
@@ -339,12 +461,15 @@ class ToricFundamentalGroups(Category):
         return [OwnedGroups()]
 
     class ParentMethods:
+        def toric_fundamental_group_construction(self):
+            return self._preamble_toric_fundamental_group_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.toric_fundamental_group_construction().scheme()
 
         def base_point_cone(self):
             r"""Return the maximal cone indexing the selected torus-fixed basepoint."""
-            return self._preamble_topological_base_point_cone
+            return self.toric_fundamental_group_construction().base_point_cone()
 
         def realization_description(self):
             return "complex analytic realization under the selected QQ-to-CC embedding"
@@ -458,9 +583,9 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
             name="Toric weight cohomology complex",
             extra_categories=(ToricWeightCohomologyComplexes(base),),
             extra_construction_data={
-                "geometric_cohomology_scheme": scheme,
-                "geometric_cohomology_divisor": divisor,
-                "geometric_cohomology_weight": weight,
+                "toric_weight_cohomology_construction": _ToricWeightCohomologyConstruction(
+                    scheme, divisor, weight
+                ),
             },
         )
     else:
@@ -480,9 +605,9 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
             name="Toric weight cohomology complex",
             extra_categories=(ToricWeightCohomologyComplexes(base),),
             extra_construction_data={
-                "geometric_cohomology_scheme": scheme,
-                "geometric_cohomology_divisor": divisor,
-                "geometric_cohomology_weight": weight,
+                "toric_weight_cohomology_construction": _ToricWeightCohomologyConstruction(
+                    scheme, divisor, weight
+                ),
             },
         )
     return complex_
@@ -537,11 +662,13 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
     construction_data = {
-        "cohomology_scheme": scheme,
-        "cohomology_divisor": divisor,
-        "cohomological_degree": degree,
-        "cohomology_weight_support": weights,
-        "cohomology_weight_pieces": pieces,
+        "_line_bundle_cohomology_construction": _ToricLineBundleCohomologyConstruction(
+            scheme,
+            divisor,
+            degree,
+            weights,
+            pieces,
+        ),
     }
     if weights.cardinality() == 0:
         total = base._fresh_free_module_on(
@@ -794,10 +921,14 @@ def _integral_topology_construction_data(
     theory="ordinary singular cohomology",
 ):
     return {
-        "topological_scheme": scheme,
-        "topological_cohomological_degree": int(degree),
-        "topological_cohomology_theory": theory,
-        "topological_realization_description": realization,
+        "_integral_topological_cohomology_construction": (
+            _IntegralTopologicalCohomologyConstruction(
+                scheme,
+                degree,
+                theory,
+                realization,
+            )
+        ),
     }
 
 
@@ -1131,12 +1262,12 @@ def _toric_integral_singular_cohomology(scheme, degree):
     if degree < 0 or degree > 2 * dimension:
         raise ValueError("singular cohomological degree lies between zero and twice the complex dimension")
     integers = _own_ring(SageZZ)
-    construction_data = {
-        "topological_scheme": scheme,
-        "topological_cohomological_degree": degree,
-        "topological_cohomology_theory": "singular cohomology of the complex analytic realization",
-        "topological_realization_description": "complex analytic realization under the selected QQ-to-CC embedding",
-    }
+    construction_data = _integral_topology_construction_data(
+        scheme,
+        degree,
+        "complex analytic realization under the selected QQ-to-CC embedding",
+        "singular cohomology of the complex analytic realization",
+    )
     if degree % 2:
         return integers._fresh_free_module_on(
             finite_ordered_set(()),
@@ -1212,8 +1343,9 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
     if base_point_cone not in maximal:
         raise ValueError("the selected torus-fixed basepoint is indexed by a maximal cone")
     group = _own_group(FreeGroup(0))
-    group._preamble_topological_scheme = scheme
-    group._preamble_topological_base_point_cone = base_point_cone
+    group._preamble_toric_fundamental_group_construction = (
+        _ToricFundamentalGroupConstruction(scheme, base_point_cone)
+    )
     return refine(group, ToricFundamentalGroups())
 
 
