@@ -45,7 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -656,7 +656,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 raise TypeError("minimal generators via Nakayama require a represented local base ring")
             residue_module = self.residue_module()
             basis_labels = residue_module.basis_generator_labels()
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 basis_labels,
                 self.module_generator,
                 name="Minimal selected module generators",
@@ -682,7 +682,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 lambda position: int(position) not in pivot_columns,
                 name="Vector-space basis generator positions",
             )
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 positions,
                 lambda position: labels[int(position)],
                 name="Vector-space basis generator labels",
@@ -762,7 +762,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             localized = self.localize_at_prime(point)
             selected_labels = localized.residue_module().basis_generator_labels()
-            labels = finite_ordered_image(
+            labels = FiniteOrderedSets().from_indexed(
                 selected_labels,
                 lambda label: label,
                 name="Local free basis labels",

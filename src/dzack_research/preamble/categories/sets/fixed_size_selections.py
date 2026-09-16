@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, TotallyOrderedSets
 
@@ -136,7 +136,7 @@ class FixedSizeSelectionElement(Element):
                     return self.parent().source()[position]
             raise IndexError(requested)
 
-        return finite_ordered_image(
+        return FiniteOrderedSets().from_indexed(
             indices,
             source_label,
             name="Selection support",

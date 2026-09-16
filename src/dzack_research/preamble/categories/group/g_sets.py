@@ -37,7 +37,7 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -449,7 +449,7 @@ class OrbitSets(OwnedCategory):
                     position: rank
                     for position, rank in enumerate(sorted(orbit_ranks))
                 }
-                orbit_families[orbit_count] = finite_ordered_image(
+                orbit_families[orbit_count] = FiniteOrderedSets().from_indexed(
                     Sets.Δ[len(rank_by_position) - 1],
                     lambda position, rank_by_position=rank_by_position: point_at(
                         rank_by_position[int(position)]
@@ -465,7 +465,7 @@ class OrbitSets(OwnedCategory):
                 name="Orbit point families",
             )
             super().__init__(**rest)
-            self._orbit_classes = finite_ordered_image(
+            self._orbit_classes = FiniteOrderedSets().from_indexed(
                 self._orbit_indices,
                 lambda index: self.element_class(self, index),
                 name="Orbit classes",

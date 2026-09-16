@@ -44,7 +44,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -662,7 +662,7 @@ def _span_basis_elements(module, module_generating_set):
             }
         )
 
-    return finite_ordered_image(
+    return FiniteOrderedSets().from_indexed(
         positions,
         basis_element,
         name=f"Canonical span basis in {module}",

@@ -87,7 +87,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -265,7 +265,7 @@ def _engine_cosets(group, subgroup, side):
 
     def own_coset(backend_members):
         member_positions = Sets.Δ[len(backend_members) - 1]
-        return finite_ordered_image(
+        return FiniteOrderedSets().from_indexed(
             member_positions,
             lambda member_position: group._from_engine(backend_members[int(member_position)]),
             name="Coset elements",
@@ -274,7 +274,7 @@ def _engine_cosets(group, subgroup, side):
     # Each coset is one object: build them once, so a coset read back from a
     # representative is the coset the family already holds.
     owned_cosets = tuple(own_coset(backend_members) for backend_members in backend_cosets)
-    return finite_ordered_image(
+    return FiniteOrderedSets().from_indexed(
         coset_positions,
         lambda position: owned_cosets[int(position)],
         name=f"{side.capitalize()} cosets",
@@ -287,7 +287,7 @@ def _unique_nonidentity_generators(group):
             return group._preamble_selected_group_generators
     engine = _engine_group(group)
     backend_generators = tuple(engine.gens())
-    owned_generators = finite_ordered_image(
+    owned_generators = FiniteOrderedSets().from_indexed(
         Sets.Δ[len(backend_generators) - 1],
         lambda position: group._from_engine(backend_generators[int(position)]),
     )
@@ -1550,7 +1550,7 @@ class GroupAutomorphismGroups(OwnedCategory):
         def group_generators(self):
             backend_generators = self._libgap_().GeneratorsOfGroup()
             positions = Sets.Δ[len(backend_generators) - 1]
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 positions,
                 lambda position: self(
                     backend_generators[int(position)],
@@ -1994,7 +1994,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 for generator in coproduct_engine.GeneratorsOfGroup()
             )
             generator_positions = Sets.Δ[len(selected_generators) - 1]
-            coproduct._preamble_selected_group_generators = finite_ordered_image(
+            coproduct._preamble_selected_group_generators = FiniteOrderedSets().from_indexed(
                 generator_positions,
                 lambda position: selected_generators[int(position)],
                 name=f"Chosen generators of {coproduct}",
@@ -2363,7 +2363,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def conjugacy_classes_representatives(self):
                 classes = _gap_model(self).ConjugacyClasses()
-                return finite_ordered_image(
+                return FiniteOrderedSets().from_indexed(
                     Sets.Δ[len(classes) - 1],
                     lambda position: _element_from_engine(
                         self,

@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -882,7 +882,7 @@ def _all_discriminant_subgroups(ambient):
                 known_by_position[len(known_by_position)] = candidate
                 frontier.append(candidate)
     positions = Sets.Δ[len(known_by_position) - 1]
-    return finite_ordered_image(
+    return FiniteOrderedSets().from_indexed(
         positions,
         lambda position: known_by_position[int(position)],
     )

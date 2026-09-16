@@ -25,10 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):

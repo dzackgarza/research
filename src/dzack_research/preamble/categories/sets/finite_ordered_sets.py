@@ -90,7 +90,7 @@ def _finite_ordered_presentation(elements):
     if elements not in Sets():
         raise TypeError(
             "finite_ordered_set requires a known finite set or explicit finite literal; "
-            "use finite_ordered_image(index_set, map) for a computed family"
+            "use FiniteOrderedSets().from_indexed(index_set, map) for a computed family"
         )
 
     size = cardinal(elements.cardinality())
@@ -125,30 +125,6 @@ def _finite_ordered_presentation(elements):
     return index_set, element_at, index_of, lambda element: element in elements
 
 
-
-
-def finite_ordered_image[IndexT, PointT](
-    index_set: Parent,
-    element_at: Callable[[IndexT], PointT],
-    *,
-    index_of: Callable[[PointT], IndexT | None] | None = None,
-    contains: Callable[[PointT], bool] | None = None,
-    name: str | None = None,
-    image_source: Parent | None = None,
-    image_map: Callable[[IndexT], PointT] | None = None,
-    image_inverse: Callable[[PointT], IndexT] | None = None,
-) -> Parent:
-    r"""Return a finite ordered image without materializing its members."""
-    return FiniteOrderedSets().from_indexed(
-        index_set,
-        element_at,
-        index_of=index_of,
-        contains=contains,
-        name=name,
-        image_source=image_source,
-        image_map=image_map,
-        image_inverse=image_inverse,
-    )
 
 
 class OrderedEnumeratedSets(OwnedCategory):

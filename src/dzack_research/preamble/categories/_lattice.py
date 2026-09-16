@@ -50,7 +50,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -134,7 +134,7 @@ def _as_generating_set(keys, rank):
         if rank == Infinity:
             return _FormalSymbols()
         positions = Sets.Δ[int(rank) - 1]
-        return finite_ordered_image(
+        return FiniteOrderedSets().from_indexed(
             positions,
             lambda position: _formal_symbol(int(position)),
             index_of=lambda symbol: positions[_formal_symbol_index(symbol)],
@@ -167,7 +167,7 @@ def _generating_set_from_names(names, rank):
     if isinstance(names, str):
         raw_names = names.split(",")
         name_source = finite_ordered_set(raw_names)
-        symbols = finite_ordered_image(
+        symbols = FiniteOrderedSets().from_indexed(
             name_source,
             lambda name: SR.var(str(name).strip()),
             index_of=lambda symbol: name_source(str(symbol)),
@@ -179,7 +179,7 @@ def _generating_set_from_names(names, rank):
             if isinstance(names, (list, tuple, range))
             else names
         )
-        symbols = finite_ordered_image(
+        symbols = FiniteOrderedSets().from_indexed(
             name_source,
             lambda name: SR.var(str(name)),
             index_of=lambda symbol: name_source(str(symbol)),
@@ -552,7 +552,7 @@ class _PairingGram(ModuleElement, Tensor):
     def tensor_indices(self):
         keys = _basis_keys(self._module)
         upper = finite_ordered_set(())
-        lower = finite_ordered_image(
+        lower = FiniteOrderedSets().from_indexed(
             finite_ordered_set((0, 1)),
             lambda _slot: keys,
             name="Gram-tensor index generating sets",

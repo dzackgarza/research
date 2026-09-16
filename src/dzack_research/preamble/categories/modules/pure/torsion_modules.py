@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -101,7 +101,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                     "finite torsion enumeration requires the represented Smith workspace"
                 )
             positions = Sets.Δ[int(engine.cardinality()) - 1]
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 positions,
                 lambda position: self._from_smith_engine_element(
                     engine[int(position)]

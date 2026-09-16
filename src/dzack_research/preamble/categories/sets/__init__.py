@@ -76,8 +76,6 @@ _EXPORTS = {'CountableSets': ('dzack_research.preamble.categories.sets.set_categ
                        'FiniteOrderedSets'),
  'OrderedEnumeratedSet': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                           'OrderedEnumeratedSet'),
- 'finite_ordered_image': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                          'finite_ordered_image'),
  'finite_ordered_set': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                         'finite_ordered_set')}
 
@@ -131,7 +129,6 @@ __all__ = [ 'PowerSets',
  'LaurentMonomials',
  'SincTranslates',
  'finite_indexed_family',
- 'finite_ordered_image',
  'finite_ordered_set',
  'indexed_family']
 

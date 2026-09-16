@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
     _equip_action,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -194,7 +194,7 @@ class InductionFunctor(ScalarExtensionFunctor):
         super().__init__(ring_map)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
         self._left_cosets = self._supergroup.left_cosets(self._subgroup)
-        self._representatives = finite_ordered_image(
+        self._representatives = FiniteOrderedSets().from_indexed(
             self._left_cosets,
             lambda coset: coset[0],
             name="Left-coset representatives",
@@ -293,7 +293,7 @@ class CoinductionFunctor(CoextensionOfScalarsFunctor):
         super().__init__(ring_map)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
         self._right_cosets = self._supergroup.right_cosets(self._subgroup)
-        self._representatives = finite_ordered_image(
+        self._representatives = FiniteOrderedSets().from_indexed(
             self._right_cosets,
             lambda coset: coset[0],
             name="Right-coset representatives",

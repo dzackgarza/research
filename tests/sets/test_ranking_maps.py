@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteFilteredOrderedSets,
     FiniteOrderedSets,
     OrderedEnumeratedSets,
-    finite_ordered_image,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
@@ -104,7 +103,7 @@ def test_a_finite_coproduct_is_enumerated_by_rank_layer() -> None:
 
 def test_finite_ordered_image_over_owned_labels_retains_the_value_map() -> None:
     labels = finite_ordered_set(("left", "right"))
-    image = finite_ordered_image(
+    image = FiniteOrderedSets().from_indexed(
         labels,
         lambda label: ("value", label),
     )
@@ -136,7 +135,7 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
         indices,
         lambda index: ("x", "y", "z")[int(index)],
     )
-    image_notation = finite_ordered_image(
+    image_notation = FiniteOrderedSets().from_indexed(
         indices,
         lambda index: ("x", "y", "z")[int(index)],
     )
@@ -186,7 +185,7 @@ def test_finite_ordered_image_positional_access_does_not_run_inverse_lookup() ->
     def inverse_lookup(_value):
         raise AssertionError("positional access already has the enumeration index")
 
-    image = finite_ordered_image(
+    image = FiniteOrderedSets().from_indexed(
         indices,
         lambda index: values[int(index)],
         index_of=inverse_lookup,

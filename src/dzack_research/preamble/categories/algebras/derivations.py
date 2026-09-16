@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 
@@ -61,7 +61,7 @@ def _commutative_presentation_data(algebra):
         )
 
     labels = presentation.algebra_generating_set()
-    variables = finite_ordered_image(
+    variables = FiniteOrderedSets().from_indexed(
         labels,
         presentation.algebra_generator,
     )

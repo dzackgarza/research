@@ -54,7 +54,7 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _finite_framing,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -1092,7 +1092,7 @@ def _ordered_coefficient_support(module, coefficients):
                 return label
         raise IndexError(requested)
 
-    return finite_ordered_image(
+    return FiniteOrderedSets().from_indexed(
         positions,
         label_at,
         name="Finite coefficient support",

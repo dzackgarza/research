@@ -54,7 +54,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -1234,7 +1234,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
 
         engine_generators = self._engine_group_parent.gens()
         positions = Sets.Δ[len(engine_generators) - 1]
-        return finite_ordered_image(
+        return FiniteOrderedSets().from_indexed(
             positions,
             lambda position: self._from_engine(engine_generators[int(position)]),
             name="Torsion-form automorphism generators",

@@ -39,7 +39,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -275,7 +275,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                         return position
                 raise ValueError(embedding)
 
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 positions,
                 embedding_at,
                 index_of=embedding_position,
@@ -551,7 +551,7 @@ class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
 
             primitive = self.primitive_element()
             embeddings = self.embeddings(target)
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 embeddings,
                 lambda embedding: embedding(primitive),
                 name="Primitive-element embedding images",

@@ -12,7 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -391,7 +391,7 @@ class ConvexPolytopes(OwnedCategory):
             engine_points = finite_ordered_set(
                 tuple(self._engine_polyhedron().integral_points())
             )
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 engine_points,
                 lambda point: self.ambient_lattice()(
                     tuple(

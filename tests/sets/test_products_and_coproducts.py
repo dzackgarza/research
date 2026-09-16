@@ -5,7 +5,7 @@ from dzack_research.preamble.all import (
     cardinal,
 )
 from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductsOfSets,
@@ -136,7 +136,7 @@ def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
     labels = Sets.Δ[1]
     left_value = TriValuedLabel("left")
     right_value = TriValuedLabel("right")
-    factor = finite_ordered_image(
+    factor = FiniteOrderedSets().from_indexed(
         labels,
         lambda index: left_value if int(index) == 0 else right_value,
         index_of=lambda value: labels[0] if value is left_value else labels[1] if value is right_value else None,
@@ -180,7 +180,7 @@ def test_finite_product_equality_uses_component_equality_before_inverse_ranking(
         inverse_calls.append(value)
         return labels[int(value)]
 
-    factor = finite_ordered_image(
+    factor = FiniteOrderedSets().from_indexed(
         labels,
         lambda index: int(index),
         index_of=inverse_lookup,

@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -1555,7 +1555,7 @@ class TensorModule(UniqueRepresentation, Parent):
 
         def modules_for(ranks):
             slots = Sets.Δ[len(ranks) - 1]
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 slots,
                 lambda slot: free_of_rank(ranks[int(slot)]),
             )
@@ -1567,7 +1567,7 @@ class TensorModule(UniqueRepresentation, Parent):
         upper_modules, lower_modules = self.index_modules()
 
         def generating_sets(modules):
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 modules.index_set(),
                 lambda slot: modules[slot].module_generating_set(),
                 name="Tensor-index generating sets",

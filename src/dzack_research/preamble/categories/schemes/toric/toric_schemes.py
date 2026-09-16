@@ -97,7 +97,7 @@ from dzack_research.preamble.categories.schemes.varieties import (
     Varieties,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -617,7 +617,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
         def affine_cover(self):
             r"""The charts of the maximal cones, which cover ``X_Sigma``."""
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 self.fan().maximal_cones(),
                 self.affine_chart,
                 name="Affine toric charts",
@@ -1183,7 +1183,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             polytope are returned as elements of ``M``.
             """
             characters = self.character_lattice()
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 self.divisor_polytope(divisor).integral_points(),
                 lambda point: _owned_vector(characters, point),
                 name="Section characters",
@@ -1233,7 +1233,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``H^0(X,O(D))`` with its actual Cox monomials as basis labels."""
             divisor = self.weil_divisor_group()(divisor)
             characters = self.divisor_section_characters(divisor)
-            monomials = finite_ordered_image(
+            monomials = FiniteOrderedSets().from_indexed(
                 characters,
                 lambda character: self.cox_monomial_of_section(divisor, character),
                 name="Homogeneous Cox monomial sections",

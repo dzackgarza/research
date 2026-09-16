@@ -141,7 +141,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -4196,7 +4196,7 @@ class RootLattices(OwnedCategory):
             if norm not in (2, -2):
                 raise ValueError(f"a simply-laced root framing has simple-root square +/-2, got {norm}")
             sign = norm // self.base_ring()(2)
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 self.dual_basis(),
                 lambda weight: weight.parent().scalar_multiple(sign, weight),
             )

@@ -617,7 +617,7 @@ class Sets(OwnedCategory):
         if is_injective is True and inverse is not None and domain_subset in EnumeratedSets():
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
                 OrderedEnumeratedSets,
-                finite_ordered_image,
+                FiniteOrderedSets,
             )
 
             def contains(element):
@@ -630,7 +630,7 @@ class Sets(OwnedCategory):
 
             match domain_subset in FiniteSets():
                 case True:
-                    return finite_ordered_image(
+                    return FiniteOrderedSets().from_indexed(
                         domain_subset,
                         map_,
                         index_of=inverse,

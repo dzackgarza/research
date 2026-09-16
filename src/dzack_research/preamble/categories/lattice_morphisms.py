@@ -43,7 +43,7 @@ from dzack_research.preamble.categories.modules.pure.modules import _engine_matr
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -1751,7 +1751,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 "lattice.indefinite_automorphism_group", _engine_gram_rows(lattice)
             )
             positions = Sets.Δ[len(backend_generators) - 1]
-            return finite_ordered_image(
+            return FiniteOrderedSets().from_indexed(
                 positions,
                 lambda position: self._from_backend_row_action(
                     backend_generators[int(position)]
@@ -1760,7 +1760,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             )
         backend_generators = self._engine_group().gens()
         positions = Sets.Δ[len(backend_generators) - 1]
-        return finite_ordered_image(
+        return FiniteOrderedSets().from_indexed(
             positions,
             lambda position: self._from_engine(backend_generators[int(position)]),
             name=f"Orthogonal-group generators of {lattice}",
