@@ -34,6 +34,12 @@ def test_the_affine_line_squared_over_the_base_is_the_affine_plane() -> None:
     assert plane.fiber_product_base() is line.base_scheme()
 
     left_projection, right_projection = plane.fiber_product_projections()
+    construction = plane.fiber_product_construction()
+    left_map, right_map = plane.fiber_product_cospan()
+    assert construction.cospan()[0] is left_map
+    assert construction.cospan()[1] is right_map
+    assert construction.projections()[0] is left_projection
+    assert construction.projections()[1] is right_projection
     assert left_projection.codomain() is line
     assert right_projection.codomain() is line
     assert left_projection.domain() is plane

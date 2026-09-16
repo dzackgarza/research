@@ -4007,6 +4007,44 @@ def _scheme_product(*schemes):
     return _install_scheme_product_data(product, factors, projections)
 
 
+class SchemeFiberProductConstruction:
+    r"""The selected cospan, projections, and realization of one scheme pullback."""
+
+    def __init__(
+        self,
+        cospan,
+        projections,
+        *,
+        algebra_pushout=None,
+        scheme_factorization=None,
+        cocone_factorization=None,
+    ) -> None:
+        self._cospan = tuple(cospan)
+        self._projections = tuple(projections)
+        if len(self._cospan) != 2 or len(self._projections) != 2:
+            raise ValueError("a represented scheme fiber product has two cospan legs and two projections")
+        if self._cospan[0].codomain() is not self._cospan[1].codomain():
+            raise ValueError("the selected fiber-product cospan must have one common codomain")
+        self._algebra_pushout = algebra_pushout
+        self._scheme_factorization = scheme_factorization
+        self._cocone_factorization = cocone_factorization
+
+    def cospan(self):
+        return self._cospan
+
+    def projections(self):
+        return self._projections
+
+    def algebra_pushout(self):
+        return self._algebra_pushout
+
+    def scheme_factorization(self):
+        return self._scheme_factorization
+
+    def cocone_factorization(self):
+        return self._cocone_factorization
+
+
 class FiberProductSchemes(OwnedCategoryOverBaseRing):
     r"""Schemes equipped as selected pullbacks of one represented cospan."""
 
@@ -4018,15 +4056,55 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Schemes(self.base_ring())]
 
+    def _install_construction(
+        self,
+        scheme,
+        cospan,
+        projections,
+        *,
+        algebra_pushout=None,
+        scheme_factorization=None,
+        cocone_factorization=None,
+    ):
+        r"""Equip ``scheme`` with its selected pullback construction before exposure."""
+        if scheme not in Schemes(self.base_ring()):
+            raise TypeError("a fiber-product construction must stay over its selected base ring")
+        construction = SchemeFiberProductConstruction(
+            cospan,
+            projections,
+            algebra_pushout=algebra_pushout,
+            scheme_factorization=scheme_factorization,
+            cocone_factorization=cocone_factorization,
+        )
+        left_projection, right_projection = construction.projections()
+        left_map, right_map = construction.cospan()
+        if left_projection.domain() is not scheme or right_projection.domain() is not scheme:
+            raise ValueError("the selected fiber-product projections must start at the constructed scheme")
+        if left_projection.codomain() is not left_map.domain() or right_projection.codomain() is not right_map.domain():
+            raise ValueError("the selected fiber-product projections have the wrong cospan endpoints")
+        existing = scheme.__dict__.get("_fiber_product_construction")
+        if existing is not None and existing is not construction:
+            raise ValueError("this scheme already carries a selected fiber-product construction")
+        scheme._fiber_product_construction = construction
+        if scheme not in self:
+            return _refine_scheme(scheme, self.base_ring(), [self])
+        return scheme
+
     class ParentMethods:
+        def fiber_product_construction(self):
+            r"""Return the selected pullback construction defining this scheme."""
+            construction = self.__dict__.get("_fiber_product_construction")
+            assert construction is not None, f"{self} has no selected fiber-product construction"
+            return construction
+
         def fiber_product_cospan(self):
-            return self._preamble_fiber_product_cospan
+            return self.fiber_product_construction().cospan()
 
         def fiber_product_base(self):
             return self.fiber_product_cospan()[0].codomain()
 
         def fiber_product_projections(self):
-            return self._preamble_fiber_product_projections
+            return self.fiber_product_construction().projections()
 
         def left_projection(self):
             return self.fiber_product_projections()[0]
@@ -4044,23 +4122,19 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
             if right_map.codomain() is not right_projection.codomain():
                 raise ValueError("the right pullback-cone map has the wrong codomain")
 
-            scheme_factorization = getattr(
-                self,
-                "_preamble_fiber_product_scheme_factorization",
-                None,
-            )
+            construction = self.fiber_product_construction()
+            scheme_factorization = construction.scheme_factorization()
             if scheme_factorization is not None:
                 factorization = scheme_factorization(left_map, right_map)
             else:
                 left_pullback = left_map.coordinate_algebra_morphism()
                 right_pullback = right_map.coordinate_algebra_morphism()
-                selected_factorization = getattr(
-                    self,
-                    "_preamble_fiber_product_cocone_factorization",
-                    None,
-                )
+                selected_factorization = construction.cocone_factorization()
                 if selected_factorization is None:
-                    algebra_pushout = self._preamble_fiber_product_algebra_pushout
+                    algebra_pushout = construction.algebra_pushout()
+                    assert algebra_pushout is not None, (
+                        "this fiber-product construction has no represented algebra pushout or selected factorization"
+                    )
                     induced = algebra_pushout.from_pushout_cocone(
                         left_pullback,
                         right_pullback,
@@ -4239,8 +4313,6 @@ def _projective_space_scalar_base_change(left_map, right_map):
         )
         for index, projection in enumerate(projections):
             projection._preamble_fiber_projection_index = index
-        changed._preamble_fiber_product_cospan = (left_map, right_map)
-        changed._preamble_fiber_product_projections = projections
 
         def factor(left_cone_map, right_cone_map):
             projective_cone_map = (
@@ -4265,11 +4337,11 @@ def _projective_space_scalar_base_change(left_map, right_map):
                 projective_cone_map,
             )
 
-        changed._preamble_fiber_product_scheme_factorization = factor
-        return _refine_scheme(
+        return FiberProductSchemes(target_base)._install_construction(
             changed,
-            target_base,
-            [FiberProductSchemes(target_base)],
+            (left_map, right_map),
+            projections,
+            scheme_factorization=factor,
         )
     return None
 
@@ -4346,13 +4418,12 @@ def _scheme_fiber_product(left_map, right_map):
         right,
         right_pushout_map,
     )
-    product._preamble_fiber_product_cospan = (left_map, right_map)
-    product._preamble_fiber_product_algebra_pushout = algebra_pushout
-    if cocone_factorization is not None:
-        product._preamble_fiber_product_cocone_factorization = cocone_factorization
-    product._preamble_fiber_product_projections = (
-        left_projection,
-        right_projection,
+    product = FiberProductSchemes(base_ring)._install_construction(
+        product,
+        (left_map, right_map),
+        (left_projection, right_projection),
+        algebra_pushout=algebra_pushout,
+        cocone_factorization=cocone_factorization,
     )
     left_projection._preamble_fiber_projection_index = 0
     right_projection._preamble_fiber_projection_index = 1
