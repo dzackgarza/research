@@ -663,7 +663,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Separating cases:** a presheaf that fails descent on a two-element cover, and the same presheaf on the trivial coverage where it passes.  Keep the coverage a parameter: the reason for stating it this way is that stacks change the value category, not the condition.
   **Acceptance:** a presheaf and a sheaf on the same site are distinguished by the construction rather than by the caller's assertion; the affine module-gluing route returns an object of the sheaf category.
 
-- [ ] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
+- [x] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
   **Goal:** Place every sheaf in the tree as an object of the sheaf category, and declare the sheaf-bearing categories into the categories their own definitions name.
   **Observed gap:** `QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`) and `RingedSpaces` (`:642`) both declare `Sets()`.  A quasi-coherent sheaf is an \(\mathcal{O}_X\)-module and a ringed space is \((X, \mathcal{O}_X)\); neither is a set.  `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and `HigherDirectImageSheaf` are plain `SageObject`s, so none inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents, and `__contains__` has to duck-type its argument for want of a placement.
   **Owners:** the sheaf category from `sheaf-descent-subcategory`; the ringed space as a space together with its sheaf of rings; the affine equivalence with \(\mathbf{Mod}_A\) already implemented as `module_category`/`associated_sheaf`/`global_sections`.

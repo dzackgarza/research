@@ -66,8 +66,6 @@ Reading each member against the definition in its own docstring separates the gr
 
 | Category | Its own definition | The category that should be declared | Source |
 | --- | --- | --- | --- |
-| `QuasiCoherentSheaves` | "quasi-coherent ``O_X``-modules on one scheme ``X``" | sheaves of `O_X`-modules | `schemes/ringed_spaces.py:541` |
-| `RingedSpaces` | "ringed spaces ``(X,O_X)``" | a space together with a sheaf of rings | `schemes/ringed_spaces.py:642` |
 | `TopologicalManifolds` | "finite-dimensional topological manifolds" | topological spaces | `manifolds.py:151` |
 | `LogPairs` | "pairs ``(X, Delta)`` of a variety and a chosen boundary divisor" | a scheme with a divisor | `schemes/log_pairs.py:22` |
 | `HyperbolicSpaces` | "projectivizations of chosen positive-cone components" | the projectivization of a cone component | `hyperbolic_geometry.py:111` |
@@ -83,21 +81,16 @@ Reading each member against the definition in its own docstring separates the gr
 | `CharacterSets` | "the owned sets ``Char(G)`` of ordinary characters of finite ``G``" | undecided: `Char(G)` carries a ring structure, and whether this category is of the sets or of the rings is a decision, not an oversight | `group/characters.py:32` |
 
 **Categories the table asks for and the tree does not have.**
-Presheaves `[C^op, D]`, and sheaves as the full subcategory of a presheaf category cut out by descent for a coverage.
 Topological spaces.
 Graphs, digraphs, and labelled graphs.
 Chamber systems.
 Convex bodies and convex cones in a module over an ordered field.
 The functor category and the opposite category both exist and are what the presheaf construction is built from, so that one is placement rather than new theory.
 
-**Consequences now visible.**
-Every sheaf in the tree is outside the category graph as a plain `SageObject`: `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and its descendants, `HigherDirectImageSheaf`.
-None inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents from Stacks Tag 01I8, and `QuasiCoherentSheaves.__contains__` duck-types its argument for want of a placement.
-
 **Required end state.**
 No category declares a supercategory its own definition contradicts.
 Where the honest category is missing it is built; where it is not yet decided, `super_categories()` is left abstract so the category refuses to construct.
-Scheduled as `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement`, `geometric-space-placement` and `combinatorial-object-placement` in [TODO.md](TODO.md).
+Scheduled as `geometric-space-placement` and `combinatorial-object-placement` in [TODO.md](TODO.md).
 
 **Coverage boundary.**
 Read from source: the declared graph, and each listed category's own class docstring.
