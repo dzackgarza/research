@@ -13,9 +13,6 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
@@ -425,9 +422,9 @@ class FiniteGluedInvariantQuotient(SageObject):
         try:
             return self._reverse_source_transitions[key]
         except KeyError:
-            reverse: CategoricalIsomorphism = Isomorphism(
-                transition.inverse(), transition.forward()
-            )
+            reverse: CategoricalIsomorphism = Schemes(self.base_ring()).Core().Mor(
+                transition.codomain(), transition.domain()
+            )(transition.inverse(), transition.forward())
             self._reverse_source_transitions[key] = reverse
             return reverse
 
@@ -446,9 +443,9 @@ class FiniteGluedInvariantQuotient(SageObject):
         try:
             return self._reverse_quotient_transitions[key]
         except KeyError:
-            reverse: CategoricalIsomorphism = Isomorphism(
-                transition.inverse(), transition.forward()
-            )
+            reverse: CategoricalIsomorphism = Schemes(self.base_ring()).Core().Mor(
+                transition.codomain(), transition.domain()
+            )(transition.inverse(), transition.forward())
             self._reverse_quotient_transitions[key] = reverse
             return reverse
 
@@ -1005,7 +1002,9 @@ def _c2_chartwise_glued_invariant_quotient(
         inverse = _c2_quotient_overlap_transition(
             datum, acted_charts, quotient_opens, right, left
         )
-        quotient_transitions_by_pair[left, right] = Isomorphism(forward, inverse)
+        quotient_transitions_by_pair[left, right] = Schemes(base).Core().Mor(
+            forward.domain(), forward.codomain()
+        )(forward, inverse)
     quotient_transitions = finite_indexed_family(
         pair_indices,
         lambda pair: quotient_transitions_by_pair[pair],

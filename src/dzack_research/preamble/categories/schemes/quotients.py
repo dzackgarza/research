@@ -34,9 +34,6 @@ group-scheme geometry.
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import (
     ContravariantFunctor,
 )
@@ -214,7 +211,9 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
             source_quotient,
             inverse_pullback,
         )
-        return Isomorphism(forward, inverse)
+        return Schemes(source_quotient.scheme_base_ring()).Core().Mor(
+            source_quotient, target_quotient
+        )(forward, inverse)
 
     def _repr_(self) -> str:
         return f"Invariant-quotient base change along {self.ring_map()} for {self.source_acted_scheme()}"
