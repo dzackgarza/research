@@ -11,8 +11,6 @@ import pytest
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 NULLARY_FUNCTORS = {
-    "RingOfIntegersFunctor": (RingOfIntegersFunctor, lambda: QQ, OwnedOrders),
-    "FractionFieldFunctor": (FractionFieldFunctor, lambda: ZZ, OwnedNumberFields),
 }
 
 

@@ -228,15 +228,6 @@ from dzack_research.preamble.categories.functors.linear_constructions import (
 from dzack_research.preamble.categories.functors.linear_constructions import (
     OrthogonalDirectSumBifunctor as OrthogonalDirectSumBifunctor,
 )
-from dzack_research.preamble.categories.functors.orders_number_fields import (
-    FractionFieldFunctor as FractionFieldFunctor,
-)
-from dzack_research.preamble.categories.functors.orders_number_fields import (
-    OrderNumberFieldAdjunction as OrderNumberFieldAdjunction,
-)
-from dzack_research.preamble.categories.functors.orders_number_fields import (
-    RingOfIntegersFunctor as RingOfIntegersFunctor,
-)
 from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,

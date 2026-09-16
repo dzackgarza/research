@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFi
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedOrders, _engine_ring
 
 
-class FractionFieldFunctor(Functor):
+class _FractionFieldFunctor(Functor):
     r"""``Frac : Orders -> NumberFields``."""
 
     def __init__(self) -> None:
@@ -41,7 +41,7 @@ class FractionFieldFunctor(Functor):
         return "Fraction-field functor"
 
 
-class RingOfIntegersFunctor(Functor):
+class _RingOfIntegersFunctor(Functor):
     r"""``K -> O_K : NumberFields -> Orders``."""
 
     def __init__(self) -> None:
@@ -59,11 +59,11 @@ class RingOfIntegersFunctor(Functor):
         return "Ring-of-integers functor"
 
 
-class OrderNumberFieldAdjunction(Adjunction):
+class _OrderNumberFieldAdjunction(Adjunction):
     r"""``Frac ⊣ O``."""
 
     def __init__(self) -> None:
-        super().__init__(FractionFieldFunctor(), RingOfIntegersFunctor())
+        super().__init__(_FractionFieldFunctor(), _RingOfIntegersFunctor())
 
     def unit(self, order):
         field = self.left_adjoint()(order)
@@ -93,12 +93,8 @@ class OrderNumberFieldAdjunction(Adjunction):
 
 
 @cached_function
-def _order_number_field_adjunction() -> OrderNumberFieldAdjunction:
-    return OrderNumberFieldAdjunction()
+def _order_number_field_adjunction() -> _OrderNumberFieldAdjunction:
+    return _OrderNumberFieldAdjunction()
 
 
-__all__ = [
-    "FractionFieldFunctor",
-    "OrderNumberFieldAdjunction",
-    "RingOfIntegersFunctor",
-]
+__all__ = []
