@@ -413,21 +413,37 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
 
 class _LineBundleBaseChangeDatum:
-    r"""The selected source, projection, and section comparison for one base change."""
+    r"""The selected source and scalar map defining one line-bundle base change.
 
-    def __init__(self, source_bundle, projection, section_comparison) -> None:
+    The changed bundle owns this datum from construction time.  Its projection
+    and section comparison are consequences of that defining datum together
+    with the changed bundle itself, so they are derived rather than attached
+    later as provenance.
+    """
+
+    def __init__(self, source_bundle, ring_map, exponent_attribute) -> None:
         self._source_bundle = source_bundle
-        self._projection = projection
-        self._section_comparison = section_comparison
+        self._ring_map = ring_map
+        self._exponent_attribute = exponent_attribute
 
     def source_bundle(self):
         return self._source_bundle
 
-    def projection(self):
-        return self._projection
+    def ring_map(self):
+        return self._ring_map
 
-    def section_comparison(self):
-        return self._section_comparison
+    def projection(self, changed_bundle):
+        return changed_bundle.scheme().left_projection()
+
+    def section_comparison(self, changed_bundle):
+        source_sections = self.source_bundle().global_sections()
+        target_sections = changed_bundle.global_sections()
+        return _section_base_change_comparison(
+            source_sections,
+            target_sections,
+            self.ring_map(),
+            self._exponent_attribute,
+        )
 
 
 def _section_base_change_comparison(source_sections, target_sections, ring_map, exponent_attribute):
@@ -456,36 +472,8 @@ def _section_base_change_comparison(source_sections, target_sections, ring_map, 
     )
 
 
-def _record_line_bundle_base_change(
-    source_bundle,
-    changed_bundle,
-    ring_map,
-    *,
-    exponent_attribute,
-):
-    projection = changed_bundle.scheme().left_projection()
-    try:
-        source_sections = source_bundle.global_sections()
-        target_sections = changed_bundle.global_sections()
-    except NotImplementedError:
-        comparison = None
-    else:
-        comparison = _section_base_change_comparison(
-            source_sections,
-            target_sections,
-            ring_map,
-            exponent_attribute,
-        )
-    changed_bundle._preamble_base_change_datum = _LineBundleBaseChangeDatum(
-        source_bundle,
-        projection,
-        comparison,
-    )
-    return changed_bundle
-
-
 def _base_change_datum(bundle):
-    datum = getattr(bundle, "_preamble_base_change_datum", None)
+    datum = bundle._base_change_datum
     if datum is None:
         raise ValueError("this line bundle was not selected as a scalar base change")
     return datum
@@ -496,16 +484,16 @@ def _base_change_source_bundle(bundle):
 
 
 def _base_change_projection(bundle):
-    return _base_change_datum(bundle).projection()
+    return _base_change_datum(bundle).projection(bundle)
 
 
 def _section_base_change_comparison_of(bundle):
-    comparison = _base_change_datum(bundle).section_comparison()
-    if comparison is None:
+    try:
+        return _base_change_datum(bundle).section_comparison(bundle)
+    except NotImplementedError:
         raise NotImplementedError(
             "this line-bundle base change has no represented global-section comparison"
-        )
-    return comparison
+        ) from None
 
 
 class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
@@ -516,7 +504,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     product therefore adds degrees and duality negates them.
     """
 
-    def __init__(self, projective_space, degree) -> None:
+    def __init__(self, projective_space, degree, *, base_change_datum=None) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _homogeneous_polynomial_section_space,
         )
@@ -529,6 +517,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             raise TypeError("O(d) is constructed here on a represented projective space")
         self._projective_space = projective_space
         self._degree = _own_ring(SageZZ)(degree)
+        self._base_change_datum = base_change_datum
         atlas = projective_space.standard_affine_atlas()
         units = {}
         for source_index, target_index in atlas.transition_index_set():
@@ -792,12 +781,15 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def base_change(self, ring_map):
         changed_space = self.projective_space().base_change(ring_map)
-        changed = changed_space.O(self.degree())
-        return _record_line_bundle_base_change(
+        datum = _LineBundleBaseChangeDatum(
             self,
-            changed,
             ring_map,
-            exponent_attribute="_preamble_homogeneous_exponents",
+            "_preamble_homogeneous_exponents",
+        )
+        return type(self)(
+            changed_space,
+            self.degree(),
+            base_change_datum=datum,
         )
 
     def base_change_source_bundle(self):
@@ -952,7 +944,7 @@ def _projective_o(projective_space, degree):
 class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
 
-    def __init__(self, projective_product, degrees) -> None:
+    def __init__(self, projective_product, degrees, *, base_change_datum=None) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _multihomogeneous_polynomial_section_space,
         )
@@ -981,6 +973,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             if len(degree_values) != len(factor_labels):
                 raise ValueError("a line-bundle multidegree has one degree per projective factor")
         self._projective_product = projective_product
+        self._base_change_datum = base_change_datum
         self._multidegree = finite_indexed_family(
             factor_indices,
             lambda label: degree_values[
@@ -1168,17 +1161,18 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def base_change(self, ring_map):
         changed_product = self.projective_product().base_change(ring_map)
-        changed = changed_product.O(
+        datum = _LineBundleBaseChangeDatum(
+            self,
+            ring_map,
+            "_preamble_multihomogeneous_exponents",
+        )
+        return type(self)(
+            changed_product,
             tuple(
                 self.multidegree()[label]
                 for label in self.multidegree().index_set()
-            )
-        )
-        return _record_line_bundle_base_change(
-            self,
-            changed,
-            ring_map,
-            exponent_attribute="_preamble_multihomogeneous_exponents",
+            ),
+            base_change_datum=datum,
         )
 
     def base_change_source_bundle(self):
