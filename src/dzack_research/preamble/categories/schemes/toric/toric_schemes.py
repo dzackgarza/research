@@ -66,9 +66,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.schemes.ringed_spaces import (
-    LocallyRingedSpaces,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
     Schemes,
@@ -467,30 +464,6 @@ def _glued_toric_scheme(fan, base_ring):
             for source_cone, target_cone in combinations(cones, 2)
         ),
     )
-
-
-class RepresentedToricSchemes(OwnedCategory):
-    r"""Represented toric schemes over arbitrary represented base rings.
-
-    This is the parameter domain for constructions such as ``CoxRings(X)``.
-    It does not recognize toric structure from coordinates: membership asks
-    the existing base-specific ``ToricSchemes(k)`` placement of ``X``.
-    """
-
-    def an_object(self):
-        return ToricSchemes(_own_ring(SageQQ)).an_object()
-
-    def super_categories(self):
-        return [LocallyRingedSpaces()]
-
-    def __contains__(self, candidate) -> bool:
-        # Every toric scheme is placed in ``ToricSchemes(R)`` over its own base
-        # at construction, so membership here is that placement.
-        return _has_scheme_placement(candidate, ToricSchemes)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "represented toric schemes over arbitrary bases"
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -1837,4 +1810,4 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None):
     return _refine_scheme(scheme, base, placements)
 
 
-__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes"]
+__all__ = ["ToricSchemeMorphism", "ToricSchemes"]
