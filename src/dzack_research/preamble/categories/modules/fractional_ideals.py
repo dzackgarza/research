@@ -2,7 +2,7 @@ r"""Ideals and fractional ideals as modules represented by their inclusions."""
 
 from functools import reduce
 
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
@@ -272,7 +272,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         def __add__(self, other):
             r"""Return the sum fractional ideal ``I+J``."""
-            if other not in FractionalIdeals(self.base_ring()) and other not in Ideals(self.base_ring()):
+            if other not in FractionalIdeals(self.base_ring()) and other not in CommutativeIdeals(self.base_ring()):
                 return NotImplemented
             return self.sum(other)
 
@@ -301,7 +301,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         def __mul__(self, other):
             r"""Return the product fractional ideal ``IJ``."""
-            if other not in FractionalIdeals(self.base_ring()) and other not in Ideals(self.base_ring()):
+            if other not in FractionalIdeals(self.base_ring()) and other not in CommutativeIdeals(self.base_ring()):
                 return NotImplemented
             other = _in_fraction_field(self.base_ring(), other)
             if _engine_ring(self.base_ring()) is SageZZ:
@@ -318,34 +318,6 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def _repr_(self):
             listed = ", ".join(str(value) for value in self._preamble_module_generator_values)
             return f"Fractional ideal ({listed}) of {self.base_ring()}"
-
-
-class Ideals(OwnedCategoryOverBaseRing):
-    r"""Integral ideals ``I <= R``: exactly the commutative ideals of ``R``."""
-
-    def an_object(self):
-        r"""The ideal (2)."""
-        return self.base_ring().ideal(2)
-
-    def additional_condition(self):
-        r"""None: an ideal is an object of ``CommutativeIdeals(R)`` and nothing more."""
-        return None
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "ideals"
-
-    def super_categories(self):
-        return [CommutativeIdeals(self.base_ring())]
-
-    @cached_method
-    def extension_to_fraction_field(self):
-        r"""The functor ``Ideals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""
-        return _FractionalIdealExtension(self)
-
-
-
-
 
 
 def _regular_module_coefficient(regular_module, element):
@@ -368,12 +340,12 @@ def _in_fraction_field(ring, ideal):
     r"""``ideal`` as a fractional ideal of ``ring``; an integral ideal is extended along ``R -> Frac(R)``."""
     if ideal in FractionalIdeals(ring):
         return ideal
-    assert ideal in Ideals(ring), f"{ideal} is not an ideal or fractional ideal of {ring}"
-    return Ideals(ring).extension_to_fraction_field()(ideal)
+    assert ideal in CommutativeIdeals(ring), f"{ideal} is not an ideal or fractional ideal of {ring}"
+    return CommutativeIdeals(ring).extension_to_fraction_field()(ideal)
 
 
 class _FractionalIdealExtension(Functor):
-    r"""``Ideals(R) -> FractionalIdeals(R)``: an ideal as the ``R``-submodule of ``Frac(R)`` it spans."""
+    r"""``CommutativeIdeals(R) -> FractionalIdeals(R)``: an ideal as the ``R``-submodule of ``Frac(R)`` it spans."""
 
     _faithful = True
 
@@ -722,5 +694,4 @@ def _fractional_ideal(ring, values):
 
 __all__ = [
     "FractionalIdeals",
-    "Ideals",
 ]

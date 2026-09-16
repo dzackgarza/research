@@ -1,7 +1,7 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
 from sage.matrix.constructor import matrix
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
@@ -126,6 +126,15 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         except (AttributeError, TypeError):
             return False
         return candidate in self.subobject_category()
+
+    @cached_method
+    def extension_to_fraction_field(self):
+        r"""The functor ``CommutativeIdeals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""
+        from dzack_research.preamble.categories.modules.fractional_ideals import (
+            _FractionalIdealExtension,
+        )
+
+        return _FractionalIdealExtension(self)
 
     class ParentMethods:
         def __init__(

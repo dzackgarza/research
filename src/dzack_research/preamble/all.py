@@ -306,7 +306,6 @@ from dzack_research.preamble.categories.modules import (
     GradedModules,
     GroupModuleHomset,
     GroupModuleMorphism,
-    Ideals,
     InternalHomModules,
     LinearHomModules,
     LocalizedModules,
