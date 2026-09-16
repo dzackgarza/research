@@ -1361,6 +1361,13 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _repr_object_names(cls):
             return "Lie algebras"
 
+        def an_object(self):
+            r"""``gl_2(R)``: the two-by-two matrix algebra under the commutator."""
+            ring = self.base_ring()
+            return Algebras(ring).Associative().commutator_lie_algebra()(
+                MatrixAlgebras(ring).an_object()
+            )
+
         def _call_(self, module, multiplication=None):
             if module in Algebras(self.base_ring()):
                 algebra = module
