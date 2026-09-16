@@ -785,18 +785,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 for generator in annihilator.ideal_generators()
             )
 
-        def module_generating_set(self):
-            return self.framing_source().module_generating_set()
-
-        def number_of_module_generators(self):
-            return self.module_generating_set().cardinality()
-
-        def module_generator(self, label):
-            source = self.framing_source()
-            if label not in source.module_generating_set():
-                raise ValueError(f"{label!r} is not a module-generator label")
-            return self.framing_morphism()(source.module_generator(label))
-
         def _from_coordinates(self, coordinates):
             r"""Return the element with these coordinates in the chosen framing.
 

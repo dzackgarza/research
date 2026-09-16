@@ -32,3 +32,6 @@ def test_presented_module_keeps_owned_selected_presentation() -> None:
     assert module in ModulesWithChosenFinitePresentation(integers)
     assert module.presentation().domain() is relations
     assert module.presentation().codomain() is target
+    assert module.framing_source() is target
+    assert module.module_generating_set() is target.module_generating_set()
+    assert module.module_generator("x") == module.framing_morphism()(target.module_generator("x"))
