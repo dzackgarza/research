@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FormModules,
-    FormedModules,
     Lp,
     PairedModules,
     RR,
@@ -23,7 +22,6 @@ def test_a_pairing_of_distinct_modules_is_not_a_form() -> None:
     b = right.module_generator("b")
 
     assert paired in PairedModules(ZZ)
-    assert paired not in FormedModules(ZZ)
     assert paired not in FormModules(ZZ)
     assert paired.left_module() is left
     assert paired.right_module() is right
@@ -39,7 +37,6 @@ def test_the_diagonal_pairing_is_a_formed_module() -> None:
     generator = formed.module_generator("e")
 
     assert form.parent() is module.pairings_with(module, ZZ)
-    assert formed in FormedModules(ZZ)
     assert formed in PairedModules(ZZ)
     assert formed in FormModules(ZZ)
     assert formed.left_module() is formed
@@ -54,13 +51,13 @@ def test_holder_pairs_lp_with_its_conjugate() -> None:
     left = Lp(1)(gaussian)
     right = Lp(Infinity)(gaussian)
 
-    assert Lp(2) in FormedModules(RR)
+    assert Lp(2) in FormModules(RR)
     assert Lp(2) in PairedModules(RR)
-    assert Lp(1) not in FormedModules(RR)
+    assert Lp(1) not in FormModules(RR)
     assert holder is Lp(1).pairing_module()
     assert Lp(Infinity).pairing_module().left_module() is Lp(Infinity)
     assert holder in PairedModules(RR)
-    assert holder not in FormedModules(RR)
+    assert holder not in FormModules(RR)
     assert holder.left_module() is Lp(1)
     assert holder.right_module() is Lp(Infinity)
     assert holder.pairing(left, right) == RR(sqrt(pi / 2))
@@ -96,11 +93,11 @@ def test_holder_pairs_ell_p_with_its_conjugate() -> None:
     bounded = ell(Infinity)(1)
     holder = ell(1) * ell(Infinity)
 
-    assert ell(2) in FormedModules(RR)
-    assert ell(1) not in FormedModules(RR)
+    assert ell(2) in FormModules(RR)
+    assert ell(1) not in FormModules(RR)
     assert holder is ell(1).pairing_module()
     assert holder in PairedModules(RR)
-    assert holder not in FormedModules(RR)
+    assert holder not in FormModules(RR)
     assert holder.left_module() is ell(1)
     assert holder.right_module() is ell(Infinity)
     assert holder.pairing(decaying, bounded) == RR(2)

@@ -2,12 +2,12 @@ import pytest
 
 from dzack_research.preamble.all import (
     AA,
+    CommutativeIdeals,
     FinitelyGeneratedModules,
     FinitelyPresentedAlgebras,
     FractionalIdeals,
     FramedModules,
     Groups,
-    Ideals,
     Lattices,
     ModuleSubobjects,
     NumberFieldsWithChosenPrimitiveElement,
@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def test_zz_owns_ideals_and_is_the_ring_of_integers_of_qq() -> None:
     ideal = ZZ.ideal(6)
-    assert ideal in Ideals(ZZ)
+    assert ideal in CommutativeIdeals(ZZ)
     assert ideal.principal_generator() == 6
     assert ideal.inclusion().domain() is ideal
     assert ideal.inclusion().codomain().base_ring() is ZZ

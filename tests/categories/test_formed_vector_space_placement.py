@@ -7,10 +7,8 @@ from dzack_research.preamble.all import (
     VectorSpaces,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    FinitelyGeneratedFormModules,
-    FinitelyGeneratedFreeFormModules,
-    FinitelyPresentedBilinearFormModules,
-    FinitelyPresentedFormModules,
+    BilinearFormModules,
+    FormModules,
     FreeFormModules,
     SymmetricBilinearFormModules,
 )
@@ -29,10 +27,10 @@ def test_finite_free_form_keeps_all_implied_form_refinements() -> None:
     formed = QQ.free_module(2).equip_bilinear_form(QQ, [[1, 0], [0, 1]])
 
     assert formed in FreeFormModules(QQ)
-    assert formed in FinitelyGeneratedFormModules(QQ)
-    assert formed in FinitelyGeneratedFreeFormModules(QQ)
-    assert formed in FinitelyPresentedFormModules(QQ)
-    assert formed in FinitelyPresentedBilinearFormModules(QQ)
+    assert formed in FormModules(QQ).FinitelyGenerated()
+    assert formed in FreeFormModules(QQ).FinitelyGenerated()
+    assert formed in FormModules(QQ).FinitelyPresented()
+    assert formed in BilinearFormModules(QQ).FinitelyPresented()
     assert formed in SymmetricBilinearFormModules(QQ)
 
 

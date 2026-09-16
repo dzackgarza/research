@@ -5,12 +5,13 @@ from sage.rings.infinity import Infinity
 from dzack_research.preamble.all import (
     NN,
     ZZ,
+    CountablyInfiniteSets,
     EnumeratedByIntegers,
     EnumeratedByNaturals,
+    EnumeratedSets,
     FourierCharacters,
     FunctionEnumeratedSets,
     HermitePolynomials,
-    InfiniteEnumeratedSets,
     Lattices,
     LaurentMonomials,
     SincTranslates,
@@ -38,7 +39,8 @@ def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
 
     assert hermite in FunctionEnumeratedSets()
     assert hermite in EnumeratedByNaturals()
-    assert hermite in InfiniteEnumeratedSets()
+    assert hermite in EnumeratedSets()
+    assert hermite in CountablyInfiniteSets()
     assert hermite.index_set() is NN
     assert hermite.cardinality() == Infinity
     assert H0 in hermite
@@ -66,7 +68,8 @@ def test_integer_indexed_function_sets() -> None:
 
     assert laurent in EnumeratedByIntegers()
     assert sinc in FunctionEnumeratedSets()
-    assert fourier in InfiniteEnumeratedSets()
+    assert fourier in EnumeratedSets()
+    assert fourier in CountablyInfiniteSets()
     assert repr(laurent.index_set()) == "Integer Ring"
     assert [str(laurent[rank]) for rank in range(5)] == [
         "z_0",

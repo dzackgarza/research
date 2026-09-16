@@ -11,12 +11,12 @@ from dzack_research.preamble.all import (
 ARCHIVE_RECONCILIATIONS = (
     {
         "archive_module": "preamble/categories/modules/pure/torsion_modules.sage",
-        "live_owner": "src/dzack_research/preamble/categories/modules/pure/torsion_modules.py",
+        "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "disposition": "reconciled-live-owner",
     },
     {
         "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage",
-        "live_owner": "src/dzack_research/preamble/categories/modules/pure/torsion_modules.py",
+        "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
         "disposition": "reconciled-live-owner",
     },
 )
