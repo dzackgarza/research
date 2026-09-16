@@ -45,8 +45,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    OrderedEnumeratedSets,
     finite_ordered_set,
-    ordered_enumerated_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -325,7 +325,7 @@ def reflection_cosines():
     so \(1/2\) and \((1+\sqrt 5)/4\) belong, being \(\cos(\pi/3)\) and
     \(\cos(\pi/5)\), while \(1/3\) does not.
     """
-    return ordered_enumerated_set(
+    return OrderedEnumeratedSets()(
         NN,
         lambda position: _reflection_cosine(int(position) + 1),
         index_of=_reflection_cosine_position,

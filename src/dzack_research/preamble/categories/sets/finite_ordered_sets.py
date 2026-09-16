@@ -127,30 +127,6 @@ def _finite_ordered_presentation(elements):
 
 
 
-def ordered_enumerated_set[IndexT, PointT](
-    index_set: Parent,
-    element_at: Callable[[IndexT], PointT],
-    *,
-    index_of: Callable[[PointT], IndexT | None],
-    contains: Callable[[PointT], bool] | None = None,
-    name: str | None = None,
-    image_source: Parent | None = None,
-    image_map: Callable[[IndexT], PointT] | None = None,
-    image_inverse: Callable[[PointT], IndexT] | None = None,
-) -> Parent:
-    r"""Return the ordered image of ``index_set`` under the stated enumeration."""
-    return OrderedEnumeratedSets()(
-        index_set,
-        element_at,
-        index_of=index_of,
-        contains=contains,
-        name=name,
-        image_source=image_source,
-        image_map=image_map,
-        image_inverse=image_inverse,
-    )
-
-
 def finite_ordered_image[IndexT, PointT](
     index_set: Parent,
     element_at: Callable[[IndexT], PointT],

@@ -79,9 +79,7 @@ _EXPORTS = {'CountableSets': ('dzack_research.preamble.categories.sets.set_categ
  'finite_ordered_image': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                           'finite_ordered_image'),
  'finite_ordered_set': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                        'finite_ordered_set'),
- 'ordered_enumerated_set': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                            'ordered_enumerated_set')}
+                        'finite_ordered_set')}
 
 __all__ = [ 'PowerSets',
  'ObjectSetsOfDiscreteCategories',
@@ -135,8 +133,7 @@ __all__ = [ 'PowerSets',
  'finite_indexed_family',
  'finite_ordered_image',
  'finite_ordered_set',
- 'indexed_family',
- 'ordered_enumerated_set']
+ 'indexed_family']
 
 def __getattr__(name):
     try:

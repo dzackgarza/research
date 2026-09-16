@@ -616,8 +616,8 @@ class Sets(OwnedCategory):
         r"""Return the owned image construction of ``domain_subset`` under ``map_``."""
         if is_injective is True and inverse is not None and domain_subset in EnumeratedSets():
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                OrderedEnumeratedSets,
                 finite_ordered_image,
-                ordered_enumerated_set,
             )
 
             def contains(element):
@@ -628,16 +628,27 @@ class Sets(OwnedCategory):
                     return False
                 return map_(source) == element
 
-            constructor = finite_ordered_image if domain_subset in FiniteSets() else ordered_enumerated_set
-            return constructor(
-                domain_subset,
-                map_,
-                index_of=inverse,
-                contains=contains,
-                image_source=domain_subset,
-                image_map=map_,
-                image_inverse=inverse,
-            )
+            match domain_subset in FiniteSets():
+                case True:
+                    return finite_ordered_image(
+                        domain_subset,
+                        map_,
+                        index_of=inverse,
+                        contains=contains,
+                        image_source=domain_subset,
+                        image_map=map_,
+                        image_inverse=inverse,
+                    )
+                case False:
+                    return OrderedEnumeratedSets()(
+                        domain_subset,
+                        map_,
+                        index_of=inverse,
+                        contains=contains,
+                        image_source=domain_subset,
+                        image_map=map_,
+                        image_inverse=inverse,
+                    )
 
         return _OwnedImageSet(
             domain_subset,
