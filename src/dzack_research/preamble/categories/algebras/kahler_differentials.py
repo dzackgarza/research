@@ -2,9 +2,6 @@ r"""Kähler differentials of represented commutative algebras."""
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     _commutative_presentation_data,
@@ -246,7 +243,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             inverse = derivations.module_category().Mor(derivations, classifiers)(
                 classifiers.module_generator
             )
-            result = Isomorphism(forward, inverse)
+            result = Modules(algebra).Core().Mor(classifiers, derivations)(forward, inverse)
             if result not in Modules(algebra).Iso(classifiers, derivations):
                 raise ArithmeticError(
                     "the represented Kähler classifier maps failed to define an A-module isomorphism"

@@ -6,9 +6,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _own_group,
@@ -1175,7 +1172,7 @@ def _toric_cycle_class_isomorphism(scheme, codimension):
     cohomology = scheme.integral_singular_cohomology(2 * codimension)
     forward = chow.module_category().Mor(chow, cohomology)({label: cohomology.module_generator(label) for label in chow.module_generating_set()})
     inverse = cohomology.module_category().Mor(cohomology, chow)({label: chow.module_generator(label) for label in cohomology.module_generating_set()})
-    return Isomorphism(forward, inverse)
+    return chow.module_category().Core().Mor(chow, cohomology)(forward, inverse)
 
 
 def _toric_picard_to_chow_isomorphism(scheme):
@@ -1188,7 +1185,7 @@ def _toric_picard_to_chow_isomorphism(scheme):
     cycles = scheme.torus_invariant_cycle_group(1)
     cycle_projection = scheme.torus_invariant_cycle_class_map(1)
     forward = picard.module_category().Mor(picard, chow)({label: cycle_projection(cycles.module_generator(label)) for label in picard.module_generating_set()})
-    return Isomorphism(forward, forward.inverse())
+    return picard.module_category().Core().Mor(picard, chow)(forward, forward.inverse())
 
 
 def _toric_middle_cohomology_form(scheme):

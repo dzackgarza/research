@@ -15,9 +15,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -771,7 +768,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             forward = free.module_category().Mor(free, localized)(
                 lambda label: localized.module_generator(label)
             )
-            return Isomorphism(forward, forward.inverse())
+            return free.module_category().Core().Mor(free, localized)(
+                forward,
+                forward.inverse(),
+            )
 
         def _is_free_at_point(self, point) -> bool:
             r"""Decide freeness of ``M_p`` from the Fitting ideals at ``point``."""
@@ -999,7 +999,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 arrows = Modules(ring).ArrowCategory()
                 original_object = arrows(presentation)
                 identity = arrows.Mor(original_object, original_object).identity()
-                return Isomorphism(identity, identity)
+                return arrows.Core().Mor(original_object, original_object)(identity, identity)
 
             diagonal_backend, row_change_backend, column_change_backend = self._selected_presentation_smith_backend()
 
@@ -1067,7 +1067,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 source_inverse,
                 target_inverse,
             )
-            return Isomorphism(forward, inverse)
+            return arrows.Core().Mor(original_object, normalized_object)(forward, inverse)
 
         @cached_method
         def hermite_form(self):
@@ -1108,7 +1108,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     for label in labels
                 }
             )
-            return Isomorphism(forward, inverse)
+            return self.module_category().Core().Mor(self, normalized)(forward, inverse)
 
         @cached_method
         def invariant_factors(self):
@@ -1176,7 +1176,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             free_to_normalized = free.module_category().Mor(free, normalized)(
                 {label: normalized.module_generator(label) for label in labels}
             )
-            return Isomorphism(normalized_to_free, free_to_normalized) * normalization
+            return (
+                normalized.module_category()
+                .Core()
+                .Mor(normalized, free)(normalized_to_free, free_to_normalized)
+                * normalization
+            )
 
         def is_projective(self) -> bool:
             r"""Decide finite projectivity of the selected presentation.
@@ -1239,10 +1244,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     point = spectrum(point)
             trivialization = self.finite_free_trivialization()
             localization = point.local_ring().localization_functor()
-            return Isomorphism(
-                localization(trivialization.forward()),
-                localization(trivialization.inverse()),
-            )
+            localized_forward = localization(trivialization.forward())
+            localized_inverse = localization(trivialization.inverse())
+            return localized_forward.domain().module_category().Core().Mor(
+                localized_forward.domain(),
+                localized_forward.codomain(),
+            )(localized_forward, localized_inverse)
 
         def presentation_projection(self):
             r"""Return the selected quotient map ``F_0 -> M``."""
@@ -1399,7 +1406,10 @@ def _module_invariant_factor_form(module):
             for reduced_label in reduced.module_generating_set()
         }
     )
-    reduced_iso = Isomorphism(full_to_reduced, reduced_to_full)
+    reduced_iso = full_normalized.module_category().Core().Mor(
+        full_normalized,
+        reduced,
+    )(full_to_reduced, reduced_to_full)
 
     target_forward = presentation_iso.forward().right()
     target_inverse = presentation_iso.inverse().right()
@@ -1411,10 +1421,10 @@ def _module_invariant_factor_form(module):
     full_to_original = full_normalized.module_category().Mor(full_normalized, module)(
         {label: original_projection(target_inverse(diagonal_presentation.codomain().module_generator(label))) for label in full_normalized.module_generating_set()}
     )
-    presentation_cokernel_iso = Isomorphism(
-        original_to_full,
-        full_to_original,
-    )
+    presentation_cokernel_iso = module.module_category().Core().Mor(
+        module,
+        full_normalized,
+    )(original_to_full, full_to_original)
     return reduced_iso * presentation_cokernel_iso
 
 
