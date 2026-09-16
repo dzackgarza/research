@@ -18,6 +18,64 @@ from dzack_research.preamble.categories.sets.set_categories import Set
 from dzack_research.preamble.owned_category import _object_of
 
 
+class _KernelSubgroupDatum:
+    r"""The morphism whose kernel is the represented subgroup."""
+
+    def __init__(self, morphism) -> None:
+        self._morphism = morphism
+
+    def morphism(self):
+        return self._morphism
+
+
+class _PreimageSubgroupDatum:
+    r"""The morphism and target subgroup defining an inverse-image subgroup."""
+
+    def __init__(self, morphism, target_subgroup) -> None:
+        self._morphism = morphism
+        self._target_subgroup = target_subgroup
+
+    def morphism(self):
+        return self._morphism
+
+    def target_subgroup(self):
+        return self._target_subgroup
+
+
+class _StabilizerSubgroupDatum:
+    r"""The object and selected action defining a stabilizer subgroup."""
+
+    def __init__(self, stabilized_object, action) -> None:
+        self._stabilized_object = stabilized_object
+        self._action = action
+
+    def stabilized_object(self):
+        return self._stabilized_object
+
+    def action(self):
+        return self._action
+
+
+class _CentralizerSubgroupDatum:
+    r"""The group element whose centralizer is represented."""
+
+    def __init__(self, element) -> None:
+        self._element = element
+
+    def element(self):
+        return self._element
+
+
+class _IntersectionSubgroupDatum:
+    r"""The selected family of subgroups defining an intersection."""
+
+    def __init__(self, subgroups) -> None:
+        self._subgroups = Set(tuple(subgroups))
+
+    def subgroups(self):
+        return self._subgroups
+
+
 class PredicateSubgroups(OwnedParameterizedCategory):
 
     @staticmethod
@@ -303,7 +361,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
             description=f"{morphism}(g)=1",
-            kernel_morphism=morphism,
+            kernel_datum=_KernelSubgroupDatum(morphism),
         )
 
     @classmethod
@@ -311,12 +369,12 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         return "kernel subgroups"
 
     class ParentMethods:
-        def __init__(self, kernel_morphism, **rest) -> None:
-            self._preamble_kernel_morphism = kernel_morphism
+        def __init__(self, kernel_datum, **rest) -> None:
+            self._kernel_datum = kernel_datum
             super().__init__(**rest)
 
         def kernel_morphism(self):
-            return self._preamble_kernel_morphism
+            return self._kernel_datum.morphism()
 
         def cardinality(self):
             r"""Return the exact kernel order when the ambient group is finite."""
@@ -367,8 +425,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
-            preimage_morphism=morphism,
-            target_subgroup=subgroup,
+            preimage_datum=_PreimageSubgroupDatum(morphism, subgroup),
         )
 
     @classmethod
@@ -376,16 +433,15 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         return "preimage subgroups"
 
     class ParentMethods:
-        def __init__(self, preimage_morphism, target_subgroup, **rest) -> None:
-            self._preamble_preimage_morphism = preimage_morphism
-            self._preamble_target_subgroup = target_subgroup
+        def __init__(self, preimage_datum, **rest) -> None:
+            self._preimage_datum = preimage_datum
             super().__init__(**rest)
 
         def preimage_morphism(self):
-            return self._preamble_preimage_morphism
+            return self._preimage_datum.morphism()
 
         def target_subgroup(self):
-            return self._preamble_target_subgroup
+            return self._preimage_datum.target_subgroup()
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
@@ -415,8 +471,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=predicate,
             description=description,
-            stabilized_object=stabilized_object,
-            stabilizer_action=action,
+            stabilizer_datum=_StabilizerSubgroupDatum(stabilized_object, action),
         )
 
     @classmethod
@@ -424,16 +479,15 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         return "stabilizer subgroups"
 
     class ParentMethods:
-        def __init__(self, stabilized_object, stabilizer_action, **rest) -> None:
-            self._preamble_stabilized_object = stabilized_object
-            self._preamble_stabilizer_action = stabilizer_action
+        def __init__(self, stabilizer_datum, **rest) -> None:
+            self._stabilizer_datum = stabilizer_datum
             super().__init__(**rest)
 
         def stabilized_object(self):
-            return self._preamble_stabilized_object
+            return self._stabilizer_datum.stabilized_object()
 
         def stabilizer_action(self):
-            return self._preamble_stabilizer_action
+            return self._stabilizer_datum.action()
 
 
 class CentralizerSubgroups(_PredicateSubgroupConstruction):
@@ -451,7 +505,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
             description=f"g commutes with {element}",
-            centralizing_element=element,
+            centralizer_datum=_CentralizerSubgroupDatum(element),
         )
 
     @classmethod
@@ -459,12 +513,12 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
         return "centralizer subgroups"
 
     class ParentMethods:
-        def __init__(self, centralizing_element, **rest) -> None:
-            self._preamble_centralizing_element = centralizing_element
+        def __init__(self, centralizer_datum, **rest) -> None:
+            self._centralizer_datum = centralizer_datum
             super().__init__(**rest)
 
         def centralizing_element(self):
-            return self._preamble_centralizing_element
+            return self._centralizer_datum.element()
 
 
 class IntersectionSubgroups(_PredicateSubgroupConstruction):
@@ -492,7 +546,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             description="g lies in every selected subgroup",
             character_data=character_data,
             character_data_complete=character_data_complete,
-            intersected_subgroups=subgroups,
+            intersection_datum=_IntersectionSubgroupDatum(subgroups),
         )
 
     @classmethod
@@ -500,12 +554,12 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         return "intersection subgroups"
 
     class ParentMethods:
-        def __init__(self, intersected_subgroups, **rest) -> None:
-            self._preamble_intersected_subgroups = Set(tuple(intersected_subgroups))
+        def __init__(self, intersection_datum, **rest) -> None:
+            self._intersection_datum = intersection_datum
             super().__init__(**rest)
 
         def intersected_subgroups(self):
-            return self._preamble_intersected_subgroups
+            return self._intersection_datum.subgroups()
 
 __all__ = [
     "CentralizerSubgroups",
