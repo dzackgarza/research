@@ -394,6 +394,9 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     labels = tuple(cox.algebra_generating_set())
 
     assert cox in CoxRings(plane)
+    assert cox.cox_ring_construction().scheme() is plane
+    assert "_preamble_cox_scheme" not in cox.__dict__
+    assert "_preamble_cox_rays" not in cox.__dict__
     assert cox.grading_monoid() is plane.class_group()
     first_degree = cox.generator_degree(labels[0])
     assert first_degree == plane.divisor_class(_prime_divisors(plane)[0])

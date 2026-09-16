@@ -13,6 +13,16 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 
 
+class _CoxRingConstruction:
+    r"""The represented toric scheme defining one Cox ring."""
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+
 class CoxRings(OwnedParameterizedCategory):
     r"""Cox rings graded by the represented divisor class group of one toric scheme."""
 
@@ -44,11 +54,20 @@ class CoxRings(OwnedParameterizedCategory):
         return f"Cox rings of {self.scheme()}"
 
     class ParentMethods:
+        def cox_ring_construction(self):
+            return self._cox_ring_construction
+
         def cox_scheme(self):
-            return self._preamble_cox_scheme
+            return self.cox_ring_construction().scheme()
 
         def cox_rays(self):
-            return self._preamble_cox_rays
+            rays = self.cox_scheme().fan().cones(1)
+            labels = self.algebra_generating_set()
+            return finite_indexed_family(
+                labels,
+                lambda label: rays[int(labels.ranking_map()(label))],
+                name="Cox generator rays",
+            )
 
         def generator_degree(self, label):
             labels = self.algebra_generating_set()
@@ -95,14 +114,8 @@ def _cox_ring(scheme):
     ring = (presentation).quotient_by_relations((),
         _extra_categories=(CoxRings(scheme),),
         _extra_construction_data=(
-            ("_preamble_cox_scheme", scheme),
+            ("_cox_ring_construction", _CoxRingConstruction(scheme)),
         ),
-    )
-    labels = ring.algebra_generating_set()
-    ring._preamble_cox_rays = finite_indexed_family(
-        labels,
-        lambda label: rays[int(labels.ranking_map()(label))],
-        name="Cox generator rays",
     )
     return ring
 
