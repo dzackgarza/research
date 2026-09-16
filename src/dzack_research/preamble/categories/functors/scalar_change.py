@@ -103,16 +103,16 @@ class _RestrictionOfScalarsFunctor(Functor):
             return module.unacted_module()
         return module.restrict_scalars(self.ring_map())
 
-    def _restricted_element(self, restricted, element):
-        r"""Read an element of the ``S``-module in its restriction ``restricted``."""
+    def _restricted_element(self, source_module, restricted, element):
+        r"""Read an element of ``source_module`` in its restriction ``restricted``."""
         if self._restricts_group_modules():
-            return self.chosen_preimage(restricted).forget_action_morphism()(element)
+            return source_module.forget_action_morphism()(element)
         return restricted(element)
 
-    def _extension_element(self, restricted, element):
-        r"""Read an element of ``restricted`` back in the ``S``-module it restricts."""
+    def _extension_element(self, source_module, restricted, element):
+        r"""Read an element of ``restricted`` back in ``source_module``."""
         if self._restricts_group_modules():
-            return self.chosen_preimage(restricted).equip_action_morphism()(element)
+            return source_module.equip_action_morphism()(element)
         return element.underlying_element()
 
     def _apply_morphism(self, morphism):
@@ -125,7 +125,11 @@ class _RestrictionOfScalarsFunctor(Functor):
         target = self(morphism.codomain())
         return source.module_category().Mor(source, target).elementwise(
             lambda element: self._restricted_element(
-                target, morphism(self._extension_element(source, element))
+                morphism.codomain(),
+                target,
+                morphism(
+                    self._extension_element(morphism.domain(), source, element)
+                ),
             ),
             verify_linearity=False,
         )

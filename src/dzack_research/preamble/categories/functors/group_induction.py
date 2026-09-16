@@ -369,8 +369,7 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
 
         return _equip_action(module, self.supergroup(), action)
 
-    def value_at(self, coinduced, vector, representative):
-        source = self.chosen_preimage(coinduced)
+    def value_at(self, source, coinduced, vector, representative):
         coefficients = coinduced.framing_coefficients(vector)
         labels = coinduced.module_generating_set()
         return source.linear_combination(
@@ -381,8 +380,7 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
             }
         )
 
-    def element_from_values(self, coinduced, value_function):
-        source = self.chosen_preimage(coinduced)
+    def element_from_values(self, source, coinduced, value_function):
         coefficients = {}
         for representative in self.representatives():
             value = value_function(representative)
@@ -469,6 +467,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
         return _equivariant_hom(group_module, coinduced,
             {
                 label: self.right_adjoint().element_from_values(
+                    restricted,
                     coinduced,
                     lambda representative, label=label: _transport_element(
                         group_module.act(
@@ -490,6 +489,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
         return _equivariant_hom(restricted, group_module,
             {
                 label: self.right_adjoint().value_at(
+                    group_module,
                     coinduced,
                     coinduced.module_generator(label),
                     representative,
