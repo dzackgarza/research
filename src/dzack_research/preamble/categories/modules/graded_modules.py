@@ -53,12 +53,10 @@ def _grading_identity(monoid: Parent | None):
 
 
 class _ParityKey:
-    r"""Identity-stable cache key for a chosen parity morphism.
+    r"""A chosen parity morphism as a category parameter.
 
-    Sage morphism equality can require generator comparison and is not a valid
-    cache-key operation for arbitrary owned ring morphisms.  Chosen parity is
-    structure, so its identity is the stable parameter until a separate
-    extensional morphism equality is available.
+    A chosen morphism has identity semantics as a parameter of a categorical
+    construction, as a functor does; the key is interned on that identity.
     """
 
     def __init__(self, morphism) -> None:
@@ -68,19 +66,9 @@ class _ParityKey:
         return self._morphism
 
 
-_PARITY_KEYS = {}
-
-
+@cached_function(key=lambda parity: id(parity))
 def _parity_key(parity):
-    if parity is None:
-        return None
-    identity = id(parity)
-    known = _PARITY_KEYS.get(identity)
-    if known is not None and known.morphism() is parity:
-        return known
-    key = _ParityKey(parity)
-    _PARITY_KEYS[identity] = key
-    return key
+    return _ParityKey(parity)
 
 
 @cached_function
@@ -251,7 +239,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
         monoid = _require_grading_monoid(grading_monoid)
         selected_parity = _grading_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
-            cls, base_ring, monoid, _parity_key(selected_parity)
+            cls,
+            base_ring,
+            monoid,
+            None if selected_parity is None else _parity_key(selected_parity),
         )
 
     def __init__(self, base_ring, grading_monoid: Parent, parity_key) -> None:

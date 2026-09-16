@@ -93,7 +93,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets as Owned
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
-for _form_axiom in ("Symmetric", "Nondegenerate", "Even"):
+for _form_axiom in ("Symmetric", "Nondegenerate", "Unimodular", "Even"):
     if _form_axiom not in all_axioms:
         all_axioms.add(_form_axiom)
 
@@ -783,17 +783,31 @@ class PairedModules(OwnedParameterizedCategory):
         )
 
     def _call_(self, pairing):
-        r"""The pairing classified by a morphism out of a represented tensor product."""
+        r"""The pairing classified by a morphism out of a represented tensor product.
+
+        A ring-valued pairing ``X x Y -> R`` arrives as the form object of
+        ``X.pairings_with(Y, R)``; its arrow into the regular module ``R`` is
+        built here from its values on the tensor generators.
+        """
         ring = self.base_ring()
+        value = self.base()
+        assert _value_module_of(pairing.codomain()) is value, (
+            f"a pairing in {self} takes values in {value}, not {pairing.codomain()}"
+        )
+        if pairing.codomain() is not value:
+            square = Modules(ring).tensor_product((pairing.left_module(), pairing.right_module()))
+            left, right = square.tensor_factor(0), square.tensor_factor(1)
+            pairing = square.module_category().Mor(square, value)(
+                lambda pair: value(
+                    (pairing(left.module_generator(pair.component(0)), right.module_generator(pair.component(1))),)
+                )
+            )
         assert pairing.parent().homset_category().is_subcategory(Modules(ring)), (
             f"a pairing in {self} is a morphism of {Modules(ring)}; {pairing} is not one, "
             "so its tensor-product domain is not represented"
         )
         assert pairing.domain() in TensorProductModules(ring), (
             f"a pairing is classified on a tensor product; {pairing.domain()} is not one"
-        )
-        assert pairing.codomain() is self.base(), (
-            f"a pairing in {self} takes values in {self.base()}, not {pairing.codomain()}"
         )
         return _object_of(self, arrow=pairing)
 
@@ -1180,6 +1194,10 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return this category with the axiom that the correlation of the form has zero kernel."""
             return self._with_axiom("Nondegenerate")
 
+        def Unimodular(self):
+            r"""Return this category with the axiom that the correlation of the form is an isomorphism."""
+            return self._with_axiom("Unimodular")
+
     class Nondegenerate(CategoryWithAxiom):
         r"""Form modules whose correlation morphism has zero kernel."""
 
@@ -1190,6 +1208,20 @@ class FormModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.lattices import Lattices
 
             return Lattices(self.base_ring())("U")
+
+    class Unimodular(CategoryWithAxiom):
+        r"""Form modules whose correlation morphism is an isomorphism."""
+
+        _certifying_predicate = "is_unimodular"
+
+        def an_object(self):
+            r"""The hyperbolic plane U."""
+            from dzack_research.preamble.categories.lattices import Lattices
+
+            return Lattices(self.base_ring())("U")
+
+        def extra_super_categories(self):
+            return [FormModules(self.base_ring()).Nondegenerate()]
 
     class FinitelyPresented(CategoryWithAxiom):
         r"""Form modules admitting a finite presentation."""

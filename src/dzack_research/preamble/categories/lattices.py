@@ -729,6 +729,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         nondegenerate = lattice.is_nondegenerate()
         if nondegenerate is True:
             categories.append(Lattices(lattice.base_ring()).Nondegenerate())
+            if lattice.is_unimodular():
+                categories.append(Lattices(lattice.base_ring()).Unimodular())
         try:
             is_even = lattice.is_even()
         except NotImplementedError:
