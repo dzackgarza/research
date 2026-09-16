@@ -437,17 +437,17 @@ class _CallableForm(Element):
         )
 
     def descends_along(self, morphism, value_projection) -> bool:
-        if self.parent().kind() != "bilinear":
-            raise NotImplementedError(
-                "quadratic-form descent belongs to the divided-square form owner"
-            )
+        assert self.parent().kind() == "bilinear", (
+            "form descent through module cokernels is represented here for bilinear forms; "
+            "quadratic descent belongs to the divided-square form owner"
+        )
         return _bilinear_form_descends_along(self, morphism, value_projection)
 
     def descend_along(self, morphism, value_projection):
-        if self.parent().kind() != "bilinear":
-            raise NotImplementedError(
-                "quadratic-form descent belongs to the divided-square form owner"
-            )
+        assert self.parent().kind() == "bilinear", (
+            "form descent through module cokernels is represented here for bilinear forms; "
+            "quadratic descent belongs to the divided-square form owner"
+        )
         return _descended_bilinear_form(self, morphism, value_projection)
 
     def __eq__(self, other):
