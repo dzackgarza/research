@@ -22,9 +22,13 @@ from dzack_research.preamble.categories.lattices import (
     Lattices,
     RootLattices,
 )
-from dzack_research.preamble.categories.modules.group_modules.group_modules import _equip_action
-from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    ModulesOverGroupAlgebra,
+    _equip_action,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -102,7 +106,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             Lattices(self.coefficient_ring()),
-            Modules(self.base_ring()),
+            ModulesOverGroupAlgebra(self.base_ring()),
         ]
 
     _HomCategory = GroupLatticeHomCategoryConstruction
@@ -299,7 +303,7 @@ def _group_lattice(lattice, group_or_action, action=None):
 
 __all__ = [
     "GroupLatticeHomCategoryConstruction",
-    "GroupLatticeMorphism",
     "GroupLatticeHomset",
+    "GroupLatticeMorphism",
     "LatticesOverGroupAlgebra",
 ]
