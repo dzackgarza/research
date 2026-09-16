@@ -103,10 +103,9 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         algebra = connection.algebra()
         if algebra is not self.algebra():
             raise ValueError("the connection belongs to a different coefficient algebra")
-        if source not in FinitelyGeneratedFreeModules(algebra):
-            raise NotImplementedError(
-                "the live structured connection is currently materialized for finite free modules"
-            )
+        assert source in FinitelyGeneratedFreeModules(algebra), (
+            "structured connection modules are materialized here for finite free source modules"
+        )
         categories = [self]
         if connection.is_flat():
             categories.append(ModulesWithFlatConnection(algebra))
@@ -389,10 +388,9 @@ class Connection(Element):
 
         module = self.module()
         ring = module.base_ring()
-        if module not in ModulesWithChosenFinitePresentation(ring):
-            raise NotImplementedError(
-                "flatness by generator verification requires a selected finite framing"
-            )
+        assert module in ModulesWithChosenFinitePresentation(ring), (
+            "flatness by generator verification requires a selected finite framing"
+        )
         zero = self.curvature_target().zero()
         return all(
             self.curvature_on_generator(label) == zero
@@ -566,10 +564,9 @@ class ConnectionMorphism(Element):
 
         domain = self.domain()
         ring = domain.base_ring()
-        if domain not in ModulesWithChosenFinitePresentation(ring):
-            raise NotImplementedError(
-                "horizontality by generator verification requires a selected finite framing"
-            )
+        assert domain in ModulesWithChosenFinitePresentation(ring), (
+            "horizontality by generator verification requires a selected finite framing"
+        )
         for label in domain.module_generating_set():
             generator = self.domain().module_generator(label)
             if codomain_connection(self(generator)) != induced(domain_connection(generator)):

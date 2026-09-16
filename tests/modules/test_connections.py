@@ -138,5 +138,5 @@ def test_connection_on_countable_free_module_keeps_callable_generator_family_laz
     e1000 = module.module_generator(NN(1000))
     assert connection.generator_image(NN(1000)) == connection_space.target_module().zero()
     assert connection(e1000) == connection_space.target_module().zero()
-    with pytest.raises(NotImplementedError, match="finite framing"):
+    with pytest.raises(AssertionError, match="finite framing"):
         connection.is_flat()
