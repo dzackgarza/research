@@ -215,7 +215,7 @@ def test_fraction_field_of_a_field_is_itself(field) -> None:
 
 def test_polynomial_ring_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    polynomials = PolynomialRing(ring, "x")
+    polynomials = ring.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
 
     assert polynomials in CommutativeRings()
@@ -231,7 +231,7 @@ def test_polynomial_ring_over_every_commutative_ring(commutative_ring) -> None:
 
 def test_polynomial_ring_in_two_variables_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    polynomials = PolynomialRing(ring, ("x", "y"))
+    polynomials = ring.polynomial_ring(("x", "y"))
     x = polynomials.algebra_generator("x")
     y = polynomials.algebra_generator("y")
 
@@ -244,13 +244,13 @@ def test_polynomial_ring_in_two_variables_over_every_commutative_ring(commutativ
 @pytest.mark.parametrize("name", ["ZZ", "QQ", "GF(5)", "ZZ[i]", "QQ[x]", "ZZ/12", "QQ_3"])
 def test_polynomial_ring_raises_krull_dimension_by_one(build, name) -> None:
     ring = build(name)
-    assert PolynomialRing(ring, "x").krull_dimension() == ring.krull_dimension() + 1
-    assert PolynomialRing(ring, ("x", "y")).krull_dimension() == ring.krull_dimension() + 2
+    assert ring.polynomial_ring("x").krull_dimension() == ring.krull_dimension() + 1
+    assert ring.polynomial_ring(("x", "y")).krull_dimension() == ring.krull_dimension() + 2
 
 
 def test_laurent_polynomials_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    laurent = LaurentPolynomialRing(ring, "x")
+    laurent = ring.laurent_polynomial_ring("x")
     x = laurent.algebra_generator("x")
 
     assert laurent in Algebras(ring).Associative().Unital().Commutative()
@@ -260,7 +260,7 @@ def test_laurent_polynomials_over_every_commutative_ring(commutative_ring) -> No
 
 def test_power_series_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    series = PowerSeriesRing(ring, "t")
+    series = ring.power_series_ring("t")
     t = series.power_series_variable()
 
     assert series in FormalPowerSeriesRings(ring)
@@ -289,7 +289,7 @@ def test_dual_numbers_over_every_commutative_ring(commutative_ring) -> None:
 
 
 def test_matrix_algebra_over_every_ring(ring) -> None:
-    matrices = MatrixSpace(ring, 2)
+    matrices = ring.matrix_space(2)
     e01 = matrices.matrix_unit(0, 1)
     e10 = matrices.matrix_unit(1, 0)
 
@@ -305,7 +305,7 @@ def test_matrix_algebra_over_every_ring(ring) -> None:
 
 @pytest.mark.parametrize("name, size", [("GF(4)", 256), ("ZZ/12", 12**4), ("GF(5)", 625)])
 def test_matrix_algebra_over_a_finite_ring_is_finite(build, name, size) -> None:
-    assert MatrixSpace(build(name), 2).cardinality() == size
+    assert build(name).matrix_space(2).cardinality() == size
 
 
 def test_a_commutative_ring_is_an_algebra_over_itself(commutative_ring) -> None:
@@ -398,7 +398,7 @@ def test_ideal_arithmetic_in_the_integers() -> None:
 
 
 def test_polynomial_ideals_over_the_rationals() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     axis = plane.ideal(x)
@@ -485,7 +485,7 @@ def test_quotient_rings_of_the_integers() -> None:
 
 
 def test_quotient_of_a_polynomial_ring_by_an_irreducible_is_a_field() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     gaussian_rationals = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
 
@@ -497,7 +497,7 @@ def test_quotient_of_a_polynomial_ring_by_an_irreducible_is_a_field() -> None:
 
 
 def test_quotient_of_the_integer_polynomials_by_x_squared_plus_one_is_a_domain() -> None:
-    polynomials = PolynomialRing(ZZ, "x")
+    polynomials = ZZ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
 
@@ -589,7 +589,7 @@ def test_the_p_adic_integers_and_numbers() -> None:
 
 
 def test_completing_a_polynomial_ring_at_the_origin() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     completion = polynomials.adic_completion(polynomials.ideal(x))
     assert completion in CompleteLocalRings()
@@ -786,8 +786,8 @@ def test_finite_field_extensions_and_their_morphisms() -> None:
 
 
 def test_a_subring_cut_out_by_a_predicate() -> None:
-    integers_in_rationals = predicate_subring(
-        QQ, lambda element: element.denominator() == 1, "the denominator is one"
+    integers_in_rationals = QQ.predicate_subring(
+        lambda element: element.denominator() == 1, "the denominator is one"
     )
     assert integers_in_rationals in OwnedRings()
     assert QQ(3) in integers_in_rationals
