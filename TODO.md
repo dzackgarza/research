@@ -702,7 +702,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** choose the standard categorical datum at each site and mechanically derive equivalent views.  Compatibility accessors may expose a mathematically distinct view only when computed from the authoritative datum; subclasses must not prove mutually determining data twice.
   **Acceptance:** constructing one representation determines the others, round-trips agree by construction, and no audited categorical object can be made internally inconsistent by supplying incompatible equivalent data.
 
-- [ ] **`owned-product-codomains`**. **Needs:** `categorical-representation-convergence`.
+- [x] **`owned-product-codomains`**. **Needs:** `categorical-representation-convergence`.
   Replace public bare tuple/list products with elements of the appropriate owned product (`CON-15`, `SET-01`, `CAT-08`).
   **Observed gap:** commutative-square components, naturality-square morphisms, and tensor index-module/index pairs currently return Python tuples.
   **Deliver:** identify the index set and factor family for each operation, construct or reuse the corresponding owned product, and return its element.  Preserve named projections/components so callers do not unpack storage positions to recover mathematics.
