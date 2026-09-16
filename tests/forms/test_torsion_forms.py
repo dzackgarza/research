@@ -2,6 +2,7 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FiniteGroups,
+    FiniteGSets,
     FractionFieldQuotients,
     Lattices,
     TorsionBilinearFormModules,
@@ -223,10 +224,33 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
     assert metabolizer.cardinality() == 2
     assert form.orthogonal_quotient(metabolizer).cardinality() == 1
 
+    group = form.orthogonal_group()
+    action = group.element_action()
+    assert action in FiniteGSets(group)
+
     isotropic_orbits = form.orbits_on_isotropic_subobjects()
     assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 3]
     assert form.orbit(first).cardinality() == 3
     assert second in form.orbit(first)
+
+    stabilizer = group.stabilizer_of_element(first)
+    assert stabilizer.supergroup() is group
+    assert group.one() in stabilizer
+    assert all(
+        automorphism(first) == first
+        for automorphism in group
+        if automorphism in stabilizer
+    )
+
+    line = form.subobject_generated_by((first,))
+    line_stabilizer = group.stabilizer_of_subobject(line)
+    line_elements = frozenset(line.inclusion()(element) for element in line.elements())
+    assert line_stabilizer.supergroup() is group
+    assert all(
+        frozenset(automorphism(element) for element in line_elements) == line_elements
+        for automorphism in group
+        if automorphism in line_stabilizer
+    )
 
 
 def test_generic_torsion_form_reframing_and_primary_components_are_live_objects() -> None:

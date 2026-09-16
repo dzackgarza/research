@@ -8,7 +8,6 @@ descent before equipping the module with the form.
 
 from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
-from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -22,6 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     IsoCategoryConstruction,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     Subgroups,
@@ -522,51 +522,49 @@ def _torsion_form_lagrangian_subobjects(form, *, quadratic: bool):
     )
 
 
-def _torsion_form_subobject_orbit(form, subobject, acting, *, quadratic: bool):
-    r"""Return the orbit of one subobject using generators, without enumerating ``acting``."""
-    if subobject.inclusion().codomain() is not form:
-        raise ValueError("the acted subobject must lie in this finite form")
-    generators = tuple(acting.group_generators())
-    seen = {_embedded_elements(subobject)}
-    frontier = [subobject]
-    orbit = [subobject]
-    while frontier:
-        current = frontier.pop()
-        current_generators = tuple(current.embedded_module_generators())
-        for action in generators:
-            image = _torsion_form_subobject_on(
-                form,
-                tuple(action(generator) for generator in current_generators),
-                quadratic=quadratic,
-            )
-            embedded = _embedded_elements(image)
-            if embedded in seen:
-                continue
-            seen.add(embedded)
-            frontier.append(image)
-            orbit.append(image)
-    return finite_ordered_set(tuple(orbit))
+def _torsion_form_element_action(form, acting):
+    r"""Return the represented finite ``acting``-set of elements of ``form``."""
+    return FiniteGSets(acting)(
+        form.elements(),
+        lambda automorphism, element: automorphism(element),
+    )
 
 
-def _torsion_form_subobject_orbits(form, family, acting, *, quadratic: bool):
-    r"""Return the orbit partition of a finite family of subobjects."""
-    remaining = {
+def _torsion_form_subobject_action(form, family, acting):
+    r"""Return the represented action on one invariant finite subobject family.
+
+    The points of the G-set are the already selected form-bearing subobjects in
+    ``family``.  Acting on a point changes only its embedded element set; the
+    corresponding selected point of ``family`` is then recovered.  Thus the
+    torsion-form layer supplies the mathematical action while orbit and
+    stabilizer structure is owned by :class:`FiniteGSets`.
+    """
+    points = finite_ordered_set(tuple(family))
+    by_embedded_elements = {
         _embedded_elements(subobject): subobject
-        for subobject in family
+        for subobject in points
     }
-    orbits = []
-    while remaining:
-        representative = next(iter(remaining.values()))
-        orbit = _torsion_form_subobject_orbit(
-            form,
-            representative,
-            acting,
-            quadratic=quadratic,
+
+    def act(automorphism, subobject):
+        if subobject.inclusion().codomain() is not form:
+            raise ValueError("the acted subobject must lie in this finite form")
+        image = frozenset(
+            automorphism(element) for element in _embedded_elements(subobject)
         )
-        orbits.append(orbit)
-        for member in orbit:
-            remaining.pop(_embedded_elements(member), None)
-    return finite_ordered_set(tuple(orbits))
+        try:
+            return by_embedded_elements[image]
+        except KeyError as error:
+            raise ValueError(
+                "the selected subobject family is not invariant under the acting group"
+            ) from error
+
+    return FiniteGSets(acting)(points, act)
+
+
+def _torsion_form_subobject_orbits(form, family, acting):
+    r"""Return the orbit partition through the represented finite G-set action."""
+    action = _torsion_form_subobject_action(form, family, acting)
+    return finite_ordered_set(tuple(orbit.points() for orbit in action.orbits()))
 
 
 def _torsion_form_subquotient(form, subobject, over, *, quadratic: bool):
@@ -1252,65 +1250,17 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     def __iter__(self):
         return (self._from_engine(element) for element in self._engine_group_parent)
 
-    def _engine_abelian_element(self, element):
-
-        element = self.domain()(element)
-        normalized = self.normalization_isometry()(element)
-        labels = tuple(self._normalized_form.module_generating_set())
-        coefficients = self._normalized_form.framing_coefficients(normalized)
-        cover = self._engine_module.V()
-        lifted = sum(
-            (
-                _engine_element(
-                    self._normalized_form.base_ring(),
-                    coefficients.get(label, self._normalized_form.base_ring().zero()),
-                )
-                * basis
-                for label, basis in zip(labels, cover.basis(), strict=True)
-            ),
-            cover.zero(),
-        )
-        engine_module_element = self._engine_module(lifted)
-        abelian_group = self._engine_group_parent.domain()
-        result = abelian_group.one()
-        for exponent, generator in zip(
-            engine_module_element.vector(),
-            abelian_group.gens(),
-            strict=True,
-        ):
-            result *= generator ** SageZZ(exponent)
-        return result
-
-    def _from_engine_abelian_element(self, _engine_element):
-        abelian_group = self._engine_group_parent.domain()
-        _engine_element = abelian_group(_engine_element)
-        module_element = self._engine_module.linear_combination_of_smith_form_gens(
-            _engine_element.exponents()
-        )
-        cover = self._engine_module.V()
-        coordinates = cover.coordinates(module_element.lift())
-        labels = tuple(self._normalized_form.module_generating_set())
-        ring = self._normalized_form.base_ring()
-        normalized = self._normalized_form.linear_combination(
-            {
-                label: ring._from_engine_element(SageZZ(coefficient))
-                for label, coefficient in zip(labels, coordinates, strict=True)
-                if coefficient
-            }
-        )
-        return self.normalization_isometry().inverse()(normalized)
+    @cached_method
+    def element_action(self):
+        r"""Return the represented action of this group on the finite form."""
+        return _torsion_form_element_action(self.domain(), self)
 
     def orbit(self, element):
-
-        point = self._engine_abelian_element(element)
-        orbit = libgap.Orbit(
-            self._engine_group_parent.gap(),
-            point.gap(),
-            libgap.OnPoints,
-        )
-        return finite_ordered_set(
-            tuple(self._from_engine_abelian_element(image) for image in orbit)
-        )
+        r"""Return the orbit of ``element`` through the owned G-set action."""
+        element = self.domain()(element)
+        action = self.element_action()
+        orbits = action.orbits()
+        return orbits.orbit_of(element).points()
 
     def subgroup_on(self, group_generators):
         supplied = tuple(group_generators)
@@ -1331,47 +1281,32 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         return subgroup
 
     def stabilizer_of_element(self, element):
-        point = self._engine_abelian_element(element)
-        gap_stabilizer = libgap.Stabilizer(
-            self._engine_group_parent.gap(),
-            point.gap(),
-            libgap.OnPoints,
-        )
-        engine_subgroup = self._engine_group_parent._subgroup_constructor(gap_stabilizer)
-        return TorsionFormOrthogonalGroup(
-            self.hom_family(),
-            self.domain(),
-            quadratic=self.is_quadratic(),
-            normalization=self._normalization,
-            engine_module=self._engine_module,
-            engine_group=engine_subgroup,
-            supergroup=self,
-        )
+        r"""Return the point stabilizer through the represented G-set action."""
+        element = self.domain()(element)
+        return self.element_action().stabilizer(element)
 
     def stabilizer_of_subgroup(self, subgroup):
-        if subgroup.ambient_discriminant_module() is not self.domain():
-            raise ValueError("the stabilized subgroup must lie in this form")
-        points = libgap.Set(
-            [
-                self._engine_abelian_element(element).gap()
-                for element in subgroup.embedded_elements()
-            ]
-        )
-        gap_stabilizer = libgap.Stabilizer(
-            self._engine_group_parent.gap(),
-            points,
-            libgap.OnSets,
-        )
-        engine_subgroup = self._engine_group_parent._subgroup_constructor(gap_stabilizer)
-        return TorsionFormOrthogonalGroup(
-            self.hom_family(),
+        r"""Return the setwise stabilizer through the owned subobject G-set."""
+        try:
+            ambient = subgroup.inclusion().codomain()
+        except AttributeError as error:
+            raise TypeError("the stabilized object must be a represented subobject") from error
+        if ambient is not self.domain():
+            raise ValueError("the stabilized subobject must lie in this form")
+        family = _torsion_form_all_subobjects(
             self.domain(),
             quadratic=self.is_quadratic(),
-            normalization=self._normalization,
-            engine_module=self._engine_module,
-            engine_group=engine_subgroup,
-            supergroup=self,
         )
+        by_embedded_elements = {
+            _embedded_elements(candidate): candidate
+            for candidate in family
+        }
+        try:
+            point = by_embedded_elements[_embedded_elements(subgroup)]
+        except KeyError as error:
+            raise ValueError("the stabilized subgroup is not a subobject of this form") from error
+        action = _torsion_form_subobject_action(self.domain(), family, self)
+        return action.stabilizer(point)
 
     stabilizer_of_subobject = stabilizer_of_subgroup
 
@@ -1701,27 +1636,23 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         def orbits(self, group=None):
             r"""Return the orbit partition of the finite underlying module."""
             acting = self.automorphism_group() if group is None else group
-            unseen = set(self.elements())
-            partition = []
-            while unseen:
-                representative = next(iter(unseen))
-                reached = acting.orbit(representative)
-                partition.append(reached)
-                unseen.difference_update(tuple(reached))
-            return finite_ordered_set(tuple(partition))
+            action = _torsion_form_element_action(self, acting)
+            return finite_ordered_set(
+                tuple(orbit.points() for orbit in action.orbits())
+            )
 
         def orbits_on_subobjects(self, group=None):
             r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
             acting = self.automorphism_group() if group is None else group
             return _torsion_form_subobject_orbits(
-                self, self.subobjects(), acting, quadratic=False
+                self, self.subobjects(), acting
             )
 
         def orbits_on_isotropic_subobjects(self, group=None):
             r"""Return the orthogonal-group orbits on isotropic subobjects."""
             acting = self.automorphism_group() if group is None else group
             return _torsion_form_subobject_orbits(
-                self, self.isotropic_subobjects(), acting, quadratic=False
+                self, self.isotropic_subobjects(), acting
             )
 
         def is_anisotropic(self) -> bool:
@@ -2026,27 +1957,23 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         def orbits(self, group=None):
             r"""Return the orbit partition of the finite underlying module."""
             acting = self.automorphism_group() if group is None else group
-            unseen = set(self.elements())
-            partition = []
-            while unseen:
-                representative = next(iter(unseen))
-                reached = acting.orbit(representative)
-                partition.append(reached)
-                unseen.difference_update(tuple(reached))
-            return finite_ordered_set(tuple(partition))
+            action = _torsion_form_element_action(self, acting)
+            return finite_ordered_set(
+                tuple(orbit.points() for orbit in action.orbits())
+            )
 
         def orbits_on_subobjects(self, group=None):
             r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
             acting = self.automorphism_group() if group is None else group
             return _torsion_form_subobject_orbits(
-                self, self.subobjects(), acting, quadratic=True
+                self, self.subobjects(), acting
             )
 
         def orbits_on_isotropic_subobjects(self, group=None):
             r"""Return the orthogonal-group orbits on isotropic subobjects."""
             acting = self.automorphism_group() if group is None else group
             return _torsion_form_subobject_orbits(
-                self, self.isotropic_subobjects(), acting, quadratic=True
+                self, self.isotropic_subobjects(), acting
             )
 
         def is_anisotropic(self) -> bool:
