@@ -654,7 +654,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Acceptance:** a source/export audit finds no free-standing public operation whose owner is already supplied as an argument; `from dzack_research.preamble.all import *` exposes mathematical objects/categories and deliberate session vocabulary but not a duplicate operation catalogue; the negative test surface needed by `ownership-test-contract` can distinguish the removed route.
 
 
-- [ ] **`framing-primary-epi`**. **Needs:** none.
+- [x] **`framing-primary-epi`**. **Needs:** none.
   Rebuild framed-module construction around the selected epimorphism `Free_R(S) -> M` as the defining datum required by `CON-11`, `OWN-03`, `ARC-20`, and `STY-152`.
   **Observed gap:** generic framing currently stores a generating set/function and reconstructs `Free_R(S)` and the generator map later when `framing_morphism()` is queried.
   **Owners:** generic framed modules, the free-module functor/unit, and the represented module morphism/Hom owner.
