@@ -789,9 +789,9 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   Audit the whole repository for messy, disorganized or duplicated code after the complaint-derived architecture has been exercised through the final public session.
   The public mathematical API need not change and should not change incidentally; this pass is about internal sources of truth, ownership and maintainability that survive the mandatory architecture repairs.
 
-  **This node explodes.** Every independent refactor the audit identifies becomes its own row here with its own `Needs`, each terminating back into this node; recurse when one contains several.  A refactoring that is not a node is one nobody will do.
+  Repair a bounded finding at its owner during the audit.  If a finding is genuinely too large or crosses independent owners, give the concrete repair its own DAG row with source-backed acceptance and make this node depend on that repair before it can close.  Do not create rows whose deliverable is only a report, inventory, approval, or proof that the audit ran.
 
-  **Acceptance:** the audit is complete and every defensible finding exists as a node with source-backed acceptance.  This is a scheduling node, not a requirement to manufacture a code change when a pass is clean.
+  **Acceptance:** the whole-repository pass is complete; every defensible finding has either been repaired at its owner or is represented by a concrete repair row that has itself closed; and a final read finds no remaining source-of-truth, ownership, or duplication defect in this scope.  A clean pass requires no receipt commit.
 
 - [ ] **`type-paydown`**. **Needs:** `refactor-audit`.
   Pay down type errors where doing so is reasonable, and not one step further.
@@ -800,13 +800,15 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   Golfing the code into oblivion -- distortions that exist only to silence a checker -- is the failure mode.  Where a contortion is genuinely warranted, it must be judged as significantly serving the goal above, and the argument for it recorded explicitly in the commit message.  A type annotation nobody can read has made the code worse even when the checker is quieter.
 
 - [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`.
-  The terminal convergence node, and it loops rather than closing.
+  The legacy identifier is retained for stable references, but this is a finite terminal convergence pass, not a permanently open audit loop.
   Before each pass reread `AGENTS.md`, `CONTRIBUTING.md`, this DAG, and the relevant audit skills under `~/ai/opencode/skills/`: `addressing-shallow-work`, `policy-index`, `anti-slop`, `fixing-slop`, `bespoke-software-policy`, `code-patterns`, `thermo-nuclear-code-quality-review`, `brooks-audit`, `brooks-debt`, `test-guidelines`, `test-writing`, `known-solution-first`, `epistemic-integrity`, `reality-grounded-debugging`, `reviewing-llm-code`, `quality-control`, and `general-cleanup`.  These are interpretive lenses, not a checklist and not permission to rewrite mathematical expectations.
 
-  Rotate whole-repository passes across categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
+  Cover categorical/math owner placement; duplicate or derivable retained state; public type/API design; tests as behavioral proofs rather than implementation mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle structure; notebook/session usability; generated/static projection boundaries; and AI-slop or locally tidy code that violates the architectural contract.
   Search the dependency or upstream owner before improving a local mechanism that may not need to exist.
 
-  Repair a small, well-supported finding in the same pass and commit the behavioral regression or mathematical consumer that proves it.  If a finding spans several owners or is too large to repair coherently in one pass, hydrate this DAG with explicit child nodes and dependency edges before implementation continues.  Never create a node merely to say that an audit ran.  A full pass that finds no defensible change makes **no commit and no complaint entry**; that is positive evidence of convergence under that lens and the terminal node remains open for later passes.
+  Repair a small, well-supported finding in the same pass and commit the behavioral regression or mathematical consumer that proves it.  If a finding spans several owners or is too large to repair coherently in one pass, add a concrete repair row with the necessary dependency edges; this node cannot close until that repair closes.  Never create a node merely to say that an audit ran, and never leave a finding in `COMPLAINTS.md` as a substitute for repair.
+
+  **Acceptance:** all lenses above have been applied to the post-`type-paydown` tree; every resulting finding has been repaired at its owner or through a closed concrete repair row; and one final whole-repository pass finds no additional defensible bloat, duplicate owner, avoidable bespoke mechanism, or architectural violation.  A clean final pass makes no receipt commit.  Later regressions are new owner-local defects and do not retroactively turn this completed convergence pass into a perpetual queue.
 
 ## Optional research consumers
 
