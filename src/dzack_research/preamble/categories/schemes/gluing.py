@@ -164,12 +164,6 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     def chart_index(self):
         return self._chart_index
 
-    def native_morphism(self):
-        raise NotImplementedError(
-            "the chart-image inclusion is represented by the glued-scheme construction, "
-            "not by one affine native morphism"
-        )
-
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, _GluedSchemeOpenInclusion)
@@ -222,12 +216,6 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
 
     def open_inclusion(self):
         return self.open_image().inclusion()
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "the canonical chart embedding is represented by the glued-scheme construction, "
-            "not by one affine native morphism"
-        )
 
     def __mul__(self, other):
         if not isinstance(other, SchemeMorphism):
@@ -296,11 +284,6 @@ class _GluedSchemeChartMap(SchemeMorphism):
 
     def gluing_datum(self):
         return self.chart_embedding().gluing_datum()
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "a map through one glued chart is represented by that chart factorization"
-        )
 
     def __mul__(self, other):
         if not isinstance(other, SchemeMorphism):
@@ -386,11 +369,6 @@ class _GluedSchemeMorphism(SchemeMorphism):
         return self.local_maps()[
             self.domain().gluing_datum().normalize_chart_index(index)
         ]
-
-    def native_morphism(self):
-        raise NotImplementedError(
-            "this morphism is represented by its compatible maps on the glued affine charts"
-        )
 
     def _verify_overlap_compatibility(self) -> None:
         datum = self.domain().gluing_datum()
@@ -1764,10 +1742,9 @@ class SemilinearAlgebraMorphism(SageObject):
             lambda scalar: morphism(source_structure(scalar)),
         )
         target_scalars = self.target().base_ring()
-        if target_scalars not in LocalizationRings():
-            raise NotImplementedError(
-                "semilinear algebra factorization is represented here when the target scalars are a localization"
-            )
+        assert target_scalars in LocalizationRings(), (
+            "semilinear algebra factorization is represented here when the target scalars are a localization"
+        )
         localization_source = target_scalars.localization_source()
         source_scalars = self.source().base_ring()
         localization_steps = []
@@ -2444,11 +2421,10 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
             index: self.local_map(index).kernel()
             for index in datum.chart_indices()
         }
-        if any(kernel.is_free() is not True for kernel in local_kernels.values()):
-            raise NotImplementedError(
-                "finite-atlas kernel descent currently requires locally free represented kernels; "
-                "factorization through a general finitely presented kernel belongs to local-module-maps"
-            )
+        assert all(kernel.is_free() is True for kernel in local_kernels.values()), (
+            "finite-atlas kernel descent requires locally free represented kernels; "
+            "general finitely presented kernel factorization belongs to local-module-maps"
+        )
 
         def kernel_transition(source_index, target_index):
             source_kernel = local_kernels[source_index]
