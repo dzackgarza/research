@@ -45,6 +45,24 @@ class _IndexedFiniteOrderedPresentation:
         self.image_inverse = image_inverse
 
 
+class _SetImageConstruction:
+    r"""A selected source set, image map, and inverse on its represented image."""
+
+    def __init__(self, source, image_map, inverse) -> None:
+        self._source = source
+        self._image_map = image_map
+        self._inverse = inverse
+
+    def source(self):
+        return self._source
+
+    def image_map(self):
+        return self._image_map
+
+    def inverse(self):
+        return self._inverse
+
+
 def _finite_ordered_presentation(elements):
     r"""Return the enumeration data of one known-finite ordered source."""
 
@@ -192,9 +210,11 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
-            self._preamble_image_source = image_source
-            self._preamble_image_map = image_map
-            self._preamble_image_inverse = image_inverse
+            self._image_construction = (
+                None
+                if image_source is None and image_map is None and image_inverse is None
+                else _SetImageConstruction(image_source, image_map, image_inverse)
+            )
             super().__init__(facade=True, **rest)
             if finite:
                 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
@@ -206,20 +226,20 @@ class OrderedEnumeratedSets(OwnedCategory):
             return self._index_set
 
         def source_set(self):
-            if self._preamble_image_source is None:
+            if self._image_construction is None or self._image_construction.source() is None:
                 raise TypeError(f"{self} is not represented as an image construction")
-            return self._preamble_image_source
+            return self._image_construction.source()
 
         def image_map(self):
-            if self._preamble_image_map is None:
+            if self._image_construction is None or self._image_construction.image_map() is None:
                 raise TypeError(f"{self} is not represented as an image construction")
-            return self._preamble_image_map
+            return self._image_construction.image_map()
 
         def inverse_on_image(self):
-            assert self._preamble_image_inverse is not None, (
+            assert self._image_construction is not None and self._image_construction.inverse() is not None, (
                 "inverse_on_image requires a selected inverse for this image construction"
             )
-            return self._preamble_image_inverse
+            return self._image_construction.inverse()
 
         def cardinality(self) -> Parent:
             return cardinal(self.index_set().cardinality())
