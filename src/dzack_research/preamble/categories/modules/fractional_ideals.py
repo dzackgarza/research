@@ -470,18 +470,16 @@ class FractionalIdealInclusion(ModuleEmbedding):
 
     def is_primitive(self) -> bool:
 
-        if self.codomain() not in FramedModules(self.domain().base_ring()):
-            raise NotImplementedError(
-                "primitivity of a fractional ideal inside its fraction field is not a finite-presentation question"
-            )
+        assert self.codomain() in FramedModules(self.domain().base_ring()), (
+            "represented primitivity for a fractional-ideal inclusion requires a framed ambient module"
+        )
         return super().is_primitive()
 
     def index(self):
 
-        if self.codomain() not in FramedModules(self.domain().base_ring()):
-            raise NotImplementedError(
-                "the quotient of the fraction field by a fractional ideal is not generally finite"
-            )
+        assert self.codomain() in FramedModules(self.domain().base_ring()), (
+            "represented index for a fractional-ideal inclusion requires a framed ambient module"
+        )
         return super().index()
 
 
@@ -760,10 +758,9 @@ def _fractional_ideal(ring, values):
             _zz_fractional_generator(values),
             integral=False,
         )
-    if ring not in OwnedOrders():
-        raise NotImplementedError(
-            "the active nonprincipal fractional-ideal engine currently requires ZZ or a number-field order"
-        )
+    assert ring in OwnedOrders(), (
+        "the represented nonprincipal fractional-ideal engine requires ZZ or a number-field order"
+    )
     field_values = tuple(
         _fraction_field_backend_value(ring, value) for value in values
     )
@@ -796,10 +793,9 @@ def _integral_ideal(ring, module_generators):
 
         refine(ideal, ProjectiveModules(ring))
         return ideal
-    if ring not in OwnedOrders():
-        raise NotImplementedError(
-            "the active owned ideal-module adapter currently handles ZZ and number-field orders"
-        )
+    assert ring in OwnedOrders(), (
+        "the represented owned ideal-module adapter requires ZZ or a number-field order"
+    )
     field_values = tuple(
         _fraction_field_backend_value(ring, value)
         for value in module_generators
