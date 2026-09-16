@@ -7,6 +7,24 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
 
+class _LineBundleCohomologyConstruction:
+    r"""The selected geometric datum defining one represented cohomology space."""
+
+    def __init__(self, scheme, divisor, degree) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+        self._degree = degree
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
+
+    def degree(self):
+        return self._degree
+
+
 class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
     r"""Vector spaces represented as ``H^i(X,L)`` for one selected line bundle."""
 
@@ -31,21 +49,25 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
             finite_ordinal_set(dimension),
             _extra_categories=(self,),
             _extra_construction_data=(
-                ("_preamble_cohomology_scheme", scheme),
-                ("_preamble_cohomology_divisor", divisor),
-                ("_preamble_cohomological_degree", degree),
+                (
+                    "_line_bundle_cohomology_construction",
+                    _LineBundleCohomologyConstruction(scheme, divisor, degree),
+                ),
             ),
         )
 
     class ParentMethods:
+        def line_bundle_cohomology_construction(self):
+            return self._line_bundle_cohomology_construction
+
         def cohomology_scheme(self):
-            return self._preamble_cohomology_scheme
+            return self.line_bundle_cohomology_construction().scheme()
 
         def cohomology_divisor(self):
-            return self._preamble_cohomology_divisor
+            return self.line_bundle_cohomology_construction().divisor()
 
         def cohomological_degree(self):
-            return self._preamble_cohomological_degree
+            return self.line_bundle_cohomology_construction().degree()
 
 
 __all__ = ["LineBundleCohomologySpaces"]
