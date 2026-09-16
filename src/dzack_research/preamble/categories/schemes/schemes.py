@@ -823,7 +823,7 @@ def _affine_structure_morphism_to_base(scheme, base_ring):
         raise TypeError("a represented affine structure morphism requires an affine scheme over the stated base")
     if scheme.scheme_base_ring() is base_ring:
         return scheme.structure_morphism()
-    base_scheme = Spec(base_ring, base_ring=base_ring)
+    base_scheme = (base_ring).affine_spectrum(base_ring=base_ring)
     pullback = _algebra_structure_morphism_from_base(
         scheme.coordinate_algebra(),
         base_ring,
@@ -1029,7 +1029,7 @@ class Schemes(OwnedCategoryOverBaseRing):
     @cached_method
     def base_scheme(self):
         ring = self.base_ring()
-        return Spec(ring, base_ring=ring)
+        return (ring).affine_spectrum(base_ring=ring)
 
     @cached_method
     def slice_category(self):
@@ -1138,7 +1138,7 @@ class Schemes(OwnedCategoryOverBaseRing):
 
         def base_scheme(self):
             ring = self.scheme_base_ring()
-            return Spec(ring, base_ring=ring)
+            return (ring).affine_spectrum(base_ring=ring)
 
         def _scheme_underlying_space(self):
             base_ring = self.scheme_base_ring()
@@ -1636,7 +1636,7 @@ class AffineSchemes(_SchemePropertyCategory):
             if quotient_operation is None:
                 raise NotImplementedError("a closed affine subscheme requires a represented polynomial presentation of its coordinate algebra")
             quotient, quotient_map = quotient_operation(equations)
-            subscheme = Spec(quotient, base_ring=self.scheme_base_ring())
+            subscheme = (quotient).affine_spectrum(base_ring=self.scheme_base_ring())
             spec_inclusion = _affine_spec_morphism(quotient_map)
             inclusion = _categorical_scheme_morphism(
                 spec_inclusion.native_morphism(),
@@ -1747,10 +1747,10 @@ class AffineSchemes(_SchemePropertyCategory):
             localized = algebra.localization(element)
             localization_map = localized.localization_map()
             base = self.scheme_base_ring()
-            canonical_ambient = Spec(algebra, base_ring=base)
+            canonical_ambient = (algebra).affine_spectrum(base_ring=base)
             if self is canonical_ambient:
                 open_subscheme = _refine_scheme(
-                    Spec(localized, base_ring=base),
+                    (localized).affine_spectrum(base_ring=base),
                     base,
                     (OpenImmersions(self),),
                 )
@@ -2019,7 +2019,7 @@ class AffineGSchemes(OwnedCategory):
         @cached_method
         def affine_quotient(self: Any) -> Any:
             r"""Return ``Spec(A^G)`` for the supported affine linear action."""
-            return Spec(self.invariant_algebra(), base_ring=self.scheme_base_ring())
+            return (self.invariant_algebra()).affine_spectrum(base_ring=self.scheme_base_ring())
 
         def quotient_base_change_comparison(self, ring_map):
             from dzack_research.preamble.categories.schemes.quotients import (
@@ -3036,7 +3036,7 @@ def _initialize_owned_affine_spectrum(
         scheme._preamble_structure_morphism = scheme._preamble_identity_morphism
         return scheme
 
-    base_scheme = Spec(base, base_ring=base)
+    base_scheme = (base).affine_spectrum(base_ring=base)
     engine_map = _engine_ring(algebra).coerce_map_from(_engine_ring(base))
     if engine_map is None:
         raise NotImplementedError("the affine Spec structure morphism currently requires an exact engine realization of the algebra structure map")
@@ -3464,8 +3464,8 @@ def _affine_spec_morphism(algebra_morphism):
     ):
         raise TypeError("affine Spec acts on a represented algebra morphism")
     return _affine_morphism_from_pullback(
-        Spec(target_algebra),
-        Spec(source_algebra),
+        (target_algebra).affine_spectrum(),
+        (source_algebra).affine_spectrum(),
         algebra_morphism,
     )
 
@@ -3531,7 +3531,7 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
         codomain=scheme,
     )
     scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = scheme.coordinate_algebra().Mor(scheme.coordinate_algebra()).identity()
-    base_scheme = Spec(base, base_ring=base)
+    base_scheme = (base).affine_spectrum(base_ring=base)
     engine_map = engine_coordinate_ring.coerce_map_from(_engine_ring(base))
     if engine_map is None:
         raise NotImplementedError("the affine-space structure morphism requires the scalar base injection")
@@ -3896,7 +3896,7 @@ def _scheme_product(*schemes):
             )
             offset += width
     elif all(scheme in AffineSchemes(base) for scheme in scheme_values):
-        base_scheme = Spec(base, base_ring=base)
+        base_scheme = (base).affine_spectrum(base_ring=base)
         nonterminal_positions = tuple(
             position
             for position, scheme in enumerate(scheme_values)
