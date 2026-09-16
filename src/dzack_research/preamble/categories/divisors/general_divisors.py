@@ -17,7 +17,10 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+from dzack_research.preamble.categories.divisors.picard_groups import (
+    PicardGroups,
+    _ProjectivePicardConstruction,
+)
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
     _AffineNormalWeilDivisorConstruction,
@@ -291,11 +294,12 @@ def _projective_space_divisor_class_theory(
     picard = PicardGroups()(
         picard_biproduct,
         scheme=projective_space,
-        construction_data={
-            "projective_base_picard_group": base_picard_group,
-            "projective_hyperplane_factor": picard_hyperplane,
-            "projective_picard_biproduct": picard_biproduct,
-        },
+        construction=_ProjectivePicardConstruction(
+            projective_space,
+            base_picard_group,
+            picard_hyperplane,
+            picard_biproduct,
+        ),
     )
     classes = ClassGroups()(class_biproduct, scheme=projective_space)
     picard_hyperplane_label = picard_hyperplane.module_generating_set()[0]
@@ -346,11 +350,12 @@ def _projective_space_picard_group(projective_space, base_picard_group):
     return PicardGroups()(
         decomposition,
         scheme=projective_space,
-        construction_data={
-            "projective_base_picard_group": base_picard_group,
-            "projective_hyperplane_factor": hyperplane,
-            "projective_picard_biproduct": decomposition,
-        },
+        construction=_ProjectivePicardConstruction(
+            projective_space,
+            base_picard_group,
+            hyperplane,
+            decomposition,
+        ),
     )
 
 

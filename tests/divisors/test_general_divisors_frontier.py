@@ -34,6 +34,7 @@ def test_projective_space_over_a_field_has_the_hyperplane_picard_generator() -> 
     picard = plane.picard_group(base_picard)
 
     assert picard.picard_scheme() is plane
+    assert picard.picard_group_construction().scheme() is plane
     assert picard.projective_base_picard_group() is base_picard
     assert picard.projective_hyperplane_factor().module_rank() == 1
     assert picard.module_rank() == 1
@@ -116,6 +117,8 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
 
     principal = ZZ.free_module(1)
     cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    assert cartier.divisor_scheme() is scheme
+    assert cartier.cartier_divisor_construction().scheme() is scheme
     weil_presentation = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
     assert weil_presentation.divisor_scheme() is scheme
     with pytest.raises(TypeError, match="no represented full prime-divisor locus"):
@@ -152,7 +155,9 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
         principal_to_weil(principal_generator)
     ) == divisor_of_x
     assert classes.picard_group().cardinality() == 1
+    assert classes.picard_group().picard_group_construction().scheme() is scheme
     assert classes.class_group().cardinality() == 2
+    assert classes.class_group().class_group_construction().scheme() is scheme
     noncartier_class = classes.weil_class_projection()(weil_generator)
     assert noncartier_class != classes.class_group().zero()
     assert noncartier_class.additive_order() == 2

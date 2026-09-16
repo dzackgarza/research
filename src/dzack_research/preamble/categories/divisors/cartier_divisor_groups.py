@@ -6,6 +6,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.owned_category_bases import Category
 
 
+class _CartierDivisorConstruction:
+    r"""The selected scheme defining one represented Cartier-divisor role."""
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+
 class CartierDivisorGroups(Category):
     def an_object(self):
         return _divisor_role_specimen(self)
@@ -26,12 +36,19 @@ class CartierDivisorGroups(Category):
             module,
             self,
             "a Cartier divisor group requires a represented framed-module presentation",
-            construction_data=None if scheme is None else {"divisor_scheme": scheme},
+            construction_data=(
+                None
+                if scheme is None
+                else {"_cartier_divisor_construction": _CartierDivisorConstruction(scheme)}
+            ),
         )
 
     class ParentMethods:
-        def divisor_scheme(self):
-            scheme = getattr(self, "_preamble_divisor_scheme", None)
-            if scheme is None:
+        def cartier_divisor_construction(self):
+            construction = getattr(self, "_cartier_divisor_construction", None)
+            if construction is None:
                 raise TypeError("this Cartier-divisor role has no selected scheme")
-            return scheme
+            return construction
+
+        def divisor_scheme(self):
+            return self.cartier_divisor_construction().scheme()

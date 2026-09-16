@@ -294,14 +294,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             module = _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
-            return PicardGroups()(
-                module,
-                scheme=self,
-                construction_data={
-                    "blowup_hyperplane_label": "H",
-                    "blowup_exceptional_label": "E",
-                },
-            )
+            return PicardGroups()(module, scheme=self)
 
         def hyperplane_picard_class(self):
             return self.picard_group().module_generator("H")

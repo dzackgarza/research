@@ -6,6 +6,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.owned_category_bases import Category
 
 
+class _ClassGroupConstruction:
+    r"""The selected scheme defining one represented Weil divisor class group."""
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+
 class ClassGroups(Category):
     def an_object(self):
         return _divisor_role_specimen(self)
@@ -26,12 +36,19 @@ class ClassGroups(Category):
             module,
             self,
             "a class group requires a represented framed-module presentation",
-            construction_data=None if scheme is None else {"class_group_scheme": scheme},
+            construction_data=(
+                None
+                if scheme is None
+                else {"_class_group_construction": _ClassGroupConstruction(scheme)}
+            ),
         )
 
     class ParentMethods:
-        def class_group_scheme(self):
-            scheme = getattr(self, "_preamble_class_group_scheme", None)
-            if scheme is None:
+        def class_group_construction(self):
+            construction = getattr(self, "_class_group_construction", None)
+            if construction is None:
                 raise TypeError("this class-group role has no selected scheme")
-            return scheme
+            return construction
+
+        def class_group_scheme(self):
+            return self.class_group_construction().scheme()
