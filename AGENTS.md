@@ -39,12 +39,14 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
-## Owner resume — 2026-09-15
+## Owner pause — 2026-09-16
 
-The repository owner explicitly resumed architectural remediation after the
-2026-09-15 pause. Continue the current architecture-remediation DAG according
-to `TODO.md`; do not reinstate the superseded pause unless the owner issues a
-new stop instruction.
+The repository owner paused this workstream after the 2026-09-15 resume. Do not
+start, select, continue, revive, wake, route, or push new work while this pause
+stands. If a turn was already mid-unit when the pause arrived, bank only that
+coherent unit and stop before selecting another. Preserve the existing dirty/shared
+tree. Only a later explicit owner instruction resumes this repository; recurrence
+of an older scheduled continuation does not supersede the pause.
 
 ## Preamble coding prerequisites
 
