@@ -49,8 +49,8 @@ def test_a_galois_theory_session(name) -> None:
         primes = field.primes_above(prime)
         rendered(primes)
         prime_above = next(iter(primes))
-        decomposition = finite_decomposition_group(galois, prime_above)
-        inertia = finite_inertia_group(galois, prime_above)
+        decomposition = galois.decomposition_group(prime_above)
+        inertia = galois.inertia_group(prime_above)
         rendered(decomposition)
         rendered(inertia)
         ramification = inertia.order()
@@ -60,14 +60,14 @@ def test_a_galois_theory_session(name) -> None:
         assert prime_above.quotient_ring().cardinality() == prime**residue_degree
         assert prime_above.quotient_ring() in Fields()
         if prime not in ramified:
-            frobenius = finite_frobenius_class(galois, prime_above)
+            frobenius = galois.frobenius_class(prime, prime_above)
             rendered(frobenius)
             assert frobenius.representative().order() == residue_degree
             assert frobenius.representative() in decomposition
     assert field.primes_above(split_prime).cardinality() == degree
     if inert_prime is not None:
         assert field.primes_above(inert_prime).cardinality() == 1
-        assert finite_inertia_group(galois, next(iter(field.primes_above(inert_prime)))).order() == 1
+        assert galois.inertia_group(next(iter(field.primes_above(inert_prime)))).order() == 1
 
     # The field inside the absolute Galois group of the rationals.
     absolute = AbsoluteGaloisGroup(QQ)

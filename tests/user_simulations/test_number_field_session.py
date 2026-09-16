@@ -35,10 +35,10 @@ def test_a_number_field_session(name) -> None:
     coefficients, degree, discriminant, (real_places, complex_places), class_number, galois, ramified = SESSIONS[name]
 
     # The field, from its defining polynomial.
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     polynomial = sum(c * x**k for k, c in enumerate(coefficients))
-    field = NumberField(polynomial, "a")
+    field = polynomial.number_field("a")
     rendered(field)
     a = field.primitive_element()
     rendered(a)

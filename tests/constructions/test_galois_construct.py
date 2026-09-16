@@ -32,8 +32,8 @@ def test_decomposition_and_inertia_groups(build, name, prime) -> None:
     galois = field.galois_group()
     primes = field.primes_above(prime)
     prime_above = next(iter(primes))
-    decomposition = finite_decomposition_group(galois, prime_above)
-    inertia = finite_inertia_group(galois, prime_above)
+    decomposition = galois.decomposition_group(prime_above)
+    inertia = galois.inertia_group(prime_above)
 
     assert primes.cardinality() == count
     assert count * ramification * residue_degree == field.degree()
@@ -41,7 +41,7 @@ def test_decomposition_and_inertia_groups(build, name, prime) -> None:
     assert inertia.order() == ramification
     assert galois.left_cosets(decomposition).cardinality() == count
     if ramification == 1:
-        frobenius = finite_frobenius_class(galois, prime_above)
+        frobenius = galois.frobenius_class(prime, prime_above)
         assert frobenius.representative().order() == residue_degree
         assert frobenius.representative() in decomposition
 
@@ -61,7 +61,8 @@ def test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups() -> 
     assert open_subgroup.fixed_field() is gaussian
     assert open_subgroup.inclusion().is_injective()
     assert galois.one() in open_subgroup
-    cubic = NumberField(PolynomialRing(QQ, "x").algebra_generator("x") ** 3 - 2, "c")
+    x = QQ.polynomial_ring("x").algebra_generator("x")
+    cubic = (x**3 - 2).number_field("c")
     assert galois.open_subgroup(cubic).index() == 3
 
 
@@ -98,18 +99,18 @@ def test_the_absolute_galois_group_of_a_finite_field() -> None:
 
 
 def test_embeddings_between_number_fields() -> None:
-    x = PolynomialRing(QQ, "x").algebra_generator("x")
+    x = QQ.polynomial_ring("x").algebra_generator("x")
     quadratic = QuadraticField(2, "s")
-    quartic = NumberField(x**4 - 2, "t")
-    embeddings = exact_embeddings(quadratic, quartic)
-    first = first_exact_embedding(quadratic, quartic)
+    quartic = (x**4 - 2).number_field("t")
+    embeddings = quadratic.exact_embeddings(quartic)
+    first = quadratic.first_exact_embedding(quartic)
 
     assert embeddings.cardinality() == 2
     assert first.domain() is quadratic
     assert first.codomain() is quartic
     assert first(quadratic.primitive_element()) ** 2 == quartic(2)
     assert first.is_injective()
-    assert exact_embeddings(quartic, quadratic).cardinality() == 0
-    eighth_roots = NumberField(x**4 + 1, "z")
-    assert exact_embeddings(QuadraticField(-1, "i"), eighth_roots).cardinality() == 2
-    assert exact_embeddings(QuadraticField(3, "s"), eighth_roots).cardinality() == 0
+    assert quartic.exact_embeddings(quadratic).cardinality() == 0
+    eighth_roots = (x**4 + 1).number_field("z")
+    assert QuadraticField(-1, "i").exact_embeddings(eighth_roots).cardinality() == 2
+    assert QuadraticField(3, "s").exact_embeddings(eighth_roots).cardinality() == 0
