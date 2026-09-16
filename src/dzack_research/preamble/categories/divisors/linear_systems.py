@@ -156,10 +156,9 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             target = pulled_bundle.global_sections()
             product = morphism.domain()
             label = getattr(morphism, "_preamble_product_projection_label", None)
-            if label is None:
-                raise NotImplementedError(
-                    "homogeneous section pullback is currently represented for product projections"
-                )
+            assert label is not None, (
+                "homogeneous section pullback is represented here for the selected product-projection role"
+            )
             labels = tuple(product.factors().index_set())
             label = product.factors().index_set()(label)
             source_exponents = self._preamble_homogeneous_exponents
