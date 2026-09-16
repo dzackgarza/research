@@ -66,6 +66,12 @@ from dzack_research.preamble.refine import refine
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
 
+# Qualified as Sage qualifies ``FinitelyGeneratedAsMagma``: an axiom name is
+# global and propagates to every declared supercategory defining it, and a
+# finitely presented algebra is not a finitely presented module.
+if "FinitelyPresentedAsAlgebra" not in all_axioms:
+    all_axioms.add("FinitelyPresentedAsAlgebra")
+
 
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Associative algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
@@ -1225,6 +1231,31 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             _HomCategory = AlgebraHomCategoryConstruction
 
+            class SubcategoryMethods:
+                def FinitelyPresentedAsAlgebra(self):
+                    r"""Return the refinement whose objects admit a finite algebra presentation."""
+                    return self._with_axiom("FinitelyPresentedAsAlgebra")
+
+            class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
+                r"""Algebras that admit a finite algebra presentation.
+
+                A property: the presentation exists and none is chosen.
+                ``AlgebrasWithChosenFinitePresentation`` is the data category.
+                """
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "finitely presented algebras"
+
+                def an_object(self):
+                    r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
+                    presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
+                    return presentation.quotient_by_relations(("x^2",))
+
+                class ParentMethods:
+                    def is_finitely_presented(self) -> bool:
+                        return True
+
             def _call_(self, algebra_or_module, multiplication=None, unit=None):
                 if algebra_or_module in Algebras(self.base_ring()):
                     algebra = algebra_or_module
@@ -1388,6 +1419,8 @@ class Algebras(OwnedCategoryOverBaseRing):
 # Register the nested refinement explicitly so ``Algebras(R).Lie()`` is a
 # category-with-axiom rather than an inference through Sage's built-in names.
 Algebras.__dict__["Lie"]._base_category_class_and_axiom = (Algebras, "Lie")
+
+FinitelyPresentedAlgebras = Algebras.Associative.Unital.FinitelyPresentedAsAlgebra
 
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
@@ -1634,26 +1667,6 @@ def _refine_matrix_algebra(homset):
     return homset
 
 
-class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras that admit a finite algebra presentation."""
-
-    def an_object(self):
-        r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
-        presentation = self.base_ring().free_module(("x",)).symmetric_algebra()
-        return presentation.quotient_by_relations(("x^2",))
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely presented algebras"
-
-    def super_categories(self):
-        return [Algebras(self.base_ring()).Associative().Unital()]
-
-    class ParentMethods:
-        def is_finitely_presented(self) -> bool:
-            return True
-
-
 class _SelectedFiniteAlgebraPresentation:
     r"""The chosen polynomial presentation defining a presented algebra.
 
@@ -1714,7 +1727,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            FinitelyPresentedAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital().FinitelyPresentedAsAlgebra(),
             FramedAlgebras(self.base_ring()),
         ]
 

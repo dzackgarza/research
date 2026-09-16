@@ -756,8 +756,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return "free algebras"
 
     def super_categories(self):
-
-        return [Algebras(self.base_ring()).Associative().Unital()]
+        return [FramedAlgebras(self.base_ring())]
 
     class ParentMethods:
         def is_free(self) -> bool:
