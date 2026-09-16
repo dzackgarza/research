@@ -123,7 +123,7 @@ def _elements_determining_maps_out_of(algebra, base):
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
-    _preamble_coordinate_algebra_morphism = None
+    _coordinate_pullback = None
 
     def __init__(
         self,
@@ -138,7 +138,7 @@ class SchemeMorphism(Morphism):
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
         if pullback is not None:
-            self._preamble_coordinate_algebra_morphism = pullback
+            self._coordinate_pullback = pullback
         if homset is None:
             if (domain is None) != (codomain is None):
                 raise ValueError("an owned scheme-morphism endpoint override requires both endpoints")
@@ -238,8 +238,8 @@ class SchemeMorphism(Morphism):
         # engine route computes it.  Reading the endpoints off the engine's
         # answer lands it on Spec of a coordinate ring instead.
         homset = _scheme_mor_category(other.domain(), self.codomain())
-        left_pullback = self._preamble_coordinate_algebra_morphism
-        right_pullback = other._preamble_coordinate_algebra_morphism
+        left_pullback = self._coordinate_pullback
+        right_pullback = other._coordinate_pullback
         if left_pullback is not None and right_pullback is not None:
             composite_pullback = left_pullback.domain().Mor(
                 right_pullback.codomain()
@@ -304,7 +304,7 @@ class SchemeMorphism(Morphism):
         return self.compose(point)
 
     def coordinate_algebra_morphism(self):
-        morphism = self._preamble_coordinate_algebra_morphism
+        morphism = self._coordinate_pullback
         if morphism is None:
             raise NotImplementedError("this scheme morphism has no represented pullback on affine coordinate algebras")
         return morphism
@@ -495,8 +495,8 @@ class SchemeMorphism(Morphism):
             return False
         if self is other:
             return True
-        left_pullback = self._preamble_coordinate_algebra_morphism
-        right_pullback = other._preamble_coordinate_algebra_morphism
+        left_pullback = self._coordinate_pullback
+        right_pullback = other._coordinate_pullback
         if left_pullback is not None and right_pullback is not None:
             base = _scheme_base_ring(self.codomain())
             if self.codomain() in AffineSchemes(base):
@@ -529,7 +529,7 @@ class _OpenComplementInclusion(SchemeMorphism):
         Morphism.__init__(self, homset)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
-        self._preamble_coordinate_algebra_morphism = None
+        self._coordinate_pullback = None
         self._native_morphism = None
         self._preamble_closed_complement = closed_complement
 
@@ -565,7 +565,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         Morphism.__init__(self, homset)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
-        self._preamble_coordinate_algebra_morphism = None
+        self._coordinate_pullback = None
         self._native_morphism = None
         self._preamble_projective_coordinate_sections = finite_family(
             tuple(coordinates),
@@ -643,7 +643,7 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
         Morphism.__init__(self, parent)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
-        self._preamble_coordinate_algebra_morphism = pullback
+        self._coordinate_pullback = pullback
         self._native_realization = None
 
     def native_morphism(self):
@@ -692,13 +692,24 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
     __hash__ = None
 
 
-def _categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
+def _categorical_scheme_morphism(
+    native_morphism,
+    *,
+    domain=None,
+    codomain=None,
+    pullback=None,
+):
     if isinstance(native_morphism, SchemeMorphism):
-        if domain is None and codomain is None:
+        if domain is None and codomain is None and pullback is None:
             return native_morphism
         native_morphism = native_morphism.native_morphism()
-    if domain is not None or codomain is not None:
-        return SchemeMorphism(native_morphism, domain=domain, codomain=codomain)
+    if domain is not None or codomain is not None or pullback is not None:
+        return SchemeMorphism(
+            native_morphism,
+            domain=domain,
+            codomain=codomain,
+            pullback=pullback,
+        )
     key = id(native_morphism)
     cached = _SCHEME_MORPHISM_WRAPPERS.get(key)
     if cached is not None and cached.native_morphism() is native_morphism:
@@ -737,7 +748,10 @@ class SchemeMorCategory(CategoricalHomset):
         if isinstance(datum, SchemeMorphism):
             if datum.parent() is self:
                 return datum
-            pullback = getattr(datum, "_preamble_coordinate_algebra_morphism", None)
+            try:
+                pullback = datum.coordinate_algebra_morphism()
+            except NotImplementedError:
+                pullback = None
             if (
                 pullback is not None
                 and self.domain() in AffineSchemes(_scheme_base_ring(self.domain()))
@@ -880,6 +894,7 @@ def _refine_scheme_morphism(
     *,
     domain=None,
     codomain=None,
+    pullback=None,
 ):
     r"""Return the native morphism in the Hom of its stated owned schemes."""
     base = _own_ring(base_ring)
@@ -893,6 +908,7 @@ def _refine_scheme_morphism(
         morphism,
         domain=domain,
         codomain=codomain,
+        pullback=pullback,
     )
 
 
@@ -1209,14 +1225,18 @@ class Schemes(OwnedCategoryOverBaseRing):
                 morphism = _native_scheme_homset(self, base)(engine_map, check=False)
             if morphism.codomain() is not base:
                 raise ArithmeticError("the native structure morphism does not land in the represented base scheme")
+            pullback = (
+                self.coordinate_algebra().algebra_structure_morphism()
+                if self in AffineSchemes(self.scheme_base_ring())
+                else None
+            )
             wrapped = _refine_scheme_morphism(
                 morphism,
                 self.scheme_base_ring(),
                 domain=self,
                 codomain=base,
+                pullback=pullback,
             )
-            if self in AffineSchemes(self.scheme_base_ring()):
-                wrapped._preamble_coordinate_algebra_morphism = self.coordinate_algebra().algebra_structure_morphism()
             self._preamble_structure_morphism = wrapped
             return wrapped
 
@@ -1320,16 +1340,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 if _integral_placement(base):
                     categories.append(IntegralSchemes(base))
                 _refine_scheme(point_domain, base, categories)
-            wrapped = _refine_scheme_morphism(
-                point,
-                base,
-                domain=point_domain,
-                codomain=self,
-            )
-            wrapped._preamble_point_coordinates = finite_family(
-                owned_coordinates,
-                name=f"Selected coordinates of point on {self}",
-            )
+            pullback = None
             if self in AffineSchemes(base):
                 source_algebra = self.coordinate_algebra()
                 target_algebra = point_domain.coordinate_algebra()
@@ -1347,7 +1358,17 @@ class Schemes(OwnedCategoryOverBaseRing):
                             )
                         }
                     )
-                    wrapped._preamble_coordinate_algebra_morphism = pullback
+            wrapped = _refine_scheme_morphism(
+                point,
+                base,
+                domain=point_domain,
+                codomain=self,
+                pullback=pullback,
+            )
+            wrapped._preamble_point_coordinates = finite_family(
+                owned_coordinates,
+                name=f"Selected coordinates of point on {self}",
+            )
             return wrapped
 
         def projective_morphism_from_coordinates(self, target, coordinates):
@@ -1637,8 +1658,8 @@ class AffineSchemes(_SchemePropertyCategory):
                 spec_inclusion.native_morphism(),
                 domain=subscheme,
                 codomain=self,
+                pullback=quotient_map,
             )
-            inclusion._preamble_coordinate_algebra_morphism = quotient_map
             subscheme._preamble_inclusion = inclusion
             return _refine_closed_subscheme(
                 subscheme,
@@ -3529,8 +3550,10 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
         base,
         domain=scheme,
         codomain=scheme,
+        pullback=scheme.coordinate_algebra().Mor(
+            scheme.coordinate_algebra()
+        ).identity(),
     )
-    scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = scheme.coordinate_algebra().Mor(scheme.coordinate_algebra()).identity()
     base_scheme = (base).affine_spectrum(base_ring=base)
     engine_map = engine_coordinate_ring.coerce_map_from(_engine_ring(base))
     if engine_map is None:
@@ -3540,8 +3563,8 @@ def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
         base,
         domain=scheme,
         codomain=base_scheme,
+        pullback=scheme.coordinate_algebra().algebra_structure_morphism(),
     )
-    scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = scheme.coordinate_algebra().algebra_structure_morphism()
     return scheme
 
 
@@ -3589,17 +3612,13 @@ def _projective_space_from_owned_data(base, engine_dimension, names):
 
 def _product_projection(product, factor, coordinates):
     native = _native_scheme_homset(product, factor)(list(coordinates), check=False)
-    projection = _categorical_scheme_morphism(
-        native,
-        domain=product,
-        codomain=factor,
-    )
+    pullback = None
     if product in AffineSchemes(product.scheme_base_ring()) and factor in AffineSchemes(factor.scheme_base_ring()):
         target = product.coordinate_algebra()
         source = factor.coordinate_algebra()
         engine_target = _engine_ring(target)
         owned_coordinates = tuple(target._from_engine_element(engine_target(coordinate)) for coordinate in coordinates)
-        projection._preamble_coordinate_algebra_morphism = source.Mor(target)(
+        pullback = source.Mor(target)(
             {
                 label: image
                 for label, image in zip(
@@ -3609,7 +3628,12 @@ def _product_projection(product, factor, coordinates):
                 )
             }
         )
-    return projection
+    return _categorical_scheme_morphism(
+        native,
+        domain=product,
+        codomain=factor,
+        pullback=pullback,
+    )
 
 
 def _standard_projective_chart_embedding(projective, chart_index):
