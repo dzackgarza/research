@@ -42,7 +42,6 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
     OwnedCategory,
 )
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
@@ -66,6 +65,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
+)
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    LocallyRingedSpaces,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     NormalSchemes,
@@ -481,7 +483,7 @@ class RepresentedToricSchemes(OwnedCategory):
         return ToricSchemes(_own_ring(SageQQ)).an_object()
 
     def super_categories(self):
-        return [Objects()]
+        return [LocallyRingedSpaces()]
 
     def __contains__(self, candidate) -> bool:
         base_method = getattr(candidate, "scheme_base_ring", None)

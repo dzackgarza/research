@@ -1552,11 +1552,7 @@ class AffineSchemes(_SchemePropertyCategory):
 
     def super_categories(self):
         # Quasi-affine as well: a scheme is an open subscheme of itself.
-        return [
-            Schemes(self.base_ring()),
-            SeparatedSchemes(self.base_ring()),
-            QuasiAffineSchemes(self.base_ring()),
-        ]
+        return [QuasiAffineSchemes(self.base_ring())]
 
     class ParentMethods:
         def is_regular_at(self, point) -> bool:
@@ -2159,10 +2155,8 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 
     def super_categories(self):
         return [
-            Schemes(self.base_ring()),
             QuasiProjectiveSchemes(self.base_ring()),
             FiniteTypeSchemes(self.base_ring()),
-            SeparatedSchemes(self.base_ring()),
         ]
 
     class ParentMethods:
@@ -2237,7 +2231,6 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return [
             AffineSchemes(self.base_ring()),
             FiniteTypeSchemes(self.base_ring()),
-            QuasiProjectiveSchemes(self.base_ring()),
             SmoothSchemes(self.base_ring()),
         ]
 
