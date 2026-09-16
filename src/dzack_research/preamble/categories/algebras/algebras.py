@@ -242,11 +242,13 @@ class MultiplicativeAlgebraMorphism(Morphism):
             if underlying_morphism * source_multiplication != target_multiplication * tensor_square:
                 raise ValueError("the stated map does not preserve multiplication")
         else:
-            if not source_module.is_framed():
-                raise NotImplementedError("multiplicativity at a mixed exact/legacy algebra Hom requires a finite framed source module")
+            assert source_module.is_framed(), (
+                "multiplicativity at a mixed exact/legacy algebra Hom requires a framed source module"
+            )
             labels = source_module.module_generating_set()
-            if not labels.cardinality().is_finite():
-                raise NotImplementedError("multiplicativity at a mixed exact/legacy algebra Hom requires finitely many source generators")
+            assert labels.cardinality().is_finite(), (
+                "multiplicativity at a mixed exact/legacy algebra Hom requires finitely many source generators"
+            )
             for left_label in labels:
                 left = source_module.module_generator(left_label)
                 for right_label in labels:
@@ -276,8 +278,9 @@ class MultiplicativeAlgebraMorphism(Morphism):
     right = underlying_morphism
 
     def tensor_square_morphism(self):
-        if self._tensor_square_morphism is None:
-            raise NotImplementedError("this mixed exact/legacy algebra map has no represented tensor-square map")
+        assert self._tensor_square_morphism is not None, (
+            "tensor_square_morphism requires a represented tensor-square map for this algebra morphism"
+        )
         return self._tensor_square_morphism
 
     left = tensor_square_morphism
@@ -422,8 +425,9 @@ class _UnitalAlgebraParentMethods:
 
     def unit_morphism(self):
         selected = self.__dict__.get("_preamble_algebra_unit_morphism")
-        if selected is None:
-            raise NotImplementedError("this unital algebra has no retained R-to-A unit morphism")
+        assert selected is not None, (
+            "unit_morphism requires the retained R-to-A unit morphism of this unital algebra"
+        )
         return selected
 
 
@@ -498,14 +502,6 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
 
         return _de_rham_cohomology_algebra_functor(self.base_ring())
 
-    def product(self, factors):
-        r"""Return the product of a represented two-object family."""
-        left, right = _two_factors_of(factors, name="Product factors")
-        return self._categorical_product(left, right)
-
-    def _categorical_product(self, left, right):
-        raise NotImplementedError("the represented categorical product of commutative algebras is not yet implemented")
-
     def coproduct(self, factors):
         r"""Return the represented two-factor tensor-product coproduct."""
         left, right = _two_factors_of(factors, name="Coproduct factors")
@@ -515,8 +511,9 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         operation = getattr(left, "_commutative_algebra_coproduct", None)
         if operation is None:
             operation = getattr(right, "_commutative_algebra_coproduct", None)
-        if operation is None:
-            raise NotImplementedError("neither factor carries a represented commutative-algebra coproduct backend")
+        assert operation is not None, (
+            "commutative-algebra coproduct requires a represented coproduct backend on one selected factor"
+        )
         return operation(left, right)
 
     def _categorical_coproduct_morphism(
@@ -542,8 +539,9 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         operation = getattr(left, "_commutative_algebra_pushout", None)
         if operation is None:
             operation = getattr(right, "_commutative_algebra_pushout", None)
-        if operation is None:
-            raise NotImplementedError("neither factor carries a represented commutative-algebra pushout backend")
+        assert operation is not None, (
+            "commutative-algebra pushout requires a represented pushout backend on one selected factor"
+        )
         return operation(left_morphism, right_morphism)
 
 
@@ -622,8 +620,10 @@ class _AlgebraTensorSquareFunctor(Functor):
 @cached_function(key=lambda base_ring: id(_owned_ring(base_ring)))
 def _algebra_tensor_square_functor(base_ring):
     ring = _owned_ring(base_ring)
-    if ring not in OwnedRings().Commutative():
-        raise NotImplementedError("constructing an algebra from M tensor_R M over a noncommutative base requires a represented bimodule tensor product")
+    assert ring in OwnedRings().Commutative(), (
+        "the represented algebra tensor-square functor requires a commutative base ring; "
+        "noncommutative bases require a selected bimodule tensor product"
+    )
     return _AlgebraTensorSquareFunctor(ring)
 
 
@@ -1061,13 +1061,15 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             module = self.underlying_module()
-            if ring not in OwnedFields():
-                raise NotImplementedError("algebra-ideal closure is currently decided for finite-dimensional algebras over fields")
+            assert ring in OwnedFields(), (
+                "algebra-ideal closure is represented here for finite-dimensional algebras over fields"
+            )
             if subobject.inclusion().codomain() is not module:
                 raise ValueError("an algebra ideal generator must be a submodule of the algebra carrier")
             ambient_labels = module.module_generating_set()
-            if not ambient_labels.cardinality().is_finite():
-                raise NotImplementedError("algebra-ideal closure currently requires a finite module framing")
+            assert ambient_labels.cardinality().is_finite(), (
+                "algebra-ideal closure requires a finite selected module framing"
+            )
 
             subobjects = Modules(ring).Subobjects(module)
             current = subobject
@@ -1542,10 +1544,9 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         def finite_algebra_generators(self):
             r"""Return the selected algebra generators as a finite ordered family."""
             labels = self.algebra_generating_set()
-            if not labels.cardinality().is_finite():
-                raise NotImplementedError(
-                    f"{self} has an infinite chosen algebra generating set"
-                )
+            assert labels.cardinality().is_finite(), (
+                f"finite_algebra_generators requires a finite chosen algebra generating set on {self}"
+            )
             return FiniteOrderedSets().from_indexed(
                 labels,
                 self.algebra_generator,
@@ -1816,7 +1817,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 TypeError,
                 ValueError,
             ) as error:
-                raise NotImplementedError("the selected algebra presentation has no quotient-cover elimination backend") from error
+                raise AssertionError(
+                    "the selected algebra presentation requires a quotient-cover elimination backend"
+                ) from error
 
             if cover is presentation_engine:
                 algebra_variables = tuple(presentation_engine.gens())
@@ -1826,11 +1829,13 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                     "flattening_morphism",
                     None,
                 )
-                if flattening_factory is None:
-                    raise NotImplementedError("the selected relative presentation has no canonical polynomial flattening")
+                assert callable(flattening_factory), (
+                    "the selected relative presentation requires a canonical polynomial flattening"
+                )
                 flattening = flattening_factory()
-                if flattening.codomain() is not cover:
-                    raise NotImplementedError("the quotient cover is not the canonical flattening of the selected presentation")
+                assert flattening.codomain() is cover, (
+                    "the selected quotient cover must be the codomain of the canonical presentation flattening"
+                )
                 algebra_variables = tuple(flattening(generator) for generator in presentation_engine.gens())
 
             try:
@@ -1841,7 +1846,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 TypeError,
                 ValueError,
             ) as error:
-                raise NotImplementedError("the selected polynomial backend cannot eliminate the algebra variables") from error
+                raise AssertionError(
+                    "the selected polynomial presentation backend must eliminate the algebra variables"
+                ) from error
             return bool(scalar_kernel.is_zero())
 
         def is_torsion_free(self) -> bool:
@@ -1857,24 +1864,29 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             base = self.base_ring()
             if bool(_engine_ring(base).is_field()):
                 return True
-            if base not in PrincipalIdealDomains():
-                raise NotImplementedError("torsion-freeness of this algebra is currently decided over a represented PID")
-            if not bool(self.is_integral_domain()):
-                raise NotImplementedError("the represented PID-algebra torsion criterion currently requires an integral target")
+            assert base in PrincipalIdealDomains(), (
+                "the represented algebra torsion-freeness criterion requires a PID base"
+            )
+            assert bool(self.is_integral_domain()), (
+                "the represented PID-algebra torsion criterion requires an integral target"
+            )
             return self._represented_structure_morphism_kernel_is_zero()
 
         def _represented_primitive_hypersurface_relative_dimension(self) -> int:
             r"""Return the common fibre dimension for a primitive hypersurface presentation."""
 
             relations = self.relations()
-            if not relations.cardinality().is_finite() or int(relations.cardinality()) != 1:
-                raise NotImplementedError("the represented relative-dimension criterion currently requires one defining equation")
+            assert relations.cardinality().is_finite() and int(relations.cardinality()) == 1, (
+                "the represented relative-dimension criterion requires one defining equation"
+            )
             labels = self.presentation_ring().algebra_generating_set()
-            if not labels.cardinality().is_finite():
-                raise NotImplementedError("the represented hypersurface criterion requires finitely many relative variables")
+            assert labels.cardinality().is_finite(), (
+                "the represented hypersurface criterion requires finitely many relative variables"
+            )
             variable_count = int(labels.cardinality())
-            if variable_count == 0:
-                raise NotImplementedError("the represented hypersurface criterion requires a positive relative affine dimension")
+            assert variable_count > 0, (
+                "the represented hypersurface criterion requires a positive relative affine dimension"
+            )
 
             relation_index = next(iter(relations.index_set()))
             relation = relations.value(relation_index)
@@ -1882,8 +1894,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             presentation_engine = _engine_ring(presentation)
             backend_relation = presentation_engine(_engine_element(presentation, relation))
             coefficient_ideal = self.base_ring().ideal(*tuple(self.base_ring()._from_engine_element(coefficient) for coefficient in backend_relation.coefficients()))
-            if coefficient_ideal != self.base_ring().ideal(self.base_ring().one()):
-                raise NotImplementedError("the selected hypersurface equation is not primitive over the base")
+            assert coefficient_ideal == self.base_ring().ideal(self.base_ring().one()), (
+                "the represented hypersurface relative-dimension criterion requires a primitive defining equation"
+            )
             return variable_count - 1
 
         def algebra_presentation_morphism(self):
@@ -1936,8 +1949,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 "_preamble_commutative_algebra_coproduct_backend",
                 None,
             )
-            if operation is None:
-                raise NotImplementedError("this selected presentation has no represented coproduct backend")
+            assert operation is not None, (
+                "this selected presentation requires a represented commutative-algebra coproduct backend"
+            )
             return operation(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
@@ -1946,8 +1960,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 "_preamble_commutative_algebra_pushout_backend",
                 None,
             )
-            if operation is None:
-                raise NotImplementedError("this selected presentation has no represented pushout backend")
+            assert operation is not None, (
+                "this selected presentation requires a represented commutative-algebra pushout backend"
+            )
             return operation(left_map, right_map)
 
 
@@ -2083,12 +2098,9 @@ class AlgebraMorphism(Morphism):
 
             labels = domain.module_generating_set()
             size = labels.cardinality()
-            try:
-                finite = size.is_finite()
-            except NotImplementedError:
-                finite = False
-            if not finite:
-                raise NotImplementedError("verification that a module morphism is multiplicative currently requires a finite module generating set")
+            assert size.is_finite(), (
+                "verification that an adopted module morphism is multiplicative requires a finite module generating set"
+            )
             if images(domain.one()) != codomain.one():
                 raise ValueError("an algebra morphism must preserve the unit")
             for left_label in labels:
@@ -2134,8 +2146,9 @@ class AlgebraMorphism(Morphism):
             else:
                 self._generator_images = None
             return
-        if not framed_domain:
-            raise NotImplementedError("an algebra morphism from an unframed domain must be supplied as an exact engine ring morphism")
+        assert framed_domain, (
+            "an algebra morphism from an unframed domain must be supplied as an exact engine ring morphism"
+        )
         labels = domain.algebra_generating_set()
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
@@ -2178,8 +2191,10 @@ class AlgebraMorphism(Morphism):
         else:
             raise TypeError("an algebra morphism is specified on the algebra generating set")
 
-        if engine_domain not in SageRings() or engine_codomain not in SageRings():
-            raise NotImplementedError("generator-defined maps with no Sage ring target are constructed through the free or chosen-presentation algebra Hom categories")
+        assert engine_domain in SageRings() and engine_codomain in SageRings(), (
+            "generator-defined maps at this generic algebra-Hom boundary require native Sage ring endpoints; "
+            "owned-only maps use the free or chosen-presentation Hom categories"
+        )
         self._engine_morphism = _engine_algebra_morphism_from_generator_images(
             domain,
             codomain,
@@ -2210,16 +2225,18 @@ class AlgebraMorphism(Morphism):
         return _engine_algebra_morphism(self)
 
     def algebra_generator_morphism(self):
-        if self._generator_images is None:
-            raise NotImplementedError("an unframed algebra domain has no selected generator morphism")
+        assert self._generator_images is not None, (
+            "algebra_generator_morphism requires a selected algebra generating family on the domain"
+        )
         return SetMorphism(
             Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
             self._generator_images.value,
         )
 
     def algebra_generator_images(self):
-        if self._generator_images is None:
-            raise NotImplementedError("an unframed algebra domain has no selected generator-image family")
+        assert self._generator_images is not None, (
+            "algebra_generator_images requires a selected algebra generating family on the domain"
+        )
         return self._generator_images
 
     def corestrict_to_center(self):
@@ -2242,7 +2259,7 @@ class AlgebraMorphism(Morphism):
             return op == op_EQ
         domain = self.domain()
         if domain not in FramedAlgebras(domain.base_ring()):
-            raise NotImplementedError("algebra-morphism equality requires a chosen algebra generating set")
+            return Unknown
         equal = self.algebra_generator_images() == other.algebra_generator_images()
         if equal is Unknown:
             return Unknown
@@ -2409,11 +2426,13 @@ def _corestrict_algebra_morphism_to_center(morphism):
     domain = morphism.domain()
     codomain = morphism.codomain()
     base = domain.base_ring()
-    if domain not in FramedAlgebras(base):
-        raise NotImplementedError("corestriction to the centre requires a chosen algebra generating set of the source")
+    assert domain in FramedAlgebras(base), (
+        "corestriction to the centre requires a chosen algebra generating set of the source"
+    )
     labels = domain.algebra_generating_set()
-    if not labels.cardinality().is_finite():
-        raise NotImplementedError("corestriction to the centre requires finitely many selected algebra generators")
+    assert labels.cardinality().is_finite(), (
+        "corestriction to the centre requires finitely many selected algebra generators"
+    )
     center = codomain.ring_center()
     for label in labels:
         image = morphism(domain.algebra_generator(label))
@@ -2840,11 +2859,13 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
     """
     engine_domain = _engine_ring(domain)
     engine_codomain = _engine_ring(codomain)
-    if engine_domain not in SageRings() or engine_codomain not in SageRings():
-        raise NotImplementedError("this algebra morphism has no native Sage ring realization")
+    assert engine_domain in SageRings() and engine_codomain in SageRings(), (
+        "the private Sage algebra-morphism realization requires native Sage ring endpoints"
+    )
     labels = domain.algebra_generating_set()
-    if not labels.cardinality().is_finite():
-        raise NotImplementedError("the private Sage algebra-morphism realization requires a finite generator framing")
+    assert labels.cardinality().is_finite(), (
+        "the private Sage algebra-morphism realization requires a finite generator framing"
+    )
 
     base = domain.base_ring()
     engine_base = _engine_ring(base)
@@ -2952,16 +2973,18 @@ def _engine_algebra_morphism(morphism):
     if isinstance(morphism, AlgebraMorphism) and morphism._engine_morphism is not None:
         return morphism._engine_morphism
     domain = morphism.domain()
-    if domain not in FramedAlgebras(domain.base_ring()):
-        raise NotImplementedError("a Sage realization of this unframed algebra morphism is not represented")
+    assert domain in FramedAlgebras(domain.base_ring()), (
+        "a private Sage realization of an owned algebra morphism requires a selected algebra generating family"
+    )
     images = {label: morphism(domain.algebra_generator(label)) for label in domain.algebra_generating_set()}
     return _engine_algebra_morphism_from_generator_images(domain, morphism.codomain(), images)
 
 
 def _engine_morphism_from_generator_images(engine_domain, engine_codomain, images, base_map):
     r"""Construct a native Sage ring morphism at the engine boundary."""
-    if engine_domain not in SageRings() or engine_codomain not in SageRings():
-        raise NotImplementedError("a native engine ring morphism requires native Sage ring endpoints")
+    assert engine_domain in SageRings() and engine_codomain in SageRings(), (
+        "a native engine ring morphism requires native Sage ring endpoints"
+    )
     return engine_domain.hom(
         [engine_codomain(image) for image in images],
         engine_codomain,
