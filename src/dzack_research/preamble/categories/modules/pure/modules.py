@@ -1832,6 +1832,24 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             )
 
 
+class _AdicModuleCompletion:
+    r"""The source module, ideal, and completed scalar ring defining ``M_hat``."""
+
+    def __init__(self, source_module, defining_ideal, completion_ring) -> None:
+        self._source_module = source_module
+        self._defining_ideal = defining_ideal
+        self._completion_ring = completion_ring
+
+    def source_module(self):
+        return self._source_module
+
+    def defining_ideal(self):
+        return self._defining_ideal
+
+    def completion_ring(self):
+        return self._completion_ring
+
+
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented modules carrying one selected finite presentation."""
 
@@ -1883,6 +1901,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     "an adically completed module requires its source, defining ideal, and completion ring"
                 )
+            self._completion_construction = None
             super().__init__(**rest)
             if completion_source_module is None:
                 return
@@ -1898,9 +1917,11 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     "the completed module must be a module over the selected completion ring"
                 )
-            self._preamble_completion_source_module = completion_source_module
-            self._preamble_completion_defining_ideal = completion_defining_ideal
-            self._preamble_completion_ring = completion_ring
+            self._completion_construction = _AdicModuleCompletion(
+                completion_source_module,
+                completion_defining_ideal,
+                completion_ring,
+            )
 
         @cached_method
         def tensor_hom_adjunction(self):
@@ -1943,25 +1964,25 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
         def is_adically_completed_module(self) -> bool:
-            return getattr(self, "_preamble_completion_source_module", None) is not None
+            return self._completion_construction is not None
 
         def completion_source_module(self):
-            source = getattr(self, "_preamble_completion_source_module", None)
-            if source is None:
+            construction = self._completion_construction
+            if construction is None:
                 raise ValueError("this module was not constructed by adic completion")
-            return source
+            return construction.source_module()
 
         def completion_defining_ideal(self):
-            ideal = getattr(self, "_preamble_completion_defining_ideal", None)
-            if ideal is None:
+            construction = self._completion_construction
+            if construction is None:
                 raise ValueError("this module was not constructed by adic completion")
-            return ideal
+            return construction.defining_ideal()
 
         def completion_ring(self):
-            completion = getattr(self, "_preamble_completion_ring", None)
-            if completion is None:
+            construction = self._completion_construction
+            if construction is None:
                 raise ValueError("this module was not constructed by adic completion")
-            return completion
+            return construction.completion_ring()
 
         @cached_method
         def completion_unit(self):
