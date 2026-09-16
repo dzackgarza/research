@@ -746,6 +746,55 @@ class Sets(OwnedCategory):
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
+        def _categorical_equalizer(self, left_morphism, right_morphism):
+            r"""Return the represented subset on which two set maps agree."""
+            return self._categorical_equalizer_construction(
+                left_morphism, right_morphism
+            ).object()
+
+        def _categorical_equalizer_construction(
+            self, left_morphism, right_morphism
+        ):
+            r"""Return the selected equalizer cone for two parallel set maps."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _parallel_pair_diagram,
+            )
+
+            if (
+                left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("a set equalizer requires parallel maps")
+            source = left_morphism.domain()
+            target = left_morphism.codomain()
+            if source not in self or target not in self:
+                raise TypeError("a set equalizer requires set-valued endpoints")
+
+            equalizer = self.condition_set(
+                source,
+                lambda element: left_morphism(element) == right_morphism(element),
+            )
+            inclusion = self.Mor(equalizer, source)(lambda element: source(element))
+            diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            universal_cone = diagram.Cones().cone(
+                equalizer,
+                lambda index: (
+                    inclusion
+                    if index is shape.source()
+                    else left_morphism * inclusion
+                ),
+            )
+
+            def factorizer(cone):
+                source_leg = cone.structure_morphism(shape.source())
+                return self.Mor(cone.apex(), equalizer)(
+                    lambda element: equalizer(source_leg(element))
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
         def coproduct(
             self,
             family: IndexedFamily | Iterable[Parent],

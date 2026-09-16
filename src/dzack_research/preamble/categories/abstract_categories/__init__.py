@@ -38,6 +38,17 @@ _EXPORTS = {
     "CommutativeSquare": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CommutativeSquare"),
     "SubobjectHomset": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectHomset"),
     "SubobjectMorphism": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectMorphism"),
+    "Coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Coverage"),
+    "CoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamilies"),
+    "CoveringFamily": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamily"),
+    "CoveringOverlap": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringOverlap"),
+    "DescentData": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentData"),
+    "DescentEqualizer": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizer"),
+    "DescentEqualizerComparison": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizerComparison"),
+    "SheafObject": ("dzack_research.preamble.categories.abstract_categories.presheaves", "SheafObject"),
+    "Sheaves": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Sheaves"),
+    "TrivialCoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "TrivialCoveringFamilies"),
+    "trivial_coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "trivial_coverage"),
 }
 
 __all__ = [
@@ -71,6 +82,17 @@ __all__ = [
     "CommutativeSquare",
     "SubobjectHomset",
     "SubobjectMorphism",
+    "Coverage",
+    "CoveringFamilies",
+    "CoveringFamily",
+    "CoveringOverlap",
+    "DescentData",
+    "DescentEqualizer",
+    "DescentEqualizerComparison",
+    "SheafObject",
+    "Sheaves",
+    "TrivialCoveringFamilies",
+    "trivial_coverage",
 ]
 
 
