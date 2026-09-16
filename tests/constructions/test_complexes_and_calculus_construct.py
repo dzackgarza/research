@@ -13,12 +13,12 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _koszul_complex(ring):
     r"""$0 \to A \xrightarrow{(x,y)} A^2 \xrightarrow{(-y, x)} A \to 0$ for $A = R[x, y]$."""
-    plane = PolynomialRing(ring, ("x", "y"))
+    plane = ring.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
-    first = FreeModule(plane, 1)
-    middle = FreeModule(plane, 2)
-    last = FreeModule(plane, 1)
+    first = plane.free_module(1)
+    middle = plane.free_module(2)
+    last = plane.free_module(1)
     d0 = first.Mor(middle)({0: x * middle.module_generator(0) + y * middle.module_generator(1)})
     d1 = middle.Mor(last)({0: -y * last.module_generator(0), 1: x * last.module_generator(0)})
     return plane, CochainComplexes(plane)({0: first, 1: middle, 2: last}, {0: d0, 1: d1})
@@ -35,7 +35,7 @@ def test_the_koszul_complex_of_a_regular_sequence(field) -> None:
     assert koszul.cycles(1).module_rank() == 1
     assert koszul.boundaries(1).module_rank() == 1
     assert koszul.cycles(1) == koszul.boundaries(1)
-    assert cohomology_functor(plane, 2)(koszul) == koszul.cohomology(2)
+    assert CochainComplexes(plane).cohomology(2)(koszul) == koszul.cohomology(2)
     assert CochainComplexes(plane).underlying_graded_module()(koszul) in GradedModules(plane)
 
 
@@ -56,7 +56,7 @@ def test_cochain_morphisms_and_the_identity() -> None:
 
 
 def test_a_complex_with_nonzero_d_squared_is_refused() -> None:
-    line = FreeModule(ZZ, 1)
+    line = ZZ.free_module(1)
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
     with pytest.raises((ValueError, AssertionError)):
         CochainComplexes(ZZ)({0: line, 1: line, 2: line}, {0: doubling, 1: doubling})
@@ -64,7 +64,7 @@ def test_a_complex_with_nonzero_d_squared_is_refused() -> None:
 
 def test_a_cochain_complex_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    line = FreeModule(ring, 1)
+    line = ring.free_module(1)
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
     complex_ = CochainComplexes(ring)({0: line, 1: line}, {0: doubling})
     assert complex_ in CochainComplexes(ring)
@@ -78,9 +78,9 @@ def test_a_cochain_complex_over_every_commutative_ring(commutative_ring) -> None
 
 
 def test_connections_on_a_free_module_over_the_affine_line(field) -> None:
-    line = PolynomialRing(field, "x")
-    module = FreeModule(line, 1)
-    connections = Connections(module)
+    line = field.polynomial_ring("x")
+    module = line.free_module(1)
+    connections = module.connections()
     omega = line.kahler_differentials()
     target = connections.target_module()
     dx = omega.differential_generator("x")
@@ -92,7 +92,7 @@ def test_connections_on_a_free_module_over_the_affine_line(field) -> None:
     assert twisted.is_flat()
     assert trivial.module() is module
     assert trivial.algebra() is line
-    with_connection = ModuleWithConnection(twisted)
+    with_connection = ModulesWithConnection(line)(twisted)
     assert with_connection in ModulesWithConnection(line)
     assert with_connection in ModulesWithFlatConnection(line)
     assert with_connection.connection() is twisted
@@ -101,10 +101,10 @@ def test_connections_on_a_free_module_over_the_affine_line(field) -> None:
 
 def test_curvature_of_a_connection_on_the_plane(field) -> None:
     r"""$\nabla = d + x\,dy$ on the trivial line bundle has curvature $dx \wedge dy \ne 0$."""
-    plane = PolynomialRing(field, ("x", "y"))
+    plane = field.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
-    module = FreeModule(plane, 1)
-    connections = Connections(module)
+    module = plane.free_module(1)
+    connections = module.connections()
     omega = plane.kahler_differentials()
     target = connections.target_module()
     dy = omega.differential_generator("y")
@@ -116,8 +116,9 @@ def test_curvature_of_a_connection_on_the_plane(field) -> None:
     assert flat.is_flat()
     assert curved.curvature_on_generator(0) != curved.curvature_target().zero()
     assert flat.curvature_on_generator(0) == flat.curvature_target().zero()
-    assert ModuleWithConnection(curved) in ModulesWithConnection(plane)
-    assert ModuleWithConnection(curved) not in ModulesWithFlatConnection(plane)
+    curved_module = ModulesWithConnection(plane)(curved)
+    assert curved_module in ModulesWithConnection(plane)
+    assert curved_module not in ModulesWithFlatConnection(plane)
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +127,7 @@ def test_curvature_of_a_connection_on_the_plane(field) -> None:
 
 
 def _plane_calculus(field):
-    plane = PolynomialRing(field, ("x", "y"))
+    plane = field.polynomial_ring(("x", "y"))
     values = plane.regular_module()
     fields_ = plane.vector_fields()
     x = plane.algebra_generator("x")
@@ -183,9 +184,9 @@ def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None
 
 def test_de_rham_cohomology_of_the_punctured_line(field) -> None:
     r"""$H^1_{dR}(\mathbb G_m) $ is spanned by $dx/x$ in characteristic zero."""
-    laurent = LaurentPolynomialRing(field, "x")
+    laurent = field.laurent_polynomial_ring("x")
     de_rham = laurent.de_rham_algebra()
-    cohomology = CohomologyAlgebra(de_rham)
+    cohomology = de_rham.cohomology_algebra()
     assert cohomology in CohomologyAlgebras(field)
     assert de_rham.cohomology(0).module_rank() == 1
     if field.characteristic() == 0:
@@ -196,8 +197,8 @@ def test_de_rham_cohomology_of_the_punctured_line(field) -> None:
 
 
 def test_the_regular_dg_module_of_a_dga(field) -> None:
-    de_rham = PolynomialRing(field, "x").de_rham_algebra()
-    regular = regular_dg_module(de_rham)
+    de_rham = field.polynomial_ring("x").de_rham_algebra()
+    regular = de_rham.regular_dg_module()
     assert regular in DifferentialGradedModules(de_rham)
     assert regular.dga() is de_rham
     assert regular.is_differential_graded_module()

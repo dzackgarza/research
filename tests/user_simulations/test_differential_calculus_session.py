@@ -27,7 +27,7 @@ FIELDS = {"QQ": lambda: QQ, "QQ(i)": lambda: QuadraticField(-1, "i"), "GF(5)": l
 def test_a_differential_calculus_session(name, dimension) -> None:
     field = FIELDS[name]()
     names = ("x", "y", "z")[:dimension]
-    algebra = PolynomialRing(field, names)
+    algebra = field.polynomial_ring(names)
     rendered(algebra)
     coordinates = [algebra.algebra_generator(label) for label in names]
     x, y = coordinates[0], coordinates[1]
@@ -87,8 +87,8 @@ def test_a_differential_calculus_session(name, dimension) -> None:
         assert vector_field.lie_derivative()(one_form) == cartan
 
     # A connection on a line bundle and its curvature.
-    line_bundle = FreeModule(algebra, 1)
-    connections = Connections(line_bundle)
+    line_bundle = algebra.free_module(1)
+    connections = line_bundle.connections()
     target = connections.target_module()
     section = line_bundle.module_generator(0)
     flat = connections(lambda label: target.pure_tensor(section, omega.differential_generator("x")))
@@ -97,8 +97,8 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     rendered(curved)
     assert flat.is_flat()
     assert not curved.is_flat()
-    assert ModuleWithConnection(flat) in ModulesWithFlatConnection(algebra)
-    assert ModuleWithConnection(curved) not in ModulesWithFlatConnection(algebra)
+    assert ModulesWithConnection(algebra)(flat) in ModulesWithFlatConnection(algebra)
+    assert ModulesWithConnection(algebra)(curved) not in ModulesWithFlatConnection(algebra)
 
     # De Rham cohomology of affine space and of the punctured plane.
     for degree in range(dimension + 1):
@@ -107,7 +107,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     if field.characteristic() == 0:
         for degree in range(1, dimension + 1):
             assert de_rham.cohomology(degree).cardinality() == 1
-        punctured = LaurentPolynomialRing(field, names).de_rham_algebra()
+        punctured = field.laurent_polynomial_ring(names).de_rham_algebra()
         rendered(punctured)
         assert punctured.cohomology(0).module_rank() == 1
         assert punctured.cohomology(1).module_rank() == dimension
