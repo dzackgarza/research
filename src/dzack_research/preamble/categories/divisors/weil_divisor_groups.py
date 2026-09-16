@@ -10,6 +10,20 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.owned_category_bases import Category
 
 
+class _WeilDivisorConstruction:
+    r"""The selected scheme defining one represented Weil-divisor role."""
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+
+class _AffineNormalWeilDivisorConstruction(_WeilDivisorConstruction):
+    r"""The full Weil-divisor group of a represented normal affine scheme."""
+
+
 class WeilDivisorGroups(Category):
     def an_object(self):
         return _divisor_role_specimen(self)
@@ -30,27 +44,35 @@ class WeilDivisorGroups(Category):
             module,
             self,
             "a Weil divisor group requires a represented free-module presentation",
-            construction_data=None if scheme is None else {"divisor_scheme": scheme},
+            construction_data=(
+                None
+                if scheme is None
+                else {"_weil_divisor_construction": _WeilDivisorConstruction(scheme)}
+            ),
         )
 
     class ParentMethods:
-        def divisor_scheme(self):
-            scheme = getattr(self, "_preamble_divisor_scheme", None)
-            if scheme is None:
+        def weil_divisor_construction(self):
+            r"""Return the selected geometric datum defining this Weil-divisor role."""
+            construction = getattr(self, "_weil_divisor_construction", None)
+            if construction is None:
                 raise TypeError("this Weil-divisor role has no selected scheme")
-            return scheme
+            return construction
+
+        def divisor_scheme(self):
+            return self.weil_divisor_construction().scheme()
 
         def prime_divisor_locus(self):
-            locus = getattr(self, "_preamble_prime_divisor_locus", None)
-            if locus is None:
+            construction = self.weil_divisor_construction()
+            if not isinstance(construction, _AffineNormalWeilDivisorConstruction):
                 raise TypeError("this Weil-divisor role has no represented full prime-divisor locus")
-            return locus
+            return self.module_generating_set()
 
         def affine_divisor_coordinate_ring(self):
-            ring = getattr(self, "_preamble_affine_divisor_coordinate_ring", None)
-            if ring is None:
+            construction = self.weil_divisor_construction()
+            if not isinstance(construction, _AffineNormalWeilDivisorConstruction):
                 raise TypeError("this Weil-divisor role is not an affine-normal divisor group")
-            return ring
+            return construction.scheme().coordinate_algebra()
 
         def prime_divisor(self, point):
             spectrum = self.affine_divisor_coordinate_ring().spectrum()

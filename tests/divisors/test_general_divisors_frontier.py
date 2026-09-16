@@ -1,5 +1,7 @@
 """General divisor theory beyond torus-invariant presentations."""
 
+import pytest
+
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
@@ -95,6 +97,9 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     assert prime.height() == 1
 
     full_weil = scheme.full_weil_divisor_group()
+    assert full_weil.divisor_scheme() is scheme
+    assert full_weil.affine_divisor_coordinate_ring() is ring
+    assert full_weil.prime_divisor_locus() is full_weil.module_generating_set()
     prime_divisor = full_weil.prime_divisor(prime)
     assert not full_weil.prime_is_cartier_at(prime, vertex)
     assert full_weil.prime_is_cartier_at(prime, prime)
@@ -112,6 +117,11 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     principal = ZZ.free_module(1)
     cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
     weil_presentation = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    assert weil_presentation.divisor_scheme() is scheme
+    with pytest.raises(TypeError, match="no represented full prime-divisor locus"):
+        weil_presentation.prime_divisor_locus()
+    with pytest.raises(TypeError, match="not an affine-normal divisor group"):
+        weil_presentation.affine_divisor_coordinate_ring()
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)
     weil_generator = weil_presentation.module_generator(0)
