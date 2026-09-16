@@ -582,13 +582,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
 
         algebra_base_ring = base_ring
 
-        def ideal(self, *module_generators):
-            from dzack_research.preamble.categories.modules.fractional_ideals import (
-                _integral_ideal,
-            )
-
-            return _integral_ideal(self, tuple(module_generators))
-
         def localization(self, *elements):
             from dzack_research.preamble.categories.rings.commutative_algebra import _localization
 
