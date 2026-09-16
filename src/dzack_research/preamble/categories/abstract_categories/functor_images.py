@@ -24,6 +24,20 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category import _object_of
 
 
+class _FunctorImagePresentation:
+    r"""The selected source object together with its exact functor image."""
+
+    def __init__(self, preimage, underlying_image) -> None:
+        self._preimage = preimage
+        self._underlying_image = underlying_image
+
+    def preimage(self):
+        return self._preimage
+
+    def underlying_image(self):
+        return self._underlying_image
+
+
 class FunctorImageMorphism(Morphism):
     r"""A codomain arrow read between two chosen functor presentations."""
 
@@ -105,16 +119,19 @@ class ImageOfFunctor(OwnedCategory):
         return typecall(cls, functor)
 
     class ParentMethods:
-        def __init__(self, preimage, underlying_image, **rest) -> None:
-            self._preamble_functor_preimage = preimage
-            self._preamble_underlying_functor_image = underlying_image
+        def __init__(self, presentation, **rest) -> None:
+            self._presentation = presentation
             super().__init__(**rest)
 
+        def presentation(self):
+            r"""Return the selected source/image datum defining this presented object."""
+            return self._presentation
+
         def preimage(self):
-            return self._preamble_functor_preimage
+            return self.presentation().preimage()
 
         def underlying_image(self):
-            return self._preamble_underlying_functor_image
+            return self.presentation().underlying_image()
 
         def constructing_functor(self):
             return self.category().functor()
@@ -147,7 +164,8 @@ class ImageOfFunctor(OwnedCategory):
         if recorded is not None and recorded[0] is preimage:
             return recorded[1]
         image = self.functor()(preimage)
-        presented = _object_of(self, preimage=preimage, underlying_image=image)
+        presentation = _FunctorImagePresentation(preimage, image)
+        presented = _object_of(self, presentation=presentation)
         self._presentations[key] = (preimage, presented)
         return presented
 
