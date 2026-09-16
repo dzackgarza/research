@@ -10,8 +10,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FinitelyPresentedModules,
-    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -83,11 +81,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-
-        return [
-            FinitelyPresentedModules(self.base_ring()),
-            FramedModules(self.base_ring()),
-        ]
+        return [ModulesWithChosenFinitePresentation(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, kahler_construction, **rest) -> None:
