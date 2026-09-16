@@ -61,7 +61,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    FormedModules,
     PairedModules,
     SymmetricBilinearFormModules,
 )
@@ -924,7 +923,7 @@ class Lp(_FunctionSpace):
     EXAMPLES::
 
         sage: from dzack_research.preamble.all import (
-        ....:     C, FormModules, FormedModules, Lp, PairedModules, RR,
+        ....:     C, FormModules, Lp, PairedModules, RR,
         ....:     SymmetricBilinearFormModules, VectorSpaces, exp,
         ....: )
         sage: L = Lp(2)
@@ -934,9 +933,7 @@ class Lp(_FunctionSpace):
         True
         sage: L in SymmetricBilinearFormModules(RR)
         True
-        sage: L in FormedModules(RR)
-        True
-        sage: L in PairedModules(RR)
+        sage: L in FormModules(RR)
         True
         sage: Lp(1) in FormModules(RR)
         False
@@ -952,7 +949,7 @@ class Lp(_FunctionSpace):
         True
         sage: Lp(1) * Lp(Infinity) in PairedModules(RR)
         True
-        sage: Lp(1) * Lp(Infinity) in FormedModules(RR)
+        sage: Lp(1) * Lp(Infinity) in FormModules(RR)
         False
     """
 
@@ -964,13 +961,18 @@ class Lp(_FunctionSpace):
         self._exponent = p
         category = VectorSpaces(RR)
         if p == 2:
-            category = (
-                category & SymmetricBilinearFormModules(RR) & FormedModules(RR)
-            )
+            category = category & SymmetricBilinearFormModules(RR)
         _FunctionSpace.__init__(self, RR, RR, category)
         if p == 2:
             self._form = self.bilinear_forms(RR)(_l2_pairing)
-            self._pairing = self._form
+
+    def form(self):
+        r"""The selected form \(b(f,g)=\int_{\mathbb R}fg\) of \(L^2\)."""
+        assert self.integrability_exponent() == 2, f"{self} has no form"
+        return self._form
+
+    def unformed_module(self):
+        return self
 
     def _element_constructor_(self, value):
         element = super()._element_constructor_(value)
@@ -1052,13 +1054,18 @@ class _ell(_FunctionSpace):
         self._exponent = p
         category = VectorSpaces(RR)
         if p == 2:
-            category = (
-                category & SymmetricBilinearFormModules(RR) & FormedModules(RR)
-            )
+            category = category & SymmetricBilinearFormModules(RR)
         _FunctionSpace.__init__(self, NN, values, category, indeterminate=SR.var("n"))
         if p == 2:
             self._form = self.bilinear_forms(RR)(_ell2_pairing)
-            self._pairing = self._form
+
+    def form(self):
+        r"""The selected form \(b(a,b)=\sum_n a_nb_n\) of \(\ell^2\)."""
+        assert self.integrability_exponent() == 2, f"{self} has no form"
+        return self._form
+
+    def unformed_module(self):
+        return self
 
     def integrability_exponent(self):
         return self._exponent
@@ -1127,16 +1134,14 @@ class _SequenceSpaces(SageObject):
     EXAMPLES::
 
         sage: from dzack_research.preamble.all import (
-        ....:     FormedModules, PairedModules, QQ, RR, VectorSpaces, ell,
+        ....:     FormModules, PairedModules, QQ, RR, VectorSpaces, ell,
         ....: )
         sage: from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         sage: ell(2) is ell(2, RR)
         True
-        sage: ell(2) in VectorSpaces(RR)
+        sage: ell(2) in FormModules(RR)
         True
-        sage: ell(2) in FormedModules(RR)
-        True
-        sage: ell(1) in FormedModules(RR)
+        sage: ell(1) in FormModules(RR)
         False
         sage: n = ell(2).indeterminate()
         sage: geometric = ell(2)(2 ** (-n))
@@ -1154,7 +1159,7 @@ class _SequenceSpaces(SageObject):
         True
         sage: ell(1) * ell(Infinity) in PairedModules(RR)
         True
-        sage: ell(1) * ell(Infinity) in FormedModules(RR)
+        sage: ell(1) * ell(Infinity) in FormModules(RR)
         False
     """
 

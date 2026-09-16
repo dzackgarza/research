@@ -1657,10 +1657,7 @@ class FreeModules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
-        return [
-            Modules(self.base_ring()),
-            ProjectiveModules(self.base_ring()),
-        ]
+        return [ProjectiveModules(self.base_ring())]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -2331,7 +2328,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         return [
             FramedFreeModules(self.base_ring()),
             ModulesWithChosenFinitePresentation(self.base_ring()),
-            ProjectiveModules(self.base_ring()),
         ]
 
     def kernel_arrow_functor(self):

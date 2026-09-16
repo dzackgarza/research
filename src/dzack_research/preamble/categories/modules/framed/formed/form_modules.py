@@ -60,7 +60,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -693,11 +692,11 @@ class FiberedFormedModuleHomset(CategoricalHomset):
             raise ValueError("the coefficient map does not land at the target base ring")
         self._ring_map = ring_map
         self._base_changed_domain = domain.base_change(ring_map)
-        # The endpoints sit over different base rings, so the Hom lives in the
-        # total category of the formed-module fibration, not in one fibre.
+        # The endpoints sit over different base rings; the Hom is filed under
+        # the Hom category of the source fibre.
         CategoricalHomset.__init__(
             self,
-            FormedModules(domain.value_module()).HomCategory(),
+            FormModules(domain.base_ring()).HomCategory(),
             domain,
             codomain,
         )
@@ -741,7 +740,7 @@ class PairedModules(OwnedParameterizedCategory):
 
     An object is classified by an element of
     \(\operatorname{Hom}_R(X\otimes_R Y,W)\).  The diagonal \(X=Y\) is
-    :class:`FormedModules`.
+    :class:`FormModules`.
     """
 
     def an_object(self):
@@ -762,9 +761,6 @@ class PairedModules(OwnedParameterizedCategory):
 
     def parameter_category(self):
         return FormValueObjects()
-
-    def super_categories(self):
-        return [OwnedSets()]
 
     def _call_(self, pairing):
         codomain = _normalize_value_module(pairing.codomain())
@@ -789,64 +785,6 @@ class PairedModules(OwnedParameterizedCategory):
 
         def value_module(self):
             return self._pairing.codomain()
-
-
-class FormedModules(OwnedParameterizedCategory):
-    r"""Modules equipped with a bilinear form \(M\otimes_R M\to W\).
-
-    This is the diagonal of :class:`PairedModules`: a pairing of a module
-    with itself.
-    """
-
-    def an_object(self):
-        r"""The hyperbolic plane U, whose form takes values in the parameter."""
-        from dzack_research.preamble.categories.lattices import Lattices
-
-        return Lattices(self.base())("U")
-
-    @staticmethod
-    def __classcall__(cls, value_module):
-        return OwnedParameterizedCategory.__classcall__(
-            cls, _normalize_value_module(value_module)
-        )
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "formed modules"
-
-    def parameter_category(self):
-        return FormValueObjects()
-
-    def super_categories(self):
-        return [PairedModules(self.base())]
-
-    class ParentMethods:
-        def b(self, left, right):
-            return self.pairing(left, right)
-
-        def q(self, element):
-            return self.b(element, element)
-
-    class ElementMethods:
-        def b(self, other):
-            r"""Return the bilinear value ``b(self, other)``."""
-            return self.parent().b(self, other)
-
-        def q(self):
-            r"""Return the quadratic value ``q(self)=b(self,self)``."""
-            return self.parent().q(self)
-
-        def is_isotropic(self) -> bool:
-            r"""Return whether ``q(self)=0`` in the form's value module."""
-            return bool(self.q() == self.parent().value_module().zero())
-
-        def is_orthogonal_to(self, other) -> bool:
-            r"""Return whether ``b(self, other)=0``.
-
-            This is left orthogonality.  For a nonsymmetric form it need not
-            agree with ``other.is_orthogonal_to(self)``.
-            """
-            return bool(self.b(other) == self.parent().value_module().zero())
 
 
 class _FormModuleConstruction:
@@ -1006,22 +944,23 @@ class FormModules(OwnedCategoryOverBaseRing):
             if left not in self or right not in self:
                 raise TypeError("a form pairs two elements of one formed module")
             form = self.form()
-            forget = self.forget_form_morphism()
-            unformed_left = forget(left)
-            unformed_right = forget(right)
+            if self.unformed_module() is not self:
+                forget = self.forget_form_morphism()
+                left, right = forget(left), forget(right)
             if _is_quadratic_form(form):
-                return form.b(unformed_left, unformed_right)
-            return form(unformed_left, unformed_right)
+                return form.b(left, right)
+            return form(left, right)
 
         def norm(self, element):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
             if element not in self:
                 raise TypeError("the norm is defined on elements of this formed module")
             form = self.form()
-            unformed = self.forget_form_morphism()(element)
+            if self.unformed_module() is not self:
+                element = self.forget_form_morphism()(element)
             if _is_quadratic_form(form):
-                return form(unformed)
-            return form(unformed, unformed)
+                return form(element)
+            return form(element, element)
 
         def gram_tensor(self):
             r"""Return the scalar Gram as its intrinsic type-``(0,2)`` tensor."""
@@ -1220,6 +1159,22 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
         return [FormModules(self.base_ring())]
 
     _HomCategory = FormedModuleHomCategoryConstruction
+
+    class ParentMethods:
+        def q(self, vector):
+            r"""Return the quadratic form \(q(v)=b(v,v)\) of the bilinear form.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: I2 = Lattices(ZZ)(ZZ^2)
+                sage: I2.q(I2.module_generator(0))
+                1
+                sage: A2 = Lattices(ZZ)("A2")
+                sage: A2.q(A2.module_generator(0))
+                -2
+            """
+            return self.b(vector, vector)
 
 
 class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
@@ -1630,7 +1585,6 @@ def _form_module(
         categories.append(FinitelyPresentedFormModules(base_ring))
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        categories.append(FormedModules(form.codomain()))
         if is_presented and not is_finitely_generated_free:
             categories.append(FinitelyPresentedBilinearFormModules(base_ring))
         try:

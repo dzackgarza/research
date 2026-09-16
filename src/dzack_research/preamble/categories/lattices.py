@@ -109,7 +109,7 @@ from dzack_research.preamble.categories.modules.framed.formed.discriminant_modul
     DiscriminantQuadraticModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    FormedModules,
+    FreeFormModules,
     SymmetricBilinearFormModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
@@ -119,7 +119,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FramedFreeModules,
     _module_subobject_constructor_data,
     _span_basis_elements,
 )
@@ -925,36 +924,17 @@ class Lattices(OwnedCategoryOverBaseRing):
         A lattice is a free `R`-module with a symmetric `R`-valued form.
         Immediate supers only, as required by the Sage category primer.
 
-        ``FormedModules(R)`` is the third of them because this level is
-        where the value module is fixed.  ``FormModules(R)`` and its
-        bilinear refinements say that an object has a form; they leave the
-        module the form takes values in to the object, so neither can
-        declare a member of the family ``FormedModules(W)``.  A lattice
-        over `R` pairs into `R` itself, so for this category `W = R` and
-        the placement is a statement about the category rather than about
-        each object.
-
         EXAMPLES::
 
             sage: from dzack_research.preamble.categories.lattices import Lattices
             sage: Lattices(ZZ).super_categories()
-            [Category of framed free modules,
-             Category of modules with a symmetric bilinear form,
-             Category of formed modules]
-
-        A lattice is therefore a pairing of its module with itself::
-
-            sage: from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            ....:     FormedModules, PairedModules)
-            sage: U = Lattices(ZZ)("U")
-            sage: U in FormedModules(ZZ), U in PairedModules(ZZ)
-            (True, True)
+            [Category of free form modules,
+             Category of modules with a symmetric bilinear form]
         """
 
         return [
-            FramedFreeModules(self.base_ring()),
+            FreeFormModules(self.base_ring()),
             SymmetricBilinearFormModules(self.base_ring()),
-            FormedModules(self.base_ring()),
         ]
 
     _HomCategory = LatticeHomCategoryConstruction
@@ -1526,21 +1506,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                     self.base_ring().zero(),
                 )
             return gram(left._vector, right._vector)
-
-        def q(self, vector):
-            r"""Return the quadratic form \(q(v)=b(v,v)\).
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: I2 = Lattices(ZZ)(ZZ^2)
-                sage: I2.q(I2.module_generator(0))
-                1
-                sage: A2 = Lattices(ZZ)("A2")
-                sage: A2.q(A2.module_generator(0))
-                -2
-            """
-            return self.b(vector, vector)
 
         def module_rank(self):
             r"""Return the rank of this lattice as a free module.
@@ -4075,7 +4040,6 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            Lattices(self.base_ring()),
             FiniteRankLattices(self.base_ring()),
             NondegenerateLattices(self.base_ring()),
             EvenLattices(self.base_ring()),

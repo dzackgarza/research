@@ -297,7 +297,6 @@ from dzack_research.preamble.categories.modules import (
     FinitelyPresentedTorsionModules,
     FormedModuleHomset,
     FormedModuleMorphism,
-    FormedModules,
     FormEmbedding,
     FormModules,
     FractionalIdeals,

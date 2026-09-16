@@ -126,13 +126,10 @@ class ModulesOverGroupAlgebra(Modules):
         return f"modules over {self.base_ring()}"
 
     def super_categories(self):
-        # Scalar restriction to R and evaluation of the associated BG-functor
-        # are genuine functors, not literal category inclusions.  The group
-        # module keeps both structures as defining data instead of obtaining
-        # them from a false supercategory edge.
+        ring = self.coefficient_ring()
         return [
-            GObjects(self.acting_group(), Modules(self.coefficient_ring())),
-            AdditiveGroups().AdditiveCommutative(),
+            Modules(ring),
+            GObjects(self.acting_group(), Modules(ring)),
         ]
 
     _HomCategory = GroupModuleHomCategoryConstruction
