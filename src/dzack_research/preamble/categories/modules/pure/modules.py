@@ -711,9 +711,28 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""
+        domain = self._hom_endpoint(domain)
+        codomain = self._hom_endpoint(codomain)
         if domain not in self or codomain not in self:
             raise TypeError("an R-module Hom requires two R-modules")
         return self.HomCategory().Of(domain, codomain)
+
+    def _hom_endpoint(self, obj):
+        r"""Read an ``R[G]``-module over ``R`` by restriction of scalars along ``R -> R[G]``.
+
+        ``Hom_R(M, N)`` for two ``R[G]``-modules is the Hom of their
+        restrictions, so the endpoints of this category's Hom are restricted
+        before the Hom parent is built.
+        """
+        if obj in self:
+            return obj
+        from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
+
+        scalars = obj.base_ring()
+        if scalars in GroupAlgebras(self.base_ring()):
+            group_modules = Modules(scalars)
+            return group_modules.restriction_of_scalars(group_modules.coefficient_inclusion())(obj)
+        return obj
 
     def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
         r"""Return the category chosen when the canonical module Hom is constructed."""

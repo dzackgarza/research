@@ -16,6 +16,7 @@ and coequalizer of the action on a finite group generating set.
 
 from sage.categories.map import Map
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -26,11 +27,15 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.algebras.group_algebras import (
     GroupAlgebras,
 )
-from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
+from dzack_research.preamble.categories.functors.core import (
+    Adjunction,
+    Functor,
+    NaturalTransformation,
+)
 from dzack_research.preamble.categories.functors.scalar_change import (
     _ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
+from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,
@@ -126,7 +131,8 @@ class ModulesOverGroupAlgebra(Modules):
         return f"modules over {self.base_ring()}"
 
     def super_categories(self):
-        return [GObjects(self.acting_group(), Modules(self.coefficient_ring()))]
+        r"""What every module category declares; ``G``-objects over ``R`` are reached by :meth:`restriction_along_group_inclusion`."""
+        return [AdditiveGroups().AdditiveCommutative()]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
@@ -135,6 +141,33 @@ class ModulesOverGroupAlgebra(Modules):
         r"""The trivial action on the free module of rank one."""
         ring = self.coefficient_ring()
         return Modules(ring).trivial_action(self.acting_group())(Modules(ring).an_object())
+
+    @cached_method
+    def coefficient_inclusion(self):
+        r"""The ring morphism ``R -> R[G]``, ``r |-> r 1``, along which scalars restrict to ``R``."""
+        algebra = self.group_algebra()
+        return OwnedRings().Mor(self.coefficient_ring(), algebra)(
+            lambda scalar: algebra.scalar_multiple(scalar, algebra.one())
+        )
+
+    # The equivalence ``Modules(R[G]) ~ GObjects(G, Modules(R))``: restricting
+    # the ring action along ``G -> R[G]`` gives the action, and extending an
+    # action ``R``-linearly gives back the ``R[G]``-module.
+
+    @cached_method
+    def restriction_along_group_inclusion(self):
+        r"""``Modules(R[G]) -> GObjects(G, Modules(R))``, the action ``G -> Aut_R(M)`` of an ``R[G]``-module."""
+        return _RestrictionAlongGroupInclusionFunctor(self.group_algebra())
+
+    @cached_method
+    def linearization(self):
+        r"""``GObjects(G, Modules(R)) -> Modules(R[G])``, the ``R``-linear extension of a ``G``-action."""
+        return _LinearizationFunctor(self.group_algebra())
+
+    @cached_method
+    def linearization_equivalence(self):
+        r"""Linearization left adjoint to restriction along ``G -> R[G]``, with invertible unit and counit."""
+        return _LinearizationEquivalence(self.group_algebra())
 
     def _call_(self, module, action):
         r"""Construct the actual ``R[G]``-module defined by the supplied action."""
@@ -332,13 +365,8 @@ class ModulesOverGroupAlgebra(Modules):
         return self.restriction_coextension_adjunction(Modules(self.coefficient_ring()[subgroup])._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset(
-            {"action", "underlying_category"}
-        )
-
         def __init__(
             self,
-            acting_group,
             unacted_module,
             source_action,
             action_is_trivial=False,
@@ -349,24 +377,7 @@ class ModulesOverGroupAlgebra(Modules):
                 source_action,
                 action_is_trivial,
             )
-
-            coefficient_endomorphisms = Modules(unacted_module.base_ring()).Mor(
-                unacted_module,
-                unacted_module,
-            )
-
-            def coefficient_action(group_element):
-                return coefficient_endomorphisms.elementwise(
-                    lambda vector: _apply_action(source_action, group_element, vector),
-                    verify_linearity=False,
-                )
-
-            super().__init__(
-                acting_group=acting_group,
-                action=coefficient_action,
-                underlying_category=Modules(unacted_module.base_ring()),
-                **rest,
-            )
+            super().__init__(**rest)
 
         def _group_module_placement(self):
             r"""The ``Modules(R[G])`` this object is placed in; its parameter names the group."""
@@ -461,6 +472,18 @@ class ModulesOverGroupAlgebra(Modules):
                 return self.action_of(group_element)(element)
             coefficient = self.forget_action_morphism()(element)
             return self.equip_action_morphism()(self.action_of(group_element)(coefficient))
+
+        def is_invariant(self, element):
+            r"""Decide ``g . element = element`` for every ``g``, on the chosen group generators."""
+            group = self.group()
+            if group.is_finitely_generated() is not True:
+                return Unknown
+            return all(self.act(generator, element) == element for generator in group.group_generators())
+
+        def restrict_action(self, group_morphism):
+            r"""This module acted on by ``H`` through ``phi: H -> G``: restriction of scalars along ``R[H] -> R[G]``."""
+            algebra_morphism = OwnedGroups().group_algebra(self.coefficient_ring())(group_morphism)
+            return self.module_category().restriction_of_scalars(algebra_morphism)(self)
 
         @cached_method
         def is_trivial_action(self) -> bool:
@@ -1091,7 +1114,7 @@ class GroupModuleMorphism(ModuleMorphism):
         )
 
 
-class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
+class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = GroupModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
@@ -1123,8 +1146,6 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
     def is_equivariant(self, arrow):
         group = self.domain().group()
         if group.is_finitely_generated() is not True:
-            from sage.misc.unknown import Unknown
-
             return Unknown
         underlying = _coefficient_morphism_from_images(
             self,
@@ -1273,7 +1294,6 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
         GeneralModules(group_algebra),
         base_ring=group_algebra,
         rho=scalar_action,
-        acting_group=group,
         unacted_module=module,
         source_action=action,
         action_is_trivial=_action_is_trivial,
@@ -1288,6 +1308,99 @@ def _trivial_action(module, group):
         lambda _group_element, vector: vector,
         _action_is_trivial=True,
     )
+
+
+class _RestrictionAlongGroupInclusionFunctor(Functor):
+    r"""``Modules(R[G]) -> GObjects(G, Modules(R))``: the action ``G -> Aut_R(M)`` of an ``R[G]``-module."""
+
+    _faithful = True
+
+    def __init__(self, group_algebra) -> None:
+        modules = Modules(group_algebra)
+        self._group = modules.acting_group()
+        self._coefficient_modules = Modules(modules.coefficient_ring())
+        super().__init__(modules, GObjects(self._group, self._coefficient_modules))
+
+    def _apply_object(self, module):
+        return self.codomain()(module.action_functor())
+
+    def _apply_morphism(self, morphism):
+        source = self.object_image(morphism.domain())
+        target = self.object_image(morphism.codomain())
+        return self.codomain().Mor(source, target)(morphism.natural_transformation())
+
+    def _repr_(self):
+        return f"Restriction of {self.domain()} along {self._group} -> {self.domain().base_ring()}"
+
+
+class _LinearizationFunctor(Functor):
+    r"""``GObjects(G, Modules(R)) -> Modules(R[G])``: the ``R``-linear extension of a ``G``-action."""
+
+    _faithful = True
+
+    def __init__(self, group_algebra) -> None:
+        modules = Modules(group_algebra)
+        self._group = modules.acting_group()
+        self._coefficient_modules = Modules(modules.coefficient_ring())
+        super().__init__(GObjects(self._group, self._coefficient_modules), modules)
+
+    def _apply_object(self, acted):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _action_functor_of,
+        )
+
+        action = _action_functor_of(acted, self._group, self._coefficient_modules)
+        return self.codomain()(action(action.domain().an_object()), action)
+
+    def _apply_morphism(self, arrow):
+        from dzack_research.preamble.categories.functors.group_actions import (
+            _underlying_equivariant_arrow,
+        )
+
+        source = self.object_image(arrow.domain())
+        target = self.object_image(arrow.codomain())
+        component = _underlying_equivariant_arrow(arrow, self._group, self._coefficient_modules)
+        return self.codomain().Mor(source, target)._from_equivariant_images(
+            component,
+            verify_linearity=False,
+        )
+
+    def _repr_(self):
+        return f"Linearization of {self._group}-actions over {self._coefficient_modules.base_ring()}"
+
+
+class _LinearizationEquivalence(Adjunction):
+    r"""``GObjects(G, Modules(R)) ~ Modules(R[G])``, linearization left adjoint to restriction along ``G -> R[G]``.
+
+    Unit and counit are the identity of the underlying ``R``-module read
+    between the two constructions, so both are isomorphisms.
+    """
+
+    def __init__(self, group_algebra) -> None:
+        super().__init__(
+            _LinearizationFunctor(group_algebra),
+            _RestrictionAlongGroupInclusionFunctor(group_algebra),
+        )
+
+    def unit(self, acted):
+        linearized = self.left_adjoint()(acted)
+        underlying = linearized.unacted_module()
+        identity = underlying.module_category().Mor(underlying, underlying).identity()
+        return self.left_adjoint().domain().Mor(acted, self.right_adjoint()(linearized))(
+            lambda _obj: identity
+        )
+
+    def counit(self, module):
+        relinearized = self.left_adjoint()(self.right_adjoint()(module))
+        underlying = module.unacted_module()
+        identity = underlying.module_category().Mor(underlying, underlying).identity()
+        return self.right_adjoint().domain().Mor(relinearized, module)._from_equivariant_images(
+            identity,
+            verify_linearity=False,
+        )
+
+    def _repr_(self):
+        return f"Linearization equivalence {self.left_adjoint().domain()} <-> {self.left_adjoint().codomain()}"
 
 
 __all__ = [
