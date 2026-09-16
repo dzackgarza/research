@@ -412,6 +412,24 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
 
 
+class _LineBundleBaseChangeDatum:
+    r"""The selected source, projection, and section comparison for one base change."""
+
+    def __init__(self, source_bundle, projection, section_comparison) -> None:
+        self._source_bundle = source_bundle
+        self._projection = projection
+        self._section_comparison = section_comparison
+
+    def source_bundle(self):
+        return self._source_bundle
+
+    def projection(self):
+        return self._projection
+
+    def section_comparison(self):
+        return self._section_comparison
+
+
 def _section_base_change_comparison(source_sections, target_sections, ring_map, exponent_attribute):
     r"""Compare scalar extension of an exponent-framed section module with the target one."""
     changed_source = source_sections.base_change(ring_map)
@@ -445,9 +463,7 @@ def _record_line_bundle_base_change(
     *,
     exponent_attribute,
 ):
-    changed_bundle._preamble_base_change_source_bundle = source_bundle
-    changed_bundle._preamble_base_change_ring_map = ring_map
-    changed_bundle._preamble_base_change_projection = changed_bundle.scheme().left_projection()
+    projection = changed_bundle.scheme().left_projection()
     try:
         source_sections = source_bundle.global_sections()
         target_sections = changed_bundle.global_sections()
@@ -460,26 +476,31 @@ def _record_line_bundle_base_change(
             ring_map,
             exponent_attribute,
         )
-    changed_bundle._preamble_section_base_change_comparison = comparison
+    changed_bundle._preamble_base_change_datum = _LineBundleBaseChangeDatum(
+        source_bundle,
+        projection,
+        comparison,
+    )
     return changed_bundle
 
 
-def _base_change_source_bundle(bundle):
-    source = getattr(bundle, "_preamble_base_change_source_bundle", None)
-    if source is None:
+def _base_change_datum(bundle):
+    datum = getattr(bundle, "_preamble_base_change_datum", None)
+    if datum is None:
         raise ValueError("this line bundle was not selected as a scalar base change")
-    return source
+    return datum
+
+
+def _base_change_source_bundle(bundle):
+    return _base_change_datum(bundle).source_bundle()
 
 
 def _base_change_projection(bundle):
-    projection = getattr(bundle, "_preamble_base_change_projection", None)
-    if projection is None:
-        raise ValueError("this line bundle was not selected as a scalar base change")
-    return projection
+    return _base_change_datum(bundle).projection()
 
 
 def _section_base_change_comparison_of(bundle):
-    comparison = getattr(bundle, "_preamble_section_base_change_comparison", None)
+    comparison = _base_change_datum(bundle).section_comparison()
     if comparison is None:
         raise NotImplementedError(
             "this line-bundle base change has no represented global-section comparison"
