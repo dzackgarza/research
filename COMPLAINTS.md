@@ -56,63 +56,60 @@ Those 92 need regeneration before they can be counted as additional current viol
 The highest-priority architectural defects are therefore: **(1) remove the global operation language; (2) reconstruct framing around the selected epi itself rather than post-hoc generator metadata; (3) eliminate hidden provenance/refinement state; (4) replace the `NotImplementedError` computational model; (5) restore one categorical representation for functors/adjunctions/universal structures; and (6) repair the test/notebook surfaces so they actually enforce rather than conceal those decisions.**
 
 
-### Presheaves are absent, so every sheaf-like category is declared into `Sets()`
+### Categories declared into `Sets()` whose objects are not sets
 
-**The missing general mathematics.** The presheaf category
-$\mathrm{Presh}(C) := [C, \mathbf{Set}]$, and with it the general functor
-category $[C, D]$ as a bifunctor
-$\mathrm{Cat} \times \mathrm{Cat} \to \mathrm{Cat}$, $(C, D) \mapsto [C, D]$.
-Sheaves on $C$ are then the full subcategory of $\mathrm{Presh}(C)$ whose
-objects satisfy descent for a coverage on $C$. Taking the value category $D$ as
-the parameter is what makes the passage to stacks and $\infty$-stacks a change
-of $D$ rather than a separate theory.
+`super_categories()` states that every object of the category is an object of those.
+Thirty categories declare `Sets()`; `just category-graph by-supercategory` lists the group, and `just category-graph audit` reports what is mechanically checkable about the graph (no name is declared as a supercategory without being defined, and there are no cycles among distinct categories).
+Reading each member against the definition in its own docstring separates the group in two.
 
-**Dependency path.** quasi-coherent sheaf $\to$ sheaf of $\mathcal{O}_X$-modules
-$\to$ sheaf on $X$ valued in $\mathbf{Mod}$ $\to$ subcategory of
-$\mathrm{Presh}(\mathrm{Open}(X), \mathbf{Mod})$ cut out by descent $\to$
-functor category $[\mathrm{Open}(X)^{\mathrm{op}}, \mathbf{Mod}]$ $\to$ the
-opposite category and the functor category, both of which the tree owns
-(`FunctorCategory`, and `.opposite()` as used by the affine spectrum functor).
-The gap is the two nodes in the middle: presheaves, and descent for a coverage.
+**Correct: sets with structure.**
+`Magmas`, `AdditiveMagmas`, `EnumeratedSets`, `CountableSets`, `PartiallyOrderedSets`, `PowerSets`, `FinitePowerSets`, `FixedCardinalitySubsetSets`, `FunctionSets`, `FinitelySupportedFunctionSets`, `CartesianProductsOfSets`, `CoproductsOfSets`, `Homsets` ("Hom objects, which are sets").
 
-**Observed evidence.** `just category-graph by-supercategory` puts thirty
-categories under `Sets()`. Among them are objects that are not sets at all:
-`QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`), `RingedSpaces`,
-`TopologicalManifolds`, `LogPairs`, `HyperbolicSpaces`. Each declares `Sets()`
-because the category its objects actually belong to is not in the tree.
-`QuasiCoherentSheaves` states the correct mathematics in its own docstring --
-the equivalence with $\mathbf{Mod}_A$ on affine $X$, Stacks Tag 01I8 -- while
-declaring a supercategory that contradicts it.
+**Incorrect: the object is not a set, and the category it belongs to is named by its own docstring.**
 
-**Existing partial capability.** The affine case is represented and works:
-`module_category()`, `associated_sheaf()`, `global_sections()` and
-`sheaf_morphisms()` realize the equivalence with $\mathbf{Mod}_A$, and the
-non-affine case is assembled as gluing data by
-`DistinguishedAffineCover.glue_modules`. That gluing data *is* the descent
-condition, written once for one situation instead of being the definition of
-the sheaf subcategory.
+| Category | Its own definition | The category that should be declared | Source |
+| --- | --- | --- | --- |
+| `Algebras` | "``R``-modules equipped with one bilinear multiplication" | `Modules(R)` | `algebras/algebras.py:630` |
+| `_ArrowCategory` | "the category ``Arr(C)=Fun([1],C)``" | an object of `Cat`; a functor category | `abstract_categories/arrow_categories.py:156` |
+| `QuasiCoherentSheaves` | "quasi-coherent ``O_X``-modules on one scheme ``X``" | sheaves of `O_X`-modules | `schemes/ringed_spaces.py:541` |
+| `RingedSpaces` | "ringed spaces ``(X,O_X)``" | a space together with a sheaf of rings | `schemes/ringed_spaces.py:642` |
+| `TopologicalManifolds` | "finite-dimensional topological manifolds" | topological spaces | `manifolds.py:151` |
+| `LogPairs` | "pairs ``(X, Delta)`` of a variety and a chosen boundary divisor" | a scheme with a divisor | `schemes/log_pairs.py:22` |
+| `HyperbolicSpaces` | "projectivizations of chosen positive-cone components" | the projectivization of a cone component | `hyperbolic_geometry.py:111` |
+| `HyperbolicPolyhedra` | "projectivized rational polyhedral cones in a chosen hyperbolic space" | projectivized cones | `hyperbolic_geometry.py:161` |
+| `PositiveConeComponents` | "chosen components of ``{x : q(x)>0}``" | a subspace of `L (x) RR` | `hyperbolic_geometry.py:26` |
+| `ConvexPolytopes` | "rational convex polytopes in a chosen coordinate lattice" | convex bodies in `L (x) QQ` | `schemes/polytopes.py:117` |
+| `RationalPolyhedralCones` | "rational polyhedral cones in a selected integral coordinate lattice" | convex cones in `L (x) QQ` | `polyhedral_cones.py:38` |
+| `RegularPolytopes` | "finite spherical regular abstract polytopes named by Schlaefli symbols" | graded posets -- an abstract polytope is a poset, and `PartiallyOrderedSets` exists | `schemes/polytopes.py:37` |
+| `CoxeterDiagrams` | "a symmetric matrix of vertex angles" | labelled graphs | `coxeter_diagrams.py:162` |
+| `ProjectiveWeightedGraphs` | "finite graphs or digraphs with exact projective vertex and edge weights" | graphs and digraphs | `vinberg_invariants.py:62` |
+| `VinbergInvariantMatrices` | "symmetric matrices of Vinberg invariants on a finite set of mirrors" | a matrix space over the coefficient ring | `vinberg_invariants.py:359` |
+| `WeylChamberComplexes` | "locally finite chamber systems generated by simple reflections" | chamber systems | `chamber_complexes.py:50` |
+| `CharacterSets` | "the owned sets ``Char(G)`` of ordinary characters of finite ``G``" | undecided: `Char(G)` carries a ring structure, and whether this category is of the sets or of the rings is a decision, not an oversight | `group/characters.py:32` |
 
-**Affected consumers.** Everything sheaf-shaped presently sited outside the
-category graph as a plain `SageObject`: `StructureSheaf`, `AffineModuleSheaf`,
-`GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`
-(`schemes/ringed_spaces.py`, `schemes/gluing.py`), `InvertibleSheaf` and its
-descendants (`divisors/invertible_sheaves.py`), and `HigherDirectImageSheaf`
-(`schemes/monodromy.py`). None of these is an object of a category, so none
-inherits the abelian or monoidal structure its own documentation asserts, and
-`QuasiCoherentSheaves.__contains__` has to duck-type its argument rather than
-ask for a placement.
+**Categories the table asks for and the tree does not have.**
+Presheaves `[C^op, D]`, and sheaves as the full subcategory of a presheaf category cut out by descent for a coverage.
+Topological spaces.
+Graphs, digraphs, and labelled graphs.
+Chamber systems.
+Convex bodies and convex cones in a module over an ordered field.
+The functor category and the opposite category both exist and are what the presheaf construction is built from, so that one is placement rather than new theory.
 
-**Required end state.** The five `Sets()` declarations named above are false
-and are not to be left standing while this entry exists; this record says why
-the correct node is missing, not that the substitute may stay. Build
-$\mathrm{Presh}$ and the descent subcategory and declare the sheaf categories
-into them, or leave `super_categories()` abstract at those five sites so they
-fail loudly rather than inheriting a false theorem.
+**Consequences now visible.**
+Every sheaf in the tree is outside the category graph as a plain `SageObject`: `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and its descendants, `HigherDirectImageSheaf`.
+None inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents from Stacks Tag 01I8, and `QuasiCoherentSheaves.__contains__` duck-types its argument for want of a placement.
+`Algebras` declaring `Sets()` rather than `Modules(R)` is the same defect in the core algebra layer, where an algebra's module operations should be inherited rather than restated.
 
-**Coverage boundary.** Read from source only: the declared category graph, the
-scheme and divisor subtrees named above, and their docstrings. No session was
-run. Whether any consumer additionally *depends* on the false `Sets()`
-declaration -- rather than merely carrying it -- was not determined.
+**Required end state.**
+No category declares a supercategory its own definition contradicts.
+Where the honest category is missing it is built; where it is not yet decided, `super_categories()` is left abstract so the category refuses to construct.
+Scheduled as `presheaf-categories`, `sheaf-descent-subcategory`, `sheaf-object-placement` and `sets-group-placement` in [TODO.md](TODO.md).
+
+**Coverage boundary.**
+Read from source: the declared graph, and each listed category's own class docstring.
+No session was run.
+The right-hand column states the category each docstring names; where building it requires a choice between several honest formulations, that choice is not made here.
+Whether any consumer additionally depends on the false declaration, rather than merely carrying it, was not determined.
 
 ## Workflow Papercuts
 
