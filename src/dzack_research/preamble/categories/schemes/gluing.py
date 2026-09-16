@@ -3888,12 +3888,17 @@ class AlgebraGluingHomset(CategoricalHomset):
 class FiniteAtlasCompatibleSectionElement(ModuleElement):
     r"""One global section represented by compatible sections on labelled affine charts."""
 
-    def __init__(self, parent, components) -> None:
+    def __init__(self, parent, components, *, global_source_section=None) -> None:
         ModuleElement.__init__(self, parent)
         self._components = components
+        self._global_source_section = global_source_section
 
     def components(self):
         return self._components
+
+    def global_source_section(self):
+        r"""Return the selected global presentation of this compatible section, if any."""
+        return self._global_source_section
 
     def component(self, index):
         datum = self.parent().gluing_datum()
@@ -3968,7 +3973,7 @@ class FiniteAtlasCompatibleSectionsModule(Parent):
     def base(self):
         return self.base_ring()
 
-    def _element_constructor_(self, value):
+    def _element_constructor_(self, value, *, global_source_section=None):
         if isinstance(value, FiniteAtlasCompatibleSectionElement) and value.parent() is self:
             return value
         datum = self.gluing_datum()
@@ -4006,7 +4011,18 @@ class FiniteAtlasCompatibleSectionsModule(Parent):
             transported = datum.transition(source_index, target_index).pullback()(target_value)
             if transported != source_value:
                 raise ValueError("the finite-atlas local sections do not agree on an overlap")
-        return self.element_class(self, components)
+        return self.element_class(
+            self,
+            components,
+            global_source_section=global_source_section,
+        )
+
+    def from_global_section_components(self, components, global_section):
+        r"""Construct compatible local data with its selected global presentation."""
+        return self._element_constructor_(
+            components,
+            global_source_section=global_section,
+        )
 
     def __call__(self, value):
         return self._element_constructor_(value)

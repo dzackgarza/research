@@ -209,11 +209,7 @@ class CyclicCoverBaseChangeComparison(SageObject):
         branch_power = cyclic_algebra.branch_power()
         changed_line_bundle = line_bundle.base_change(ring_map)
         changed_branch_power = branch_power.base_change(ring_map)
-        global_branch = getattr(
-            cyclic_algebra.branch_section(),
-            "_preamble_global_section_source",
-            None,
-        )
+        global_branch = cyclic_algebra.branch_section().global_source_section()
         if global_branch is None:
             raise NotImplementedError(
                 "cyclic-cover scalar change currently requires a represented global branch section"

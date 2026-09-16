@@ -745,9 +745,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             module = module_sheaf.sections_on_chart(choice)
             generator = _rank_one_generator(module)
             components[choice] = module.scalar_multiple(local_coefficient, generator)
-        compatible = self.compatible_sections()(components)
-        compatible._preamble_global_section_source = section
-        return compatible
+        return self.compatible_sections().from_global_section_components(
+            components,
+            section,
+        )
 
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap

@@ -1129,8 +1129,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 module = module_sheaf.sections_on_chart(cone)
                 generator = module.module_generator(next(iter(module.module_generating_set())))
                 local_components[cone] = module.scalar_multiple(local_coefficient, generator)
-            compatible = selected_line.compatible_sections()(local_components)
-            compatible._preamble_global_section_source = section
+            compatible = selected_line.compatible_sections().from_global_section_components(
+                local_components,
+                section,
+            )
             compatible._preamble_toric_divisor = divisor
             return compatible
 

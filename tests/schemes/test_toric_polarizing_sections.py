@@ -33,7 +33,7 @@ def test_polytope_reconstructs_its_polarizing_divisor_and_character_section_zero
         line_bundle=line_bundle,
     )
 
-    assert compatible._preamble_global_section_source == section
+    assert compatible.global_source_section() == section
     assert zero.inclusion().codomain() is surface
     assert zero._preamble_defining_toric_section == section
     assert zero._preamble_defining_toric_divisor == divisor
