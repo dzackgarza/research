@@ -701,7 +701,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Owners:** the owned product construction on `Cat` objects; `GObjects`, which should be the case of a discrete group object.
   **Acceptance:** an affine group scheme is placed through the group-object construction; the two scheme categories declare it and nothing two levels up; `GObjects(G, C)` is its restriction to constant group objects.
 
-- [ ] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
+- [x] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
   **Goal:** Every category-of-categories construction is an object of `Cat`: `_FunctorCategory`, `_OppositeCategory`, `_ProductCategory`, `ClassifyingCategory`, `DiscreteCategory`, `ImageOfFunctor`, alongside `HomCategories` (done, 61bd8c65) and `_ArrowCategory`.
   **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
   **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
