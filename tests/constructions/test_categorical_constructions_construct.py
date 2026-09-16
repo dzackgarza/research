@@ -81,8 +81,8 @@ def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
 
 def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None:
     ring = commutative_ring
-    left = FreeModule(ring, 2)
-    right = FreeModule(ring, 3)
+    left = ring.free_module(2)
+    right = ring.free_module(3)
     modules = Modules(ring)
     for both in (
         modules.product((left, right)),
@@ -97,8 +97,8 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
 
 def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
     ring = commutative_ring
-    plane = FreeModule(ring, 2)
-    line = FreeModule(ring, 1)
+    plane = ring.free_module(2)
+    line = ring.free_module(1)
     projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
 
@@ -112,8 +112,8 @@ def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
 
 def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     ring = commutative_ring
-    line = FreeModule(ring, 1)
-    plane = FreeModule(ring, 2)
+    line = ring.free_module(1)
+    plane = ring.free_module(2)
     first_axis = line.Mor(plane)({0: plane.module_generator(0)})
     second_axis = line.Mor(plane)({0: plane.module_generator(1)})
     glued = Modules(ring).pushout(first_axis, first_axis)
@@ -128,7 +128,7 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
 
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     subobjects = Modules(ring).Subobjects(module)
     line = module.subobject_on([module.module_generator(0)])
     assert subobjects in Cat()
@@ -181,7 +181,7 @@ def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
 
 
 def test_slices_coslices_opposites_products_and_functor_categories() -> None:
-    module = FreeModule(ZZ, 2)
+    module = ZZ.free_module(2)
     for category in (
         Modules(ZZ).SliceOver(module),
         OwnedRings().CosliceUnder(ZZ),
@@ -250,7 +250,7 @@ def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
 
 
 def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
-    plane = FreeModule(field, 2)
+    plane = field.free_module(2)
     endomorphisms = Modules(field).End(plane)
     automorphisms = Modules(field).Aut(plane)
     assert endomorphisms in Cat()

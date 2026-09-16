@@ -16,10 +16,10 @@ OBJECTS = {
     "the integers": (lambda: ZZ, 1, 1),
     "the rationals": (lambda: QQ, 1, 1),
     "a finite field": (lambda: GF(4), 2, 2),
-    "a free module": (lambda: FreeModule(ZZ, 2), None, None),
-    "a vector space over GF(2)": (lambda: FreeModule(GF(2), 2), 6, 16),
+    "a free module": (lambda: ZZ.free_module(2), None, None),
+    "a vector space over GF(2)": (lambda: GF(2).free_module(2), 6, 16),
     "a lattice": (lambda: Lattices(ZZ)("A2"), 12, None),
-    "a polynomial algebra": (lambda: PolynomialRing(QQ, "x"), None, None),
+    "a polynomial algebra": (lambda: QQ.polynomial_ring("x"), None, None),
     "an affine line": (lambda: AffineSpaces(QQ)(1), None, None),
 }
 
@@ -58,9 +58,9 @@ def test_homs_between_objects_of_different_kinds_are_refused() -> None:
     with pytest.raises(TypeError):
         ZZ.Mor(Sets.Δ[2])
     with pytest.raises(TypeError):
-        Groups.S(3).Mor(FreeModule(ZZ, 2))
+        Groups.S(3).Mor(ZZ.free_module(2))
     with pytest.raises(TypeError):
-        FreeModule(ZZ, 2).Mor(FreeModule(QQ, 2))
+        ZZ.free_module(2).Mor(QQ.free_module(2))
 
 
 def test_homs_taken_in_a_common_supercategory() -> None:
@@ -74,8 +74,8 @@ def test_homs_taken_in_a_common_supercategory() -> None:
 
 
 def test_hom_modules_are_modules_and_hom_sets_are_sets() -> None:
-    plane = FreeModule(ZZ, 2)
-    line = FreeModule(ZZ, 1)
+    plane = ZZ.free_module(2)
+    line = ZZ.free_module(1)
     homs = plane.Hom(line)
     assert homs in Modules(ZZ)
     assert homs.module_rank() == 2
@@ -84,4 +84,4 @@ def test_hom_modules_are_modules_and_hom_sets_are_sets() -> None:
     assert Modules(ZZ).Mor(plane, line) is plane.Mor(line)
     assert Modules(ZZ).Iso(plane, plane) in Cat()
     assert Modules(ZZ).Iso(plane, line).cardinality() == 0
-    assert Modules(GF(2)).Iso(FreeModule(GF(2), 2), FreeModule(GF(2), 2)).cardinality() == 6
+    assert Modules(GF(2)).Iso(GF(2).free_module(2), GF(2).free_module(2)).cardinality() == 6

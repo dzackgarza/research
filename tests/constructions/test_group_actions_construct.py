@@ -19,7 +19,7 @@ def _symmetric_three():
 
 
 def _permutation_module(ring, group, points):
-    module = FreeModule(ring, len(points))
+    module = ring.free_module(len(points))
 
     def act(g, vector):
         return module.Mor(module)({label: module.module_generator(int(g(points[label])) - 1) for label in range(len(points))})(vector)
@@ -114,7 +114,7 @@ def test_permutation_module_invariants_and_coinvariants(pid) -> None:
 
 def test_the_trivial_action_and_its_adjunctions(pid) -> None:
     group = Groups.S(3)
-    module = FreeModule(pid, 2)
+    module = pid.free_module(2)
     trivial = Modules(pid).trivial_action(group)(module)
     also = Modules(ring).trivial_action(group)(module)
     assert trivial.is_trivial_action()
@@ -129,7 +129,7 @@ def test_the_trivial_action_and_its_adjunctions(pid) -> None:
 def test_induction_and_restriction_between_c2_and_s3(pid) -> None:
     group, points, _ = _symmetric_three()
     subgroup = _transposition_subgroup(group)
-    line = FreeModule(pid, 1)
+    line = pid.free_module(1)
 
     def sign(h, vector):
         return vector if h == subgroup.one() else -vector
@@ -159,7 +159,7 @@ def test_frobenius_reciprocity_over_the_rationals() -> None:
     r"""$\operatorname{Hom}_G(\operatorname{Ind}_H^G \mathbf 1, M) \cong \operatorname{Hom}_H(\mathbf 1, \operatorname{Res} M)$."""
     group, points, _ = _symmetric_three()
     subgroup = _transposition_subgroup(group)
-    trivial_line = Modules(QQ).trivial_action(subgroup)(FreeModule(QQ, 1))
+    trivial_line = Modules(QQ).trivial_action(subgroup)(QQ.free_module(1))
     induced = Modules(ZZ[subgroup]).induction(group)(trivial_line)
     permutation = _permutation_module(QQ, group, points)
     adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(group)

@@ -119,7 +119,7 @@ def test_number_field_element_invariants(build) -> None:
 
 def test_elements_of_free_modules(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     v = module.an_element()
     e0, e1 = module.module_generator(0), module.module_generator(1)
     assert v.parent() is module

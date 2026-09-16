@@ -187,7 +187,7 @@ def test_group_modules_and_their_invariants(pid) -> None:
     r"""$C_2$ swapping the coordinates of $R^2$: invariants of rank one, coinvariants of rank one."""
     ring = pid
     group = Groups.C(2)
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     e0, e1 = module.module_generator(0), module.module_generator(1)
     swap = module.Mor(module)({0: e1, 1: e0})
 

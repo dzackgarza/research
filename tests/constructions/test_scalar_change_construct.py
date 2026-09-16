@@ -16,7 +16,7 @@ RING_MAPS = {
     "ZZ->ZZ_3": (lambda: ZZ, lambda: Zp(3), True, 0),
     "ZZ->ZZ[i]": (lambda: ZZ, lambda: QuadraticField(-1, "i").ring_of_integers(), True, 0),
     "QQ->QQ(i)": (lambda: QQ, lambda: QuadraticField(-1, "i"), True, 0),
-    "ZZ->ZZ[x]": (lambda: ZZ, lambda: PolynomialRing(ZZ, "x"), True, 0),
+    "ZZ->ZZ[x]": (lambda: ZZ, lambda: ZZ.polynomial_ring("x"), True, 0),
     "GF(5)->GF(25)": (lambda: GF(5), lambda: GF(25), True, 0),
 }
 
@@ -42,7 +42,7 @@ def test_a_ring_map_is_a_ring_morphism(ring_map) -> None:
 def test_extension_of_scalars_of_a_free_module(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
-    module = FreeModule(source, 3)
+    module = source.free_module(3)
     extended = module.base_change(phi)
     functorial = Modules(source).scalar_extension(phi)(module)
 
@@ -72,7 +72,7 @@ def test_extension_of_scalars_of_a_torsion_module_over_the_integers() -> None:
 def test_restriction_of_scalars(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
-    module = FreeModule(target, 2)
+    module = target.free_module(2)
     restricted = Modules(target).restriction_of_scalars(phi)(module)
     also = module.restrict_scalars(phi)
 
@@ -86,11 +86,11 @@ def test_restriction_of_scalars(ring_map) -> None:
 def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> None:
     gaussian = QuadraticField(-1, "i").ring_of_integers()
     phi = ZZ.Mor(gaussian)(lambda element: gaussian(element))
-    restricted = FreeModule(gaussian, 1).restrict_scalars(phi)
+    restricted = gaussian.free_module(1).restrict_scalars(phi)
     assert restricted in Modules(ZZ)
     assert restricted.module_rank() == 2
     assert restricted in FinitelyGeneratedModules(ZZ)
-    rationals = FreeModule(QQ, 1).restrict_scalars(ZZ.Mor(QQ)(lambda element: QQ(element)))
+    rationals = QQ.free_module(1).restrict_scalars(ZZ.Mor(QQ)(lambda element: QQ(element)))
     assert rationals in Modules(ZZ)
     assert rationals not in FinitelyGeneratedModules(ZZ)
 
@@ -99,8 +99,8 @@ def test_the_base_change_adjunction(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
     adjunction = Modules(source).base_change_adjunction(phi)
-    module = FreeModule(source, 2)
-    target_module = FreeModule(target, 1)
+    module = source.free_module(2)
+    target_module = target.free_module(1)
     extended = adjunction.left_adjoint()(module)
     restricted = adjunction.right_adjoint()(target_module)
 
@@ -124,7 +124,7 @@ def test_the_base_change_adjunction(ring_map) -> None:
 def test_extension_of_scalars_of_an_algebra(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
-    polynomials = PolynomialRing(source, "x")
+    polynomials = source.polynomial_ring("x")
     extended = Algebras(source).Associative().Unital().Commutative().scalar_extension(phi)(polynomials)
     assert extended in Algebras(target).Associative().Unital().Commutative()
     assert extended.algebra_generators().cardinality() == 1
@@ -150,7 +150,7 @@ def test_localization_of_modules_at_a_prime_of_the_integers() -> None:
     local = ZZ.localize_at_prime(5)
     localize = local.localization_functor()
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((6, 25))
-    free = FreeModule(ZZ, 2)
+    free = ZZ.free_module(2)
 
     assert localize(torsion) in Modules(local)
     assert localize(torsion).cardinality() == 25
@@ -164,7 +164,7 @@ def test_localization_of_modules_at_a_prime_of_the_integers() -> None:
 def test_twisting_a_module_by_frobenius() -> None:
     field = GF(4)
     frobenius = field.Mor(field)(lambda element: element**2)
-    module = FreeModule(field, 2)
+    module = field.free_module(2)
     twisted = module.twist_scalar_action(frobenius)
     generator = field.multiplicative_generator()
     assert twisted in Modules(field)
@@ -175,10 +175,10 @@ def test_twisting_a_module_by_frobenius() -> None:
 
 def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    fixed = FreeModule(ring, 2)
+    fixed = ring.free_module(2)
     adjunction = fixed.tensor_hom_adjunction()
-    module = FreeModule(ring, 3)
-    other = FreeModule(ring, 1)
+    module = ring.free_module(3)
+    other = ring.free_module(1)
 
     tensored = adjunction.left_adjoint()(module)
     homs = adjunction.right_adjoint()(other)

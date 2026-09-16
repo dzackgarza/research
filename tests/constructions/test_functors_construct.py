@@ -46,8 +46,8 @@ def test_known_values_of_the_nullary_functors() -> None:
 
 def test_functors_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
-    polynomials = PolynomialRing(ring, "x")
+    module = ring.free_module(2)
+    polynomials = ring.polynomial_ring("x")
 
     free = Sets().free_module(ring)(Sets.Δ[2])
     assert free in FreeModules(ring)
@@ -67,7 +67,7 @@ def test_free_forgetful_adjunction_over_every_commutative_ring(commutative_ring)
     adjunction = Sets().free_module_adjunction(ring)
     labels = Sets.Δ[1]
     free = adjunction.left_adjoint()(labels)
-    module = FreeModule(ring, 3)
+    module = ring.free_module(3)
 
     unit = adjunction.unit(labels)
     assert unit.domain() is labels
@@ -86,7 +86,7 @@ def test_free_forgetful_adjunction_over_every_commutative_ring(commutative_ring)
 
 def test_algebra_adjunctions_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     for adjunction in (Modules(ring).symmetric_algebra_adjunction(), Modules(ring).tensor_algebra_adjunction()):
         algebra = adjunction.left_adjoint()(module)
         unit = adjunction.unit(module)
@@ -99,7 +99,7 @@ def test_algebra_adjunctions_over_every_commutative_ring(commutative_ring) -> No
 
 def test_de_rham_adjunction_over_every_field(field) -> None:
     adjunction = Algebras(field).Associative().Unital().Commutative().de_rham_adjunction()
-    polynomials = PolynomialRing(field, "x")
+    polynomials = field.polynomial_ring("x")
     de_rham = adjunction.left_adjoint()(polynomials)
     assert adjunction.right_adjoint()(de_rham) is polynomials
     assert adjunction.unit(polynomials).domain() is polynomials
