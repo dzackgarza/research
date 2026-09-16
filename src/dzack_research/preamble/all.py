@@ -313,9 +313,6 @@ from dzack_research.preamble.categories.functors.linear_constructions import (
     CokernelArrowFunctor as CokernelArrowFunctor,
 )
 from dzack_research.preamble.categories.functors.linear_constructions import (
-    DualizationFunctor as DualizationFunctor,
-)
-from dzack_research.preamble.categories.functors.linear_constructions import (
     KernelArrowFunctor as KernelArrowFunctor,
 )
 from dzack_research.preamble.categories.functors.linear_constructions import (

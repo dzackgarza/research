@@ -186,6 +186,7 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "abelianization_adjunction",
         "abelianization_functor",
         "order_number_field_adjunction",
+        "DualizationFunctor",
         "GroupAlgebraFunctor",
         "BaseChangeAdjunction",
         "CoextensionOfScalarsFunctor",

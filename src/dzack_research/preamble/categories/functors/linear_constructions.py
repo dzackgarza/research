@@ -12,7 +12,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-class DualizationFunctor(ContravariantFunctor):
+class _DualizationFunctor(ContravariantFunctor):
     r"""Finite-free duality ``(-)^* : C^op -> C``."""
 
     def __init__(self, base_ring) -> None:
@@ -184,14 +184,13 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
 
 
 @cached_function
-def _dualization_functor(base_ring) -> DualizationFunctor:
-    return DualizationFunctor(base_ring)
+def _dualization_functor(base_ring) -> _DualizationFunctor:
+    return _DualizationFunctor(base_ring)
 
 
 __all__ = [
     "BiproductBifunctor",
     "CokernelArrowFunctor",
-    "DualizationFunctor",
     "KernelArrowFunctor",
     "OrthogonalDirectSumBifunctor",
 ]
