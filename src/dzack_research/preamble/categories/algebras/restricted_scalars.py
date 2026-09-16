@@ -20,9 +20,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FinitelyPresentedAlgebras,
     FramedAlgebras,
     _OwnedAlgebraParent,
-)
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    _base_change_commutative_presentation,
+    _SelectedFiniteAlgebraPresentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -133,12 +131,11 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             presentation_ideal,
             lift_to_presentation,
         ) = presentation_data
-        self._preamble_presentation_ring = presentation_ring
-        self._preamble_presentation_relations = selected_relations
-        self._preamble_presentation_ideal = presentation_ideal
-        self._preamble_lift_to_presentation = lift_to_presentation
-        self._preamble_base_change_selected_presentation = (
-            lambda target_map: _base_change_commutative_presentation(self, target_map)
+        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
+            presentation_ring,
+            selected_relations,
+            presentation_ideal,
+            lift_to_presentation,
         )
 
         presentation_engine = _engine_ring(presentation_ring)
@@ -161,7 +158,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             algebra_engine,
             base_map=engine_base_map,
         )
-        self._preamble_algebra_presentation_morphism = presentation_ring.Mor(self)(
+        presentation_morphism = presentation_ring.Mor(self)(
             lambda element: self._from_engine_element(
                 algebra_engine(
                     presentation_engine_map(
@@ -170,6 +167,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                 )
             ),
         )
+        self.selected_algebra_presentation().set_presentation_morphism(presentation_morphism)
 
 
 def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):

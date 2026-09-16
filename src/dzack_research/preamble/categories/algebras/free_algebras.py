@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
     _OwnedAlgebraParent,
+    _SelectedFiniteAlgebraPresentation,
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -294,9 +295,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         if extra_construction_data is not None:
             for name, value in extra_construction_data:
                 setattr(self, name, value)
-        self._preamble_presentation_ring = presentation_ring
-        self._preamble_presentation_relations = selected_relations
-        self._preamble_presentation_ideal = presentation_ideal
         unflatten = (
             None if presentation_flattening is None else presentation_flattening.section()
         )
@@ -312,7 +310,12 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 representative = unflatten(representative)
             return presentation_ring._from_engine_element(representative)
 
-        self._preamble_lift_to_presentation = lift_to_presentation
+        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
+            presentation_ring,
+            selected_relations,
+            presentation_ideal,
+            lift_to_presentation,
+        )
         if free_source_module is not None:
             self._preamble_free_algebra_source_module = free_source_module
 
@@ -374,13 +377,11 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             generator_values=selected_generator_values,
             categories=tuple(placement),
         )
-        self._preamble_algebra_presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
+        presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
             lambda label: self.algebra_generator(label)
         )
+        self.selected_algebra_presentation().set_presentation_morphism(presentation_morphism)
         if commutative_backend:
-            self._preamble_base_change_selected_presentation = lambda ring_map: (
-                _base_change_commutative_presentation(self, ring_map)
-            )
             self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
                 _commutative_algebra_coproduct_backend(left, right)
             )

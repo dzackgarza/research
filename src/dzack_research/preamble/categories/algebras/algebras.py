@@ -1671,6 +1671,52 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
             return True
 
 
+class _SelectedFiniteAlgebraPresentation:
+    r"""The chosen polynomial presentation defining a presented algebra.
+
+    The presenting algebra, relation family, defining ideal, quotient map, and
+    selected lift are one mathematical choice.  Keep them together so the
+    chosen-presentation category does not infer that choice from unrelated
+    private attributes on its objects.
+    """
+
+    def __init__(
+        self,
+        presentation_ring,
+        relations,
+        presentation_ideal,
+        lift_to_presentation,
+    ) -> None:
+        self._presentation_ring = presentation_ring
+        self._relations = relations
+        self._presentation_ideal = presentation_ideal
+        self._lift_to_presentation = lift_to_presentation
+        self._presentation_morphism = None
+
+    def presentation_ring(self):
+        return self._presentation_ring
+
+    def relations(self):
+        return self._relations
+
+    def presentation_ideal(self):
+        return self._presentation_ideal
+
+    def lift(self, element):
+        return self._lift_to_presentation(element)
+
+    def set_presentation_morphism(self, morphism) -> None:
+        if self._presentation_morphism is not None and self._presentation_morphism is not morphism:
+            raise ValueError("the selected algebra presentation already has its quotient morphism")
+        self._presentation_morphism = morphism
+
+    def presentation_morphism(self):
+        assert self._presentation_morphism is not None, (
+            "the selected algebra presentation must acquire its quotient morphism during construction"
+        )
+        return self._presentation_morphism
+
+
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented algebras carrying one selected finite presentation."""
 
@@ -1717,8 +1763,12 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         def _algebra_homset_class(self):
             return PresentedAlgebraHomset
 
+        def selected_algebra_presentation(self):
+            r"""Return the one chosen polynomial-presentation datum for this algebra."""
+            return self._selected_algebra_presentation
+
         def presentation_ring(self):
-            return self._preamble_presentation_ring
+            return self.selected_algebra_presentation().presentation_ring()
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             return True
@@ -1736,10 +1786,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self(value)
 
         def relations(self):
-            return self._preamble_presentation_relations
+            return self.selected_algebra_presentation().relations()
 
         def presentation_ideal(self):
-            return self._preamble_presentation_ideal
+            return self.selected_algebra_presentation().presentation_ideal()
 
         def presentation(self):
             return self.presentation_ring(), self.relations()
@@ -1837,10 +1887,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return variable_count - 1
 
         def algebra_presentation_morphism(self):
-            return self._preamble_algebra_presentation_morphism
+            return self.selected_algebra_presentation().presentation_morphism()
 
         def lift_to_presentation(self, element):
-            return self._preamble_lift_to_presentation(element)
+            return self.selected_algebra_presentation().lift(element)
 
         def presentation_normal_form_terms(self, element):
             r"""Return the selected reduced presentation representative as owned monomial terms.
@@ -1870,10 +1920,15 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return terms
 
         def base_change(self, ring_map):
-            operation = self.__dict__.get("_preamble_base_change_selected_presentation")
-            if operation is None:
-                raise NotImplementedError("this selected algebra presentation has no represented base-change backend")
-            return operation(ring_map)
+            r"""Extend this chosen commutative presentation along ``ring_map``."""
+            assert self in Algebras(self.base_ring()).Associative().Unital().Commutative(), (
+                "base change of a chosen algebra presentation is currently represented for commutative algebras"
+            )
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _base_change_commutative_presentation,
+            )
+
+            return _base_change_commutative_presentation(self, ring_map)
 
         def _commutative_algebra_coproduct(self, left, right):
             operation = getattr(
