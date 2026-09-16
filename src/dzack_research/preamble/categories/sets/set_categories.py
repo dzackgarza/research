@@ -142,7 +142,7 @@ class EnumeratedSets(OwnedCategory):
         return finite_ordinal_set(2)
 
     def super_categories(self):
-        return [Sets()]
+        return [CountableSets()]
 
     class ParentMethods:
         @abstract_method
@@ -196,17 +196,6 @@ class EnumeratedSets(OwnedCategory):
             return self.fixed_size_selections(size, repetition=True)
 
 
-class InfiniteEnumeratedSets(OwnedCategory):
-    r"""Countably infinite enumerated sets."""
-
-    def an_object(self) -> Parent:
-        r"""The natural numbers, enumerated by identity."""
-        return NN
-
-    def super_categories(self):
-        return [EnumeratedSets()]
-
-
 class FiniteOrdinalSets(OwnedCategory):
     r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
 
@@ -217,7 +206,7 @@ class FiniteOrdinalSets(OwnedCategory):
     def super_categories(self):
         # The join every finite ordinal was built in, declared once
         # by the category rather than computed for each object.
-        return [EnumeratedSets(), TotallyOrderedSets(), FiniteEnumeratedSets()]
+        return [EnumeratedSets(), TotallyOrderedSets(), FiniteSets()]
 
     def _call_(self, size):
         r"""Construct the canonical finite ordinal of cardinality ``size``."""
@@ -2243,7 +2232,6 @@ class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
             CartesianProductsOfSets(),
             EnumeratedSets(),
             FiniteSets(),
-            FiniteEnumeratedSets(),
         ]
 
     class ParentMethods:
@@ -2637,9 +2625,9 @@ class NaturalNumberSets(OwnedCategory):
         # is the chosen enumeration.  Declared by the category rather
         # than joined for the one object.
         return [
+            EnumeratedSets(),
             CountablyInfiniteSets(),
             TotallyOrderedSets(),
-            InfiniteEnumeratedSets(),
             AdditiveMonoids(),
         ]
 
@@ -2904,7 +2892,6 @@ __all__ = [
     "FinitelySupportedFunctionSets",
     "FixedCardinalitySubsetSets",
     "FunctionSets",
-    "InfiniteEnumeratedSets",
     "InfiniteSets",
     "NaturalNumberSets",
     "NN",

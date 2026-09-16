@@ -951,7 +951,9 @@ class HomCategories(OwnedCategoryBase):
     r"""The category of represented fixed-endpoint Hom categories."""
 
     def super_categories(self):
-        return [Objects()]
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return [Cat()]
 
     def __contains__(self, candidate: Any) -> bool:
         return isinstance(candidate, (FixedHomCategory, CategoricalHomset))

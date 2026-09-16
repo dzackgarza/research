@@ -186,13 +186,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         return self._category
 
     def super_categories(self):
-        # G-objects are not a subcategory of C: forgetting an action is a
-        # functor, not an inclusion.  Concrete represented specializations
-        # (finite G-sets, R[G]-modules, affine G-schemes) separately list both
-        # this category and their underlying concrete category as supers.
-        from dzack_research.preamble.categories.abstract_categories.objects import Objects
-
-        return [Objects()]
+        return [self.underlying_category()]
 
     def _repr_object_names(self):
         return f"{self.acting_group()}-objects in {self.underlying_category()._repr_object_names()}"

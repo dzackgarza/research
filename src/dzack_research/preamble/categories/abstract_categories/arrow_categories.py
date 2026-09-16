@@ -23,7 +23,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_hom,
     _category_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -198,8 +198,7 @@ class _ArrowCategory(OwnedCategory):
         return self._base_category
 
     def super_categories(self):
-
-        return [Sets()]
+        return [Objects()]
 
     def __contains__(self, candidate: Any) -> bool:
         if not isinstance(candidate, Parent):

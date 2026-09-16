@@ -54,8 +54,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
+    CountablyInfiniteSets,
     EnumeratedSets,
-    InfiniteEnumeratedSets,
     Sets,
 )
 from dzack_research.preamble.tensors.tensor import (
@@ -99,7 +99,11 @@ class _FormalSymbols(UniqueRepresentation, Parent):
     r"""The enumerated set \(\{e_i : i\in\mathbb N\}\subset\mathrm{SR}\)."""
 
     def __init__(self) -> None:
-        Parent.__init__(self, facade=SR, category=InfiniteEnumeratedSets())
+        Parent.__init__(
+            self,
+            facade=SR,
+            category=Category.join((EnumeratedSets(), CountablyInfiniteSets())),
+        )
 
     def cardinality(self):
         return aleph0

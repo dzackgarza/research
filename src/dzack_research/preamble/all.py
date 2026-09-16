@@ -453,7 +453,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     FourierCharacters,
     FunctionEnumeratedSets,
     HermitePolynomials,
-    InfiniteEnumeratedSets,
     InfiniteSets,
     LaurentMonomials,
     ObjectSetsOfDiscreteCategories,

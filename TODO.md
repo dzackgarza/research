@@ -685,7 +685,7 @@ These nodes build the missing categories rather than leaving the false declarati
 
 - [ ] **`arrow-category-placement`**. **Needs:** none.
   **Goal:** `_ArrowCategory` is an object of `Cat`, which is what its own definition \(\mathrm{Arr}(C) = \mathrm{Fun}([1], C)\) says it is.
-  **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Sets()`.  A category is not a set, and the functor category it names is owned.
+  **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Objects()`, the root, so an arrow object inherits nothing from the functor category its definition names.  The functor category's own objects are built as objects of `Arr(Cat)` (`cat.py`, `_FunctorCategory._object_on`), so the two constructions currently define each other; one must become primary before `Arr(C)` can be declared into `[1] \to C`.
   **Owners:** `Cat`, and the owned functor category.
   **Acceptance:** the arrow category is reached as the functor category \([1] \to C\) rather than declared alongside it; its placement is in `Cat`.
 
