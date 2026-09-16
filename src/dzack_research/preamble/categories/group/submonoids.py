@@ -23,12 +23,7 @@ class SubmonoidInclusion(MonoidMorphism):
             return Monoids().Mor(self.domain(), self.domain()).identity()
         source = self.domain()
         target = target_inclusion.domain()
-        try:
-            generators = tuple(source.monoid_generators())
-        except NotImplementedError as error:
-            raise NotImplementedError(
-                "submonoid containment has no represented decision procedure"
-            ) from error
+        generators = tuple(source.monoid_generators())
         if not all(generator in target for generator in generators):
             raise ValueError("the source submonoid is not contained in the target")
         return Monoids().Mor(source, target)(
@@ -80,15 +75,15 @@ class _SubmonoidParent(Parent):
         return dict(self._preamble_submonoid_structure_data)
 
     def defining_predicate(self):
-        if self._preamble_defining_predicate is None:
-            raise NotImplementedError(
-                "this submonoid is represented by generators, not a membership predicate"
-            )
+        assert self._preamble_defining_predicate is not None, (
+            "defining_predicate requires a submonoid represented by a selected membership predicate"
+        )
         return self._preamble_defining_predicate
 
     def monoid_generators(self):
-        if self._preamble_monoid_generators is None:
-            raise NotImplementedError("this submonoid has no chosen generating set")
+        assert self._preamble_monoid_generators is not None, (
+            "monoid_generators requires a submonoid represented by a chosen generating set"
+        )
         return self._preamble_monoid_generators
 
 
@@ -111,11 +106,12 @@ class _SubmonoidParent(Parent):
         if element == self.one():
             return True
         generators = tuple(self._preamble_monoid_generators)
-        if any(element == generator for generator in generators):
-            return True
-        raise NotImplementedError(
-            "membership in this generated submonoid has no active decision procedure"
+        is_selected_generator = any(element == generator for generator in generators)
+        assert is_selected_generator, (
+            "membership beyond the identity and selected generators requires a represented "
+            "generated-submonoid decision procedure"
         )
+        return True
 
     def _element_constructor_(self, datum):
         element = self._normalize(datum)
