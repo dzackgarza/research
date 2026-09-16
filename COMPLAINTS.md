@@ -98,33 +98,32 @@ No session was run.
 The right-hand column states the category each docstring names; where building it requires a choice between several honest formulations, that choice is not made here.
 Whether any consumer additionally depends on the false declaration, rather than merely carrying it, was not determined.
 
-### Engine-backed algebras are placed in `Modules(R)` without a constructed module
+### Algebras are not constructed from their structure morphism
 
 **Missing general mathematics.**
-An \(R\)-algebra is an \(R\)-module equipped with a multiplication, so its module operations -- generating set, generators, scalar action, zero, rank -- are those of the module it is constructed on, and a free algebra \(T_R(M)\) or \(\operatorname{Sym}_R(M)\) is the graded direct sum of its homogeneous pieces with the product of words or monomials.
-The forgetful functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) is the identity on objects.
+An \(R\)-algebra is an additive group \(A\) with a biadditive multiplication together with a ring morphism \(\rho\colon R\to Z(A)\) into its centroid, the additive endomorphisms commuting with left and right multiplication (Mathlib `CentroidHom`); for unital associative \(A\) the centroid is the centre.
+Nothing else is assumed: unit, associativity and commutativity are axioms, and a Lie bracket is the multiplication of its algebra.
+\(\rho\) constructs the underlying \(R\)-module, \(r\cdot a=\rho(r)(a)\), so the forgetful functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) is the identity on that object; from an \(R\)-module \(M\) with bilinear \(m\), \(\rho\) is the scalar action of \(M\), which lands in the centroid because \(m\) is bilinear.
 
 **Dependency path.**
-`Algebras(R)` declares `Modules(R)`, which is the theorem that every algebra is a module.
-An algebra built by `Algebras(R)(M, m)` is constructed through `Modules(R)` on the generating set of \(M\) and inherits its module operations.
-An engine-backed algebra -- `_OwnedAlgebraParent` in `algebras/algebras.py` (polynomial rings, free and symmetric algebras, chosen-presentation quotients) and `SparseFreeAlgebra` in `algebras/sparse_free_algebras.py` -- is placed in `Modules(R)` by that declaration but constructed by `Parent.__init__` on an engine ring, so the placement is not backed by a module construction.
+One canonical constructor consumes \((A, \rho)\); every other route -- \((M, m)\), a group algebra, a centre, a quotient, a commutator Lie algebra, an engine-adopted ring, a free functor -- computes \(\rho\) from its own data and feeds it (CONTRIBUTING `CON-02`, `CON-06`; vault plan `PLAN-r-algebras-math-syntax-20260803`).
 
 **Observed evidence.**
-`SparseFreeAlgebra` and its homogeneous pieces hand-write `module_generating_set`, `module_generator`, `linear_combination`, `zero` and `scalar_multiple` (`sparse_free_algebras.py:182-212`, `:332-369`, `:537-566`).
-`FramedAlgebras.ParentMethods.cardinality` (`algebras.py`) computes a set-level cardinality on the algebra.
-Until commit `83c80ce4` the forgetful functor answered a free algebra with a separate graded direct sum realizing it, a wrapper around the algebra, and that branch had been unreachable since `Algebras(R)` declared `Modules(R)`.
+`Algebras(R)(M, m)` builds a second module and retains \(M\) with an identification map (`_ChosenAlgebraMultiplicationDatum`, `multiplication_source_module`, `from_multiplication_source`, `AlgebrasWithChosenMultiplication`; `algebras/algebras.py`), a parallel constructor with names that have no mathematical referent.
+`_own_algebra` and `AlgebraStructureConstruction` hold a structure map as a side attribute of an engine ring, only for unital associative algebras.
+`_OwnedAlgebraParent` and the engine free-algebra realization (`algebras/sparse_free_algebras.py`) are placed in `Modules(R)` by the `Algebras(R)` declaration without constructing a module; the realization hand-writes the module operations, and `FramedAlgebras.ParentMethods.cardinality` restates a set-level operation.
+The algebra Hom asserts a finite module framing to decide multiplicativity instead of asking the module Hom and recording `Unknown` as the hypothesis on non-finitary data.
 
 **Existing partial capability.**
-`GradedDirectSumModule` (`modules/graded_direct_sums.py`) is the finite-support direct sum of an indexed family of modules; the history of `functors/algebra_modules.py` before `83c80ce4` records how words and monomials index the homogeneous pieces of \(T_R(M)\) and \(\operatorname{Sym}_R(M)\).
-Chosen-presentation quotients already carry a presented module (`AlgebrasWithChosenFinitePresentation`).
+`Modules(R)` constructs framed and presented modules; `Algebras(R)` and its axioms exist; the history of `functors/algebra_modules.py` before `83c80ce4` records how words and monomials index the homogeneous pieces of a free algebra.
 
 **Affected consumers.**
-The tensor- and symmetric-algebra adjunctions (`functors/free_algebras.py`), whose unit and counit are stated on the module generators of \(U(F(M))\); Kaehler differentials and de Rham algebras of polynomial rings; every consumer that asks a polynomial ring for a module generator.
+Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
 
 **Coverage boundary.**
 Read from source; no session was run.
 Which engine-backed algebras answer `module_generating_set` today, and with what, was not determined.
-Scheduled as `engine-algebras-module-construction` in [TODO.md](TODO.md).
+Scheduled as `algebra-structure-morphism-constructor` and `engine-algebras-through-the-structure-constructor` in [TODO.md](TODO.md).
 
 ## Workflow Papercuts
 
