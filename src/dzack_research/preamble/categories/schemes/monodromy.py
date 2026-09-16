@@ -22,6 +22,7 @@ created without its own comparison theorem.
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
@@ -34,6 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
+from dzack_research.preamble.categories.schemes.ringed_spaces import SheafObjects
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -70,7 +72,7 @@ class PointedAnalyticFundamentalGroup(SageObject):
 
 
 
-class IntegralLocalSystem(SageObject):
+class IntegralLocalSystem(Parent):
     r"""A pointed integral local system represented by a ``pi_1`` action.
 
     On a connected pointed space, local systems of finitely generated modules
@@ -90,6 +92,7 @@ class IntegralLocalSystem(SageObject):
         self._pointed_fundamental_group = pointed_fundamental_group
         self._stalk_module = stalk_module
         self._action_functor = action_functor
+        Parent.__init__(self, category=SheafObjects(base))
 
     def base_space(self):
         return self._base
@@ -127,7 +130,7 @@ class IntegralLocalSystem(SageObject):
 
 
 
-class HigherDirectImageSheaf(SageObject):
+class HigherDirectImageSheaf(Parent):
     r"""A selected ``R^i pi_* ZZ`` with its smooth-stratum local system."""
 
     def __init__(self, family_data, degree, smooth_stratum, local_system) -> None:
@@ -137,6 +140,7 @@ class HigherDirectImageSheaf(SageObject):
         self._local_system = local_system
         if local_system.base_space() is not smooth_stratum:
             raise ValueError("the higher-direct-image restriction lives on the selected smooth stratum")
+        Parent.__init__(self, category=SheafObjects(smooth_stratum))
 
     def family_data(self):
         return self._family_data

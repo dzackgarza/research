@@ -2,6 +2,7 @@ r"""Invertible sheaves represented by rank-one affine module descent data."""
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -12,6 +13,9 @@ from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlasPresentation,
     ModuleGluingDatum,
     _FiniteSchemeGluingDatum,
+)
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheaves,
 )
 
 
@@ -38,7 +42,7 @@ def _rank_one_transition(source, target, unit):
     return source.module_category().Core().Mor(source, target)(forward, inverse)
 
 
-class InvertibleSheaf(SageObject):
+class InvertibleSheaf(Parent):
     r"""A line bundle represented by rank-one free descent on one affine cover."""
 
     def __init__(self, gluing_datum) -> None:
@@ -58,6 +62,7 @@ class InvertibleSheaf(SageObject):
                     left,
                     right,
                 )
+        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -245,6 +250,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
                 raise ValueError("a finite-atlas line-bundle transition must be a unit on the overlap")
             self._transition_units[source_index, target_index] = unit
         self._verify_finite_atlas_cocycle()
+        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
 
     def gluing_datum(self):
         return self._finite_gluing_datum

@@ -43,7 +43,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    AlgebraSheaves,
     DistinguishedAffineCovers,
+    QuasiCoherentSheaves,
+    SheafObjects,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
@@ -4398,9 +4401,16 @@ class GluedModuleSheaf(Parent):
         # in Sh(C, Set): construction of this sheaf is the affirmative descent
         # datum, not a later boolean refinement of a presheaf.
         gluing_datum.descent_data()
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
         Parent.__init__(
             self,
-            category=gluing_datum.cover().cech_coverage().sheaves(Sets()),
+            category=Cat().meet(
+                (
+                    gluing_datum.cover().cech_coverage().sheaves(Sets()),
+                    QuasiCoherentSheaves(gluing_datum.scheme()),
+                )
+            ),
         )
 
     def gluing_datum(self):
@@ -4465,7 +4475,7 @@ class GluedModuleSheaf(Parent):
         return f"Glued module sheaf on {self.scheme()} from {self.cover()}"
 
 
-class FiniteAtlasGluedModuleSheaf(SageObject):
+class FiniteAtlasGluedModuleSheaf(Parent):
     r"""The quasi-coherent module sheaf represented on a finite affine atlas.
 
     Unlike :class:`GluedModuleSheaf`, this owner allows the two presentations
@@ -4477,6 +4487,7 @@ class FiniteAtlasGluedModuleSheaf(SageObject):
         if not isinstance(gluing_datum, FiniteAtlasModuleGluingDatum):
             raise TypeError("a finite-atlas module sheaf requires finite-atlas descent data")
         self._gluing_datum = gluing_datum
+        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -4532,7 +4543,7 @@ class FiniteAtlasGluedModuleSheaf(SageObject):
 
 
 
-class FiniteAtlasInverseImageModuleSheaf(SageObject):
+class FiniteAtlasInverseImageModuleSheaf(Parent):
     r"""The inverse image ``f^{-1} F`` before extension to ``O_X``-modules.
 
     The object lives on the fine atlas but retains the coarse local modules and
@@ -4551,6 +4562,7 @@ class FiniteAtlasInverseImageModuleSheaf(SageObject):
         self._refinement = refinement
         self._source_sheaf = source_sheaf
         self._pullback_functor = pullback_functor
+        Parent.__init__(self, category=SheafObjects(refinement.fine_scheme()))
 
     def source_sheaf(self):
         return self._source_sheaf
@@ -4835,11 +4847,23 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
         return self._inverse
 
 
-class GluedAlgebraSheaf(SageObject):
+class GluedAlgebraSheaf(Parent):
     r"""The algebra sheaf represented by finite affine algebra descent data."""
 
     def __init__(self, gluing_datum) -> None:
         self._gluing_datum = gluing_datum
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        scheme = gluing_datum.scheme()
+        Parent.__init__(
+            self,
+            category=Cat().meet(
+                (
+                    AlgebraSheaves(scheme),
+                    QuasiCoherentSheaves(scheme),
+                )
+            ),
+        )
 
     def gluing_datum(self):
         return self._gluing_datum

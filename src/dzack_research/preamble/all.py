@@ -349,6 +349,7 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
 )
 from dzack_research.preamble.categories.schemes import (
     ADELogPairs,
+    AlgebraSheaves,
     AffineGroupSchemeActions,
     AffineGroupSchemes,
     AffineGSchemes,
@@ -388,6 +389,7 @@ from dzack_research.preamble.categories.schemes import (
     LegendreMonodromyFamily,
     LocallyRingedSpaces,
     LogPairs,
+    ModuleSheaves,
     NodalCubic,
     NodalCubicIntegralTopology,
     NodalCubicNormalization,
@@ -414,6 +416,7 @@ from dzack_research.preamble.categories.schemes import (
     SchemeMorphism,
     Schemes,
     SchemeUnderlyingSpace,
+    SheafObjects,
     SideDecoration,
     SmoothSchemes,
     StructureSheaf,
