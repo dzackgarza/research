@@ -3536,10 +3536,6 @@ def _affine_space_from_owned_data(base, engine_dimension, names):
     return _fresh_affine_space_from_owned_data(base, engine_dimension, names)
 
 
-def AffineSpace(dimension, base_ring, names=None):
-    r"""Return the category-owned affine space ``A^n_R``."""
-    return AffineSpaces(_own_ring(base_ring))(dimension, names=names)
-
 
 def _fresh_projective_space_from_owned_data(base, engine_dimension, names):
     r"""Construct one fresh owned projective-space carrier from the stated data.
@@ -3574,10 +3570,6 @@ def _projective_space_from_owned_data(base, engine_dimension, names):
     r"""Return the canonical ordinary projective space for this constructor datum."""
     return _fresh_projective_space_from_owned_data(base, engine_dimension, names)
 
-
-def ProjectiveSpace(dimension, base_ring, names=None):
-    r"""Return the category-owned projective space ``P^n_R``."""
-    return ProjectiveSpaces(_own_ring(base_ring))(dimension, names=names)
 
 
 def _product_projection(product, factor, coordinates):
@@ -4875,7 +4867,6 @@ def _refine_closed_subscheme(
 
 __all__ = [
     "AffineSchemes",
-    "AffineSpace",
     "AffineSpaces",
     "ClosedEmbeddings",
     "ClosedSubschemes",
@@ -4885,7 +4876,6 @@ __all__ = [
     "NormalSchemes",
     "OpenImmersions",
     "ProjectiveSchemes",
-    "ProjectiveSpace",
     "ProjectiveSpaces",
     "ProductProjectiveSpaces",
     "ProductSchemes",

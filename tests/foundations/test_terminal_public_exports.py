@@ -224,6 +224,8 @@ def test_owner_in_argument_universal_operations_are_not_session_globals() -> Non
         "integral_transporter",
         "integral_right_cosets",
         "integral_double_cosets",
+        "AffineSpace",
+        "ProjectiveSpace",
         "AffineCycleGroup",
         "AffineWeilCycleIsomorphism",
         "affine_normal_weil_divisor_group",
