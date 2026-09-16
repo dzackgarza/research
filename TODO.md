@@ -747,7 +747,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** identify the exact maintained kernel/syzygy/presentation operation that returns enough data to reconstruct the owned kernel inclusion and selected presentation.  Keep representation conversion at the adapter boundary; do not reproduce the standard algorithm in Python around lower-level Singular calls.
   **Acceptance:** a nontrivial finitely presented module morphism obtains its kernel object, inclusion and presentation through one maintained-engine computation and raises every constituent to owned mathematics; unsupported coefficient regimes stop at the declared frontier rather than falling back to the old orchestration.
 
-- [ ] **`torsion-action-delegation`**. **Needs:** none.
+- [x] **`torsion-action-delegation`**. **Needs:** none.
   Route torsion-form orbit/stabilizer computation through the general owned action/G-set infrastructure, with GAP private beneath that owner (`ENG-01`, `STY-40`--`42`, `BND-01`--`02`).
   **Observed gap:** torsion-form modules contain both a hand-written orbit traversal and direct `libgap.Orbit`/`Stabilizer` calls.
   **Deliver:** represent the relevant finite action once, expose orbit/stabilizer through the action/G-set owner, and let that owner select GAP where appropriate.  The torsion-form layer supplies the mathematical set/action and consumes owned orbit/stabilizer objects; it does not own traversal or GAP calls.
