@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
 )
-from dzack_research.preamble.categories.schemes.varieties import Curve, Curves
+from dzack_research.preamble.categories.schemes.varieties import Curves
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
 _RATIONALS = _own_ring(SageQQ)
@@ -219,7 +219,10 @@ def rational_quintic_with_two_nodes_normalization():
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
     Z = ring.algebra_generator("Z")
-    curve = Curve(Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2, plane)
+    curve = Curves(_RATIONALS).from_equation(
+        Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2,
+        plane,
+    )
     normalization = _projective_quintic_normalization(
         curve,
         lambda s, t: (
@@ -266,7 +269,10 @@ def rational_quintic_with_nonrational_node_normalization():
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
     Z = ring.algebra_generator("Z")
-    curve = Curve(Y**2 * Z**3 - X * (X**2 + Z**2) ** 2, plane)
+    curve = Curves(_RATIONALS).from_equation(
+        Y**2 * Z**3 - X * (X**2 + Z**2) ** 2,
+        plane,
+    )
     normalization = _projective_quintic_normalization(
         curve,
         lambda s, t: (

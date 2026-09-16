@@ -9,13 +9,12 @@ from dzack_research.preamble.all import (
     Curves,
     ProjectiveSpace,
 )
-from dzack_research.preamble.categories.schemes import Curve
 
 
 def test_curve_without_ambient_uses_the_polynomial_framing() -> None:
     polynomial_ring = QQ.polynomial_ring(("x", "y"))
     x, y = polynomial_ring.algebra_generators()
-    curve = Curve(y - x**2)
+    curve = Curves(QQ).from_equation(y - x**2)
 
     assert curve in Curves(QQ)
     assert curve in ClosedSubschemes(QQ)
@@ -31,7 +30,7 @@ def test_curve_with_projective_ambient_retains_the_actual_closed_embedding() -> 
     x = coordinate_ring.algebra_generator("x")
     y = coordinate_ring.algebra_generator("y")
     z = coordinate_ring.algebra_generator("z")
-    cubic = Curve(y**2 * z - x**3, plane)
+    cubic = Curves(QQ).from_equation(y**2 * z - x**3, plane)
 
     assert cubic in Curves(QQ)
     assert cubic.inclusion().codomain() is plane
@@ -45,4 +44,4 @@ def test_curve_rejects_a_reducible_one_dimensional_closed_subscheme() -> None:
     y = coordinate_ring.algebra_generator("y")
 
     with pytest.raises(ValueError, match="not an integral curve"):
-        Curve(x * y, plane)
+        Curves(QQ).from_equation(x * y, plane)

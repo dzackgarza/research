@@ -89,12 +89,12 @@ def test_a_newcomer_does_plane_curves(field_name) -> None:
     k = {"QQ": QQ, "GF(5)": GF(5), "GF(7)": GF(7)}[field_name]
     R = PolynomialRing(k, ("x", "y"))
     x, y = R.gens()
-    E = Curve(y**2 - x**3 - x)
+    E = Curves(k).from_equation(y**2 - x**3 - x)
     rendered(E)
     assert E.genus() == 1
     assert E.is_smooth()
     assert E.dimension() == 1
-    C = Curve(y**2 - x**3)
+    C = Curves(k).from_equation(y**2 - x**3)
     assert C.geometric_genus() == 0
     assert not C.is_smooth()
     assert C.singular_points().cardinality() == 1
