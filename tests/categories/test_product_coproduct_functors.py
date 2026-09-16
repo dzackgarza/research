@@ -1,10 +1,5 @@
 
 from dzack_research.preamble.all import Sets, ZZ
-from dzack_research.preamble.categories.abstract_categories.functors import (
-    CoproductFunctor,
-    DiagonalFunctor,
-    ProductFunctor,
-)
 from dzack_research.preamble.categories.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -23,9 +18,9 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     x = Sets.Δ[1]
     y = Sets.Δ[2]
     z = Sets.Δ[3]
-    product = ProductFunctor(Sets())
-    coproduct = CoproductFunctor(Sets())
-    diagonal = DiagonalFunctor(Sets())
+    product = Sets().product_functor()
+    coproduct = Sets().coproduct_functor()
+    diagonal = Sets().diagonal_functor()
 
     pair = product.domain()(x, y)
     product_xy = product(pair)
@@ -54,8 +49,8 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
     category = FinitelyPresentedModules(ZZ)
     left = ZZ.free_module(finite_ordered_set(("x",)))
     right = ZZ.free_module(finite_ordered_set(("y",)))
-    product = ProductFunctor(category)
-    coproduct = CoproductFunctor(category)
+    product = category.product_functor()
+    coproduct = category.coproduct_functor()
     pair = product.domain()(left, right)
     product_object = product(pair)
     coproduct_object = coproduct(pair)

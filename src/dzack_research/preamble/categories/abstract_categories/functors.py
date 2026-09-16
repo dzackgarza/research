@@ -159,7 +159,7 @@ class Bifunctor(Functor):
         return self.object_image(left, right)
 
 
-class DomainFunctor(Functor):
+class _DomainFunctor(Functor):
     r"""The domain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
@@ -172,7 +172,7 @@ class DomainFunctor(Functor):
         return square.left()
 
 
-class CodomainFunctor(Functor):
+class _CodomainFunctor(Functor):
     r"""The codomain functor ``Arr(C) -> C``."""
 
     def __init__(self, category: Category) -> None:
@@ -459,25 +459,18 @@ class ConstantDiagram(Functor):
 
 
 __all__ = [
-    "CodomainFunctor",
     "ConstantDiagram",
     "DiscreteCategories",
     "DiscreteCategory",
     "DiscreteDiagram",
     "DiscreteFunctor",
-    "DomainFunctor",
     "ObjectSetFunctor",
     "CartesianProductFunctor",
-    "ColimitFunctor",
-    "CoproductFunctor",
-    "DiagonalFunctor",
     "DisjointUnionFunctor",
-    "LimitFunctor",
-    "ProductFunctor",
 ]
 
 
-class DiagonalFunctor(Functor):
+class _DiagonalFunctor(Functor):
     r"""The diagonal functor ``C -> C x C``."""
 
     def __init__(self, category: Category) -> None:
@@ -497,7 +490,7 @@ class DiagonalFunctor(Functor):
         )(morphism, morphism)
 
 
-class ProductFunctor(Functor):
+class _ProductFunctor(Functor):
     r"""The binary categorical product functor ``C x C -> C`` where represented."""
 
     def __init__(self, category: Category) -> None:
@@ -517,7 +510,7 @@ class ProductFunctor(Functor):
         )
 
 
-class CoproductFunctor(Functor):
+class _CoproductFunctor(Functor):
     r"""The binary categorical coproduct functor ``C x C -> C`` where represented."""
 
     def __init__(self, category: Category) -> None:
@@ -537,21 +530,21 @@ class CoproductFunctor(Functor):
         )
 
 
-class CartesianProductFunctor(ProductFunctor):
+class CartesianProductFunctor(_ProductFunctor):
     r"""The binary Cartesian-product functor on Set."""
 
     def __init__(self) -> None:
         super().__init__(Sets())
 
 
-class DisjointUnionFunctor(CoproductFunctor):
+class DisjointUnionFunctor(_CoproductFunctor):
     r"""The binary disjoint-union functor on Set."""
 
     def __init__(self) -> None:
         super().__init__(Sets())
 
 
-class LimitFunctor(Functor):
+class _LimitFunctor(Functor):
     r"""The selected limit functor ``[J,C] -> C`` for one represented shape."""
 
     def __init__(self, codomain: Category, index_category: Category) -> None:
@@ -581,7 +574,7 @@ class LimitFunctor(Functor):
         return source.induced_map(transformation, target)
 
 
-class ColimitFunctor(Functor):
+class _ColimitFunctor(Functor):
     r"""The selected colimit functor ``[J,C] -> C`` for one represented shape."""
 
     def __init__(self, codomain: Category, index_category: Category) -> None:
@@ -609,3 +602,38 @@ class ColimitFunctor(Functor):
         source = self._colimits.construction(transformation.source())
         target = self._colimits.construction(transformation.target())
         return source.induced_map(transformation, target)
+
+
+@cached_function
+def _domain_functor(category: Category) -> _DomainFunctor:
+    return _DomainFunctor(category)
+
+
+@cached_function
+def _codomain_functor(category: Category) -> _CodomainFunctor:
+    return _CodomainFunctor(category)
+
+
+@cached_function
+def _diagonal_functor(category: Category) -> _DiagonalFunctor:
+    return _DiagonalFunctor(category)
+
+
+@cached_function
+def _product_functor(category: Category) -> _ProductFunctor:
+    return _ProductFunctor(category)
+
+
+@cached_function
+def _coproduct_functor(category: Category) -> _CoproductFunctor:
+    return _CoproductFunctor(category)
+
+
+@cached_function
+def _limit_functor(codomain: Category, index_category: Category) -> _LimitFunctor:
+    return _LimitFunctor(codomain, index_category)
+
+
+@cached_function
+def _colimit_functor(codomain: Category, index_category: Category) -> _ColimitFunctor:
+    return _ColimitFunctor(codomain, index_category)

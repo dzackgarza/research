@@ -308,6 +308,62 @@ class Cat(CategoryPacketMethods, Category):
 
             return _CategoryInclusionFunctor(self, supercategory)
 
+        def domain_functor(self):
+            r"""Return the domain functor ``Ar(self) -> self``."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                _domain_functor,
+            )
+
+            return _domain_functor(self)
+
+        def codomain_functor(self):
+            r"""Return the codomain functor ``Ar(self) -> self``."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                _codomain_functor,
+            )
+
+            return _codomain_functor(self)
+
+        def diagonal_functor(self):
+            r"""Return the diagonal functor ``self -> self x self``."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                _diagonal_functor,
+            )
+
+            return _diagonal_functor(self)
+
+        def product_functor(self):
+            r"""Return this category's selected binary-product functor."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                _product_functor,
+            )
+
+            return _product_functor(self)
+
+        def coproduct_functor(self):
+            r"""Return this category's selected binary-coproduct functor."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                _coproduct_functor,
+            )
+
+            return _coproduct_functor(self)
+
+        def limit_functor(self, index_category: Category):
+            r"""Return the selected limit functor ``[index_category,self] -> self``."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                LimitsOfCategory,
+            )
+
+            return LimitsOfCategory(index_category, self).defining_functor()
+
+        def colimit_functor(self, index_category: Category):
+            r"""Return the selected colimit functor ``[index_category,self] -> self``."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                ColimitsOfCategory,
+            )
+
+            return ColimitsOfCategory(index_category, self).defining_functor()
+
         @property
         def ObjectType(self) -> type[Parent]:
             r"""Return the complete implementation type for objects of this category."""

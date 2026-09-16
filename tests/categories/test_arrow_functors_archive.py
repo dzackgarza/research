@@ -1,8 +1,6 @@
 r"""Archived domain/codomain functors on the represented arrow category."""
 
 from dzack_research.preamble.all import (
-    CodomainFunctor,
-    DomainFunctor,
     Sets,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -22,8 +20,8 @@ def test_domain_and_codomain_functors_select_the_two_edges_of_a_commuting_square
     target = arrows(identity_two)
     square = arrows.Mor(source, target)(pick_a, collapse_to_a)
 
-    domain = DomainFunctor(Sets())
-    codomain = CodomainFunctor(Sets())
+    domain = Sets().domain_functor()
+    codomain = Sets().codomain_functor()
 
     assert domain(source) is one
     assert domain(target) is two

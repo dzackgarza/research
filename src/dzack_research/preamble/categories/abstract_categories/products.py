@@ -1311,10 +1311,10 @@ class LimitsOfCategory(OwnedCategoryBase):
     def defining_functor(self):
         r"""Return the functor ``[J,C] -> C`` selected by these limits."""
         from dzack_research.preamble.categories.abstract_categories.functors import (
-            LimitFunctor,
+            _limit_functor,
         )
 
-        return LimitFunctor(self.target_category(), self.index_category())
+        return _limit_functor(self.target_category(), self.index_category())
 
 
 class ColimitsOfCategory(LimitsOfCategory):
@@ -1412,10 +1412,10 @@ class ColimitsOfCategory(LimitsOfCategory):
     def defining_functor(self):
         r"""Return the functor ``[J,C] -> C`` selected by these colimits."""
         from dzack_research.preamble.categories.abstract_categories.functors import (
-            ColimitFunctor,
+            _colimit_functor,
         )
 
-        return ColimitFunctor(self.target_category(), self.index_category())
+        return _colimit_functor(self.target_category(), self.index_category())
 
 
 class ProductsOfCategory(LimitsOfCategory):

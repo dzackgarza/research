@@ -66,14 +66,12 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     Bifunctor,
-    CodomainFunctor,
     ConstantDiagram,
     ContravariantFunctor,
     DiscreteCategories,
     DiscreteCategory,
     DiscreteDiagram,
     DiscreteFunctor,
-    DomainFunctor,
     ObjectSetFunctor,
 )
 from dzack_research.preamble.categories.algebras import (

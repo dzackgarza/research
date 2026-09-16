@@ -23,8 +23,8 @@ ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/sets/owned_sets.py",
     "live_owner": "src/dzack_research/preamble/categories/sets/set_categories.py",
     "owner_overrides": {
-        "SetSubcategoryMethods.ProductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "SetSubcategoryMethods.CoproductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "SetSubcategoryMethods.product_functor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "SetSubcategoryMethods.coproduct_functor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
         "SetSubcategoryMethods.ExponentialFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
         "SetSubcategoryMethods.InverseImagePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
         "SetSubcategoryMethods.FinitePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
