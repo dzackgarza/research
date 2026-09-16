@@ -245,7 +245,7 @@ def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordina
 
     assert morphism.domain() is plane
     assert morphism.codomain() is system
-    assert morphism._preamble_linear_system_divisor == line
+    assert morphism.codomain().linear_system_divisor() == line
     assert len(morphism.native_morphism().defining_polynomials()) == 3
 
 
@@ -486,7 +486,7 @@ def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel(
     assert restriction.codomain().dimension() == 3
     assert restriction.kernel().dimension() == 3
     assert restriction.cokernel().is_zero()
-    assert restriction._preamble_closed_subscheme.inclusion().codomain() is projective_plane
+    assert restriction.codomain().section_scheme().inclusion().codomain() is projective_plane
 
 
 def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:

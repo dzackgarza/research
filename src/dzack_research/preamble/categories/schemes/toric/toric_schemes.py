@@ -1298,7 +1298,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 domain=self,
                 codomain=system,
             )
-            result._preamble_linear_system_divisor = divisor
             return result
 
         def weight_cohomology_complex(self, divisor, weight):

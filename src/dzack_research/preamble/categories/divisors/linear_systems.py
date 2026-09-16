@@ -642,7 +642,6 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
             for monomial in source.module_generating_set()
         }
     )
-    restriction._preamble_closed_subscheme = hyperplane
     return restriction
 
 
