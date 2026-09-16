@@ -979,9 +979,6 @@ class ModuleMorphism(Morphism):
         decides there, which is the rational solve of the linear system
         followed by the integrality of its solution.
         """
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
         from dzack_research.preamble.categories.modules.pure.modules import (
             FinitelyGeneratedModules,
             FramedModules,
@@ -1014,7 +1011,7 @@ class ModuleMorphism(Morphism):
             ring.one(),
         )
         scale = codomain.ring_map()(denominator)
-        cleared_module = FreshFreeModuleOn(ring, extension.module_generating_set())
+        cleared_module = ring._fresh_free_module_on(extension.module_generating_set())
 
         def cleared(coordinates):
             return cleared_module.linear_combination({label: ring(scale * coefficient) for label, coefficient in coordinates.items()})
@@ -1519,11 +1516,7 @@ def _initialize_module_hom_parent(
         # A matrix space is a finitely generated free module, so Hom objects
         # between matrix spaces are matrix spaces too: it supplies the fresh
         # free-module constructor that placement asks a free module for.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
-
-        parent._preamble_free_module_constructor = lambda labels, **options: FreshFreeModuleOn(ring, labels, **options)
+        parent._preamble_free_module_constructor = ring._fresh_free_module_on
     elif ring in OwnedRings().Commutative() and full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
         # Hom(M, N) between presented modules is presented by its
         # endpoint-determined model (see ``internal_hom``); the presented-module
@@ -1543,7 +1536,7 @@ def _initialize_module_hom_parent(
     )
 
     if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-        parent._preamble_framing_source = FreshFreeModuleOn(ring, labels)
+        parent._preamble_framing_source = ring._fresh_free_module_on(labels)
         parent._preamble_framing_morphism = None
 
     if ring in OwnedRings().Commutative() and full_internal_hom:

@@ -9,9 +9,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -501,8 +498,7 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
                 monomial *= ring.algebra_generator(labels[position]) ** exponent
         monomials.append(monomial)
         exponent_data[monomial] = exponents
-    space = FreshFreeModuleOn(
-        base,
+    space = base._fresh_free_module_on(
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(HomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
@@ -583,8 +579,7 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         monomials.append(monomial)
         exponent_data[monomial] = tuple(tuple(block) for block in blocks)
 
-    return FreshFreeModuleOn(
-        base,
+    return base._fresh_free_module_on(
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
@@ -736,8 +731,7 @@ def _projective_section_restriction(
             if not any(monomial == known for known in monomials):
                 monomials.append(monomial)
 
-    ambient = FreshFreeModuleOn(
-        base,
+    ambient = base._fresh_free_module_on(
         finite_ordered_set(tuple(monomials)),
     )
     ambient_map = source.module_category().Mor(source, ambient)(
@@ -773,7 +767,7 @@ def _projective_linear_system(line_bundle, sections):
     if not sections:
         raise ValueError("a projective linear system requires a nonzero section subspace")
     labels = Sets.Δ[len(sections) - 1]
-    selected = FreshFreeModuleOn(base, labels)
+    selected = base._fresh_free_module_on(labels)
     images = {
         label: sections[int(labels.ranking_map()(label))]
         for label in labels
@@ -877,8 +871,7 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
         jet_order,
     )
     source = line_bundle.global_sections()
-    target = FreshFreeModuleOn(
-        base,
+    target = base._fresh_free_module_on(
         finite_ordered_set(local_monomials),
         _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data=(

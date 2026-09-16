@@ -22,9 +22,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
@@ -220,7 +217,7 @@ class _ProjectiveLineBundleLinearization(SageObject):
             return self.section_group_module()
         if int(self.projective_space().relative_dimension()) == 1 and degree == 1 and self.line_bundle().degree() >= 0:
             base = self.section_scheme().scheme_base_ring()
-            zero = FreshFreeModuleOn(base, finite_ordered_set(()))
+            zero = base._fresh_free_module_on(finite_ordered_set(()))
             return Modules(base).trivial_action(self.acting_group())(zero)
         raise NotImplementedError(
             "this linearization currently represents coherent cohomology actions on H^0 and the vanishing H^1 of nonnegative O(d) on P^1"

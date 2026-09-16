@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
@@ -53,8 +52,7 @@ def _affine_normal_weil_divisor_group(scheme):
         raise TypeError("Weil divisors in this construction require a normal coordinate ring")
     spectrum = ring.spectrum()
     prime_locus = spectrum.condition_set(lambda point: point.height() == 1)
-    return FreshFreeModuleOn(
-        _integers(),
+    return _integers()._fresh_free_module_on(
         prime_locus,
         _extra_categories=(WeilDivisorGroups(),),
         _extra_construction_data={
@@ -280,12 +278,10 @@ def _projective_space_divisor_class_theory(
         raise ValueError("the supplied class group is not attached to the projective base")
 
     integers = _integers()
-    picard_hyperplane = FreshFreeModuleOn(
-        integers,
+    picard_hyperplane = integers._fresh_free_module_on(
         finite_ordered_set(("O(1)",)),
     )
-    class_hyperplane = FreshFreeModuleOn(
-        integers,
+    class_hyperplane = integers._fresh_free_module_on(
         finite_ordered_set(("H",)),
     )
     modules = Modules(integers)
@@ -344,7 +340,7 @@ def _projective_space_picard_group(projective_space, base_picard_group):
     integers = _integers()
     if base_picard_group.base_ring() is not integers:
         raise TypeError("a Picard group is an abelian group over ZZ")
-    hyperplane = FreshFreeModuleOn(integers, finite_ordered_set(("O(1)",)))
+    hyperplane = integers._fresh_free_module_on(finite_ordered_set(("O(1)",)))
     decomposition = Modules(integers).biproduct((base_picard_group, hyperplane))
     return PicardGroups()(
         decomposition,

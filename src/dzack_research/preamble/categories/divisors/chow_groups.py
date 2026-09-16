@@ -6,9 +6,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     _isomorphism_from_known_inverse_pair,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeModules,
@@ -127,8 +124,7 @@ def _affine_cycle_group(scheme, cycle_dimension):
     spectrum = ring.spectrum()
     locus = spectrum.condition_set(lambda point: point.closure_dimension() == cycle_dimension)
     integers = _own_ring(SageZZ)
-    return FreshFreeModuleOn(
-        integers,
+    return integers._fresh_free_module_on(
         locus,
         _extra_categories=(AlgebraicCycleGroups(integers),),
         _extra_construction_data={

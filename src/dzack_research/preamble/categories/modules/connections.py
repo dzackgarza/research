@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.algebras.kahler_differentials import (
 )
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -111,8 +110,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         categories = [self]
         if connection.is_flat():
             categories.append(ModulesWithFlatConnection(algebra))
-        return FreshFreeModuleOn(
-            algebra,
+        return algebra._fresh_free_module_on(
             source.module_generating_set(),
             _extra_categories=tuple(categories),
             _extra_construction_data={"source_connection": connection},

@@ -1,9 +1,6 @@
 r"""Archive reconciliation for the generic decomposition surface of graded modules."""
 
 from dzack_research.preamble.all import QQ, GradedModules
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -27,8 +24,7 @@ def _finite_graded_module():
             raise ValueError("a selected module generator has singleton support")
         return degrees[coefficient_labels[0]]
 
-    return FreshFreeModuleOn(
-        QQ,
+    return QQ._fresh_free_module_on(
         labels,
         _extra_categories=(GradedModules(QQ),),
         _extra_construction_data={"degree_on_module_generator": selected_degree},

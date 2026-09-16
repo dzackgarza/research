@@ -12,7 +12,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
@@ -51,8 +50,8 @@ class ScalarExtensionFunctor(Functor):
                 and _engine_ring(module.ring_map().codomain()) is _engine_ring(self._target_ring)
                 and module in FramedModules(self._source_ring)
             ):
-                image = FreshFreeModuleOn(
-                    self._target_ring, module.module_generating_set()
+                image = self._target_ring._fresh_free_module_on(
+                    module.module_generating_set()
                 )
                 return image
         return module.base_change(self.ring_map())

@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules, FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -31,7 +31,7 @@ def _divisor_role_specimen(category):
     from sage.rings.integer_ring import ZZ as SageZZ
 
     integers = _own_ring(SageZZ)
-    module = FreshFreeModuleOn(integers, finite_ordered_set(("D",)))
+    module = integers._fresh_free_module_on(finite_ordered_set(("D",)))
     return _module_in_role(
         module,
         category,
@@ -76,8 +76,7 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
     @cached_method(key=lambda self, prime_divisors: tuple(prime_divisors))
     def _call_(self, prime_divisors):
         r"""Return the free formal-divisor group on the stated prime divisors."""
-        return FreshFreeModuleOn(
-            self.base_ring(),
+        return self.base_ring()._fresh_free_module_on(
             finite_ordered_set(prime_divisors),
             _extra_categories=(self,),
         )

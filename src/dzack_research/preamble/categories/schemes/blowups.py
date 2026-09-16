@@ -18,9 +18,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.divisors.picard_groups import (
     PicardGroups,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -234,8 +231,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         @cached_method
         def picard_group(self):
-            module = FreshFreeModuleOn(
-                _integers(),
+            module = _integers()._fresh_free_module_on(
                 finite_ordered_set(("H", "E")),
             )
             return PicardGroups()(

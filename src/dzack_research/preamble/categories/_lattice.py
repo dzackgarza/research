@@ -38,7 +38,6 @@ from sage.symbolic.ring import SR
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -1184,7 +1183,7 @@ def _colimit_lattice(stage, *, category):
     if probe.module_rank() != 2:
         raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}")
 
-    module = FreshFreeModuleOn(ring, _as_generating_set(None, Infinity))
+    module = ring._fresh_free_module_on(_as_generating_set(None, Infinity))
     return _lattice_parent(
         module,
         _ColimitGram(module, stage),
@@ -1410,7 +1409,7 @@ def _lattice_from_gram_tensor(
     module = (
         ring.free_module(generating_set)
         if module_generators is None
-        else FreshFreeModuleOn(ring, generating_set)
+        else ring._fresh_free_module_on(generating_set)
     )
     return _lattice_parent(
         module,
@@ -1472,9 +1471,8 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
         )
 
     if module_generators is None and not positional:
-        return FreshFreeModuleOn(ring, labels)
-    return FreshFreeModuleOn(
-        ring,
+        return ring._fresh_free_module_on(labels)
+    return ring._fresh_free_module_on(
         _generating_set_for(rank, module_generators, names),
     )
 

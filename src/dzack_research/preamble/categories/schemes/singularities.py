@@ -10,9 +10,6 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     _from_engine_ideal,
 )
@@ -254,7 +251,7 @@ class IsolatedHypersurfaceSingularity:
     def ambient_tangent_space(self):
         r"""Return the coordinate tangent space of the ambient affine space at the origin."""
         ring = self.polynomial_ring()
-        return FreshFreeModuleOn(ring.base_ring(), ring.algebra_generating_set())
+        return ring.base_ring()._fresh_free_module_on(ring.algebra_generating_set())
 
     @cached_method
     def zariski_tangent_space(self):
@@ -276,8 +273,7 @@ class IsolatedHypersurfaceSingularity:
         differential = matrix(base_engine, 1, len(coefficients), coefficients)
         kernel_basis = tuple(differential.right_kernel().basis())
         labels = finite_ordered_set(range(len(kernel_basis)))
-        tangent = FreshFreeModuleOn(
-            base,
+        tangent = base._fresh_free_module_on(
             labels,
             _extra_construction_data={
                 "ambient_tangent_space": self.ambient_tangent_space(),

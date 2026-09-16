@@ -12,9 +12,6 @@ from dzack_research.preamble.categories.group.magmas import (
     AdditiveMonoids,
     Monoids,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     _initialize_module_hom_parent,
@@ -56,8 +53,7 @@ def _grading_identity(monoid: Parent | None):
 def _concentrated_graded_module(base_ring, grading_monoid=None):
     r"""Return a rank-one graded module concentrated in the identity degree."""
     monoid = _require_grading_monoid(grading_monoid)
-    return FreshFreeModuleOn(
-        base_ring,
+    return base_ring._fresh_free_module_on(
         Sets.Δ[0],
         _extra_categories=(GradedModules(base_ring, monoid),),
         _extra_construction_data={

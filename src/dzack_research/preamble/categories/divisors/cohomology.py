@@ -1,8 +1,5 @@
 r"""Owned coherent cohomology spaces for represented line bundles."""
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -30,8 +27,7 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
             raise ValueError("a cohomology dimension is nonnegative")
         if scheme.scheme_base_ring() is not self.base_ring():
             raise ValueError("line-bundle cohomology is placed over this category's base ring")
-        return FreshFreeModuleOn(
-            self.base_ring(),
+        return self.base_ring()._fresh_free_module_on(
             finite_ordinal_set(dimension),
             _extra_categories=(self,),
             _extra_construction_data=(
