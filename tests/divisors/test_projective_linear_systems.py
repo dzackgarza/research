@@ -1,6 +1,6 @@
 r"""Selected projective linear systems retain base loci and rational-map domains."""
 
-from dzack_research.preamble.all import QQ, OpenImmersions, ProjectiveSpace
+from dzack_research.preamble.all import QQ, OpenImmersions, ProjectiveSpaces
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_linear_systems_restrictions.sage",
@@ -19,7 +19,7 @@ def _coordinate_sections(bundle):
 
 
 def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     bundle = plane.O(1)
     x0, x1, _x2 = _coordinate_sections(bundle)
 
@@ -41,7 +41,7 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
 
 
 def test_complete_hyperplane_system_has_empty_base_locus_and_everywhere_defined_map() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     bundle = plane.O(1)
     system = bundle.linear_system()
 
@@ -53,7 +53,7 @@ def test_complete_hyperplane_system_has_empty_base_locus_and_everywhere_defined_
 
 
 def test_complete_quadrics_and_restriction_to_a_line_keep_expected_dimensions() -> None:
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     bundle = plane.O(2)
     system = bundle.linear_system()
     ring = bundle.global_sections().homogeneous_coordinate_ring()

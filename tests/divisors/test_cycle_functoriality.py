@@ -1,10 +1,10 @@
 r"""Proper closed pushforward and flat open pullback of affine cycles."""
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpace
+from dzack_research.preamble.all import QQ, ZZ, AffineSpaces
 
 
 def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplicity() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     axis = plane.closed_subscheme(x)
@@ -22,7 +22,7 @@ def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplic
 
 
 def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves_the_other() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")

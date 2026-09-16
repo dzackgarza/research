@@ -1,10 +1,10 @@
 """Multiprojective homogeneous coordinates preserve exact factor roles."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
 def test_factor_coordinate_embeddings_keep_repeated_projective_factors_distinct() -> None:
-    line = ProjectiveSpace(1, QQ, names=("u", "v"))
+    line = ProjectiveSpaces(QQ)(1, names=("u", "v"))
     product = line.scheme_category().product((line, line))
     sections = product.O(1, 1).global_sections()
     ring = sections.homogeneous_coordinate_ring()

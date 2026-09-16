@@ -1,13 +1,13 @@
 r"""Projective section rings retain actual graded pieces and multiplication maps."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     bundle = line.O(2)
     ring = bundle.section_ring()
     degree_one = ring.graded_piece(1)
@@ -44,7 +44,7 @@ def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() 
 
 def test_multiprojective_section_ring_is_segre_veronese_with_exact_factor_roles() -> None:
     factor_labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     factors = indexed_family(factor_labels, lambda _label: line)
     quadric = Schemes(QQ).product(factors)
     bundle = quadric.O(1, 1)
@@ -75,7 +75,7 @@ def test_multiprojective_section_ring_is_segre_veronese_with_exact_factor_roles(
 
 
 def test_section_spaces_consume_their_owned_construction_data() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     homogeneous = line.O(2).global_sections()
 
     assert homogeneous.section_scheme() is line

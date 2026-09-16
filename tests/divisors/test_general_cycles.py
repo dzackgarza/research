@@ -1,11 +1,11 @@
 r"""General algebraic cycles retain generic-point multiplicities."""
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpace
+from dzack_research.preamble.all import QQ, ZZ, AffineSpaces
 from dzack_research.preamble.categories.divisors.chow_groups import AlgebraicCycleGroups
 
 
 def test_nonreduced_double_line_has_multiplicity_two_in_its_fundamental_cycle() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     double_line = plane.closed_subscheme(x**2)
@@ -22,7 +22,7 @@ def test_nonreduced_double_line_has_multiplicity_two_in_its_fundamental_cycle() 
 
 
 def test_embedded_lower_dimensional_associated_prime_is_not_a_generic_component() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")

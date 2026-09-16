@@ -2,12 +2,12 @@
 
 from dzack_research.preamble.all import (
     QQ,
-    ProjectiveSpace,
+    ProjectiveSpaces,
 )
 
 
 def _linearizations():
-    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     bundle = line.O(1)
     trivial = bundle.c2_coordinate_swap_linearization(1)
     sign = bundle.c2_coordinate_swap_linearization(-1)
@@ -112,7 +112,7 @@ def test_restriction_to_an_eigensection_divisor_is_an_equivariant_h0_map() -> No
 
 
 def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
-    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     bundle = line.O(1)
     action = line.coordinate_swap_action()
     linearized = bundle.linearize(action, lambda _element: QQ.one())
@@ -122,7 +122,7 @@ def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
 
 
 def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     product = line.scheme_category().product((line, line))
     bundle = product.O(1, 1)
     action = product.c2_diagonal_sign_action()

@@ -1,10 +1,10 @@
 r"""Supported local intersections use Serre's alternating Tor lengths."""
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpace
+from dzack_research.preamble.all import QQ, ZZ, AffineSpaces
 
 
 def test_self_intersection_of_origin_on_affine_line_has_cancelling_tor_one() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     ring = line.coordinate_algebra()
     x = ring.algebra_generator("x")
     origin = line.closed_subscheme(x)
@@ -20,7 +20,7 @@ def test_self_intersection_of_origin_on_affine_line_has_cancelling_tor_one() -> 
 
 
 def test_proper_tangent_intersection_agrees_with_surface_colength_specialization() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     ring = plane.coordinate_algebra()
     x = ring.algebra_generator("x")
     y = ring.algebra_generator("y")

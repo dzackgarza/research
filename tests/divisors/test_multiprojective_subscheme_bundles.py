@@ -1,10 +1,10 @@
 """Restricted multiprojective line bundles retain their exact multidegree."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 def test_restricted_multiprojective_bundles_tensor_and_compare_by_multidegree() -> None:
-    plane = ProjectiveSpace(2, QQ)
-    line = ProjectiveSpace(1, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
+    line = ProjectiveSpaces(QQ)(1)
     product = plane.scheme_category().product((plane, line))
     sections = product.O(1, 1).global_sections()
     ring = sections.homogeneous_coordinate_ring()

@@ -3,7 +3,7 @@ r"""Standard projective line bundles use the generic finite-atlas descent owner.
 from dzack_research.preamble.all import (
     QQ,
     FiniteAtlasInvertibleSheaf,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -17,7 +17,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_projective_O_one_is_descent_on_the_actual_projective_space() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     bundle = line.O(1)
     atlas = bundle.gluing_datum()
     overlap = atlas.overlap(0, 1)
@@ -37,7 +37,7 @@ def test_projective_O_one_is_descent_on_the_actual_projective_space() -> None:
 
 
 def test_projective_line_bundle_tensor_dual_and_canonical_degrees_are_exact() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     hyperplane = plane.O(1)
     square = hyperplane.tensor_power(2)
     dual = hyperplane.dual()
@@ -53,7 +53,7 @@ def test_projective_line_bundle_tensor_dual_and_canonical_degrees_are_exact() ->
 
 
 def test_projective_section_multiplication_is_polynomial_multiplication_on_actual_modules() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     linear = line.O(1)
     quadratic = line.O(2)
     multiplication = linear.section_multiplication(linear)
@@ -77,7 +77,7 @@ def test_projective_line_bundle_base_change_retains_projection_and_section_compa
 
     field = QuadraticField(2, "s")
     ring_map = QQ.Mor(field)(lambda element: field(element))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     bundle = line.O(2)
 
     changed = bundle.base_change(ring_map)
@@ -97,7 +97,7 @@ def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
         FiniteAtlasRefinement,
     )
 
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     bundle = line.O(1)
     coarse = bundle.gluing_datum()
     fine = coarse.presentation()
@@ -128,7 +128,7 @@ def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
 
 def test_projection_pullback_places_degree_in_the_selected_product_factor() -> None:
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     product = Schemes(QQ).product(indexed_family(labels, lambda _label: line))
     projection = product.projection("left")
     bundle = line.O(2)
@@ -147,7 +147,7 @@ def test_projection_pullback_places_degree_in_the_selected_product_factor() -> N
 
 
 def test_identity_base_change_preserves_projective_dimension_and_bundle_degree() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     identity = QQ.Mor(QQ).identity()
     changed_plane = plane.base_change(identity)
     changed_bundle = plane.O(1).base_change(identity)

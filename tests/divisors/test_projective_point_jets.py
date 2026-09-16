@@ -1,10 +1,10 @@
 r"""Projective jets are local quotients at actual represented rational points."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
 def test_noncoordinate_projective_point_jet_retains_stalk_and_local_quotient() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     bundle = plane.O(2)
     point = plane.point_morphism((1, 2, 3))
 
@@ -26,7 +26,7 @@ def test_noncoordinate_projective_point_jet_retains_stalk_and_local_quotient() -
 
 
 def test_double_point_condition_is_nonreduced_and_stronger_than_value_evaluation() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     bundle = plane.O(2)
     point = plane.point_morphism((1, 2, 3))
 
@@ -40,7 +40,7 @@ def test_double_point_condition_is_nonreduced_and_stronger_than_value_evaluation
 
 
 def test_noncoordinate_imposed_multiplicity_parameter_space_retains_actual_condition() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     bundle = plane.O(3)
     point = plane.point_morphism((1, 1, 2))
 

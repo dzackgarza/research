@@ -1,13 +1,13 @@
 r"""Multidegree line bundles retain factor roles and multihomogeneous sections."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _quadric_with_named_factors():
     labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     factors = indexed_family(labels, lambda _label: line)
     return labels, Schemes(QQ).product(factors)
 

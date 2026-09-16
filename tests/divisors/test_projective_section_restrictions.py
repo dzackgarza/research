@@ -1,10 +1,10 @@
 r"""Projective restriction maps use the exact image on general closed subschemes."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
 def _plane_line_and_sections():
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     bundle = plane.O(1)
     sections = bundle.global_sections()
     ring = sections.homogeneous_coordinate_ring()

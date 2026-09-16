@@ -1,10 +1,10 @@
 """Homogeneous section spaces pull back contravariantly by projective coordinates."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpace
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
 def test_coordinate_swap_pulls_homogeneous_sections_by_substitution() -> None:
-    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     sections = line.O(3).global_sections()
     ring = sections.homogeneous_coordinate_ring()
     x = ring.algebra_generator("x")

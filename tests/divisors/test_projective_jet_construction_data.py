@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import ProjectiveSpace, QQ
+from dzack_research.preamble.all import ProjectiveSpaces, QQ
 
 
 def test_projective_jet_space_consumes_its_selected_local_data() -> None:
-    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
     bundle = line.O(1)
     point = line.point_morphism((1, 1))
 
