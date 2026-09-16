@@ -233,11 +233,11 @@ class Modules(OwnedCategoryOverBaseRing):
     def scalar_extension(self, ring_map):
         r"""``S tensor_R - : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
         from dzack_research.preamble.categories.functors.scalar_change import (
-            ScalarExtensionFunctor,
+            _ScalarExtensionFunctor,
         )
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
-        return ScalarExtensionFunctor(ring_map)
+        return _ScalarExtensionFunctor(ring_map)
 
     def restriction_of_scalars(self, ring_map):
         r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``.
@@ -248,7 +248,7 @@ class Modules(OwnedCategoryOverBaseRing):
             TrivialActionFunctor,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
-            RestrictionOfScalarsFunctor,
+            _RestrictionOfScalarsFunctor,
         )
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
@@ -256,16 +256,16 @@ class Modules(OwnedCategoryOverBaseRing):
             case _ if ring_map.is_group_algebra_augmentation():
                 return TrivialActionFunctor(ring_map)
             case _:
-                return RestrictionOfScalarsFunctor(ring_map)
+                return _RestrictionOfScalarsFunctor(ring_map)
 
     def coextension_of_scalars(self, ring_map):
         r"""``Hom_R(S, -) : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
         from dzack_research.preamble.categories.functors.scalar_change import (
-            CoextensionOfScalarsFunctor,
+            _CoextensionOfScalarsFunctor,
         )
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
-        return CoextensionOfScalarsFunctor(ring_map)
+        return _CoextensionOfScalarsFunctor(ring_map)
 
     def base_change_adjunction(self, ring_map):
         r"""``S tensor_R - -| Res_f`` along ``ring_map: R -> S``."""

@@ -3,7 +3,7 @@ r"""Localization of modules as scalar extension along a ring localization."""
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.scalar_change import (
-    ScalarExtensionFunctor,
+    _ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.localizations import (
     _localized_module,
@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 
 
-class ModuleLocalizationFunctor(ScalarExtensionFunctor):
+class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     r"""The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``."""
 
     def __init__(self, localization_ring) -> None:

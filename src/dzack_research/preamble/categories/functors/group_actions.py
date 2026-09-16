@@ -17,11 +17,11 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.functors.scalar_change import (
-    BaseChangeAdjunction,
-    CoextensionOfScalarsFunctor,
-    RestrictionCoextensionAdjunction,
-    RestrictionOfScalarsFunctor,
-    ScalarExtensionFunctor,
+    _BaseChangeAdjunction,
+    _CoextensionOfScalarsFunctor,
+    _RestrictionCoextensionAdjunction,
+    _RestrictionOfScalarsFunctor,
+    _ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _trivial_action,
@@ -224,7 +224,7 @@ def _coinvariant_projection(group_module, coinvariants, element):
     )
 
 
-class TrivialActionFunctor(RestrictionOfScalarsFunctor):
+class TrivialActionFunctor(_RestrictionOfScalarsFunctor):
     r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -249,7 +249,7 @@ class TrivialActionFunctor(RestrictionOfScalarsFunctor):
         return f"Trivial {self.group()}-action functor"
 
 
-class InvariantsFunctor(CoextensionOfScalarsFunctor):
+class InvariantsFunctor(_CoextensionOfScalarsFunctor):
     r"""``(-)^G : Modules(R[G]) -> Modules(R)``, coextension along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -284,7 +284,7 @@ class InvariantsFunctor(CoextensionOfScalarsFunctor):
         return f"{self.group()}-invariants functor"
 
 
-class CoinvariantsFunctor(ScalarExtensionFunctor):
+class CoinvariantsFunctor(_ScalarExtensionFunctor):
     r"""``(-)_G : Modules(R[G]) -> Modules(R)``, scalar extension along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -315,7 +315,7 @@ class CoinvariantsFunctor(ScalarExtensionFunctor):
         return f"{self.group()}-coinvariants functor"
 
 
-class TrivialInvariantsAdjunction(RestrictionCoextensionAdjunction):
+class TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
     r"""``Triv_G ⊣ (-)^G``, restriction/coextension along the augmentation."""
 
     _restriction_functor = TrivialActionFunctor
@@ -342,7 +342,7 @@ class TrivialInvariantsAdjunction(RestrictionCoextensionAdjunction):
         return f"Trivial-action/invariants adjunction for {self.left_adjoint().group()}"
 
 
-class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
+class CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     r"""``(-)_G ⊣ Triv_G``, base change along the augmentation."""
 
     _extension_functor = CoinvariantsFunctor

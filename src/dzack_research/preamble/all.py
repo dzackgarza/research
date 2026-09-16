@@ -331,21 +331,6 @@ from dzack_research.preamble.categories.functors.orders_number_fields import (
 from dzack_research.preamble.categories.functors.orders_number_fields import (
     RingOfIntegersFunctor as RingOfIntegersFunctor,
 )
-from dzack_research.preamble.categories.functors.scalar_change import (
-    BaseChangeAdjunction as BaseChangeAdjunction,
-)
-from dzack_research.preamble.categories.functors.scalar_change import (
-    CoextensionOfScalarsFunctor as CoextensionOfScalarsFunctor,
-)
-from dzack_research.preamble.categories.functors.scalar_change import (
-    RestrictionCoextensionAdjunction as RestrictionCoextensionAdjunction,
-)
-from dzack_research.preamble.categories.functors.scalar_change import (
-    RestrictionOfScalarsFunctor as RestrictionOfScalarsFunctor,
-)
-from dzack_research.preamble.categories.functors.scalar_change import (
-    ScalarExtensionFunctor as ScalarExtensionFunctor,
-)
 from dzack_research.preamble.categories.functors.set_constructions import (
     ExponentialFunctor as ExponentialFunctor,
 )

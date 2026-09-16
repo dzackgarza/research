@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
-class ScalarExtensionFunctor(Functor):
+class _ScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : Mod_R -> Mod_S`` along ``f:R -> S``.
 
     The mathematical functor is defined on every module.  The live computation
@@ -78,7 +78,7 @@ class ScalarExtensionFunctor(Functor):
         return f"Scalar extension along {self.ring_map()}"
 
 
-class RestrictionOfScalarsFunctor(Functor):
+class _RestrictionOfScalarsFunctor(Functor):
     r"""``Res_f : Mod_S -> Mod_R`` along ``f:R -> S``."""
 
     def __init__(self, ring_map) -> None:
@@ -134,7 +134,7 @@ class RestrictionOfScalarsFunctor(Functor):
         return f"Restriction of scalars along {self.ring_map()}"
 
 
-class CoextensionOfScalarsFunctor(Functor):
+class _CoextensionOfScalarsFunctor(Functor):
     r"""``Hom_R(S, -) : Mod_R -> Mod_S`` along ``f: R -> S``, the right adjoint of ``Res_f``.
 
     ``S`` acts on ``Hom_R(S, M)`` through its right regular action,
@@ -237,11 +237,11 @@ class CoextensionOfScalarsFunctor(Functor):
         return f"Coextension of scalars along {self.ring_map()}"
 
 
-class BaseChangeAdjunction(Adjunction):
+class _BaseChangeAdjunction(Adjunction):
     r"""``S tensor_R - ⊣ Res_f``."""
 
-    _extension_functor = ScalarExtensionFunctor
-    _restriction_functor = RestrictionOfScalarsFunctor
+    _extension_functor = _ScalarExtensionFunctor
+    _restriction_functor = _RestrictionOfScalarsFunctor
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
@@ -269,14 +269,14 @@ class BaseChangeAdjunction(Adjunction):
         return f"Scalar-extension/restriction adjunction along {self._ring_map}"
 
 
-class RestrictionCoextensionAdjunction(Adjunction):
+class _RestrictionCoextensionAdjunction(Adjunction):
     r"""``Res_f ⊣ Hom_R(S, -)``.
 
     The unit sends ``n`` to ``s |-> s n`` and the counit evaluates at ``1``.
     """
 
-    _restriction_functor = RestrictionOfScalarsFunctor
-    _coextension_functor = CoextensionOfScalarsFunctor
+    _restriction_functor = _RestrictionOfScalarsFunctor
+    _coextension_functor = _CoextensionOfScalarsFunctor
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
@@ -323,10 +323,10 @@ class RestrictionCoextensionAdjunction(Adjunction):
 
 
 @cached_function
-def _base_change_adjunction(ring_map) -> BaseChangeAdjunction:
-    return BaseChangeAdjunction(ring_map)
+def _base_change_adjunction(ring_map) -> _BaseChangeAdjunction:
+    return _BaseChangeAdjunction(ring_map)
 
 
 @cached_function
-def _restriction_coextension_adjunction(ring_map) -> RestrictionCoextensionAdjunction:
-    return RestrictionCoextensionAdjunction(ring_map)
+def _restriction_coextension_adjunction(ring_map) -> _RestrictionCoextensionAdjunction:
+    return _RestrictionCoextensionAdjunction(ring_map)

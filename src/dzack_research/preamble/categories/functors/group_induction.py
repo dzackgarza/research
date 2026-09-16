@@ -13,11 +13,11 @@ with the transversal as the represented datum.
 
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.scalar_change import (
-    BaseChangeAdjunction,
-    CoextensionOfScalarsFunctor,
-    RestrictionCoextensionAdjunction,
-    RestrictionOfScalarsFunctor,
-    ScalarExtensionFunctor,
+    _BaseChangeAdjunction,
+    _CoextensionOfScalarsFunctor,
+    _RestrictionCoextensionAdjunction,
+    _RestrictionOfScalarsFunctor,
+    _ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presentation_from_relation_rows,
@@ -140,7 +140,7 @@ def _finite_coset_sum(module, representatives):
     return presentation.cokernel()
 
 
-class RestrictionOfActingGroupFunctor(RestrictionOfScalarsFunctor):
+class RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
     r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -187,7 +187,7 @@ class RestrictionOfActingGroupFunctor(RestrictionOfScalarsFunctor):
         return f"Restriction from {self.supergroup()} to {self.subgroup()}"
 
 
-class InductionFunctor(ScalarExtensionFunctor):
+class InductionFunctor(_ScalarExtensionFunctor):
     r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -286,7 +286,7 @@ class InductionFunctor(ScalarExtensionFunctor):
         return f"Induction from {self.subgroup()} to {self.supergroup()}"
 
 
-class CoinductionFunctor(CoextensionOfScalarsFunctor):
+class CoinductionFunctor(_CoextensionOfScalarsFunctor):
     r"""``Coind_H^G : Modules(R[H]) -> Modules(R[G])``, coextension along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -422,7 +422,7 @@ class CoinductionFunctor(CoextensionOfScalarsFunctor):
         return f"Coinduction from {self.subgroup()} to {self.supergroup()}"
 
 
-class InductionRestrictionAdjunction(BaseChangeAdjunction):
+class InductionRestrictionAdjunction(_BaseChangeAdjunction):
     r"""``Ind_H^G ⊣ Res_H^G``, the base-change adjunction along ``R[H] -> R[G]``."""
 
     _extension_functor = InductionFunctor
@@ -457,7 +457,7 @@ class InductionRestrictionAdjunction(BaseChangeAdjunction):
         )
 
 
-class RestrictionCoinductionAdjunction(RestrictionCoextensionAdjunction):
+class RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
     r"""``Res_H^G ⊣ Coind_H^G``, the restriction/coextension adjunction along ``R[H] -> R[G]``."""
 
     _restriction_functor = RestrictionOfActingGroupFunctor

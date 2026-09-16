@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.algebras.group_algebras import (
 )
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.functors.scalar_change import (
-    ScalarExtensionFunctor,
+    _ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
@@ -226,7 +226,7 @@ class ModulesOverGroupAlgebra(Modules):
             case _ if ring_map.is_group_algebra_augmentation():
                 return CoinvariantsFunctor(ring_map)
             case _:
-                return ScalarExtensionFunctor(ring_map)
+                return _ScalarExtensionFunctor(ring_map)
 
     def restriction_of_scalars(self, ring_map):
         r"""``Res_f : Modules(R[G]) -> Modules(A)`` along ``ring_map: A -> R[G]``."""
@@ -234,7 +234,7 @@ class ModulesOverGroupAlgebra(Modules):
             RestrictionOfActingGroupFunctor,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
-            RestrictionOfScalarsFunctor,
+            _RestrictionOfScalarsFunctor,
         )
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
@@ -242,7 +242,7 @@ class ModulesOverGroupAlgebra(Modules):
             case _ if ring_map.is_group_algebra_subgroup_inclusion():
                 return RestrictionOfActingGroupFunctor(ring_map)
             case _:
-                return RestrictionOfScalarsFunctor(ring_map)
+                return _RestrictionOfScalarsFunctor(ring_map)
 
     def coextension_of_scalars(self, ring_map):
         r"""``Hom_{R[G]}(S, -) : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
@@ -253,7 +253,7 @@ class ModulesOverGroupAlgebra(Modules):
             CoinductionFunctor,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
-            CoextensionOfScalarsFunctor,
+            _CoextensionOfScalarsFunctor,
         )
 
         assert _owned_ring(ring_map.domain()) is self.base_ring()
@@ -263,7 +263,7 @@ class ModulesOverGroupAlgebra(Modules):
             case _ if ring_map.is_group_algebra_augmentation():
                 return InvariantsFunctor(ring_map)
             case _:
-                return CoextensionOfScalarsFunctor(ring_map)
+                return _CoextensionOfScalarsFunctor(ring_map)
 
     def base_change_adjunction(self, ring_map):
         r"""``S tensor_{R[G]} - -| Res_f`` along ``ring_map: R[G] -> S``."""
@@ -892,7 +892,7 @@ class ModulesOverGroupAlgebra(Modules):
             r"""Transport this group module along ``R -> S`` functorially."""
 
             unacted = self.unacted_module()
-            scalar_extension = ScalarExtensionFunctor(ring_map)
+            scalar_extension = _ScalarExtensionFunctor(ring_map)
             changed_module = scalar_extension(unacted)
             if self.is_trivial_action():
                 return _trivial_action(changed_module, self.group())

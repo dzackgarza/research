@@ -290,10 +290,6 @@ def _construct_kahler_differentials(algebra):
         tuple(("d", label) for label in labels)
     )
     if relations.cardinality() != 0:
-        from dzack_research.preamble.categories.functors.scalar_change import (
-            ScalarExtensionFunctor,
-        )
-
         presentation_ideal = presentation.ideal(*tuple(relations))
         presentation_omega = presentation.kahler_differentials()
         presentation_derivation = presentation_omega.universal_derivation()
@@ -305,7 +301,7 @@ def _construct_kahler_differentials(algebra):
             )
         )
         quotient_map = algebra.algebra_presentation_morphism()
-        scalar_extension = ScalarExtensionFunctor(quotient_map)
+        scalar_extension = Modules(quotient_map.domain()).scalar_extension(quotient_map)
         conormal_module = scalar_extension(presentation_ideal)
         ambient_differentials = algebra.free_module(differential_labels)
 
