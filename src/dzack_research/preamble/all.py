@@ -65,6 +65,7 @@ from dzack_research.preamble.categories.algebras import (
     CohomologyAlgebras,
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
+    CommutativeDifferentialGradedAlgebras,
     CommutatorLieAlgebras,
     CyclicCoverAlgebra,
     DegreewiseLinearMorphism,
