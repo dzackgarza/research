@@ -12,7 +12,7 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineSchemes,
     IntegralSchemes,
-    LatticePolygon,
+    LatticePolygons,
     NormalSchemes,
     OpenImmersions,
     RationalPolyhedralFans,
@@ -150,7 +150,7 @@ def test_the_normal_fan_of_a_polytope_uses_inner_normals() -> None:
     r"""The facet ``x + 2y = 2`` of ``conv{(0,0),(2,0),(0,1)}`` has inner
     normal ``-e_1 - 2 e_2``; the outer normal ``e_1 + 2 e_2`` is not a ray of
     the normal fan."""
-    polygon = LatticePolygon(((0, 0), (2, 0), (0, 1)))
+    polygon = LatticePolygons()(((0, 0), (2, 0), (0, 1)))
     fan = polygon.normal_fan()
     cocharacters = fan.cocharacter_lattice()
     first, second = tuple(cocharacters.module_generating_set())
@@ -165,7 +165,7 @@ def test_the_normal_fan_of_a_polytope_uses_inner_normals() -> None:
 def test_the_toric_variety_of_the_standard_triangle_is_the_projective_plane() -> None:
     r"""The normal fan of ``conv{(0,0),(1,0),(0,1)}`` has rays ``e_1``, ``e_2``
     and ``-e_1-e_2``, which is the fan of ``P^2``."""
-    triangle = LatticePolygon(((0, 0), (1, 0), (0, 1)))
+    triangle = LatticePolygons()(((0, 0), (1, 0), (0, 1)))
     variety = triangle.toric_variety(QQ)
 
     assert variety in ToricSchemes(QQ)

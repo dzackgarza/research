@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
 )
-from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytope
+from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopes
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -169,7 +169,7 @@ class VoronoiCell(SageObject):
             result.append(
                 VoronoiFacet(
                     self,
-                    ConvexPolytope(face.as_polyhedron().vertices_list(), lattice=lattice),
+                    ConvexPolytopes()(face.as_polyhedron().vertices_list(), lattice=lattice),
                     relevant_vector,
                 )
             )
@@ -584,7 +584,7 @@ def _voronoi_cell(lattice, bound=None):
     if rank == 0:
         return VoronoiCell(
             lattice,
-            ConvexPolytope(Polyhedron(vertices=[[]], base_ring=SageQQ).vertices_list()),
+            ConvexPolytopes()(Polyhedron(vertices=[[]], base_ring=SageQQ).vertices_list()),
         )
     gram_q = gram.change_ring(rationals)
     engine_gram = _engine_component_matrix(gram)
@@ -618,7 +618,7 @@ def _voronoi_cell(lattice, bound=None):
                 )
         return VoronoiCell(
             lattice,
-            ConvexPolytope(
+            ConvexPolytopes()(
                 Polyhedron(ieqs=inequalities, base_ring=SageQQ).vertices_list(),
                 lattice=lattice,
             ),
@@ -792,7 +792,7 @@ def _contact_polytope(lattice):
         ]
         for vector in lattice.shortest_vectors()
     ]
-    return ConvexPolytope(
+    return ConvexPolytopes()(
         Polyhedron(vertices=vertices, base_ring=SageQQ)
     )
 

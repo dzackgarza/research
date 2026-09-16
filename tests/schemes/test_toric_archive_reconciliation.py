@@ -10,7 +10,7 @@ fan and a polarizing polytope are not conflated.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    LatticePolygon,
+    LatticePolygons,
     RationalPolyhedralFans,
     ToricSchemes,
 )
@@ -45,7 +45,7 @@ def test_archived_fan_datum_is_the_live_toric_variety_owner() -> None:
 
 
 def test_archived_optional_polytope_is_retained_as_actual_polarization_data() -> None:
-    triangle = LatticePolygon(((0, 0), (1, 0), (0, 1)))
+    triangle = LatticePolygons()(((0, 0), (1, 0), (0, 1)))
     variety = triangle.toric_variety(QQ)
 
     assert variety in ToricSchemes(QQ)
@@ -58,7 +58,7 @@ def test_archived_optional_polytope_is_retained_as_actual_polarization_data() ->
 def test_bare_fan_and_polarized_construction_remain_distinct_data() -> None:
     fan = _plane_fans().projective_space_fan()
     bare = fan.toric_variety(QQ)
-    triangle = LatticePolygon(((0, 0), (1, 0), (0, 1)))
+    triangle = LatticePolygons()(((0, 0), (1, 0), (0, 1)))
     polarized = triangle.toric_variety(QQ)
 
     assert bare.fan().is_isomorphic(polarized.fan())

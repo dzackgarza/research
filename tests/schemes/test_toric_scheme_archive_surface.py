@@ -10,7 +10,7 @@ are decided by fan isomorphism.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    LatticePolygon,
+    LatticePolygons,
     RationalPolyhedralFans,
     Schemes,
     ToricSchemes,
@@ -36,7 +36,7 @@ def test_fan_defined_toric_scheme_retains_its_mathematical_data() -> None:
 
 
 def test_polytope_construction_retains_the_selected_polarization() -> None:
-    triangle = LatticePolygon(((0, 0), (1, 0), (0, 1)))
+    triangle = LatticePolygons()(((0, 0), (1, 0), (0, 1)))
     plane = triangle.toric_variety(QQ)
 
     assert plane in ToricSchemes(QQ)

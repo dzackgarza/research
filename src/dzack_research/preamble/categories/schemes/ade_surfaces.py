@@ -32,8 +32,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPairs
 from dzack_research.preamble.categories.schemes.polytopes import (
-    ConvexPolytope,
-    LatticePolygon,
+    ConvexPolytopes,
+    LatticePolygons,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -542,7 +542,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                 *polygon._engine_coordinates(self.distinguished_point()),
                 SageQQ(2),
             )
-            return ConvexPolytope((*base, apex))
+            return ConvexPolytopes()((*base, apex))
 
         def cover_toric_threefold(self):
             r"""``V_P``, the toric threefold the double cover is cut out of."""
@@ -570,7 +570,7 @@ def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
     variant = tuple(variant)
 
     vertices, point, decorations = _ade_polygon_data(letter, rank, variant, bool(affine))
-    polygon = LatticePolygon(vertices)
+    polygon = LatticePolygons()(vertices)
     toric_base = polygon.toric_variety(base_ring)
     return _object_of(
         ADELogPairs(toric_base.scheme_base_ring()),
@@ -752,7 +752,7 @@ class AT21ToricADEPair(SageObject):
 
     def branch_newton_polygon(self, section):
         r"""Return the convex hull of the nonzero character terms of ``section``."""
-        from dzack_research.preamble.categories.schemes.polytopes import LatticePolygon
+        from dzack_research.preamble.categories.schemes.polytopes import LatticePolygons
 
         sections = self.branch_section_space()
         coefficients = sections.framing_coefficients(sections(section))
@@ -763,7 +763,7 @@ class AT21ToricADEPair(SageObject):
         )
         if len(support) < 3:
             raise ValueError("a branch Newton polygon requires two-dimensional support")
-        return LatticePolygon(support, lattice=self.scheme().character_lattice())
+        return LatticePolygons()(support, lattice=self.scheme().character_lattice())
 
     def source_normal_form_section(self, *, constant=1):
         r"""Return the AT21 Table 5 normal-form specimen in the D/E families.

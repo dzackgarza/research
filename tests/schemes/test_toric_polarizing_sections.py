@@ -1,10 +1,10 @@
 r"""A chosen lattice polytope owns its toric polarization and zero divisors."""
 
-from dzack_research.preamble.all import QQ, LatticePolygon
+from dzack_research.preamble.all import QQ, LatticePolygons
 
 
 def test_polytope_reconstructs_its_polarizing_divisor_and_character_section_zero_scheme() -> None:
-    polygon = LatticePolygon(((0, 0), (2, 0), (0, 2)))
+    polygon = LatticePolygons()(((0, 0), (2, 0), (0, 2)))
     surface = polygon.toric_variety(QQ)
     divisor = surface.polarizing_divisor()
     recovered = surface.divisor_polytope(divisor)

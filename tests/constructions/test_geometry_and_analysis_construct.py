@@ -16,8 +16,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_the_standard_simplex_and_the_square() -> None:
-    simplex = LatticePolygon([[0, 0], [1, 0], [0, 1]])
-    square = LatticePolygon([[-1, -1], [1, -1], [1, 1], [-1, 1]])
+    simplex = LatticePolygons()([[0, 0], [1, 0], [0, 1]])
+    square = LatticePolygons()([[-1, -1], [1, -1], [1, 1], [-1, 1]])
 
     assert simplex in ConvexPolygons()
     assert simplex in ConvexPolytopes()
@@ -47,7 +47,7 @@ def test_the_standard_simplex_and_the_square() -> None:
 
 
 def test_ehrhart_polynomial_of_the_square() -> None:
-    square = LatticePolygon([[0, 0], [1, 0], [1, 1], [0, 1]])
+    square = LatticePolygons()([[0, 0], [1, 0], [1, 1], [0, 1]])
     ehrhart = square.ehrhart_polynomial()
     t = ehrhart.parent().algebra_generator("t")
     assert ehrhart == (t + 1) ** 2
@@ -56,8 +56,8 @@ def test_ehrhart_polynomial_of_the_square() -> None:
 
 
 def test_a_three_dimensional_polytope() -> None:
-    cube = LatticePolytope([[a, b, c] for a in (0, 1) for b in (0, 1) for c in (0, 1)])
-    tetrahedron = ConvexPolytope([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    cube = LatticePolytopes()([[a, b, c] for a in (0, 1) for b in (0, 1) for c in (0, 1)])
+    tetrahedron = ConvexPolytopes()([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
     assert cube.dimension() == 3
     assert cube.n_vertices() == 8
     assert cube.facets().cardinality() == 6
@@ -67,7 +67,7 @@ def test_a_three_dimensional_polytope() -> None:
     assert tetrahedron.volume() == QQ(1) / 6
     assert tetrahedron.normalized_volume() == 1
     assert tetrahedron.n_integral_points() == 4
-    assert ConvexPolygon([[0, 0], [QQ(1) / 2, 0], [0, QQ(1) / 2]]).is_lattice_polytope() is False
+    assert ConvexPolygons()([[0, 0], [QQ(1) / 2, 0], [0, QQ(1) / 2]]).is_lattice_polytope() is False
 
 
 # ---------------------------------------------------------------------------

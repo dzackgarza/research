@@ -9,7 +9,6 @@ file records that mathematical migration without reviving an archive parent.
 from dzack_research.preamble.all import (
     ConvexPolygons,
     ConvexPolytopes,
-    LatticePolygon,
     LatticePolygons,
     LatticePolytopes,
 )
@@ -22,7 +21,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_lattice_polygon_invariants_live_on_the_current_object() -> None:
-    triangle = LatticePolygon(((0, 0), (0, 3), (6, 0)))
+    triangle = LatticePolygons()(((0, 0), (0, 3), (6, 0)))
 
     assert triangle in ConvexPolytopes()
     assert triangle in ConvexPolygons()
@@ -40,7 +39,7 @@ def test_archived_lattice_polygon_invariants_live_on_the_current_object() -> Non
 
 
 def test_archived_ehrhart_h_star_and_polar_duality_are_live_lattice_operations() -> None:
-    square = LatticePolygon(((-1, -1), (-1, 1), (1, 1), (1, -1)))
+    square = LatticePolygons()(((-1, -1), (-1, 1), (1, 1), (1, -1)))
     polynomial = square.ehrhart_polynomial()
     t = polynomial.parent().algebra_generator("t")
     h_star = square.h_star_vector()

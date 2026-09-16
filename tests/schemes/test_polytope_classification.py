@@ -35,6 +35,6 @@ def test_a_non_reflexive_lattice_polygon_is_not_in_the_classification() -> None:
     r"""The triangle on ``(0,0)``, ``(2,0)``, ``(0,2)`` has no interior lattice
     point at the origin, so it is not reflexive and the predicate is not
     answering true for every lattice polygon."""
-    from dzack_research.preamble.all import LatticePolygon
+    from dzack_research.preamble.all import LatticePolygons
 
-    assert not LatticePolygon(((0, 0), (2, 0), (0, 2))).is_reflexive()
+    assert not LatticePolygons()(((0, 0), (2, 0), (0, 2))).is_reflexive()

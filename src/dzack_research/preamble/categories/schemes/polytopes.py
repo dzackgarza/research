@@ -126,7 +126,7 @@ class ConvexPolytopes(OwnedCategory):
         r"""The rational simplex on ``0, e_1/2, e_2, e_3`` in ``QQ^3``."""
         from sage.rings.rational import Rational
 
-        return ConvexPolytope(
+        return self(
             (
                 (0, 0, 0),
                 (Rational((1, 2)), 0, 0),
@@ -134,6 +134,10 @@ class ConvexPolytopes(OwnedCategory):
                 (0, 0, 1),
             )
         )
+
+    def _call_(self, vertices, lattice=None):
+        r"""Construct the convex polytope on the selected vertices."""
+        return _convex_polytope(vertices, lattice=lattice, require_integral=False)
 
     def from_halfspaces(self, halfspaces, lattice=None):
         r"""The polytope cut out by a family of affine halfspaces.
@@ -434,7 +438,7 @@ class ConvexPolytopes(OwnedCategory):
             assert scalar >= integers.zero(), (
                 "Ehrhart dilation factors are nonnegative"
             )
-            return LatticePolytope(
+            return LatticePolytopes()(
                 [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
                 lattice=self.ambient_lattice(),
             )
@@ -518,8 +522,8 @@ class ConvexPolytopes(OwnedCategory):
                 for vertex in polar.vertices()
                 for coordinate in vertex
             ):
-                return LatticePolytope(polar.vertices())
-            return ConvexPolytope(polar.vertices())
+                return LatticePolytopes()(polar.vertices())
+            return ConvexPolytopes()(polar.vertices())
 
         def is_smooth(self) -> bool:
             if not self.is_lattice_polytope():
@@ -540,7 +544,11 @@ class LatticePolytopes(OwnedCategory):
 
     def an_object(self):
         r"""The standard simplex in ``ZZ^3``."""
-        return LatticePolytope(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
+        return self(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
+
+    def _call_(self, vertices, lattice=None):
+        r"""Construct the lattice polytope on the selected integral vertices."""
+        return _convex_polytope(vertices, lattice=lattice, require_integral=True)
 
     @cached_method
     def reflexive_polytopes(self, dimension):
@@ -562,7 +570,7 @@ class LatticePolytopes(OwnedCategory):
         )
         return finite_ordered_set(
             tuple(
-                LatticePolytope(
+                LatticePolytopes()(
                     tuple(
                         tuple(int(coordinate) for coordinate in vertex)
                         for vertex in classified.vertices()
@@ -588,7 +596,13 @@ class ConvexPolygons(OwnedCategory):
         r"""The triangle on ``0, e_1/2, e_2``, whose vertices are not integral."""
         from sage.rings.rational import Rational
 
-        return ConvexPolygon(((0, 0), (Rational((1, 2)), 0), (0, 1)))
+        return self(((0, 0), (Rational((1, 2)), 0), (0, 1)))
+
+    def _call_(self, vertices, lattice=None):
+        r"""Construct the two-dimensional convex polytope on ``vertices``."""
+        polytope = ConvexPolytopes()(vertices, lattice=lattice)
+        assert polytope.dimension() == 2, "a convex polygon has affine dimension two"
+        return polytope
 
     @classmethod
     def _repr_object_names(cls):
@@ -662,7 +676,13 @@ class LatticePolygons(OwnedCategory):
 
     def an_object(self):
         r"""The standard triangle in ``ZZ^2``."""
-        return LatticePolygon(((0, 0), (1, 0), (0, 1)))
+        return self(((0, 0), (1, 0), (0, 1)))
+
+    def _call_(self, vertices, lattice=None):
+        r"""Construct the two-dimensional lattice polytope on ``vertices``."""
+        polytope = LatticePolytopes()(vertices, lattice=lattice)
+        assert polytope.dimension() == 2, "a lattice polygon has affine dimension two"
+        return polytope
 
     @classmethod
     def _repr_object_names(cls):
@@ -715,34 +735,10 @@ def _convex_polytope(
     )
 
 
-def ConvexPolytope(vertices, lattice=None):
-    return _convex_polytope(vertices, lattice=lattice, require_integral=False)
-
-
-def ConvexPolygon(vertices, lattice=None):
-    polytope = ConvexPolytope(vertices, lattice=lattice)
-    assert polytope.dimension() == 2, "a convex polygon has affine dimension two"
-    return polytope
-
-
-def LatticePolytope(vertices, lattice=None):
-    return _convex_polytope(vertices, lattice=lattice, require_integral=True)
-
-
-def LatticePolygon(vertices, lattice=None):
-    polytope = LatticePolytope(vertices, lattice=lattice)
-    assert polytope.dimension() == 2, "a lattice polygon has affine dimension two"
-    return polytope
-
-
 __all__ = [
-    "ConvexPolygon",
     "ConvexPolygons",
-    "ConvexPolytope",
     "ConvexPolytopes",
-    "LatticePolygon",
     "LatticePolygons",
-    "LatticePolytope",
     "LatticePolytopes",
     "RegularPolytopes",
 ]

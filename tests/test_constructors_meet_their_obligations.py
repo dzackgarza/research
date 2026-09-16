@@ -247,10 +247,10 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # ---- schemes ----
         "affine space": lambda: AffineSpace(2, QQ),
         "projective space": lambda: ProjectiveSpace(2, QQ),
-        "convex polytope": lambda: ConvexPolytope([[0, 0], [1, 0], [0, 1]]),
-        "convex polygon": lambda: ConvexPolygon([[0, 0], [1, 0], [0, 1]]),
-        "lattice polytope": lambda: LatticePolytope([[0, 0], [1, 0], [0, 1]]),
-        "lattice polygon": lambda: LatticePolygon([[0, 0], [1, 0], [0, 1]]),
+        "convex polytope": lambda: ConvexPolytopes()([[0, 0], [1, 0], [0, 1]]),
+        "convex polygon": lambda: ConvexPolygons()([[0, 0], [1, 0], [0, 1]]),
+        "lattice polytope": lambda: LatticePolytopes()([[0, 0], [1, 0], [0, 1]]),
+        "lattice polygon": lambda: LatticePolygons()([[0, 0], [1, 0], [0, 1]]),
         "equation-defined closed subscheme": lambda: _affine_divisor(),
         # ---- algebras on an existing module ----
         # A different construction from the ``...On`` rows above: those build

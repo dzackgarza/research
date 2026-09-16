@@ -1,16 +1,14 @@
 from dzack_research.preamble.all import (
     QQ,
-    ConvexPolygon,
     ConvexPolygons,
     ConvexPolytopes,
-    LatticePolygon,
     LatticePolygons,
     LatticePolytopes,
 )
 
 
 def test_lattice_polygon_carries_exact_lattice_point_and_volume_data() -> None:
-    polygon = LatticePolygon(((0, 0), (0, 3), (6, 0)))
+    polygon = LatticePolygons()(((0, 0), (0, 3), (6, 0)))
     assert polygon in ConvexPolytopes()
     assert polygon in ConvexPolygons()
     assert polygon in LatticePolytopes()
@@ -31,14 +29,14 @@ def test_lattice_polygon_carries_exact_lattice_point_and_volume_data() -> None:
 
 
 def test_rational_polygon_is_not_silently_called_a_lattice_polytope() -> None:
-    polygon = ConvexPolygon(((0, 0), (0, QQ(3) / 2), (3, 0)))
+    polygon = ConvexPolygons()(((0, 0), (0, QQ(3) / 2), (3, 0)))
     assert polygon in ConvexPolygons()
     assert polygon not in LatticePolytopes()
     assert polygon.volume() == QQ(9) / 4
 
 
 def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
-    square = LatticePolygon(((-1, -1), (-1, 1), (1, 1), (1, -1)))
+    square = LatticePolygons()(((-1, -1), (-1, 1), (1, 1), (1, -1)))
     polynomial = square.ehrhart_polynomial()
     t = polynomial.parent().algebra_generator("t")
     assert polynomial == 4 * t**2 + 4 * t + 1
@@ -54,14 +52,14 @@ def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
 
 
 def test_polygon_svg_is_a_view_of_the_live_exact_polygon() -> None:
-    triangle = LatticePolygon(((0, 0), (2, 0), (0, 1)))
+    triangle = LatticePolygons()(((0, 0), (2, 0), (0, 1)))
     svg = triangle._repr_svg_()
 
     assert svg.startswith('<svg xmlns="http://www.w3.org/2000/svg"')
     assert '<polygon points="' in svg
     assert 'fill="none"' in svg
     assert 'stroke="currentColor"' in svg
-    assert triangle.vertices() == LatticePolygon(((0, 0), (2, 0), (0, 1))).vertices()
+    assert triangle.vertices() == LatticePolygons()(((0, 0), (2, 0), (0, 1))).vertices()
 
 
 def test_three_dimensional_polytope_delegates_to_sages_local_threejs_view() -> None:
