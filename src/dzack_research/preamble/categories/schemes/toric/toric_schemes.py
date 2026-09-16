@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
-    AffineSemigroupAlgebra,
+    AffineSemigroupAlgebras,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroups,
@@ -144,12 +144,11 @@ def _semigroup_algebra(cone, base_ring):
     transition out of a face localization is written.
     """
     generators = cone.semigroup_generators()
-    return AffineSemigroupAlgebra(
+    return AffineSemigroupAlgebras(base_ring)(
         (
             tuple(_engine_vector(cone.character_lattice(), generator))
             for generator in generators
         ),
-        base_ring,
         extra_categories=(OwnedIntegralDomains(),),
     )
 

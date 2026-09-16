@@ -48,8 +48,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                        'AugmentedAlgebras'),
  'GradedAugmentedAlgebras': ('dzack_research.preamble.categories.algebras.augmented_algebras',
                              'GradedAugmentedAlgebras'),
- 'AffineSemigroupAlgebra': ('dzack_research.preamble.categories.algebras.semigroup_algebras',
-                            'AffineSemigroupAlgebra'),
  'AffineSemigroupAlgebras': ('dzack_research.preamble.categories.algebras.semigroup_algebras',
                              'AffineSemigroupAlgebras'),
  'GroupAlgebraFunctor': ('dzack_research.preamble.categories.algebras.group_algebras',
@@ -111,7 +109,6 @@ _EXPORTS = {'AlgebraHomset': ('dzack_research.preamble.categories.algebras.algeb
                         'CohomologyAlgebras')}
 
 __all__ = ['AugmentedAlgebras',
- 'AffineSemigroupAlgebra',
  'AffineSemigroupAlgebras',
  'AlgebraHomset',
  'AlgebraMorphism',

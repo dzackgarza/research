@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
-    _own_ring,
 )
 
 
@@ -86,28 +85,4 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         )
 
 
-def AffineSemigroupAlgebra(
-    generator_coordinates,
-    base_ring,
-    *,
-    names=None,
-    extra_categories=(),
-    extra_construction_data=(),
-):
-    r"""Construct the affine semigroup algebra on the selected lattice generators.
-
-    The rows are the chosen lattice generators ``a_i``.  The private Sage
-    ``ToricIdeal`` computation supplies the kernel of
-    ``R[z_i] -> R[t^M]``, ``z_i |-> t^{a_i}``; the public result is the owned
-    finitely presented commutative algebra carrying this selected semigroup
-    presentation.
-    """
-    return AffineSemigroupAlgebras(_own_ring(base_ring))(
-        generator_coordinates,
-        names=names,
-        extra_categories=extra_categories,
-        extra_construction_data=extra_construction_data,
-    )
-
-
-__all__ = ["AffineSemigroupAlgebra", "AffineSemigroupAlgebras"]
+__all__ = ["AffineSemigroupAlgebras"]
