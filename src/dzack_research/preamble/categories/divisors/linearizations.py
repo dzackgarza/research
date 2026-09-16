@@ -74,6 +74,24 @@ class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
         )
 
 
+class _EigensectionDivisorConstruction(SageObject):
+    r"""The selected eigensection datum defining one invariant zero divisor."""
+
+    def __init__(self, linearization, section, character) -> None:
+        self._linearization = linearization
+        self._section = section
+        self._character = character
+
+    def linearization(self):
+        return self._linearization
+
+    def section(self):
+        return self._section
+
+    def character(self):
+        return self._character
+
+
 class _ProjectiveLineBundleLinearization(SageObject):
     r"""A character-twisted linearization of ``O(d)`` under a projective action."""
 
@@ -278,17 +296,34 @@ class _ProjectiveLineBundleLinearization(SageObject):
             raise ValueError("the selected section does not transform through this character")
         polynomial = sections.homogeneous_polynomial(section)
         divisor = self.projective_space().closed_subscheme(polynomial)
-        divisor._preamble_linearized_section = section
-        divisor._preamble_linearization = self
-        divisor._preamble_eigensection_character = character
+        divisor._preamble_eigensection_divisor_construction = (
+            _EigensectionDivisorConstruction(self, section, character)
+        )
         return divisor
+
+    def eigensection_divisor_construction(self, divisor):
+        r"""Return the selected eigensection datum defining ``divisor`` for this lift."""
+        construction = getattr(
+            divisor,
+            "_preamble_eigensection_divisor_construction",
+            None,
+        )
+        if (
+            not isinstance(construction, _EigensectionDivisorConstruction)
+            or construction.linearization() is not self
+        ):
+            raise ValueError(
+                "this divisor was not constructed from an eigensection of this linearization"
+            )
+        return construction
 
     def is_eigensection_divisor(self, divisor) -> bool:
         r"""Return whether ``divisor`` was constructed from an eigensection of this lift."""
-        return (
-            getattr(divisor, "_preamble_linearization", None) is self
-            and getattr(divisor, "_preamble_linearized_section", None) is not None
-        )
+        try:
+            self.eigensection_divisor_construction(divisor)
+        except ValueError:
+            return False
+        return True
 
     @staticmethod
     def _normalized_projective_coordinates(point):
