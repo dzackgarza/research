@@ -1281,9 +1281,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 def _repr_object_names(cls):
                     return "commutative algebras"
 
-                def extra_super_categories(self):
-                    return [Algebras(self.base_ring()).Commutative()]
-
                 def an_object(self):
                     modules = Modules(self.base_ring())
                     return modules.symmetric_algebra()(modules.an_object())
