@@ -36,11 +36,12 @@ def _equip_action_element(group_module, element):
 class _GroupModuleScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : R[G]-Mod -> S[G]-Mod`` along one scalar map."""
 
-    def __init__(self, ring_map, group) -> None:
+    def __init__(self, ring_map, group, scalar_extension) -> None:
         self._ring_map = ring_map
         self._group = group
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
+        self._scalar_extension = scalar_extension
         super().__init__(
             Modules(self._source_ring[group]),
             Modules(self._target_ring[group]),
@@ -52,10 +53,13 @@ class _GroupModuleScalarExtensionFunctor(Functor):
     def group(self):
         return self._group
 
+    def _underlying_scalar_extension(self):
+        return self._scalar_extension
+
     def _apply_object(self, group_module):
         r"""Transport one ``R[G]``-module through this coefficient scalar extension."""
         unacted = group_module.unacted_module()
-        scalar_extension = Modules(self._source_ring).scalar_extension(self.ring_map())
+        scalar_extension = self._underlying_scalar_extension()
         changed_module = scalar_extension(unacted)
         if group_module.is_trivial_action():
             return _trivial_action(changed_module, self.group())
@@ -69,14 +73,7 @@ class _GroupModuleScalarExtensionFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         underlying = morphism.underlying_module_morphism()
-        scalar_extension = Modules(self._source_ring).scalar_extension(self.ring_map())
-        scalar_extension.adopt_object_image(
-            morphism.domain().unacted_module(), source.unacted_module()
-        )
-        scalar_extension.adopt_object_image(
-            morphism.codomain().unacted_module(), target.unacted_module()
-        )
-        transported = scalar_extension(underlying)
+        transported = self._underlying_scalar_extension()(underlying)
         return source.Mor(target)._from_equivariant_images(
             transported,
             verify_linearity=False,
@@ -89,11 +86,12 @@ class _GroupModuleScalarExtensionFunctor(Functor):
 class _GroupModuleRestrictionOfScalarsFunctor(Functor):
     r"""``Res_f : S[G]-Mod -> R[G]-Mod``."""
 
-    def __init__(self, ring_map, group) -> None:
+    def __init__(self, ring_map, group, restriction) -> None:
         self._ring_map = ring_map
         self._group = group
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
+        self._restriction = restriction
         super().__init__(
             Modules(self._target_ring[group]),
             Modules(self._source_ring[group]),
@@ -105,9 +103,12 @@ class _GroupModuleRestrictionOfScalarsFunctor(Functor):
     def group(self):
         return self._group
 
+    def _underlying_restriction(self):
+        return self._restriction
+
     def _apply_object(self, group_module):
         unacted_extension = _unacted_module(group_module)
-        unacted_restricted = unacted_extension.restrict_scalars(self.ring_map())
+        unacted_restricted = self._underlying_restriction()(unacted_extension)
 
         def action(group_element, vector):
             acted_source = _equip_action_element(
@@ -132,16 +133,9 @@ class _GroupModuleRestrictionOfScalarsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        restriction = Modules(self._target_ring).restriction_of_scalars(self.ring_map())
-        restriction.adopt_object_image(
-            morphism.domain().unacted_module(),
-            source.unacted_module(),
+        transported = self._underlying_restriction()(
+            morphism.underlying_module_morphism()
         )
-        restriction.adopt_object_image(
-            morphism.codomain().unacted_module(),
-            target.unacted_module(),
-        )
-        transported = restriction(morphism.underlying_module_morphism())
         return source.Mor(target)._from_equivariant_images(
             transported,
             verify_linearity=False,
@@ -157,24 +151,24 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
     def __init__(self, ring_map, group) -> None:
         self._ring_map = ring_map
         self._group = group
+        self._underlying = Modules(ring_map.domain()).base_change_adjunction(ring_map)
         super().__init__(
-            _GroupModuleScalarExtensionFunctor(ring_map, group),
-            _GroupModuleRestrictionOfScalarsFunctor(ring_map, group),
+            _GroupModuleScalarExtensionFunctor(
+                ring_map, group, self._underlying.left_adjoint()
+            ),
+            _GroupModuleRestrictionOfScalarsFunctor(
+                ring_map, group, self._underlying.right_adjoint()
+            ),
         )
 
     def _underlying_adjunction(self):
-
-        return Modules(self._ring_map.domain()).base_change_adjunction(self._ring_map)
+        return self._underlying
 
     def unit(self, group_module):
         extended = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(extended)
         underlying = self._underlying_adjunction()
         source_module = group_module.unacted_module()
-        extended_module = extended.unacted_module()
-        restricted_module = restricted.unacted_module()
-        underlying.left_adjoint().adopt_object_image(source_module, extended_module)
-        underlying.right_adjoint().adopt_object_image(extended_module, restricted_module)
         unit = underlying.unit(source_module)
         return group_module.Mor(restricted)._from_equivariant_images(
             unit,
@@ -186,10 +180,6 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
         extended = self.left_adjoint()(restricted)
         underlying = self._underlying_adjunction()
         target_module = group_module.unacted_module()
-        restricted_module = restricted.unacted_module()
-        extended_module = extended.unacted_module()
-        underlying.right_adjoint().adopt_object_image(target_module, restricted_module)
-        underlying.left_adjoint().adopt_object_image(restricted_module, extended_module)
         counit = underlying.counit(target_module)
         return extended.Mor(group_module)._from_equivariant_images(
             counit,
