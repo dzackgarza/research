@@ -1874,6 +1874,10 @@ class _AdicQuotientInverseSystem(Functor):
 class _AdicCompletionElement(_OwnedAlgebraElement):
     r"""An element of a completion with equality respecting its information model."""
 
+    def __init__(self, parent, backend_value, *, exact_source_expression=None) -> None:
+        super().__init__(parent, backend_value)
+        self._exact_source_expression = exact_source_expression
+
     def exact_source_expression(self):
         r"""Return the retained exact source expression, or ``None``.
 
@@ -1882,7 +1886,7 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         map, however, still carry their exact source expression, and ordinary
         ring operations preserve that information while both operands have it.
         """
-        return getattr(self, "_preamble_exact_source_expression", None)
+        return self._exact_source_expression
 
     def _with_source_expression(self, backend_value, source_expression):
         constructor = getattr(self.parent(), "_completion_element", None)
@@ -2207,9 +2211,11 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     def _completion_element(self, value, *, source_expression=None):
         if getattr(value, "parent", lambda: None)() is not self._engine:
             value = self._engine(value)
-        element = self.element_class(self, value)
-        element._preamble_exact_source_expression = source_expression
-        return element
+        return self.element_class(
+            self,
+            value,
+            exact_source_expression=source_expression,
+        )
 
     def _element_constructor_(self, value):
         if getattr(value, "parent", lambda: None)() is self:
