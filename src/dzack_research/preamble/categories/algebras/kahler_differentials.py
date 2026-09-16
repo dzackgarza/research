@@ -104,30 +104,27 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             r"""Return ``A tensor_P I ~= I/I^2`` for the selected quotient ``P -> A``."""
 
             conormal = self.kahler_construction().conormal_module()
-            if conormal is None:
-                raise NotImplementedError(
-                    "this differential object has no selected quotient presentation conormal module"
-                )
+            assert conormal is not None, (
+                "conormal_module requires selected quotient-presentation conormal data"
+            )
             return conormal
 
         def ambient_differentials(self):
             r"""Return ``Omega^1_{P/R} tensor_P A`` in the selected conormal sequence."""
 
             ambient = self.kahler_construction().ambient_differentials()
-            if ambient is None:
-                raise NotImplementedError(
-                    "this differential object has no selected quotient presentation ambient differential module"
-                )
+            assert ambient is not None, (
+                "ambient_differentials requires selected quotient-presentation differential data"
+            )
             return ambient
 
         def conormal_morphism(self):
             r"""Return ``I/I^2 -> Omega^1_{P/R} tensor_P A``, ``f |-> df``."""
 
             morphism = self.kahler_construction().conormal_morphism()
-            if morphism is None:
-                raise NotImplementedError(
-                    "this differential object has no selected quotient presentation conormal morphism"
-                )
+            assert morphism is not None, (
+                "conormal_morphism requires selected quotient-presentation conormal data"
+            )
             return morphism
 
         def differential_projection(self):
@@ -144,14 +141,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             spectrum = algebra.spectrum()
             if getattr(point, "parent", lambda: None)() is not spectrum:
                 point = spectrum(point)
-            try:
-                return self.fiber(point)
-            except NotImplementedError:
-                # The fiber is canonically the direct scalar extension along
-                # A -> kappa(p).  This exact route remains available when the
-                # optional localization-first realization cannot decide
-                # equality of localization fractions.
-                return self.base_change(point.residue_map())
+            # The cotangent fiber is canonically the direct scalar extension
+            # Omega^1_{A/R} tensor_A kappa(p); no localization realization is
+            # needed to define or compute this selected fiber.
+            return self.base_change(point.residue_map())
 
         @cached_method
         def tangent_space(self, point):
@@ -245,10 +238,9 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             if target_module.base_ring() is not algebra:
                 raise TypeError("the Kähler representing property targets an A-module")
             classifiers = self.module_category().Mor(self, target_module)
-            if classifiers not in ModulesWithChosenFinitePresentation(algebra):
-                raise NotImplementedError(
-                    "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"
-                )
+            assert classifiers in ModulesWithChosenFinitePresentation(algebra), (
+                "the represented Kähler Hom-Der isomorphism requires a selected finite presentation of Hom_A(Omega^1,M)"
+            )
             derivations = algebra.derivations(target_module)
             if derivations not in ModulesWithChosenFinitePresentation(algebra):
                 raise TypeError(
