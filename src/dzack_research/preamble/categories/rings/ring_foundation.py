@@ -91,6 +91,8 @@ if "Local" not in all_axioms:
     all_axioms.add("Local")
 if "PrincipalIdeals" not in all_axioms:
     all_axioms.add("PrincipalIdeals")
+if "Prime" not in all_axioms:
+    all_axioms.add("Prime")
 
 
 class RingMorphism(Morphism):
@@ -1377,6 +1379,22 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     OwnedRings().Commutative().Local(),
                 ]
 
+            class SubcategoryMethods:
+                def Prime(self):
+                    r"""Return this category with the axiom of having no proper subfield."""
+                    return self._with_axiom("Prime")
+
+            class Prime(CategoryWithAxiom):
+                r"""Prime fields: \(\mathbf F_p\) and \(\mathbb Q\), the fields with no proper subfield."""
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "prime fields"
+
+                def an_object(self):
+                    r"""The field of two elements."""
+                    return GF(2)
+
             class ParentMethods:
                 def field_generators(self):
                     r"""Return exact elements which determine a unital map out of this field."""
@@ -2178,19 +2196,32 @@ def OwnedFields():
 
 
 class OwnedOrders(OwnedCategory):
-    r"""Orders: integral domains finitely generated as ``ZZ``-modules.
+    r"""Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I §12).
 
-    The number field is ``Frac(O) = O (x) QQ``, determined by the ring.
+    The number field is ``Frac(O) = O (x) QQ``, determined by the ring, and
+    the category is the intersection of its two declared supercategories:
+    finite generation is the module axiom on the ring as a ``ZZ``-algebra.
+    The class is the home of the operations of orders (their embeddings, the
+    adjunction with number fields, maximality); it adds no condition.
     """
-
-    _certifying_predicate = "_preamble_is_number_field_order"
 
     def an_object(self):
         r"""The integers, the ring of integers of the rationals."""
         return _own_ring(SageZZ)
 
+    def additional_condition(self):
+        return None
+
     def super_categories(self):
-        return [OwnedRings().Commutative().NoZeroDivisors().Noetherian()]
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        # The engine view, not ``_own_ring``: this runs inside the refinement
+        # that places the integers here, which ``_own_ring`` would re-enter.
+        integers = _owned_engine_ring(SageZZ)
+        return [
+            Algebras(integers).Associative().Unital().Commutative().FinitelyGenerated(),
+            OwnedRings().Commutative().NoZeroDivisors().Noetherian(),
+        ]
 
     def fraction_field_adjunction(self):
         r"""Return ``Frac -| O`` from orders to number fields."""
@@ -2234,10 +2265,6 @@ class OwnedOrders(OwnedCategory):
                 return orders.Mor(self, codomain)
             return super()._Hom_(codomain, category=category)
 
-        def cardinality(self):
-
-            return aleph0
-
         def is_maximal(self) -> bool:
             r"""Return whether this is the maximal order of its fraction field."""
             engine = _engine_ring(self)
@@ -2246,15 +2273,9 @@ class OwnedOrders(OwnedCategory):
             return bool(engine.is_maximal())
 
 
-class PrimeFields(OwnedCategory):
-    r"""Prime fields \(\mathbf F_p\) and \(\mathbb Q\): fields with no proper subfield."""
-
-    def an_object(self):
-        r"""The field of two elements."""
-        return GF(2)
-
-    def super_categories(self):
-        return [OwnedRings().Division().Commutative()]
+def PrimeFields():
+    r"""``OwnedRings().Division().Commutative().Prime()``, the session name for prime fields."""
+    return OwnedRings().Division().Commutative().Prime()
 
 
 @cached_function
@@ -3210,7 +3231,10 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
     else:
         placement = OwnedRings()
     joined = Category.join((placement, _owned_ring_size(engine), *extra))
-    if engine is SageZZ or isinstance(engine, SageNumberFieldOrder):
+    # The integers are placed as an order after their construction, in
+    # ``_own_ring``: the category of orders is stated over ``Algebras(ZZ)``,
+    # which needs the owned integers to exist.
+    if isinstance(engine, SageNumberFieldOrder):
         return Category.join((joined, OwnedOrders()))
     return joined
 
@@ -3230,6 +3254,7 @@ def _owned_ring_size(engine):
         engine is SageZZ
         or engine is SageQQ
         or engine in NumberFields()
+        or isinstance(engine, SageNumberFieldOrder)
         or engine is SageAA
         or engine is SageQQbar
     ):
@@ -3267,7 +3292,21 @@ def _own_ring(ring):
         return ring
     if ring not in SageRings():
         raise TypeError(f"{ring} is not a ring")
+    if ring is SageZZ:
+        return _owned_integers()
     return _owned_engine_ring(ring)
+
+
+@cached_function
+def _owned_integers() -> _OwnedRingParent:
+    r"""The owned integers, placed as an order once they exist.
+
+    ``OwnedOrders()`` is stated over ``Algebras(ZZ)``, so the integers cannot
+    be placed there inside their own construction; the placement is the
+    refinement that follows it.
+    """
+    integers = _owned_engine_ring(SageZZ)
+    return refine(integers, OwnedOrders())
 
 
 def _owned_ring(ring):
