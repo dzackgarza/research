@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
-    Spec,
     _affine_spec_morphism,
 )
 
@@ -28,7 +27,7 @@ class AffineSpecFunctor(ContravariantFunctor):
         return self._base_ring
 
     def _apply_contravariant_object(self, algebra):
-        return Spec(algebra, base_ring=self.base_ring())
+        return (algebra).affine_spectrum(base_ring=self.base_ring())
 
     def _apply_contravariant_morphism(self, morphism):
         return _affine_spec_morphism(morphism)

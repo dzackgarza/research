@@ -5,7 +5,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
-    Spec,
 )
 
 
@@ -30,7 +29,7 @@ class RelativeAffineFamily(SageObject):
         self._total_algebra = (self._presentation_ring).quotient_by_relations(self._equations,
         )
         self._base_scheme = Schemes(parameter_algebra).base_scheme()
-        self._total_space = Spec(self._total_algebra, base_ring=parameter_algebra)
+        self._total_space = (self._total_algebra).affine_spectrum(base_ring=parameter_algebra)
         self._morphism = self._total_space.structure_morphism()
         self._slice_object = self._total_space.scheme_category().SliceOver(
             self._base_scheme
@@ -73,7 +72,7 @@ class RelativeAffineFamily(SageObject):
     def quotient_fiber(self, ideal):
         r"""Return the fibre over ``Spec(T/I) -> Spec(T)``."""
         quotient = self.parameter_algebra().quotient_ring(ideal)
-        point = Spec(quotient, base_ring=self.parameter_algebra())
+        point = (quotient).affine_spectrum(base_ring=self.parameter_algebra())
         return self.fiber(point.structure_morphism())
 
     def is_flat(self) -> bool:

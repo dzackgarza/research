@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
     Schemes,
-    Spec,
     _affine_morphism_from_pullback,
     _fresh_affine_spectrum,
     _affine_spec_morphism,
@@ -62,7 +61,7 @@ def _relative_overlap(datum, source_index, target_index):
     base_restriction = cover.structure_sheaf_restriction(source_index, target_index)
     pullback = _semilinear_scalar_extension_map(local, restricted, base_restriction)
 
-    ambient = Spec(local)
+    ambient = (local).affine_spectrum()
     overlap = _fresh_affine_spectrum(
         restricted,
         ambient.scheme_base_ring(),
@@ -117,7 +116,7 @@ def _finite_atlas_relative_overlap(datum, source_index, target_index):
     ).inclusion().coordinate_algebra_morphism()
     pullback = _semilinear_scalar_extension_map(local, pair, base_restriction)
 
-    ambient = Spec(local)
+    ambient = (local).affine_spectrum()
     overlap = _fresh_affine_spectrum(
         pair,
         ambient.scheme_base_ring(),
@@ -159,7 +158,7 @@ def _finite_atlas_relative_spectrum(datum):
     indices = tuple(atlas.chart_indices())
     base_scheme = datum.scheme()
     base_ring = base_scheme.scheme_base_ring()
-    charts = {index: Spec(datum.local_algebra(index)) for index in indices}
+    charts = {index: (datum.local_algebra(index)).affine_spectrum() for index in indices}
     transitions = {
         (left, right): _finite_atlas_relative_transition(datum, left, right)
         for left, right in atlas.transition_index_set()
@@ -200,7 +199,7 @@ def _relative_spectrum(datum):
     indices = tuple(cover.atlas())
     base_scheme = datum.scheme()
     base_ring = base_scheme.scheme_base_ring()
-    charts = {index: Spec(datum.local_algebra(index)) for index in indices}
+    charts = {index: (datum.local_algebra(index)).affine_spectrum() for index in indices}
     transitions = {
         (left, right): _relative_transition(datum, left, right)
         for left, right in combinations(indices, 2)

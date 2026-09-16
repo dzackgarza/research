@@ -659,9 +659,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
         from sage.rings.integer_ring import ZZ as SageZZ
 
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-        from dzack_research.preamble.categories.schemes.schemes import Spec
-
-        return Spec(_own_ring(SageZZ))
+        return (_own_ring(SageZZ)).affine_spectrum()
 
     @classmethod
     def _repr_object_names(cls):

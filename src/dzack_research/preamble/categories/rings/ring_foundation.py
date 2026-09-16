@@ -1279,6 +1279,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     raise ValueError(f"{self} has no represented canonical algebra structure over {base}")
                 return _refine_algebra(self, base)
 
+            def affine_spectrum(self, base_ring=None):
+                r"""Return the affine scheme represented by this commutative ring or algebra."""
+                from dzack_research.preamble.categories.schemes.schemes import (
+                    _affine_spectrum,
+                )
+
+                return _affine_spectrum(self, base_ring=base_ring)
+
             def as_ZZ_algebra(self):
                 return self.as_algebra_over(_own_ring(SageZZ))
 

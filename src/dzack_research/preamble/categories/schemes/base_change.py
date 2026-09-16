@@ -45,7 +45,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProductProjectiveSpaces,
     ProjectiveSpaces,
     Schemes,
-    Spec,
     _affine_morphism_from_pullback,
     _fresh_affine_space_from_owned_data,
     _fresh_affine_spectrum,
@@ -142,8 +141,8 @@ class SchemeBaseChangeFunctor(Functor):
     def base_morphism(self):
         r"""``Spec g: Spec R' -> Spec R``, the affine morphism induced by the ring map."""
         return _affine_morphism_from_pullback(
-            Spec(self._target_ring, base_ring=self._target_ring),
-            Spec(self._source_ring, base_ring=self._source_ring),
+            (self._target_ring).affine_spectrum(base_ring=self._target_ring),
+            (self._source_ring).affine_spectrum(base_ring=self._source_ring),
             self.ring_map(),
         )
 

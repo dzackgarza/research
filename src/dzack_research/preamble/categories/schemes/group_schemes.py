@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     ProductSchemes,
     Schemes,
-    Spec,
     _affine_morphism_from_pullback,
 )
 
@@ -418,7 +417,7 @@ def _roots_of_unity_group_scheme(base_ring, degree: int):
     algebra = (presentation).quotient_by_relations((u_presentation**degree - presentation.one(),),
     )
     u = algebra.algebra_generator("u")
-    scheme = Spec(algebra, base_ring=base)
+    scheme = (algebra).affine_spectrum(base_ring=base)
     square = scheme.scheme_category().product((scheme, scheme))
     square_algebra = square.coordinate_algebra()
     first_pullback = square.projection(0).coordinate_algebra_morphism()

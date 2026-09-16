@@ -3,7 +3,7 @@ r"""Adic formal spectra and their compatible infinitesimal thickenings."""
 from sage.structure.sage_object import SageObject
 
 
-from dzack_research.preamble.categories.schemes.schemes import Spec, _affine_spec_morphism
+from dzack_research.preamble.categories.schemes.schemes import _affine_spec_morphism
 
 
 class FormalCompletionComparison(SageObject):
@@ -69,7 +69,7 @@ class FormalSpectrum(SageObject):
     def completed_affine_scheme(self, precision=20):
         r"""Return ``Spec(A^)`` for one computational realization, not ``Spf(A,I)``."""
         completion = self.completion(precision)
-        return Spec(completion, base_ring=completion)
+        return (completion).affine_spectrum(base_ring=completion)
 
     def thickening_ring(self, exponent):
         exponent = int(exponent)
@@ -82,7 +82,7 @@ class FormalSpectrum(SageObject):
     def thickening(self, exponent):
         r"""Return the finite stage ``Spec(A/I^exponent)``."""
         quotient = self.thickening_ring(exponent)
-        return Spec(quotient, base_ring=quotient)
+        return (quotient).affine_spectrum(base_ring=quotient)
 
     def transition_ring_map(self, higher_exponent, lower_exponent):
         r"""Return ``A/I^higher -> A/I^lower`` in the inverse system."""
