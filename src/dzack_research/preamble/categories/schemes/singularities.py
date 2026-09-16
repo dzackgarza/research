@@ -141,10 +141,9 @@ class IsolatedHypersurfaceSingularity:
         constructor selects a normal form; it does not assert that an arbitrary
         analytically equivalent equation has already been transformed to it.
         """
-        if int(_engine_ring(base_ring).characteristic()) != 0:
-            raise NotImplementedError(
-                "the represented ADE plane-curve normal forms currently require characteristic zero"
-            )
+        assert int(_engine_ring(base_ring).characteristic()) == 0, (
+            "the represented ADE plane-curve normal forms require characteristic zero"
+        )
         ring = base_ring.polynomial_ring(tuple(names))
         return cls(ring, _ade_normal_form_equation(ring, ade_type))
 
@@ -161,10 +160,9 @@ class IsolatedHypersurfaceSingularity:
         formal, contact, or right-equivalence algorithm is invoked here.
         """
         ring = self.polynomial_ring()
-        if int(_engine_ring(ring.base_ring()).characteristic()) != 0:
-            raise NotImplementedError(
-                "ADE normal-form recognition is currently represented in characteristic zero"
-            )
+        assert int(_engine_ring(ring.base_ring()).characteristic()) == 0, (
+            "ADE normal-form recognition is represented in characteristic zero"
+        )
         if len(tuple(ring.algebra_generators())) != 2:
             return None
         milnor = int(self.milnor_number())
@@ -323,10 +321,9 @@ class IsolatedHypersurfaceSingularity:
         """
         ring = self.polynomial_ring()
         generators = tuple(ring.algebra_generators())
-        if len(generators) != 2:
-            raise NotImplementedError(
-                "local delta data are currently represented for plane curves"
-            )
+        assert len(generators) == 2, (
+            "local delta data are represented here for plane curves"
+        )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
@@ -353,8 +350,9 @@ class IsolatedHypersurfaceSingularity:
         if point.parent().ring() is not ring:
             raise ValueError("the selected local point belongs to a different plane")
         generators = tuple(ring.algebra_generators())
-        if len(generators) != 2:
-            raise NotImplementedError("local delta data are currently represented for plane curves")
+        assert len(generators) == 2, (
+            "local delta data are represented here for plane curves"
+        )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
@@ -425,10 +423,9 @@ class IsolatedHypersurfaceSingularity:
         """
         ring = self.polynomial_ring()
         generators = tuple(ring.algebra_generators())
-        if len(generators) != 2:
-            raise NotImplementedError(
-                "local conductor data are currently represented for plane curves"
-            )
+        assert len(generators) == 2, (
+            "local conductor data are represented here for plane curves"
+        )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
