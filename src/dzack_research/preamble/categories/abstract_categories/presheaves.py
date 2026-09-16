@@ -113,8 +113,8 @@ class _YonedaEmbedding(Functor):
 
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        source_presheaf = source.arrow().functor()
-        target_presheaf = target.arrow().functor()
+        source_presheaf = source.functor()
+        target_presheaf = target.functor()
 
         def component(obj):
             return Sets().Mor(source_presheaf(obj), target_presheaf(obj))(
@@ -156,7 +156,7 @@ class _PresheafTransport(Functor):
         return self._opposite_site_functor.then(presheaf).then(self.value_functor())
 
     def _apply_object(self, obj: Parent) -> Parent:
-        return self.codomain().object(self._transport_presheaf(obj.arrow().functor()))
+        return self.codomain().object(self._transport_presheaf(obj.functor()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         transformation = morphism.transformation()

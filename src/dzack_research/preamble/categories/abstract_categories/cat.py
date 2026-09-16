@@ -56,6 +56,28 @@ class CategoryObject(Parent):
         return f"[{self.represented_category()}]"
 
 
+class _FunctorObject(Parent):
+    r"""A represented functor as an object of its functor category."""
+
+    def __init__(self, functor_category, functor: Functor) -> None:
+        self._functor_category = functor_category
+        self._functor = functor
+        Parent.__init__(self, category=functor_category)
+
+    def functor_category(self):
+        return self._functor_category
+
+    def functor(self) -> Functor:
+        return self._functor
+
+    def arrow(self) -> CategoryFunctorMorphism:
+        r"""Return the same functor as the corresponding morphism in ``Cat``."""
+        return self.functor_category().category_of_categories().arrow(self.functor())
+
+    def _repr_(self) -> str:
+        return f"Functor object ({self.functor()})"
+
+
 class CategoryFunctorMorphism(Morphism):
     r"""A live functor regarded as a morphism in ``Cat``."""
 
@@ -961,9 +983,9 @@ class NaturalTransformationMorphism(Morphism):
         transformation: NaturalTransformation,
     ) -> None:
         Morphism.__init__(self, parent)
-        if transformation.source() is not self.domain().arrow().functor():
+        if transformation.source() is not self.domain().functor():
             raise ValueError("the natural transformation has the wrong source functor")
-        if transformation.target() is not self.codomain().arrow().functor():
+        if transformation.target() is not self.codomain().functor():
             raise ValueError("the natural transformation has the wrong target functor")
         self._transformation = transformation
 
@@ -1005,8 +1027,8 @@ class NaturalTransformationMorphism(Morphism):
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        source = other.domain().arrow().functor()
-        target = self.codomain().arrow().functor()
+        source = other.domain().functor()
+        target = self.codomain().functor()
 
         composite = NaturalTransformation(
             source,
@@ -1035,10 +1057,10 @@ class NaturalTransformationHomset(CategoricalHomset):
         return self.base_category()
 
     def source(self) -> Functor:
-        return self.domain().arrow().functor()
+        return self.domain().functor()
 
     def target(self) -> Functor:
-        return self.codomain().arrow().functor()
+        return self.codomain().functor()
 
     def _element_constructor_(self, transformation):
         if isinstance(transformation, NaturalTransformationMorphism):
@@ -1047,7 +1069,7 @@ class NaturalTransformationHomset(CategoricalHomset):
             transformation = transformation.transformation()
         if callable(transformation) and not isinstance(transformation, NaturalTransformation):
             transformation = NaturalTransformation(
-                self.domain().arrow().functor(), self.codomain().arrow().functor(), transformation
+                self.domain().functor(), self.codomain().functor(), transformation
             )
         return NaturalTransformationMorphism(self, transformation)
 
@@ -1055,7 +1077,7 @@ class NaturalTransformationHomset(CategoricalHomset):
     def identity(self) -> NaturalTransformationMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism natural-transformation Hom-set")
-        functor = self.domain().arrow().functor()
+        functor = self.domain().functor()
 
 
         return self(
@@ -1146,6 +1168,9 @@ class _FunctorCategory(FixedHomCategory):
     def _make_named_class_key(self, name):
         return self._cat, self._domain_category, self._codomain_category
 
+    def category_of_categories(self) -> Cat:
+        return self._cat
+
     def domain_category(self) -> Category:
         return self._domain_category
 
@@ -1206,7 +1231,7 @@ class _FunctorCategory(FixedHomCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor):
-        return self._cat.ArrowCategory()(self._cat.arrow(functor))
+        return _FunctorObject(self, functor)
 
     __call__ = object
 
@@ -1224,13 +1249,18 @@ class _FunctorCategory(FixedHomCategory):
         if isinstance(candidate, CategoryFunctorMorphism):
             return self.accepts(candidate)
         try:
-            arrow = candidate.arrow()
+            if candidate.category().is_subcategory(self):
+                return True
         except AttributeError:
+            pass
+        selected = getattr(candidate, "functor", None)
+        if not callable(selected):
             return False
+        functor = selected()
         return (
-            isinstance(arrow, CategoryFunctorMorphism)
-            and arrow.functor().domain() == self.domain_category()
-            and arrow.functor().codomain() == self.codomain_category()
+            isinstance(functor, Functor)
+            and functor.domain() == self.domain_category()
+            and functor.codomain() == self.codomain_category()
         )
 
     def Mor(
