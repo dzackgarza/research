@@ -12,7 +12,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _free(ring, rank):
-    return FreeModule(ring, rank)
+    return ring.free_module(rank)
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ def test_free_module_over_an_uncountable_ring_has_the_continuum(build, name) -> 
 
 
 def test_free_module_of_countably_infinite_rank(commutative_ring) -> None:
-    module = FreeModuleOn(commutative_ring, NN)
+    module = commutative_ring.free_module(NN)
     assert module in FreeModules(commutative_ring)
     assert module not in FinitelyGeneratedModules(commutative_ring)
     assert module.module_rank() == aleph0
@@ -136,7 +136,7 @@ def test_tensor_product_of_free_modules(commutative_ring) -> None:
 def test_tensor_and_divided_squares(commutative_ring) -> None:
     module = _free(commutative_ring, 3)
     assert Modules(commutative_ring).tensor_product((module, module)).module_rank() == 9
-    assert DividedSquare(module).module_rank() == 6
+    assert module.divided_square().module_rank() == 6
 
 
 def test_biproduct_of_free_modules(commutative_ring) -> None:
@@ -315,7 +315,7 @@ def test_a_principal_ideal_as_a_module(dedekind_domain) -> None:
 def test_fractional_ideals_of_the_gaussian_integers(build) -> None:
     gaussian = build("ZZ[i]")
     i = gaussian.fraction_field().primitive_element()
-    ideal = FractionalIdeal(gaussian, [gaussian(1 + i)])
+    ideal = gaussian.fractional_ideal(gaussian(1 + i))
     inverse = ideal.inverse()
 
     assert ideal.is_principal()
@@ -327,7 +327,7 @@ def test_fractional_ideals_of_the_gaussian_integers(build) -> None:
 def test_a_non_principal_ideal_in_a_class_number_two_field(build) -> None:
     ring = build("ZZ[sqrt-5]")
     s = ring.fraction_field().primitive_element()
-    ideal = FractionalIdeal(ring, [ring(2), ring(1 + s)])
+    ideal = ring.fractional_ideal(ring(2), ring(1 + s))
     assert not ideal.is_principal()
     assert ideal.inverse().inverse() == ideal
 
