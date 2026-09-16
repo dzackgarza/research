@@ -929,7 +929,13 @@ class NaturalTransformationMorphism(Morphism):
     def component(self, obj: Parent) -> Morphism:
         return self.transformation().component(obj)
 
-    def naturality_square(self, morphism: Map) -> tuple[Morphism, Morphism]:
+    def naturality_target_composite(self, morphism: Map) -> Morphism:
+        return self.transformation().naturality_target_composite(morphism)
+
+    def naturality_source_composite(self, morphism: Map) -> Morphism:
+        return self.transformation().naturality_source_composite(morphism)
+
+    def naturality_square(self, morphism: Map):
         return self.transformation().naturality_square(morphism)
 
     def __eq__(self, other: Any) -> bool | UnknownClass:

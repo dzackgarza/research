@@ -65,7 +65,9 @@ class CommutativeSquare(Morphism):
         return self._right
 
     def components(self):
-        return self.left(), self.right()
+        r"""Return the two square edges as an element of their owned product."""
+        product = Sets().product((self.left().parent(), self.right().parent()))
+        return product((self.left(), self.right()))
 
     def __eq__(self, other) -> bool | UnknownClass:
         r"""Two commuting squares agree when both of their edges do."""

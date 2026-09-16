@@ -20,7 +20,10 @@ def test_arrow_category_homs_are_commuting_squares_with_componentwise_compositio
     arrow_object = arrows(identity)
     hom = arrows.Mor(arrow_object, arrow_object)
     square = hom(swap, swap)
+    components = square.components()
 
+    assert components.parent().projection(0)(components) == square.left()
+    assert components.parent().projection(1)(components) == square.right()
     assert arrow_object.arrow() is identity
     assert hom is arrows.HomCategory().Of(arrow_object, arrow_object)
     assert square.left() is swap

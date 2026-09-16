@@ -220,7 +220,12 @@ def test_natural_transformations_between_functors() -> None:
     three = Sets.Δ[2]
     unit = transformations.identity()
     assert unit.component(three) == Sets().Mor(three, three).identity()
-    left, right = unit.naturality_square(Sets().Mor(three, three).identity())
+    identity = Sets().Mor(three, three).identity()
+    square = unit.naturality_square(identity)
+    left = square.parent().projection(0)(square)
+    right = square.parent().projection(1)(square)
+    assert left == unit.naturality_target_composite(identity)
+    assert right == unit.naturality_source_composite(identity)
     assert left == right
 
 

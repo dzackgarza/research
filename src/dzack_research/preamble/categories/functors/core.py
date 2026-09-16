@@ -521,11 +521,22 @@ class NaturalTransformation(SageObject):
 
     __call__ = component
 
-    def naturality_square(self, morphism: Map) -> tuple[Morphism, Morphism]:
-        r"""Return the two composites that naturality asserts are equal."""
-        left = self.target()(morphism) * self.component(morphism.domain())
-        right = self.component(morphism.codomain()) * self.source()(morphism)
-        return left, right
+    def naturality_target_composite(self, morphism: Map) -> Morphism:
+        r"""Return ``G(f) o eta_A`` for this transformation ``eta:F=>G``."""
+        return self.target()(morphism) * self.component(morphism.domain())
+
+    def naturality_source_composite(self, morphism: Map) -> Morphism:
+        r"""Return ``eta_B o F(f)`` for this transformation ``eta:F=>G``."""
+        return self.component(morphism.codomain()) * self.source()(morphism)
+
+    def naturality_square(self, morphism: Map):
+        r"""Return the two naturality composites as an element of their owned product."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        target_composite = self.naturality_target_composite(morphism)
+        source_composite = self.naturality_source_composite(morphism)
+        product = Sets().product((target_composite.parent(), source_composite.parent()))
+        return product((target_composite, source_composite))
 
     def _repr_(self) -> str:
         return f"{self.source()} => {self.target()}"
