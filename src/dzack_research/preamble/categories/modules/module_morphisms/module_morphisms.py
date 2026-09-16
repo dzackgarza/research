@@ -507,13 +507,15 @@ class ModuleMorphism(Morphism):
                 raise ValueError("the selected module-generator images do not kill the domain relations")
 
     def module_generator_morphism(self):
-        if self._generator_morphism is None:
-            raise NotImplementedError("an unframed morphism has no selected generator map")
+        assert self._generator_morphism is not None, (
+            "module_generator_morphism requires a selected module generating map on the domain"
+        )
         return self._generator_morphism
 
     def module_generator_images(self):
-        if self._generator_morphism is None:
-            raise NotImplementedError("an unframed morphism has no selected generator-image family")
+        assert self._generator_morphism is not None and self._generator_images is not None, (
+            "module_generator_images requires a selected module generating map on the domain"
+        )
         return self._generator_images
 
     def __add__(self, other):
@@ -554,11 +556,13 @@ class ModuleMorphism(Morphism):
             return op == op_NE
         if self is other:
             return op == op_EQ
+        from sage.misc.unknown import Unknown
+
         domain = self.domain()
         if domain._selected_presentation_rows() is None:
-            raise NotImplementedError("module-morphism equality is not decidable without a chosen finite presentation of the source")
+            return Unknown
         equal = all(self(domain.module_generator(label)) == other(domain.module_generator(label)) for label in domain.module_generating_set())
-        return equal if op == op_EQ else not equal
+        return equal if op == op_EQ else (Unknown if equal is Unknown else not equal)
 
     def __rmul__(self, actor):
         # A specialized right operand such as ModuleEmbedding gets reflected
@@ -633,8 +637,9 @@ class ModuleMorphism(Morphism):
         boundary.
         """
 
-        if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
-            raise NotImplementedError("a coordinate matrix requires finitely generated framed free endpoints")
+        assert _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()), (
+            "a coordinate matrix requires finitely generated framed free endpoints"
+        )
         domain_labels = tuple(self.domain().module_generating_set())
         codomain_labels = tuple(self.codomain().module_generating_set())
         coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
@@ -803,11 +808,15 @@ class ModuleMorphism(Morphism):
                         raise ArithmeticError("the descended local kernel inclusion does not return to the direct local domain")
                     return localized_kernel
 
+        represented = NotImplemented
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)
             if represented is not NotImplemented:
                 return represented
-        raise NotImplementedError("this kernel has no represented finite-free or general polynomial-presentation backend")
+        assert represented is not NotImplemented, (
+            "kernel construction requires a represented finite-free or general polynomial-presentation backend"
+        )
+        return represented
 
     def subobject_image_adjunction(self):
         r"""Return ``f_* ⊣ f^{-1}`` on fixed-ambient module subobjects."""
@@ -820,8 +829,9 @@ class ModuleMorphism(Morphism):
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
         labels = self.domain().module_generating_set()
-        if not labels.cardinality().is_finite():
-            raise NotImplementedError("the represented image-subobject backend requires a finite domain framing")
+        assert labels.cardinality().is_finite(), (
+            "the represented image-subobject backend requires a finite domain framing"
+        )
         return self.codomain().subobject_on(
             finite_indexed_family(
                 labels,
@@ -847,14 +857,13 @@ class ModuleMorphism(Morphism):
             return domain.zero()
         if not _has_finite_free_framing(domain):
             elements = getattr(domain, "elements", None)
-            if callable(elements) and domain.cardinality().is_finite():
-                for candidate in elements():
-                    if self(candidate) == element:
-                        return candidate
-                raise ValueError("the selected element does not lie in the represented image")
-            raise NotImplementedError(
+            assert callable(elements) and domain.cardinality().is_finite(), (
                 "represented preimages require a finitely framed free domain or an enumerable finite domain"
             )
+            for candidate in elements():
+                if self(candidate) == element:
+                    return candidate
+            raise ValueError("the selected element does not lie in the represented image")
         if self.is_surjective() and bool(getattr(codomain, "is_free", lambda: False)()):
             return self.section()(element)
 
@@ -1171,11 +1180,13 @@ class ModuleMorphism(Morphism):
         ring = self.domain().base_ring()
         if self.codomain().base_ring() is not ring or ring_map.domain() is not ring:
             raise ValueError("module-morphism base change requires one source scalar ring")
-        try:
-            source = self.domain().base_change(ring_map)
-            target = self.codomain().base_change(ring_map)
-        except AttributeError as error:
-            raise NotImplementedError("base change of this module morphism requires represented endpoint base changes") from error
+        source_base_change = getattr(self.domain(), "base_change", None)
+        target_base_change = getattr(self.codomain(), "base_change", None)
+        assert callable(source_base_change) and callable(target_base_change), (
+            "base change of this module morphism requires represented endpoint base-change constructions"
+        )
+        source = source_base_change(ring_map)
+        target = target_base_change(ring_map)
 
         return source.module_category().Mor(source, target)(
             {
@@ -1316,8 +1327,9 @@ class ModuleMorphism(Morphism):
         quotient = self.codomain()._represented_cokernel_of_morphism(self)
         if quotient is NotImplemented:
             quotient = self.domain()._represented_cokernel_of_morphism(self)
-        if quotient is NotImplemented:
-            raise NotImplementedError("this cokernel has no represented quotient-module backend")
+        assert quotient is not NotImplemented, (
+            "cokernel construction requires a represented quotient-module backend on one endpoint owner"
+        )
         return quotient
 
     @cached_method
@@ -1857,22 +1869,41 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         return presentation
 
     def _selected_presentation_rows(self):
+        stored = self.__dict__.get("_preamble_relation_matrix")
+        if stored is not None:
+            return tuple(stored.rows())
         if "_preamble_free_module_constructor" in self.__dict__:
             # A matrix space is free: no relations.
             return ()
-        try:
-            return tuple(self.presentation_matrix().rows())
-        except NotImplementedError:
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            _represented_finite_presentation,
+        )
+
+        if (
+            self.__dict__.get("_preamble_internal_hom_construction") is None
+            or not _represented_finite_presentation(self.domain())
+            or not _represented_finite_presentation(self.codomain())
+        ):
             return None
+        return tuple(self.presentation_matrix().rows())
 
     def _selected_module_coefficients(self, morphism):
         coefficient_function = self.__dict__.get("_preamble_module_coefficient_function")
         if coefficient_function is not None:
             return coefficient_function(morphism)
-        try:
+        model = self.__dict__.get("_preamble_internal_hom_model")
+        if model is None:
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                _represented_finite_presentation,
+            )
+
+            if (
+                self.__dict__.get("_preamble_internal_hom_construction") is None
+                or not _represented_finite_presentation(self.domain())
+                or not _represented_finite_presentation(self.codomain())
+            ):
+                return None
             model = self.internal_hom_model()
-        except NotImplementedError:
-            return None
         return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
 
     def internal_hom_model(self):

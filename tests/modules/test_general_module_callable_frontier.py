@@ -7,6 +7,8 @@ equality is refused rather than guessed from callable identity or a finite
 sample.
 """
 
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import ZZ, GeneralModules, Set
 
 
@@ -30,11 +32,4 @@ def test_extensionally_equal_callable_maps_do_not_acquire_a_false_equality_decis
     )
 
     assert first(module(ZZ(7))) == second(module(ZZ(7)))
-    try:
-        first == second
-    except NotImplementedError as error:
-        assert "not decidable without a chosen finite presentation" in str(error)
-    else:
-        raise AssertionError(
-            "two callable maps on an unframed infinite module must not be compared by sampling"
-        )
+    assert (first == second) is Unknown
