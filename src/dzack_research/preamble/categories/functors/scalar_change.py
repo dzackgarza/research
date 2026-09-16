@@ -88,7 +88,26 @@ class _ScalarExtensionFunctor(Functor):
                 }
             )
 
-        return source.module_category().Mor(source, target)(image)
+        changed = source.module_category().Mor(source, target)(image)
+
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            AdicCompletions,
+        )
+
+        if (
+            self._target_ring in AdicCompletions()
+            and self._target_ring.completion_map() is self.ring_map()
+        ):
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                ModuleCompletionMorphismConstruction,
+            )
+
+            construction = ModuleCompletionMorphismConstruction(
+                morphism,
+                self._target_ring,
+            )
+            return construction.image_of(changed)
+        return changed
 
     def _repr_(self):
         return f"Scalar extension along {self.ring_map()}"

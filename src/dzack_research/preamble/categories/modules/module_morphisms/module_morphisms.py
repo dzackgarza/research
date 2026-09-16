@@ -34,7 +34,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 _LOGGER = logging.getLogger(__name__)
 
 
-class _CompletedModuleMorphismDatum(SageObject):
+class ModuleCompletionMorphismConstruction(SageObject):
     r"""The selected source morphism and completion defining a completed map."""
 
     def __init__(self, source_morphism, completion) -> None:
@@ -46,6 +46,26 @@ class _CompletedModuleMorphismDatum(SageObject):
 
     def completion(self):
         return self._completion
+
+    def image_of(self, image):
+        r"""Return ``image`` with this completion construction established at birth."""
+        if not isinstance(image, ModuleMorphism):
+            raise TypeError("a completed module-morphism construction produces a module morphism")
+        parent = image.parent()
+        source = image.domain()
+        if source.is_framed():
+            return parent.element_class(
+                parent,
+                lambda label: image(source.module_generator(label)),
+                completion_construction=self,
+            )
+        return parent.element_class(
+            parent,
+            lambda element: image(element),
+            elementwise=True,
+            verify_linearity=False,
+            completion_construction=self,
+        )
 
 
 class ModuleLocalizationMorphismConstruction(SageObject):
@@ -239,6 +259,7 @@ class ModuleMorphism(Morphism):
     r"""The linear extension of a function on a chosen module framing."""
 
     _localization_construction = None
+    _completion_construction = None
 
     def __init__(
         self,
@@ -247,8 +268,10 @@ class ModuleMorphism(Morphism):
         *,
         elementwise=False,
         verify_linearity=True,
+        completion_construction=None,
     ) -> None:
         Morphism.__init__(self, parent)
+        self._completion_construction = completion_construction
         self._element_function = None
         framed_domain = bool(self.domain().is_framed())
         if elementwise or not framed_domain:
@@ -729,14 +752,14 @@ class ModuleMorphism(Morphism):
         r"""Return the selected localization datum defining this transported map."""
         return self._localization_construction
 
+    def completion_construction(self):
+        r"""Return the selected completion datum defining this transported map, if any."""
+        return self._completion_construction
+
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
-        completion_datum = getattr(
-            self,
-            "_preamble_adic_completion_datum",
-            None,
-        )
+        completion_datum = self.completion_construction()
         if completion_datum is not None:
             completion_source = completion_datum.source_morphism()
             completion = completion_datum.completion()
@@ -1229,13 +1252,11 @@ class ModuleMorphism(Morphism):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         extension = Modules(ring).scalar_extension(completion.completion_map())
-        extension.adopt_object_image(self.domain(), source)
-        extension.adopt_object_image(self.codomain(), target)
         completed = extension(self)
-        completed._preamble_adic_completion_datum = _CompletedModuleMorphismDatum(
-            self,
-            completion,
-        )
+        if completed.domain() is not source or completed.codomain() is not target:
+            raise ArithmeticError(
+                "scalar extension did not reuse the selected completed endpoint images"
+            )
         return completed
 
     def completion_cokernel_comparison(self, ideal, *, precision=20):
@@ -1311,11 +1332,7 @@ class ModuleMorphism(Morphism):
     @cached_method
     def cokernel(self):
         r"""Return the selected quotient ``codomain(self) / image(self)``."""
-        completion_datum = getattr(
-            self,
-            "_preamble_adic_completion_datum",
-            None,
-        )
+        completion_datum = self.completion_construction()
         if completion_datum is not None:
             completion_source = completion_datum.source_morphism()
             completion = completion_datum.completion()
