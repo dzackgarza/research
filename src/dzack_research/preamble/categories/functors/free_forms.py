@@ -33,7 +33,7 @@ class _UnderlyingFormModuleFunctor(Functor):
         raise TypeError("a formed-module morphism must carry an underlying module map")
 
 
-class ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
+class _ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
     r"""Forget the selected form from one represented formed-module category."""
 
     _faithful = True
@@ -44,7 +44,7 @@ class ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
         super().__init__(formed_category, Modules(ring))
 
 
-class BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
+class _BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
         self._base_ring = ring
@@ -60,7 +60,7 @@ class BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
         return f"Underlying-module functor on bilinear formed {self.base_ring()}-modules"
 
 
-class QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
+class _QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
         self._base_ring = ring
@@ -76,7 +76,7 @@ class QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
         return f"Underlying-module functor on quadratic formed {self.base_ring()}-modules"
 
 
-class FreeBilinearFormFunctor(Functor):
+class _FreeBilinearFormFunctor(Functor):
     r"""Send ``M`` to ``(M, M tensor M, universal pure tensor)``."""
 
     def __init__(self, base_ring) -> None:
@@ -120,7 +120,7 @@ class FreeBilinearFormFunctor(Functor):
         return source.Mor(target)((module_map, value_map))
 
 
-class FreeQuadraticFormFunctor(Functor):
+class _FreeQuadraticFormFunctor(Functor):
     r"""Send ``M`` to ``(M, Gamma^2(M), gamma_2)``."""
 
     def __init__(self, base_ring) -> None:
@@ -158,15 +158,11 @@ class FreeQuadraticFormFunctor(Functor):
         return source.Mor(target)((module_map, value_map))
 
 
-class TautologicalFormFunctor(Functor):
+class _TautologicalFormFunctor(Functor):
     r"""Abstract base for a free form classified by a functorial square."""
 
     def _classifying_square(self, module):
         raise NotImplementedError("a tautological form functor must supply its classifier")
-
-
-TautologicalBilinearFormFunctor = FreeBilinearFormFunctor
-TautologicalQuadraticFormFunctor = FreeQuadraticFormFunctor
 
 
 class _FreeFormAdjunction(Adjunction):
@@ -189,16 +185,13 @@ class _FreeFormAdjunction(Adjunction):
         )
 
 
-FormForgetfulAdjunction = _FreeFormAdjunction
-
-
-class BilinearFreeFormAdjunction(_FreeFormAdjunction):
+class _BilinearFreeFormAdjunction(_FreeFormAdjunction):
     r"""The tautological bilinear-form classifier adjunction."""
 
     def __init__(self, base_ring) -> None:
         super().__init__(
-            FreeBilinearFormFunctor(base_ring),
-            BilinearUnderlyingModuleFunctor(base_ring),
+            _FreeBilinearFormFunctor(base_ring),
+            _BilinearUnderlyingModuleFunctor(base_ring),
         )
 
     def _counit_value_map(self, free_formed, formed):
@@ -219,13 +212,13 @@ class BilinearFreeFormAdjunction(_FreeFormAdjunction):
         return free_formed.value_module().from_bilinear(bilinear)
 
 
-class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
+class _QuadraticFreeFormAdjunction(_FreeFormAdjunction):
     r"""The divided-square quadratic-form classifier adjunction."""
 
     def __init__(self, base_ring) -> None:
         super().__init__(
-            FreeQuadraticFormFunctor(base_ring),
-            QuadraticUnderlyingModuleFunctor(base_ring),
+            _FreeQuadraticFormFunctor(base_ring),
+            _QuadraticUnderlyingModuleFunctor(base_ring),
         )
 
     def _counit_value_map(self, free_formed, formed):
@@ -240,32 +233,14 @@ class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
         )
 
 
-BilinearFormForgetfulAdjunction = BilinearFreeFormAdjunction
-QuadraticFormForgetfulAdjunction = QuadraticFreeFormAdjunction
+@cached_function
+def _bilinear_free_form_adjunction(base_ring) -> _BilinearFreeFormAdjunction:
+    return _BilinearFreeFormAdjunction(base_ring)
 
 
 @cached_function
-def _bilinear_free_form_adjunction(base_ring) -> BilinearFreeFormAdjunction:
-    return BilinearFreeFormAdjunction(base_ring)
+def _quadratic_free_form_adjunction(base_ring) -> _QuadraticFreeFormAdjunction:
+    return _QuadraticFreeFormAdjunction(base_ring)
 
 
-@cached_function
-def _quadratic_free_form_adjunction(base_ring) -> QuadraticFreeFormAdjunction:
-    return QuadraticFreeFormAdjunction(base_ring)
-
-
-__all__ = [
-    "BilinearFreeFormAdjunction",
-    "BilinearFormForgetfulAdjunction",
-    "BilinearUnderlyingModuleFunctor",
-    "FreeBilinearFormFunctor",
-    "FreeQuadraticFormFunctor",
-    "ForgetTheFormFunctor",
-    "FormForgetfulAdjunction",
-    "QuadraticFreeFormAdjunction",
-    "QuadraticFormForgetfulAdjunction",
-    "QuadraticUnderlyingModuleFunctor",
-    "TautologicalBilinearFormFunctor",
-    "TautologicalFormFunctor",
-    "TautologicalQuadraticFormFunctor",
-]
+__all__ = []

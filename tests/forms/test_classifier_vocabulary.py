@@ -1,14 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import NN, ZZ
-from dzack_research.preamble.categories.functors.free_forms import (
-    BilinearFormForgetfulAdjunction,
-    BilinearFreeFormAdjunction,
-    QuadraticFormForgetfulAdjunction,
-    QuadraticFreeFormAdjunction,
-    TautologicalBilinearFormFunctor,
-    TautologicalQuadraticFormFunctor,
-)
+from dzack_research.preamble.all import Modules, NN, ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -96,11 +88,11 @@ def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations()
         assert recovered.classifying_morphism()(generator) == classifier(generator)
 
 
-def test_archive_tautological_names_are_the_live_classifier_adjunctions() -> None:
-    assert TautologicalBilinearFormFunctor is not None
-    assert TautologicalQuadraticFormFunctor is not None
-    assert BilinearFormForgetfulAdjunction is BilinearFreeFormAdjunction
-    assert QuadraticFormForgetfulAdjunction is QuadraticFreeFormAdjunction
+def test_archive_tautological_constructions_use_module_owned_adjunctions() -> None:
+    bilinear = Modules(ZZ).bilinear_free_form_adjunction()
+    quadratic = Modules(ZZ).quadratic_free_form_adjunction()
+    assert bilinear.left_adjoint().domain() is quadratic.left_adjoint().domain()
+    assert bilinear.right_adjoint().codomain() is quadratic.right_adjoint().codomain()
 
 
 def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() -> None:

@@ -231,24 +231,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 from dzack_research.preamble.categories.functors.de_rham import (
     DeRhamFunctor as DeRhamFunctor,
 )
-from dzack_research.preamble.categories.functors.free_forms import (
-    BilinearFreeFormAdjunction as BilinearFreeFormAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    BilinearUnderlyingModuleFunctor as BilinearUnderlyingModuleFunctor,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    FreeBilinearFormFunctor as FreeBilinearFormFunctor,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    FreeQuadraticFormFunctor as FreeQuadraticFormFunctor,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    QuadraticFreeFormAdjunction as QuadraticFreeFormAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_forms import (
-    QuadraticUnderlyingModuleFunctor as QuadraticUnderlyingModuleFunctor,
-)
 from dzack_research.preamble.categories.functors.free_groups import (
     FreeGroupFunctor as FreeGroupFunctor,
 )

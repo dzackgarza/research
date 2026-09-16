@@ -2,20 +2,12 @@ r"""Archive reconciliation for tautological forms and the forgetful adjunction.
 
 The archived form-forgetful module exposed a left adjoint that equips a module
 with its universal bilinear or quadratic form and a right adjoint that forgets
-that form.  The live ``free_forms`` owner keeps those same constructions under
-``BilinearFreeFormAdjunction`` and ``QuadraticFreeFormAdjunction``; the old
-public names are exact aliases, not a parallel implementation.
+that form.  The live module category owns those same adjunctions through
+``Modules(R).bilinear_free_form_adjunction()`` and
+``Modules(R).quadratic_free_form_adjunction()``.
 """
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.functors.free_forms import (
-    BilinearFormForgetfulAdjunction,
-    BilinearFreeFormAdjunction,
-    QuadraticFormForgetfulAdjunction,
-    QuadraticFreeFormAdjunction,
-    TautologicalBilinearFormFunctor,
-    TautologicalQuadraticFormFunctor,
-)
+from dzack_research.preamble.all import Modules, ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -33,11 +25,8 @@ def _line_and_negation():
 
 
 def test_archived_bilinear_form_adjunction_is_the_live_free_form_adjunction() -> None:
-    assert BilinearFormForgetfulAdjunction is BilinearFreeFormAdjunction
-    assert TautologicalBilinearFormFunctor is not None
-
     line, negation = _line_and_negation()
-    adjunction = BilinearFormForgetfulAdjunction(ZZ)
+    adjunction = Modules(ZZ).bilinear_free_form_adjunction()
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     formed = free(line)
@@ -52,11 +41,8 @@ def test_archived_bilinear_form_adjunction_is_the_live_free_form_adjunction() ->
 
 
 def test_archived_quadratic_form_adjunction_is_the_live_free_form_adjunction() -> None:
-    assert QuadraticFormForgetfulAdjunction is QuadraticFreeFormAdjunction
-    assert TautologicalQuadraticFormFunctor is not None
-
     line, negation = _line_and_negation()
-    adjunction = QuadraticFormForgetfulAdjunction(ZZ)
+    adjunction = Modules(ZZ).quadratic_free_form_adjunction()
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
     formed = free(line)

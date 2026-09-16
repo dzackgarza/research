@@ -6,23 +6,18 @@ the adjunction down with it.  Every other functor in the preamble names
 itself; these four are asked the same question here.
 """
 
-from dzack_research.preamble.all import (
-    BilinearFreeFormAdjunction,
-    BilinearUnderlyingModuleFunctor,
-    FreeBilinearFormFunctor,
-    FreeQuadraticFormFunctor,
-    QuadraticFreeFormAdjunction,
-    QuadraticUnderlyingModuleFunctor,
-    ZZ,
-)
+from dzack_research.preamble.all import Modules, ZZ
+
 
 
 def test_each_form_functor_names_its_construction_ring_and_endpoints() -> None:
+    bilinear = Modules(ZZ).bilinear_free_form_adjunction()
+    quadratic = Modules(ZZ).quadratic_free_form_adjunction()
     functors = (
-        (FreeBilinearFormFunctor(ZZ), "Free bilinear-form functor"),
-        (FreeQuadraticFormFunctor(ZZ), "Free quadratic-form functor"),
-        (BilinearUnderlyingModuleFunctor(ZZ), "Underlying-module functor"),
-        (QuadraticUnderlyingModuleFunctor(ZZ), "Underlying-module functor"),
+        (bilinear.left_adjoint(), "Free bilinear-form functor"),
+        (quadratic.left_adjoint(), "Free quadratic-form functor"),
+        (bilinear.right_adjoint(), "Underlying-module functor"),
+        (quadratic.right_adjoint(), "Underlying-module functor"),
     )
     for functor, label in functors:
         shown = repr(functor)
@@ -34,7 +29,10 @@ def test_each_form_functor_names_its_construction_ring_and_endpoints() -> None:
 
 
 def test_each_free_form_adjunction_displays_its_categorical_endpoints() -> None:
-    for adjunction in (BilinearFreeFormAdjunction(ZZ), QuadraticFreeFormAdjunction(ZZ)):
+    for adjunction in (
+        Modules(ZZ).bilinear_free_form_adjunction(),
+        Modules(ZZ).quadratic_free_form_adjunction(),
+    ):
         shown = repr(adjunction)
         left = adjunction.left_adjoint()
         assert str(left.domain()) in shown
