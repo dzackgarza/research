@@ -1042,6 +1042,42 @@ class _FunctorCategory(FixedHomCategory):
 
     underlying_homset = arrow_set
 
+    def from_object_map(self, object_map):
+        r"""Return the functor induced by an object-set map between discrete categories."""
+        from dzack_research.preamble.categories.abstract_categories.functors import (
+            _DiscreteFunctor,
+        )
+
+        return _DiscreteFunctor(
+            self.domain_category(),
+            self.codomain_category(),
+            object_map,
+        )
+
+    def discrete_diagram(self, values):
+        r"""Return the diagram on a discrete domain with the selected object family."""
+        from dzack_research.preamble.categories.abstract_categories.functors import (
+            _DiscreteDiagram,
+        )
+
+        return _DiscreteDiagram(
+            self.domain_category(),
+            self.codomain_category(),
+            values,
+        )
+
+    def constant_functor(self, value):
+        r"""Return the constant functor at ``value`` in this functor category."""
+        from dzack_research.preamble.categories.abstract_categories.functors import (
+            _ConstantDiagram,
+        )
+
+        return _ConstantDiagram(
+            self.domain_category(),
+            self.codomain_category(),
+            value,
+        )
+
     def super_categories(self):
         return [Objects()]
 

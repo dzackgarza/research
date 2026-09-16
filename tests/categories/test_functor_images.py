@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import (
     Cat,
     DiscreteCategory,
-    DiscreteFunctor,
     ObjectSetFunctor,
     Sets,
 )
@@ -15,7 +14,7 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     object_map = Sets().Mono(source.object_set(), target.object_set())(
         lambda value: target.object_set()(value + 1)
     )
-    functor = DiscreteFunctor(source, target, object_map)
+    functor = Cat().Mor(source, target).from_object_map(object_map)
 
     cat = Cat()
     cat_arrow = cat.arrow(functor)

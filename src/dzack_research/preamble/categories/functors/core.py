@@ -407,14 +407,15 @@ class _CompositeFunctor(Functor):
     Unverified specimen: a factor can have more recorded preimages than the
     composite. That does not change the composite's already selected image::
 
-        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, ConstantDiagram
+        sage: from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: labels = finite_ordered_set(("a", "b"))
         sage: source = DiscreteCategory(labels)
         sage: points = finite_ordered_set((0, 1))
         sage: first = IdentityFunctor(source)
-        sage: second = ConstantDiagram(source, Sets(), points)
+        sage: second = Cat().Mor(source, Sets()).constant_functor(points)
         sage: composite = first.then(second)
         sage: composite(source("a")) is points
         True

@@ -15,11 +15,7 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, _FunctorCategory
-from dzack_research.preamble.categories.abstract_categories.functors import (
-    ConstantDiagram,
-    DiscreteCategory,
-    DiscreteDiagram,
-)
+from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -889,7 +885,7 @@ class _ConeCategory(OwnedCategory):
         sage: index = DiscreteCategory(labels)
         sage: points = finite_ordered_set(("a", "b"))
         sage: one = finite_ordered_set(("*",))
-        sage: diagram = ConstantDiagram(index, Sets(), one)
+        sage: diagram = Cat().Mor(index, Sets()).constant_functor(one)
         sage: category = diagram.Cones()
         sage: leg = Sets().Mor(points, one)(lambda point: "*")
         sage: cone = category.cone(points, lambda obj: leg)
@@ -917,7 +913,7 @@ class _ConeCategory(OwnedCategory):
         sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
         sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
         sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
-        sage: diagram = ConstantDiagram(empty_shape, injections, points)
+        sage: diagram = Cat().Mor(empty_shape, injections).constant_functor(points)
         sage: category = diagram.Cones()
         sage: cone = category.cone(points, lambda obj: injections.identity(points))
         sage: hom = category.Mor(cone, cone)
@@ -997,7 +993,9 @@ class _ConeCategory(OwnedCategory):
         components: Callable[[Parent], Morphism],
     ) -> Parent:
 
-        constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
+        constant = Cat().Mor(
+            self.diagram().domain(), self.target_category()
+        ).constant_functor(apex)
         transformation = NaturalTransformation(constant, self.diagram(), components)
         return _object_of(self, apex=apex, transformation=transformation)
 
@@ -1079,7 +1077,9 @@ class _CoconeCategory(OwnedCategory):
         components: Callable[[Parent], Morphism],
     ) -> Parent:
 
-        constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
+        constant = Cat().Mor(
+            self.diagram().domain(), self.target_category()
+        ).constant_functor(apex)
         transformation = NaturalTransformation(self.diagram(), constant, components)
         return _object_of(self, apex=apex, transformation=transformation)
 
@@ -1537,7 +1537,7 @@ def _discrete_diagram(factors, target_category=None):
         )
 
     index = DiscreteCategory(family.index_set())
-    return DiscreteDiagram(index, target, family)
+    return Cat().Mor(index, target).discrete_diagram(family)
 
 
 __all__ = [

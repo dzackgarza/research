@@ -12,8 +12,8 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     MonomorphismArrowCategory,
     WideSubcategory,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.functors import (
-    ConstantDiagram,
     DiscreteCategory,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -24,7 +24,7 @@ def _one_object_diagram(target_category=Sets()):
     labels = finite_ordered_set(("j",))
     index = DiscreteCategory(labels)
     one = finite_ordered_set(("*",))
-    return ConstantDiagram(index, target_category, one), one
+    return Cat().Mor(index, target_category).constant_functor(one), one
 
 
 def test_cone_retains_projection_and_nonidentity_apex_maps() -> None:
@@ -64,7 +64,7 @@ def test_cone_apex_map_must_belong_to_the_target_category_even_for_empty_diagram
     points = finite_ordered_set(("a", "b"))
     empty = finite_ordered_set(())
     injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
-    diagram = ConstantDiagram(DiscreteCategory(empty), injections, points)
+    diagram = Cat().Mor(DiscreteCategory(empty), injections).constant_functor(points)
     cones = (diagram).Cones()
     cone = cones.cone(points, lambda _obj: injections.identity(points))
     hom = cones.Mor(cone, cone)

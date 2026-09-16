@@ -1,6 +1,6 @@
 r"""Archived discrete-category and constant-functor semantics."""
 
-from dzack_research.preamble.all import ConstantDiagram, DiscreteCategory, Sets
+from dzack_research.preamble.all import Cat, DiscreteCategory, Sets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -31,7 +31,7 @@ def test_discrete_category_has_only_identity_arrows_and_retains_unhashable_label
 def test_constant_diagram_sends_every_index_arrow_to_the_codomain_identity() -> None:
     index = DiscreteCategory(Sets.Δ[1])
     value = finite_ordered_set(("x", "y"))
-    diagram = ConstantDiagram(index, Sets(), value)
+    diagram = Cat().Mor(index, Sets()).constant_functor(value)
     first = index(index.object_set()[0])
     identity = index.identity(first)
 

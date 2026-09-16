@@ -3,9 +3,9 @@ r"""Discrete categories remain in the owned category graph under real consumers.
 from dzack_research.preamble.categories.abstract_categories.functors import (
     DiscreteCategories,
     DiscreteCategory,
-    DiscreteFunctor,
     ObjectSetFunctor,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -20,9 +20,7 @@ def test_discrete_category_family_is_owned_and_retains_a_nonidentity_functor() -
     assert source in DiscreteCategories()
     assert target in DiscreteCategories()
 
-    functor = DiscreteFunctor(
-        source,
-        target,
+    functor = Cat().Mor(source, target).from_object_map(
         lambda value: "b" if value == 0 else "a",
     )
     assert functor(source(0)) is target("b")

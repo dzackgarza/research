@@ -1,8 +1,8 @@
 import pytest
 
 from dzack_research.preamble.all import (
+    Cat,
     DiscreteCategory,
-    DiscreteDiagram,
     Sets,
 )
 from dzack_research.preamble.categories.sets import NN
@@ -20,9 +20,7 @@ def test_cones_and_cocones_are_natural_transformations_with_commuting_apex_maps(
     index = DiscreteCategory(Sets.Δ[1])
     x = Sets.Δ[1]
     y = Sets.Δ[2]
-    diagram = DiscreteDiagram(
-        index,
-        Sets(),
+    diagram = Cat().Mor(index, Sets()).discrete_diagram(
         lambda position: x if position == 0 else y,
     )
 

@@ -51,7 +51,7 @@ def _identity_on(source: Parent):
 
 def _one_object_diagram(source: Parent):
     index = DiscreteCategory(Sets.Δ[0])
-    return DiscreteDiagram(index, Sets(), lambda _index: source)
+    return Cat().Mor(index, Sets()).discrete_diagram(lambda _index: source)
 
 
 def _tensor_square(module: Parent):

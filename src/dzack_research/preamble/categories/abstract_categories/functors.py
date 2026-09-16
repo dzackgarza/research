@@ -367,7 +367,7 @@ class DiscreteCategories(OwnedCategory):
         return isinstance(candidate, DiscreteCategory)
 
 
-class DiscreteFunctor(Functor):
+class _DiscreteFunctor(Functor):
     r"""A functor between discrete categories induced by a map of object sets."""
 
     def __init__(
@@ -409,7 +409,7 @@ class ObjectSetFunctor(Functor):
         return functor.functor().object_map()
 
 
-class DiscreteDiagram(Functor):
+class _DiscreteDiagram(Functor):
     r"""A functor from a discrete category, specified on its objects."""
 
     def __init__(
@@ -434,7 +434,7 @@ class DiscreteDiagram(Functor):
         return _category_homset(self.codomain(), image, image).identity()
 
 
-class ConstantDiagram(Functor):
+class _ConstantDiagram(Functor):
     r"""The constant functor from an index category at one object."""
 
     def __init__(self, index_category: Category, codomain: Category, value: Parent) -> None:
@@ -459,11 +459,8 @@ class ConstantDiagram(Functor):
 
 
 __all__ = [
-    "ConstantDiagram",
     "DiscreteCategories",
     "DiscreteCategory",
-    "DiscreteDiagram",
-    "DiscreteFunctor",
     "ObjectSetFunctor",
     "CartesianProductFunctor",
     "DisjointUnionFunctor",
