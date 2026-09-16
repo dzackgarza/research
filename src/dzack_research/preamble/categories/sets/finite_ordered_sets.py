@@ -216,8 +216,9 @@ class OrderedEnumeratedSets(OwnedCategory):
             return self._preamble_image_map
 
         def inverse_on_image(self):
-            if self._preamble_image_inverse is None:
-                raise NotImplementedError("this image construction has no selected inverse")
+            assert self._preamble_image_inverse is not None, (
+                "inverse_on_image requires a selected inverse for this image construction"
+            )
             return self._preamble_image_inverse
 
         def cardinality(self) -> Parent:

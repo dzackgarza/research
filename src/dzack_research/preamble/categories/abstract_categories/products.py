@@ -198,10 +198,10 @@ class PosetCategory(OwnedCategory):
 
     @cached_method
     def arrows(self):
-        if self.object_set() not in FiniteSets():
-            raise NotImplementedError(
-                "the arrow set of an infinite poset category is represented by its order, not enumerated"
-            )
+        assert self.object_set() in FiniteSets(), (
+            "arrow enumeration for a poset category requires a finite represented object set; "
+            "an infinite poset is represented by its order relation instead"
+        )
         return finite_ordered_set(
             tuple(
                 self.Mor(self(left), self(right)).unique()
@@ -1163,28 +1163,24 @@ class _LimitsOfCategory(OwnedCategoryBase):
         if diagram.codomain() is not self.target_category():
             raise ValueError("a selected limit diagram has the wrong target category")
         shape = self.index_category()
-        try:
-            object_set = shape.object_set()
-            objects = shape.objects()
-        except AttributeError as error:
-            raise NotImplementedError(
-                "the theorem-backed realization currently requires an indexing category "
-                "with represented finite object and arrow sets"
-            ) from error
-        if not cardinal(object_set.cardinality()).is_finite():
-            raise NotImplementedError(
-                "the current product/equalizer realization enumerates only a finite represented shape"
-            )
-        try:
-            arrows = shape.arrows()
-        except AttributeError as error:
-            raise NotImplementedError(
-                "the theorem-backed realization currently requires a finite represented arrow set"
-            ) from error
-        if not cardinal(arrows.cardinality()).is_finite():
-            raise NotImplementedError(
-                "the current product/equalizer realization enumerates only a finite represented arrow set"
-            )
+        object_set_function = getattr(shape, "object_set", None)
+        objects_function = getattr(shape, "objects", None)
+        arrows_function = getattr(shape, "arrows", None)
+        assert callable(object_set_function) and callable(objects_function), (
+            "the theorem-backed realization requires an indexing category with represented object data"
+        )
+        assert callable(arrows_function), (
+            "the theorem-backed realization requires an indexing category with a represented arrow set"
+        )
+        object_set = object_set_function()
+        objects = objects_function()
+        assert cardinal(object_set.cardinality()).is_finite(), (
+            "the current product/equalizer realization enumerates a finite represented shape"
+        )
+        arrows = arrows_function()
+        assert cardinal(arrows.cardinality()).is_finite(), (
+            "the current product/equalizer realization enumerates a finite represented arrow set"
+        )
         return object_set, objects, arrows
 
     @staticmethod
