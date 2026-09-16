@@ -237,18 +237,6 @@ from dzack_research.preamble.categories.functors.orders_number_fields import (
 from dzack_research.preamble.categories.functors.orders_number_fields import (
     RingOfIntegersFunctor as RingOfIntegersFunctor,
 )
-from dzack_research.preamble.categories.functors.set_constructions import (
-    ExponentialFunctor as ExponentialFunctor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    FinitePowerSetFunctor as FinitePowerSetFunctor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    FixedCardinalitySubsetFunctor as FixedCardinalitySubsetFunctor,
-)
-from dzack_research.preamble.categories.functors.set_constructions import (
-    InverseImagePowerSetFunctor as InverseImagePowerSetFunctor,
-)
 from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,

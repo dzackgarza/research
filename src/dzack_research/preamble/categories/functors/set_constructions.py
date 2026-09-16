@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 
 
-class ExponentialFunctor(Functor):
+class _ExponentialFunctor(Functor):
     r"""The internal-Hom functor ``Set^op x Set -> Set``."""
 
     def __init__(self) -> None:
@@ -50,7 +50,7 @@ class ExponentialFunctor(Functor):
         return self.domain().Mor(source, target)(opposite, postcompose)
 
 
-class InverseImagePowerSetFunctor(Functor):
+class _InverseImagePowerSetFunctor(Functor):
     r"""The contravariant power-set functor on the opposite of Set."""
 
     def __init__(self) -> None:
@@ -74,7 +74,7 @@ class InverseImagePowerSetFunctor(Functor):
         )(morphism)
 
 
-class FinitePowerSetFunctor(Functor):
+class _FinitePowerSetFunctor(Functor):
     r"""The covariant finite-power-set functor under direct image."""
 
     def __init__(self) -> None:
@@ -92,7 +92,7 @@ class FinitePowerSetFunctor(Functor):
         )
 
 
-class FixedCardinalitySubsetFunctor(Functor):
+class _FixedCardinalitySubsetFunctor(Functor):
     r"""Direct image on ``k``-element subsets, defined on injective set maps."""
 
     def __init__(self, subset_cardinality) -> None:
@@ -122,28 +122,23 @@ class FixedCardinalitySubsetFunctor(Functor):
 
 
 @cached_function
-def _exponential_functor() -> ExponentialFunctor:
-    return ExponentialFunctor()
+def _exponential_functor() -> _ExponentialFunctor:
+    return _ExponentialFunctor()
 
 
 @cached_function
-def _inverse_image_power_set_functor() -> InverseImagePowerSetFunctor:
-    return InverseImagePowerSetFunctor()
+def _inverse_image_power_set_functor() -> _InverseImagePowerSetFunctor:
+    return _InverseImagePowerSetFunctor()
 
 
 @cached_function
-def _finite_power_set_functor() -> FinitePowerSetFunctor:
-    return FinitePowerSetFunctor()
+def _finite_power_set_functor() -> _FinitePowerSetFunctor:
+    return _FinitePowerSetFunctor()
 
 
 @cached_function
-def _fixed_cardinality_subset_functor(subset_cardinality) -> FixedCardinalitySubsetFunctor:
-    return FixedCardinalitySubsetFunctor(subset_cardinality)
+def _fixed_cardinality_subset_functor(subset_cardinality) -> _FixedCardinalitySubsetFunctor:
+    return _FixedCardinalitySubsetFunctor(subset_cardinality)
 
 
-__all__ = [
-    "ExponentialFunctor",
-    "FinitePowerSetFunctor",
-    "FixedCardinalitySubsetFunctor",
-    "InverseImagePowerSetFunctor",
-]
+__all__ = []
