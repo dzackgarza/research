@@ -74,7 +74,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                 and source.inclusion().codomain() is target
             ):
                 embedded = source.inclusion()
-                return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
+                return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
 
         if source in _localized_modules(source.base_ring()):
             if target in _localized_modules(target.base_ring()):
@@ -119,7 +119,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
             image = super()._apply_morphism(morphism)
 
         if not isinstance(morphism, ModuleEmbedding):
-            return ModuleLocalizationMorphismConstruction(morphism, self).attach(image)
+            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(image)
 
 
         if source in FramedModules(source.base_ring()):
@@ -129,14 +129,14 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                     for label in source.module_generating_set()
                 }
             )
-            return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
+            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
         embedded = ModuleEmbedding(
             source.module_category().Mor(source, target),
             lambda element: image(element),
             elementwise=True,
             verify_linearity=False,
         )
-        return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
+        return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""

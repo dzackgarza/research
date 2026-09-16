@@ -81,10 +81,14 @@ class ModuleLocalizationMorphismConstruction(SageObject):
     def localization_functor(self):
         return self._localization_functor
 
-    def attach(self, image):
-        r"""Attach this selected construction before the localized morphism is exposed."""
+    def image_of(self, image):
+        r"""Return ``image`` with this localization construction established at birth."""
+        if not isinstance(image, ModuleMorphism):
+            raise TypeError("a localized module-morphism construction produces a module morphism")
         existing = image.localization_construction()
-        if existing is not None and existing is not self:
+        if existing is self:
+            return image
+        if existing is not None:
             if (
                 existing.source_morphism() is not self.source_morphism()
                 or existing.localization_functor() is not self.localization_functor()
@@ -93,8 +97,21 @@ class ModuleLocalizationMorphismConstruction(SageObject):
                     "this morphism already carries a different localization construction"
                 )
             return image
-        image._localization_construction = self
-        return image
+        parent = image.parent()
+        source = image.domain()
+        if source.is_framed():
+            return parent.element_class(
+                parent,
+                lambda label: image(source.module_generator(label)),
+                localization_construction=self,
+            )
+        return parent.element_class(
+            parent,
+            lambda element: image(element),
+            elementwise=True,
+            verify_linearity=False,
+            localization_construction=self,
+        )
 
 
 class ModuleCokernelCompletionComparison(SageObject):
@@ -268,9 +285,11 @@ class ModuleMorphism(Morphism):
         *,
         elementwise=False,
         verify_linearity=True,
+        localization_construction=None,
         completion_construction=None,
     ) -> None:
         Morphism.__init__(self, parent)
+        self._localization_construction = localization_construction
         self._completion_construction = completion_construction
         self._element_function = None
         framed_domain = bool(self.domain().is_framed())
@@ -769,7 +788,10 @@ class ModuleMorphism(Morphism):
 
             source_kernel = completion_source.kernel()
             extension = Modules(completion_source.domain().base_ring()).scalar_extension(completion.completion_map())
-            extension.adopt_object_image(completion_source.domain(), self.domain())
+            if extension(completion_source.domain()) is not self.domain():
+                raise ArithmeticError(
+                    "the completed morphism domain is not the retained scalar-extension image of its source"
+                )
             extension(source_kernel)
             completed_inclusion = extension(source_kernel.inclusion())
             if completed_inclusion.codomain() is not self.domain():
