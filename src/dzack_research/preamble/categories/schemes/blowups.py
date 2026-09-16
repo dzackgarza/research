@@ -42,6 +42,59 @@ def _integers():
     return _own_ring(SageZZ)
 
 
+class _ProjectivePointBlowupConstruction(SageObject):
+    r"""The selected Rees/graph data defining one represented point blowup."""
+
+    def __init__(
+        self,
+        source,
+        center,
+        point,
+        blowdown,
+        graph_ambient,
+        graph_relation,
+        graph_section_space,
+        source_coordinate_embedding,
+        center_equations_in_graph_ring,
+    ) -> None:
+        self._source = source
+        self._center = center
+        self._point = point
+        self._blowdown = blowdown
+        self._graph_ambient = graph_ambient
+        self._graph_relation = graph_relation
+        self._graph_section_space = graph_section_space
+        self._source_coordinate_embedding = source_coordinate_embedding
+        self._center_equations_in_graph_ring = center_equations_in_graph_ring
+
+    def source(self):
+        return self._source
+
+    def center(self):
+        return self._center
+
+    def point(self):
+        return self._point
+
+    def blowdown(self):
+        return self._blowdown
+
+    def graph_ambient(self):
+        return self._graph_ambient
+
+    def graph_relation(self):
+        return self._graph_relation
+
+    def graph_section_space(self):
+        return self._graph_section_space
+
+    def source_coordinate_embedding(self):
+        return self._source_coordinate_embedding
+
+    def center_equations_in_graph_ring(self):
+        return self._center_equations_in_graph_ring
+
+
 class _ProjectivePointBlowupCanonicalComparison(SageObject):
     r"""The line-bundle comparison ``omega_B ~= pi^*omega_P tensor O_B(E)``."""
 
@@ -98,34 +151,38 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         )
 
     class ParentMethods:
+        def blowup_construction(self):
+            r"""Return the selected Rees/graph datum defining this blowup."""
+            return self._preamble_blowup_construction
+
         def blowup_source(self):
-            return self._preamble_blowup_source
+            return self.blowup_construction().source()
 
         def blowup_center(self):
-            return self._preamble_blowup_center
+            return self.blowup_construction().center()
 
         def blowup_point(self):
-            return self._preamble_blowup_point
+            return self.blowup_construction().point()
 
         def blowup_morphism(self):
-            return self._preamble_blowup_morphism
+            return self.blowup_construction().blowdown()
 
         blowdown = blowup_morphism
 
         def graph_ambient_product(self):
-            return self._preamble_blowup_graph_ambient
+            return self.blowup_construction().graph_ambient()
 
         def graph_relation(self):
-            return self._preamble_blowup_graph_relation
+            return self.blowup_construction().graph_relation()
 
         def graph_section_space(self):
-            return self._preamble_blowup_graph_section_space
+            return self.blowup_construction().graph_section_space()
 
         def source_coordinate_embedding(self):
-            return self._preamble_blowup_source_coordinate_embedding
+            return self.blowup_construction().source_coordinate_embedding()
 
         def center_equations_in_graph_ring(self):
-            return self._preamble_blowup_center_equations_in_graph_ring
+            return self.blowup_construction().center_equations_in_graph_ring()
 
         def _source_hypersurface_equation_in_graph_ring(self, hypersurface):
             if hypersurface not in ClosedSubschemes(self.scheme_base_ring()):
@@ -387,16 +444,16 @@ def _projective_point_blowup(projective_plane, point):
     blowup = product.closed_subscheme(graph_relation)
     blowdown = product.projection(0) * blowup.inclusion()
 
-    blowup._preamble_blowup_source = projective_plane
-    blowup._preamble_blowup_center = center
-    blowup._preamble_blowup_point = point
-    blowup._preamble_blowup_morphism = blowdown
-    blowup._preamble_blowup_graph_ambient = product
-    blowup._preamble_blowup_graph_relation = graph_relation
-    blowup._preamble_blowup_graph_section_space = graph_sections
-    blowup._preamble_blowup_source_coordinate_embedding = source_embedding
-    blowup._preamble_blowup_center_equations_in_graph_ring = tuple(
-        source_embedding(equation) for equation in center_equations
+    blowup._preamble_blowup_construction = _ProjectivePointBlowupConstruction(
+        projective_plane,
+        center,
+        point,
+        blowdown,
+        product,
+        graph_relation,
+        graph_sections,
+        source_embedding,
+        tuple(source_embedding(equation) for equation in center_equations),
     )
     return _refine_scheme(
         blowup,
