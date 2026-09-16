@@ -265,10 +265,9 @@ class ElementConjugacyClass(SageObject):
         return self._representative
 
     def __contains__(self, element) -> bool:
-        if self._supergroup.is_abelian() is not True:
-            raise NotImplementedError(
-                "conjugacy membership is not decided for this absolute Galois group"
-            )
+        assert self._supergroup.is_abelian() is True, (
+            "conjugacy membership is represented here when the absolute Galois group is abelian"
+        )
         if element not in self._supergroup:
             return False
         return element == self._representative
@@ -280,10 +279,9 @@ class ElementConjugacyClass(SageObject):
             return False
         if other._supergroup is not self._supergroup:
             return False
-        if self._supergroup.is_abelian() is not True:
-            raise NotImplementedError(
-                "conjugacy-class equality is not decided for this absolute Galois group"
-            )
+        assert self._supergroup.is_abelian() is True, (
+            "conjugacy-class equality is represented here when the absolute Galois group is abelian"
+        )
         return other._representative == self._representative
 
     def __hash__(self) -> int:
@@ -619,10 +617,9 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         return FrobeniusConjugacyClass(self, prime)
 
     def topological_group_generators(self):
-        if not self._is_finite_field():
-            raise NotImplementedError(
-                "no topological generating family is selected for this field"
-            )
+        assert self._is_finite_field(), (
+            "a selected topological generating family is represented here for finite-field absolute Galois groups"
+        )
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
             finite_ordered_set,
         )

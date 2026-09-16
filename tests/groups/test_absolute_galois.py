@@ -141,7 +141,7 @@ def test_only_known_group_size_and_conjugacy_claims_are_decided() -> None:
     # G_Q has quotients (C_2)^r for arbitrarily large r, from multiquadratic
     # extensions, so no finite algebraic generating set can exist.
     assert rational_group.is_finitely_generated() is False
-    with pytest.raises(NotImplementedError, match="conjugacy membership"):
+    with pytest.raises(AssertionError, match="conjugacy membership"):
         rational_group.one() in rational_group.one().conjugacy_class()
 
 

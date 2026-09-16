@@ -1,5 +1,7 @@
 """Archive reconciliation for topological versus algebraic Galois generators."""
 
+import pytest
+
 from dzack_research.preamble.all import GF, QQ
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
@@ -25,9 +27,5 @@ def test_general_absolute_galois_group_does_not_fabricate_topological_generators
 
     assert group.group_generators_are_computable() is False
     assert group.has_computed_group_generators() is False
-    try:
+    with pytest.raises(AssertionError, match="topological generating family"):
         group.topological_generating_family()
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("G_Q must not fabricate a selected topological generating family")
