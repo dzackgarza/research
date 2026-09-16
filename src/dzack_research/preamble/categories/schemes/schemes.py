@@ -1034,10 +1034,6 @@ class Schemes(OwnedCategoryOverBaseRing):
         """
         return [LocallyRingedSpaces()]
 
-    def __contains__(self, candidate) -> bool:
-        stated = getattr(candidate, "_preamble_scheme_base_ring", None)
-        return stated is not None and any(base is self.base_ring() for base in _scheme_base_tower(stated)) and _has_scheme_placement(candidate, Schemes)
-
     @cached_method(key=lambda self, domain, codomain: (id(domain), id(codomain)))
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:

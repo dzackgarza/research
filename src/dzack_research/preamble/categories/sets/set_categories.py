@@ -1167,31 +1167,12 @@ class Sets(OwnedCategory):
 
             return _g_set_trivial_fixed_adjunction(group)
 
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_finite()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
-
     class Infinite(CategoryWithAxiom):
         r"""Sets whose cardinality is infinite."""
 
         def an_object(self) -> Parent:
             r"""The natural numbers."""
             return NN
-
-        def __contains__(self, candidate) -> bool:
-            # The cardinality of the underlying set decides this, as it does for
-            # FiniteSets.  Sage's own Infinite() axiom answers for Sage's graph, in
-            # which an owned set is not placed at all (`CAT-12`).
-            if candidate not in Sets():
-                return False
-            try:
-                return not cardinal(candidate.cardinality()).is_finite()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
 
     class Countable(CategoryWithAxiom):
         r"""Sets whose cardinality is at most \(\aleph_0\)."""
@@ -1200,28 +1181,12 @@ class Sets(OwnedCategory):
             r"""The natural numbers."""
             return NN
 
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_countable()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
-
         class Infinite(CategoryWithAxiom):
             r"""Sets whose cardinality is \(\aleph_0\)."""
 
             def an_object(self) -> Parent:
                 r"""The natural numbers."""
                 return NN
-
-            def __contains__(self, candidate) -> bool:
-                if candidate not in Sets():
-                    return False
-                try:
-                    return cardinal(candidate.cardinality()).is_countably_infinite()
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    return False
 
     class Uncountable(CategoryWithAxiom):
         r"""Sets whose cardinality exceeds \(\aleph_0\)."""
@@ -1233,14 +1198,6 @@ class Sets(OwnedCategory):
         def extra_super_categories(self) -> list[Category]:
             r"""An uncountable set is infinite."""
             return [Sets().Infinite()]
-
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_uncountable()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
 
 
 def FiniteSets() -> Category:
