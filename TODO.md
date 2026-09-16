@@ -683,7 +683,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 
 ### Public vocabulary, representations, and codomains
 
-- [ ] **`generator-lexicon`**. **Needs:** `framing-specialization-convergence`.
+- [x] **`generator-lexicon`**. **Needs:** `framing-specialization-convergence`.
   Remove implementation-role display language such as `"Module-generator family"`, `"Free-module generator family"`, `"Presented-module generator family"`, and `"Lattice-generator family"` (`LEX-01`, `LEX-04`).
   **Observed gap:** public displays currently describe an `IndexedFamily`/refinement role instead of the mathematical set or its image.
   **Deliver:** display the actual selected generator set/image, a bounded mathematically meaningful view for infinite sets, and any truly distinguishing chosen structure.  The object returned by `module_generators()` must look like module generators, not like the Python/category mechanism used to store them.
