@@ -3,11 +3,9 @@ import pytest
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
-    ColimitsOfCategory,
     DirectedSystem,
     FiniteSequenceDiagram,
     InverseSystem,
-    LimitsOfCategory,
     PosetCategory,
 )
 from dzack_research.preamble.categories.functors.core import (
@@ -253,7 +251,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     thrice = line.module_category().Mor(line, line)({"e": 3 * e})
     diagram = FiniteSequenceDiagram((line, line, line), (twice, thrice), line.category())
 
-    limit = LimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    limit = line.category().Limits(diagram.domain()).construction(diagram)
     shape = diagram.domain()
     assert diagram(shape.Mor(shape(0), shape(2)).unique()) == thrice * twice
     assert twice * limit.structure_morphism(shape(0)) == limit.structure_morphism(shape(1))
@@ -270,7 +268,7 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     assert limit.structure_morphism(shape(0)) * into_limit == to_zero
     assert limit.structure_morphism(shape(2)) * into_limit == to_two
 
-    colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    colimit = line.category().Colimits(diagram.domain()).construction(diagram)
     assert colimit.object() in line.category()
     assert colimit.object().module_rank() == 1
     from_zero = line.module_category().Mor(line, probe)({"e": 6 * t})
@@ -317,7 +315,7 @@ def test_limit_functor_maps_nonidentity_stagewise_transformation_through_project
         lambda index: stage_maps[index.position()],
     )
 
-    limits = LimitsOfCategory(shape, line.category())
+    limits = line.category().Limits(shape)
     limit_functor = limits.defining_functor()
     diagrams = limit_functor.domain()
     source_object = diagrams(source)
@@ -372,7 +370,7 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
     assert stage_maps[1] * source_twice == target_fourfold * stage_maps[0]
     assert stage_maps[2] * source_thrice == target_ninefold * stage_maps[1]
 
-    colimits = ColimitsOfCategory(shape, line.category())
+    colimits = line.category().Colimits(shape)
     colimit_functor = colimits.defining_functor()
     diagrams = colimit_functor.domain()
     source_object = diagrams(source)
@@ -446,12 +444,12 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
             ).unique()
 
     restricted = system.restrict(RectangleInclusion())
-    construction = LimitsOfCategory(rectangle, line.category()).construction(restricted)
+    construction = line.category().Limits(rectangle).construction(restricted)
     assert construction.diagram() is restricted
     assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line
 
     with pytest.raises(NotImplementedError, match="finite represented shape"):
-        LimitsOfCategory(index, line.category()).construction(system)
+        line.category().Limits(index).construction(system)
 
 
 def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limit() -> None:
@@ -481,7 +479,7 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
     )
     assert tower(tower_arrow)(e) == 4 * e
     with pytest.raises(NotImplementedError):
-        LimitsOfCategory(opposite, line.category()).construction(tower)
+        line.category().Limits(opposite).construction(tower)
 
 
 def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:
@@ -489,7 +487,7 @@ def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:
     zero = ZZ.free_module(finite_ordered_set(()))
     collapse = line.module_category().Mor(line, zero).zero()
     diagram = FiniteSequenceDiagram((line, zero), (collapse,), line.category())
-    colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    colimit = line.category().Colimits(diagram.domain()).construction(diagram)
     shape = diagram.domain()
 
     first_coprojection = colimit.costructure_morphism(shape(0))

@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     BiproductCategory,
-    LimitsOfCategory,
     TensorProductCategory,
 )
 from dzack_research.preamble.categories.functors.core import IdentityFunctor
@@ -69,7 +68,7 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
         IdentityFunctor(Sets()).algebras(),
         HomCategories(),
         Sets().HomCategory(),
-        LimitsOfCategory(discrete, Sets()),
+        Sets().Limits(discrete),
         BiproductCategory((points, points)),
         TensorProductCategory((points, points)),
         Cat().Mor(Sets(), Sets()),

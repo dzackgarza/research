@@ -350,19 +350,43 @@ class Cat(CategoryPacketMethods, Category):
 
         def limit_functor(self, index_category: Category):
             r"""Return the selected limit functor ``[index_category,self] -> self``."""
-            from dzack_research.preamble.categories.abstract_categories.products import (
-                LimitsOfCategory,
-            )
-
-            return LimitsOfCategory(index_category, self).defining_functor()
+            return self.Limits(index_category).defining_functor()
 
         def colimit_functor(self, index_category: Category):
             r"""Return the selected colimit functor ``[index_category,self] -> self``."""
+            return self.Colimits(index_category).defining_functor()
+
+        def Limits(self, index_category: Category) -> Category:
+            r"""Return the selected-limit construction category for this target."""
             from dzack_research.preamble.categories.abstract_categories.products import (
-                ColimitsOfCategory,
+                _LimitsOfCategory,
             )
 
-            return ColimitsOfCategory(index_category, self).defining_functor()
+            return _LimitsOfCategory(index_category, self)
+
+        def Colimits(self, index_category: Category) -> Category:
+            r"""Return the selected-colimit construction category for this target."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _ColimitsOfCategory,
+            )
+
+            return _ColimitsOfCategory(index_category, self)
+
+        def Products(self, index_category: Category) -> Category:
+            r"""Return the selected-product construction category for this target."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _ProductsOfCategory,
+            )
+
+            return _ProductsOfCategory(index_category, self)
+
+        def Coproducts(self, index_category: Category) -> Category:
+            r"""Return the selected-coproduct construction category for this target."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _CoproductsOfCategory,
+            )
+
+            return _CoproductsOfCategory(index_category, self)
 
         @property
         def ObjectType(self) -> type[Parent]:

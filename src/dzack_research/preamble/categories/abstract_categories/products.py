@@ -1140,7 +1140,7 @@ class _CoproductCoconeCategory(_CoconeCategory):
         return [(self.diagram()).Cocones()]
 
 
-class LimitsOfCategory(OwnedCategoryBase):
+class _LimitsOfCategory(OwnedCategoryBase):
     def __init__(self, index_category: Category, target_category: Category) -> None:
         self._index_category = index_category
         self._target_category = target_category
@@ -1317,7 +1317,7 @@ class LimitsOfCategory(OwnedCategoryBase):
         return _limit_functor(self.target_category(), self.index_category())
 
 
-class ColimitsOfCategory(LimitsOfCategory):
+class _ColimitsOfCategory(_LimitsOfCategory):
     @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
         r"""Return the selected colimit, using coproducts and a coequalizer on finite shapes."""
@@ -1418,11 +1418,11 @@ class ColimitsOfCategory(LimitsOfCategory):
         return _colimit_functor(self.target_category(), self.index_category())
 
 
-class ProductsOfCategory(LimitsOfCategory):
+class _ProductsOfCategory(_LimitsOfCategory):
     pass
 
 
-class CoproductsOfCategory(ColimitsOfCategory):
+class _CoproductsOfCategory(_ColimitsOfCategory):
     pass
 
 
@@ -1543,20 +1543,16 @@ def _discrete_diagram(factors, target_category=None):
 __all__ = [
     "BiproductCategory",
     "CoconeMorphism",
-    "ColimitsOfCategory",
     "ConeMorphism",
-    "CoproductsOfCategory",
     "DiagramCategory",
     "DirectSumCategory",
     "DirectedSystem",
     "FiniteOrdinalCategory",
     "FiniteSequenceDiagram",
     "InverseSystem",
-    "LimitsOfCategory",
     "ParallelPairCategory",
     "ParallelPairDiagram",
     "PosetCategory",
-    "ProductsOfCategory",
     "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
