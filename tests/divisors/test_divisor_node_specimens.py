@@ -3,7 +3,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    ProjectiveSpace,
     QuadraticField,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
@@ -25,7 +24,7 @@ def _cyclic_module(order):
 
 
 def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
-    projective = ProjectiveSpace(3, QQ)
+    projective = ProjectiveSpaces(QQ)(3)
     base = projective.base_scheme()
     base_picard = PicardGroups().trivial(base)
     base_class = _zero_class_group(base)
@@ -46,7 +45,7 @@ def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> 
     field = QuadraticField(-5, "a")
     order = field.ring_of_integers()
     base = (order).affine_spectrum(base_ring=order)
-    projective = ProjectiveSpace(2, order)
+    projective = ProjectiveSpaces(order)(2)
     base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
     base_class = ClassGroups()(_cyclic_module(2), scheme=base)
     base_comparison = base_picard.module_category().Mor(base_picard, base_class)(

@@ -8,7 +8,6 @@ category graph and no registry of relationships.
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
 from typing import overload
 
 from sage.categories.category import Category
@@ -18,16 +17,6 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
-
-
-@dataclass(frozen=True)
-class _FunctorImageRecord:
-    r"""One identity-retaining object or morphism image in a functor's provenance."""
-
-    source_object: Parent | None = None
-    target_object: Parent | None = None
-    source_morphism: Map | None = None
-    target_morphism: Map | None = None
 
 
 class Functor(SageObject):
@@ -63,12 +52,10 @@ class Functor(SageObject):
     def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
         self._codomain = codomain
-        # One identity-based provenance store for everything this functor
-        # actually maps.  Keeping the source object/morphism alive in the
-        # record also makes ``id`` reuse impossible while the provenance is
-        # live.  Reverse lookup is intentionally derived from this same store
-        # rather than maintained by a second cache.
-        self._provenance: dict[int, _FunctorImageRecord] = {}
+        # Cache the forward action by source identity.  A codomain object does
+        # not determine a preimage; chosen preimages belong to ImageOfFunctor.
+        self._object_images: dict[int, tuple[Parent, Parent]] = {}
+        self._morphism_images: dict[int, tuple[Map, Map]] = {}
 
     def _cache_key(self) -> int:
         r"""Functors have identity semantics as parameters of categorical constructions."""
@@ -89,49 +76,35 @@ class Functor(SageObject):
         r"""Return the image of one morphism of the domain."""
 
     def _cached_object_image(self, preimage: Parent) -> Parent | None:
-        recorded = self._provenance.get(id(preimage))
-        if recorded is not None and recorded.source_object is preimage:
-            return recorded.target_object
+        recorded = self._object_images.get(id(preimage))
+        if recorded is not None and recorded[0] is preimage:
+            return recorded[1]
         return None
 
     def _record_object_image(self, preimage: Parent, image: Parent) -> Parent:
         key = id(preimage)
-        recorded = self._provenance.get(key)
-        if (
-            recorded is not None
-            and recorded.source_object is preimage
-            and recorded.target_object is not image
-        ):
+        recorded = self._object_images.get(key)
+        if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
             raise ValueError(
                 "this functor instance already selected a different image for the same preimage"
             )
-        self._provenance[key] = _FunctorImageRecord(
-            source_object=preimage,
-            target_object=image,
-        )
+        self._object_images[key] = (preimage, image)
         return image
 
     def _cached_morphism_image(self, preimage: Map) -> Map | None:
-        recorded = self._provenance.get(id(preimage))
-        if recorded is not None and recorded.source_morphism is preimage:
-            return recorded.target_morphism
+        recorded = self._morphism_images.get(id(preimage))
+        if recorded is not None and recorded[0] is preimage:
+            return recorded[1]
         return None
 
     def _record_morphism_image(self, preimage: Map, image: Map) -> Map:
         key = id(preimage)
-        recorded = self._provenance.get(key)
-        if (
-            recorded is not None
-            and recorded.source_morphism is preimage
-            and recorded.target_morphism is not image
-        ):
+        recorded = self._morphism_images.get(key)
+        if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
             raise ValueError(
                 "this functor instance already selected a different image for the same preimage"
             )
-        self._provenance[key] = _FunctorImageRecord(
-            source_morphism=preimage,
-            target_morphism=image,
-        )
+        self._morphism_images[key] = (preimage, image)
         return image
 
     def object_image(self, obj: Parent) -> Parent:

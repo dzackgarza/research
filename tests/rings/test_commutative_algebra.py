@@ -2,14 +2,12 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    AffineSpace,
     ArtinianRings,
     Algebras,
     CompleteLocalRings,
     IntegralDomains,
     LocalRings,
     NoetherianRings,
-    ProjectiveSpace,
     Set,
     Zmod,
 )
@@ -119,8 +117,8 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
 
 def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     field = GF(5)
-    affine_plane = AffineSpace(2, field)
-    projective_plane = ProjectiveSpace(2, field)
+    affine_plane = AffineSpaces(field)(2)
+    projective_plane = ProjectiveSpaces(field)(2)
 
     _values = affine_plane.point_counts(3)
 
@@ -147,7 +145,7 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
 
 
 def test_nonfinite_base_rejects_arithmetic_zeta_interface() -> None:
-    affine_line = AffineSpace(1, QQ)
+    affine_line = AffineSpaces(QQ)(1)
     try:
         affine_line.zeta_function()
     except TypeError:
@@ -185,7 +183,7 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
 
 
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
-    affine_line = AffineSpace(1, QQ, names=("x",))
+    affine_line = AffineSpaces(QQ)(1, names=("x",))
     spectrum = affine_line.underlying_space()
     ring = spectrum.ring()
     x = ring.algebra_generator("x")

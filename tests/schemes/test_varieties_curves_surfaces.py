@@ -8,11 +8,9 @@ assertion below fails if one hypothesis is dropped from the criterion.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AffineSpace,
     Curves,
     FiniteTypeSchemes,
     IntegralSchemes,
-    ProjectiveSpace,
     SeparatedSchemes,
     Surfaces,
     Varieties,
@@ -20,16 +18,16 @@ from dzack_research.preamble.all import (
 
 
 def _plane():
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     return plane, algebra.algebra_generator("x"), algebra.algebra_generator("y")
 
 
 def test_the_affine_plane_is_a_surface_and_the_lines_are_curves() -> None:
-    line = AffineSpace(1, QQ)
+    line = AffineSpaces(QQ)(1)
     plane, _x, _y = _plane()
-    projective_line = ProjectiveSpace(1, QQ)
-    projective_plane = ProjectiveSpace(2, QQ)
+    projective_line = ProjectiveSpaces(QQ)(1)
+    projective_plane = ProjectiveSpaces(QQ)(2)
 
     assert line in Varieties(QQ)
     assert line in Curves(QQ)
@@ -74,7 +72,7 @@ def test_the_finite_type_hypothesis_excludes_the_spectrum_of_a_function_field() 
 
 def test_relative_dimension_is_read_over_the_stated_base() -> None:
     r"""``A^1_Z`` is a surface over nothing: it is a curve over ``Z``, which is one-dimensional."""
-    line = AffineSpace(1, ZZ)
+    line = AffineSpaces(ZZ)(1)
 
     assert line in Varieties(ZZ)
     assert line.relative_dimension() == 1
@@ -86,7 +84,7 @@ def test_relative_dimension_is_read_over_the_stated_base() -> None:
 
 
 def test_projective_line_has_arithmetic_and_geometric_genus_zero() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
 
     assert line.arithmetic_genus() == 0
     assert line.geometric_genus() == 0
@@ -94,7 +92,7 @@ def test_projective_line_has_arithmetic_and_geometric_genus_zero() -> None:
 
 
 def test_singular_plane_cubic_keeps_arithmetic_genus_separate_from_geometric_genus() -> None:
-    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     coordinate_ring = plane.coordinate_ring()
     x = coordinate_ring.algebra_generator("x")
     y = coordinate_ring.algebra_generator("y")

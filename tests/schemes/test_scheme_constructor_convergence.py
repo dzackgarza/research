@@ -3,9 +3,7 @@ r"""Basic scheme notation delegates to the owning scheme categories."""
 from dzack_research.preamble.all import (
     QQ,
     AffineSchemes,
-    AffineSpace,
     AffineSpaces,
-    ProjectiveSpace,
     ProjectiveSpaces,
 )
 
@@ -24,7 +22,7 @@ def test_spec_notation_is_the_affine_scheme_category_constructor() -> None:
 
 def test_affine_space_notation_is_the_affine_space_category_constructor() -> None:
     declared = AffineSpaces(QQ)(2, names=("x", "y"))
-    notation = AffineSpace(2, QQ, names=("x", "y"))
+    notation = AffineSpaces(QQ)(2, names=("x", "y"))
 
     assert declared is notation
     assert declared in AffineSpaces(QQ)
@@ -33,7 +31,7 @@ def test_affine_space_notation_is_the_affine_space_category_constructor() -> Non
 
 def test_projective_space_notation_is_the_projective_space_category_constructor() -> None:
     declared = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
-    notation = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    notation = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
 
     assert declared is notation
     assert declared in ProjectiveSpaces(QQ)

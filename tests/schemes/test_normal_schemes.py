@@ -13,9 +13,7 @@ asserted normal.
 """
 
 from dzack_research.preamble.all import (
-    AffineSpace,
     NormalSchemes,
-    ProjectiveSpace,
     QQ,
     ZZ,
     Zmod,
@@ -23,8 +21,8 @@ from dzack_research.preamble.all import (
 
 
 def test_affine_space_is_normal_over_a_principal_ideal_domain() -> None:
-    line = AffineSpace(1, ZZ)
-    plane = AffineSpace(2, QQ)
+    line = AffineSpaces(ZZ)(1)
+    plane = AffineSpaces(QQ)(2)
 
     assert line in NormalSchemes(ZZ)
     assert line.is_normal()
@@ -37,8 +35,8 @@ def test_affine_space_is_normal_over_a_principal_ideal_domain() -> None:
 
 
 def test_projective_space_is_normal_over_a_principal_ideal_domain() -> None:
-    projective_line = ProjectiveSpace(1, QQ)
-    projective_plane = ProjectiveSpace(2, ZZ)
+    projective_line = ProjectiveSpaces(QQ)(1)
+    projective_plane = ProjectiveSpaces(ZZ)(2)
 
     assert projective_line in NormalSchemes(QQ)
     assert projective_plane in NormalSchemes(ZZ)

@@ -3,7 +3,6 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    ProjectiveSpace,
     QuadraticField,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
@@ -28,7 +27,7 @@ def _cyclic_module(order):
 
 
 def test_projective_space_over_a_field_has_the_hyperplane_picard_generator() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     base_picard = PicardGroups().trivial(plane.base_scheme())
     picard = plane.picard_group(base_picard)
 
@@ -45,7 +44,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
     order = field.ring_of_integers()
     base = (order).affine_spectrum(base_ring=order)
     base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
-    relative_line = ProjectiveSpace(1, order)
+    relative_line = ProjectiveSpaces(order)(1)
     picard = relative_line.picard_group(base_picard)
 
     base_generator = base_picard.module_generator(0)
@@ -60,7 +59,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
 
 
 def test_cartier_local_equations_produce_units_and_the_associated_line_bundle() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     datum = line.glued_from_standard_charts().gluing_datum()
     left_ring = datum.chart(0).coordinate_algebra()
     right_ring = datum.chart(1).coordinate_algebra()

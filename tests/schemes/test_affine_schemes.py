@@ -4,13 +4,11 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineSchemes,
-    AffineSpace,
     AffineSpaces,
     ClosedEmbeddings,
     IntegralSchemes,
     ProductProjectiveSpaces,
     ProductSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     Schemes,
     SmoothSchemes,
@@ -18,8 +16,8 @@ from dzack_research.preamble.all import (
 
 
 def test_affine_projective_and_base_schemes_live_in_the_owned_scheme_graph() -> None:
-    affine = AffineSpace(2, QQ)
-    projective = ProjectiveSpace(2, QQ)
+    affine = AffineSpaces(QQ)(2)
+    projective = ProjectiveSpaces(QQ)(2)
     base = (QQ).affine_spectrum()
 
     assert affine in Schemes(QQ)
@@ -42,13 +40,13 @@ def test_affine_projective_and_base_schemes_live_in_the_owned_scheme_graph() -> 
 
 
 def test_space_dimensions_accept_owned_and_backend_integer_numerals() -> None:
-    assert AffineSpace(ZZ(2), QQ).relative_dimension() == 2
-    assert ProjectiveSpace(SageZZ(2), QQ).relative_dimension() == 2
+    assert AffineSpaces(QQ)(ZZ(2)).relative_dimension() == 2
+    assert ProjectiveSpaces(QQ)(SageZZ(2)).relative_dimension() == 2
 
 
 def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_sections() -> None:
-    affine = AffineSpace(2, QQ)
-    projective = ProjectiveSpace(3, QQ)
+    affine = AffineSpaces(QQ)(2)
+    projective = ProjectiveSpaces(QQ)(3)
 
     affine_sheaf = affine.structure_sheaf()
     projective_sheaf = projective.structure_sheaf()
@@ -59,7 +57,7 @@ def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_section
 
 
 def test_scheme_over_base_is_realized_in_the_generic_slice_category() -> None:
-    affine = AffineSpace(2, QQ)
+    affine = AffineSpaces(QQ)(2)
     base = (QQ).affine_spectrum()
     slice_category = Schemes(QQ).slice_category()
     slice_object = affine.as_slice_object()
@@ -73,7 +71,7 @@ def test_scheme_over_base_is_realized_in_the_generic_slice_category() -> None:
 
 
 def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None:
-    affine = AffineSpace(2, QQ)
+    affine = AffineSpaces(QQ)(2)
     point = affine.point_morphism([1, 2])
 
     assert point in Schemes(QQ).Mor(point.domain(), affine)
@@ -88,7 +86,7 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
 
 
 def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() -> None:
-    affine = AffineSpace(2, QQ)
+    affine = AffineSpaces(QQ)(2)
     x, _y = affine.coordinate_ring().algebra_generators()
     divisor = affine.closed_subscheme(x)
 
@@ -104,8 +102,8 @@ def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() ->
 
 
 def test_affine_space_product_is_a_scheme_product_with_actual_projections() -> None:
-    line = AffineSpace(1, QQ, names=("u",))
-    plane = AffineSpace(2, QQ, names=("v", "w"))
+    line = AffineSpaces(QQ)(1, names=("u",))
+    plane = AffineSpaces(QQ)(2, names=("v", "w"))
     product = line.scheme_category().product((line, plane))
 
     assert product in Schemes(QQ)
@@ -126,8 +124,8 @@ def test_affine_space_product_is_a_scheme_product_with_actual_projections() -> N
 
 
 def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> None:
-    first_factor = ProjectiveSpace(1, QQ, names=("x0", "x1"))
-    second_factor = ProjectiveSpace(1, QQ, names=("y0", "y1"))
+    first_factor = ProjectiveSpaces(QQ)(1, names=("x0", "x1"))
+    second_factor = ProjectiveSpaces(QQ)(1, names=("y0", "y1"))
     product = first_factor.scheme_category().product((first_factor, second_factor))
 
     assert product in Schemes(QQ)

@@ -52,7 +52,6 @@ class _ChartMapIntoGluedScheme(SchemeMorphism):
         Morphism.__init__(self, parent)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
-        self._preamble_coordinate_algebra_morphism = None
         self._target_chart = target_chart
         self._local_affine_map = local_affine_map
         if local_affine_map.domain() is not self.domain():
@@ -93,7 +92,6 @@ class _ChartwiseGluedSchemeMorphism(SchemeMorphism):
         Morphism.__init__(self, parent)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
-        self._preamble_coordinate_algebra_morphism = None
         if source_charts.index_set() != local_maps.index_set():
             raise ValueError("a chartwise scheme morphism requires one local map on each source chart")
         for index in source_charts.index_set():

@@ -1,7 +1,6 @@
 r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, direct and inverse images, relative Spec."""
 
 from dzack_research.preamble.all import (
-    AffineSpace,
     LocalRings,
     QQ,
     Algebras,
@@ -39,7 +38,7 @@ def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
 
 
 def test_the_stalk_of_a_module_sheaf_is_the_localized_module() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
     module = algebra.free_module(2)
@@ -55,7 +54,7 @@ def test_the_stalk_of_a_module_sheaf_is_the_localized_module() -> None:
 
 
 def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
@@ -91,7 +90,7 @@ def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:
 
 def test_relative_spec_is_compatible_with_base_change() -> None:
     r"""``Spec_{X'}(B tensor_A A') = Spec_X(B) x_X X'`` for the double cover ``z^2 = x`` of the line."""
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     algebra = line.coordinate_ring()
     x = algebra.algebra_generator("x")
     cover_presentation = QQ.polynomial_ring(("x", "z"))

@@ -3,14 +3,12 @@ r"""Base change of schemes along a ring map, and the slice adjunction along a ba
 from dzack_research.preamble.all import (
     QQ,
     AffineSchemes,
-    AffineSpace,
     AffineSpaces,
     FiberProductSchemes,
     FiniteTypeSchemes,
     IntegralSchemes,
     NormalSchemes,
     ProjectiveSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     QuadraticField,
     QuasiProjectiveSchemes,
@@ -28,14 +26,14 @@ def _extension():
 
 def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> None:
     field, ring_map = _extension()
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     cusp = plane.closed_subscheme(y**2 - x**3)
     change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
-    ordinary_changed_plane = AffineSpace(2, field, names=("x", "y"))
+    ordinary_changed_plane = AffineSpaces(field)(2, names=("x", "y"))
     changed_plane = change(plane)
     changed_cusp = change(cusp)
     # The session spelling names the object, not the functor.
@@ -74,7 +72,7 @@ def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> 
 
 def test_base_change_transports_automorphisms_and_satisfies_the_identity_and_composition_laws() -> None:
     field, ring_map = _extension()
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
@@ -162,10 +160,10 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
 
 def test_projective_space_base_change_is_the_selected_nonaffine_pullback() -> None:
     field, ring_map = _extension()
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     change = Schemes(ring_map.domain()).base_change_functor(ring_map)
 
-    ordinary_target_line = ProjectiveSpace(1, field)
+    ordinary_target_line = ProjectiveSpaces(field)(1)
     changed = change(line)
 
     assert changed is not ordinary_target_line

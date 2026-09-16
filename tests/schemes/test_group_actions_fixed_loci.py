@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     AffineSchemes,
     GObjects,
     Groups,
-    ProjectiveSpace,
     Schemes,
     Algebras,
 )
@@ -110,7 +109,7 @@ def test_gobjects_of_schemes_has_a_trivial_affine_specimen() -> None:
 
 
 def test_projective_product_sign_and_swap_fixed_loci_keep_archive_dimensions() -> None:
-    line = ProjectiveSpace(1, QQ, names=("x0", "x1"))
+    line = ProjectiveSpaces(QQ)(1, names=("x0", "x1"))
     product = line.product_with(line)
     x0, x1 = line.coordinate_ring().gens()
     sign = line.projective_morphism_from_coordinates(line, (x0, -x1))

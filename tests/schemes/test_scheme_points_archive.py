@@ -1,6 +1,6 @@
 """Archive reconciliation for scheme points as morphisms in Sch/S."""
 
-from dzack_research.preamble.all import QQ, AffineSpace, ProjectiveSpace, Schemes
+from dzack_research.preamble.all import QQ, AffineSpaces, ProjectiveSpaces, Schemes
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/schemes/scheme_points.sage",
@@ -10,7 +10,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_scheme_point_is_an_actual_scheme_morphism() -> None:
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     point = plane.point_morphism([1, 2])
     residue_scheme = (QQ).affine_spectrum()
 
@@ -20,7 +20,7 @@ def test_archived_scheme_point_is_an_actual_scheme_morphism() -> None:
 
 
 def test_scheme_point_composes_with_the_structure_map_over_the_same_base() -> None:
-    line = AffineSpace(1, QQ, names=("t",))
+    line = AffineSpaces(QQ)(1, names=("t",))
     point = line.point_morphism([3])
     base = (QQ).affine_spectrum()
 
@@ -31,7 +31,7 @@ def test_scheme_point_composes_with_the_structure_map_over_the_same_base() -> No
 
 
 def test_projective_point_retains_owned_noncoordinate_homogeneous_coordinates() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     point = plane.point_morphism((1, 2, 3))
     coordinates = point.point_coordinates()
 

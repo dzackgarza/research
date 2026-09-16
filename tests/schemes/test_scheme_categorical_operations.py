@@ -11,12 +11,10 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineSchemes,
-    AffineSpace,
     ClosedEmbeddings,
     ClosedSubschemes,
     IntegralSchemes,
     NormalSchemes,
-    ProjectiveSpace,
     Schemes,
     SmoothSchemes,
     Algebras,
@@ -33,7 +31,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _plane():
-    plane = AffineSpace(2, QQ, names=("x", "y"))
+    plane = AffineSpaces(QQ)(2, names=("x", "y"))
     algebra = plane.coordinate_ring()
     return plane, algebra, algebra.algebra_generator("x"), algebra.algebra_generator("y")
 
@@ -98,7 +96,7 @@ def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> No
 
 
 def test_projective_closed_subschemes_require_homogeneous_equations() -> None:
-    plane = ProjectiveSpace(2, QQ)
+    plane = ProjectiveSpaces(QQ)(2)
     x, y, z = plane.gens()
     conic = plane.closed_subscheme(x * z - y**2)
     assert conic in ClosedSubschemes(QQ)
