@@ -16,7 +16,11 @@ def test_nonreduced_double_line_has_multiplicity_two_in_its_fundamental_cycle() 
 
     assert cycle.parent() in AlgebraicCycleGroups(ZZ)
     assert cycle.parent().cycle_scheme() is plane
+    assert cycle.parent().cycle_degree_construction().scheme() is plane
     assert cycle.parent().cycle_dimension() == 1
+    assert "_preamble_cycle_scheme" not in cycle.parent().__dict__
+    assert "_preamble_cycle_dimension" not in cycle.parent().__dict__
+    assert "_preamble_cycle_prime_locus" not in cycle.parent().__dict__
     assert coefficients == {support: ZZ(2)}
     assert support.generic_local_length(double_line.defining_ideal_owned()) == 2
 

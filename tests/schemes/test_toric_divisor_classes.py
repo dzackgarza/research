@@ -363,7 +363,10 @@ def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> No
         group = plane.chow_group(degree)
         assert group in ChowGroups(ZZ)
         assert group.chow_scheme() is plane
+        assert group.cycle_degree_construction().scheme() is plane
         assert group.cycle_dimension() == degree
+        assert "_preamble_chow_scheme" not in group.__dict__
+        assert "_preamble_cycle_dimension" not in group.__dict__
         assert group.module_rank() == 1
         assert group.invariant_factors().cardinality() == 1
         assert group.invariant_factors()[0] == ZZ.zero()
@@ -377,7 +380,10 @@ def test_projective_plane_invariant_curves_surject_onto_the_chow_group() -> None
 
     assert cycles in TorusInvariantCycleGroups(ZZ)
     assert cycles.cycle_scheme() is plane
+    assert cycles.cycle_degree_construction().scheme() is plane
     assert cycles.cycle_dimension() == 1
+    assert "_preamble_cycle_scheme" not in cycles.__dict__
+    assert "_preamble_cycle_dimension" not in cycles.__dict__
     assert cycles.module_rank() == 3
     assert projection.is_surjective()
     images = tuple(projection(cycles.module_generator(ray)) for ray in rays)

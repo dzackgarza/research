@@ -17,6 +17,19 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
+class _CycleDegreeConstruction:
+    r"""The selected scheme and dimension defining a cycle-theoretic role."""
+
+    def __init__(self, scheme, cycle_dimension) -> None:
+        self._scheme = scheme
+        self._cycle_dimension = int(cycle_dimension)
+
+    def scheme(self):
+        return self._scheme
+
+    def cycle_dimension(self):
+        return self._cycle_dimension
+
 
 class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
     r"""Sparse free abelian groups on prime cycle components of one dimension."""
@@ -29,11 +42,20 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(self, _cycle_degree_construction, **rest) -> None:
+            if not isinstance(_cycle_degree_construction, _CycleDegreeConstruction):
+                raise TypeError("an algebraic cycle group requires selected cycle-degree data")
+            self._cycle_degree_construction = _cycle_degree_construction
+            super().__init__(**rest)
+
+        def cycle_degree_construction(self):
+            return self._cycle_degree_construction
+
         def cycle_scheme(self):
-            return self._preamble_cycle_scheme
+            return self.cycle_degree_construction().scheme()
 
         def cycle_dimension(self):
-            return self._preamble_cycle_dimension
+            return self.cycle_degree_construction().cycle_dimension()
 
         def cycle_codimension(self):
             return int(self.cycle_scheme().dimension()) - int(self.cycle_dimension())
@@ -67,17 +89,28 @@ class ChowGroups(OwnedCategoryOverBaseRing):
             module.module_generating_set(),
             _extra_categories=(self,),
             _extra_construction_data={
-                "chow_scheme": scheme,
-                "cycle_dimension": int(cycle_dimension),
+                "_cycle_degree_construction": _CycleDegreeConstruction(
+                    scheme,
+                    cycle_dimension,
+                ),
             },
         )
 
     class ParentMethods:
+        def __init__(self, _cycle_degree_construction, **rest) -> None:
+            if not isinstance(_cycle_degree_construction, _CycleDegreeConstruction):
+                raise TypeError("a Chow group requires selected cycle-degree data")
+            self._cycle_degree_construction = _cycle_degree_construction
+            super().__init__(**rest)
+
+        def cycle_degree_construction(self):
+            return self._cycle_degree_construction
+
         def chow_scheme(self):
-            return self._preamble_chow_scheme
+            return self.cycle_degree_construction().scheme()
 
         def cycle_dimension(self):
-            return self._preamble_cycle_dimension
+            return self.cycle_degree_construction().cycle_dimension()
 
         def cycle_codimension(self):
             return int(self.chow_scheme().dimension()) - int(self.cycle_dimension())
@@ -128,9 +161,10 @@ def _affine_cycle_group(scheme, cycle_dimension):
         locus,
         _extra_categories=(AlgebraicCycleGroups(integers),),
         _extra_construction_data={
-            "cycle_scheme": scheme,
-            "cycle_dimension": cycle_dimension,
-            "cycle_prime_locus": locus,
+            "_cycle_degree_construction": _CycleDegreeConstruction(
+                scheme,
+                cycle_dimension,
+            ),
         },
     )
 
