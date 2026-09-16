@@ -36,6 +36,20 @@ def _complete_intersection_base_supported(base) -> bool:
     )
 
 
+class _CompleteIntersectionBaseChange(SageObject):
+    r"""The selected source and projection defining one scalar base change."""
+
+    def __init__(self, source, projection) -> None:
+        self._source = source
+        self._projection = projection
+
+    def source(self):
+        return self._source
+
+    def projection(self):
+        return self._projection
+
+
 class _CompleteIntersectionAdjunctionComparison(SageObject):
     r"""The adjunction comparison ``omega_X ~= (omega_P tensor det N)_X``.
 
@@ -175,25 +189,21 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             r"""Return the relative projective complete-intersection morphism to its base."""
             return self.structure_morphism()
 
-        def base_change_source_complete_intersection(self):
-            source = getattr(
+        def base_change_datum(self):
+            datum = getattr(
                 self,
-                "_preamble_complete_intersection_base_change_source",
+                "_preamble_complete_intersection_base_change",
                 None,
             )
-            if source is None:
+            if datum is None:
                 raise ValueError("this complete intersection was not selected as a scalar base change")
-            return source
+            return datum
+
+        def base_change_source_complete_intersection(self):
+            return self.base_change_datum().source()
 
         def base_change_projection(self):
-            projection = getattr(
-                self,
-                "_preamble_complete_intersection_base_change_projection",
-                None,
-            )
-            if projection is None:
-                raise ValueError("this complete intersection was not selected as a scalar base change")
-            return projection
+            return self.base_change_datum().projection()
 
         def base_change(self, ring_map):
             r"""Base-change this complete-intersection family through its defining sections."""
@@ -238,9 +248,9 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 domain=changed,
                 codomain=self,
             )
-            changed._preamble_complete_intersection_base_change_source = self
-            changed._preamble_complete_intersection_base_change_ring_map = ring_map
-            changed._preamble_complete_intersection_base_change_projection = projection
+            changed._preamble_complete_intersection_base_change = (
+                _CompleteIntersectionBaseChange(self, projection)
+            )
             return changed
 
         def adjunction_twist_degree(self):
