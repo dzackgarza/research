@@ -962,14 +962,14 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         field = _engine_ring(self.fixed_field())
         base = _engine_ring(self._supergroup.base_field())
         defining_base = getattr(field, "base_field", lambda: None)()
+        assert defining_base is base or base.absolute_degree() == 1, (
+            "the represented open-subgroup core requires a relative defining polynomial over "
+            "the supergroup base field, or an absolute degree-one base"
+        )
         if defining_base is base:
             polynomial = field.relative_polynomial()
-        elif base.absolute_degree() == 1:
-            polynomial = field.defining_polynomial().change_ring(base)
         else:
-            raise NotImplementedError(
-                "the relative defining polynomial over the supergroup base field is unavailable"
-            )
+            polynomial = field.defining_polynomial().change_ring(base)
 
         normal_field, base_backend = polynomial.splitting_field(
             "normal_closure", map=True
@@ -1038,12 +1038,12 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             raise ValueError(
                 "open-subgroup intersection requires one supergroup Galois group"
             )
-        if _engine_ring(self.fixed_field()) in FiniteFields():
-            degree = ZZ(self.index()).lcm(ZZ(other.index()))
-            return self.supergroup().open_subgroup(self.supergroup().finite_extension(degree))
-        raise NotImplementedError(
-            "the compositum must be supplied with its exact closure embedding"
+        assert _engine_ring(self.fixed_field()) in FiniteFields(), (
+            "the represented open-subgroup intersection computes the compositum canonically "
+            "for finite fields; other bases require explicit compositum closure data"
         )
+        degree = ZZ(self.index()).lcm(ZZ(other.index()))
+        return self.supergroup().open_subgroup(self.supergroup().finite_extension(degree))
 
     def _repr_(self) -> str:
         return f"Gal({self.algebraic_closure()} / {self.fixed_field()}) inside {self._supergroup}"
