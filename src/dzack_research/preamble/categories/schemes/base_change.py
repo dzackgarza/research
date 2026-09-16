@@ -125,7 +125,7 @@ def _base_change_unit(algebra, changed_algebra, ring_map):
     )
 
 
-class SchemeBaseChangeFunctor(Functor):
+class _SchemeBaseChangeFunctor(Functor):
     r"""``- x_{Spec R} Spec R' : Sch/R -> Sch/R'`` along ``g: R -> R'``."""
 
     def __init__(self, ring_map) -> None:
@@ -287,11 +287,11 @@ class SchemeBaseChangeFunctor(Functor):
 
 
 @cached_function
-def _scheme_base_change_functor(ring_map) -> SchemeBaseChangeFunctor:
-    return SchemeBaseChangeFunctor(ring_map)
+def _scheme_base_change_functor(ring_map) -> _SchemeBaseChangeFunctor:
+    return _SchemeBaseChangeFunctor(ring_map)
 
 
-class SlicePullbackFunctor(Functor):
+class _SlicePullbackFunctor(Functor):
     r"""``g^*: Sch/S -> Sch/S'``, ``(X -> S) |-> (X x_S S' -> S')``."""
 
     def __init__(self, base_morphism) -> None:
@@ -326,7 +326,7 @@ class SlicePullbackFunctor(Functor):
         return f"Pullback of families along {self.base_morphism()}"
 
 
-class SliceCompositionFunctor(Functor):
+class _SliceCompositionFunctor(Functor):
     r"""``Sigma_g: Sch/S' -> Sch/S``, ``(X -> S') |-> (X -> S' -> S)``."""
 
     def __init__(self, base_morphism) -> None:
@@ -350,12 +350,12 @@ class SliceCompositionFunctor(Functor):
         return f"Composition of families with {self.base_morphism()}"
 
 
-class SliceBaseChangeAdjunction(Adjunction):
+class _SliceBaseChangeAdjunction(Adjunction):
     r"""``Sigma_g ⊣ g^*`` for a base morphism ``g: S' -> S``."""
 
     def __init__(self, base_morphism) -> None:
         self._base_morphism = base_morphism
-        super().__init__(SliceCompositionFunctor(base_morphism), SlicePullbackFunctor(base_morphism))
+        super().__init__(_SliceCompositionFunctor(base_morphism), _SlicePullbackFunctor(base_morphism))
 
     def base_morphism(self):
         return self._base_morphism
@@ -383,13 +383,8 @@ class SliceBaseChangeAdjunction(Adjunction):
 
 
 @cached_function
-def _slice_base_change_adjunction(base_morphism) -> SliceBaseChangeAdjunction:
-    return SliceBaseChangeAdjunction(base_morphism)
+def _slice_base_change_adjunction(base_morphism) -> _SliceBaseChangeAdjunction:
+    return _SliceBaseChangeAdjunction(base_morphism)
 
 
-__all__ = [
-    "SchemeBaseChangeFunctor",
-    "SliceBaseChangeAdjunction",
-    "SliceCompositionFunctor",
-    "SlicePullbackFunctor",
-]
+__all__ = []
