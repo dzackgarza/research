@@ -27,7 +27,7 @@ def test_a_newcomer_does_algebraic_number_theory(radicand) -> None:
     assert a**2 == radicand
     OK = K.ring_of_integers()
     rendered(OK)
-    assert OK.basis().cardinality() == 2
+    assert OK.integral_basis().cardinality() == 2
     assert K.discriminant() == OK.discriminant()
     h = K.class_number()
     Cl = K.class_group()
@@ -88,7 +88,7 @@ def test_a_newcomer_does_finite_group_theory(n) -> None:
 def test_a_newcomer_does_plane_curves(field_name) -> None:
     k = {"QQ": QQ, "GF(5)": GF(5), "GF(7)": GF(7)}[field_name]
     R = k.polynomial_ring(("x", "y"))
-    x, y = R.gens()
+    x, y = R.algebra_generators()
     E = Curves(k).from_equation(y**2 - x**3 - x)
     rendered(E)
     assert E.genus() == 1
@@ -154,7 +154,7 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
 
 def test_a_newcomer_does_commutative_algebra() -> None:
     R = QQ.polynomial_ring(("x", "y", "z"))
-    x, y, z = R.gens()
+    x, y, z = R.algebra_generators()
     I = R.ideal(x * y, y * z, x * z)
     rendered(I)
     assert I.dimension() == 1
