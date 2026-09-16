@@ -118,15 +118,14 @@ def _ported_rational_group(rational_group):
 def _ported_integral_structure(rational_group, lattice_inclusion):
     r"""Reach T2 through the registered lazy provider without importing it here."""
     selected = _ported_rational_group(rational_group)
-    match selected:
-        case None:
-            raise NotImplementedError(_ABSENCE)
-        case _:
-            return engine_capabilities.compute(
-                "lattice.rational_integral_structure",
-                selected,
-                lattice_inclusion,
-            )
+    assert selected is not None, (
+        f"integral-structure transport/coset computation requires the registered T2 rational-group provider: {_ABSENCE}"
+    )
+    return engine_capabilities.compute(
+        "lattice.rational_integral_structure",
+        selected,
+        lattice_inclusion,
+    )
 
 
 
@@ -212,17 +211,10 @@ class IntegralStructureAction(SageObject):
                     source_inclusion,
                     target_inclusion,
                 )
-        match _ported_rational_group(rational_group):
-            case None:
-                raise NotImplementedError(
-                    f"an integral transporter in {rational_group} from {source_inclusion} "
-                    f"to {target_inclusion} is not computed: {_ABSENCE}"
-                )
-            case _:
-                return _ported_integral_structure(
-                    rational_group,
-                    source_inclusion,
-                ).transporter(source_inclusion, target_inclusion)
+        return _ported_integral_structure(
+            rational_group,
+            source_inclusion,
+        ).transporter(source_inclusion, target_inclusion)
 
     def right_cosets(self):
         r"""Return ``G/G_L`` with the selected lattice stabilizer on the right."""
@@ -403,10 +395,9 @@ def _full_orthogonal_integral_transporter(
     source = source_inclusion.domain()
     target = target_inclusion.domain()
     ring = source.base_ring()
-    if target.base_ring() is not ring or ring is not _own_ring(SageZZ):
-        raise NotImplementedError(
-            "the OSCAR integral-isometry transporter currently uses full-rank ZZ-lattices"
-        )
+    assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
+        "the maintained OSCAR integral-isometry transporter is represented for ZZ-lattices"
+    )
     from dzack_research.preamble.categories.modules.pure.modules import (
         RestrictedScalarsModules,
     )
@@ -414,17 +405,15 @@ def _full_orthogonal_integral_transporter(
     if space not in RestrictedScalarsModules(ring):
         raise TypeError("the two lattices must lie in a restriction of a rational quadratic space")
     ambient = space.module_over_extension()
-    if rational_group is not ambient.Aut():
-        raise NotImplementedError(
-            "the maintained OSCAR witness solves the full orthogonal-group transporter; "
-            "transport inside a prescribed proper rational subgroup still needs integralization"
-        )
-    if int(source.module_rank()) != int(ambient.module_rank()) or int(target.module_rank()) != int(
-        ambient.module_rank()
-    ):
-        raise NotImplementedError(
-            "the maintained OSCAR specialization currently transports full-rank lattices"
-        )
+    assert rational_group is ambient.Aut(), (
+        "the maintained OSCAR witness represents the full orthogonal-group transporter; "
+        "a prescribed proper rational subgroup requires the registered integral-structure provider"
+    )
+    assert int(source.module_rank()) == int(ambient.module_rank()) and int(
+        target.module_rank()
+    ) == int(ambient.module_rank()), (
+        "the maintained OSCAR specialization represents full-rank lattice transport"
+    )
 
     def embedded_basis(inclusion):
         domain = inclusion.domain()
