@@ -575,6 +575,24 @@ def _primitive_root_of_unity(scalars, degree):
     return scalars._from_engine_element(primitive[0])
 
 
+class _AffineCyclicCoverConstruction:
+    r"""The branch datum and deck action defining one affine cyclic cover."""
+
+    def __init__(self, branch_section, degree, deck_group_scheme_action) -> None:
+        self._branch_section = branch_section
+        self._degree = int(degree)
+        self._deck_group_scheme_action = deck_group_scheme_action
+
+    def branch_section(self):
+        return self._branch_section
+
+    def degree(self):
+        return self._degree
+
+    def deck_group_scheme_action(self):
+        return self._deck_group_scheme_action
+
+
 class CyclicCovers(OwnedCategory):
     r"""Degree-``n`` cyclic covers of ``Spec(A)``, with their deck action.
 
@@ -682,19 +700,22 @@ class CyclicCovers(OwnedCategory):
             action_morphism,
         )
 
-        cover._preamble_cyclic_branch_section = section
-        cover._preamble_cyclic_cover_degree = degree
-        cover._preamble_deck_group_scheme_action = group_scheme_action
+        cover._preamble_affine_cyclic_cover_construction = (
+            _AffineCyclicCoverConstruction(section, degree, group_scheme_action)
+        )
         return refine(cover, self)
 
     class ParentMethods:
+        def affine_cyclic_cover_construction(self):
+            return self._preamble_affine_cyclic_cover_construction
+
         def cover_degree(self):
             r"""Return ``n``: the cover is finite locally free of this rank."""
-            return self._preamble_cyclic_cover_degree
+            return self.affine_cyclic_cover_construction().degree()
 
         def branch_section(self):
             r"""Return ``f``, the section of ``L^n = O_X`` the cover is branched along."""
-            return self._preamble_cyclic_branch_section
+            return self.affine_cyclic_cover_construction().branch_section()
 
         def deck_root_of_unity(self):
             r"""Return a primitive root identifying ``mu_n`` with the constant ``C_n`` here."""
@@ -712,7 +733,7 @@ class CyclicCovers(OwnedCategory):
 
         def deck_group_scheme_action(self):
             r"""Return the canonical action ``mu_n x X -> X``."""
-            return self._preamble_deck_group_scheme_action
+            return self.affine_cyclic_cover_construction().deck_group_scheme_action()
 
         def constant_deck_action(self):
             r"""Return the constant ``C_n`` action selected by a primitive root of unity.
