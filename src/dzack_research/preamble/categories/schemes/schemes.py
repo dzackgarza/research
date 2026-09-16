@@ -147,6 +147,7 @@ class SchemeConeMorphismConstruction:
                 homset=image.parent(),
                 pullback=image._coordinate_pullback,
                 cone_construction=self,
+                point_coordinates=image._point_coordinates,
             )
         raise TypeError(
             "the selected universal cone requires a represented affine or native scheme morphism"
@@ -158,6 +159,7 @@ class SchemeMorphism(Morphism):
 
     _coordinate_pullback = None
     _cone_construction = None
+    _point_coordinates = None
 
     def __init__(
         self,
@@ -168,9 +170,11 @@ class SchemeMorphism(Morphism):
         homset=None,
         pullback=None,
         cone_construction=None,
+        point_coordinates=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._cone_construction = cone_construction
+        self._point_coordinates = point_coordinates
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
         if pullback is not None:
@@ -210,7 +214,7 @@ class SchemeMorphism(Morphism):
 
     def point_coordinates(self):
         r"""Return the selected owned coordinate family when this morphism is a represented point."""
-        coordinates = getattr(self, "_preamble_point_coordinates", None)
+        coordinates = self._point_coordinates
         if coordinates is None:
             raise ValueError("this scheme morphism was not constructed from selected point coordinates")
         return coordinates
@@ -739,17 +743,19 @@ def _categorical_scheme_morphism(
     domain=None,
     codomain=None,
     pullback=None,
+    point_coordinates=None,
 ):
     if isinstance(native_morphism, SchemeMorphism):
-        if domain is None and codomain is None and pullback is None:
+        if domain is None and codomain is None and pullback is None and point_coordinates is None:
             return native_morphism
         native_morphism = native_morphism.native_morphism()
-    if domain is not None or codomain is not None or pullback is not None:
+    if domain is not None or codomain is not None or pullback is not None or point_coordinates is not None:
         return SchemeMorphism(
             native_morphism,
             domain=domain,
             codomain=codomain,
             pullback=pullback,
+            point_coordinates=point_coordinates,
         )
     key = id(native_morphism)
     cached = _SCHEME_MORPHISM_WRAPPERS.get(key)
@@ -936,6 +942,7 @@ def _refine_scheme_morphism(
     domain=None,
     codomain=None,
     pullback=None,
+    point_coordinates=None,
 ):
     r"""Return the native morphism in the Hom of its stated owned schemes."""
     base = _own_ring(base_ring)
@@ -950,6 +957,7 @@ def _refine_scheme_morphism(
         domain=domain,
         codomain=codomain,
         pullback=pullback,
+        point_coordinates=point_coordinates,
     )
 
 
@@ -1403,18 +1411,18 @@ class Schemes(OwnedCategoryOverBaseRing):
                             )
                         }
                     )
-            wrapped = _refine_scheme_morphism(
+            selected_coordinates = finite_family(
+                owned_coordinates,
+                name=f"Selected coordinates of point on {self}",
+            )
+            return _refine_scheme_morphism(
                 point,
                 base,
                 domain=point_domain,
                 codomain=self,
                 pullback=pullback,
+                point_coordinates=selected_coordinates,
             )
-            wrapped._preamble_point_coordinates = finite_family(
-                owned_coordinates,
-                name=f"Selected coordinates of point on {self}",
-            )
-            return wrapped
 
         def projective_morphism_from_coordinates(self, target, coordinates):
             r"""Return the projective morphism defined by a basepoint-free coordinate family.
