@@ -53,7 +53,7 @@ class ModuleCompletionMorphismConstruction(SageObject):
             raise TypeError("a completed module-morphism construction produces a module morphism")
         parent = image.parent()
         source = image.domain()
-        if source.is_framed():
+        if source.is_framed_module():
             return parent.element_class(
                 parent,
                 lambda label: image(source.module_generator(label)),
@@ -99,7 +99,7 @@ class ModuleLocalizationMorphismConstruction(SageObject):
             return image
         parent = image.parent()
         source = image.domain()
-        if source.is_framed():
+        if source.is_framed_module():
             return parent.element_class(
                 parent,
                 lambda label: image(source.module_generator(label)),
@@ -295,7 +295,7 @@ class ModuleMorphism(Morphism):
         self._completion_construction = completion_construction
         self._lift_function = lift
         self._element_function = None
-        framed_domain = bool(self.domain().is_framed())
+        framed_domain = bool(self.domain().is_framed_module())
         if elementwise or not framed_domain:
             if not callable(images):
                 raise TypeError("a morphism from an unframed module must be supplied as an exact element map")
@@ -1526,7 +1526,7 @@ class ModuleEmbeddingHomset(CategoricalHomset):
             if images.parent() is self:
                 return images
             source = self.domain()
-            if source.is_framed():
+            if source.is_framed_module():
                 images = lambda label: images(source.module_generator(label))
             else:
                 return self.element_class(
@@ -1705,7 +1705,7 @@ class _ModuleHomsetCommonMethods:
                 raise ValueError("the morphism has the wrong Hom source or target")
             if images.parent() is self:
                 return images
-            if not self.domain().is_framed():
+            if not self.domain().is_framed_module():
                 return self.elementwise(lambda element: images(element))
             images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):

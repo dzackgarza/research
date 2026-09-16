@@ -9,8 +9,6 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.structure.element import ModuleElement
-from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -165,104 +163,64 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
         return domain._algebra_homset_class()
 
 
-def _algebra_element_in_module(algebra, module, element):
-    r"""Read one algebra element in its represented forgetful module."""
-    if module is algebra:
-        return algebra(element)
-    from_realization = getattr(module, "from_realization", None)
-    if callable(from_realization):
-        return from_realization(algebra(element))
-    return module(algebra(element))
-
-
-def _module_element_in_algebra(algebra, module, element):
-    r"""Read one forgetful-module element back in its algebra realization."""
-    if module is algebra:
-        return algebra(element)
-    realize = getattr(module, "realize", None)
-    if callable(realize):
-        return algebra(realize(element))
-    return algebra(element)
-
-
-def _algebra_product_in_module(algebra, module, left, right):
-    r"""Evaluate the algebra product and return its forgetful-module value."""
-    product = algebra.product(
-        _module_element_in_algebra(algebra, module, left),
-        _module_element_in_algebra(algebra, module, right),
-    )
-    return _algebra_element_in_module(algebra, module, product)
-
-
 class MultiplicativeAlgebraMorphism(Morphism):
     r"""An ``R``-linear map satisfying ``f m_A = m_B (f tensor f)``."""
 
     def __init__(self, parent, underlying_morphism) -> None:
         Morphism.__init__(self, parent)
-        source_module = self.domain().underlying_module()
-        target_module = self.codomain().underlying_module()
-        selected = getattr(underlying_morphism, "underlying_morphism", None)
-        if callable(selected):
-            underlying_morphism = selected()
-        if not (isinstance(underlying_morphism, ModuleMorphism) and underlying_morphism.domain() is source_module and underlying_morphism.codomain() is target_module):
-            underlying_morphism = source_module.module_category().Mor(source_module, target_module)(underlying_morphism)
-        tensor_square = None
-        try:
-            source_multiplication = self.domain().multiplication_morphism()
-            target_multiplication = self.codomain().multiplication_morphism()
-            tensor_square = underlying_morphism.tensor_product_map(
-                underlying_morphism,
-                source=source_multiplication.domain(),
-                target=target_multiplication.domain(),
-            )
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            tensor_square = None
-        if tensor_square is not None:
-            if underlying_morphism * source_multiplication != target_multiplication * tensor_square:
-                raise ValueError("the stated map does not preserve multiplication")
-        else:
-            assert source_module.is_framed(), (
-                "multiplicativity without a represented tensor-square map requires a framed source module"
-            )
-            labels = source_module.module_generating_set()
-            assert labels.cardinality().is_finite(), (
-                "multiplicativity without a represented tensor-square map requires finitely many source generators"
-            )
-            for left_label in labels:
-                left = source_module.module_generator(left_label)
-                for right_label in labels:
-                    right = source_module.module_generator(right_label)
-                    source_product = _algebra_product_in_module(
-                        self.domain(),
-                        source_module,
-                        left,
-                        right,
-                    )
-                    left_image = underlying_morphism(left)
-                    right_image = underlying_morphism(right)
-                    target_product = _algebra_product_in_module(
-                        self.codomain(),
-                        target_module,
-                        left_image,
-                        right_image,
-                    )
-                    if underlying_morphism(source_product) != target_product:
-                        raise ValueError("the stated map does not preserve multiplication")
+        domain = self.domain()
+        codomain = self.codomain()
+        if isinstance(underlying_morphism, MultiplicativeAlgebraMorphism):
+            underlying_morphism = underlying_morphism.underlying_morphism()
+        module_hom = domain.module_category().Mor(domain, codomain)
+        if not (isinstance(underlying_morphism, ModuleMorphism) and underlying_morphism.parent() is module_hom):
+            underlying_morphism = module_hom(underlying_morphism)
+        chosen = AlgebrasWithChosenMultiplication(domain.base_ring())
+        match (domain, codomain):
+            case _ if domain in chosen and codomain in chosen:
+                # Both multiplications are chosen morphisms, so ``f m_A = m_B (f (x) f)``
+                # is one equation between two module morphisms out of ``A (x) A``.
+                source_multiplication = domain.multiplication_morphism()
+                target_multiplication = codomain.multiplication_morphism()
+                tensor_square = underlying_morphism.tensor_product_map(
+                    underlying_morphism,
+                    source=source_multiplication.domain(),
+                    target=target_multiplication.domain(),
+                )
+                if underlying_morphism * source_multiplication != target_multiplication * tensor_square:
+                    raise ValueError("the stated map does not preserve multiplication")
+            case _:
+                # An endpoint whose product is inherited from its construction
+                # has no chosen tensor-square map; bilinearity of both sides
+                # makes agreement on module generators agreement everywhere.
+                tensor_square = None
+                assert domain.is_framed_module(), (
+                    "multiplicativity without a chosen multiplication on both endpoints is decided on a module framing of the domain"
+                )
+                labels = domain.module_generating_set()
+                assert labels.cardinality().is_finite(), (
+                    "multiplicativity without a chosen multiplication on both endpoints requires finitely many domain module generators"
+                )
+                for left_label in labels:
+                    left = domain.module_generator(left_label)
+                    for right_label in labels:
+                        right = domain.module_generator(right_label)
+                        if underlying_morphism(domain.product(left, right)) != codomain.product(
+                            underlying_morphism(left),
+                            underlying_morphism(right),
+                        ):
+                            raise ValueError("the stated map does not preserve multiplication")
         self._underlying_morphism = underlying_morphism
         self._tensor_square_morphism = tensor_square
 
     def underlying_morphism(self):
         return self._underlying_morphism
 
-    right = underlying_morphism
-
     def tensor_square_morphism(self):
         assert self._tensor_square_morphism is not None, (
-            "tensor_square_morphism requires a represented tensor-square map for this algebra morphism"
+            "tensor_square_morphism requires a chosen multiplication on both endpoints of this algebra morphism"
         )
         return self._tensor_square_morphism
-
-    left = tensor_square_morphism
 
     def corestrict_to_center(self):
         r"""Factor this algebra morphism through the represented centre of its codomain."""
@@ -287,16 +245,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
         return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
 
     def _call_(self, element):
-        source_module = self.domain().underlying_module()
-        target_module = self.codomain().underlying_module()
-        image = self.underlying_morphism()(
-            _algebra_element_in_module(self.domain(), source_module, element)
-        )
-        return _module_element_in_algebra(
-            self.codomain(),
-            target_module,
-            image,
-        )
+        return self.codomain()(self.underlying_morphism()(self.domain()(element)))
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, MultiplicativeAlgebraMorphism):
@@ -319,7 +268,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
 
 
 class MultiplicativeAlgebraHomset(CategoricalHomset):
-    r"""The common fixed-endpoint Hom of algebras with represented carriers."""
+    r"""The fixed-endpoint Hom of algebras, at least one with a chosen multiplication."""
 
     Element = MultiplicativeAlgebraMorphism
 
@@ -332,8 +281,8 @@ class MultiplicativeAlgebraHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        module = self.domain().underlying_module()
-        return self(module.module_category().Mor(module, module).identity())
+        algebra = self.domain()
+        return self(algebra.module_category().Mor(algebra, algebra).identity())
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
@@ -378,17 +327,9 @@ def _unit_morphism_from_element(module, unit, ring):
     r"""Return the linear map ``U_R(R) -> module`` determined by ``1 |-> unit``."""
     ring = _owned_ring(ring)
     scalar_module = Algebras(ring).underlying_module()(ring)
-    realize = getattr(scalar_module, "realize", None)
-
-    def scalar_value(scalar):
-        return realize(scalar) if callable(realize) else ring(scalar)
-
     return ModuleMorphism(
         scalar_module.module_category().Mor(scalar_module, module),
-        lambda scalar: module.scalar_multiple(
-            scalar_value(scalar),
-            unit,
-        ),
+        lambda scalar: module.scalar_multiple(ring(scalar), unit),
         elementwise=True,
     )
 
@@ -412,32 +353,29 @@ class _UnitalAlgebraParentMethods:
 def _equip_unit(algebra, unit_morphism, category):
     r"""Retain ``eta:R->M`` and verify its two unit equations when decidable."""
     ring = category.base_ring()
-    module = algebra.underlying_module()
     scalar_module = Algebras(ring).underlying_module()(ring)
     if not isinstance(unit_morphism, Morphism):
         raise TypeError("a unit is supplied as a morphism R -> M")
     if unit_morphism.domain() is not scalar_module:
         raise ValueError("the unit morphism must start at U_R(R)")
-    if unit_morphism.codomain() is not module:
+    if unit_morphism.codomain() is not algebra:
         chosen = AlgebrasWithChosenMultiplication(ring)
         if (
             algebra not in chosen
             or unit_morphism.codomain() is not algebra.multiplication_source_module()
         ):
             raise ValueError(
-                "the unit morphism must land in the algebra module or its selected multiplication source"
+                "the unit morphism must land in the algebra or in the module its multiplication was chosen on"
             )
-        _forget, equip = algebra._multiplication_transport_maps()
-        unit_morphism = equip * unit_morphism
+        unit_morphism = algebra.from_multiplication_source() * unit_morphism
     unit = unit_morphism(scalar_module(ring.one()))
     multiplication = algebra.multiplication_morphism()
     tensor = multiplication.domain()
-    is_framed = getattr(module, "is_framed", None)
-    if callable(is_framed) and is_framed():
-        labels = module.module_generating_set()
+    if algebra.is_framed_module():
+        labels = algebra.module_generating_set()
         if labels.cardinality().is_finite():
             for label in labels:
-                element = module.module_generator(label)
+                element = algebra.module_generator(label)
                 left = multiplication(tensor.pure_tensor(unit, element))
                 right = multiplication(tensor.pure_tensor(element, unit))
                 if left != element or right != element:
@@ -739,7 +677,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         def is_algebra(self) -> bool:
             return True
 
-        def is_framed(self) -> bool:
+        def is_framed_algebra(self) -> bool:
             return False
 
         def is_commutative(self):
@@ -805,7 +743,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return _own_ring(host_base)
 
         def underlying_module(self):
-            r"""Return the exact carrier under ``Alg_R -> Mod_R``."""
+            r"""This algebra under the forgetful functor ``Alg_R -> Mod_R`` of its category."""
             return Algebras(self.base_ring()).underlying_module()(self)
 
         @cached_method
@@ -821,20 +759,19 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return selected
 
             ring = self.algebra_base_ring()
-            module = self.underlying_module()
             try:
-                tensor = _algebra_tensor_square_functor(ring)(module)
+                tensor = _algebra_tensor_square_functor(ring)(self)
             except NotImplementedError as error:
                 raise TypeError(f"the multiplication morphism of {self} has no represented tensor-product realization by finitely presented {ring}-modules") from error
             return tensor.from_bilinear(
                 BilinearMap(
-                    module,
-                    module,
-                    module,
+                    self,
+                    self,
+                    self,
                     {
-                        (left, right): (module.module_generator(left) * module.module_generator(right))
-                        for left in module.module_generating_set()
-                        for right in module.module_generating_set()
+                        (left, right): (self.module_generator(left) * self.module_generator(right))
+                        for left in self.module_generating_set()
+                        for right in self.module_generating_set()
                     },
                 )
             )
@@ -864,17 +801,16 @@ class Algebras(OwnedCategoryOverBaseRing):
             of the pairs (left multiplication by \(b\), right multiplication
             by \(b\)) over that set, computed in \(R\)-modules.
             """
-            module = self.underlying_module()
             multiplication = self.multiplication_morphism()
             tensor = multiplication.domain()
-            labels = module.module_generating_set()
+            labels = self.module_generating_set()
             assert labels.cardinality().is_finite(), "the centre is computed here from a finite module generating set"
-            endomorphisms = module.module_category().Mor(module, module)
+            endomorphisms = self.module_category().Mor(self, self)
 
             def commutation_equalizer(label):
-                element = module.module_generator(label)
-                left = endomorphisms({other: multiplication(tensor.pure_tensor(module.module_generator(other), element)) for other in labels})
-                right = endomorphisms({other: multiplication(tensor.pure_tensor(element, module.module_generator(other))) for other in labels})
+                element = self.module_generator(label)
+                left = endomorphisms({other: multiplication(tensor.pure_tensor(self.module_generator(other), element)) for other in labels})
+                right = endomorphisms({other: multiplication(tensor.pure_tensor(element, self.module_generator(other))) for other in labels})
                 return Modules(self.base_ring()).equalizer(left, right)
 
             equalizers = iter(labels)
@@ -908,10 +844,9 @@ class Algebras(OwnedCategoryOverBaseRing):
             )
             refine(result, Algebras(self.base_ring()).Commutative())
             if self in Algebras(self.base_ring()).Unital():
-                ambient_unit = _algebra_element_in_module(self, module, self.one())
-                center_unit = inclusion.lift(ambient_unit)
+                center_unit = result.from_multiplication_source()(inclusion.lift(self.one()))
                 unit_morphism = _unit_morphism_from_element(
-                    center,
+                    result,
                     center_unit,
                     self.base_ring(),
                 )
@@ -920,7 +855,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                     unit_morphism,
                     Algebras(self.base_ring()).Associative().Unital(),
                 )
-            result._preamble_center_inclusion = inclusion
+            # The centre was equalized inside this algebra; the algebra built
+            # on it is a fresh module, so its inclusion is read through the
+            # identification with the module the multiplication was chosen on.
+            result._preamble_center_inclusion = inclusion * result.to_multiplication_source()
             return result
 
         def center_inclusion(self):
@@ -942,18 +880,17 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
 
             ring = self.base_ring()
-            module = self.underlying_module()
             assert ring in OwnedFields(), (
                 "algebra-ideal closure is represented here for finite-dimensional algebras over fields"
             )
-            if subobject.inclusion().codomain() is not module:
-                raise ValueError("an algebra ideal generator must be a submodule of the algebra carrier")
-            ambient_labels = module.module_generating_set()
+            if subobject.inclusion().codomain() is not self:
+                raise ValueError("an algebra ideal generator must be a submodule of the algebra")
+            ambient_labels = self.module_generating_set()
             assert ambient_labels.cardinality().is_finite(), (
                 "algebra-ideal closure requires a finite selected module framing"
             )
 
-            subobjects = Modules(ring).Subobjects(module)
+            subobjects = Modules(ring).Subobjects(self)
             current = subobject
             while True:
                 products = []
@@ -961,27 +898,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                 for ideal_label in current.module_generating_set():
                     ideal_element = inclusion(current.module_generator(ideal_label))
                     for ambient_label in ambient_labels:
-                        ambient_element = module.module_generator(ambient_label)
-                        products.append(
-                            _algebra_product_in_module(
-                                self,
-                                module,
-                                ambient_element,
-                                ideal_element,
-                            )
-                        )
-                        products.append(
-                            _algebra_product_in_module(
-                                self,
-                                module,
-                                ideal_element,
-                                ambient_element,
-                            )
-                        )
+                        ambient_element = self.module_generator(ambient_label)
+                        products.append(self.product(ambient_element, ideal_element))
+                        products.append(self.product(ideal_element, ambient_element))
 
                 if not products:
                     return current
-                enlarged = current.sum(module.subobject_on(products))
+                enlarged = current.sum(self.subobject_on(products))
                 if subobjects.leq(enlarged, current):
                     return current
                 current = enlarged
@@ -990,16 +913,15 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""Return ``A/I`` with the multiplication induced from ``A``.
 
             The supplied submodule must already be an algebra ideal.  The
-            module cokernel provides the quotient carrier and projection; the
+            module cokernel provides the quotient module and projection; the
             multiplication on quotient generators is the image of the product
             of their selected lifts.  Associative, commutative, and Lie
             identities descend through quotients and are therefore retained as
             category refinements rather than reverified coordinatewise.
             """
 
-            module = self.underlying_module()
-            if ideal.inclusion().codomain() is not module:
-                raise ValueError("an algebra quotient requires an ideal in its carrier module")
+            if ideal.inclusion().codomain() is not self:
+                raise ValueError("an algebra quotient requires an ideal in the algebra")
             projection = ideal.inclusion().cokernel_projection()
             quotient_module = projection.codomain()
             labels = quotient_module.module_generating_set()
@@ -1011,11 +933,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                     quotient_module,
                     {
                         (left, right): projection(
-                            _algebra_product_in_module(
-                                self,
-                                module,
-                                module.module_generator(left),
-                                module.module_generator(right),
+                            self.product(
+                                self.module_generator(left),
+                                self.module_generator(right),
                             )
                         )
                         for left in labels
@@ -1024,6 +944,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
             )
             quotient = Algebras(self.base_ring())(quotient_module, multiplication)
+            # The cokernel projection lands in the module cokernel; the quotient
+            # algebra is the fresh module built on it, so the projection is
+            # read through that identification.
+            projection = quotient.from_multiplication_source() * projection
             if self in Algebras(self.base_ring()).Associative():
                 refine(quotient, Algebras(self.base_ring()).Associative())
             if self in Algebras(self.base_ring()).Commutative():
@@ -1066,7 +990,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             module = multiplication.codomain()
         ring = self.base_ring()
         if module not in Modules(ring):
-            raise TypeError("an R-algebra carrier must be an R-module")
+            raise TypeError("an R-algebra is built on an R-module")
         tensor_square = _algebra_tensor_square_functor(ring)
         if multiplication.domain() is not tensor_square(module):
             raise ValueError("the multiplication must have the exact canonical tensor square of the supplied module as domain")
@@ -1223,23 +1147,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                         return eta
                     return eta.domain().Mor(center)(eta)
 
-                @cached_method
-                def one(self):
-                    selected = self.__dict__.get("_preamble_algebra_unit")
-                    if selected is not None:
-                        return self(selected)
-                    chosen_multiplications = AssociativeAlgebrasWithChosenMultiplication(
-                        self.algebra_base_ring()
-                    )
-                    if self not in chosen_multiplications:
-                        return super().one()
-                    source = self.multiplication_source_module()
-                    source_unit = self.source_algebra_unit()
-                    if source_unit is None:
-                        source_unit = source.one()
-                    _forget, equip = self._multiplication_transport_maps()
-                    return self(equip(source_unit))
-
     class Lie(CategoryWithAxiom):
         r"""Algebras whose selected bilinear multiplication satisfies the Lie identities.
 
@@ -1367,8 +1274,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             super().__init__(**rest)
             source_unit = chosen_multiplication_datum.unit()
             if source_unit is not None:
-                _forget, equip = self._multiplication_transport_maps()
-                unit = equip(source_unit)
+                unit = self.from_multiplication_source()(source_unit)
                 self._preamble_algebra_unit = unit
                 self._preamble_algebra_unit_morphism = _unit_morphism_from_element(
                     self,
@@ -1397,27 +1303,28 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             return self.chosen_multiplication_datum().unit()
 
         @cached_method
-        def _multiplication_transport_maps(self):
+        def from_multiplication_source(self):
+            r"""The identification \(M\to A\) of the module the multiplication was chosen on with this algebra.
+
+            The algebra is a fresh module on the same generating set as
+            \(M\), so the map sending each generator to its namesake is an
+            isomorphism; it is stated on labels so that an infinite framing is
+            never enumerated.
+            """
             source = self.multiplication_source_module()
-            labels = self.module_generating_set()
-            forget = self.module_category().Mor(self, source)(
-                {
-                    label: source.module_generator(label)
-                    for label in labels
-                }
-            )
-            equip = source.module_category().Mor(source, self)(
-                {
-                    label: self.module_generator(label)
-                    for label in labels
-                }
-            )
-            return forget, equip
+            return source.module_category().Mor(source, self)(self.module_generator)
+
+        @cached_method
+        def to_multiplication_source(self):
+            r"""The inverse identification \(A\to M\)."""
+            source = self.multiplication_source_module()
+            return self.module_category().Mor(self, source)(source.module_generator)
 
         @cached_method
         def _transported_multiplication_morphism(self):
             source_multiplication = self.source_multiplication()
-            forget, equip = self._multiplication_transport_maps()
+            forget = self.to_multiplication_source()
+            equip = self.from_multiplication_source()
             source_tensor = source_multiplication.domain()
             tensor_constructor = getattr(source_tensor, "_same_presentation_module", None)
             if tensor_constructor is None:
@@ -1469,7 +1376,7 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
-        def is_framed(self) -> bool:
+        def is_framed_algebra(self) -> bool:
             return True
 
         def cardinality(self):
@@ -2426,8 +2333,8 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
-        module = self.domain().underlying_module()
-        return self(module.module_category().Mor(module, module).identity())
+        algebra = self.domain()
+        return self(algebra.module_category().Mor(algebra, algebra).identity())
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"

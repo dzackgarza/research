@@ -59,7 +59,7 @@ class LieAlgebraMorphism(ModuleMorphism):
         """
         domain = self.domain()
         codomain = self.codomain()
-        assert domain.is_framed(), (
+        assert domain.is_framed_module(), (
             f"the bracket condition on a map out of {domain} is decided on a "
             "module generating set, and this one states none"
         )

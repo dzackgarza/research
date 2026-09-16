@@ -17,8 +17,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
     UnitalMultiplicativeAlgebraMorphism,
-    _algebra_element_in_module,
-    _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import (
     AugmentedAlgebras,
@@ -41,7 +39,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
-from dzack_research.preamble.refine import refine
 
 
 class GroupAlgebras(OwnedCategoryOverBaseRing):
@@ -93,11 +90,10 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                 "the represented conjugacy-class-sum basis of a group-algebra center "
                 "requires a finite group"
             )
-            module = self.underlying_module()
             class_sums = finite_ordered_set(
                 [
                     sum(
-                        module.module_generator(element)
+                        self.module_generator(element)
                         for element in {
                             g * representative * g.inverse() for g in group
                         }
@@ -105,7 +101,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                     for representative in group.conjugacy_classes_representatives()
                 ]
             )
-            return module.subobject_on(class_sums)
+            return self.subobject_on(class_sums)
 
         @cached_method
         def group_inclusion(self):
@@ -119,36 +115,26 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
         def augmentation(self):
             r"""The algebra morphism \(\varepsilon\colon R[G]\to R\), \(g\mapsto 1\)."""
             ring = self.base_ring()
-            target_module = Algebras(ring).underlying_module()(ring)
-            source_module = self.underlying_module()
-            counit = source_module.module_category().Mor(source_module, target_module)(
-                {
-                    label: target_module(ring.one())
-                    for label in self.module_generating_set()
-                }
+            scalars = Algebras(ring).underlying_module()(ring)
+            counit = self.module_category().Mor(self, scalars)(
+                lambda label: scalars(ring.one())
             )
-            return Algebras(self.base_ring()).Associative().Unital().Mor(self, ring)(counit)
+            return Algebras(ring).Associative().Unital().Mor(self, ring)(counit)
 
         @cached_method
         def regular_representation(self):
             r"""``R[G]`` as a module over itself by left multiplication.
 
-            The algebra object and its coefficient-module carrier are distinct
-            objects: ``Alg_R -> Mod_R`` is the represented forgetful functor,
-            not a category-inclusion edge.  Linearize left multiplication on
-            that exact carrier, then let ``Modules(R[G])`` equip the resulting
-            group action with the group-algebra scalar action.
+            The group acts on the algebra, an ``R``-module, by left
+            multiplication through the group inclusion; ``Modules(R[G])``
+            equips that action with the group-algebra scalar action.
             """
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-            carrier = self.underlying_module()
             inclusion = self.group_inclusion()
 
             def left_action(group_element, element):
-                product = inclusion(group_element) * self(element)
-                return _algebra_element_in_module(self, carrier, product)
+                return inclusion(group_element) * self(element)
 
-            return Modules(self)(carrier, left_action)
+            return Modules(self)(self, left_action)
 
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).
@@ -187,25 +173,18 @@ def _group_algebra(base_ring, group):
             lambda left, right: module.module_generator(left * right),
         )
     )
-    unit_element = module.module_generator(group.one())
-    unit = _unit_morphism_from_element(module, unit_element, ring)
-
-    # The group law already decides the multiplication before the object is
-    # refined into the ring category: R[G] is commutative exactly when R and
-    # G are commutative.  Retain that defining datum before the unital
-    # refinement reaches OwnedRings; its construction hook legitimately asks
-    # the algebra for commutativity.  No finite enumeration of G is involved.
-    algebra = Algebras(ring)(module, multiplication)
-    algebra._preamble_multiplication_morphism = multiplication
-    algebra._preamble_algebra_is_commutative = bool(
-        ring.is_commutative() and group.is_abelian()
+    # The group law decides the multiplication: R[G] is commutative exactly
+    # when R and G are, and the identity of G is the unit.  Both are stated as
+    # construction data, so no finite enumeration of G is involved and the
+    # ring level can ask for commutativity while the object is being built.
+    return module.algebra_from_multiplication(
+        multiplication,
+        base_ring=ring,
+        unit=module.module_generator(group.one()),
+        commutative=bool(ring.is_commutative() and group.is_abelian()),
+        extra_categories=(GroupAlgebras(ring),),
+        extra_construction_data={"group": group},
     )
-    algebra = Algebras(ring).Associative().Unital()(algebra, unit)
-    algebra._preamble_group = group
-    refine(algebra, GroupAlgebras(ring))
-    if algebra.is_commutative():
-        refine(algebra, Algebras(ring).Associative().Unital().Commutative())
-    return algebra
 
 
 class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
@@ -226,10 +205,8 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
         if group_morphism.codomain() is not target.group():
             raise ValueError("the group map has the wrong target group algebra")
 
-        source_module = source.underlying_module()
-        target_module = target.underlying_module()
-        linear = source_module.module_category().Mor(source_module, target_module)(
-            lambda label: target_module.module_generator(group_morphism(label))
+        linear = source.module_category().Mor(source, target)(
+            lambda label: target.module_generator(group_morphism(label))
         )
         source_multiplication = source.multiplication_morphism()
         target_multiplication = target.multiplication_morphism()
@@ -240,8 +217,8 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
             target=target_multiplication.domain(),
         )
 
-        source_identity = source_module.module_generator(source.group().one())
-        target_identity = target_module.module_generator(target.group().one())
+        source_identity = source.module_generator(source.group().one())
+        target_identity = target.module_generator(target.group().one())
         if linear(source_identity) != target_identity:
             raise ValueError("the induced group-algebra map does not preserve the unit")
 

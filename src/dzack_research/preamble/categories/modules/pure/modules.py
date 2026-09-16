@@ -1135,7 +1135,7 @@ class Modules(OwnedCategoryOverBaseRing):
         def is_finitely_generated(self) -> bool:
             return False
 
-        def is_framed(self) -> bool:
+        def is_framed_module(self) -> bool:
             return False
 
         def is_finite(self):
@@ -2733,7 +2733,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
                 print(f"Defining {', '.join(names)}")
             scope.update(zip(names, generators, strict=True))
 
-        def is_framed(self) -> bool:
+        def is_framed_module(self) -> bool:
             return True
 
 
@@ -3327,7 +3327,7 @@ def _represented_finite_presentation(module) -> bool:
 def _represented_framed_free(module) -> bool:
     r"""Return whether ``module`` carries the framed free construction.
 
-    Membership, not ``is_framed() and is_free()``.  Those two are true of
+    Membership, not ``is_framed_module() and is_free()``.  Those two are true of
     every module that happens to be framed and free -- the zero presented
     module is one, and it is the discriminant module of a unimodular lattice
     -- while the backend they were standing in for is the one a module gets

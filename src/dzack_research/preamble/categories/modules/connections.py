@@ -592,7 +592,7 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
     def __init__(self, parent, connection_morphism, underlying) -> None:
         self._connection_morphism = connection_morphism
         source = parent.domain()
-        if source.is_framed():
+        if source.is_framed_module():
             super().__init__(
                 parent,
                 lambda label: underlying(source.module_generator(label)),

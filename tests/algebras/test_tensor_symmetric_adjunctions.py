@@ -199,7 +199,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
     # A genuinely torsion linear map M -> U(A) extends uniquely to F(M) -> A.
     linear = source.module_category().Mor(source, target_underlying)(
-        {0: target_underlying.from_realization(2 * target_generator)}
+        {0: target_underlying(2 * target_generator)}
     )
     extension = adjunction.hom_set_isomorphism_inverse(linear, target_algebra)
     recovered = adjunction.hom_set_isomorphism_forward(extension, source)

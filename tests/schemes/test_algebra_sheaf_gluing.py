@@ -54,7 +54,7 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
     assert sections in Algebras(algebra)
     assert sections in Algebras(algebra).Associative().Unital().Commutative()
     assert sections.algebra_base_ring() is algebra
-    assert not sections.is_framed()
+    assert not sections.is_framed_module()
     assert sheaf.global_sections() is sections
     assert sheaf.underlying_module_sheaf() is datum.underlying_module_datum().sheaf()
     assert sheaf.sections_on_chart(0) is local_algebras[0]

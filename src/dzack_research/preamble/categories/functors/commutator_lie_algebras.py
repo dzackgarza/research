@@ -33,29 +33,28 @@ class CommutatorLieAlgebraFunctor(Functor):
 
     def _apply_object(self, algebra):
         r"""Equip the same underlying module with the changed product ``xy-yx``."""
-        module = algebra.underlying_module()
         multiplication = algebra.multiplication_morphism()
         tensor = multiplication.domain()
         commutator = tensor.from_bilinear(
             BilinearMap(
-                module,
-                module,
-                module,
+                algebra,
+                algebra,
+                algebra,
                 lambda left, right: multiplication(
                     tensor.pure_tensor(
-                        module.module_generator(left),
-                        module.module_generator(right),
+                        algebra.module_generator(left),
+                        algebra.module_generator(right),
                     )
                 )
                 - multiplication(
                     tensor.pure_tensor(
-                        module.module_generator(right),
-                        module.module_generator(left),
+                        algebra.module_generator(right),
+                        algebra.module_generator(left),
                     )
                 ),
             )
         )
-        result = Algebras(self.base_ring()).Lie()(module, commutator)
+        result = Algebras(self.base_ring()).Lie()(algebra, commutator)
         refine(result, CommutatorLieAlgebras(self.base_ring()))
         return result
 
@@ -74,11 +73,7 @@ class CommutatorLieAlgebraFunctor(Functor):
         cokernel -- is the module level's, and
         the algebra category's ``underlying_module()`` functor is where that map is asked for.
         """
-        underlying = getattr(morphism, "underlying_morphism", None)
-        if callable(underlying):
-            underlying = underlying()
-        else:
-            underlying = morphism
+        underlying = Algebras(self.base_ring()).underlying_module()(morphism)
         return Algebras(self.base_ring()).Lie().Mor(
             self(morphism.domain()),
             self(morphism.codomain()),

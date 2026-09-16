@@ -1521,7 +1521,7 @@ class FiniteAtlasInvertibleSheafRefinement(SageObject):
 
 
 def _finite_framing(module):
-    if not module.is_framed():
+    if not module.is_framed_module():
         raise TypeError("affine module descent currently requires finitely framed local modules")
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite():

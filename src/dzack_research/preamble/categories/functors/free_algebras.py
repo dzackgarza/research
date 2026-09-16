@@ -20,9 +20,6 @@ from dzack_research.preamble.categories.algebras.power_algebras import (
     _divided_power_algebra_of,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.graded_direct_sums import (
-    GradedDirectSumModule,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -166,11 +163,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
         free_algebra = self.left_adjoint()(module)
         underlying = self.right_adjoint()(free_algebra)
         return module.module_category().Mor(module, underlying)(
-            lambda label: (
-                underlying.from_realization(free_algebra.algebra_generator(label))
-                if isinstance(underlying, GradedDirectSumModule)
-                else free_algebra.algebra_generator(label)
-            )
+            free_algebra.algebra_generator
         )
 
     def counit(self, algebra):
@@ -179,14 +172,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
         free_algebra = self.left_adjoint()(module)
         homset = free_algebra.Mor(algebra)
 
-        def image(label):
-            return (
-                module.realize_module_generator(label)
-                if isinstance(module, GradedDirectSumModule)
-                else module.module_generator(label)
-            )
-
-        return homset._from_degree_preserving_generator_map(image)
+        return homset._from_degree_preserving_generator_map(module.module_generator)
 
 
     def _repr_(self):

@@ -57,12 +57,11 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert polynomial_eta.codomain() is polynomials
 
 
-def test_forgetful_functor_wraps_an_unframed_ring_with_its_scalar_base() -> None:
-    underlying = Algebras(ZZ).underlying_module()(ZZ)
+def test_forgetful_functor_sends_a_ring_to_itself_as_a_module() -> None:
+    underlying = Algebras(ZZ).underlying_module()
 
-    assert underlying.base_ring() is ZZ
-    assert underlying.realized_object() is ZZ
-    assert underlying(ZZ(2)).underlying_element() == ZZ(2)
+    assert underlying(ZZ) is ZZ
+    assert ZZ in Modules(ZZ)
 
 
 def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:

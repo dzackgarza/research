@@ -123,7 +123,7 @@ def test_nonidentity_map_uses_its_forced_tensor_square() -> None:
         structures.homomorphism(split, dual, identity)
 
 
-def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
+def test_general_algebra_node_builds_one_module_per_product() -> None:
     module, dual_numbers, split_idempotent = _two_products_on_one_module()
     algebras = Algebras(QQ)
     dual = algebras(module, dual_numbers)
@@ -133,36 +133,44 @@ def test_general_algebra_node_uses_exact_carriers_and_common_hom() -> None:
     assert dual is not split
     assert dual in algebras
     assert split in algebras
+    assert dual in Modules(QQ)
     assert dual not in algebras.Associative().Unital()
     assert split not in algebras.Associative().Unital()
-    assert dual.underlying_module() is module
-    assert split.underlying_module() is module
-    assert dual.multiplication_morphism() is dual_numbers
-    assert split.multiplication_morphism() is split_idempotent
-    assert forget(dual) is module
-    assert forget(split) is module
-    x = module.module_generator("x")
-    assert dual.scalar_multiple(QQ(2), x).underlying_element() == module.scalar_multiple(QQ(2), x)
-    assert dual.product(x, x).underlying_element() == module.zero()
-    assert split.product(x, x).underlying_element() == x
+    assert forget(dual) is dual
+    assert dual.underlying_module() is dual
+    assert dual.multiplication_source_module() is module
+    assert dual.source_multiplication() is dual_numbers
+    assert split.source_multiplication() is split_idempotent
 
-    one = module.module_generator("1")
-    projection = module.module_category().Mor(module, module)(
-        {"1": one, "x": module.zero()}
+    one = dual.module_generator("1")
+    x = dual.module_generator("x")
+    assert dual.scalar_multiple(QQ(2), x) == x + x
+    assert x * x == dual.zero()
+    assert one * x == x
+    y = split.module_generator("x")
+    assert y * y == y
+    assert dual.from_multiplication_source()(module.module_generator("x")) == x
+    assert dual.to_multiplication_source()(x) == module.module_generator("x")
+    multiplication = dual.multiplication_morphism()
+    assert multiplication.codomain() is dual
+    assert multiplication(multiplication.domain().pure_tensor(x, x)) == dual.zero()
+
+    projection = split.module_category().Mor(split, dual)(
+        {"1": one, "x": dual.zero()}
     )
     structured_projection = algebras.Mor(split, dual)(projection)
 
-    assert structured_projection.right() is projection
+    assert structured_projection.underlying_morphism() is projection
     assert forget(structured_projection) is projection
-    assert (
-        structured_projection(split(module.module_generator("x"))).underlying_element()
-        == module.zero()
+    assert structured_projection(split.module_generator("x")) == dual.zero()
+    assert structured_projection(split.module_generator("1")) == one
+    assert projection * split.multiplication_morphism() == (
+        multiplication * structured_projection.tensor_square_morphism()
     )
-    assert projection * split_idempotent == dual_numbers * structured_projection.left()
 
-    identity = module.module_category().Mor(module, module).identity()
-    with pytest.raises(ValueError, match="does not commute"):
-        algebras.Mor(split, dual)(identity)
+    renaming = split.module_category().Mor(split, dual)({"1": one, "x": x})
+    with pytest.raises(ValueError):
+        algebras.Mor(split, dual)(renaming)
 
 
 def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
@@ -184,18 +192,22 @@ def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
         )
     )
     algebra = Algebras(QQ)(module, multiplication)
+    a = algebra.module_generator("a")
+    b = algebra.module_generator("b")
 
-    assert multiplication(tensor_square.pure_tensor(b, a)) == a
-    assert multiplication(tensor_square.pure_tensor(a, b)) == module.zero()
-    assert algebra.underlying_module() is module
-    assert algebra.multiplication_morphism() is multiplication
+    assert b * a == a
+    assert a * b == algebra.zero()
+    assert (a * a) * a == a
+    assert a * (a * a) == algebra.zero()
+    assert algebra.underlying_module() is algebra
+    assert algebra.source_multiplication() is multiplication
     assert algebra not in Algebras(QQ).Associative().Unital()
 
 
-def test_algebra_axiom_placement_and_module_forgetting_are_distinct() -> None:
+def test_algebra_axioms_refine_the_algebra_node_inside_modules() -> None:
     algebras = Algebras(QQ)
 
-    assert not algebras.is_subcategory(Modules(QQ))
+    assert algebras.is_subcategory(Modules(QQ))
     assert Algebras(QQ).Associative().is_subcategory(algebras)
     assert algebras.Associative().Unital().is_subcategory(algebras.Unital())
     assert Algebras(QQ).Associative().Unital().Commutative().is_subcategory(
@@ -208,21 +220,25 @@ def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
     module, dual_numbers, _split_idempotent = _two_products_on_one_module()
     one = module.module_generator("1")
     scalar_module = Algebras(QQ).underlying_module()(QQ)
-    assert scalar_module in Modules(QQ)
+    assert scalar_module is QQ
     eta = _unit_morphism_from_element(module, one, QQ)
     unital = Algebras(QQ).Unital()(module, dual_numbers, eta)
 
-    assert unital.underlying_module() is module
-    assert unital.unit_morphism() is eta
-    assert unital.one().underlying_element() == one
-    x = unital(module.module_generator("x"))
+    assert unital.underlying_module() is unital
+    assert unital.unit_morphism().codomain() is unital
+    assert unital.unit_morphism()(scalar_module(QQ(3))) == 3 * unital.one()
+    assert unital.one() == unital.module_generator("1")
+    x = unital.module_generator("x")
     assert unital.one() * x == x
     assert x * unital.one() == x
 
-    zero = module.module_category().Mor(module, module)(
-        {"1": module.zero(), "x": module.zero()}
+    zero = unital.module_category().Mor(unital, unital)(
+        {"1": unital.zero(), "x": unital.zero()}
     )
     general = Algebras(QQ)(module, dual_numbers)
-    assert Algebras(QQ).Mor(general, general)(zero).right() is zero
-    with pytest.raises(ValueError, match="does not preserve the unit"):
+    general_zero = general.module_category().Mor(general, general)(
+        {"1": general.zero(), "x": general.zero()}
+    )
+    assert Algebras(QQ).Mor(general, general)(general_zero).underlying_morphism() is general_zero
+    with pytest.raises(ValueError):
         Algebras(QQ).Unital().Mor(unital, unital)(zero)
