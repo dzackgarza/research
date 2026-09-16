@@ -54,3 +54,9 @@ writing/coble/**/*.html
 # `scripts/docs_figures.py`. Authored and rendered there, collected here at build
 # time like the bibliography and the MathJax macros.
 writing/.book/rendered/
+
+# Agent scratch. A turn's intermediate captures, plan dumps and validation logs
+# live here and are deleted when the turn that made them is finished; nothing
+# under these paths is an input to a later session.
+.tmp/
+.tmp-*
