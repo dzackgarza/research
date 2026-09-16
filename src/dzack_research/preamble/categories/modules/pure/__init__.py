@@ -8,7 +8,7 @@ _EXPORTS = {
     "VectorSpaces": ("dzack_research.preamble.categories.modules.pure.modules", "VectorSpaces"),
     "FreeModules": ("dzack_research.preamble.categories.modules.pure.modules", "FreeModules"),
     "ProjectiveModules": ("dzack_research.preamble.categories.modules.pure.modules", "ProjectiveModules"),
-    "TorsionModules": ("dzack_research.preamble.categories.modules.pure.torsion_modules", "TorsionModules"),
+    "TorsionModules": ("dzack_research.preamble.categories.modules.pure.modules", "TorsionModules"),
 }
 
 __all__ = [

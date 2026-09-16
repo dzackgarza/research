@@ -6,8 +6,14 @@ from dataclasses import dataclass
 
 from sage.categories.action import Action
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
+from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+from sage.categories.groups import Groups as SageGroups
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -55,7 +61,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    _row_normal_form,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSets,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -65,7 +77,12 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import realize_owned_category, refine
+
+for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
+    if _module_axiom not in all_axioms:
+        all_axioms.add(_module_axiom)
 
 
 class _ModuleScalarAction(Action):
@@ -295,6 +312,28 @@ class Modules(OwnedCategoryOverBaseRing):
 
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
+
+        # Properties of the objects, each an axiom on this category.
+
+        def FinitelyGenerated(self):
+            r"""Return this category with the axiom that its objects are finitely generated."""
+            return self._with_axiom("FinitelyGenerated")
+
+        def FinitelyPresented(self):
+            r"""Return this category with the axiom that its objects are finitely presented."""
+            return self._with_axiom("FinitelyPresented")
+
+        def Free(self):
+            r"""Return this category with the axiom that its objects are free."""
+            return self._with_axiom("Free")
+
+        def Projective(self):
+            r"""Return this category with the axiom that its objects are projective."""
+            return self._with_axiom("Projective")
+
+        def Torsion(self):
+            r"""Return this category with the axiom that its objects are torsion."""
+            return self._with_axiom("Torsion")
 
         # Functors out of ``Mod_R``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
@@ -1398,6 +1437,392 @@ class Modules(OwnedCategoryOverBaseRing):
 
         localization_at_prime = localize_at_prime
 
+    class FinitelyGenerated(CategoryWithAxiom):
+        r"""Modules admitting a finite generating set."""
+
+        def an_object(self):
+            r"""The free module of rank one."""
+            return self.base_ring().free_module(1)
+
+        class ParentMethods:
+            def is_finitely_generated(self) -> bool:
+                return True
+
+            @cached_method
+            def fiber(self, point):
+                r"""Return ``M(p)=M tensor_R kappa(p)`` at ``p in Spec(R)``."""
+                ring = self.base_ring()
+                if point.parent().ring() is not ring:
+                    raise ValueError("a module fiber requires a point of Spec(base_ring)")
+                localized = self.localize_at_prime(point)
+                fiber = localized.base_change(point.local_ring().residue_map())
+                residue = point.residue_field()
+                if fiber not in VectorSpaces(residue):
+                    raise TypeError("base change to a residue field must construct a vector space")
+                fiber._preamble_fiber_localization = localized
+                return fiber
+
+            def fiber_dimension(self, point):
+                r"""Return ``dim_{kappa(p)} M(p)`` when the finite fiber is represented."""
+                return self.fiber(point).dimension()
+
+            def rank_at(self, point):
+                r"""Return the local fiber rank ``dim_{kappa(p)} M(p)``."""
+                return self.fiber_dimension(point)
+
+            def rank_function(self):
+                r"""Return ``r_M : Spec(R) -> NN``, ``p |-> dim_{kappa(p)} M(p)``.
+
+                A module that is not locally free has no rank; it has a rank at
+                each point, and those values vary.  So the rank of a finitely
+                generated module is a function on the spectrum, and this returns
+                that function as a morphism of sets: it composes with maps of
+                spectra, restricts to a subset, and is the object whose fibres are
+                the rank strata, rather than a number a caller recomputes at every
+                point.
+
+                This is a different invariant from the generic rank, which is one
+                value of it, and from the local free rank of a finite projective
+                module, which is this function where it is locally constant.
+                """
+                return Sets().Mor(self.base_ring().spectrum(), NN)(self.rank_at)
+
+            def local_number_of_generators(self, point):
+                r"""Return the minimal number of generators of ``M_p`` by Nakayama."""
+                return self.localize_at_prime(point).minimal_number_of_generators()
+
+            def local_minimal_generators(self, point):
+                r"""Return a selected minimal generating set of ``M_p`` when represented."""
+                return self.localize_at_prime(point).minimal_module_generators()
+
+            def residue_module(self):
+                r"""Return ``M/mM = M tensor_R k`` for a represented local base ring."""
+
+                ring = self.base_ring()
+                if ring not in LocalRings():
+                    raise TypeError("the residue module is defined here for modules over a local ring")
+                residue = ring.residue_field()
+                module = self.base_change(ring.residue_map())
+                if module not in VectorSpaces(residue):
+                    raise TypeError("base change to a residue field must construct a vector space")
+                return module
+
+            def minimal_number_of_generators(self):
+                r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
+
+                ring = self.base_ring()
+                if ring not in LocalRings():
+                    raise TypeError("minimal generator counts via Nakayama require a represented local base ring")
+                return self.residue_module().dimension()
+
+            def generic_rank(self):
+                r"""Return ``dim_K(M tensor_R K)`` for an integral-domain base ``R``."""
+
+                ring = self.base_ring()
+                if ring not in IntegralDomains():
+                    raise TypeError("generic rank is defined here over an integral domain")
+                return self.fiber_dimension(ring.spectrum().generic_point())
+
+            def is_torsion(self) -> bool:
+                r"""Return whether ``K tensor_R M = 0`` over an integral domain.
+
+                The generic fibre is a vector space over ``K``, so it vanishes
+                exactly when its dimension does.  A free module of positive rank is
+                therefore not torsion, whatever its relations look like.
+                """
+                return self.generic_rank() == 0
+
+    class FinitelyPresented(CategoryWithAxiom):
+        r"""Modules admitting a finite presentation."""
+
+        def an_object(self):
+            r"""The free module of rank one, presented by no relations."""
+            return self.base_ring().free_module(1)
+
+        def extra_super_categories(self):
+            return [Modules(self.base_ring()).FinitelyGenerated()]
+
+        def biproduct_bifunctor(self):
+            r"""Return the biproduct bifunctor on finitely presented modules."""
+            from dzack_research.preamble.categories.functors.linear_constructions import (
+                _biproduct_bifunctor,
+            )
+
+            return _biproduct_bifunctor(self.base_ring())
+
+        def cokernel_arrow_functor(self):
+            r"""Return the cokernel functor on this module arrow category."""
+            from dzack_research.preamble.categories.functors.linear_constructions import (
+                _cokernel_arrow_functor,
+            )
+
+            return _cokernel_arrow_functor(self.base_ring())
+
+        class ParentMethods:
+            def is_finitely_presented(self) -> bool:
+                return True
+
+            def tor(self, other, degree=0):
+                r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
+                from dzack_research.preamble.categories.modules.derived_functors import _tor
+
+                return _tor(self, other, degree=degree)
+
+            def ext(self, other, degree=0):
+                r"""Return ``Ext^degree(self, other)`` from the selected free resolution."""
+                from dzack_research.preamble.categories.modules.derived_functors import _ext
+
+                return _ext(self, other, degree=degree)
+
+            def projective_dimension(self):
+                r"""Return the projective dimension in the regimes where it is decided exactly.
+
+                A projective module has dimension zero.  Over a principal ideal
+                domain every submodule of a free module is free, so every finitely
+                presented module has projective dimension at most one; a
+                nonprojective one therefore has dimension exactly one.  No finite
+                bound is inferred over a more general ring.
+                """
+                if self.is_projective():
+                    return 0
+                if self.base_ring() in PrincipalIdealDomains():
+                    return 1
+                raise NotImplementedError(
+                    "projective dimension beyond the projective/PID regimes requires a represented finite resolution bound"
+                )
+
+        class Torsion(CategoryWithAxiom):
+            r"""Finitely presented torsion modules over a PID."""
+
+            def an_object(self):
+                r"""The discriminant group of U."""
+                from dzack_research.preamble.categories.lattices import Lattices
+
+                return Lattices(self.base_ring())("U").discriminant_group()
+
+            def _call_(self, presentation):
+                module = presentation.cokernel()
+                if module.base_ring() is not self.base_ring():
+                    raise ValueError("a torsion presentation belongs to its coefficient ring")
+                return _refine_finitely_presented_torsion_module(module)
+
+            class ParentMethods:
+                def is_torsion(self) -> bool:
+                    return True
+
+                def invariants(self):
+                    r"""Return the invariant factors of this finite presented torsion module."""
+                    return self.invariant_factors()
+
+                @cached_method
+                def elements(self):
+                    r"""Return all elements through the private finite Smith workspace."""
+
+                    assert _engine_ring(self.base_ring()) is SageZZ, (
+                        "finite torsion enumeration is represented here in the ZZ Smith specialization"
+                    )
+                    engine = self._smith_engine()
+                    assert engine is not None, (
+                        "finite torsion enumeration requires the represented Smith workspace"
+                    )
+                    positions = Sets.Δ[int(engine.cardinality()) - 1]
+                    return FiniteOrderedSets().from_indexed(
+                        positions,
+                        lambda position: self._from_smith_engine_element(
+                            engine[int(position)]
+                        ),
+                        name="Finite torsion elements",
+                    )
+
+                def __iter__(self):
+                    return iter(self.elements())
+
+            def direct_sum_of_cyclics(self, orders):
+                r"""Return ``\bigoplus_i R/(a_i)`` for the selected nonzero scalars.
+
+                Over ``ZZ`` the ``a_i`` are the usual cyclic-group orders.  Over a
+                general PID the same diagonal presentation is the invariant-factor
+                construction; unit entries contribute zero summands, as they should.
+                A zero entry would contribute a free copy of ``R`` and hence would not
+                define an object of the torsion category.
+                """
+                ring = self.base_ring()
+                assert ring in PrincipalIdealDomains(), (
+                    "direct sums of cyclic torsion modules require a represented PID"
+                )
+                orders = tuple(ring(order) for order in orders)
+                if any(order == ring.zero() for order in orders):
+                    raise ValueError("a cyclic torsion summand requires a nonzero relation scalar")
+                orders = tuple(order for order in orders if not order.is_unit())
+                size = len(orders)
+
+                relations = ring.matrix_space(size, size).from_rows(
+                    tuple(
+                        tuple(
+                            order if row == column else ring.zero()
+                            for column in range(size)
+                        )
+                        for row, order in enumerate(orders)
+                    )
+                )
+                return _torsion_module_presented_by_matrix(relations, base_ring=ring)
+
+            def from_abelian_group(self, group):
+                r"""Return a finite abelian group as a torsion ``ZZ``-module presentation.
+
+                The selected group generators remain the module-generator labels.  In
+                particular a represented ``C_2 x C_3`` remains a two-generator object;
+                it is not silently replaced by an isomorphic one-generator ``C_6``.
+                Relations are the complete kernel of the map from the free abelian
+                group on those selected generators, found inside the finite box cut out
+                by their individual orders and reduced to Hermite row normal form.
+                """
+                assert _engine_ring(self.base_ring()) is SageZZ, (
+                    "finite abelian groups are represented here as ZZ-torsion modules"
+                )
+                if not group.is_finite():
+                    raise ValueError("a torsion-module crossing requires a finite group")
+                additive = group.category().is_subcategory(CommutativeAdditiveGroups())
+                if not additive:
+                    commutative = group.category().is_subcategory(SageGroups().Commutative())
+                    if not commutative and not bool(group.is_abelian()):
+                        raise ValueError("a ZZ-module crossing requires an abelian group")
+
+                generators = tuple(group.group_generators())
+                ring = self.base_ring()
+                if not generators:
+                    return _torsion_module_presented_by_matrix(
+                        engine_matrix(SageZZ, 0, 0),
+                        finite_ordered_set(()),
+                        base_ring=ring,
+                    )
+                orders = tuple(int(generator.order()) for generator in generators)
+                search_size = prod(orders)
+                assert search_size <= 10**6, (
+                    "exact relation enumeration uses the selected generator-order box only up to size 10^6; "
+                    "larger groups require a represented finite presentation"
+                )
+
+                if additive:
+                    identity = group.zero()
+
+                    def combine(exponents):
+                        return sum(
+                            (exponent * generator for exponent, generator in zip(exponents, generators, strict=True)),
+                            identity,
+                        )
+                else:
+                    identity = group.one()
+
+                    def combine(exponents):
+                        return prod(
+                            (generator**exponent for exponent, generator in zip(exponents, generators, strict=True)),
+                            identity,
+                        )
+
+                relation_rows = [
+                    exponents
+                    for exponents in itertools.product(*(range(order) for order in orders))
+                    if combine(exponents) == identity
+                ]
+                relation_rows.extend(
+                    tuple(order if row == column else 0 for column in range(len(orders)))
+                    for row, order in enumerate(orders)
+                )
+                relations = engine_matrix(SageZZ, relation_rows)
+                reduced = _row_normal_form(relations, include_zero_rows=True)
+                full_rank_rows = reduced.matrix_from_rows(tuple(range(len(generators))))
+                return _torsion_module_presented_by_matrix(
+                    full_rank_rows,
+                    finite_ordered_set(generators),
+                    base_ring=ring,
+                )
+
+    class Free(CategoryWithAxiom):
+        r"""Modules admitting a basis."""
+
+        def an_object(self):
+            r"""The free module of rank one."""
+            return self.base_ring().free_module(1)
+
+        def extra_super_categories(self):
+            return [Modules(self.base_ring()).Projective()]
+
+        class ParentMethods:
+            def is_free(self) -> bool:
+                return True
+
+    class Projective(CategoryWithAxiom):
+        r"""Direct summands of free modules."""
+
+        _certifying_predicate = "is_projective"
+
+        def an_object(self):
+            r"""The free module of rank one, which is projective."""
+            return self.base_ring().free_module(1)
+
+        class ParentMethods:
+            def is_projective(self) -> bool:
+                return True
+
+            def projective_rank(self, point):
+                r"""Return the local free rank of a finite projective module at ``point``."""
+                if self not in Modules(self.base_ring()).FinitelyGenerated():
+                    raise TypeError("projective_rank currently requires a finite projective module")
+                return self.fiber_dimension(point)
+
+            def local_free_trivialization(self, point):
+                r"""Return the isomorphism ``R_p^r -> M_p`` at a point of the spectrum.
+
+                By Nakayama a family whose images span the fibre ``M(p)`` generates
+                ``M_p``, and a projective module is free there, so a family of that
+                size generating a free module of that rank is a basis.  The
+                residue field already selects such a family among the chosen
+                generators, so the trivialization is the map carrying the standard
+                basis to it, and it is an isomorphism rather than merely a
+                surjection because the ranks agree.
+                """
+
+
+                localized = self.localize_at_prime(point)
+                labels = localized.residue_module().basis_generator_labels()
+                free = localized.base_ring().free_module(labels)
+                return free.module_category().Mor(free, localized)(
+                    lambda label: localized.module_generator(label)
+                )
+
+    class Torsion(CategoryWithAxiom):
+        r"""Modules whose generic fibre vanishes."""
+
+        _certifying_predicate = "is_torsion"
+
+        def an_object(self):
+            r"""The discriminant group of U, which is torsion."""
+            from dzack_research.preamble.categories.lattices import Lattices
+
+            return Lattices(self.base_ring())("U").discriminant_group()
+
+        class ParentMethods:
+            def is_torsion(self) -> bool:
+                return True
+
+
+FinitelyGeneratedModules = Modules.FinitelyGenerated
+FinitelyPresentedModules = Modules.FinitelyPresented
+FinitelyPresentedTorsionModules = Modules.FinitelyPresented.Torsion
+FreeModules = Modules.Free
+ProjectiveModules = Modules.Projective
+TorsionModules = Modules.Torsion
+
+
+def FinitelyGeneratedFreeModules(base_ring):
+    r"""``FramedFreeModules(R).FinitelyGenerated()``, under the name the session catalogue uses."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+
+    return FramedFreeModules(base_ring).FinitelyGenerated()
+
 
 class LinearHomModules(OwnedCategoryOverBaseRing):
     r"""Represented Hom parents closed under pointwise ``R``-linear operations."""
@@ -1641,190 +2066,6 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
             return represented
 
 
-class FreeModules(OwnedCategoryOverBaseRing):
-    r"""Modules admitting a basis."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "free modules"
-
-    def an_object(self):
-        r"""The free module of rank one."""
-        return self.base_ring().free_module(1)
-
-    def super_categories(self):
-        return [ProjectiveModules(self.base_ring())]
-
-    class ParentMethods:
-        def is_free(self) -> bool:
-            return True
-
-
-class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely generated modules"
-
-    def an_object(self):
-        r"""The free module of rank one."""
-        return self.base_ring().free_module(1)
-
-    def super_categories(self):
-        return [Modules(self.base_ring())]
-
-    class ParentMethods:
-        def is_finitely_generated(self) -> bool:
-            return True
-
-        @cached_method
-        def fiber(self, point):
-            r"""Return ``M(p)=M tensor_R kappa(p)`` at ``p in Spec(R)``."""
-            ring = self.base_ring()
-            if point.parent().ring() is not ring:
-                raise ValueError("a module fiber requires a point of Spec(base_ring)")
-            localized = self.localize_at_prime(point)
-            fiber = localized.base_change(point.local_ring().residue_map())
-            residue = point.residue_field()
-            if fiber not in VectorSpaces(residue):
-                raise TypeError("base change to a residue field must construct a vector space")
-            fiber._preamble_fiber_localization = localized
-            return fiber
-
-        def fiber_dimension(self, point):
-            r"""Return ``dim_{kappa(p)} M(p)`` when the finite fiber is represented."""
-            return self.fiber(point).dimension()
-
-        def rank_at(self, point):
-            r"""Return the local fiber rank ``dim_{kappa(p)} M(p)``."""
-            return self.fiber_dimension(point)
-
-        def rank_function(self):
-            r"""Return ``r_M : Spec(R) -> NN``, ``p |-> dim_{kappa(p)} M(p)``.
-
-            A module that is not locally free has no rank; it has a rank at
-            each point, and those values vary.  So the rank of a finitely
-            generated module is a function on the spectrum, and this returns
-            that function as a morphism of sets: it composes with maps of
-            spectra, restricts to a subset, and is the object whose fibres are
-            the rank strata, rather than a number a caller recomputes at every
-            point.
-
-            This is a different invariant from the generic rank, which is one
-            value of it, and from the local free rank of a finite projective
-            module, which is this function where it is locally constant.
-            """
-            return Sets().Mor(self.base_ring().spectrum(), NN)(self.rank_at)
-
-        def local_number_of_generators(self, point):
-            r"""Return the minimal number of generators of ``M_p`` by Nakayama."""
-            return self.localize_at_prime(point).minimal_number_of_generators()
-
-        def local_minimal_generators(self, point):
-            r"""Return a selected minimal generating set of ``M_p`` when represented."""
-            return self.localize_at_prime(point).minimal_module_generators()
-
-        def residue_module(self):
-            r"""Return ``M/mM = M tensor_R k`` for a represented local base ring."""
-
-            ring = self.base_ring()
-            if ring not in LocalRings():
-                raise TypeError("the residue module is defined here for modules over a local ring")
-            residue = ring.residue_field()
-            module = self.base_change(ring.residue_map())
-            if module not in VectorSpaces(residue):
-                raise TypeError("base change to a residue field must construct a vector space")
-            return module
-
-        def minimal_number_of_generators(self):
-            r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
-
-            ring = self.base_ring()
-            if ring not in LocalRings():
-                raise TypeError("minimal generator counts via Nakayama require a represented local base ring")
-            return self.residue_module().dimension()
-
-        def generic_rank(self):
-            r"""Return ``dim_K(M tensor_R K)`` for an integral-domain base ``R``."""
-
-            ring = self.base_ring()
-            if ring not in IntegralDomains():
-                raise TypeError("generic rank is defined here over an integral domain")
-            return self.fiber_dimension(ring.spectrum().generic_point())
-
-        def is_torsion(self) -> bool:
-            r"""Return whether ``K tensor_R M = 0`` over an integral domain.
-
-            The generic fibre is a vector space over ``K``, so it vanishes
-            exactly when its dimension does.  A free module of positive rank is
-            therefore not torsion, whatever its relations look like.
-            """
-            return self.generic_rank() == 0
-
-
-class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
-    r"""Modules admitting a finite presentation."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely presented modules"
-
-    def an_object(self):
-        r"""The free module of rank one, presented by no relations."""
-        return self.base_ring().free_module(1)
-
-    def super_categories(self):
-        return [FinitelyGeneratedModules(self.base_ring())]
-
-    def biproduct_bifunctor(self):
-        r"""Return the biproduct bifunctor on finitely presented modules."""
-        from dzack_research.preamble.categories.functors.linear_constructions import (
-            _biproduct_bifunctor,
-        )
-
-        return _biproduct_bifunctor(self.base_ring())
-
-    def cokernel_arrow_functor(self):
-        r"""Return the cokernel functor on this module arrow category."""
-        from dzack_research.preamble.categories.functors.linear_constructions import (
-            _cokernel_arrow_functor,
-        )
-
-        return _cokernel_arrow_functor(self.base_ring())
-
-    class ParentMethods:
-        def is_finitely_presented(self) -> bool:
-            return True
-
-        def tor(self, other, degree=0):
-            r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
-            from dzack_research.preamble.categories.modules.derived_functors import _tor
-
-            return _tor(self, other, degree=degree)
-
-        def ext(self, other, degree=0):
-            r"""Return ``Ext^degree(self, other)`` from the selected free resolution."""
-            from dzack_research.preamble.categories.modules.derived_functors import _ext
-
-            return _ext(self, other, degree=degree)
-
-        def projective_dimension(self):
-            r"""Return the projective dimension in the regimes where it is decided exactly.
-
-            A projective module has dimension zero.  Over a principal ideal
-            domain every submodule of a free module is free, so every finitely
-            presented module has projective dimension at most one; a
-            nonprojective one therefore has dimension exactly one.  No finite
-            bound is inferred over a more general ring.
-            """
-            if self.is_projective():
-                return 0
-            if self.base_ring() in PrincipalIdealDomains():
-                return 1
-            raise NotImplementedError(
-                "projective dimension beyond the projective/PID regimes requires a represented finite resolution bound"
-            )
-
-
 class _AdicModuleCompletion:
     r"""The source module, ideal, and completed scalar ring defining ``M_hat``."""
 
@@ -1858,7 +2099,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [
-            FinitelyPresentedModules(self.base_ring()),
+            Modules(self.base_ring()).FinitelyPresented(),
             FramedModules(self.base_ring()),
         ]
 
@@ -2305,205 +2546,6 @@ class FreeResolutionHomotopy:
         return source.module_category().Mor(source, target).zero()
 
 
-class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
-    r"""Finite-rank free modules with a chosen ordered basis."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely generated free modules"
-
-    def an_object(self):
-        r"""The free module of rank one."""
-        return self.base_ring().free_module(1)
-
-    def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FramedFreeModules,
-        )
-
-        return [
-            FramedFreeModules(self.base_ring()),
-            ModulesWithChosenFinitePresentation(self.base_ring()),
-        ]
-
-    def kernel_arrow_functor(self):
-        r"""Return the kernel functor on the finite-free arrow category."""
-        from dzack_research.preamble.categories.functors.linear_constructions import (
-            _kernel_arrow_functor,
-        )
-
-        return _kernel_arrow_functor(self.base_ring())
-
-    class ParentMethods:
-        def _fresh_free_module_on(self, labels, **options):
-            constructor = self.__dict__.get("_preamble_free_module_constructor")
-            if constructor is None:
-                raise NotImplementedError("this finite free module has no selected free-module constructor")
-            return constructor(labels, **options)
-
-        def _represented_vector_space_dimension(self):
-            return self.module_rank()
-
-        def _represented_vector_space_basis_generator_labels(self):
-            return self.module_generating_set()
-
-        def is_zero(self) -> bool:
-            r"""Return whether this finite free module is the zero module.
-
-            A finite free module is zero exactly when every vector in its
-            chosen basis is the additive identity; this also handles the zero
-            coefficient ring without replacing the basis by a rank heuristic.
-            """
-            return all(generator == self.zero() for generator in self.module_generators())
-
-        def _selected_presentation_rows(self):
-            return ()
-
-        def fitting_ideal(self, index):
-            r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
-
-            A free module is presented by no relations, so its relation matrix
-            has no rows and the ideal of its ``(n - i)``-minors is zero while a
-            minor of positive size is asked for and the unit ideal once none
-            is.  The general minor computation has no matrix to read here, so
-            the same formula is stated directly.
-            """
-            ring = self.base_ring()
-            rank = int(self.number_of_module_generators())
-            return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
-
-        def _represented_kernel_of_morphism(self, morphism):
-            if morphism.domain() is not self:
-                return NotImplemented
-            try:
-                codomain_is_zero = morphism.codomain().is_zero()
-            except NotImplementedError:
-                codomain_is_zero = False
-            if codomain_is_zero:
-                return self.whole_subobject()
-            try:
-                coordinate_matrix = morphism.matrix()
-                coordinate_generators = coordinate_matrix._kernel_spanning_family()
-            except (AttributeError, NotImplementedError):
-                return NotImplemented
-
-            source_labels = tuple(self.module_generating_set())
-            coordinate_domain = coordinate_matrix.domain()
-            coordinate_labels = tuple(coordinate_domain.module_generating_set())
-            if len(source_labels) != len(coordinate_labels):
-                raise ArithmeticError(
-                    "the coordinate kernel changed the source framing rank"
-                )
-
-            def transport(coordinate_vector):
-                coefficients = coordinate_domain.framing_coefficients(coordinate_vector)
-                return self.linear_combination(
-                    {
-                        source_label: coefficients[coordinate_label]
-                        for source_label, coordinate_label in zip(
-                            source_labels, coordinate_labels, strict=True
-                        )
-                        if coordinate_label in coefficients
-                    }
-                )
-
-            generators = finite_indexed_family(
-                coordinate_generators.index_set(),
-                lambda index: transport(coordinate_generators[index]),
-                name=f"Kernel spanning family in {self}",
-            )
-            return self.subobject_on(generators)
-
-        def _same_presentation_module(
-            self,
-            labels,
-            *,
-            _extra_categories=(),
-            _extra_construction_data=None,
-        ):
-            return self._fresh_free_module_on(
-                labels,
-                _extra_categories=tuple(_extra_categories),
-                _extra_construction_data=_extra_construction_data,
-            )
-
-        def free_resolution(self, steps=None):
-            r"""A free module is its own resolution, in degree zero alone.
-
-            The number of steps a caller is willing to compute does not enter:
-            the identity already resolves a free module, so the same resolution
-            answers however far it is asked to go.
-            """
-            _ = steps
-            return self._identity_resolution()
-
-        @cached_method
-        def _identity_resolution(self):
-            zero = self._fresh_free_module_on(finite_ordered_set(()))
-            degrees = Sets.Δ[0]
-            return FreeResolution(
-                self,
-                degrees,
-                indexed_family(degrees, lambda degree: self, name="Free resolution terms"),
-                indexed_family(
-                    Sets.Δ[-1],
-                    lambda degree: None,
-                    name="Free resolution differentials",
-                ),
-                self.module_category().Mor(self, self).identity(),
-                zero,
-            )
-
-        @cached_method
-        def dual_module(self):
-            return self._fresh_free_module_on(self.module_generating_set())
-
-
-class ProjectiveModules(OwnedCategoryOverBaseRing):
-    _certifying_predicate = "is_projective"
-
-    def an_object(self):
-        r"""The free module of rank one, which is projective."""
-        return self.base_ring().free_module(1)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "projective modules"
-
-    def super_categories(self):
-        return [Modules(self.base_ring())]
-
-    class ParentMethods:
-        def is_projective(self) -> bool:
-            return True
-
-        def projective_rank(self, point):
-            r"""Return the local free rank of a finite projective module at ``point``."""
-            if self not in FinitelyGeneratedModules(self.base_ring()):
-                raise TypeError("projective_rank currently requires a finite projective module")
-            return self.fiber_dimension(point)
-
-        def local_free_trivialization(self, point):
-            r"""Return the isomorphism ``R_p^r -> M_p`` at a point of the spectrum.
-
-            By Nakayama a family whose images span the fibre ``M(p)`` generates
-            ``M_p``, and a projective module is free there, so a family of that
-            size generating a free module of that rank is a basis.  The
-            residue field already selects such a family among the chosen
-            generators, so the trivialization is the map carrying the standard
-            basis to it, and it is an isomorphism rather than merely a
-            surjection because the ranks agree.
-            """
-
-
-            localized = self.localize_at_prime(point)
-            labels = localized.residue_module().basis_generator_labels()
-            free = localized.base_ring().free_module(labels)
-            return free.module_category().Mor(free, localized)(
-                lambda label: localized.module_generator(label)
-            )
-
-
 class FramedModules(OwnedCategoryOverBaseRing):
     r"""Modules carrying a selected epimorphism from a free module."""
 
@@ -2755,7 +2797,7 @@ class RestrictedScalarsModuleView(Parent):
 
         categories = [RestrictedScalarsModules(base_ring)]
 
-        selected_finite_module_framing = module in FramedModules(extension_ring) and module in FinitelyGeneratedModules(extension_ring)
+        selected_finite_module_framing = module in FramedModules(extension_ring) and module in Modules(extension_ring).FinitelyGenerated()
         if selected_finite_module_framing and extension_ring in FinitelyGeneratedFreeModules(base_ring):
             scalar_labels = extension_ring.module_generating_set()
             module_labels = module.module_generating_set()
@@ -2767,13 +2809,13 @@ class RestrictedScalarsModuleView(Parent):
                     )
                 )
                 categories.append(FramedModules(base_ring))
-                if extension_ring in FinitelyGeneratedModules(base_ring) and module in FinitelyGeneratedModules(extension_ring):
-                    categories.append(FinitelyGeneratedModules(base_ring))
+                if extension_ring in Modules(base_ring).FinitelyGenerated() and module in Modules(extension_ring).FinitelyGenerated():
+                    categories.append(Modules(base_ring).FinitelyGenerated())
                 if extension_ring in FinitelyGeneratedFreeModules(base_ring):
                     if module in ModulesWithChosenFinitePresentation(extension_ring):
                         categories.append(ModulesWithChosenFinitePresentation(base_ring))
-                    elif module in FinitelyPresentedModules(extension_ring):
-                        categories.append(FinitelyPresentedModules(base_ring))
+                    elif module in Modules(extension_ring).FinitelyPresented():
+                        categories.append(Modules(base_ring).FinitelyPresented())
                     if module in FinitelyGeneratedFreeModules(extension_ring):
                         categories.append(FinitelyGeneratedFreeModules(base_ring))
 
@@ -3590,9 +3632,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         return "matrix Hom objects"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
         return [
             InternalHomModules(self.base_ring()),
-            FinitelyGeneratedFreeModules(self.base_ring()),
+            FramedFreeModules(self.base_ring()).FinitelyGenerated(),
         ]
 
     class ParentMethods:
@@ -4076,3 +4122,75 @@ def _refine_matrix_hom(homset):
     if homset not in MatrixSpaces(ring):
         raise TypeError("a finite-free module Hom must be constructed as a matrix Hom")
     return homset
+
+
+def _torsion_module_presented_by_matrix(
+    relations, module_generating_set=None, *, base_ring=None
+):
+    r"""Return the torsion module presented by relation rows ``relations``."""
+
+    ring = _own_ring(SageZZ) if base_ring is None else base_ring
+    try:
+        relation_parent = relations.parent()
+    except AttributeError:
+        relation_parent = None
+    represented_matrix = (
+        relation_parent is not None and relation_parent in MatrixSpaces(ring)
+    )
+    if represented_matrix:
+        width = relations.parent().ncols()
+        relation_count = relations.parent().nrows()
+    else:
+        rows = tuple(tuple(row) for row in relations)
+        relation_count = len(rows)
+        width = 0 if not rows else len(rows[0])
+
+        relations = ring.matrix_space(relation_count, width).from_rows(rows)
+        represented_matrix = True
+    labels = (
+        finite_ordered_set(range(width))
+        if module_generating_set is None
+        else finite_ordered_set(module_generating_set)
+    )
+    if labels.cardinality() != width:
+        raise ValueError(
+            "the module-generating set and relation matrix have different widths"
+        )
+    target = ring.free_module(labels)
+    source = ring.free_module(relation_count)
+
+    def relation_entry(row_position, column_position):
+        row_label = relations.parent().row_index_set()[row_position]
+        column_label = relations.parent().column_index_set()[column_position]
+        return relations.matrix_entry(row_label, column_label)
+
+    def relation_image(row_position):
+        return target.linear_combination(
+            {
+                label: relation_entry(row_position, column_position)
+                for column_position, label in enumerate(labels)
+                if relation_entry(row_position, column_position)
+            }
+        )
+
+    images = {
+        source_label: relation_image(row_position)
+        for row_position, source_label in enumerate(source.module_generating_set())
+    }
+    return Modules(ring).FinitelyPresented().Torsion()(
+        source.module_category().Mor(source, target)(images)
+    )
+
+
+def _refine_finitely_presented_torsion_module(module):
+    r"""Attach the torsion intersection after verifying the represented property."""
+
+    ring = module.base_ring()
+    if module not in Modules(ring).FinitelyPresented():
+        raise TypeError("torsion refinement requires a finitely presented module")
+    if not module.is_torsion():
+        raise ValueError(
+            "the supplied finite presentation does not present a torsion module"
+        )
+    return refine(module, Modules(ring).FinitelyPresented().Torsion())
+

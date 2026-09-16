@@ -109,8 +109,9 @@ from dzack_research.preamble.categories.modules.framed.formed.discriminant_modul
     DiscriminantQuadraticModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    BilinearFormModules,
+    FormModules,
     FreeFormModules,
-    SymmetricBilinearFormModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     _form_gram_on,
@@ -126,11 +127,9 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _solve_left_integrally,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FinitelyGeneratedFreeModules,
     ModuleSubobjects,
+    _torsion_module_presented_by_matrix,
 )
-from dzack_research.preamble.categories.modules.pure.torsion_modules import _torsion_module_presented_by_matrix
-from dzack_research.preamble.categories.rational_lattices import RationalLattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -587,7 +586,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         return TwistFunctor(scale)
 
     @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
-    def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> FiniteRankLattices.ParentMethods: ...
+    def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> Lattices.ParentMethods: ...
 
     @overload
     def __call__(self, data: object, *args: object, **options: object) -> Lattices.ParentMethods: ...
@@ -726,16 +725,16 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""Attach the lattice-property subcategories decidable from its form."""
         categories = []
         if lattice.module_rank() != Infinity:
-            categories.append(FiniteRankLattices(lattice.base_ring()))
+            categories.append(Lattices(lattice.base_ring()).FinitelyGenerated())
         nondegenerate = lattice.is_nondegenerate()
         if nondegenerate is True:
-            categories.append(NondegenerateLattices(lattice.base_ring()))
+            categories.append(Lattices(lattice.base_ring()).Nondegenerate())
         try:
             is_even = lattice.is_even()
         except NotImplementedError:
             is_even = False
         if is_even:
-            categories.append(EvenLattices(lattice.base_ring()))
+            categories.append(Lattices(lattice.base_ring()).Even())
         return refine(lattice, categories) if categories else lattice
 
     def _refine_root_lattice(self, lattice, cartan_type):
@@ -934,7 +933,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         return [
             FreeFormModules(self.base_ring()),
-            SymmetricBilinearFormModules(self.base_ring()),
+            BilinearFormModules(self.base_ring()).Symmetric(),
         ]
 
     _HomCategory = LatticeHomCategoryConstruction
@@ -1816,9 +1815,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     integral_dual_form,
                     module_generators=self.module_generating_set(),
                 )
-            return RationalLattices(self.base_ring())(
-                self.dual_module().equip_bilinear_form(fraction_field, inverse_components)
-            )
+            rational = self.dual_module().equip_bilinear_form(fraction_field, inverse_components)
+            return refine(rational, FormModules(self.base_ring()).Nondegenerate())
 
         def metric_dual(self):
             r"""Return the metric dual ``L^#``; explicit synonym for ``dual_lattice``."""
@@ -3453,59 +3451,19 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             return source.module_category().Mor(source, self)(image)
 
 
-class FiniteRankLattices(OwnedCategoryOverBaseRing):
-    r"""Lattices whose underlying free module has finite rank."""
-
-    _certifying_predicate = "module_rank.is_finite"
-
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "finite-rank lattices"
-
-    def an_object(self):
-        r"""The hyperbolic plane U, of rank two."""
-        return Lattices(self.base_ring())("U")
-
-    def super_categories(self):
-
-        return [
-            Lattices(self.base_ring()),
-            FinitelyGeneratedFreeModules(self.base_ring()),
-        ]
+def FiniteRankLattices(base_ring):
+    r"""``Lattices(R).FinitelyGenerated()``, under the name the session catalogue uses."""
+    return Lattices(base_ring).FinitelyGenerated()
 
 
-class NondegenerateLattices(OwnedCategoryOverBaseRing):
-    r"""Lattices whose correlation map has zero kernel."""
-
-    _certifying_predicate = "is_nondegenerate"
-
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "nondegenerate lattices"
-
-    def an_object(self):
-        r"""The hyperbolic plane U, whose form is unimodular."""
-        return Lattices(self.base_ring())("U")
-
-    def super_categories(self):
-        return [Lattices(self.base_ring())]
+def NondegenerateLattices(base_ring):
+    r"""``Lattices(R).Nondegenerate()``, under the name the session catalogue uses."""
+    return Lattices(base_ring).Nondegenerate()
 
 
-class EvenLattices(OwnedCategoryOverBaseRing):
-    r"""Lattices satisfying ``b(x,x) in 2R`` for every lattice vector ``x``."""
-
-    _certifying_predicate = "is_even"
-
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "even lattices"
-
-    def an_object(self):
-        r"""The hyperbolic plane U, on which every square is even."""
-        return Lattices(self.base_ring())("U")
-
-    def super_categories(self):
-        return [Lattices(self.base_ring())]
+def EvenLattices(base_ring):
+    r"""``Lattices(R).Even()``, under the name the session catalogue uses."""
+    return Lattices(base_ring).Even()
 
 
 class RankOneRationalWittDecomposition:
@@ -4039,11 +3997,7 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
         return "noncrystallographic root lattices"
 
     def super_categories(self):
-        return [
-            FiniteRankLattices(self.base_ring()),
-            NondegenerateLattices(self.base_ring()),
-            EvenLattices(self.base_ring()),
-        ]
+        return [Lattices(self.base_ring()).FinitelyGenerated().Nondegenerate().Even()]
 
     class ParentMethods:
         def coxeter_type(self):
@@ -4095,12 +4049,7 @@ class RootLattices(OwnedCategory):
         return "root lattices"
 
     def super_categories(self):
-        integers = _own_ring(SageZZ)
-        return [
-            FiniteRankLattices(integers),
-            NondegenerateLattices(integers),
-            EvenLattices(integers),
-        ]
+        return [Lattices(_own_ring(SageZZ)).FinitelyGenerated().Nondegenerate().Even()]
 
     class ParentMethods:
         def cartan_type(self):

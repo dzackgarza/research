@@ -286,14 +286,9 @@ from dzack_research.preamble.categories.modules import (
     DividedSquareModules,
     FiberedFormedModuleHomset,
     FiberedFormedModuleMorphism,
-    FinitelyGeneratedFormModules,
-    FinitelyGeneratedFreeFormModules,
     FinitelyGeneratedFreeModules,
     FinitelyGeneratedModules,
-    FinitelyPresentedBilinearFormModules,
-    FinitelyPresentedFormModules,
     FinitelyPresentedModules,
-    FinitelyPresentedQuadraticFormModules,
     FinitelyPresentedTorsionModules,
     FormedModuleHomset,
     FormedModuleMorphism,
@@ -341,9 +336,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F
 from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
     FiniteCommensurabilityQuotient,
     IntegralStructureAction,
-)
-from dzack_research.preamble.categories.rational_lattices import (
-    RationalLattices as RationalLattices,
 )
 from dzack_research.preamble.categories.schemes import (
     ADELogPairs,

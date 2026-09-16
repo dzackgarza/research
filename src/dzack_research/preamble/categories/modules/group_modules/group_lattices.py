@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.lattices import (
-    FiniteRankLattices,
     Lattices,
     RootLattices,
 )
@@ -276,7 +275,7 @@ def _group_lattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
 
     base_ring = lattice.base_ring()
-    assert lattice in FiniteRankLattices(base_ring)
+    assert lattice in Lattices(base_ring).FinitelyGenerated()
     source_group_module = _equip_action(lattice, group_or_action, action)
     group = source_group_module.group()
 

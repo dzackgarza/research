@@ -2641,12 +2641,9 @@ def _presented_module_from_morphism(
         except NotImplementedError:
             represented_torsion = None
         if represented_torsion is True:
-            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-                FinitelyPresentedTorsionModules,
-            )
             from dzack_research.preamble.refine import refine
 
-            quotient = refine(quotient, FinitelyPresentedTorsionModules(base_ring))
+            quotient = refine(quotient, Modules(base_ring).FinitelyPresented().Torsion())
 
     return quotient
 
