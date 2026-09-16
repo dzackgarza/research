@@ -429,38 +429,6 @@ class RestrictionOfGroupActionFunctor(Functor):
                     lambda group_element, point: acted.act(morphism(group_element), point),
                 )
 
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        match category:
-            case Modules():
-                base_ring = category.base_ring()
-                from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-                    _equip_action,
-                )
-
-                source_modules = Modules(base_ring[morphism.codomain()])
-                if acted not in source_modules:
-                    action = _action_functor_of(acted, morphism.codomain(), category)
-                    from dzack_research.preamble.categories.group.classifying_categories import (
-                        ClassifyingFunctor,
-                    )
-
-                    return self.codomain()(ClassifyingFunctor(morphism).then(action))
-
-                unacted = acted.unacted_module()
-
-                def restricted_action(group_element, vector):
-                    return acted.action_of(morphism(group_element))(vector)
-
-                return _equip_action(
-                    unacted,
-                    morphism.domain(),
-                    restricted_action,
-                    _action_is_trivial=acted.is_trivial_action(),
-                )
-            case _:
-                pass
-
         # The affine-scheme specialization still owns a concrete carrier and
         # its fixed-locus operations; retain that owner until the scheme stream
         # moves its two-argument compatibility constructor.
