@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_krull_dimension,
     _engine_quotient_cover_ideal,
     _engine_ring,
+    _install_local_ring_construction,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
@@ -728,12 +729,6 @@ class QuotientRings(OwnedCategory):
                 defining_ideal,
             )
             self._preamble_engine_ring = _engine_ring
-            self._preamble_algebra_base_ring = source
-            # The quotient is already placed in ``Algebras(source)`` by its
-            # category, and that algebra owner reads the exact scalar source
-            # from ``_preamble_algebra_base_ring`` above.  The generic Sage
-            # parent constructor accepts ``base=`` but has no ``base_ring=``
-            # construction datum at this level.
             super().__init__(base=source, **rest)
 
             quotient_map = source.Mor(self)(
@@ -877,6 +872,12 @@ class QuotientRings(OwnedCategory):
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
+
+        def algebra_base_ring(self):
+            return self.quotient_source()
+
+        def _ring_morphism_defining_algebra_structure(self):
+            return self.quotient_map()
 
         def quotient_source(self):
             return self._quotient_construction.source()
@@ -2263,7 +2264,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
         self._adic_completion_construction.set_completion_map(completion_map)
         if algebra_base is None or algebra_base is source:
-            self._preamble_structure_map = completion_map
+            self.algebra_structure_construction().set_structure_map(completion_map)
         match (formal_base_is_local, defining_ideal_is_maximal):
             case (True, _):
                 formal_parameters = tuple(
@@ -2272,17 +2273,17 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     )
                     for label in self._preamble_formal_parameter_labels
                 )
-                self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
+                maximal_ideal = _maximal_ideal_over_local_base(
                     self,
                     formal_base,
                     formal_parameters,
                 )
-                self._preamble_residue_field = formal_base.residue_field()
+                residue = formal_base.residue_field()
+                _install_local_ring_construction(self, maximal_ideal, residue)
             case (_, True):
-                self._preamble_maximal_ideal = completion_map.extension_of_ideal(
-                    defining_ideal
-                )
-                self._preamble_residue_field = source.residue_field_at(defining_ideal)
+                maximal_ideal = completion_map.extension_of_ideal(defining_ideal)
+                residue = source.residue_field_at(defining_ideal)
+                _install_local_ring_construction(self, maximal_ideal, residue)
             case _:
                 pass
 
@@ -3511,12 +3512,16 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
         self._quotient_construction.set_quotient_map(quotient_map)
         if base in OwnedRings().Commutative().Local():
             epsilon_bar = self._from_engine_element(engine.gen())
-            self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
+            maximal_ideal = _maximal_ideal_over_local_base(
                 self,
                 base,
                 (epsilon_bar,),
             )
-            self._preamble_residue_field = base.residue_field()
+            _install_local_ring_construction(
+                self,
+                maximal_ideal,
+                base.residue_field(),
+            )
 
 
 def _dual_numbers(base_ring, name="epsilon"):

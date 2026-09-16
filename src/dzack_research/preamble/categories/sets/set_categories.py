@@ -746,6 +746,55 @@ class Sets(OwnedCategory):
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
+        def _categorical_equalizer(self, left_morphism, right_morphism):
+            r"""Return the represented subset on which two set maps agree."""
+            return self._categorical_equalizer_construction(
+                left_morphism, right_morphism
+            ).object()
+
+        def _categorical_equalizer_construction(
+            self, left_morphism, right_morphism
+        ):
+            r"""Return the selected equalizer cone for two parallel set maps."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _parallel_pair_diagram,
+            )
+
+            if (
+                left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("a set equalizer requires parallel maps")
+            source = left_morphism.domain()
+            target = left_morphism.codomain()
+            if source not in self or target not in self:
+                raise TypeError("a set equalizer requires set-valued endpoints")
+
+            equalizer = self.condition_set(
+                source,
+                lambda element: left_morphism(element) == right_morphism(element),
+            )
+            inclusion = self.Mor(equalizer, source)(lambda element: source(element))
+            diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            universal_cone = diagram.Cones().cone(
+                equalizer,
+                lambda index: (
+                    inclusion
+                    if index is shape.source()
+                    else left_morphism * inclusion
+                ),
+            )
+
+            def factorizer(cone):
+                source_leg = cone.structure_morphism(shape.source())
+                return self.Mor(cone.apex(), equalizer)(
+                    lambda element: equalizer(source_leg(element))
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
         def coproduct(
             self,
             family: IndexedFamily | Iterable[Parent],
@@ -1167,31 +1216,12 @@ class Sets(OwnedCategory):
 
             return _g_set_trivial_fixed_adjunction(group)
 
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_finite()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
-
     class Infinite(CategoryWithAxiom):
         r"""Sets whose cardinality is infinite."""
 
         def an_object(self) -> Parent:
             r"""The natural numbers."""
             return NN
-
-        def __contains__(self, candidate) -> bool:
-            # The cardinality of the underlying set decides this, as it does for
-            # FiniteSets.  Sage's own Infinite() axiom answers for Sage's graph, in
-            # which an owned set is not placed at all (`CAT-12`).
-            if candidate not in Sets():
-                return False
-            try:
-                return not cardinal(candidate.cardinality()).is_finite()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
 
     class Countable(CategoryWithAxiom):
         r"""Sets whose cardinality is at most \(\aleph_0\)."""
@@ -1200,28 +1230,12 @@ class Sets(OwnedCategory):
             r"""The natural numbers."""
             return NN
 
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_countable()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
-
         class Infinite(CategoryWithAxiom):
             r"""Sets whose cardinality is \(\aleph_0\)."""
 
             def an_object(self) -> Parent:
                 r"""The natural numbers."""
                 return NN
-
-            def __contains__(self, candidate) -> bool:
-                if candidate not in Sets():
-                    return False
-                try:
-                    return cardinal(candidate.cardinality()).is_countably_infinite()
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    return False
 
     class Uncountable(CategoryWithAxiom):
         r"""Sets whose cardinality exceeds \(\aleph_0\)."""
@@ -1233,14 +1247,6 @@ class Sets(OwnedCategory):
         def extra_super_categories(self) -> list[Category]:
             r"""An uncountable set is infinite."""
             return [Sets().Infinite()]
-
-        def __contains__(self, candidate) -> bool:
-            if candidate not in Sets():
-                return False
-            try:
-                return cardinal(candidate.cardinality()).is_uncountable()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
 
 
 def FiniteSets() -> Category:

@@ -260,9 +260,9 @@ def test_hom_tensor_and_sum_spelled_as_a_sage_user_would(commutative_ring) -> No
     assert plane.direct_sum(line).module_rank() == 3
     assert (plane + line).module_rank() == 3
     assert (plane**3).module_rank() == 6
-    assert plane.dual().module_rank() == 2
+    assert plane.dual_module().module_rank() == 2
     assert plane.dimension() == 2 if ring in Fields() else plane.module_rank() == 2
-    assert plane.basis().cardinality() == 2
+    assert plane.module_generators().cardinality() == 2
     assert plane.zero_submodule().module_rank() == 0
     assert kernel(plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})).module_rank() == 1
 

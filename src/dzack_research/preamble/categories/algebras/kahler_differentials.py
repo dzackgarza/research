@@ -1,6 +1,6 @@
 r"""Kähler differentials of represented commutative algebras."""
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
@@ -69,12 +69,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             raise ValueError(
                 "KahlerDifferentialModules(A) constructs the differentials of that same algebra A"
             )
-        cached = _KAHLER_DIFFERENTIAL_CACHE.get(id(algebra))
-        if cached is not None and cached.source_algebra() is algebra:
-            return cached
-        result = _construct_kahler_differentials(algebra)
-        _KAHLER_DIFFERENTIAL_CACHE[id(algebra)] = result
-        return result
+        return _cached_kahler_differentials(algebra)
 
     @classmethod
     def _repr_object_names(cls):
@@ -258,7 +253,9 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         representing_isomorphism = derivation_classifier_isomorphism
 
 
-_KAHLER_DIFFERENTIAL_CACHE = {}
+@cached_function(key=lambda algebra: id(algebra))
+def _cached_kahler_differentials(algebra):
+    return _construct_kahler_differentials(algebra)
 
 
 def _construct_kahler_differentials(algebra):

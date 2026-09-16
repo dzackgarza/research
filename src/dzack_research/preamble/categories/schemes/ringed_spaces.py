@@ -1,6 +1,11 @@
 """Owned ringed-space structure used by the scheme hierarchy."""
 
-from sage.misc.cachefunc import cached_method
+from itertools import combinations
+
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -11,8 +16,14 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.presheaves import (
+    Coverage,
+    CoveringFamilies,
+    CoveringFamily,
+)
+from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -36,12 +47,155 @@ class SchemeUnderlyingSpace(SageObject):
         return f"Underlying topological space of {self.ringed_space()}"
 
 
-class StructureSheaf(SageObject):
+class SheafObjects(OwnedParameterizedCategory):
+    r"""Represented sheaves on one base space.
+
+    This is the semantic placement shared by the concrete sheaf carriers in
+    the scheme, divisor, and monodromy subtrees.  A sheaf that materializes a
+    specific site/coverage additionally lies in the corresponding
+    :class:`~dzack_research.preamble.categories.abstract_categories.presheaves.Sheaves`
+    full subcategory; this base-space category does not replace that descent
+    datum or pretend that every represented space currently exposes one common
+    site presentation.
+    """
+
+    def space(self):
+        return self.base()
+
+    def _repr_object_names(self):
+        return f"sheaves on {self.space()}"
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        return _TerminalSheaf(self.space())
+
+
+class SheafedSpaces(OwnedCategory):
+    r"""Represented spaces equipped with a chosen sheaf.
+
+    The topological-space ancestor is intentionally not guessed here: the
+    repository does not yet own that category, and ``geometric-space-placement``
+    is the node that introduces it.  This category records the independent
+    sheaf-bearing structure now, so a ringed space is no longer declared as a
+    set merely because the space category is absent.
+    """
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "sheafed spaces"
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        return RingedSpaces().an_object()
+
+
+class _TerminalSheaf(Parent):
+    r"""The terminal one-section sheaf on a represented base space.
+
+    This is the canonical inhabitant of :class:`SheafObjects`: it exists on
+    every site/topological space and therefore does not assume that the base
+    has ringed-space structure merely to witness that the sheaf category is
+    inhabited.  Concrete sheaves retain their own section/stalk models.
+    """
+
+    def __init__(self, space) -> None:
+        self._space = space
+        Parent.__init__(self, category=SheafObjects(space))
+
+    def base_space(self):
+        return self._space
+
+    space = base_space
+
+    def _repr_(self) -> str:
+        return f"Terminal sheaf on {self.base_space()}"
+
+
+class ModuleSheaves(OwnedParameterizedCategory):
+    r"""Sheaves of ``O_X``-modules on one represented ringed space ``X``."""
+
+    def scheme(self):
+        return self.base()
+
+    ringed_space = scheme
+
+    def _repr_object_names(self):
+        return f"module sheaves on {self.scheme()}"
+
+    def super_categories(self):
+        return [SheafObjects(self.scheme())]
+
+    def an_object(self):
+        return self.scheme().structure_sheaf()
+
+    def tensor_product(self, factors):
+        r"""Return the tensor product of represented module sheaves.
+
+        The currently selected affine implementation is transported through
+        the existing equivalence ``QCoh(Spec A) ~= Modules(A)``.  Moving this
+        operation here records its mathematical owner: quasi-coherence adds a
+        condition on a module sheaf; it does not define a second tensor
+        product.
+        """
+
+        quasi_coherent = QuasiCoherentSheaves(self.scheme())
+        modules = tuple(quasi_coherent.global_sections(factor) for factor in factors)
+        return quasi_coherent.associated_sheaf(
+            quasi_coherent.module_category().tensor_product(modules)
+        )
+
+    def kernel(self, sheaf_morphism):
+        r"""Return the represented kernel in sheaves of ``O_X``-modules."""
+
+        quasi_coherent = QuasiCoherentSheaves(self.scheme())
+        return quasi_coherent.associated_sheaf(sheaf_morphism.kernel())
+
+    def cokernel(self, sheaf_morphism):
+        r"""Return the represented cokernel in sheaves of ``O_X``-modules."""
+
+        quasi_coherent = QuasiCoherentSheaves(self.scheme())
+        return quasi_coherent.associated_sheaf(sheaf_morphism.cokernel())
+
+
+class AlgebraSheaves(OwnedParameterizedCategory):
+    r"""Sheaves of ``O_X``-algebras on one represented ringed space ``X``."""
+
+    def scheme(self):
+        return self.base()
+
+    ringed_space = scheme
+
+    def _repr_object_names(self):
+        return f"algebra sheaves on {self.scheme()}"
+
+    def super_categories(self):
+        return [ModuleSheaves(self.scheme())]
+
+    def an_object(self):
+        return self.scheme().structure_sheaf()
+
+
+class StructureSheaf(Parent):
     r"""The represented structure sheaf ``O_X`` of a ringed space ``X``."""
 
     def __init__(self, ringed_space) -> None:
         self._ringed_space = ringed_space
         self._restriction_maps = {}
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        Parent.__init__(
+            self,
+            category=Cat().meet(
+                (
+                    AlgebraSheaves(ringed_space),
+                    QuasiCoherentSheaves(ringed_space),
+                )
+            ),
+        )
 
     def ringed_space(self):
         return self._ringed_space
@@ -177,20 +331,114 @@ def _localization_restriction_map(source, target):
 
 
 class DistinguishedAffineCovers(OwnedCategory):
-    r"""The owned category of represented distinguished affine covers."""
+    r"""Represented distinguished affine covering families.
+
+    With no parameter this is the catalogue containing every represented
+    distinguished affine cover.  ``DistinguishedAffineCovers(X)`` is its fibre
+    over one affine scheme ``X``; that fibre is a subcategory of covering
+    families in the slice ``AffSch_R/X`` and is the selected family category
+    for the distinguished-affine coverage of ``X``.
+    """
+
+    @staticmethod
+    @cached_function(
+        key=lambda cls, scheme=None: (
+            cls,
+            None if scheme is None else id(scheme),
+        )
+    )
+    def __classcall__(cls, scheme=None):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(scheme)
+        return typecall(cls, scheme)
+
+    def __init__(self, scheme=None) -> None:
+        self._scheme = scheme
+        super().__init__()
+
+    def scheme(self):
+        return self._scheme
+
+    def site_category(self):
+        scheme = self.scheme()
+        if scheme is None:
+            raise ValueError("the global cover catalogue has no single site category")
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        affine_schemes = Schemes(scheme.scheme_base_ring()).Affine()
+        return affine_schemes.SliceCategory(scheme)
+
+    def coverage(self):
+        scheme = self.scheme()
+        if scheme is None:
+            raise ValueError("the global cover catalogue does not select one coverage")
+        return distinguished_affine_coverage(scheme)
 
     def super_categories(self):
-        return [Objects()]
+        scheme = self.scheme()
+        if scheme is None:
+            return [Objects()]
+        return [
+            DistinguishedAffineCovers(),
+            CoveringFamilies(self.site_category()),
+        ]
 
-    def __contains__(self, candidate) -> bool:
-        return isinstance(candidate, DistinguishedAffineCover)
+    def an_object(self):
+        scheme = self.scheme()
+        if scheme is None:
+            scheme = RingedSpaces().an_object()
+        return scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "distinguished affine covers"
+    def _repr_object_names(self):
+        scheme = self.scheme()
+        if scheme is None:
+            return "distinguished affine covers"
+        return f"distinguished affine covering families of {scheme}"
 
 
-class DistinguishedAffineCover(SageObject):
+@cached_function(key=lambda scheme: id(scheme))
+def distinguished_affine_coverage(scheme) -> Coverage:
+    r"""The distinguished-open coverage in ``AffSch_R/X``."""
+
+    category = DistinguishedAffineCovers(scheme)
+    return Coverage(
+        category.site_category(),
+        category,
+        name=f"Distinguished-affine coverage of {scheme}",
+    )
+
+
+class _DistinguishedCechCoveringFamilies(OwnedCategory):
+    r"""The chosen Čech family of one represented distinguished affine cover."""
+
+    @staticmethod
+    @cached_function(key=lambda cls, cover: (cls, id(cover)))
+    def __classcall__(cls, cover):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(cover)
+        return typecall(cls, cover)
+
+    def __init__(self, cover) -> None:
+        self._cover = cover
+        super().__init__()
+
+    def cover(self):
+        return self._cover
+
+    def site_category(self):
+        return self.cover().cech_site()
+
+    def super_categories(self):
+        return [CoveringFamilies(self.site_category())]
+
+    def an_object(self):
+        return self.cover().cech_covering_family()
+
+    def _repr_object_names(self):
+        return f"chosen Čech covering family of {self.cover()}"
+
+
+class DistinguishedAffineCover(CoveringFamily):
     r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
 
     def _cache_key(self) -> int:
@@ -215,6 +463,34 @@ class DistinguishedAffineCover(SageObject):
         }
         self._restricted_modules = {}
         self._restricted_algebras = {}
+
+        category = DistinguishedAffineCovers(scheme)
+        site = category.site_category()
+        target = site.an_object()
+        chart_objects = {
+            index: site.object(self.open(index).inclusion()) for index in self._atlas
+        }
+        members = finite_indexed_family(
+            self._atlas,
+            lambda index: site.Mor(chart_objects[index], target)(
+                self.open(index).inclusion()
+            ),
+            name="Distinguished affine cover arrows",
+        )
+        overlaps = {}
+        for left_index, right_index in combinations(tuple(self._atlas), 2):
+            overlap = self.intersection(left_index, right_index)
+            overlap_object = site.object(overlap.inclusion())
+            overlaps[left_index, right_index] = (
+                overlap_object,
+                site.Mor(overlap_object, chart_objects[left_index])(
+                    overlap.inclusion_into(self.open(left_index))
+                ),
+                site.Mor(overlap_object, chart_objects[right_index])(
+                    overlap.inclusion_into(self.open(right_index))
+                ),
+            )
+        CoveringFamily.__init__(self, category, target, members, overlaps)
 
     def ambient_scheme(self):
         return self._scheme
@@ -277,6 +553,60 @@ class DistinguishedAffineCover(SageObject):
 
     def overlap(self, left_index, right_index):
         return self.intersection(left_index, right_index)
+
+    @cached_method
+    def cech_site(self):
+        r"""Return the finite Čech site used by this cover's represented descent computation.
+
+        Its objects are the ambient affine, the charts, and the pairwise
+        intersections.  The order is reverse inclusion, hence its arrows are
+        precisely the restriction directions needed by the cover equalizer.
+        This finite site records the computation already performed by the
+        gluing datum; it does not claim to replace the full Zariski site.
+        """
+
+        labels = [()]
+        labels.extend((index,) for index in self.atlas())
+        labels.extend(combinations(tuple(self.atlas()), 2))
+        label_set = finite_ordered_set(tuple(labels))
+        return PosetCategory(
+            label_set,
+            le=lambda finer, coarser: set(coarser).issubset(set(finer)),
+        )
+
+    @cached_method
+    def cech_covering_family(self):
+        r"""The chart family as a covering family of :meth:`cech_site`."""
+
+        site = self.cech_site()
+        category = _DistinguishedCechCoveringFamilies(self)
+        target = site(())
+        members = finite_indexed_family(
+            self.atlas(),
+            lambda index: site.Mor(site((index,)), target).unique(),
+            name="Čech cover arrows",
+        )
+        overlaps = {}
+        for left_index, right_index in combinations(tuple(self.atlas()), 2):
+            pair = self.intersection_indices(left_index, right_index)
+            overlap = site(pair)
+            overlaps[left_index, right_index] = (
+                overlap,
+                site.Mor(overlap, site((left_index,))).unique(),
+                site.Mor(overlap, site((right_index,))).unique(),
+            )
+        return CoveringFamily(category, target, members, overlaps)
+
+    @cached_method
+    def cech_coverage(self) -> Coverage:
+        r"""Return the coverage presentation generated by this cover's Čech family."""
+
+        category = _DistinguishedCechCoveringFamilies(self)
+        return Coverage(
+            self.cech_site(),
+            category,
+            name=f"Čech coverage presentation of {self}",
+        )
 
     def structure_sheaf_restriction(self, chart_index, other_index):
         overlap = self.overlap(chart_index, other_index)
@@ -424,7 +754,7 @@ class CoverRefinement(SageObject):
         return f"Common refinement of {self.coarse_cover(0)} and {self.coarse_cover(1)}"
 
 
-class AffineModuleSheaf(SageObject):
+class AffineModuleSheaf(Parent):
     r"""The quasi-coherent sheaf ``M~`` on the represented distinguished-open basis."""
 
     def __init__(self, scheme, module) -> None:
@@ -434,6 +764,7 @@ class AffineModuleSheaf(SageObject):
         self._scheme = scheme
         self._module = module
         self._local_sections = {}
+        Parent.__init__(self, category=QuasiCoherentSheaves(scheme))
 
     def ringed_space(self):
         return self._scheme
@@ -550,16 +881,16 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
 
     On an affine ``X = Spec A`` the association ``M |-> M~`` is an equivalence
     onto this category, inverse to global sections (Stacks, Tag 01I8).  The
-    category is therefore abelian and monoidal exactly because ``Modules(A)``
-    is, and every operation below is the module operation read through that
-    equivalence rather than a second definition of the same thing.  For the
+    represented affine operations are therefore read through ``Modules(A)``
+    rather than defined a second time.  For the
     same reason a morphism of quasi-coherent sheaves on an affine scheme is a
     morphism of the two modules, so no separate arrow type is introduced.
 
-    On a scheme that is not affine no object of this category is represented:
-    a quasi-coherent sheaf there is gluing data, which
-    :meth:`DistinguishedAffineCover.glue_modules` assembles from modules on
-    the charts and transition isomorphisms on the overlaps.
+    On a non-affine represented scheme, quasi-coherent sheaves are carried by
+    the finite-atlas/descent objects in ``schemes.gluing``.  The affine
+    equivalence methods below deliberately retain their affine assertion;
+    placement in this category no longer means that every object has one
+    global coordinate-algebra presentation.
     """
 
     def scheme(self):
@@ -569,14 +900,10 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         return f"quasi-coherent sheaves on {self.scheme()}"
 
     def super_categories(self):
-        return [Sets()]
+        return [ModuleSheaves(self.scheme())]
 
-    def __contains__(self, candidate) -> bool:
-        # Deciding about an arbitrary argument is this method's whole job, and
-        # the represented sheaves are not parents carrying a placement, so the
-        # question is asked of the space each one names.
-        ringed_space = getattr(candidate, "ringed_space", None)
-        return ringed_space is not None and ringed_space() is self.scheme()
+    def an_object(self):
+        return self.scheme().structure_sheaf()
 
     def module_category(self):
         r"""``Modules(A)``: the category this one is equivalent to, for affine ``X``."""
@@ -607,24 +934,6 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         source_sections = self.global_sections(source)
         target_sections = self.global_sections(target)
         return source_sections.module_category().Mor(source_sections, target_sections)
-
-    def tensor_product(self, factors):
-        r"""``(M tensor_A N)~``: the equivalence carries the monoidal structure."""
-        modules = tuple(self.global_sections(factor) for factor in factors)
-        return self.associated_sheaf(self.module_category().tensor_product(modules))
-
-    def kernel(self, sheaf_morphism):
-        r"""``(ker f)~``, the kernel of the module morphism underlying ``f``.
-
-        Taking ``~`` is exact, so the kernel of the sheaf morphism is the
-        sheaf of the kernel; the subobject the module kernel returns is a
-        module over the same algebra and is the object here.
-        """
-        return self.associated_sheaf(sheaf_morphism.kernel())
-
-    def cokernel(self, sheaf_morphism):
-        r"""``(coker f)~``, carried by the same exactness."""
-        return self.associated_sheaf(sheaf_morphism.cokernel())
 
     def local_presentation(self, sheaf):
         r"""``O_X^m -> O_X^n``, the presentation whose cokernel is ``F``.
@@ -661,10 +970,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
         return "ringed spaces"
 
     def super_categories(self):
-        return [Sets()]
-
-    def __contains__(self, candidate) -> bool:
-        return hasattr(candidate, "_preamble_scheme_base_ring")
+        return [SheafedSpaces()]
 
     def LocallyRinged(self):
         return LocallyRingedSpaces()
@@ -695,9 +1001,6 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
 
     def super_categories(self):
         return [RingedSpaces()]
-
-    def __contains__(self, candidate) -> bool:
-        return candidate in RingedSpaces()
 
     class ParentMethods:
         def stalk(self, point):
@@ -731,13 +1034,18 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
 
 
 __all__ = [
+    "AlgebraSheaves",
     "AffineModuleSheaf",
     "CoverRefinement",
     "DistinguishedAffineCover",
     "DistinguishedAffineCovers",
+    "distinguished_affine_coverage",
     "LocallyRingedSpaces",
+    "ModuleSheaves",
     "QuasiCoherentSheaves",
     "RingedSpaces",
     "SchemeUnderlyingSpace",
+    "SheafObjects",
+    "SheafedSpaces",
     "StructureSheaf",
 ]

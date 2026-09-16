@@ -277,6 +277,7 @@ class ModuleMorphism(Morphism):
 
     _localization_construction = None
     _completion_construction = None
+    _lift_function = None
 
     def __init__(
         self,
@@ -287,10 +288,12 @@ class ModuleMorphism(Morphism):
         verify_linearity=True,
         localization_construction=None,
         completion_construction=None,
+        lift=None,
     ) -> None:
         Morphism.__init__(self, parent)
         self._localization_construction = localization_construction
         self._completion_construction = completion_construction
+        self._lift_function = lift
         self._element_function = None
         framed_domain = bool(self.domain().is_framed())
         if elementwise or not framed_domain:
@@ -977,7 +980,7 @@ class ModuleMorphism(Morphism):
 
     def lift(self, element):
         r"""Return the unique preimage of ``element`` for an injective free map."""
-        custom = self.__dict__.get("_preamble_lift")
+        custom = self._lift_function
         if custom is not None:
             return custom(element)
         ring = self.domain().base_ring()
@@ -995,6 +998,10 @@ class ModuleMorphism(Morphism):
             ring,
         )
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
+
+    def has_selected_lift(self) -> bool:
+        r"""Return whether construction supplied an exact lift through this map."""
+        return self._lift_function is not None
 
     def factor_through(self, target_embedding):
         r"""Return the unique factor through a represented module embedding.
@@ -1512,7 +1519,7 @@ class ModuleEmbeddingHomset(CategoricalHomset):
             raise TypeError("a module embedding Hom requires two modules over one scalar ring")
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, verify_linearity=True):
+    def _element_constructor_(self, images, *, verify_linearity=True, lift=None):
         if isinstance(images, ModuleEmbedding):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError("the module embedding has the wrong endpoints")
@@ -1527,11 +1534,13 @@ class ModuleEmbeddingHomset(CategoricalHomset):
                     lambda element: images(element),
                     elementwise=True,
                     verify_linearity=False,
+                    lift=lift,
                 )
         return self.element_class(
             self,
             images,
             verify_linearity=verify_linearity,
+            lift=lift,
         )
 
     def base_ring(self):
@@ -1995,8 +2004,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
                 coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
         assignment = power.linear_combination(coefficients)
         inclusion = self.inclusion_into_generator_maps()
-        custom_lift = inclusion.__dict__.get("_preamble_lift")
-        if custom_lift is not None:
+        if inclusion.has_selected_lift():
             return inclusion.lift(assignment)
         return model(assignment)
 

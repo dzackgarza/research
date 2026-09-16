@@ -13,11 +13,13 @@ both commutative and noncommutative source DGAs.
 """
 
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.algebras.algebras import AlgebraStructureConstruction
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
 )
@@ -68,12 +70,7 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
             raise TypeError(
                 "a cohomology algebra is constructed from a differential graded algebra over the same base ring"
             )
-        cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
-        if cached is not None and cached.source_dga() is dga:
-            return cached
-        result = _CohomologyAlgebra(dga)
-        _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
-        return result
+        return _cohomology_algebra_from_dga(dga)
 
     @classmethod
     def _repr_object_names(cls):
@@ -102,7 +99,7 @@ class _CohomologyAlgebra(GradedDirectSumModule):
 
     def __init__(self, dga) -> None:
         self._cohomology_construction = _CohomologyAlgebraConstruction(dga)
-        self._preamble_algebra_base_ring = dga.base_ring()
+        self._algebra_structure_construction = AlgebraStructureConstruction(dga.base_ring())
         extra_categories = [CohomologyAlgebras(dga.base_ring())]
         if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative():
             extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative())
@@ -234,7 +231,9 @@ class CohomologyAlgebraHomset(CategoricalHomset):
         )
 
 
-_COHOMOLOGY_ALGEBRA_CACHE = {}
+@cached_function(key=lambda dga: id(dga))
+def _cohomology_algebra_from_dga(dga):
+    return _CohomologyAlgebra(dga)
 
 
 __all__ = [

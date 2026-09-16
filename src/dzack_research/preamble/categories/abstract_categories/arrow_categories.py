@@ -30,6 +30,40 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
+class _ArrowAsFunctor(Functor):
+    r"""The functor ``[1] -> C`` corresponding to one morphism of ``C``."""
+
+    def __init__(self, base_category: Category, arrow: Morphism) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        self._arrow = arrow
+        super().__init__(FiniteOrdinalCategory(2), base_category)
+
+    def arrow(self) -> Morphism:
+        return self._arrow
+
+    def _apply_object(self, obj: Parent) -> Parent:
+        match obj.position():
+            case 0:
+                return self.arrow().domain()
+            case 1:
+                return self.arrow().codomain()
+            case _:
+                raise ValueError("the walking-arrow category has exactly two objects")
+
+    def _apply_morphism(self, morphism: Map) -> Map:
+        left = morphism.domain().position()
+        right = morphism.codomain().position()
+        if left == right:
+            endpoint = self.arrow().domain() if left == 0 else self.arrow().codomain()
+            return _category_homset(self.codomain(), endpoint, endpoint).identity()
+        if left == 0 and right == 1:
+            return self.arrow()
+        raise ValueError("the walking-arrow category has no decreasing morphism")
+
+
 class CommutativeSquare(Morphism):
     r"""A morphism between two arrow objects, i.e. a commuting square."""
 
@@ -177,6 +211,10 @@ class _ArrowCategory(OwnedCategory):
         def arrow(self) -> Morphism:
             return self._arrow
 
+        @cached_method
+        def functor(self) -> Functor:
+            return _ArrowAsFunctor(self.arrow_category().base_category(), self.arrow())
+
         def source_object(self) -> Parent:
             return self.arrow().domain()
 
@@ -198,7 +236,12 @@ class _ArrowCategory(OwnedCategory):
         return self._base_category
 
     def super_categories(self):
-        return [Objects()]
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
     def __contains__(self, candidate: Any) -> bool:
         if not isinstance(candidate, Parent):

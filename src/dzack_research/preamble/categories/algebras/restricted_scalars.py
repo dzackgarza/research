@@ -157,8 +157,10 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         )
 
         source_structure = algebra.algebra_structure_morphism()
-        self._preamble_structure_map = base_ring.Mor(self)(
-            lambda scalar: self(source_structure(ring_map(scalar))),
+        self.algebra_structure_construction().set_structure_map(
+            base_ring.Mor(self)(
+                lambda scalar: self(source_structure(ring_map(scalar))),
+            )
         )
 
         if presentation_data is None:

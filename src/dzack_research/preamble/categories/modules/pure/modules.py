@@ -1918,6 +1918,53 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
             return inclusion
 
 
+class ModuleSubobjectConstruction:
+    r"""The selected data defining one module subobject and its inclusion."""
+
+    def __init__(
+        self,
+        *,
+        ambient=None,
+        generator_images=None,
+        lift=None,
+        inclusion_factory=None,
+        verify_linearity=True,
+    ) -> None:
+        if inclusion_factory is None and (ambient is None or generator_images is None):
+            raise ValueError("a module subobject requires constructor-owned inclusion data")
+        self._ambient = ambient
+        self._generator_images = generator_images
+        self._lift = lift
+        self._inclusion_factory = inclusion_factory
+        self._verify_linearity = bool(verify_linearity)
+
+    def ambient_module(self):
+        return self._ambient
+
+    def generator_images(self):
+        return self._generator_images
+
+    def selected_lift(self):
+        return self._lift
+
+    def inclusion_factory(self):
+        return self._inclusion_factory
+
+    def verify_linearity(self) -> bool:
+        return self._verify_linearity
+
+    def inclusion(self, subobject):
+        factory = self.inclusion_factory()
+        if factory is not None:
+            return factory(subobject)
+        lift = self.selected_lift()
+        return subobject.Mono(self.ambient_module())(
+            self.generator_images(),
+            verify_linearity=self.verify_linearity(),
+            lift=(None if lift is None else lambda element: lift(subobject, element)),
+        )
+
+
 class ModuleSubobjects(OwnedCategoryOverBaseRing):
     r"""Modules carrying a chosen monomorphism into another module."""
 
@@ -1942,39 +1989,23 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             subobject_verify_linearity=True,
             **rest,
         ) -> None:
-            if subobject_ambient is None and subobject_inclusion_factory is None:
-                raise ValueError("a module subobject requires constructor-owned inclusion data")
-            self._preamble_subobject_ambient = subobject_ambient
-            self._preamble_subobject_generator_images = subobject_generator_images
-            self._preamble_subobject_lift = subobject_lift
-            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
-            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            self._module_subobject_construction = ModuleSubobjectConstruction(
+                ambient=subobject_ambient,
+                generator_images=subobject_generator_images,
+                lift=subobject_lift,
+                inclusion_factory=subobject_inclusion_factory,
+                verify_linearity=subobject_verify_linearity,
+            )
             super().__init__(**rest)
+
+        def module_subobject_construction(self):
+            r"""Return the selected construction defining this module subobject."""
+            return self._module_subobject_construction
 
         @cached_method
         def inclusion(self):
             r"""Return the chosen monomorphism represented by constructor data."""
-            factory = self.__dict__.get("_preamble_subobject_inclusion_factory")
-            if factory is not None:
-                inclusion = factory(self)
-            else:
-                ambient = self.__dict__.get("_preamble_subobject_ambient")
-                images = self.__dict__.get("_preamble_subobject_generator_images")
-                if ambient is None or images is None:
-                    selected = self.__dict__.get("_preamble_inclusion")
-                    assert selected is not None, f"{self} is a module subobject without constructor-owned inclusion data"
-                    return selected
-                inclusion = self.Mono(ambient)(
-                    images,
-                    verify_linearity=self.__dict__.get(
-                        "_preamble_subobject_verify_linearity",
-                        True,
-                    ),
-                )
-            lift = self.__dict__.get("_preamble_subobject_lift")
-            if lift is not None:
-                inclusion._preamble_lift = lambda element: lift(self, element)
-            return inclusion
+            return self.module_subobject_construction().inclusion(self)
 
         def ambient_module(self):
             r"""Return the ambient module, i.e. the codomain of the inclusion."""
@@ -2836,11 +2867,13 @@ class RestrictedScalarsModuleView(Parent):
 
         subobject_data = subobject_inclusion_factory is not None or (subobject_ambient is not None and subobject_generator_images is not None)
         if subobject_data:
-            self._preamble_subobject_ambient = subobject_ambient
-            self._preamble_subobject_generator_images = subobject_generator_images
-            self._preamble_subobject_lift = subobject_lift
-            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
-            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            self._module_subobject_construction = ModuleSubobjectConstruction(
+                ambient=subobject_ambient,
+                generator_images=subobject_generator_images,
+                lift=subobject_lift,
+                inclusion_factory=subobject_inclusion_factory,
+                verify_linearity=subobject_verify_linearity,
+            )
             categories.append(ModuleSubobjects(base_ring))
 
         self._preamble_base_ring = base_ring

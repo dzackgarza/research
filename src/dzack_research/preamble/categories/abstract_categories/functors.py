@@ -429,7 +429,7 @@ class _LimitFunctor(Functor):
 
     @staticmethod
     def _diagram(diagram_object):
-        return diagram_object.arrow().functor()
+        return diagram_object.functor()
 
     def _apply_object(self, diagram_object: Parent) -> Parent:
         return self._limits.construction(self._diagram(diagram_object)).object()
@@ -456,7 +456,7 @@ class _ColimitFunctor(Functor):
 
     @staticmethod
     def _diagram(diagram_object):
-        return diagram_object.arrow().functor()
+        return diagram_object.functor()
 
     def _apply_object(self, diagram_object: Parent) -> Parent:
         return self._colimits.construction(self._diagram(diagram_object)).object()

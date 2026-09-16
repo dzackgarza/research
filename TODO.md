@@ -653,7 +653,7 @@ Some members are sets with structure and belong there.
 Others are not sets at all, and declare `Sets()` because the category their objects belong to is not in the tree.
 These nodes build the missing categories rather than leaving the false declarations standing.
 
-- [ ] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
+- [x] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
   **Goal:** Own a coverage on a category and the sheaf condition it defines, so that sheaves on \(C\) are the full subcategory of \(\mathrm{Presh}(C, D)\) cut out by descent.
   **Observed gap:** the descent condition exists in exactly one situation and as gluing data rather than as a definition: `DistinguishedAffineCover.glue_modules` assembles a module sheaf from charts and transition isomorphisms.  Nothing states the condition a presheaf must satisfy.
   **Owners:** the coverage on \(C\), the descent diagram it produces for a covering family, and the full subcategory of the presheaf category.
@@ -663,7 +663,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Separating cases:** a presheaf that fails descent on a two-element cover, and the same presheaf on the trivial coverage where it passes.  Keep the coverage a parameter: the reason for stating it this way is that stacks change the value category, not the condition.
   **Acceptance:** a presheaf and a sheaf on the same site are distinguished by the construction rather than by the caller's assertion; the affine module-gluing route returns an object of the sheaf category.
 
-- [ ] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
+- [x] **`sheaf-object-placement`**. **Needs:** `sheaf-descent-subcategory`.
   **Goal:** Place every sheaf in the tree as an object of the sheaf category, and declare the sheaf-bearing categories into the categories their own definitions name.
   **Observed gap:** `QuasiCoherentSheaves` (`schemes/ringed_spaces.py:541`) and `RingedSpaces` (`:642`) both declare `Sets()`.  A quasi-coherent sheaf is an \(\mathcal{O}_X\)-module and a ringed space is \((X, \mathcal{O}_X)\); neither is a set.  `StructureSheaf`, `AffineModuleSheaf`, `GluedModuleSheaf`, `GluedAlgebraSheaf`, `FiniteAtlasInverseImageModuleSheaf`, `InvertibleSheaf` and `HigherDirectImageSheaf` are plain `SageObject`s, so none inherits the abelian or monoidal structure `QuasiCoherentSheaves` documents, and `__contains__` has to duck-type its argument for want of a placement.
   **Owners:** the sheaf category from `sheaf-descent-subcategory`; the ringed space as a space together with its sheaf of rings; the affine equivalence with \(\mathbf{Mod}_A\) already implemented as `module_category`/`associated_sheaf`/`global_sections`.
@@ -677,7 +677,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** `Algebras(R)(module, m)` constructs through the presented-module route for every bilinear `m`, associative or not; the forwarding block, the wrapper element class, the exact-module guard and the arrow-object branches of the algebra Hom classes are deleted with it; `underlying_module()` remains the functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) obtained from its category.
   **Acceptance:** an algebra answers its module operations through `Modules(R)`; no operation `Modules(R)` provides is defined a second time in the algebra subtree.
 
-- [ ] **`arrow-category-placement`**. **Needs:** none.
+- [x] **`arrow-category-placement`**. **Needs:** none.
   **Goal:** `_ArrowCategory` is an object of `Cat`, which is what its own definition \(\mathrm{Arr}(C) = \mathrm{Fun}([1], C)\) says it is.
   **Observed gap:** `abstract_categories/arrow_categories.py:156` states the functor-category definition in its docstring and declares `Objects()`, the root, so an arrow object inherits nothing from the functor category its definition names.  The functor category's own objects are built as objects of `Arr(Cat)` (`cat.py`, `_FunctorCategory._object_on`), so the two constructions currently define each other; one must become primary before `Arr(C)` can be declared into `[1] \to C`.
   **Owners:** `Cat`, and the owned functor category.
@@ -701,12 +701,12 @@ These nodes build the missing categories rather than leaving the false declarati
   **Owners:** the owned product construction on `Cat` objects; `GObjects`, which should be the case of a discrete group object.
   **Acceptance:** an affine group scheme is placed through the group-object construction; the two scheme categories declare it and nothing two levels up; `GObjects(G, C)` is its restriction to constant group objects.
 
-- [ ] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
+- [x] **`cat-valued-placement`**. **Needs:** `arrow-category-placement`.
   **Goal:** Every category-of-categories construction is an object of `Cat`: `_FunctorCategory`, `_OppositeCategory`, `_ProductCategory`, `ClassifyingCategory`, `DiscreteCategory`, `ImageOfFunctor`, alongside `HomCategories` (done, 61bd8c65) and `_ArrowCategory`.
   **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
   **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
 
-- [ ] **`membership-by-placement`**. **Needs:** none.
+- [x] **`membership-by-placement`**. **Needs:** none.
   **Goal:** No `__contains__` decides membership by a predicate (`CAT-23`).
   **Observed gap:** `Schemes.__contains__` answers lower-base membership by walking the candidate ring's base tower (schemes/schemes.py), so `X in Schemes(ZZ)` is true for a QQ-scheme that inherits nothing from it; `Sets.Countable.Infinite` decides membership by cardinality (a6078850); `QuasiCoherentSheaves.__contains__` duck-types (owned by `sheaf-object-placement`).
   **Acceptance:** each such membership is answered by placement at construction or through the functor of `CAT-16`; the predicates are gone.
@@ -743,7 +743,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** each specialization inherits or composes the general framing datum and introduces only genuinely stronger mathematics.  A lattice may provide lattice-specific structure on its generators only when that returned object actually has extra lattice semantics; otherwise its module generators are the same module-theoretic image inherited from the underlying free module.
   **Acceptance:** one framing authority supplies source, selected epi, generator set and generator evaluation across the audited descendants; specialization methods that remain have a documented stronger codomain/operation and are not renamings of the generic result.
 
-- [ ] **`owned-provenance-data`**. **Needs:** none.
+- [x] **`owned-provenance-data`**. **Needs:** none.
   **Goal:** Represent chosen source maps, presentations, base changes, completions, and comparison morphisms as first-class construction data instead of hidden `_preamble_*` provenance attributes.
   Replace hidden `_preamble_*source*`, functor-preimage, coordinate-morphism, and provenance side channels with first-class construction data (`CON-05`, `STY-07`, `OWN-03`--`05`).
   **Observed gap:** the audit found 108 attachment/provenance sites across 32 files, including functor-image preimages, de Rham/Kahler/cohomology source attributes, coordinate-algebra morphisms, completion sources and base-change sources.
@@ -766,7 +766,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** display the actual selected generator set/image, a bounded mathematically meaningful view for infinite sets, and any truly distinguishing chosen structure.  The object returned by `module_generators()` must look like module generators, not like the Python/category mechanism used to store them.
   **Acceptance:** finite free/lattice examples show their generator image (for example `{e_0, e_1}` or an equally informative owned-set rendering); infinite examples preserve laziness and expose the indexing mathematics without implementation taxonomy; no audited generator display is merely a renamed type.
 
-- [ ] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
+- [x] **`ambiguous-generator-names`**. **Needs:** `framing-specialization-convergence`.
   **Goal:** Replace bare `gens`, `basis`, `dual`, and similar names with structure-qualified operations whose mathematical codomain is clear from the name itself.
   Remove public bare `gens`, `generators`, `basis`, `dual`, and `ngens` spellings where `LEX-02`, `LEX-10`, and `STY-127` require the structure-qualified referent.
   **Observed gap:** current examples include fractional-ideal/lattice `gens`, lattice/isotropic `basis`, and six divisor/sheaf `dual()` methods.
@@ -816,7 +816,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** select the mathematical owner (normally the scalar-change functor/construction); make the convenience object method delegate to it or vice versa, with one retained source/target ring map, group action and induced morphism law.
   **Acceptance:** object and morphism transport are two actions of the same retained functor/construction, not parallel algorithms, and a nonidentity group-module map commutes with scalar change through that one owner.
 
-- [ ] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
+- [x] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
   **Goal:** Give constructions such as de Rham algebras, Kähler differentials, cohomology, and absolute Galois groups one shared identity/caching mechanism keyed by their defining mathematical data.
   Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism (`STY-55`, `DEV-12`, `OWN-10`).
   **Observed gap:** five independent dictionaries encode construction identity and lifetime.

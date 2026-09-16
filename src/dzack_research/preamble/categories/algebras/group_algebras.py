@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
     UnitalMultiplicativeAlgebraMorphism,
+    _algebra_element_in_module,
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import (
@@ -145,7 +146,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
             def left_action(group_element, element):
                 product = inclusion(group_element) * self(element)
-                return carrier(self._carrier_element(product))
+                return _algebra_element_in_module(self, carrier, product)
 
             return Modules(self)(carrier, left_action)
 

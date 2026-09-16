@@ -339,13 +339,10 @@ class FormEmbedding(FormedModuleMorphism):
     def lift(self, element):
         r"""Return the unique preimage through this formed monomorphism.
 
-        Subobject constructors may retain a specialized lift on the formed
-        inclusion itself.  Otherwise the form carries no additional lifting
-        datum: lift through the underlying module monomorphism.
+        The form carries no additional lifting datum: lift through the
+        underlying module monomorphism whose construction owns the selected
+        preimage operation.
         """
-        custom = self.__dict__.get("_preamble_lift")
-        if custom is not None:
-            return custom(element)
         return self.module_morphism().lift(element)
 
     @cached_method

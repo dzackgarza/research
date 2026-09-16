@@ -11,7 +11,10 @@ from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebraStructureConstruction,
+    FramedAlgebras,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
@@ -68,7 +71,7 @@ class PowerAlgebra(GradedDirectSumModule):
             raise ValueError("power algebra flavor must be alternating or divided")
         self._power_algebra_construction = _PowerAlgebraConstruction(module, flavor)
         base = _owned_ring(module.base_ring())
-        self._preamble_algebra_base_ring = base
+        self._algebra_structure_construction = AlgebraStructureConstruction(base)
 
         match flavor:
             case "alternating":

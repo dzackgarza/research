@@ -120,6 +120,7 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     assert kernel_images == {(algebra.zero(), ybar), (xbar, algebra.zero())}
     assert kernel.presentation_matrix().nrows() == 2
     element = source.linear_combination({"u": xbar, "v": -ybar})
+    assert inclusion.has_selected_lift()
     lifted = inclusion.lift(element)
     assert inclusion(lifted) == element
 
@@ -155,6 +156,7 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     assert invariant_factors[0] == ZZ(2)
 
     two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))
+    assert inclusion.has_selected_lift()
     lifted = inclusion.lift(two_x)
     assert inclusion(lifted) == two_x
 

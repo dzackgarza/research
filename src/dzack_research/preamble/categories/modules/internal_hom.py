@@ -171,21 +171,18 @@ def _internal_hom_model_data(homset):
         )
     else:
         model = relation_evaluation.kernel()
-        ambient = model.__dict__.get("_preamble_subobject_ambient")
-        images = model.__dict__.get("_preamble_subobject_generator_images")
+        construction = model.module_subobject_construction()
+        ambient = construction.ambient_module()
+        images = construction.generator_images()
         if ambient is None or images is None:
             raise AssertionError("an internal-Hom kernel must retain its subobject inclusion data")
+        lift = construction.selected_lift()
         inclusion = ModuleEmbedding(
             _auxiliary_linear_module_homset(model, ambient),
             images,
-            verify_linearity=model.__dict__.get(
-                "_preamble_subobject_verify_linearity",
-                True,
-            ),
+            verify_linearity=construction.verify_linearity(),
+            lift=(None if lift is None else lambda element: lift(model, element)),
         )
-        lift = model.__dict__.get("_preamble_subobject_lift")
-        if lift is not None:
-            inclusion._preamble_lift = lambda element: lift(model, element)
 
     relation_matrix = _presentation_matrix(model)
     presentation = (
