@@ -645,7 +645,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
 
 ### Owner API and construction data
 
-- [ ] **`owner-api-convergence`**. **Needs:** none.
+- [x] **`owner-api-convergence`**. **Needs:** none.
   Remove the public/global operation language forbidden by `ARC-12`, `API-07`, `STY-01`--`04`, and `OWN-02`.
   **Observed gap:** `preamble.all` still exports construction verbs such as products, coproducts, tensor products, kernels/cokernels, pushouts, localizations, completions, and quotients as free functions; the audit also found 261 exported owner-in-argument functions across 107 files.
   **Owners:** the actual category/object/morphism/Hom/functor that determines each operation; `preamble.all` is only the session aggregator and must not become a second operation registry.
