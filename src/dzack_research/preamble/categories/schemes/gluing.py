@@ -4838,7 +4838,6 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
         }
     )
     fixed_glued._preamble_inclusion = inclusion
-    fixed_glued._preamble_chartwise_fixed_automorphisms = automorphisms
     fixed_glued._preamble_local_fixed_subschemes = finite_indexed_family(
         indices,
         lambda index: local_fixed[index],

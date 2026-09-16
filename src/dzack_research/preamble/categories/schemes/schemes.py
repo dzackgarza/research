@@ -4569,8 +4569,6 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     source.Mor(self),
                     coordinates,
                 )
-                factor._preamble_projective_corestriction_ambient_morphism = morphism
-                factor._preamble_projective_corestriction_closed_subscheme = self
                 return factor
             raise NotImplementedError(
                 "the represented closed corestriction currently supports affine maps or retained projective-coordinate maps into projective space"
