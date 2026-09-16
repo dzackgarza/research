@@ -593,10 +593,6 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
     else:
         raise AssertionError("a nonlinear map on a finite module must be rejected")
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-
     infinite = ZZ.free_module(1)
     with caplog.at_level(
         logging.DEBUG,
@@ -605,7 +601,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
         basis_label = infinite.module_generating_set()[0]
         declared = infinite.module_category().Mor(infinite, infinite).elementwise(
             lambda vector: infinite(
-                (module_coefficients(vector, infinite).get(basis_label, ZZ.zero()) ** 2,)
+                (infinite.framing_coefficients(vector).get(basis_label, ZZ.zero()) ** 2,)
             )
         )
     assert declared(infinite.module_generator(0)) == infinite.module_generator(0)

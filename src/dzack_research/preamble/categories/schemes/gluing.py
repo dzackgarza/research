@@ -30,9 +30,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _algebra_structure_view,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
@@ -1545,7 +1542,7 @@ def _finite_framing(module):
 def _change_coefficients(element, source, target, ring_map):
     r"""Base-change one framed module element along ``ring_map``."""
 
-    coefficients = module_coefficients(source(element), source)
+    coefficients = source.framing_coefficients(source(element))
     return target.linear_combination(
         {
             label: ring_map(coefficient)
@@ -2307,8 +2304,8 @@ class FiniteAtlasModuleGluingDatum(SageObject):
                 right_label = label.component(1)
                 left_image = left_transition(left_source.module_generator(left_label))
                 right_image = right_transition(right_source.module_generator(right_label))
-                left_coefficients = module_coefficients(left_image, left_target)
-                right_coefficients = module_coefficients(right_image, right_target)
+                left_coefficients = left_target.framing_coefficients(left_image)
+                right_coefficients = right_target.framing_coefficients(right_image)
                 coefficients = {}
                 for tensor_label in codomain.module_generating_set():
                     coefficient = (
@@ -2416,10 +2413,11 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
                 label: target.linear_combination(
                     {
                         target_label: ring_map(coefficient)
-                        for target_label, coefficient in module_coefficients(
-                            local_map(local_map.domain().module_generator(label)),
-                            local_map.codomain(),
-                        ).items()
+                        for target_label, coefficient in local_map.codomain()
+                        .framing_coefficients(
+                            local_map(local_map.domain().module_generator(label))
+                        )
+                        .items()
                         if ring_map(coefficient) != target.base_ring().zero()
                     }
                 )

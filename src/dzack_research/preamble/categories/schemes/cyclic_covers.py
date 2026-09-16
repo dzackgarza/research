@@ -60,9 +60,6 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
@@ -269,9 +266,7 @@ class CyclicCoverBaseChangeComparison(SageObject):
                 source_ranking=source_rank,
                 target_labels=changed_labels,
             ):
-                coefficients = module_coefficients(
-                    source_algebra(element), source_algebra
-                )
+                coefficients = source_algebra.framing_coefficients(source_algebra(element))
                 result = target_algebra.zero()
                 for label, coefficient in coefficients.items():
                     position = int(source_ranking(label))
@@ -510,7 +505,7 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
             scale=scalar,
             rank=ranking,
         ):
-            coefficients = module_coefficients(algebra(element), algebra)
+            coefficients = algebra.framing_coefficients(algebra(element))
             result = algebra.zero()
             for label, coefficient in coefficients.items():
                 exponent = int(rank(label))

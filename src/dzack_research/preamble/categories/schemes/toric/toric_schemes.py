@@ -66,9 +66,6 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -434,7 +431,7 @@ class ToricSchemeMorphism(SchemeMorphism):
         if not codomain.is_cartier(divisor):
             raise ValueError("toric divisor pullback is represented for Cartier divisors")
         target_rays = codomain.fan().cones(1)
-        target_coefficients = module_coefficients(divisor, target_group)
+        target_coefficients = target_group.framing_coefficients(divisor)
         zero = _integers().zero()
         engine_divisor = codomain._toric_engine_variety().divisor(
             [int(target_coefficients.get(ray, zero)) for ray in target_rays]
@@ -707,7 +704,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if ray not in self.fan().cones(1):
                 raise ValueError("a toric Weil multiplicity is indexed by a ray of the fan")
             group = self.weil_divisor_group()
-            coefficients = module_coefficients(group(divisor), group)
+            coefficients = group.framing_coefficients(group(divisor))
             return coefficients.get(ray, _integers().zero())
 
         def order_of_character_along_prime_divisor(self, character, ray):
@@ -732,7 +729,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             group = self.torus_invariant_divisor_group()
             divisor = group(divisor)
-            coefficients = module_coefficients(divisor, group)
+            coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             if any(coefficient < zero for coefficient in coefficients.values()):
                 raise ValueError("divisor support here requires an effective torus-invariant divisor")
@@ -896,7 +893,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             ``<m_sigma, u_rho> = -a_rho`` (CLS Thm. 4.2.8).
             """
             group = self.torus_invariant_divisor_group()
-            coefficients = module_coefficients(divisor, group)
+            coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             local = self.local_divisor_group(cone)
             return local.linear_combination(
@@ -951,7 +948,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 return False
             fan = self.fan()
             group = self.torus_invariant_divisor_group()
-            coefficients = module_coefficients(divisor, group)
+            coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             for cone in fan.maximal_cones():
                 character = self.cartier_datum(divisor, cone)
@@ -977,7 +974,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 return False
             fan = self.fan()
             group = self.torus_invariant_divisor_group()
-            coefficients = module_coefficients(divisor, group)
+            coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             for cone in fan.maximal_cones():
                 character = self.cartier_datum(divisor, cone)
@@ -1062,7 +1059,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "the polytope of a divisor is bounded on a complete fan"
             )
             group = self.torus_invariant_divisor_group()
-            coefficients = module_coefficients(divisor, group)
+            coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             cocharacters = self.cocharacter_lattice()
             halfspaces = tuple(
@@ -1122,7 +1119,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 raise ValueError("the selected line bundle represents a different toric divisor")
             sections = self.divisor_section_space(divisor)
             section = sections(section)
-            coefficients = module_coefficients(section, sections)
+            coefficients = sections.framing_coefficients(section)
             module_sheaf = selected_line.module_sheaf()
             local_components = {}
             for cone in self.gluing_datum().chart_indices():
@@ -1161,7 +1158,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             for cone in self.gluing_datum().chart_indices():
                 module = selected_line.module_sheaf().sections_on_chart(cone)
                 label = next(iter(module.module_generating_set()))
-                coefficient = module_coefficients(compatible.component(cone), module).get(
+                coefficient = module.framing_coefficients(compatible.component(cone)).get(
                     label,
                     module.base_ring().zero(),
                 )
@@ -1216,7 +1213,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if character not in sections:
                 raise ValueError("the character is not a global section of the stated divisor")
             cox = self.cox_ring()
-            coefficients = module_coefficients(divisor, self.weil_divisor_group())
+            coefficients = self.weil_divisor_group().framing_coefficients(divisor)
             zero = _integers().zero()
             monomial = cox.one()
             for label in cox.algebra_generating_set():
@@ -1543,7 +1540,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             zero = _integers().zero()
 
             def engine_divisor(divisor):
-                coefficients = module_coefficients(divisor, group)
+                coefficients = group.framing_coefficients(divisor)
                 return self._toric_engine_variety().divisor(
                     [int(coefficients.get(ray, zero)) for ray in rays]
                 )
