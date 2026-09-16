@@ -1,10 +1,10 @@
 r"""Archive reconciliation for the distinguished boundary points of an ADE polygon."""
 
-from dzack_research.preamble.all import QQ, ADELogPair
+from dzack_research.preamble.all import ADELogPairs, QQ
 
 
 def test_a_one_distinguished_boundary_points_are_exactly_the_two_blue_edges() -> None:
-    pair = ADELogPair("A", 1, QQ)
+    pair = ADELogPairs(QQ)("A", 1)
     polygon = pair.polygon()
     points = pair.distinguished_boundary_points()
 
@@ -24,7 +24,7 @@ def test_a_one_distinguished_boundary_points_are_exactly_the_two_blue_edges() ->
 
 
 def test_distinguished_points_are_a_proper_subset_when_a_polygon_has_nonblue_boundary() -> None:
-    pair = ADELogPair("D", 4, QQ)
+    pair = ADELogPairs(QQ)("D", 4)
     points = pair.distinguished_boundary_points()
     boundary = pair.polygon().boundary_integral_points()
 

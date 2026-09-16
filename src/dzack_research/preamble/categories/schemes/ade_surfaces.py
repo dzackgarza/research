@@ -212,7 +212,55 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The base log pair of the ``A_2`` polygon."""
-        return ADELogPair("A", 2, self.base_ring())
+        return self("A", 2)
+
+    def _call_(self, dynkin_letter, dynkin_rank, variant=(), affine=False):
+        r"""Construct the base log pair of one ADE type over this category's base."""
+        letter = str(dynkin_letter).upper()
+        assert letter in ("A", "D", "E"), "an ADE type has letter A, D or E"
+        rank = int(dynkin_rank)
+        assert rank >= 1, "an ADE type has positive rank"
+        variant = tuple(variant)
+
+        vertices, point, decorations = _ade_polygon_data(
+            letter,
+            rank,
+            variant,
+            bool(affine),
+        )
+        polygon = LatticePolygons()(vertices)
+        toric_base = polygon.toric_variety(self.base_ring())
+        return _object_of(
+            self,
+            dynkin_letter=letter,
+            dynkin_rank=rank,
+            dynkin_variant=variant,
+            is_affine_type=bool(affine),
+            polygon=polygon,
+            polygon_vertex_order=finite_family(
+                tuple(_rational_point(vertex) for vertex in vertices),
+                name="ADE polygon boundary order",
+            ),
+            distinguished_point=_rational_point(point),
+            side_decorations=decorations,
+            log_scheme=toric_base,
+            boundary_divisor=toric_base.toric_boundary_divisor(),
+        )
+
+    def at21(self, dynkin_letter, dynkin_rank, *, variant="pure", affine=False):
+        r"""Construct the source-admitted toric AT21 enhancement of one ADE pair."""
+        letter = str(dynkin_letter).upper()
+        rank = int(dynkin_rank)
+        source_variant = str(variant).lower().replace("_", "-")
+        affine = bool(affine)
+        low_variant = AT21ToricADEPair._validated_low_level_variant(
+            letter,
+            rank,
+            source_variant,
+            affine,
+        )
+        pair = self(letter, rank, variant=low_variant, affine=affine)
+        return AT21ToricADEPair(pair, source_variant=source_variant)
 
     def _repr_object_names(self):
         return f"ADE log pairs over {self.base_ring()}"
@@ -562,31 +610,12 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
 
 def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
-    r"""The base log pair ``(V_Q, Delta)`` of one ADE type."""
-    letter = str(dynkin_letter).upper()
-    assert letter in ("A", "D", "E"), "an ADE type has letter A, D or E"
-    rank = int(dynkin_rank)
-    assert rank >= 1, "an ADE type has positive rank"
-    variant = tuple(variant)
-
-    vertices, point, decorations = _ade_polygon_data(letter, rank, variant, bool(affine))
-    polygon = LatticePolygons()(vertices)
-    toric_base = polygon.toric_variety(base_ring)
-    return _object_of(
-        ADELogPairs(toric_base.scheme_base_ring()),
-        dynkin_letter=letter,
-        dynkin_rank=rank,
-        dynkin_variant=variant,
-        is_affine_type=bool(affine),
-        polygon=polygon,
-        polygon_vertex_order=finite_family(
-            tuple(_rational_point(vertex) for vertex in vertices),
-            name="ADE polygon boundary order",
-        ),
-        distinguished_point=_rational_point(point),
-        side_decorations=decorations,
-        log_scheme=toric_base,
-        boundary_divisor=toric_base.toric_boundary_divisor(),
+    r"""Compatibility spelling for ``ADELogPairs(base_ring)(...)``."""
+    return ADELogPairs(_own_ring(base_ring))(
+        dynkin_letter,
+        dynkin_rank,
+        variant=variant,
+        affine=affine,
     )
 
 
@@ -597,7 +626,7 @@ class AT21ToricADEPair(SageObject):
     r"""A source-admitted toric ADE base pair with its branch linear system.
 
     This is the toric part of Alexeev--Thompson's classification, not a second
-    scheme model.  The underlying :func:`ADELogPair` remains the actual toric
+    scheme model.  The underlying object of :class:`ADELogPairs` remains the actual toric
     surface with its boundary.  Admission uses AT21 Theorems 4.8 and 4.10 for
     the pure finite/affine shapes and Lemma 3.25 for the primed shapes that
     remain toric.  In particular ``tilde A`` is not admitted here (AT21
@@ -608,13 +637,22 @@ class AT21ToricADEPair(SageObject):
     parser to infer parity from a loose token sequence.
     """
 
-    def __init__(self, dynkin_letter, dynkin_rank, base_ring, *, variant="pure", affine=False) -> None:
-        letter = str(dynkin_letter).upper()
-        rank = int(dynkin_rank)
-        variant = str(variant).lower().replace("_", "-")
-        affine = bool(affine)
-        low_variant = self._validated_low_level_variant(letter, rank, variant, affine)
-        pair = ADELogPair(letter, rank, base_ring, variant=low_variant, affine=affine)
+    def __init__(self, base_pair, *, source_variant) -> None:
+        base = base_pair.log_scheme().scheme_base_ring()
+        if base_pair not in ADELogPairs(base):
+            raise TypeError("an AT21 toric ADE enhancement requires an owned ADE log pair")
+        pair = base_pair
+        source_variant = str(source_variant).lower().replace("_", "-")
+        expected_variant = self._validated_low_level_variant(
+            pair.dynkin_letter(),
+            int(pair.dynkin_rank()),
+            source_variant,
+            pair.is_affine_type(),
+        )
+        if tuple(pair.dynkin_variant()) != tuple(expected_variant):
+            raise ValueError(
+                "the supplied ADE log pair does not have the polygon variant selected by the AT21 source shape"
+            )
         branch_class = pair.log_scheme().polarizing_divisor()
         expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
         if branch_class != expected:
@@ -623,7 +661,7 @@ class AT21ToricADEPair(SageObject):
                 "L=-2(K_Y+C)=2C'"
             )
         self._base_pair = pair
-        self._source_variant = variant
+        self._source_variant = source_variant
         self._branch_divisor_class = branch_class
         self._branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
 
@@ -1101,11 +1139,10 @@ class AT21ADEDoubleCover(SageObject):
 
 
 def AT21ADEPair(dynkin_letter, dynkin_rank, base_ring, *, variant="pure", affine=False):
-    r"""Construct the source-admitted toric AT21 base pair."""
-    return AT21ToricADEPair(
+    r"""Compatibility spelling for ``ADELogPairs(base_ring).at21(...)``."""
+    return ADELogPairs(_own_ring(base_ring)).at21(
         dynkin_letter,
         dynkin_rank,
-        base_ring,
         variant=variant,
         affine=affine,
     )

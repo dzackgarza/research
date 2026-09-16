@@ -1,11 +1,10 @@
 r"""AT21 double covers are live toric-pyramid hypersurfaces with their boundary data."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.schemes.ade_surfaces import AT21ADEPair
+from dzack_research.preamble.all import ADELogPairs, QQ
 
 
 def test_d4_cover_is_the_pyramid_hypersurface_with_projection_and_deck_involution() -> None:
-    pair = AT21ADEPair("D", 4, QQ)
+    pair = ADELogPairs(QQ).at21("D", 4)
     cover = pair.double_cover(pair.source_normal_form_section(constant=1))
 
     assert cover.scheme().inclusion().codomain() is cover.ambient_toric_threefold()
@@ -22,7 +21,7 @@ def test_d4_cover_is_the_pyramid_hypersurface_with_projection_and_deck_involutio
 
 
 def test_branch_ramification_and_pulled_boundary_are_actual_closed_subschemes() -> None:
-    pair = AT21ADEPair("D", 4, QQ)
+    pair = ADELogPairs(QQ).at21("D", 4)
     cover = pair.double_cover(pair.source_normal_form_section(constant=1))
 
     assert cover.branch_subscheme().inclusion().codomain() is pair.scheme()
@@ -40,7 +39,7 @@ def test_branch_ramification_and_pulled_boundary_are_actual_closed_subschemes() 
 
 
 def test_e8_source_orbit_retains_local_global_singularity_comparison() -> None:
-    pair = AT21ADEPair("E", 8, QQ)
+    pair = ADELogPairs(QQ).at21("E", 8)
     cover = pair.double_cover(pair.source_normal_form_section(constant=0))
     comparison = dict(cover.local_global_singularity_comparison())
 

@@ -1,10 +1,10 @@
 r"""Archive reconciliation for the decorated two-dimensional ADE SVG view."""
 
-from dzack_research.preamble.all import QQ, ADELogPair
+from dzack_research.preamble.all import ADELogPairs, QQ
 
 
 def test_ade_svg_retains_the_distinguished_point_and_side_decorations() -> None:
-    pair = ADELogPair("A", 3, QQ, variant=("long", "short"))
+    pair = ADELogPairs(QQ)("A", 3, variant=("long", "short"))
     svg = pair.ade_svg()
 
     assert pair.polygon_vertex_order().cardinality() == pair.vertices().cardinality()
@@ -21,7 +21,7 @@ def test_ade_svg_retains_the_distinguished_point_and_side_decorations() -> None:
 
 
 def test_ade_svg_marks_the_actual_blue_boundary_points() -> None:
-    pair = ADELogPair("A", 1, QQ)
+    pair = ADELogPairs(QQ)("A", 1)
     svg = pair._repr_svg_()
 
     represented = {

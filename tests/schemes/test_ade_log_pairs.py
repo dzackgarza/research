@@ -8,7 +8,6 @@ point, and whether the pyramid over the polygon is integral.
 """
 
 from dzack_research.preamble.all import (
-    ADELogPair,
     ADELogPairs,
     LogPairs,
     QQ,
@@ -19,7 +18,7 @@ from dzack_research.preamble.all import (
 def test_the_a_one_polygon_has_the_projective_plane_as_its_toric_base() -> None:
     r"""``Q`` is the triangle on ``(0,2)``, ``(0,0)``, ``(2,0)``, whose inner
     normal fan has rays ``e_1``, ``e_2`` and ``-e_1-e_2``."""
-    pair = ADELogPair("A", 1, QQ)
+    pair = ADELogPairs(QQ)("A", 1)
 
     assert pair in ADELogPairs(QQ)
     assert pair in ToricLogPairs(QQ)
@@ -35,7 +34,7 @@ def test_the_a_one_polygon_has_the_projective_plane_as_its_toric_base() -> None:
 def test_the_boundary_splits_into_the_blue_divisor_and_its_complement() -> None:
     r"""``p* = (0,2)`` is a vertex of the ``A_1`` triangle, so it lies on two of
     the three sides and exactly two of the three invariant divisors are blue."""
-    pair = ADELogPair("A", 1, QQ)
+    pair = ADELogPairs(QQ)("A", 1)
     blue = pair.blue_divisor()
     complementary = pair.complementary_divisor()
     group = pair.boundary_divisor_group()
@@ -49,7 +48,7 @@ def test_the_boundary_splits_into_the_blue_divisor_and_its_complement() -> None:
 def test_the_d_four_polygon_has_a_quadric_surface_as_its_toric_base() -> None:
     r"""``Q`` is the square ``[0,2]^2``, whose normal fan is the fan of
     ``P^1 x P^1``, the Hirzebruch surface ``F_0``."""
-    pair = ADELogPair("D", 4, QQ)
+    pair = ADELogPairs(QQ)("D", 4)
 
     assert pair.polygon().vertices().cardinality() == 4
     assert pair.log_scheme().is_hirzebruch_surface(0)
@@ -58,7 +57,7 @@ def test_the_d_four_polygon_has_a_quadric_surface_as_its_toric_base() -> None:
 
 
 def test_the_unadorned_a_family_carries_two_long_white_sides() -> None:
-    pair = ADELogPair("A", 3, QQ)
+    pair = ADELogPairs(QQ)("A", 3)
     decorations = pair.side_decorations()
 
     assert decorations.cardinality() == 2
@@ -68,8 +67,8 @@ def test_the_unadorned_a_family_carries_two_long_white_sides() -> None:
 
 
 def test_a_short_variant_decorates_one_side_differently() -> None:
-    plain = ADELogPair("A", 3, QQ)
-    right_short = ADELogPair("A", 3, QQ, variant=("long", "short"))
+    plain = ADELogPairs(QQ)("A", 3)
+    right_short = ADELogPairs(QQ)("A", 3, variant=("long", "short"))
     decorations = right_short.side_decorations()
 
     assert decorations.cardinality() == 2
@@ -81,7 +80,7 @@ def test_a_short_variant_decorates_one_side_differently() -> None:
 
 def test_the_pyramid_over_a_finite_type_polygon_is_a_lattice_polytope() -> None:
     r"""The apex is ``(p*, 2)``, integral exactly when ``p*`` is."""
-    pair = ADELogPair("A", 1, QQ)
+    pair = ADELogPairs(QQ)("A", 1)
     pyramid = pair.pyramid()
 
     assert pyramid.dimension() == 3
@@ -96,7 +95,7 @@ def test_an_affine_a_pyramid_is_rational_when_the_half_rank_parameter_is_odd() -
     half-integral.  Even ``n`` gives an integral apex instead; half-integrality
     is not a property of the entire affine ``A`` family.
     """
-    pair = ADELogPair("A", 1, QQ, affine=True)
+    pair = ADELogPairs(QQ)("A", 1, affine=True)
 
     assert pair.is_affine_type()
     assert pair.distinguished_point()[0] == QQ(1) / QQ(2)
@@ -104,12 +103,12 @@ def test_an_affine_a_pyramid_is_rational_when_the_half_rank_parameter_is_odd() -
 
 
 def test_the_coxeter_diagram_of_a_finite_type_has_one_vertex_per_rank() -> None:
-    assert ADELogPair("A", 3, QQ).coxeter_diagram().cardinality() == 3
-    assert ADELogPair("E", 6, QQ).coxeter_diagram().cardinality() == 6
+    assert ADELogPairs(QQ)("A", 3).coxeter_diagram().cardinality() == 3
+    assert ADELogPairs(QQ)("E", 6).coxeter_diagram().cardinality() == 6
 
 
 def test_the_polarizing_polytope_of_the_toric_base_is_the_ade_polygon() -> None:
-    pair = ADELogPair("E", 6, QQ)
+    pair = ADELogPairs(QQ)("E", 6)
 
     assert pair.log_scheme().is_polarized()
     assert pair.log_scheme().polarizing_polytope() is pair.polygon()
