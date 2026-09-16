@@ -375,7 +375,7 @@ class UnderlyingAlgebraModuleMorphism(ModuleMorphism):
         return self._algebra_morphism
 
 
-class AlgebraUnderlyingModuleFunctor(Functor):
+class _AlgebraUnderlyingModuleFunctor(Functor):
     r"""\(U\colon\mathbf{Alg}_R\to\mathbf{Mod}_R\)."""
 
     def __init__(self, base_ring, algebra_category=None) -> None:
@@ -456,11 +456,10 @@ class AlgebraUnderlyingModuleFunctor(Functor):
 def _algebra_underlying_module_functor(
     base_ring,
     algebra_category=None,
-) -> AlgebraUnderlyingModuleFunctor:
-    return AlgebraUnderlyingModuleFunctor(base_ring, algebra_category)
+) -> _AlgebraUnderlyingModuleFunctor:
+    return _AlgebraUnderlyingModuleFunctor(base_ring, algebra_category)
 
 
 __all__ = [
-    "AlgebraUnderlyingModuleFunctor",
     "UnderlyingAlgebraModuleMorphism",
 ]
