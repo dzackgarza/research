@@ -73,7 +73,7 @@ def _has_category_packet_surface(category) -> bool:
     not reliably a Python ``isinstance`` relation: Sage requires nested method
     providers themselves to have no superclass.
     """
-    return callable(getattr(category, "_category_packet", None)) and callable(
+    return callable(getattr(category, "category_packet", None)) and callable(
         getattr(category, "_hom_endpoint", None)
     )
 

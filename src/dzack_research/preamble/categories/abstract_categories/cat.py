@@ -288,7 +288,7 @@ class Cat(CategoryPacketMethods, Category):
         """
 
         _hom_endpoint = CategoryPacketMethods._hom_endpoint
-        _category_packet = CategoryPacketMethods._category_packet
+        category_packet = CategoryPacketMethods.category_packet
         HomCategory = CategoryPacketMethods.HomCategory
         EndCategory = CategoryPacketMethods.EndCategory
         MonoCategory = CategoryPacketMethods.MonoCategory

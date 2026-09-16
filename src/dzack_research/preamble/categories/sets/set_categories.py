@@ -675,17 +675,6 @@ class Sets(OwnedCategory):
             raise TypeError("a set morphism requires two set objects")
         return _set_mor_category(domain, codomain)
 
-    class ParentMethods:
-        def counting_ordinal(self):
-            r"""Return the represented ordinal that counts this set when it is countable."""
-            size = cardinal(self.cardinality())
-            if size.is_finite():
-                return finite_ordinal_set(size.finite_value())
-            assert size.is_countably_infinite(), (
-                f"{self} is not countable, so no ordinal represented here counts it"
-            )
-            return NN
-
     class SubcategoryMethods:
         def Finite(self) -> Category:
             r"""Return this category with the axiom that its objects are finite."""
@@ -1058,6 +1047,16 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def counting_ordinal(self):
+            r"""Return the represented ordinal that counts this set when it is countable."""
+            size = cardinal(self.cardinality())
+            if size.is_finite():
+                return finite_ordinal_set(size.finite_value())
+            assert size.is_countably_infinite(), (
+                f"{self} is not countable, so no ordinal represented here counts it"
+            )
+            return NN
+
         def Mor(
             self,
             codomain: Parent,
