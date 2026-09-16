@@ -1804,9 +1804,12 @@ property combinations, four notions each under two names, restriction of
 scalars declared as a supercategory on three bases, and a diamond whose two
 routes landed on different objects. None of it was a wrong object; all of it
 was a wrong belief about what a declaration says. `CONTRIBUTING.md` codes
-`CAT-15` to `CAT-25` and `DEV-64` state the rules with the artifact each one
-came from. This section is the order in which the questions are asked, and no
-declaration is written until each has an answer in the commit body.
+`CAT-15` to `CAT-27`, `DEV-64` and `DEV-65` state the rules with the artifact
+each one came from, and *Contributing a category: the procedure* there is the
+full order of work, from the definition in the field's words through the
+survey of the tree to the delivery of every consumer. This section is the
+short form asked before any declaration is written; no declaration is written
+until each question has an answer in the commit body.
 
 1. **What are the objects?** Write the definition in one sentence, in the
    field's words. If it names a chosen datum ("with a chosen basis", "with a

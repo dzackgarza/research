@@ -1415,6 +1415,102 @@ exhaustive blacklist.  When a new instance has the same generator, repair the
 construction owner; do not mint a narrower exception or a detector for the one
 spelling that happened to expose it.
 
+### Contributing a category: the procedure
+
+This is the order of work for adding, moving, splitting or retiring a category.
+It exists because the declared graph read on 2026-09-16 was the sum of locally
+defensible edits: thirty categories under `Sets()`, a hand-meshed block of 135,
+four notions each under two names, restriction of scalars declared on three
+bases, a diamond through two different objects.  None of those was wrong at the
+moment it was written, from where its author stood.  The procedure moves the
+author to where the errors are visible, which is the mathematics first and the
+whole graph second, and it makes each step leave evidence in the commit body.
+
+**How the graph drifts, so that the steps below read as remedies.**  A
+category is minted where a consumer needs it and named from that vantage, so
+one notion acquires a second name (`FormedModules` beside `FormModules`).  A
+property is written as a class because a class is what the language offers,
+and then a class per combination follows, so a product of independent axes
+becomes a mesh of hand-declared diamonds (`FinitelyPresentedQuadraticFormModules`).
+A supercategory is chosen because it makes construction succeed or a method
+resolve, so `Sets()` and `Objects()` become placeholders and `Schemes` is
+declared beside `QuasiAffineSchemes` for safety.  A functor across a base is
+declared as an inclusion because both are true sentences (`Modules(R) ->
+Modules(S)`).  A consumer is left behind by a rename, and a lazy export table is
+added so the package still imports, which hides the dangling import for a year.
+Each step is local, each is defensible, and the disorder is only visible in
+aggregate, which is why the instrument runs on every declaration change.
+
+1. **State the notion in the field's words, with no implementation names.**
+   Objects, morphisms, the defining datum, the hypotheses, and the reference
+   that defines it (Stacks tag, Bourbaki chapter, the paper).  Apply
+   [mathematical dependency tracing](#mathematical-dependency-tracing): the
+   categories the definition passes through, down to ones the tree must own,
+   each a real category with a literature name.  Do not open the tree yet;
+   reading the tree first makes its current contents decide what is true.
+2. **Classify every level of that chain.**  A property of the objects with no
+   chosen datum is an axiom on the base that first states it (`CAT-17`).  A
+   chosen datum is a data subcategory, a class that declares the axiom it
+   truncates to.  A construction on a category (G-objects, direct-sum
+   decompositions, arrows, presheaves) is parameterized by that category and
+   declares it (`CAT-20`).  An object constructor is the category applied to
+   the object's data and is not a category at all.  A combination of
+   properties is a join and gets no class (`CAT-18`).
+3. **Survey the tree, level by level.**  `just category-graph by-supercategory`
+   for the parent each level would declare; `just category-graph json` with
+   `jq` for who owns an operation; `rg` on the nouns of each definition across
+   `categories/`; the expectation files under `tests/constructions/`,
+   `tests/user_simulations/` and `tests/conftest.py` for the names the
+   specification uses.  Record each level as: exists; exists under another
+   name, which is retired into the owner (`CAT-22`); or missing.
+4. **Reuse axioms before naming any.**  `sage.categories.category_with_axiom.all_axioms`
+   and the base's nested axiom classes first.  A new name is the reference
+   text's word, registered once; a property relative to a different structure
+   is qualified in Sage's idiom (`FinitelyPresentedAsAlgebra`) so that it does
+   not collide with the module meaning (`CAT-19`).  Two established names is a
+   choice, not coining.
+5. **Build what is missing from the top down.**  The deepest missing
+   intermediate category first, declaring its one immediate parent, then the
+   next, then the leaf.  A leaf written before its intermediates is a leaf that
+   declares two levels up, and that edge is never removed later.
+6. **Wire the leaf onto the deepest existing node.**  Its declaration is the
+   most specific category the tree can spell, as a join where it is one:
+   `Schemes(R).Affine().FiniteType().Smooth()`, not `AffineSchemes(R)` beside a
+   list of properties the join already composes.  One entry, unless the object
+   is genuinely two structures at once (a ring and a module), in which case
+   write both and say in the commit body why the two routes are the same
+   functor (`CAT-21`).
+7. **Keep every change of base or parameter out of the list.**  Restriction of
+   scalars, base change, the passage from an ideal to a fractional ideal or from
+   an `R[G]`-module to a `G`-object over `R`: each is a functor obtained from
+   the category by a method named for the construction (`CAT-16`).  Sage
+   applies every axiom along a declared edge, so such an entry is a false
+   theorem for every relative property.
+8. **Write the declaration as expressions a reader can resolve** (`CAT-24`):
+   names and parameters, no locals, no method calls on `self` that compute a
+   category.  `extra_super_categories` on an axiom class states a genuine
+   implication over the same base and nothing Sage's join already supplies.
+9. **Read the graph before and after** (`CAT-25`): `shape`, `cells`, `audit`,
+   and `just preamble-imports`.  The breadth of the target does not grow, no
+   shortcut appears, no piece splits off, and any new generator owing a cell is
+   named in the commit body with the theorem that fills it.
+10. **Deliver the consequences in the same commit.**  Consumers of a retired or
+    renamed name are rewritten (`CAT-26`); a name the specification requires
+    survives as a thin function returning the category (`CAT-27`); the TODO
+    node the change delivers is removed with its edges; the delta from step 9
+    is in the body.
+11. **When the honest parent is not in the tree, stop and say so.**  Build it
+    if steps 1 to 5 defined it; otherwise leave `super_categories` abstract so
+    the category refuses to construct, and record the missing category in
+    `COMPLAINTS.md` with its dependency path and in `TODO.md` as a node the
+    consumer needs.  Never a placeholder, never a mechanism that makes the
+    construction proceed (`DEV-65`).
+
+The procedure in one line: define, classify, survey, reuse, build top-down,
+wire to the deepest node, keep functors out of the list, write resolvable
+expressions, read the graph, deliver the consequences, and stop where the
+mathematics is missing.
+
 ## Corrective implementation style guide (`STY-*`)
 
 This is a **living catalogue of concrete code shapes**.  Add a new entry whenever review identifies a recurring implementation pattern whose replacement is known.  Do not wait for the same mistake to recur in several files.  The point is to teach the repository's preferred constructions—not merely to ban today's instances.
@@ -5297,6 +5393,26 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the commit body of a declaration change quotes the before and after of `shape` (declarations, longest chain) and `cells` (H_1 rank, largest block, count owing a cell), and names each edge as shortcut, false, or new-and-immediate.
 
+#### `CAT-26`: A Retirement or Rename Rewrites Its Consumers in the Same Delivery
+
+- **Rule**: When a category is retired into its owner, renamed, or moved between modules, every consumer of the old name is rewritten in the delivery commit: source, the session surface `preamble/all.py` and the package export tables, and every test outside the expectation subtrees (a test's claim is preserved and only its spelling changes; a claim with no surviving spelling is reported, never deleted).  `just preamble-imports` exits zero before the commit.  Notebooks under `computations/notebooks/` are the user's; a notebook that names the old spelling is reported with its cell, not edited.
+
+- **Rationale**: a consumer left behind is invisible while the tree cannot be run, and a lazy export table added so the package still imports hides it indefinitely; on 2026-09-16 the import audit found seventeen such imports, all older than that day, including `DeRhamAlgebra` and `KahlerDifferentials`, names no module had defined for months.  The consumer sweep that followed the axiom passes touched two source files and fourteen test files that the passes had each reported as "outside my tree".
+
+- **Violation Example**: retiring `FormedModules` and leaving five tests importing it; renaming `DeRhamAlgebras` and leaving five modules importing `DeRhamAlgebra`; adding `_EXPORTS` with `__getattr__` so the package imports while a name in the table no longer exists.
+
+- **Correct Example**: the retirement of `Ideals` rewrites `test_fractional_ideals_archive.py` to `CommutativeIdeals(ZZ).extension_to_fraction_field()(I) in FractionalIdeals(ZZ)`, restating the same claim, in the commit that retires the class.
+
+#### `CAT-27`: A Name the Specification Requires Survives as a Thin Function, Never as a Class With a Body
+
+- **Rule**: When a class becomes an axiom category or a join and the expectation files name the class, the name survives as a function of the same parameters returning that category (`def OwnedFields(): return OwnedRings().Division().Commutative()`), or as the axiom class itself under its plural name.  It never survives as a class with its own body, methods, or `super_categories`: a second implementation under the old name is the duplicate `CAT-22` retires.  Operations the retired class owned move to the axiom class at the weakest sufficient structure (`OWN-18`); a join category holds no methods, so an operation a join needs is placed on the nested join class Sage generates or on the data class that consumes the datum.
+
+- **Rationale**: the specification is written blind and its names are the contract; the implementation meets the contract by resolving the name to the right category, not by keeping the old class alive beside the new one.
+
+- **Violation Example**: `OwnedOrders` kept as a class "because a join carries no methods" while also declaring the join, so the name is both the join and a second class over it.
+
+- **Correct Example**: `StrictlyCommutativeDifferentialGradedAlgebras(R)` returning `DifferentialGradedAlgebras(R).Supercommutative().Alternating()`; `PrimeFields` as the plural name of `OwnedRings.Division.Commutative.Prime`.
+
 #### `CAT-02`: Property Categories Do Not Manufacture Chosen Data
 
 - **Rule**: Distinguish a property from a chosen witness of that property.
@@ -6845,6 +6961,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: writing `def super_categories(self): return [Schemes(self.base_ring())]` on nine axiom classes to block axiom descent along a base-restriction edge, instead of reading why the descent happens and removing the edge.
 
 - **Correct Example**: reading `CategoryWithAxiom.super_categories` (category_with_axiom.py) and `Category._with_axiom_as_tuple` (category.py), recording that an axiom is applied along every declared supercategory, and ruling that base-restriction edges are functors (AGENTS.md, *Red flags*; `TRAPS.md`).
+
+#### `DEV-65`: An Obstruction Met While Changing a Declaration Is a Finding, Never a Mechanism
+
+- **Rule**: When a declaration change meets an obstruction (a construction that cannot proceed, an object that must be in a category that does not yet exist when it is built, a Sage behaviour that a plain declaration triggers), the change stops there and the obstruction becomes a node in `TODO.md` with its dependency path, or a question to the owner.  It is never resolved by a runtime mechanism: not `refine` after construction, not a declaration that reads an engine object, not a `super_categories` override on an axiom class, not a membership predicate, not a placeholder supercategory.  The same rule binds an agent working one subtree under a brief: the report names the obstruction with the file and line, and the brief's owner decides.
+
+- **Rationale**: every one of those mechanisms was tried on 2026-09-16 by an agent that had the policy in front of it, because from inside a subtree the mechanism is the shortest path to a passing view: nine `super_categories` overrides to block axiom descent that one deleted edge stops; the integers refined into `OwnedOrders` after construction, with a declaration reading an engine view of ZZ to avoid re-entry; a base-free category pointed two levels up for want of the node it needed.  Each would have been invisible to the next reader and each restated at the leaf a fact that belongs to the owner.  The obstruction is the information; the mechanism destroys it.
+
+- **Violation Example**: `def super_categories(self): return [Schemes(self.base_ring())]` on every scheme axiom; `_owned_integers` refining ZZ into a category whose declaration needs ZZ; `RepresentedToricSchemes -> LocallyRingedSpaces` because no base-free scheme category exists.
+
+- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in `COMPLAINTS.md` and scheduled in `TODO.md`.
 
 
 * * *
