@@ -67,7 +67,7 @@ class _ModuleAlgebraFunctor(Functor):
         return f"{self._name} functor on {self.base_ring()}-modules"
 
 
-class TensorAlgebraFunctor(_ModuleAlgebraFunctor):
+class _TensorAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(T_R:\mathbf{Mod}_R\to\mathbf{Alg}_R\)."""
 
     _constructor = staticmethod(_tensor_algebra_of)
@@ -75,7 +75,7 @@ class TensorAlgebraFunctor(_ModuleAlgebraFunctor):
     _name = "Tensor algebra"
 
 
-class SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
+class _SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(\operatorname{Sym}_R:\mathbf{Mod}_R\to\mathbf{CAlg}_R\)."""
 
     _constructor = staticmethod(_symmetric_algebra_of)
@@ -85,7 +85,7 @@ class SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     _name = "Symmetric algebra"
 
 
-class AlternatingAlgebraFunctor(Functor):
+class _AlternatingAlgebraFunctor(Functor):
     r"""Exterior-algebra functor on represented modules.
 
     No ordinary free/forgetful adjunction is asserted for this construction.
@@ -113,7 +113,7 @@ class AlternatingAlgebraFunctor(Functor):
         return f"Alternating algebra functor on {self.base_ring()}-modules"
 
 
-class DividedPowerAlgebraFunctor(Functor):
+class _DividedPowerAlgebraFunctor(Functor):
     r"""The divided-power algebra functor ``Gamma_R : Mod_R -> DPAlg_R``."""
 
     def __init__(self, base_ring) -> None:
@@ -139,13 +139,13 @@ class DividedPowerAlgebraFunctor(Functor):
 
 
 @cached_function
-def _tensor_algebra_functor(base_ring) -> TensorAlgebraFunctor:
-    return TensorAlgebraFunctor(base_ring)
+def _tensor_algebra_functor(base_ring) -> _TensorAlgebraFunctor:
+    return _TensorAlgebraFunctor(base_ring)
 
 
 @cached_function
-def _symmetric_algebra_functor(base_ring) -> SymmetricAlgebraFunctor:
-    return SymmetricAlgebraFunctor(base_ring)
+def _symmetric_algebra_functor(base_ring) -> _SymmetricAlgebraFunctor:
+    return _SymmetricAlgebraFunctor(base_ring)
 
 
 class _ModuleAlgebraAdjunction(Adjunction):
@@ -193,14 +193,14 @@ class _ModuleAlgebraAdjunction(Adjunction):
         return f"{self._name} adjunction over {self.base_ring()}"
 
 
-class TensorAlgebraAdjunction(_ModuleAlgebraAdjunction):
+class _TensorAlgebraAdjunction(_ModuleAlgebraAdjunction):
     r"""The adjunction \(T_R\dashv U:\mathbf{Mod}_R\leftrightarrows\mathbf{Alg}_R\)."""
 
     _left_functor_factory = staticmethod(_tensor_algebra_functor)
     _name = "Tensor-algebra/underlying-module"
 
 
-class SymmetricAlgebraAdjunction(_ModuleAlgebraAdjunction):
+class _SymmetricAlgebraAdjunction(_ModuleAlgebraAdjunction):
     r"""The adjunction \(\operatorname{Sym}_R\dashv U\) for commutative algebras."""
 
     _left_functor_factory = staticmethod(_symmetric_algebra_functor)
@@ -208,30 +208,23 @@ class SymmetricAlgebraAdjunction(_ModuleAlgebraAdjunction):
 
 
 @cached_function
-def _alternating_algebra_functor(base_ring) -> AlternatingAlgebraFunctor:
-    return AlternatingAlgebraFunctor(base_ring)
+def _alternating_algebra_functor(base_ring) -> _AlternatingAlgebraFunctor:
+    return _AlternatingAlgebraFunctor(base_ring)
 
 
 @cached_function
-def _divided_power_algebra_functor(base_ring) -> DividedPowerAlgebraFunctor:
-    return DividedPowerAlgebraFunctor(base_ring)
+def _divided_power_algebra_functor(base_ring) -> _DividedPowerAlgebraFunctor:
+    return _DividedPowerAlgebraFunctor(base_ring)
 
 
 @cached_function
-def _tensor_algebra_adjunction(base_ring) -> TensorAlgebraAdjunction:
-    return TensorAlgebraAdjunction(base_ring)
+def _tensor_algebra_adjunction(base_ring) -> _TensorAlgebraAdjunction:
+    return _TensorAlgebraAdjunction(base_ring)
 
 
 @cached_function
-def _symmetric_algebra_adjunction(base_ring) -> SymmetricAlgebraAdjunction:
-    return SymmetricAlgebraAdjunction(base_ring)
+def _symmetric_algebra_adjunction(base_ring) -> _SymmetricAlgebraAdjunction:
+    return _SymmetricAlgebraAdjunction(base_ring)
 
 
-__all__ = [
-    "AlternatingAlgebraFunctor",
-    "DividedPowerAlgebraFunctor",
-    "SymmetricAlgebraAdjunction",
-    "SymmetricAlgebraFunctor",
-    "TensorAlgebraAdjunction",
-    "TensorAlgebraFunctor",
-]
+__all__ = []

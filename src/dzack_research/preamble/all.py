@@ -241,21 +241,6 @@ from dzack_research.preamble.categories.functors.de_rham import (
 from dzack_research.preamble.categories.functors.de_rham import (
     DeRhamFunctor as DeRhamFunctor,
 )
-from dzack_research.preamble.categories.functors.free_algebras import (
-    AlternatingAlgebraFunctor as AlternatingAlgebraFunctor,
-)
-from dzack_research.preamble.categories.functors.free_algebras import (
-    SymmetricAlgebraAdjunction as SymmetricAlgebraAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_algebras import (
-    SymmetricAlgebraFunctor as SymmetricAlgebraFunctor,
-)
-from dzack_research.preamble.categories.functors.free_algebras import (
-    TensorAlgebraAdjunction as TensorAlgebraAdjunction,
-)
-from dzack_research.preamble.categories.functors.free_algebras import (
-    TensorAlgebraFunctor as TensorAlgebraFunctor,
-)
 from dzack_research.preamble.categories.functors.free_forgetful import (
     FreeForgetfulAdjunction as FreeForgetfulAdjunction,
 )
