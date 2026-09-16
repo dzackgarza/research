@@ -382,6 +382,38 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
         return [IntegralSingularCohomologyGroups(self.base_ring())]
 
 
+class _GeometricFundamentalGroupConstruction:
+    r"""The pointed realization defining one represented fundamental group."""
+
+    def __init__(self, scheme, base_point, realization) -> None:
+        self._scheme = scheme
+        self._base_point = base_point
+        self._realization = realization
+
+    def scheme(self):
+        return self._scheme
+
+    def base_point(self):
+        return self._base_point
+
+    def realization_description(self):
+        return self._realization
+
+
+class _ToricFundamentalGroupConstruction:
+    r"""The toric realization and fixed-point cone defining one fundamental group."""
+
+    def __init__(self, scheme, base_point_cone) -> None:
+        self._scheme = scheme
+        self._base_point_cone = base_point_cone
+
+    def scheme(self):
+        return self._scheme
+
+    def base_point_cone(self):
+        return self._base_point_cone
+
+
 class GeometricFundamentalGroups(Category):
     r"""Pointed fundamental groups of specified complex scheme realizations."""
 
@@ -393,22 +425,28 @@ class GeometricFundamentalGroups(Category):
         return [OwnedGroups()]
 
     class ParentMethods:
+        def geometric_fundamental_group_construction(self):
+            return self._preamble_geometric_fundamental_group_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.geometric_fundamental_group_construction().scheme()
 
         def base_point(self):
-            return self._preamble_topological_base_point
+            return self.geometric_fundamental_group_construction().base_point()
 
         def realization_description(self):
-            return self._preamble_topological_realization_description
+            return (
+                self.geometric_fundamental_group_construction()
+                .realization_description()
+            )
 
 
 def _equip_geometric_fundamental_group(group, scheme, base_point, realization):
     if base_point.codomain() is not scheme:
         raise ValueError("a pointed fundamental group requires a point of its scheme")
-    group._preamble_topological_scheme = scheme
-    group._preamble_topological_base_point = base_point
-    group._preamble_topological_realization_description = realization
+    group._preamble_geometric_fundamental_group_construction = (
+        _GeometricFundamentalGroupConstruction(scheme, base_point, realization)
+    )
     return refine(group, GeometricFundamentalGroups())
 
 
@@ -423,12 +461,15 @@ class ToricFundamentalGroups(Category):
         return [OwnedGroups()]
 
     class ParentMethods:
+        def toric_fundamental_group_construction(self):
+            return self._preamble_toric_fundamental_group_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.toric_fundamental_group_construction().scheme()
 
         def base_point_cone(self):
             r"""Return the maximal cone indexing the selected torus-fixed basepoint."""
-            return self._preamble_topological_base_point_cone
+            return self.toric_fundamental_group_construction().base_point_cone()
 
         def realization_description(self):
             return "complex analytic realization under the selected QQ-to-CC embedding"
@@ -1302,8 +1343,9 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
     if base_point_cone not in maximal:
         raise ValueError("the selected torus-fixed basepoint is indexed by a maximal cone")
     group = _own_group(FreeGroup(0))
-    group._preamble_topological_scheme = scheme
-    group._preamble_topological_base_point_cone = base_point_cone
+    group._preamble_toric_fundamental_group_construction = (
+        _ToricFundamentalGroupConstruction(scheme, base_point_cone)
+    )
     return refine(group, ToricFundamentalGroups())
 
 

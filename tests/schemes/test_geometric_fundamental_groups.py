@@ -16,7 +16,11 @@ def test_pgl2_has_nontrivial_pointed_fundamental_group_at_the_identity() -> None
     assert tuple(point.point_coordinates()) == (point.codomain().scheme_base_ring()(1), point.codomain().scheme_base_ring()(0), point.codomain().scheme_base_ring()(0), point.codomain().scheme_base_ring()(1))
     assert group in GeometricFundamentalGroups()
     assert group.topological_scheme() is topology.scheme()
+    assert group.geometric_fundamental_group_construction().scheme() is topology.scheme()
     assert group.base_point() is point
+    assert "_preamble_topological_scheme" not in group.__dict__
+    assert "_preamble_topological_base_point" not in group.__dict__
+    assert "_preamble_topological_realization_description" not in group.__dict__
     assert int(group.order()) == 2
 
 

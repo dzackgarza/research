@@ -121,7 +121,10 @@ def test_projective_plane_has_a_pointed_trivial_fundamental_group() -> None:
     assert ToricFundamentalGroups() in Cat()
     assert ToricFundamentalGroups().category() is Cat()
     assert fundamental.topological_scheme() is plane
+    assert fundamental.toric_fundamental_group_construction().scheme() is plane
     assert fundamental.base_point_cone() is cone
+    assert "_preamble_topological_scheme" not in fundamental.__dict__
+    assert "_preamble_topological_base_point_cone" not in fundamental.__dict__
     assert fundamental.group_generators().cardinality() == 0
 
 
