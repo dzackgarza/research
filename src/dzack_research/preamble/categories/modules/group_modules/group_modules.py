@@ -896,18 +896,11 @@ class ModulesOverGroupAlgebra(Modules):
             )
 
         def base_change(self, ring_map):
-            r"""Transport this group module along ``R -> S`` functorially."""
-
-            unacted = self.unacted_module()
-            scalar_extension = _ScalarExtensionFunctor(ring_map)
-            changed_module = scalar_extension(unacted)
-            if self.is_trivial_action():
-                return _trivial_action(changed_module, self.group())
-
-            def changed_action(group_element, vector):
-                return scalar_extension(self.action_of(group_element))(vector)
-
-            return _equip_action(changed_module, self.group(), changed_action)
+            r"""Transport this group module through the category-owned coefficient extension."""
+            extension = self.module_category().coefficient_base_change_adjunction(
+                ring_map
+            ).left_adjoint()
+            return extension(self)
 
 
 def _apply_action(action, group_element, vector):

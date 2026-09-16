@@ -461,6 +461,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     restriction = adjunction.right_adjoint()
 
     extended = extension(acted)
+    assert acted.base_change(ring_map) is extended
     restricted = restriction(extended)
     assert restricted.module_generating_set().cardinality() == 4
 
@@ -481,6 +482,10 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
             "f": 2 * acted.module_generator("f"),
         }
     )
+    extended_source_endomorphism = extension(source_endomorphism)
+    for generator in extended.module_generators():
+        assert extended_source_endomorphism(generator) == 2 * generator
+
     left, right = adjunction.unit_transformation().naturality_square(
         source_endomorphism
     )
