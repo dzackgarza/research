@@ -83,11 +83,7 @@ def _relative_cyclic_cover(cyclic_algebra):
     r"""Return the cyclic cover through the general relative-Spec owner."""
     if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
         raise TypeError("relative cyclic cover requires cyclic-cover algebra descent data")
-    relative = cyclic_algebra.gluing_datum().relative_spectrum()
-    glued = relative.arrow().domain()
-    glued._preamble_cyclic_cover_algebra = cyclic_algebra
-    glued._preamble_cyclic_cover_morphism = relative.arrow()
-    return relative
+    return cyclic_algebra.gluing_datum().relative_spectrum()
 
 
 def _relative_cover_chart(cyclic_algebra, chart_index):

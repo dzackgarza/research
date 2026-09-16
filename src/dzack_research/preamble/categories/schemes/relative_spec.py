@@ -177,8 +177,6 @@ def _finite_atlas_relative_spectrum(datum):
         raise ArithmeticError(
             "the finite-atlas relative-Spec structure map does not restrict to its local chart maps"
         )
-    glued._preamble_relative_spec_algebra_datum = datum
-    glued._preamble_relative_spec_morphism = structure
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
 
@@ -217,8 +215,6 @@ def _relative_spectrum(datum):
         for index in indices
     ):
         raise ArithmeticError("the relative-Spec structure map does not restrict to its affine chart maps")
-    glued._preamble_relative_spec_algebra_datum = datum
-    glued._preamble_relative_spec_morphism = structure
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
 
