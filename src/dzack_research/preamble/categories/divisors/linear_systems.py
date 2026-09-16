@@ -38,6 +38,46 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+class _HomogeneousSectionSpaceConstruction:
+    r"""The selected homogeneous-coordinate presentation of one section space."""
+
+    def __init__(self, scheme, degree, coordinate_ring, monomial_exponents) -> None:
+        self._scheme = scheme
+        self._degree = degree
+        self._coordinate_ring = coordinate_ring
+        self._monomial_exponents = dict(monomial_exponents)
+
+    def scheme(self):
+        return self._scheme
+
+    def degree(self):
+        return self._degree
+
+    def coordinate_ring(self):
+        return self._coordinate_ring
+
+    def exponents_of(self, monomial):
+        return self._monomial_exponents[monomial]
+
+
+class _MultihomogeneousSectionSpaceConstruction(_HomogeneousSectionSpaceConstruction):
+    r"""The selected multiprojective coordinate presentation of one section space."""
+
+    def __init__(
+        self,
+        scheme,
+        degree,
+        coordinate_ring,
+        monomial_exponents,
+        coordinate_blocks,
+    ) -> None:
+        super().__init__(scheme, degree, coordinate_ring, monomial_exponents)
+        self._coordinate_blocks = coordinate_blocks
+
+    def coordinate_block(self, position):
+        return self._coordinate_blocks[position]
+
+
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
     r"""Projective spaces ``|D| = P(H^0(X,O_X(D)))`` with their defining data."""
 
@@ -79,28 +119,32 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_section_scheme,
-            _preamble_homogeneous_degree,
-            _preamble_homogeneous_coordinate_ring,
-            _preamble_homogeneous_exponents,
-            **rest,
-        ) -> None:
-            self._preamble_section_scheme = _preamble_section_scheme
-            self._preamble_homogeneous_degree = _preamble_homogeneous_degree
-            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
-            self._preamble_homogeneous_exponents = _preamble_homogeneous_exponents
+        def __init__(self, _section_space_construction, **rest) -> None:
+            if not isinstance(
+                _section_space_construction,
+                _HomogeneousSectionSpaceConstruction,
+            ) or isinstance(
+                _section_space_construction,
+                _MultihomogeneousSectionSpaceConstruction,
+            ):
+                raise TypeError(
+                    "a homogeneous section space requires homogeneous construction data"
+                )
+            self._section_space_construction = _section_space_construction
             super().__init__(**rest)
 
+        def section_space_construction(self):
+            r"""Return the selected coordinate presentation defining this section space."""
+            return self._section_space_construction
+
         def section_scheme(self):
-            return self._preamble_section_scheme
+            return self.section_space_construction().scheme()
 
         def homogeneous_degree(self):
-            return self._preamble_homogeneous_degree
+            return self.section_space_construction().degree()
 
         def homogeneous_coordinate_ring(self):
-            return self._preamble_homogeneous_coordinate_ring
+            return self.section_space_construction().coordinate_ring()
 
         def homogeneous_polynomial(self, section):
             r"""Return the homogeneous polynomial represented by ``section``."""
@@ -126,7 +170,10 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             engine_base = _engine_ring(base)
             by_exponents = {
                 tuple(exponents): monomial
-                for monomial, exponents in self._preamble_homogeneous_exponents.items()
+                for monomial in self.module_generating_set()
+                for exponents in (
+                    self.section_space_construction().exponents_of(monomial),
+                )
             }
             coefficients = {}
             for exponent, coefficient in engine(backend).monomial_coefficients().items():
@@ -158,14 +205,15 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             label = product.projection_label(morphism)
             labels = tuple(product.factors().index_set())
             label = product.factors().index_set()(label)
-            source_exponents = self._preamble_homogeneous_exponents
+            source_construction = self.section_space_construction()
+            target_construction = target.section_space_construction()
             target_by_exponents = {
-                tuple(tuple(block) for block in exponents): monomial
-                for monomial, exponents in target._preamble_multihomogeneous_exponents.items()
+                tuple(tuple(block) for block in target_construction.exponents_of(monomial)): monomial
+                for monomial in target.module_generating_set()
             }
 
             def target_exponents(monomial):
-                selected = tuple(source_exponents[monomial])
+                selected = tuple(source_construction.exponents_of(monomial))
                 blocks = []
                 for factor_label in labels:
                     factor = product.factors()[factor_label]
@@ -225,30 +273,29 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            _preamble_section_scheme,
-            _preamble_multihomogeneous_degree,
-            _preamble_homogeneous_coordinate_ring,
-            _preamble_multihomogeneous_exponents,
-            _preamble_multihomogeneous_block_offsets,
-            **rest,
-        ) -> None:
-            self._preamble_section_scheme = _preamble_section_scheme
-            self._preamble_multihomogeneous_degree = _preamble_multihomogeneous_degree
-            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
-            self._preamble_multihomogeneous_exponents = _preamble_multihomogeneous_exponents
-            self._preamble_multihomogeneous_block_offsets = _preamble_multihomogeneous_block_offsets
+        def __init__(self, _section_space_construction, **rest) -> None:
+            if not isinstance(
+                _section_space_construction,
+                _MultihomogeneousSectionSpaceConstruction,
+            ):
+                raise TypeError(
+                    "a multihomogeneous section space requires multiprojective construction data"
+                )
+            self._section_space_construction = _section_space_construction
             super().__init__(**rest)
 
+        def section_space_construction(self):
+            r"""Return the selected coordinate presentation defining this section space."""
+            return self._section_space_construction
+
         def section_scheme(self):
-            return self._preamble_section_scheme
+            return self.section_space_construction().scheme()
 
         def multidegree(self):
-            return self._preamble_multihomogeneous_degree
+            return self.section_space_construction().degree()
 
         def homogeneous_coordinate_ring(self):
-            return self._preamble_homogeneous_coordinate_ring
+            return self.section_space_construction().coordinate_ring()
 
         @cached_method
         def factor_coordinate_embedding(self, factor_label):
@@ -270,7 +317,7 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             factor = factors[factor_label]
             source = factor.O(1).global_sections().homogeneous_coordinate_ring()
             target = self.homogeneous_coordinate_ring()
-            start, stop = self._preamble_multihomogeneous_block_offsets[position]
+            start, stop = self.section_space_construction().coordinate_block(position)
             source_labels = tuple(source.algebra_generating_set())
             target_labels = tuple(target.algebra_generating_set())
             if stop - start != len(source_labels):
@@ -503,10 +550,15 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(HomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_section_scheme", projective_scheme),
-            ("_preamble_homogeneous_degree", degree),
-            ("_preamble_homogeneous_coordinate_ring", ring),
-            ("_preamble_homogeneous_exponents", exponent_data),
+            (
+                "_section_space_construction",
+                _HomogeneousSectionSpaceConstruction(
+                    projective_scheme,
+                    degree,
+                    ring,
+                    exponent_data,
+                ),
+            ),
         ),
     )
     return space
@@ -584,11 +636,16 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
         _extra_construction_data=(
-            ("_preamble_section_scheme", projective_product),
-            ("_preamble_multihomogeneous_degree", multidegree),
-            ("_preamble_homogeneous_coordinate_ring", ring),
-            ("_preamble_multihomogeneous_exponents", exponent_data),
-            ("_preamble_multihomogeneous_block_offsets", tuple(block_offsets)),
+            (
+                "_section_space_construction",
+                _MultihomogeneousSectionSpaceConstruction(
+                    projective_product,
+                    multidegree,
+                    ring,
+                    exponent_data,
+                    tuple(block_offsets),
+                ),
+            ),
         ),
     )
 
@@ -623,14 +680,15 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
         degree,
         coordinate_names=target_names,
     )
-    source_exponents = source._preamble_homogeneous_exponents
+    source_construction = source.section_space_construction()
+    target_construction = target.section_space_construction()
     target_by_exponents = {
-        exponents: monomial
-        for monomial, exponents in target._preamble_homogeneous_exponents.items()
+        tuple(target_construction.exponents_of(monomial)): monomial
+        for monomial in target.module_generating_set()
     }
 
     def image(monomial):
-        exponents = source_exponents[monomial]
+        exponents = source_construction.exponents_of(monomial)
         if exponents[coordinate_index]:
             return target.zero()
         restricted = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
@@ -887,11 +945,11 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
             ("_preamble_jet_residue_field", residue_field),
         ),
     )
-    source_exponents = source._preamble_homogeneous_exponents
+    source_construction = source.section_space_construction()
     nonpivot = tuple(index for index in range(dimension + 1) if index != pivot)
 
     def image(monomial):
-        homogeneous_exponents = source_exponents[monomial]
+        homogeneous_exponents = source_construction.exponents_of(monomial)
         local_powers = tuple(homogeneous_exponents[index] for index in nonpivot)
         coefficients = {}
         choices = tuple(
