@@ -50,9 +50,6 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
 
 def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objects() -> None:
     from dzack_research.preamble.all import (
-        AutomorphismArrowCategory,
-        EndArrowCategory,
-        IsoArrowCategory,
         Sets,
         WideSubcategory,
     )
@@ -66,20 +63,17 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     assert Cat().join((x.category(), y.category())).is_subcategory(Sets())
 
     end = Sets().Mor(x, x)(lambda value: x(2 - int(value)))
-    end_object = EndArrowCategory(Sets())(end)
-    assert end_object in EndArrowCategory(Sets())
+    end_object = Sets().EndArrowCategory()(end)
+    assert end_object in Sets().EndArrowCategory()
 
     inverse = end
     isomorphism = Sets().Core().Mor(x, x)(end, inverse)
     core = Sets().Core()
     assert isomorphism in core.Mor(x, x)
-    iso_object = IsoArrowCategory(Sets())(isomorphism)
-    aut_object = AutomorphismArrowCategory(Sets())(isomorphism)
-    assert iso_object in IsoArrowCategory(Sets())
-    assert aut_object in AutomorphismArrowCategory(Sets())
+    iso_object = Sets().IsoArrowCategory()(isomorphism)
+    aut_object = Sets().AutomorphismArrowCategory()(isomorphism)
+    assert iso_object in Sets().IsoArrowCategory()
+    assert aut_object in Sets().AutomorphismArrowCategory()
 
-    injections = WideSubcategory(Sets(), __import__(
-        "dzack_research.preamble.categories.abstract_categories",
-        fromlist=["MonomorphismArrowCategory"],
-    ).MonomorphismArrowCategory(Sets()))
+    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
     assert injections.admits(inclusion)

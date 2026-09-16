@@ -36,10 +36,10 @@ class Functor(SageObject):
     Unverified specimen: a proposed identity on underlying sets is not a
     functor to the category of injections when applied to a noninjective map::
 
-        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
         sage: class ProposedInclusion(Functor):
         ....:     def __init__(self):
         ....:         super().__init__(Sets(), injections)

@@ -1,12 +1,7 @@
 r"""Archive reconciliation for arrow categories, restricted arrows, and cores."""
 
 from dzack_research.preamble.all import (
-    AutomorphismArrowCategory,
     Cat,
-    EndArrowCategory,
-    EpimorphismArrowCategory,
-    IsoArrowCategory,
-    MonomorphismArrowCategory,
     Sets,
     WideSubcategory,
 )
@@ -46,11 +41,11 @@ def test_archived_arrow_subcategories_retain_their_semantic_predicates() -> None
     isomorphism = Sets().Core().Mor(two, two)(swap, swap)
 
     assert Cat().join((two.category(), three.category())).is_subcategory(Sets())
-    assert MonomorphismArrowCategory(Sets())(inclusion).arrow() is inclusion
-    assert EpimorphismArrowCategory(Sets())(quotient).arrow() is quotient
-    assert EndArrowCategory(Sets())(swap).arrow() is swap
-    assert IsoArrowCategory(Sets())(isomorphism).arrow() is isomorphism
-    assert AutomorphismArrowCategory(Sets())(isomorphism).arrow() is isomorphism
+    assert Sets().MonomorphismArrowCategory()(inclusion).arrow() is inclusion
+    assert Sets().EpimorphismArrowCategory()(quotient).arrow() is quotient
+    assert Sets().EndArrowCategory()(swap).arrow() is swap
+    assert Sets().IsoArrowCategory()(isomorphism).arrow() is isomorphism
+    assert Sets().AutomorphismArrowCategory()(isomorphism).arrow() is isomorphism
 
 
 def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None:
@@ -58,7 +53,7 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     maps = Sets().Mor(points, points)
     swap = maps(lambda point: points[1 - int(point)])
     collapse = maps(lambda _point: points[0])
-    injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
 
     assert injections.admits(swap)
     assert not injections.admits(collapse)

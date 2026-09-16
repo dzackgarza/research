@@ -296,8 +296,8 @@ class _ProductCategory(OwnedCategory):
     Unverified specimens: equal endpoints alone do not admit an arrow of a
     factor category whose morphisms are restricted::
 
-        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
-        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory
+        sage: injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
         sage: category = Cat().product((injections, Sets()))
         sage: obj = category(points, points)
         sage: category.Mor(obj, obj)(swap, swap).first() is swap

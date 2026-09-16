@@ -910,8 +910,8 @@ class _ConeCategory(OwnedCategory):
     Unverified specimen: even an empty cone diagram does not make a
     non-morphism into a permitted apex map::
 
-        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
-        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory
+        sage: injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
         sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
         sage: diagram = Cat().Mor(empty_shape, injections).constant_functor(points)
         sage: category = diagram.Cones()

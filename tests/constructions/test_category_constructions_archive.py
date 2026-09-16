@@ -9,7 +9,6 @@ semantics and checks each factor's actual morphism category.
 import pytest
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    MonomorphismArrowCategory,
     WideSubcategory,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -62,7 +61,7 @@ def test_product_category_composes_nonidentity_maps_componentwise() -> None:
 
 def test_product_and_opposite_respect_a_restricted_factor_category() -> None:
     points, swap, collapse = _two_points_and_maps()
-    injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
     product = Cat().product((injections, Sets()))
     obj = product(points, points)
 

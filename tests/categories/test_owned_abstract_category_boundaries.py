@@ -2,7 +2,6 @@ r"""Pure abstract category objects use the owned runtime category boundary."""
 
 from dzack_research.preamble.all import Cat, Sets
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    MonomorphismArrowCategory,
     WideSubcategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -29,8 +28,8 @@ ARCHIVE_RECONCILIATION = {
         "Cat.ParentMethods.EpiCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
         "Cat.ParentMethods.ArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.EndArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
-        "Cat.ParentMethods.IsomorphismArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
-        "Cat.ParentMethods.AutArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+        "Cat.ParentMethods.IsoArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+        "Cat.ParentMethods.AutomorphismArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.MonomorphismArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.EpimorphismArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.core": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
@@ -66,7 +65,7 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
     categories = (
         Sets().Core(),
         Sets().Subobjects(points),
-        WideSubcategory(Sets(), MonomorphismArrowCategory(Sets())),
+        WideSubcategory(Sets(), Sets().MonomorphismArrowCategory()),
         IdentityFunctor(Sets()).algebras(),
         HomCategories(),
         Sets().HomCategory(),

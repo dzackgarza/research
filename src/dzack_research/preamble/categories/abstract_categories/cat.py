@@ -679,17 +679,52 @@ class Cat(CategoryPacketMethods, Category):
         def Core(self) -> Category:
             r"""Return the maximal groupoid inside this category."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                CoreCategory,
+                _CoreCategory,
             )
 
-            return CoreCategory(self)
+            return _CoreCategory(self)
         def ArrowCategory(self) -> Category:
             r"""Return \(\mathrm{Ar}(C)=\mathrm{Fun}([1],C)\)."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                ArrowCategory as _ArrowCategory,
+                _ArrowCategory,
             )
 
             return _ArrowCategory(self)
+        def EndArrowCategory(self) -> Category:
+            r"""Return the full arrow subcategory on endomorphisms."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _EndArrowCategory,
+            )
+
+            return _EndArrowCategory(self)
+        def IsoArrowCategory(self) -> Category:
+            r"""Return the full arrow subcategory on represented isomorphisms."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _IsoArrowCategory,
+            )
+
+            return _IsoArrowCategory(self)
+        def AutomorphismArrowCategory(self) -> Category:
+            r"""Return the full arrow subcategory on automorphisms."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _AutomorphismArrowCategory,
+            )
+
+            return _AutomorphismArrowCategory(self)
+        def MonomorphismArrowCategory(self) -> Category:
+            r"""Return the full arrow subcategory on represented monomorphisms."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _MonomorphismArrowCategory,
+            )
+
+            return _MonomorphismArrowCategory(self)
+        def EpimorphismArrowCategory(self) -> Category:
+            r"""Return the full arrow subcategory on represented epimorphisms."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _EpimorphismArrowCategory,
+            )
+
+            return _EpimorphismArrowCategory(self)
         def SliceOver(self, base_object: Parent) -> Category:
             r"""Return the slice \(C/X\)."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -748,7 +783,7 @@ class Cat(CategoryPacketMethods, Category):
         does not inherit the constructions every other category gets.
         """
         from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            ArrowCategory as _ArrowCategory,
+            _ArrowCategory,
         )
 
         return _ArrowCategory(self)

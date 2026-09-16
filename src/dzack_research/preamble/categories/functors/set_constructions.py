@@ -3,10 +3,7 @@ r"""Functorial Set constructions: exponentials and finite/power subsets."""
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    MonomorphismArrowCategory,
-    WideSubcategory,
-)
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -101,7 +98,7 @@ class _FixedCardinalitySubsetFunctor(Functor):
         self._subset_cardinality = ZZ(subset_cardinality)
         if self._subset_cardinality < 0:
             raise ValueError("a subset cardinality is nonnegative")
-        injections = MonomorphismArrowCategory(Sets())
+        injections = Sets().MonomorphismArrowCategory()
         super().__init__(WideSubcategory(Sets(), injections), Sets())
 
     def subset_cardinality(self):

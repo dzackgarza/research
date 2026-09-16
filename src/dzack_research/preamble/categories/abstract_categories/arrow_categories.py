@@ -115,7 +115,7 @@ class ArrowHomset(CategoricalHomset):
             self, family, source, target
         )
 
-    def arrow_category(self) -> ArrowCategory:
+    def arrow_category(self) -> _ArrowCategory:
         return self.base_category()
 
     def _element_constructor_(self, left, right=None):
@@ -151,7 +151,7 @@ class ArrowHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = ArrowHomset
 
 
-class ArrowCategory(OwnedCategory):
+class _ArrowCategory(OwnedCategory):
     r"""The category ``Arr(C)=Fun([1],C)``."""
 
     _HomCategory = ArrowHomCategoryConstruction
@@ -169,7 +169,7 @@ class ArrowCategory(OwnedCategory):
             self._arrow = arrow
             super().__init__(**rest)
 
-        def arrow_category(self) -> ArrowCategory:
+        def arrow_category(self) -> _ArrowCategory:
             return self.category()
 
         def arrow(self) -> Morphism:
@@ -202,7 +202,7 @@ class ArrowCategory(OwnedCategory):
     def __contains__(self, candidate: Any) -> bool:
         if not isinstance(candidate, Parent):
             return False
-        if not candidate.category().is_subcategory(ArrowCategory(self.base_category())):
+        if not candidate.category().is_subcategory(self.base_category().ArrowCategory()):
             return False
         return self._accepts_arrow(candidate.arrow())
 
@@ -339,7 +339,7 @@ class _EndofunctorAlgebraCategory(OwnedCategoryBase):
         if endofunctor.domain() is not endofunctor.codomain():
             raise ValueError("an endofunctor must have one common domain and codomain")
         self._endofunctor = endofunctor
-        self._arrow_category = ArrowCategory(endofunctor.domain())
+        self._arrow_category = endofunctor.domain().ArrowCategory()
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -351,7 +351,7 @@ class _EndofunctorAlgebraCategory(OwnedCategoryBase):
     def base_category(self) -> Category:
         return self.endofunctor().domain()
 
-    def arrow_category(self) -> ArrowCategory:
+    def arrow_category(self) -> _ArrowCategory:
         return self._arrow_category
 
     def super_categories(self):
@@ -460,7 +460,7 @@ class SliceHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = SliceHomset
 
 
-class SliceCategory(ArrowCategory):
+class SliceCategory(_ArrowCategory):
     r"""The slice category \(C/X\).
 
     Unverified specimens retain equal-but-distinct base sets and keep the
@@ -517,7 +517,7 @@ class SliceCategory(ArrowCategory):
         return typecall(cls, base_category, base_object)
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
@@ -587,7 +587,7 @@ class CosliceHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = CosliceHomset
 
 
-class CosliceCategory(ArrowCategory):
+class CosliceCategory(_ArrowCategory):
     r"""The coslice category \(X/C\)."""
 
     _HomCategory = CosliceHomCategoryConstruction
@@ -600,7 +600,7 @@ class CosliceCategory(ArrowCategory):
         return typecall(cls, base_category, base_object)
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
@@ -634,37 +634,38 @@ class CosliceCategory(ArrowCategory):
         return f"Coslice category {self.base_object()}/{self.base_category()}"
 
 
-class EndArrowCategory(ArrowCategory):
+class _EndArrowCategory(_ArrowCategory):
     r"""The full subcategory of ``Arr(C)`` on endomorphisms."""
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         return arrow.domain() is arrow.codomain() and super()._accepts_arrow(arrow)
 
 
-class IsoArrowCategory(ArrowCategory):
+class _IsoArrowCategory(_ArrowCategory):
     r"""The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms."""
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         return isinstance(arrow, CategoricalIsomorphism) and super()._accepts_arrow(arrow)
 
 
-class AutomorphismArrowCategory(IsoArrowCategory):
+class _AutomorphismArrowCategory(_IsoArrowCategory):
     r"""The full subcategory of the arrow category on automorphisms."""
 
     def super_categories(self):
-        return [IsoArrowCategory(self.base_category()), EndArrowCategory(self.base_category())]
+        base = self.base_category()
+        return [base.IsoArrowCategory(), base.EndArrowCategory()]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         return arrow.domain() is arrow.codomain() and super()._accepts_arrow(arrow)
 
 
-class MonomorphismArrowCategory(ArrowCategory):
+class _MonomorphismArrowCategory(_ArrowCategory):
     r"""The full subcategory of the arrow category on represented monomorphisms.
 
     Which arrows are monic is the base category's own question, so this asks
@@ -674,7 +675,7 @@ class MonomorphismArrowCategory(ArrowCategory):
     """
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         if not super()._accepts_arrow(arrow):
@@ -682,14 +683,14 @@ class MonomorphismArrowCategory(ArrowCategory):
         return self.base_category().category_packet().Monos().accepts(arrow)
 
 
-class EpimorphismArrowCategory(ArrowCategory):
+class _EpimorphismArrowCategory(_ArrowCategory):
     r"""The full subcategory of the arrow category on represented epimorphisms.
 
     As for monomorphisms, the base category's declared epi family answers.
     """
 
     def super_categories(self):
-        return [ArrowCategory(self.base_category())]
+        return [self.base_category().ArrowCategory()]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
         if not super()._accepts_arrow(arrow):
@@ -883,9 +884,9 @@ class SubobjectCategory(OwnedCategoryBase):
         r"""Return the ambient slice ``C/X`` in which subobjects are monomorphisms."""
         return SliceCategory(self.base_category(), self.base_object())
 
-    def monomorphism_category(self) -> MonomorphismArrowCategory:
+    def monomorphism_category(self) -> _MonomorphismArrowCategory:
         r"""Return the monomorphism subcategory of the ambient arrow category."""
-        return MonomorphismArrowCategory(self.base_category())
+        return self.base_category().MonomorphismArrowCategory()
 
     def as_slice_object(self, subobject: Parent) -> Parent:
         if subobject not in self:
@@ -935,9 +936,7 @@ class SuperobjectCategory(CosliceCategory):
         return [CosliceCategory(self.base_category(), self.base_object())]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
-        return super()._accepts_arrow(arrow) and MonomorphismArrowCategory(
-            self.base_category()
-        )._accepts_arrow(arrow)
+        return super()._accepts_arrow(arrow) and self.base_category().MonomorphismArrowCategory()._accepts_arrow(arrow)
 
     def _repr_(self) -> str:
         return f"Superobjects of {self.base_object()}"
@@ -950,9 +949,7 @@ class CoveringObjectCategory(SliceCategory):
         return [SliceCategory(self.base_category(), self.base_object())]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
-        return super()._accepts_arrow(arrow) and EpimorphismArrowCategory(
-            self.base_category()
-        )._accepts_arrow(arrow)
+        return super()._accepts_arrow(arrow) and self.base_category().EpimorphismArrowCategory()._accepts_arrow(arrow)
 
     def _repr_(self) -> str:
         return f"Covering objects of {self.base_object()}"
@@ -965,9 +962,7 @@ class CoveredObjectCategory(CosliceCategory):
         return [CosliceCategory(self.base_category(), self.base_object())]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
-        return super()._accepts_arrow(arrow) and EpimorphismArrowCategory(
-            self.base_category()
-        )._accepts_arrow(arrow)
+        return super()._accepts_arrow(arrow) and self.base_category().EpimorphismArrowCategory()._accepts_arrow(arrow)
 
     def _repr_(self) -> str:
         return f"Covered objects of {self.base_object()}"
@@ -1027,7 +1022,7 @@ class WideSubcategory(OwnedCategoryBase):
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor, NaturalTransformation
         sage: points = finite_ordered_set(("a", "b"))
-        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
         sage: maps = Sets().Mor(points, points)
         sage: hom = injections.Mor(points, points)
         sage: hom is injections.HomCategory().Of(points, points)
@@ -1056,7 +1051,7 @@ class WideSubcategory(OwnedCategoryBase):
         Traceback (most recent call last):
         ...
         TypeError: the component is not a morphism of the common codomain category
-        sage: arrows = ArrowCategory(injections)
+        sage: arrows = injections.ArrowCategory()
         sage: obj = arrows(injections.identity(points))
         sage: arrows.Mor(obj, obj)(swap, swap).left() is swap
         True
@@ -1073,12 +1068,12 @@ class WideSubcategory(OwnedCategoryBase):
 
     @staticmethod
     @cached_function(key=lambda cls, base_category, arrow_category: (cls, id(base_category), id(arrow_category)))
-    def __classcall__(cls, base_category: Category, arrow_category: ArrowCategory):
+    def __classcall__(cls, base_category: Category, arrow_category: _ArrowCategory):
         if isinstance(cls, DynamicMetaclass):
             return cls.__base__(base_category, arrow_category)
         return typecall(cls, base_category, arrow_category)
 
-    def __init__(self, base_category: Category, arrow_category: ArrowCategory) -> None:
+    def __init__(self, base_category: Category, arrow_category: _ArrowCategory) -> None:
         if arrow_category.base_category() != base_category:
             raise ValueError("the selected arrows must belong to the stated base category")
         self._base_category = base_category
@@ -1091,7 +1086,7 @@ class WideSubcategory(OwnedCategoryBase):
     def base_category(self) -> Category:
         return self._base_category
 
-    def arrow_category(self) -> ArrowCategory:
+    def arrow_category(self) -> _ArrowCategory:
         return self._arrow_category
 
     def super_categories(self):
@@ -1142,7 +1137,7 @@ class CoreHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def core_category(self) -> CoreCategory:
+    def core_category(self) -> _CoreCategory:
         return self.base_category()
 
     def __contains__(self, candidate: Any) -> bool:
@@ -1192,7 +1187,7 @@ class CoreHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = CoreHomset
 
 
-class CoreCategory(OwnedCategoryBase):
+class _CoreCategory(OwnedCategoryBase):
     r"""The maximal subgroupoid (core) of a represented category."""
 
     _HomCategory = CoreHomCategoryConstruction
@@ -1279,20 +1274,13 @@ def _isomorphism_from_known_inverse_pair(forward, inverse):
 
 
 __all__ = [
-    "IsoArrowCategory",
-    "EndArrowCategory",
-    "AutomorphismArrowCategory",
-    "ArrowCategory",
     "ArrowHomset",
     "CategoricalIsomorphism",
     "CommutativeSquare",
-    "CoreCategory",
     "CoreHomset",
     "CosliceCategory",
     "CoveredObjectCategory",
     "CoveringObjectCategory",
-    "EpimorphismArrowCategory",
-    "MonomorphismArrowCategory",
     "SliceCategory",
     "SubobjectCategory",
     "SubobjectHomset",
