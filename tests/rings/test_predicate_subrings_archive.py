@@ -52,5 +52,5 @@ def test_undecided_predicate_membership_is_not_guessed() -> None:
     )
 
     assert QQ.zero() in unresolved
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError, match="selected predicate"):
         QQ.one() in unresolved
