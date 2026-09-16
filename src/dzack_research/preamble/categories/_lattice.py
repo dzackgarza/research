@@ -1482,7 +1482,7 @@ def _identity_lattice(data, ring, names, module_generators, category) -> Lattice
     return _lattice_parent(module, _IdentityGram(module), category, None, names)
 
 
-def lattice(
+def _lattice(
     data,
     basis=None,
     names=None,

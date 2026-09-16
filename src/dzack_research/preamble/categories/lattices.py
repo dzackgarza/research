@@ -39,7 +39,7 @@ from dzack_research.preamble.categories._lattice import (
     _ScaledGram,
     _colimit_lattice,
     _discriminant_of_gram,
-    lattice,
+    _lattice,
     _lattice_latex,
     _orthogonal_sum,
     signature_pair,
@@ -657,7 +657,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             Integral lattice of rank +Infinity and signature (+Infinity, 1)
         """
 
-        return lattice(
+        return _lattice(
             data,
             basis,
             names=names,
