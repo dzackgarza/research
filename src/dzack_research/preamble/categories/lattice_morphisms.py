@@ -591,7 +591,7 @@ class LatticeIsometry(LatticeEmbedding):
         if isinstance(obj, IsotropicFlag):
             return IsotropicFlag(
                 self.codomain(),
-                tuple(self(element) for element in obj.basis()),
+                tuple(self(element) for element in obj.isotropic_basis()),
             )
         return (self * obj.inclusion()).image()
 
@@ -1304,10 +1304,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def ambient_lattice(self):
         r"""Return the lattice acted on by this orthogonal group."""
         return self.lattice()
-
-    def gens(self):
-        r"""Return the selected exact generating family of this orthogonal group."""
-        return self.group_generators()
 
     def element(self, matrix):
         r"""Construct the isometry having the stated coordinate matrix.

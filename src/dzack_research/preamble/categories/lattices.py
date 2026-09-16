@@ -1064,7 +1064,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError("ambient_lattice() requires a represented lattice subobject")
             return self.inclusion().codomain()
 
-        def basis(self):
+        def lattice_basis(self):
             r"""Return the selected lattice basis as actual lattice elements."""
             return self.module_generators()
 

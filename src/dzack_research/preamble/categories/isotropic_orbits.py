@@ -349,7 +349,7 @@ class IsotropicFlag:
     def lattice(self):
         return self._lattice
 
-    def basis(self):
+    def isotropic_basis(self):
         return self._basis
 
     def terms(self):
@@ -671,7 +671,7 @@ def _embedded_basis(subobject):
 
 
 def _basis_rows(obj):
-    basis = obj.basis() if isinstance(obj, IsotropicFlag) else _embedded_basis(obj)
+    basis = obj.isotropic_basis() if isinstance(obj, IsotropicFlag) else _embedded_basis(obj)
     return [[int(entry) for entry in element.to_list()] for element in basis]
 
 

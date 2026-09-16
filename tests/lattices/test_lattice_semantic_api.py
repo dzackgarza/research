@@ -79,7 +79,7 @@ def test_sublattice_semantic_accessors_retain_the_actual_embedding_and_form() ->
     assert line.ambient_lattice() is lattice
     assert line.inclusion().codomain() is lattice
     assert line.rank() == line.module_rank() == 1
-    assert line.basis() == line.module_generators()
+    assert line.lattice_basis() == line.module_generators()
     assert not line.is_primitive()
 
     saturated = line.saturation()

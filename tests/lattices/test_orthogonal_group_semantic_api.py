@@ -19,7 +19,7 @@ def test_orthogonal_group_owns_acted_lattice_generators_and_matrix_elements() ->
     identity = group.one()
 
     assert group.ambient_lattice() is lattice
-    assert group.gens() is group.group_generators()
+    assert group.group_generators().cardinality() >= 1
     assert group.contains(identity)
     assert group.element(identity.matrix()) == identity
 
@@ -70,4 +70,4 @@ def test_centralizer_of_identity_is_the_whole_orthogonal_group_predicate() -> No
     centralizer = group.centralizer(group.one())
 
     assert group.one() in centralizer
-    assert all(generator in centralizer for generator in group.gens())
+    assert all(generator in centralizer for generator in group.group_generators())
