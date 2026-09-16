@@ -852,6 +852,20 @@ class FormedModules(OwnedParameterizedCategory):
             return bool(self.b(other) == self.parent().value_module().zero())
 
 
+class _FormModuleConstruction:
+    r"""The selected form and underlying module defining a formed module."""
+
+    def __init__(self, source_form, unformed_module) -> None:
+        self._source_form = source_form
+        self._unformed_module = unformed_module
+
+    def form(self):
+        return self._source_form
+
+    def unformed_module(self):
+        return self._unformed_module
+
+
 class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over ``R`` equipped with a form."""
 
@@ -901,14 +915,16 @@ class FormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def __init__(self, source_form, unformed_module, **rest) -> None:
-            self._preamble_source_form = source_form
-            self._preamble_unformed_module = unformed_module
+            self._form_module_construction = _FormModuleConstruction(
+                source_form,
+                unformed_module,
+            )
             super().__init__(**rest)
 
         @cached_method
         def form(self):
             r"""Return the selected form datum on the unformed module."""
-            return self._preamble_source_form
+            return self._form_module_construction.form()
 
         @cached_method
         def _formed_form(self):
@@ -919,7 +935,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def unformed_module(self):
             r"""Return the module used to equip this represented formed object."""
-            return self._preamble_unformed_module
+            return self._form_module_construction.unformed_module()
 
         @cached_method
         def forget_form_morphism(self):
