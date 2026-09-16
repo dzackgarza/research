@@ -51,10 +51,9 @@ class StructureSheaf(SageObject):
     def global_sections(self):
         r"""Return ``Gamma(X,O_X)`` in the exact cases represented live."""
         operation = getattr(self.ringed_space(), "_structure_sheaf_global_sections", None)
-        if operation is None:
-            raise NotImplementedError(
-                f"global sections of the structure sheaf of {self.ringed_space()} are not represented"
-            )
+        assert callable(operation), (
+            f"global sections of the structure sheaf of {self.ringed_space()} require a selected represented operation"
+        )
         return operation()
 
     sections = global_sections
@@ -66,10 +65,9 @@ class StructureSheaf(SageObject):
             "_structure_sheaf_sections_on_distinguished_open",
             None,
         )
-        if operation is None:
-            raise NotImplementedError(
-                "distinguished-open structure-sheaf sections are not represented for this ringed space"
-            )
+        assert callable(operation), (
+            "distinguished-open structure-sheaf sections require a selected represented operation on this ringed space"
+        )
         return operation(distinguished_open)
 
     def restriction_map(self, source_open, target_open):
@@ -130,10 +128,9 @@ class StructureSheaf(SageObject):
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
         operation = getattr(self.ringed_space(), "_structure_sheaf_stalk", None)
-        if operation is None:
-            raise NotImplementedError(
-                "structure-sheaf stalks are not represented for this ringed space"
-            )
+        assert callable(operation), (
+            "structure-sheaf stalks require a selected represented stalk operation on this ringed space"
+        )
         return operation(point)
 
     def _repr_(self) -> str:
@@ -159,12 +156,7 @@ def _localization_restriction_map(source, target):
         raise ValueError("principal-open restriction requires localizations of one affine coordinate ring")
 
     target_unit = target.localization_map()
-    try:
-        generators = tuple(source.localization_submonoid().monoid_generators())
-    except NotImplementedError as error:
-        raise NotImplementedError(
-            "principal-open restriction currently requires a chosen finite denominator family"
-        ) from error
+    generators = tuple(source.localization_submonoid().monoid_generators())
     if any(not target_unit(generator).is_unit() for generator in generators):
         raise ValueError("the target distinguished open is not contained in the source distinguished open")
 
