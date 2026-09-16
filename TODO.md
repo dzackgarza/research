@@ -816,7 +816,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Deliver:** select the mathematical owner (normally the scalar-change functor/construction); make the convenience object method delegate to it or vice versa, with one retained source/target ring map, group action and induced morphism law.
   **Acceptance:** object and morphism transport are two actions of the same retained functor/construction, not parallel algorithms, and a nonidentity group-module map commutes with scalar change through that one owner.
 
-- [ ] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
+- [x] **`memoization-convergence`**. **Needs:** `owned-provenance-data`.
   **Goal:** Give constructions such as de Rham algebras, Kähler differentials, cohomology, and absolute Galois groups one shared identity/caching mechanism keyed by their defining mathematical data.
   Replace theory-local identity caches for de Rham algebras, Kahler differentials, cohomology, cohomology algebras, and absolute Galois groups with the common identity/lifetime mechanism (`STY-55`, `DEV-12`, `OWN-10`).
   **Observed gap:** five independent dictionaries encode construction identity and lifetime.
