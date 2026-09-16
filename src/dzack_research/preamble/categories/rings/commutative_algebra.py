@@ -1430,13 +1430,11 @@ class PrimeLocalizations(OwnedCategory):
             self,
             source,
             submonoid,
-            prime_ideal,
             fraction_field=None,
             *,
             engine_ring=None,
             **rest,
         ) -> None:
-            self._preamble_prime_ideal = prime_ideal
             self._preamble_fraction_field = fraction_field
             base = source.base_ring()
             algebra_source = (
@@ -1526,14 +1524,18 @@ class PrimeLocalizations(OwnedCategory):
                 raise ValueError("the module has the wrong source ring for this localization")
             return self.localization_functor()(module)
 
-        def localization_source(self):
-            return self._preamble_localization_source
-
         def localized_prime(self):
-            return self._preamble_prime_ideal
-
-        def localization_map(self):
-            return self._preamble_localization_map
+            structure = self.localization_submonoid().structure_data()
+            if structure.get("kind") != "prime_complement":
+                raise ArithmeticError(
+                    "a prime localization must retain a prime-complement localization submonoid"
+                )
+            prime = structure.get("prime_ideal")
+            if prime is None:
+                raise ArithmeticError(
+                    "a prime-complement localization submonoid must retain its selected prime ideal"
+                )
+            return prime
 
         def is_field(self):
             r"""Return whether the maximal ideal ``p R_p`` vanishes."""
@@ -3120,7 +3122,6 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         Category.join([PrimeLocalizations(), *placements]),
         source=source,
         submonoid=submonoid,
-        prime_ideal=prime_ideal,
         fraction_field=fraction_field,
         engine_ring=fraction_engine,
     )
