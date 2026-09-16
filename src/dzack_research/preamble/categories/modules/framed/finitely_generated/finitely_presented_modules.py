@@ -103,6 +103,24 @@ def _matrix_space_like(module, nrows, ncols):
     return source.module_category().Mor(source, target)
 
 
+class _SelectedModulePresentationConstruction:
+    r"""The chosen relation map, matrix view, and optional cokernel witness of a presented module."""
+
+    def __init__(self, relation_matrix, presentation, cokernel_morphism=None) -> None:
+        self._relation_matrix = relation_matrix
+        self._presentation = presentation
+        self._cokernel_morphism = cokernel_morphism
+
+    def relation_matrix(self):
+        return self._relation_matrix
+
+    def presentation(self):
+        return self._presentation
+
+    def cokernel_morphism(self):
+        return self._cokernel_morphism
+
+
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 
@@ -121,9 +139,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             cokernel_morphism=None,
             **rest,
         ) -> None:
-            self._preamble_relation_matrix = relation_matrix
-            self._preamble_presentation = presentation
-            self._preamble_cokernel_morphism = cokernel_morphism
+            self._selected_module_presentation = _SelectedModulePresentationConstruction(
+                relation_matrix,
+                presentation,
+                cokernel_morphism,
+            )
             super().__init__(**rest)
 
         def base_ring(self):
@@ -239,7 +259,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         @cached_method
         def cokernel_projection(self):
             r"""Return the canonical quotient map when this object is a selected cokernel."""
-            morphism = self._preamble_cokernel_morphism
+            morphism = self._selected_module_presentation.cokernel_morphism()
             if morphism is None:
                 raise ValueError("this finitely presented module was not constructed as a cokernel")
             source = morphism.codomain()
@@ -375,11 +395,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            return self._preamble_presentation
+            return self._selected_module_presentation.presentation()
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
-            return self._preamble_relation_matrix
+            return self._selected_module_presentation.relation_matrix()
 
         def _selected_presentation_rows(self):
             return _matrix_coordinate_rows(self.presentation_matrix())
