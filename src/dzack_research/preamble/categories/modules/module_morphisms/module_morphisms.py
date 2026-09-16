@@ -48,6 +48,35 @@ class _CompletedModuleMorphismDatum(SageObject):
         return self._completion
 
 
+class ModuleLocalizationMorphismConstruction(SageObject):
+    r"""The selected source morphism and localization functor defining a localized map."""
+
+    def __init__(self, source_morphism, localization_functor) -> None:
+        self._source_morphism = source_morphism
+        self._localization_functor = localization_functor
+
+    def source_morphism(self):
+        return self._source_morphism
+
+    def localization_functor(self):
+        return self._localization_functor
+
+    def attach(self, image):
+        r"""Attach this selected construction before the localized morphism is exposed."""
+        existing = image.localization_construction()
+        if existing is not None and existing is not self:
+            if (
+                existing.source_morphism() is not self.source_morphism()
+                or existing.localization_functor() is not self.localization_functor()
+            ):
+                raise ValueError(
+                    "this morphism already carries a different localization construction"
+                )
+            return image
+        image._localization_construction = self
+        return image
+
+
 class ModuleCokernelCompletionComparison(SageObject):
     r"""The finite-module comparison ``coker(f)^ ~= coker(f^)``."""
 
@@ -209,7 +238,7 @@ def _scalar_linearity_generating_scalars(ring):
 class ModuleMorphism(Morphism):
     r"""The linear extension of a function on a chosen module framing."""
 
-    _preamble_localization_functor = None
+    _localization_construction = None
 
     def __init__(
         self,
@@ -691,6 +720,10 @@ class ModuleMorphism(Morphism):
         )
         return target.to_product(self, other)
 
+    def localization_construction(self):
+        r"""Return the selected localization datum defining this transported map."""
+        return self._localization_construction
+
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
@@ -715,13 +748,14 @@ class ModuleMorphism(Morphism):
                 raise ArithmeticError("the completed source-kernel inclusion has the wrong ambient module")
             return completed_inclusion.image()
 
-        localization_functor = self._preamble_localization_functor
-        if localization_functor is not None:
+        localization_construction = self.localization_construction()
+        if localization_construction is not None:
             from dzack_research.preamble.categories.modules.pure.modules import (
                 ModuleSubobjects,
             )
 
-            source_morphism = localization_functor.chosen_preimage(self)
+            source_morphism = localization_construction.source_morphism()
+            localization_functor = localization_construction.localization_functor()
             source_kernel = source_morphism.kernel()
             localized_kernel = localization_functor(source_kernel)
             localized_inclusion = localization_functor(source_kernel.inclusion())

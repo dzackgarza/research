@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.modules.localizations import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
+    ModuleLocalizationMorphismConstruction,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
@@ -73,8 +74,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                 and source.inclusion().codomain() is target
             ):
                 embedded = source.inclusion()
-                embedded._preamble_localization_functor = self
-                return embedded
+                return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
 
         if source in _localized_modules(source.base_ring()):
             if target in _localized_modules(target.base_ring()):
@@ -119,8 +119,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
             image = super()._apply_morphism(morphism)
 
         if not isinstance(morphism, ModuleEmbedding):
-            image._preamble_localization_functor = self
-            return image
+            return ModuleLocalizationMorphismConstruction(morphism, self).attach(image)
 
 
         if source in FramedModules(source.base_ring()):
@@ -130,16 +129,14 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                     for label in source.module_generating_set()
                 }
             )
-            embedded._preamble_localization_functor = self
-            return embedded
+            return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
         embedded = ModuleEmbedding(
             source.module_category().Mor(source, target),
             lambda element: image(element),
             elementwise=True,
             verify_linearity=False,
         )
-        embedded._preamble_localization_functor = self
-        return embedded
+        return ModuleLocalizationMorphismConstruction(morphism, self).attach(embedded)
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""
