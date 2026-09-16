@@ -10,7 +10,6 @@ import pytest
 
 from dzack_research.preamble.all import (
     ZZ,
-    DirectSumDecomposition,
     DirectSumObjects,
     Lattices,
 )
@@ -31,7 +30,7 @@ def test_constructor_owned_direct_sum_retains_its_indexed_summands() -> None:
     assert lattice.summand_index_set() is lattice.summands().index_set()
     assert lattice.summand(0) is left
     assert lattice.summand(1) is right
-    assert DirectSumDecomposition(lattice, lattice.summands()) is lattice
+    assert DirectSumObjects().verify_decomposition(lattice, lattice.summands()) is lattice
 
 
 def test_post_hoc_fake_decomposition_is_not_an_owned_direct_sum() -> None:
@@ -40,7 +39,7 @@ def test_post_hoc_fake_decomposition_is_not_an_owned_direct_sum() -> None:
 
     assert plane not in DirectSumObjects()
     with pytest.raises(ValueError):
-        DirectSumDecomposition(plane, (line, line))
+        DirectSumObjects().verify_decomposition(plane, (line, line))
 
 
 def test_selected_summands_cannot_be_replaced_by_isomorphic_copies() -> None:
@@ -51,4 +50,4 @@ def test_selected_summands_cannot_be_replaced_by_isomorphic_copies() -> None:
 
     assert replacement is not right
     with pytest.raises(ValueError):
-        DirectSumDecomposition(lattice, (left, replacement))
+        DirectSumObjects().verify_decomposition(lattice, (left, replacement))
