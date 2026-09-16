@@ -1362,7 +1362,12 @@ whichever the ordering picked. **Each generator is a coherence obligation and a
 site where method resolution can quietly return the wrong answer.**
 
 `just category-graph cells` computes the homology and a minimum cycle basis, so
-each generator is a short readable square rather than a wandering path. Every
+each generator is a short readable square rather than a wandering path. An
+axiom category is a vertex of its own, `Modules.FinitelyGenerated.Torsion`,
+whether it is a nested class or only named in a declaration, and it declares
+each vertex with one axiom fewer; that is Sage's join, so a generator lying
+inside one base's axiom lattice is listed as a computed join, not as a cell
+owed. Every
 generator lies inside one 2-connected block, and the view lists the blocks
 first: a near-tree has only small ones, so a block of a hundred categories is
 the region where declarations mesh, and it is the finding, never something to
@@ -1406,9 +1411,15 @@ Each is observable in the declaration itself, with no judgment of intent:
   That is evidence the path is missing, and the fix is the path, not the leaf.
 - Any node whose breadth grew in the change you are about to commit.
 
-Parameterized recursion is not a red flag: `Modules(R)` declaring `Modules(S)`
-for a restriction base ring is restriction of scalars, a loop on the name and
-not on the objects.
+A category declaring itself over a lower base, `Modules(R)` declaring
+`Modules(S)` along `S -> R`, is a red flag of its own kind. Restriction of
+scalars is a functor obtained from the category, never a declaration: Sage
+applies every axiom of a category to every declared supercategory
+(`CategoryWithAxiom.super_categories` joins `category._with_axiom_as_tuple(axiom)`
+over the base's supercategories, category_with_axiom.py), so the declared
+edge would make `Modules(QQ).FinitelyGenerated()` a subcategory of
+`Modules(ZZ).FinitelyGenerated()`, a false theorem for every property stated
+relative to the base. Ruled 2026-09-16; `TRAPS.md` holds the engine fact.
 
 # Mathematical ontology (always-on)
 

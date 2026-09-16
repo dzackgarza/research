@@ -84,6 +84,27 @@ Route chosen: the cycle space is the direct sum over 2-connected blocks, so the
 large block is the audit finding, not an obstacle. The per-block cost is paid
 once per run.
 
+### An axiom applies to every declared supercategory, so a base-restriction edge asserts descent of every property
+
+`CategoryWithAxiom.super_categories` (sage/categories/category_with_axiom.py,
+`def super_categories`, Sage 10.10.beta8) returns the join of the base
+category, `category._with_axiom_as_tuple(axiom)` for every supercategory of
+the base, and `extra_super_categories()`. `_with_axiom_as_tuple`
+(category.py) applies the axiom to any category whose class hierarchy
+defines it, and `Modules(ZZ)` defines the same axioms as `Modules(QQ)`.
+Consequence, read from source on 2026-09-16 and not executed: if `Modules(QQ)`
+declared `Modules(ZZ)` (restriction of scalars), then
+`Modules(QQ).FinitelyGenerated()` would have `Modules(ZZ).FinitelyGenerated()`
+as a supercategory, which is false; the same for every property stated
+relative to the base (finite type, smooth, projective, free of finite rank).
+Absolute properties (commutative, associative, finite) descend truly, but the
+mechanism cannot tell the two apart.
+
+Route chosen: no owned category declares itself over a lower base. Restriction
+of scalars is a functor obtained from the category, and a preservation
+theorem on that functor states which properties descend. Depends on this: the
+`Modules`, `Algebras` and `Schemes` bases (AGENTS.md, *Red flags*).
+
 ### `DiGraph.longest_path()` is a MILP by default; a DAG's longest chain is `level_sets()`
 
 `longest_path(algorithm='MILP')` is the default and `'heuristic'` the only

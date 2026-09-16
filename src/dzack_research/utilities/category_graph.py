@@ -422,9 +422,10 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
                     declaration.qualified_name
                 )
 
-    # A category may legitimately declare itself on other data: `Modules(R)`
-    # declares `Modules(S)` for a restriction base ring.  That is a loop on the
-    # name and not on the objects, so it is reported apart from real cycles.
+    # A category declaring its own name over other data (`Modules(R)` declaring
+    # `Modules(S)`) is a restriction-of-scalars edge, ruled out on 2026-09-16
+    # because Sage applies every axiom along it; reported apart from cycles
+    # because it is a loop on the name, not on the objects.
     recursive = sorted({d.name for d in declarations if d.name in d.heads})
     # A strongly connected component with more than one category is a set of
     # categories each declared to lie under the others.
@@ -453,8 +454,8 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
         "",
         f"## Declared on its own name, with other data ({len(recursive)})",
         "",
-        "Legitimate where the parameter differs -- restriction of scalars, a",
-        "smaller base -- and a contradiction where it does not.  Read the body.",
+        "A restriction-of-scalars edge, which Sage applies every axiom along;",
+        "restriction is a functor, never a declaration (AGENTS.md, Red flags).",
         "",
     ]
     lines.extend(recursive or ["none"])
