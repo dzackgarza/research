@@ -729,7 +729,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** implement the operation at its proper owner when mathematics is available; otherwise make the genuine abstract contract explicit or delete/move a method that is not defined at that layer.  Use `...` in Sage abstract bodies as required by policy.
   **Acceptance:** each audited method has a successful mathematical implementation path or is an honest abstract declaration; no unconditional failure/pass body remains behind a public mathematical promise.
 
-- [ ] **`group-module-scalar-change-convergence`**. **Needs:** `categorical-representation-convergence`.
+- [x] **`group-module-scalar-change-convergence`**. **Needs:** `categorical-representation-convergence`.
   Make group-module scalar extension/restriction one construction whose object and morphism actions are owned once (`STY-54`, `OWN-09`, `OWN-14`).
   **Observed gap:** object-level `base_change` transports the action while `GroupModuleScalarExtensionFunctor` separately owns morphism transport and construction knowledge.
   **Deliver:** select the mathematical owner (normally the scalar-change functor/construction); make the convenience object method delegate to it or vice versa, with one retained source/target ring map, group action and induced morphism law.
