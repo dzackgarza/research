@@ -155,10 +155,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             pulled_bundle = source_scheme.O(self.homogeneous_degree()).pullback(morphism)
             target = pulled_bundle.global_sections()
             product = morphism.domain()
-            label = getattr(morphism, "_preamble_product_projection_label", None)
-            assert label is not None, (
-                "homogeneous section pullback is represented here for the selected product-projection role"
-            )
+            label = product.projection_label(morphism)
             labels = tuple(product.factors().index_set())
             label = product.factors().index_set()(label)
             source_exponents = self._preamble_homogeneous_exponents

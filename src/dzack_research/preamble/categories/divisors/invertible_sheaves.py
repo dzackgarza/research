@@ -605,14 +605,9 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         assert source in ProductProjectiveSpaces(base), (
             "projective-space line-bundle pullback is represented here for product projections"
         )
-        label = getattr(morphism, "_preamble_product_projection_label", None)
-        assert label is not None, (
-            "projective-space line-bundle pullback requires the selected product-projection role"
-        )
+        label = source.projection_label(morphism)
         labels = tuple(source.factors().index_set())
         label = source.factors().index_set()(label)
-        if morphism is not source.projection(label):
-            raise ValueError("the retained projection label does not identify this morphism")
         return source.O(
             tuple(self.degree() if factor_label == label else 0 for factor_label in labels)
         )

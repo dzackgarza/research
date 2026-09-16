@@ -56,6 +56,8 @@ def test_repeated_projective_factors_keep_their_named_projection_roles() -> None
     assert quadric.factors()["right"] is line
     assert quadric.projection("left").codomain() is line
     assert quadric.projection("right").codomain() is line
+    assert quadric.projection_label(quadric.projection("left")) == "left"
+    assert quadric.projection_label(quadric.projection("right")) == "right"
 
     point = quadric.point_morphism([1, 2, 3, 4])
     assert quadric.projection("left").evaluate_at(point) == line.point_morphism([1, 2])

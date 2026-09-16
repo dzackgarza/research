@@ -195,11 +195,14 @@ class SchemeMorphism(Morphism):
             if structure.codomain() is self.codomain():
                 return structure
 
-        projection_label = getattr(
-            self,
-            "_preamble_product_projection_label",
-            None,
-        )
+        projection_label = None
+        projection_domain = self.domain()
+        projection_base = projection_domain.scheme_base_ring()
+        if projection_domain in ProductSchemes(projection_base):
+            try:
+                projection_label = projection_domain.projection_label(self)
+            except ValueError:
+                pass
         product_cone_target = getattr(
             other,
             "_preamble_product_cone_target",
@@ -292,11 +295,10 @@ class SchemeMorphism(Morphism):
             if self.domain() in ProductProjectiveSpaces(base):
                 factors = self.domain().factors()
                 stored_points = getattr(native_point, "_points", None)
-                factor_label = getattr(
-                    self,
-                    "_preamble_product_projection_label",
-                    None,
-                )
+                try:
+                    factor_label = self.domain().projection_label(self)
+                except ValueError:
+                    factor_label = None
                 if stored_points is not None and factor_label is not None:
                     labels = tuple(factors.index_set())
                     for position, label in enumerate(labels):
@@ -2660,6 +2662,15 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
             r"""Return the projections indexed by the same set as :meth:`factors`."""
             return self._preamble_product_projections
 
+        def projection_label(self, projection):
+            r"""Return the factor label selected by one of this product's projections."""
+            if projection.domain() is not self:
+                raise ValueError("a product projection must have this product as its domain")
+            for label in self.factors().index_set():
+                if projection is self.projection(label):
+                    return label
+            raise ValueError("this morphism is not one of the selected product projections")
+
         def from_product_cone(self, legs):
             r"""Return the unique represented map into this selected product.
 
@@ -3680,9 +3691,6 @@ def _install_scheme_product_data(product, factors, projections):
             if known_label == label:
                 return projection_values[position]
         raise KeyError(label)
-
-    for position, label in enumerate(labels):
-        projection_values[position]._preamble_product_projection_label = label
 
     product._preamble_product_factors = factors
     product._preamble_product_projections = indexed_family(
