@@ -1278,21 +1278,7 @@ def _isomorphism_from_known_inverse_pair(forward, inverse):
     )._from_known_inverse_pair(forward, inverse)
 
 
-def Isomorphism(
-    forward: Morphism,
-    inverse: Morphism,
-) -> CategoricalIsomorphism:
-    r"""Return the isomorphism represented by mutually inverse arrows."""
-    base_category = _represented_morphism_category(forward, inverse)
-    return _core_mor(
-        forward.domain(),
-        forward.codomain(),
-        base_category=base_category,
-    )(forward, inverse)
-
-
 __all__ = [
-    "Isomorphism",
     "IsoArrowCategory",
     "EndArrowCategory",
     "AutomorphismArrowCategory",
