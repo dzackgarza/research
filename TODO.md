@@ -706,7 +706,7 @@ These nodes build the missing categories rather than leaving the false declarati
   **Observed gap:** each declares `Objects()`; the sets sweep left them because their `super_categories` describe their objects rather than the category, the same circularity `arrow-category-placement` records (`[1] -> C` builds its objects as objects of `Arr(Cat)`).
   **Acceptance:** one construction is primary, and every one of these categories is placed in `Cat` by it.
 
-- [ ] **`membership-by-placement`**. **Needs:** none.
+- [x] **`membership-by-placement`**. **Needs:** none.
   **Goal:** No `__contains__` decides membership by a predicate (`CAT-23`).
   **Observed gap:** `Schemes.__contains__` answers lower-base membership by walking the candidate ring's base tower (schemes/schemes.py), so `X in Schemes(ZZ)` is true for a QQ-scheme that inherits nothing from it; `Sets.Countable.Infinite` decides membership by cardinality (a6078850); `QuasiCoherentSheaves.__contains__` duck-types (owned by `sheaf-object-placement`).
   **Acceptance:** each such membership is answered by placement at construction or through the functor of `CAT-16`; the predicates are gone.
