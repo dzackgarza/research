@@ -2774,7 +2774,7 @@ class RestrictedScalarsModuleView(Parent):
 
         self._preamble_base_ring = base_ring
         if self._preamble_module_generating_set is not None:
-            self._preamble_module_generator_function = lambda label: RestrictedScalarsModuleView.module_generator(self, label)
+            self._preamble_module_generator_function = self._restricted_scalar_generator
         Parent.__init__(
             self,
             base=base_ring,
@@ -2825,14 +2825,10 @@ class RestrictedScalarsModuleView(Parent):
         except (TypeError, ValueError):
             return False
 
-    def module_generating_set(self):
-        if self._preamble_module_generating_set is None:
-            raise NotImplementedError("this scalar restriction has no selected finite framing")
-        return self._preamble_module_generating_set
-
-    def module_generator(self, label):
-        labels = self.module_generating_set()
-        if label not in labels:
+    def _restricted_scalar_generator(self, label):
+        r"""Construct one selected restricted-scalar framing image."""
+        labels = self._preamble_module_generating_set
+        if labels is None or label not in labels:
             raise ValueError(f"{label!r} is not a restricted-scalar module-generator label")
         label = labels(label)
         scalar_label = label.component(0)
@@ -2858,15 +2854,6 @@ class RestrictedScalarsModuleView(Parent):
                 label = framing((scalar_label, module_label))
                 coefficients[label] = self.base_ring()(coefficient)
         return coefficients
-
-    @cached_method
-    def module_generators(self):
-
-        return indexed_family(
-            self.module_generating_set(),
-            self.module_generator,
-
-        )
 
     @cached_method
     def presentation(self):

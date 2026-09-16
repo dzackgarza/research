@@ -100,6 +100,10 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     assert framing.domain() is restricted.framing_source()
     assert framing.codomain() is restricted
     assert len(labels) == 2
+    for label in labels:
+        assert restricted.module_generator(label) == framing(
+            restricted.framing_source().module_generator(label)
+        )
     total = restricted.module_generator(labels[0]) + restricted.module_generator(labels[1])
     coefficients = restricted.framing_coefficients(total)
 
