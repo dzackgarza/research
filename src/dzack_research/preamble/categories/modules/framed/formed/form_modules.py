@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.modules.base_change import (
     _base_change_codomain,
     _base_change_scalar,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     FreshFreeModuleOn,
@@ -1654,7 +1654,7 @@ def _form_module(
     if is_free:
         return FreshFreeModuleOn(base_ring, labels, **common)
     if is_presented:
-        return FinitelyPresentedModule(module.presentation(), **common)
+        return _presented_module_from_morphism(module.presentation(), **common)
     raise TypeError(
         "the active formed-module constructor requires a framed free or chosen finitely presented module"
     )

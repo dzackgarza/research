@@ -4771,7 +4771,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Public `own_ring(SageZZ)`, `own_group(SagePermutationGroup(...))`, `refine_free_module(SageFreeModule(...))`, `FinitelyPresentedModule(sage_submodule)`, or a morphism constructor that accepts a Sage `Map` as a supported public datum.
 
-- **Correct Example**: Public `PolynomialRing(ZZ, "x")`, `FreeModule(ZZ, 3)`, `Groups.S(4)`, `FinitelyPresentedModule(presentation_morphism)`, and `A.Hom(B)(...)` consume preamble objects and mathematical data.  Any Sage/GAP representation needed to execute them is selected and constructed privately after the public call has crossed the API boundary.
+- **Correct Example**: Public `PolynomialRing(ZZ, "x")`, `FreeModule(ZZ, 3)`, `Groups.S(4)`, `presentation_morphism.cokernel()`, and `A.Hom(B)(...)` consume preamble objects and mathematical data.  Any Sage/GAP representation needed to execute them is selected and constructed privately after the public call has crossed the API boundary.
 
 #### `API-02`: Coordinates Are Framing Data; Coordinate Objects Keep Their Mathematical Type
 
@@ -4902,7 +4902,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Constructing a presented module directly from a Sage relation submodule; `with_action(G, matrices)` constructing the group morphism internally; `submodule_from_rows(matrix)` treating rows as the subobject rather than constructing the inclusion.
 
-- **Correct Example**: `FinitelyPresentedModule(presentation)` consumes the selected morphism `F_1 -> F_0`; a module with a `G`-action consumes `rho: G -> Aut(M)`; a Gram-matrix convenience first constructs the corresponding form morphism on the specified framed free module and then invokes the canonical formed-module constructor.
+- **Correct Example**: `presentation.cokernel()` consumes the selected morphism `F_1 -> F_0`; a module with a `G`-action consumes `rho: G -> Aut(M)`; a Gram-matrix convenience first constructs the corresponding form morphism on the specified framed free module and then invokes the canonical formed-module constructor.
 
 #### `CON-02`: Structure Maps Are First-Class Morphisms Constructed by Their Caller
 

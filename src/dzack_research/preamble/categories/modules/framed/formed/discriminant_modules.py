@@ -3,7 +3,7 @@ r"""Discriminant modules and their quotient-valued forms."""
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     TorsionBilinearFormModules,
@@ -827,7 +827,7 @@ def _discriminant_subgroup(ambient, generators):
                 prototype.module_generating_set(), ambient_generators, strict=True
             )
         }
-        source = FinitelyPresentedModule(
+        source = _presented_module_from_morphism(
             prototype.presentation(),
             _subobject_ambient=ambient,
             _subobject_generator_images=images,
@@ -838,7 +838,7 @@ def _discriminant_subgroup(ambient, generators):
         # The zero finite module is presented by the identity on one generator.
 
         free = ambient.base_ring().free_module(finite_ordered_set((0,)))
-        source = FinitelyPresentedModule(
+        source = _presented_module_from_morphism(
             free.module_category().Mor(free, free).identity(),
             _subobject_ambient=ambient,
             _subobject_generator_images={0: ambient.zero()},
@@ -983,7 +983,7 @@ def _discriminant_module(lattice):
                 _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
             )
         construction_data["unformed_module"] = prototype
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         prototype.presentation(),
         _extra_categories=tuple(categories),
         _extra_construction_data=construction_data,

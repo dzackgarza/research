@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
+    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -652,7 +652,7 @@ def _cohomology(complex_, degree):
     cycles = complex_.cycles(degree)
     boundaries = complex_.boundaries(degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
-    result = FinitelyPresentedModule(
+    result = _presented_module_from_morphism(
         boundary_in_cycles,
         _cokernel_morphism=boundary_in_cycles,
         _extra_categories=(CohomologyModules(ring),),

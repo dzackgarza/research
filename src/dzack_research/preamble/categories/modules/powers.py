@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
+    _presented_module_from_morphism,
     _presentation_from_relation_rows,
     _presentation_rows,
 )
@@ -679,7 +679,7 @@ def _presented_degree_power(
         relation_labels,
         relation_matrix,
     )
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation,
         _extra_categories=extra_categories,
         _extra_construction_data=extra_construction_data,

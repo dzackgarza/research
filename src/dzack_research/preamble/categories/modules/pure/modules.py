@@ -2904,10 +2904,10 @@ class RestrictedScalarsModuleView(Parent):
         if morphism.codomain() is not self:
             return NotImplemented
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModule,
+            _presented_module_from_morphism,
         )
 
-        return FinitelyPresentedModule(morphism, _cokernel_morphism=morphism)
+        return _presented_module_from_morphism(morphism, _cokernel_morphism=morphism)
 
     @cached_method
     def _selected_presentation_model(self):

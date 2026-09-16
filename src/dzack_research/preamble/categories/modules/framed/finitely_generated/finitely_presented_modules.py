@@ -174,7 +174,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             r"""Return a fresh module carrying this chosen finite presentation."""
             if labels != self.module_generating_set():
                 raise ValueError("the requested framing differs from the selected presentation")
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 self.presentation(),
                 _extra_categories=tuple(_extra_categories),
                 _extra_construction_data=_extra_construction_data,
@@ -232,7 +232,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 Sets.Δ[len(rows) - 1],
                 relations,
             )
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 presentation,
                 _biproduct_factors=factors,
                 _extra_categories=extra_categories,
@@ -401,7 +401,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
-            return FinitelyPresentedModule(morphism, _cokernel_morphism=morphism)
+            return _presented_module_from_morphism(morphism, _cokernel_morphism=morphism)
 
         def _presented_module_from_relation_rows(
             self,
@@ -424,7 +424,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 Sets.Δ[len(rows) - 1],
                 relations,
             )
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 presentation,
                 _extra_categories=extra_categories,
                 _extra_construction_data=extra_construction_data,
@@ -437,7 +437,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 element = element if element.parent() is self else self(element)
                 return image.linear_combination(self.framing_coefficients(element))
 
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 self.presentation(),
                 _subobject_ambient=self,
                 _subobject_generator_images=lambda label: self.module_generator(label),
@@ -483,7 +483,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return self.whole_subobject()
 
             kernel = spanning.kernel()
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 kernel.inclusion(),
                 _subobject_ambient=self,
                 _subobject_generator_images=lambda label: spanning(source.module_generator(label)),
@@ -1333,7 +1333,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     strict=True,
                 )
             }
-            return FinitelyPresentedModule(
+            return _presented_module_from_morphism(
                 source.module_category().Mor(source, target)(images),
                 _extra_construction_data=_extra_construction_data,
             )
@@ -2054,7 +2054,7 @@ def _cap_presentation_kernel(morphism):
             }
         )
 
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation,
         _subobject_ambient=domain,
         _subobject_generator_images=generator_images,
@@ -2178,7 +2178,7 @@ def _pid_presentation_kernel(morphism):
             raise ValueError("the element does not lie in the represented kernel") from error
         return kernel.linear_combination({label: ring._from_engine_element(engine(coordinates[int(label)])) for label in kernel_labels if coordinates[int(label)] != 0})
 
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation,
         _subobject_ambient=domain,
         _subobject_generator_images=generator_images,
@@ -2375,7 +2375,7 @@ def _singular_presentation_kernel(morphism):
             raise ValueError("the element does not lie in the represented kernel") from error
         return kernel.linear_combination({label: from_singular(lifted[position, 0]) for position, label in enumerate(kernel_labels) if lifted[position, 0] != 0})
 
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation,
         _subobject_ambient=domain,
         _subobject_generator_images=generator_images,
@@ -2397,7 +2397,7 @@ def _presentation_from_relation_rows(
     return source.module_category().Mor(source, target)(images)
 
 
-def FinitelyPresentedModule(
+def _presented_module_from_morphism(
     presentation,
     *,
     _cokernel_morphism=None,
@@ -2638,6 +2638,5 @@ def FinitelyPresentedModule(
 
 
 __all__ = [
-    "FinitelyPresentedModule",
     "_presentation_matrix",
 ]

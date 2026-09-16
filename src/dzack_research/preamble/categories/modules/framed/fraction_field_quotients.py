@@ -19,7 +19,7 @@ from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
+    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
@@ -328,7 +328,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     subobject.module_generator(label),
                 )
 
-            subobject = FinitelyPresentedModule(
+            subobject = _presented_module_from_morphism(
                 cyclic.presentation(),
                 _subobject_ambient=self,
                 _subobject_generator_images=lambda _label: image,

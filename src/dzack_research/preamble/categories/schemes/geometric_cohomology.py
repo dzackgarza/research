@@ -827,14 +827,14 @@ def _free_integral_topology_group(
 
 def _zmod2_integral_topology_group(scheme, degree, realization):
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
+        _presented_module_from_morphism,
     )
 
     integers = _own_ring(SageZZ)
     source = integers.free_module(1)
     target = integers.free_module(1)
     presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation,
         _extra_categories=(IntegralSingularCohomologyGroups(integers),),
         _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization),

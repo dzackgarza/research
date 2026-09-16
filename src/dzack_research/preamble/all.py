@@ -527,7 +527,6 @@ from dzack_research.preamble.categories.modules import (
     FinitelyGeneratedModules,
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedFormModules,
-    FinitelyPresentedModule,
     FinitelyPresentedModules,
     FinitelyPresentedQuadraticFormModules,
     FinitelyPresentedTorsionModules,

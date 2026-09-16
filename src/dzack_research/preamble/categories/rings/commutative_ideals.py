@@ -5,7 +5,7 @@ from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_bas
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -817,7 +817,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
             _extra_categories=(CommutativeIdeals(target),),
             _extra_construction_data=construction_data,
         )
-    return FinitelyPresentedModule(
+    return _presented_module_from_morphism(
         presentation(),
         _subobject_ambient=ambient_module,
         _subobject_generator_images=generator_images,
@@ -900,7 +900,7 @@ def _commutative_ideal(source, generators):
         }
     )
     ambient_module = source.regular_module()
-    ideal = FinitelyPresentedModule(
+    ideal = _presented_module_from_morphism(
         presentation,
         _subobject_ambient=ambient_module,
         _subobject_generator_images={
