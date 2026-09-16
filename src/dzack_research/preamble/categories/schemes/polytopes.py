@@ -2,6 +2,8 @@ r"""Convex polytopes and integral lattice polytopes."""
 
 from math import atan2, factorial
 
+from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -17,7 +19,12 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.tensors.tensor import tensor
+
+for _axiom in ("Integral", "Polygon"):
+    if _axiom not in all_axioms:
+        all_axioms.add(_axiom)
 
 
 def _owned_rational(coordinate):
@@ -137,7 +144,7 @@ class ConvexPolytopes(OwnedCategory):
 
     def _call_(self, vertices, lattice=None):
         r"""Construct the convex polytope on the selected vertices."""
-        return _convex_polytope(vertices, lattice=lattice, require_integral=False)
+        return _convex_polytope(vertices, lattice=lattice)
 
     def from_halfspaces(self, halfspaces, lattice=None):
         r"""The polytope cut out by a family of affine halfspaces.
@@ -173,12 +180,20 @@ class ConvexPolytopes(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    class SubcategoryMethods:
+        def Integral(self) -> Category:
+            r"""Return this category with the axiom that every vertex is a lattice point."""
+            return self._with_axiom("Integral")
+
+        def Polygon(self) -> Category:
+            r"""Return this category with the axiom that the affine dimension is two."""
+            return self._with_axiom("Polygon")
+
     class ParentMethods:
         def __init__(
             self,
             vertices=None,
             lattice=None,
-            require_integral=False,
             engine_polyhedron=None,
             **rest,
         ) -> None:
@@ -218,10 +233,6 @@ class ConvexPolytopes(OwnedCategory):
 
             self._polyhedron = polyhedron
             self._ambient_lattice = lattice
-            self._require_integral = bool(require_integral)
-            assert not self._require_integral or self._vertices_are_integral(), (
-                "a lattice polytope must have integral vertices"
-            )
 
             super().__init__(**rest)
 
@@ -309,7 +320,6 @@ class ConvexPolytopes(OwnedCategory):
                     _convex_polytope(
                         engine_polyhedron=facet.as_polyhedron(),
                         lattice=self.ambient_lattice(),
-                        require_integral=self.is_lattice_polytope(),
                     )
                     for facet in self._engine_polyhedron().facets()
                 )
@@ -438,7 +448,7 @@ class ConvexPolytopes(OwnedCategory):
             assert scalar >= integers.zero(), (
                 "Ehrhart dilation factors are nonnegative"
             )
-            return LatticePolytopes()(
+            return ConvexPolytopes().Integral()(
                 [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
                 lattice=self.ambient_lattice(),
             )
@@ -517,12 +527,6 @@ class ConvexPolytopes(OwnedCategory):
                 "the polar dual is bounded only when the origin is interior"
             )
             polar = self._engine_polyhedron().polar()
-            if all(
-                coordinate in SageZZ
-                for vertex in polar.vertices()
-                for coordinate in vertex
-            ):
-                return LatticePolytopes()(polar.vertices())
             return ConvexPolytopes()(polar.vertices())
 
         def is_smooth(self) -> bool:
@@ -538,200 +542,204 @@ class ConvexPolytopes(OwnedCategory):
             return f"{noun} of dimension {self.dimension()} with {self.n_vertices()} vertices"
 
 
+    class Integral(CategoryWithAxiom):
+        r"""Convex polytopes all of whose vertices are lattice points."""
 
-class LatticePolytopes(OwnedCategory):
-    r"""Convex polytopes all of whose vertices are lattice points."""
+        def an_object(self):
+            r"""The standard simplex in ``ZZ^3``."""
+            return self(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
 
-    def an_object(self):
-        r"""The standard simplex in ``ZZ^3``."""
-        return self(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
+        @classmethod
+        def _repr_object_names(cls):
+            return "lattice polytopes"
 
-    def _call_(self, vertices, lattice=None):
-        r"""Construct the lattice polytope on the selected integral vertices."""
-        return _convex_polytope(vertices, lattice=lattice, require_integral=True)
+        def _call_(self, vertices, lattice=None):
+            r"""Construct the lattice polytope on the selected integral vertices."""
+            return _polytope_in(self, vertices, lattice)
 
-    @cached_method
-    def reflexive_polytopes(self, dimension):
-        r"""The reflexive polytopes of the stated dimension, up to lattice equivalence.
+        def __contains__(self, candidate) -> bool:
+            return candidate in ConvexPolytopes() and candidate.is_lattice_polytope()
 
-        The classification is Kreuzer--Skarke's; Sage carries it in
-        ``sage.geometry.lattice_polytope.ReflexivePolytopes``, with dimension
-        two built in and dimension three behind its optional polytope
-        database.  By Batyrev's theorem the toric variety of the normal fan of
-        a reflexive polytope is Gorenstein Fano, so this is the finite list a
-        session searches when it wants those.
-        """
-        from sage.geometry.lattice_polytope import ReflexivePolytopes
+        @cached_method
+        def reflexive_polytopes(self, dimension):
+            r"""The reflexive polytopes of the stated dimension, up to lattice equivalence.
 
-        dimension = int(dimension)
-        assert dimension in (2, 3), (
-            "the represented reflexive-polytope classification covers "
-            "dimensions two and three"
-        )
-        return finite_ordered_set(
-            tuple(
-                LatticePolytopes()(
-                    tuple(
-                        tuple(int(coordinate) for coordinate in vertex)
-                        for vertex in classified.vertices()
+            The classification is Kreuzer--Skarke's; Sage carries it in
+            ``sage.geometry.lattice_polytope.ReflexivePolytopes``, with dimension
+            two built in and dimension three behind its optional polytope
+            database.  By Batyrev's theorem the toric variety of the normal fan of
+            a reflexive polytope is Gorenstein Fano, so this is the finite list a
+            session searches when it wants those.
+            """
+            from sage.geometry.lattice_polytope import ReflexivePolytopes
+
+            dimension = int(dimension)
+            assert dimension in (2, 3), (
+                "the represented reflexive-polytope classification covers "
+                "dimensions two and three"
+            )
+            return finite_ordered_set(
+                tuple(
+                    self(
+                        tuple(
+                            tuple(int(coordinate) for coordinate in vertex)
+                            for vertex in classified.vertices()
+                        )
+                    )
+                    for classified in ReflexivePolytopes(dimension)
+                )
+            )
+
+        class Polygon(CategoryWithAxiom):
+            r"""Lattice polytopes of affine dimension two."""
+
+            def an_object(self):
+                r"""The standard triangle in ``ZZ^2``."""
+                return self(((0, 0), (1, 0), (0, 1)))
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "lattice polygons"
+
+            def _call_(self, vertices, lattice=None):
+                r"""Construct the two-dimensional lattice polytope on ``vertices``."""
+                return _polytope_in(self, vertices, lattice)
+
+            def __contains__(self, candidate) -> bool:
+                return (
+                    candidate in ConvexPolytopes().Integral()
+                    and candidate in ConvexPolytopes().Polygon()
+                )
+
+    class Polygon(CategoryWithAxiom):
+        r"""Convex polytopes of affine dimension two."""
+
+        def an_object(self):
+            r"""The triangle on ``0, e_1/2, e_2``, whose vertices are not integral."""
+            from sage.rings.rational import Rational
+
+            return self(((0, 0), (Rational((1, 2)), 0), (0, 1)))
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "convex polygons"
+
+        def _call_(self, vertices, lattice=None):
+            r"""Construct the two-dimensional convex polytope on ``vertices``."""
+            return _polytope_in(self, vertices, lattice)
+
+        def __contains__(self, candidate) -> bool:
+            return candidate in ConvexPolytopes() and int(candidate.dimension()) == 2
+
+        class ParentMethods:
+            def _repr_svg_(self):
+                r"""Render this live polygon as a deterministic notebook SVG view.
+
+                The mathematical object remains the exact owned polygon.  Floating
+                point conversion is confined to this display boundary: the exact
+                engine vertices are sorted cyclically about their centroid and
+                affinely rescaled into a fixed SVG viewport.
+                """
+                vertices = tuple(
+                    tuple(float(coordinate) for coordinate in vertex)
+                    for vertex in self._engine_polyhedron().vertices_list()
+                )
+                if len(vertices) < 3:
+                    return None
+
+                center_x = sum(vertex[0] for vertex in vertices) / len(vertices)
+                center_y = sum(vertex[1] for vertex in vertices) / len(vertices)
+                ordered = tuple(
+                    sorted(
+                        vertices,
+                        key=lambda vertex: atan2(
+                            vertex[1] - center_y,
+                            vertex[0] - center_x,
+                        ),
                     )
                 )
-                for classified in ReflexivePolytopes(dimension)
-            )
-        )
+                minimum_x = min(vertex[0] for vertex in ordered)
+                maximum_x = max(vertex[0] for vertex in ordered)
+                minimum_y = min(vertex[1] for vertex in ordered)
+                maximum_y = max(vertex[1] for vertex in ordered)
+                span_x = maximum_x - minimum_x
+                span_y = maximum_y - minimum_y
+                scale = 260.0 / max(span_x, span_y, 1.0)
+                margin = 30.0
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "lattice polytopes"
+                def screen_point(vertex):
+                    x, y = vertex
+                    return (
+                        margin + (x - minimum_x) * scale,
+                        margin + (maximum_y - y) * scale,
+                    )
 
-    def super_categories(self):
-        return [ConvexPolytopes()]
-
-
-
-class ConvexPolygons(OwnedCategory):
-    r"""Convex polytopes of affine dimension two."""
-
-    def an_object(self):
-        r"""The triangle on ``0, e_1/2, e_2``, whose vertices are not integral."""
-        from sage.rings.rational import Rational
-
-        return self(((0, 0), (Rational((1, 2)), 0), (0, 1)))
-
-    def _call_(self, vertices, lattice=None):
-        r"""Construct the two-dimensional convex polytope on ``vertices``."""
-        polytope = ConvexPolytopes()(vertices, lattice=lattice)
-        assert polytope.dimension() == 2, "a convex polygon has affine dimension two"
-        return polytope
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "convex polygons"
-
-    def super_categories(self):
-        return [ConvexPolytopes()]
-
-    class ParentMethods:
-        def _repr_svg_(self):
-            r"""Render this live polygon as a deterministic notebook SVG view.
-
-            The mathematical object remains the exact owned polygon.  Floating
-            point conversion is confined to this display boundary: the exact
-            engine vertices are sorted cyclically about their centroid and
-            affinely rescaled into a fixed SVG viewport.
-            """
-            vertices = tuple(
-                tuple(float(coordinate) for coordinate in vertex)
-                for vertex in self._engine_polyhedron().vertices_list()
-            )
-            if len(vertices) < 3:
-                return None
-
-            center_x = sum(vertex[0] for vertex in vertices) / len(vertices)
-            center_y = sum(vertex[1] for vertex in vertices) / len(vertices)
-            ordered = tuple(
-                sorted(
-                    vertices,
-                    key=lambda vertex: atan2(
-                        vertex[1] - center_y,
-                        vertex[0] - center_x,
-                    ),
+                points = " ".join(
+                    f"{x:.6g},{y:.6g}" for x, y in map(screen_point, ordered)
                 )
-            )
-            minimum_x = min(vertex[0] for vertex in ordered)
-            maximum_x = max(vertex[0] for vertex in ordered)
-            minimum_y = min(vertex[1] for vertex in ordered)
-            maximum_y = max(vertex[1] for vertex in ordered)
-            span_x = maximum_x - minimum_x
-            span_y = maximum_y - minimum_y
-            scale = 260.0 / max(span_x, span_y, 1.0)
-            margin = 30.0
-
-            def screen_point(vertex):
-                x, y = vertex
+                width = 2 * margin + span_x * scale
+                height = 2 * margin + span_y * scale
                 return (
-                    margin + (x - minimum_x) * scale,
-                    margin + (maximum_y - y) * scale,
+                    f'<svg xmlns="http://www.w3.org/2000/svg" '
+                    f'viewBox="0 0 {width:.6g} {height:.6g}" '
+                    f'width="{width:.6g}" height="{height:.6g}">'
+                    '<polygon points="'
+                    + points
+                    + '" fill="none" stroke="currentColor" stroke-width="2"/>'
+                    "</svg>"
                 )
 
-            points = " ".join(
-                f"{x:.6g},{y:.6g}" for x, y in map(screen_point, ordered)
-            )
-            width = 2 * margin + span_x * scale
-            height = 2 * margin + span_y * scale
-            return (
-                f'<svg xmlns="http://www.w3.org/2000/svg" '
-                f'viewBox="0 0 {width:.6g} {height:.6g}" '
-                f'width="{width:.6g}" height="{height:.6g}">'
-                '<polygon points="'
-                + points
-                + '" fill="none" stroke="currentColor" stroke-width="2"/>'
-                "</svg>"
-            )
+
+def LatticePolytopes() -> Category:
+    r"""The category of lattice polytopes."""
+    return ConvexPolytopes().Integral()
 
 
-
-class LatticePolygons(OwnedCategory):
-    r"""Lattice polytopes of affine dimension two."""
-
-    def an_object(self):
-        r"""The standard triangle in ``ZZ^2``."""
-        return self(((0, 0), (1, 0), (0, 1)))
-
-    def _call_(self, vertices, lattice=None):
-        r"""Construct the two-dimensional lattice polytope on ``vertices``."""
-        polytope = LatticePolytopes()(vertices, lattice=lattice)
-        assert polytope.dimension() == 2, "a lattice polygon has affine dimension two"
-        return polytope
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "lattice polygons"
-
-    def super_categories(self):
-        return [ConvexPolygons(), LatticePolytopes()]
+def ConvexPolygons() -> Category:
+    r"""The category of convex polygons."""
+    return ConvexPolytopes().Polygon()
 
 
+def LatticePolygons() -> Category:
+    r"""The category of lattice polygons."""
+    return ConvexPolytopes().Integral().Polygon()
 
+
+def _polytope_in(category, vertices, lattice):
+    r"""The polytope on ``vertices``, which the caller asserts lies in ``category``."""
+    polytope = _convex_polytope(vertices, lattice=lattice)
+    assert polytope in category, f"the vertices do not span an object of {category}"
+    return polytope
 
 
 def _convex_polytope(
     vertices=None,
     lattice=None,
-    require_integral=False,
     engine_polyhedron=None,
 ):
     r"""Return the polytope its category generates, placed by what it is.
 
-    Integrality of the vertices and affine dimension two are the two
-    conditions the finer categories state, so the construction decides them
-    once and the object is placed accordingly.
+    Integrality of the vertices and affine dimension two are the two axioms
+    the finer categories state, so the construction decides them once and
+    the object is placed accordingly.
     """
     probe = _object_of(
         ConvexPolytopes(),
         vertices=vertices,
         lattice=lattice,
-        require_integral=require_integral,
         engine_polyhedron=engine_polyhedron,
     )
-    integral = probe.is_lattice_polytope()
-    plane = int(probe.dimension()) == 2
-    placement = (
-        LatticePolygons()
-        if integral and plane
-        else LatticePolytopes()
-        if integral
-        else ConvexPolygons()
-        if plane
-        else ConvexPolytopes()
-    )
+    placement = ConvexPolytopes()
+    if probe.is_lattice_polytope():
+        placement = placement.Integral()
+    if int(probe.dimension()) == 2:
+        placement = placement.Polygon()
     if placement is ConvexPolytopes():
         return probe
     return _object_of(
         placement,
         vertices=probe,
         lattice=probe.ambient_lattice(),
-        require_integral=require_integral,
     )
 
 
