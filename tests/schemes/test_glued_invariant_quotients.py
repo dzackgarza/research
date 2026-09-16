@@ -13,9 +13,6 @@ from dzack_research.preamble.all import (
     Schemes,
     Algebras,
 )
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
 )
@@ -98,7 +95,10 @@ class _SwapChart:
         )
         forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)
         inverse: SchemeMorphism = overlap.Mor(overlap)(inverse_ring_map)
-        transition: CategoricalIsomorphism = Isomorphism(forward, inverse)
+        transition: CategoricalIsomorphism = forward.parent().base_category().Core().Mor(
+            overlap,
+            overlap,
+        )(forward, inverse)
         return transition
 
     def quotient_scale(
@@ -151,7 +151,10 @@ class _SwapChart:
         )
         forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)
         inverse: SchemeMorphism = overlap.Mor(overlap)(inverse_ring_map)
-        transition: CategoricalIsomorphism = Isomorphism(forward, inverse)
+        transition: CategoricalIsomorphism = forward.parent().base_category().Core().Mor(
+            overlap,
+            overlap,
+        )(forward, inverse)
         return transition
 
 
@@ -359,7 +362,10 @@ def test_glued_quotient_rejects_a_nonequivariant_source_transition() -> None:
     )
     forward: SchemeMorphism = overlap.Mor(overlap)(forward_ring_map)
     inverse: SchemeMorphism = overlap.Mor(overlap)(inverse_ring_map)
-    source_transition: CategoricalIsomorphism = Isomorphism(forward, inverse)
+    source_transition: CategoricalIsomorphism = forward.parent().base_category().Core().Mor(
+        overlap,
+        overlap,
+    )(forward, inverse)
     acted_charts = _constant_acted_family(data.acted, 2)
     source_transitions = _transition_family({(0, 1): source_transition})
     quotient_transitions = _transition_family({(0, 1): data.quotient_scale(2)})

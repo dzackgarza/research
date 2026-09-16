@@ -6,10 +6,6 @@ def _rank_one_generator(module):
 
 
 def _rank_one_transition(source, target, unit):
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
-
     source_generator = _rank_one_generator(source)
     target_generator = _rank_one_generator(target)
     forward = source.module_category().Mor(source, target)(
@@ -18,7 +14,7 @@ def _rank_one_transition(source, target, unit):
     inverse = target.module_category().Mor(target, source)(
         lambda _label: source.scalar_multiple(unit.inverse_of_unit(), source_generator)
     )
-    return Isomorphism(forward, inverse)
+    return source.module_category().Core().Mor(source, target)(forward, inverse)
 
 
 def _rank_one_map(source, target, scalar):

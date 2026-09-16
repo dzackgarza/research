@@ -10,9 +10,6 @@ def _quadratic_algebra(ring):
 
 
 def _sign_transition(source, target, sign):
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.algebras.algebras import Algebras
 
     sign = source.base_ring()(sign)
@@ -24,7 +21,7 @@ def _sign_transition(source, target, sign):
     inverse = algebras.Mor(target, source)(
         {"z": sign * source.algebra_generator("z")}
     )
-    return Isomorphism(forward, inverse)
+    return algebras.Core().Mor(source, target)(forward, inverse)
 
 
 def _two_chart_sign_datum():

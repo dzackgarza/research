@@ -8,23 +8,18 @@ def _generator(module: Any) -> Any:
 
 
 def _transition(source: Any, target: Any, unit: Any) -> Any:
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
-
     source_generator = _generator(source)
     target_generator = _generator(target)
-    return Isomorphism(
-        source.module_category().Mor(source, target)(
-            lambda _label: target.scalar_multiple(unit, target_generator)
-        ),
-        target.module_category().Mor(target, source)(
-            lambda _label: source.scalar_multiple(
-                unit.inverse_of_unit(),
-                source_generator,
-            )
-        ),
+    forward = source.module_category().Mor(source, target)(
+        lambda _label: target.scalar_multiple(unit, target_generator)
     )
+    inverse = target.module_category().Mor(target, source)(
+        lambda _label: source.scalar_multiple(
+            unit.inverse_of_unit(),
+            source_generator,
+        )
+    )
+    return source.module_category().Core().Mor(source, target)(forward, inverse)
 
 
 def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
@@ -152,10 +147,6 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     )
     left_overlap = cover.restrict_module(local_modules[0], 0, 1)
     right_overlap = cover.restrict_module(local_modules[1], 1, 0)
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
-
     forward = left_overlap.module_category().Mor(left_overlap, right_overlap)(
         {
             label: right_overlap.module_generator(label)
@@ -170,7 +161,11 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     )
     datum = cover.glue_modules(
         local_modules,
-        {(0, 1): Isomorphism(forward, inverse)},
+        {
+            (0, 1): left_overlap.module_category()
+            .Core()
+            .Mor(left_overlap, right_overlap)(forward, inverse)
+        },
     )
     with raises(TypeError, match="rank-one finite free"):
         InvertibleSheaf(datum)

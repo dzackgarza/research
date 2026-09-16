@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
@@ -16,9 +15,10 @@ def _polynomial_algebra_descent(variable):
     right = cover.restrict_algebra(local_algebras[1], 1, 0)
     forward = left.Mor(right)({variable: right.algebra_generator(variable)})
     inverse = right.Mor(left)({variable: left.algebra_generator(variable)})
+    transition = forward.parent().base_category().Core().Mor(left, right)(forward, inverse)
     datum = cover.glue_algebras(
         local_algebras,
-        {(0, 1): Isomorphism(forward, inverse)},
+        {(0, 1): transition},
     )
     return scheme, cover, datum
 
@@ -52,14 +52,19 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     )
     target_left = source_cover.restrict_algebra(target_local[0], 0, 1)
     target_right = source_cover.restrict_algebra(target_local[1], 1, 0)
+    target_forward = target_left.Mor(target_right)(
+        {"w": target_right.algebra_generator("w")}
+    )
+    target_inverse = target_right.Mor(target_left)(
+        {"w": target_left.algebra_generator("w")}
+    )
+    target_transition = target_forward.parent().base_category().Core().Mor(
+        target_left,
+        target_right,
+    )(target_forward, target_inverse)
     target = source_cover.glue_algebras(
         target_local,
-        {
-            (0, 1): Isomorphism(
-                target_left.Mor(target_right)({"w": target_right.algebra_generator("w")}),
-                target_right.Mor(target_left)({"w": target_left.algebra_generator("w")}),
-            )
-        },
+        {(0, 1): target_transition},
     )
     local_maps = tuple(
         source.local_algebra(index).Mor(target.local_algebra(index))(
@@ -97,15 +102,26 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
     whole_overlap = overlap.distinguished_open(overlap.coordinate_algebra().one())
-    left_to_overlap = Isomorphism(
-        whole_overlap.corestriction(overlap.categorical_identity_morphism()),
-        whole_overlap.inclusion(),
+    schemes = Schemes(QQ)
+    left_forward = whole_overlap.corestriction(overlap.categorical_identity_morphism())
+    left_inverse = whole_overlap.inclusion()
+    left_to_overlap = schemes.Core().Mor(
+        left_forward.domain(),
+        left_forward.codomain(),
+    )(
+        left_forward,
+        left_inverse,
     )
-    right_to_overlap = Isomorphism(
-        whole_overlap.corestriction(coarse.transition_between(1, 0).forward()),
-        coarse.transition_between(0, 1).forward() * whole_overlap.inclusion(),
+    right_forward = whole_overlap.corestriction(coarse.transition_between(1, 0).forward())
+    right_inverse = coarse.transition_between(0, 1).forward() * whole_overlap.inclusion()
+    right_to_overlap = schemes.Core().Mor(
+        right_forward.domain(),
+        right_forward.codomain(),
+    )(
+        right_forward,
+        right_inverse,
     )
-    fine = Schemes(QQ).glue_affine_atlas(
+    fine = schemes.glue_affine_atlas(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
@@ -137,4 +153,3 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
             * refinement.chart_map(fine_index)
         )
         assert refined_structure * fine.chart_embedding(fine_index) == expected
-

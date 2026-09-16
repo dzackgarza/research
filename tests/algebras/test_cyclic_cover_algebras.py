@@ -11,9 +11,6 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from sage.rings.rational_field import QQ as SageQQ
 
     from dzack_research.preamble.all import InvertibleSheaf
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
@@ -31,19 +28,24 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         scheme,
         cover.overlap(0, 1),
     )(x)
-    transition = Isomorphism(
-        left_overlap.module_category().Mor(left_overlap, right_overlap)(
-            lambda _label: right_overlap.scalar_multiple(
-                overlap_x,
-                _generator(right_overlap),
-            )
-        ),
-        right_overlap.module_category().Mor(right_overlap, left_overlap)(
-            lambda _label: left_overlap.scalar_multiple(
-                overlap_x.inverse_of_unit(),
-                _generator(left_overlap),
-            )
-        ),
+    forward = left_overlap.module_category().Mor(left_overlap, right_overlap)(
+        lambda _label: right_overlap.scalar_multiple(
+            overlap_x,
+            _generator(right_overlap),
+        )
+    )
+    inverse = right_overlap.module_category().Mor(right_overlap, left_overlap)(
+        lambda _label: left_overlap.scalar_multiple(
+            overlap_x.inverse_of_unit(),
+            _generator(left_overlap),
+        )
+    )
+    transition = left_overlap.module_category().Core().Mor(
+        left_overlap,
+        right_overlap,
+    )(
+        forward,
+        inverse,
     )
     line = InvertibleSheaf(
         cover.glue_modules(local_modules, {(0, 1): transition})
