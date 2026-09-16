@@ -22,7 +22,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
+    DescentData,
     DescentDataOnCover,
+)
+from dzack_research.preamble.categories.abstract_categories.products import (
+    SelectedLimitConstruction,
+    _parallel_pair_diagram,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -32,6 +37,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     _engine_ring,
@@ -2899,6 +2905,8 @@ class ModuleGluingDatum(Parent):
         self._inverse_transitions = {}
         self._compatible_sections = None
         self._sheaf = None
+        self._descent_presheaf = None
+        self._descent_data = None
         self._verify_pairwise_transitions()
         self._verify_cocycles()
         Parent.__init__(self, category=ModuleGluingData(cover))
@@ -3120,6 +3128,45 @@ class ModuleGluingDatum(Parent):
             self._sheaf = GluedModuleSheaf(self)
         return self._sheaf
 
+    def descent_presheaf(self):
+        r"""Return the underlying set-valued presheaf on this cover's finite Čech site."""
+
+        if self._descent_presheaf is None:
+            self._descent_presheaf = _ModuleGluingCechPresheaf(self)
+        return self._descent_presheaf
+
+    def descent_data(self) -> DescentData:
+        r"""Return the sheaf-condition data carried by the existing gluing computation."""
+
+        if self._descent_data is None:
+            presheaf = self.descent_presheaf()
+            coverage = self.cover().cech_coverage()
+            selected_cover = self.cover().cech_covering_family()
+
+            def inverse_for(equalizer):
+                if equalizer.covering_family() is not selected_cover:
+                    raise ValueError("this affine descent datum belongs to a different Čech family")
+                global_sections = self.compatible_sections()
+                return Sets().Mor(global_sections, global_sections).identity()
+
+            self._descent_data = DescentData(
+                coverage,
+                presheaf,
+                inverse_for,
+                equalizer_for=presheaf.selected_equalizer_construction,
+            )
+            # Materialize the selected comparison now.  For this concrete
+            # finite coverage there is one nontrivial represented family, so
+            # the sheaf witness is checked at construction rather than deferred
+            # until a later consumer happens to request it.
+            self._descent_data.comparison(selected_cover)
+        return self._descent_data
+
+    def descent_sheaf(self):
+        r"""Return the existing glued object, now placed in its sheaf category."""
+
+        return self.sheaf()
+
     def Mor(self, target):
         r"""Return the represented Hom category of descent morphisms to ``target``."""
 
@@ -3127,6 +3174,135 @@ class ModuleGluingDatum(Parent):
 
     def _repr_(self):
         return f"Module gluing datum on {self.cover()}"
+
+
+class _ModuleGluingCechPresheaf(Functor):
+    r"""The represented Čech presheaf already computed by affine module gluing.
+
+    This is the underlying set-valued presheaf of the module sheaf.  A chart
+    or overlap is therefore represented by its existing local module parent,
+    without forcing modules over different coordinate rings into one artificial
+    module category.  The global value is the existing
+    :class:`CompatibleLocalSectionsModule`, so selecting that same object as
+    the descent equalizer introduces no second gluing algorithm.
+    """
+
+    def __init__(self, gluing_datum: ModuleGluingDatum) -> None:
+        self._gluing_datum = gluing_datum
+        cover = gluing_datum.cover()
+        Functor.__init__(
+            self,
+            cover.cech_site().opposite(),
+            Sets(),
+        )
+
+    def gluing_datum(self) -> ModuleGluingDatum:
+        return self._gluing_datum
+
+    def cover(self):
+        return self.gluing_datum().cover()
+
+    def site(self):
+        return self.cover().cech_site()
+
+    def _label(self, opposite_object):
+        return tuple(opposite_object.underlying_object().value())
+
+    def _apply_object(self, opposite_object):
+        label = self._label(opposite_object)
+        datum = self.gluing_datum()
+        if not label:
+            return datum.compatible_sections()
+        if len(label) == 1:
+            return datum.local_module(label[0])
+        if len(label) == 2:
+            owner = label[0]
+            return datum.restricted_module(owner, *label)
+        raise ValueError("the affine Čech presheaf is represented through pair overlaps")
+
+    def _restriction_value(self, source_label, target_label, element, target):
+        datum = self.gluing_datum()
+        cover = self.cover()
+        if not source_label:
+            section = datum.compatible_sections()(element)
+            if len(target_label) == 1:
+                chart = target_label[0]
+                return target(section.component(cover.chart_position(chart)))
+            owner = target_label[0]
+            local = section.component(cover.chart_position(owner))
+            return target(datum.restrict_section(owner, local, *target_label))
+
+        if len(source_label) == 1 and len(target_label) == 2:
+            chart = source_label[0]
+            restricted = datum.restrict_section(
+                chart,
+                element,
+                *target_label,
+            )
+            owner = target_label[0]
+            if chart != owner:
+                restricted = datum.transition(owner, chart).inverse()(restricted)
+            return target(restricted)
+        raise ValueError("the supplied Čech-site arrow has no represented restriction")
+
+    def _apply_morphism(self, opposite_arrow):
+        underlying = opposite_arrow.underlying_arrow()
+        source_label = tuple(underlying.codomain().value())
+        target_label = tuple(underlying.domain().value())
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        homset = Sets().Mor(source, target)
+        if source_label == target_label:
+            return homset.identity()
+        return homset(
+            lambda element: self._restriction_value(
+                source_label,
+                target_label,
+                element,
+                target,
+            ),
+        )
+
+    def selected_equalizer_construction(self, equalizer):
+        r"""Use the existing compatible-sections parent as the selected equalizer."""
+
+        selected_cover = self.cover().cech_covering_family()
+        if equalizer.covering_family() is not selected_cover:
+            raise ValueError("the selected affine equalizer belongs to a different Čech family")
+        datum = self.gluing_datum()
+        compatible = datum.compatible_sections()
+        local_product_construction = equalizer.local_product_construction()
+        local_product = local_product_construction.object()
+        inclusion = equalizer.restriction_to_product()
+        left, right = equalizer.parallel_maps()
+        diagram = _parallel_pair_diagram(left, right, self.codomain())
+        shape = diagram.domain()
+        universal_cone = diagram.Cones().cone(
+            compatible,
+            lambda index: (
+                inclusion if index is shape.source() else left * inclusion
+            ),
+        )
+
+        def factorizer(cone):
+            source = cone.apex()
+            source_leg = cone.structure_morphism(shape.source())
+
+            def image(element):
+                product_element = source_leg(element)
+                components = []
+                for chart in self.cover().atlas():
+                    components.append(
+                        local_product.projection(chart)(product_element)
+                    )
+                return compatible(tuple(components))
+
+            return Sets().Mor(source, compatible)(image)
+
+        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+    def _repr_(self):
+        return f"Čech presheaf of {self.gluing_datum()}"
 
 
 class ModuleGluingMorphism(Morphism):
@@ -4213,11 +4389,19 @@ class CompatibleLocalAlgebraSections(CompatibleLocalSectionsModule):
         return f"Compatible local algebra sections of {self.algebra_gluing_datum()}"
 
 
-class GluedModuleSheaf(SageObject):
+class GluedModuleSheaf(Parent):
     r"""The module sheaf represented by one finite affine descent datum."""
 
     def __init__(self, gluing_datum) -> None:
         self._gluing_datum = gluing_datum
+        # Materialize the concrete equalizer witness before placing the object
+        # in Sh(C, Set): construction of this sheaf is the affirmative descent
+        # datum, not a later boolean refinement of a presheaf.
+        gluing_datum.descent_data()
+        Parent.__init__(
+            self,
+            category=gluing_datum.cover().cech_coverage().sheaves(Sets()),
+        )
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -4229,6 +4413,17 @@ class GluedModuleSheaf(SageObject):
 
     def cover(self):
         return self.gluing_datum().cover()
+
+    def functor(self):
+        return self.gluing_datum().descent_presheaf()
+
+    def descent_data(self):
+        return self.gluing_datum().descent_data()
+
+    def arrow(self):
+        return self.category().presheaf_category().category_of_categories().arrow(
+            self.functor()
+        )
 
     def sections_on_chart(self, index):
         return self.gluing_datum().local_module(index)

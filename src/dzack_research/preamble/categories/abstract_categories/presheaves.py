@@ -624,10 +624,18 @@ def _identity_equalizer_construction(value_category: Category, obj: Parent):
 class DescentEqualizer(SageObject):
     r"""The canonical Čech equalizer comparison for one presheaf and cover."""
 
-    def __init__(self, coverage: Coverage, presheaf, covering_family: CoveringFamily) -> None:
+    def __init__(
+        self,
+        coverage: Coverage,
+        presheaf,
+        covering_family: CoveringFamily,
+        *,
+        equalizer_selector=None,
+    ) -> None:
         self._coverage = coverage
         self._presheaf = _presheaf_functor(presheaf)
         self._covering_family = covering_family
+        self._equalizer_selector = equalizer_selector
         if covering_family not in coverage.covering_families():
             raise TypeError("descent is stated only for a covering family of the coverage")
         site = coverage.site_category()
@@ -682,9 +690,6 @@ class DescentEqualizer(SageObject):
             self._left = identity
             self._right = identity
             self._matching_product = None
-            self._equalizer = _identity_equalizer_construction(
-                self.value_category(), local_product
-            )
         else:
             overlap_values = finite_indexed_family(
                 cover.pair_index_set(),
@@ -705,6 +710,13 @@ class DescentEqualizer(SageObject):
 
             self._left = side_map("left")
             self._right = side_map("right")
+        if self._equalizer_selector is not None:
+            self._equalizer = self._equalizer_selector(self)
+        elif not pairs:
+            self._equalizer = _identity_equalizer_construction(
+                self.value_category(), local_product
+            )
+        else:
             self._equalizer = self.value_category().equalizer_construction(
                 self._left,
                 self._right,
@@ -712,15 +724,27 @@ class DescentEqualizer(SageObject):
 
         equalizer_diagram = self._equalizer.diagram()
         shape = equalizer_diagram.domain()
-        common = self._left * self._restriction_to_product
-        if (common == self._right * self._restriction_to_product) is not True:
-            raise ValueError("presheaf restrictions do not form a cone over the Čech pair")
+        selected_inclusion = self._equalizer.structure_morphism(shape.source())
+        if selected_inclusion is self._restriction_to_product:
+            common = self._equalizer.structure_morphism(shape.target())
+        else:
+            common = self._left * self._restriction_to_product
+            if (common == self._right * self._restriction_to_product) is not True:
+                raise ValueError("presheaf restrictions do not form a cone over the Čech pair")
         global_equalizer_cone = equalizer_diagram.Cones().cone(
             global_value,
             lambda index: (
                 self._restriction_to_product if index is shape.source() else common
             ),
         )
+        if (
+            global_value is self._equalizer.object()
+            and selected_inclusion is self._restriction_to_product
+        ):
+            self._canonical_map = _category_homset(
+                self.value_category(), global_value, global_value
+            ).identity()
+            return
         self._canonical_map = self._equalizer.factor(global_equalizer_cone).apex_map()
 
     def _overlap_leg(self, pair, side: str) -> Morphism:
@@ -735,6 +759,9 @@ class DescentEqualizer(SageObject):
 
     def local_product_construction(self):
         return self._local_product
+
+    def restriction_to_product(self) -> Morphism:
+        return self._restriction_to_product
 
     def matching_product_construction(self):
         return self._matching_product
@@ -789,6 +816,55 @@ class DescentData(SageObject):
     checked by :class:`CategoricalIsomorphism` when that cover is requested.
     Thus an unbounded coverage is represented by a rule for all of its covers,
     rather than by pretending they can be enumerated.
+
+    Unverified separating specimen: the same presheaf fails descent for a
+    two-member cover but has canonical descent data for the trivial coverage::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: labels = finite_ordered_set(("U", "U0", "U1", "U01"))
+        sage: relations = {("U0", "U"), ("U1", "U"), ("U01", "U0"), ("U01", "U1"), ("U01", "U")}
+        sage: site = PosetCategory(labels, le=lambda left, right: left == right or (left, right) in relations)
+        sage: families = CoveringFamilies(site)
+        sage: cover = families.family(
+        ....:     site("U"),
+        ....:     (
+        ....:         site.Mor(site("U0"), site("U")).unique(),
+        ....:         site.Mor(site("U1"), site("U")).unique(),
+        ....:     ),
+        ....:     {(0, 1): (
+        ....:         site("U01"),
+        ....:         site.Mor(site("U01"), site("U0")).unique(),
+        ....:         site.Mor(site("U01"), site("U1")).unique(),
+        ....:     )},
+        ....: )
+        sage: coverage = Coverage(site, families)
+        sage: two = finite_ordered_set((0, 1)); one = finite_ordered_set((0,))
+        sage: class FailingPresheaf(Functor):
+        ....:     def __init__(self):
+        ....:         super().__init__(site.opposite(), Sets())
+        ....:     def _apply_object(self, obj):
+        ....:         return two if obj.underlying_object() is site("U") else one
+        ....:     def _apply_morphism(self, arrow):
+        ....:         source, target = self(arrow.domain()), self(arrow.codomain())
+        ....:         if source is target:
+        ....:             return Sets().Mor(source, target).identity()
+        ....:         return Sets().Mor(source, target)(lambda _point: target(0))
+        sage: presheaf = FailingPresheaf()
+        sage: bad = DescentData(
+        ....:     coverage,
+        ....:     presheaf,
+        ....:     lambda equalizer: Sets().Mor(equalizer.equalizer_object(), two)(lambda _point: two(0)),
+        ....: )
+        sage: bad.comparison(cover)
+        Traceback (most recent call last):
+        ...
+        ValueError: the supplied maps do not establish a left inverse
+        sage: trivial = DescentData.trivial(presheaf)
+        sage: identity_cover = trivial.coverage().covering_families().family(site("U"))
+        sage: trivial.comparison(identity_cover).isomorphism().domain() is two
+        True
     """
 
     def __init__(
@@ -796,10 +872,13 @@ class DescentData(SageObject):
         coverage: Coverage,
         presheaf,
         inverse_for: Callable[[DescentEqualizer], Morphism | DescentEqualizerComparison],
+        *,
+        equalizer_for=None,
     ) -> None:
         self._coverage = coverage
         self._presheaf = _presheaf_functor(presheaf)
         self._inverse_for = inverse_for
+        self._equalizer_for = equalizer_for
         self._comparisons = {}
         if self._presheaf.domain() != coverage.site_category().opposite():
             raise ValueError("descent data and presheaf have different sites")
@@ -809,23 +888,65 @@ class DescentData(SageObject):
         r"""Return the canonical descent data for the trivial coverage.
 
         Every covering family in the trivial coverage is the singleton
-        identity cover.  Its Čech equalizer is the selected one-factor product,
-        and the unique product projection is inverse to the canonical
-        comparison from the presheaf value.
+        identity cover.  The presheaf value itself is selected as the
+        equalizer object, with the canonical map into the one-factor product
+        as its equalizer inclusion.  Hence the descent comparison is literally
+        the identity even when equality of arbitrary maps in the value
+        category is not decidable.
         """
 
         functor = _presheaf_functor(presheaf)
         site = functor.domain().base_category()
         coverage = trivial_coverage(site)
 
-        def inverse_for(equalizer: DescentEqualizer):
+        def equalizer_for(equalizer: DescentEqualizer):
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _parallel_pair_diagram,
+            )
+
             cover = equalizer.covering_family()
             label = next(iter(cover.index_set()))
             product = equalizer.local_product_construction()
             index = product.diagram().domain()(label)
-            return product.structure_morphism(index)
+            projection = product.structure_morphism(index)
+            inclusion = equalizer.restriction_to_product()
+            left, right = equalizer.parallel_maps()
+            diagram = _parallel_pair_diagram(
+                left,
+                right,
+                equalizer.value_category(),
+            )
+            shape = diagram.domain()
+            global_value = inclusion.domain()
+            universal_cone = diagram.Cones().cone(
+                global_value,
+                lambda position: (
+                    inclusion
+                    if position is shape.source()
+                    else left * inclusion
+                ),
+            )
 
-        return DescentData(coverage, functor, inverse_for)
+            def factorizer(cone):
+                return projection * cone.structure_morphism(shape.source())
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def inverse_for(equalizer: DescentEqualizer):
+            global_value = equalizer.canonical_map().domain()
+            return _category_homset(
+                equalizer.value_category(),
+                global_value,
+                global_value,
+            ).identity()
+
+        return DescentData(
+            coverage,
+            functor,
+            inverse_for,
+            equalizer_for=equalizer_for,
+        )
 
     def coverage(self) -> Coverage:
         return self._coverage
@@ -843,7 +964,12 @@ class DescentData(SageObject):
         cached = self._comparisons.get(key)
         if cached is not None and cached.covering_family() is covering_family:
             return cached
-        equalizer = DescentEqualizer(self.coverage(), self.presheaf(), covering_family)
+        equalizer = DescentEqualizer(
+            self.coverage(),
+            self.presheaf(),
+            covering_family,
+            equalizer_selector=self._equalizer_for,
+        )
         selected = self._inverse_for(equalizer)
         if isinstance(selected, DescentEqualizerComparison):
             if (
