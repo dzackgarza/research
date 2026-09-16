@@ -16,14 +16,14 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_free_algebra_over_every_commutative_ring(commutative_ring) -> None:
-    r"""``FreeAlgebraOn(R,S)`` is the free *commutative* algebra ``R[S]``.
+    r"""``R[S]`` is ``Sym(F_R(S))`` through the module and ring owners.
 
-    The user-settled constructor contract is ``R[S] = Sym(F_R(S))``; the
-    noncommutative free associative construction is ``TensorAlgebraOn``.
+    The noncommutative free associative construction is the tensor algebra of
+    the corresponding free module.
     """
     ring = commutative_ring
-    free = FreeAlgebraOn(ring, ("a", "b"))
-    symmetric = SymmetricAlgebraOn(ring, ("a", "b"))
+    free = ring.free_module(("a", "b")).symmetric_algebra()
+    symmetric = ring.free_module(("a", "b")).symmetric_algebra()
     a = free.algebra_generator("a")
     b = free.algebra_generator("b")
 
@@ -39,7 +39,7 @@ def test_free_algebra_over_every_commutative_ring(commutative_ring) -> None:
 
 def test_symmetric_algebra_is_the_polynomial_algebra(commutative_ring) -> None:
     ring = commutative_ring
-    symmetric = SymmetricAlgebraOn(ring, ("x", "y"))
+    symmetric = ring.free_module(("x", "y")).symmetric_algebra()
     x = symmetric.algebra_generator("x")
     y = symmetric.algebra_generator("y")
 
@@ -54,8 +54,8 @@ def test_symmetric_algebra_is_the_polynomial_algebra(commutative_ring) -> None:
 
 def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 3)
-    symmetric = SymmetricAlgebraOf(module)
+    module = ring.free_module(3)
+    symmetric = module.symmetric_algebra()
     assert symmetric in Algebras(ring).Associative().Unital().Commutative()
     assert symmetric.free_source_module() is module
     assert symmetric.graded_piece(1).module_rank() == 3
@@ -64,8 +64,8 @@ def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
 
 def test_exterior_algebra_of_a_free_module(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 3)
-    exterior = AlternatingAlgebraOf(module)
+    module = ring.free_module(3)
+    exterior = module.exterior_algebra()
     e0 = exterior.algebra_generator(0)
     e1 = exterior.algebra_generator(1)
     e2 = exterior.algebra_generator(2)
@@ -85,8 +85,8 @@ def test_exterior_algebra_of_a_free_module(commutative_ring) -> None:
 
 def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
-    tensor = TensorAlgebraOf(module)
+    module = ring.free_module(2)
+    tensor = module.tensor_algebra()
     a = tensor.algebra_generator(0)
     b = tensor.algebra_generator(1)
 
@@ -100,7 +100,7 @@ def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
 
 def test_polynomial_ring_is_a_commutative_algebra(commutative_ring) -> None:
     ring = commutative_ring
-    polynomials = PolynomialRing(ring, ("x", "y"))
+    polynomials = ring.polynomial_ring(("x", "y"))
     assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert polynomials in Algebras(ring)
     assert polynomials.algebra_base_ring() is ring
@@ -114,7 +114,7 @@ def test_polynomial_ring_is_a_commutative_algebra(commutative_ring) -> None:
 
 def test_matrix_algebra_is_a_lie_algebra_under_the_commutator(commutative_ring) -> None:
     ring = commutative_ring
-    matrices = MatrixSpace(ring, 2)
+    matrices = ring.matrix_space(2)
     e01 = matrices.matrix_unit(0, 1)
     e10 = matrices.matrix_unit(1, 0)
     commutator = Algebras(ring).Associative().commutator_lie_algebra()(matrices)
@@ -139,7 +139,7 @@ def test_matrix_algebra_is_a_lie_algebra_under_the_commutator(commutative_ring) 
 
 
 def test_coordinate_axes_as_a_presented_algebra(field) -> None:
-    plane = PolynomialRing(field, ("x", "y"))
+    plane = field.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     axes = (plane).quotient_by_relations([x * y])
@@ -170,7 +170,7 @@ def test_kahler_differentials_of_a_ring_over_itself_vanish(commutative_ring) -> 
 def test_kahler_differentials_of_the_polynomial_algebra(commutative_ring) -> None:
     r"""$\Omega_{R[x,y]/R} = R[x,y]\,dx \oplus R[x,y]\,dy$ with $d(xy) = y\,dx + x\,dy$."""
     ring = commutative_ring
-    polynomials = PolynomialRing(ring, ("x", "y"))
+    polynomials = ring.polynomial_ring(("x", "y"))
     x = polynomials.algebra_generator("x")
     y = polynomials.algebra_generator("y")
     omega = polynomials.kahler_differentials()
@@ -212,7 +212,7 @@ def test_kahler_differentials_of_a_rational_function_field(build) -> None:
 
 
 def test_kahler_differentials_of_the_coordinate_axes(field) -> None:
-    plane = PolynomialRing(field, ("x", "y"))
+    plane = field.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     axes = (plane).quotient_by_relations([x * y])
@@ -233,7 +233,7 @@ def test_kahler_differentials_of_the_coordinate_axes(field) -> None:
 
 
 def test_de_rham_complex_of_the_affine_line(field) -> None:
-    polynomials = PolynomialRing(field, "x")
+    polynomials = field.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     de_rham = polynomials.de_rham_algebra()
     d = de_rham.differential()
@@ -250,7 +250,7 @@ def test_de_rham_complex_of_the_affine_line(field) -> None:
 def test_poincare_lemma_in_characteristic_zero(build, name) -> None:
     r"""$H^1_{dR}(\mathbb A^1_K) = 0$ and $H^0 = K$ when $\operatorname{char} K = 0$."""
     field = build(name)
-    de_rham = PolynomialRing(field, "x").de_rham_algebra()
+    de_rham = field.polynomial_ring("x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() == 1
     assert de_rham.cohomology(0).module_rank() == 1
 
@@ -259,13 +259,13 @@ def test_poincare_lemma_in_characteristic_zero(build, name) -> None:
 def test_de_rham_cohomology_of_the_line_is_nonzero_in_positive_characteristic(build, name) -> None:
     r"""$x^{p-1}\,dx$ is closed and not exact over $\mathbb F_q$."""
     field = build(name)
-    de_rham = PolynomialRing(field, "x").de_rham_algebra()
+    de_rham = field.polynomial_ring("x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() != 1
     assert de_rham.cohomology(1).module_rank() >= 1
 
 
 def test_de_rham_cohomology_of_the_integer_line_has_torsion() -> None:
     r"""$x\,dx$ is closed over $\mathbb Z$ and $2\,x\,dx = d(x^2)$, so $H^1$ has $2$-torsion."""
-    de_rham = PolynomialRing(ZZ, "x").de_rham_algebra()
+    de_rham = ZZ.polynomial_ring("x").de_rham_algebra()
     assert de_rham.cohomology(1).cardinality() != 1
     assert de_rham.cohomology(0).module_rank() == 1
