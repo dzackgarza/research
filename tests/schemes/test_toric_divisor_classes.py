@@ -424,6 +424,9 @@ def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces
     assert ring in SectionRings(QQ)
     assert ring.section_scheme() is plane
     assert ring.section_divisor() == line
+    assert "_preamble_section_scheme" not in ring.__dict__
+    assert "_preamble_section_divisor" not in ring.__dict__
+    assert "_preamble_section_semigroup_generators" not in ring.__dict__
     assert all(ring.generator_degree(label) == 1 for label in labels)
     assert ring.graded_piece(1).module_rank() == 3
     assert ring.graded_piece(2).module_rank() == 6

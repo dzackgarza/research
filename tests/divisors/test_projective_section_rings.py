@@ -26,6 +26,12 @@ def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() 
 
     assert ring.section_scheme() is line
     assert ring.section_line_bundle() is bundle
+    assert "_preamble_section_scheme" not in ring.__dict__
+    assert "_preamble_section_line_bundle" not in ring.__dict__
+    assert "_preamble_section_semigroup_generators" not in ring.__dict__
+    assert "_preamble_degree_one_section_exponents" not in ring.__dict__
+    assert "_preamble_section_line_bundle_degree" not in ring.__dict__
+    assert "_preamble_section_block_widths" not in ring.__dict__
     assert degree_one is bundle.global_sections()
     assert degree_one.module_rank() == 3
     assert degree_two.module_rank() == 5

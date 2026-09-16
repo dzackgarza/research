@@ -14,10 +14,44 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.indexed_families import (
-    finite_indexed_family,
-)
 from dzack_research.preamble.categories.sets.set_categories import NN
+
+
+class _SectionRingConstruction:
+    r"""The selected geometric source defining one section ring."""
+
+    def divisor(self):
+        raise ValueError("this section ring was selected from a line bundle, not a divisor")
+
+    def line_bundle(self):
+        raise ValueError("this section ring was selected from a divisor, not a line bundle")
+
+
+class _LineBundleSectionRingConstruction(_SectionRingConstruction):
+    r"""A section ring selected from one projective line bundle."""
+
+    def __init__(self, line_bundle) -> None:
+        self._line_bundle = line_bundle
+
+    def section_scheme(self):
+        return self.line_bundle().scheme()
+
+    def line_bundle(self):
+        return self._line_bundle
+
+
+class _ToricDivisorSectionRingConstruction(_SectionRingConstruction):
+    r"""A section ring selected from one divisor on one toric scheme."""
+
+    def __init__(self, scheme, divisor) -> None:
+        self._scheme = scheme
+        self._divisor = divisor
+
+    def section_scheme(self):
+        return self._scheme
+
+    def divisor(self):
+        return self._divisor
 
 
 class SectionRings(OwnedCategoryOverBaseRing):
@@ -37,38 +71,27 @@ class SectionRings(OwnedCategoryOverBaseRing):
         return _toric_divisor_section_ring(self, source, divisor)
 
     class ParentMethods:
+        def section_ring_construction(self):
+            r"""Return the selected geometric datum defining this section ring."""
+            return self._section_ring_construction
+
         def section_scheme(self):
-            return self._preamble_section_scheme
+            return self.section_ring_construction().section_scheme()
 
         def section_divisor(self):
-            divisor = getattr(self, "_preamble_section_divisor", None)
-            if divisor is None:
-                raise ValueError("this section ring was selected from a line bundle, not a divisor")
-            return divisor
+            return self.section_ring_construction().divisor()
 
         def section_line_bundle(self):
-            bundle = getattr(self, "_preamble_section_line_bundle", None)
-            if bundle is None:
-                raise ValueError("this section ring was selected from a divisor, not a line bundle")
-            return bundle
+            return self.section_ring_construction().line_bundle()
 
         @cached_method
         def section_semigroup_generators(self):
-            labels = self.algebra_generating_set()
-            coordinates = self._preamble_section_semigroup_generators
-            integers = _own_ring(SageZZ)
-            return finite_indexed_family(
-                labels,
-                lambda label: tuple(
-                    integers(entry)
-                    for entry in coordinates[int(labels.ranking_map()(label))]
-                ),
-                name="Section-ring semigroup generators",
-            )
+            return self.affine_semigroup_generator_coordinates()
 
         def generator_degree(self, label):
             point = self.section_semigroup_generators()[label]
-            return NN(int(point[-1]))
+            final_position = int(point.cardinality().finite_value()) - 1
+            return NN(int(point[final_position]))
 
         def homogeneous_degree(self, element):
             r"""Return the nonnegative degree of one homogeneous section-ring element."""
@@ -98,19 +121,22 @@ class SectionRings(OwnedCategoryOverBaseRing):
         def graded_piece(self, degree):
             r"""Return the actual section module in nonnegative degree ``n``."""
             degree = NN(degree)
-            bundle = getattr(self, "_preamble_section_line_bundle", None)
-            if bundle is not None:
-                return bundle.tensor_power(int(degree)).global_sections()
-            scheme = self.section_scheme()
-            divisor = self.section_divisor()
-            integers = divisor.parent().base_ring()
-            return scheme.divisor_section_space(integers(int(degree)) * divisor)
+            construction = self.section_ring_construction()
+            match construction:
+                case _LineBundleSectionRingConstruction():
+                    return construction.line_bundle().tensor_power(int(degree)).global_sections()
+                case _ToricDivisorSectionRingConstruction():
+                    divisor = construction.divisor()
+                    integers = divisor.parent().base_ring()
+                    return construction.section_scheme().divisor_section_space(
+                        integers(int(degree)) * divisor
+                    )
+                case _:
+                    raise TypeError("unknown section-ring construction datum")
 
         def section_multiplication(self, left_degree, right_degree):
             r"""Multiply sections in two graded pieces of a projective line-bundle ring."""
-            assert getattr(self, "_preamble_section_line_bundle", None) is not None, (
-                "module-level section multiplication is represented here for projective line-bundle section rings"
-            )
+            self.section_line_bundle()
             left_degree = NN(left_degree)
             right_degree = NN(right_degree)
             left = self.graded_piece(left_degree)
@@ -139,24 +165,26 @@ class SectionRings(OwnedCategoryOverBaseRing):
         @cached_method
         def homogeneous_component_map(self, degree):
             r"""Return the map ``H^0(X,L^n) -> R(L)`` into the degree-``n`` component."""
-            assert getattr(self, "_preamble_section_line_bundle", None) is not None, (
-                "the represented homogeneous component map is selected for projective line-bundle section rings"
-            )
+            bundle = self.section_line_bundle()
             degree = NN(degree)
             piece = self.graded_piece(degree)
             count = int(degree)
+            degree_one = bundle.global_sections()
+            degree_one_exponents = _section_exponent_data(degree_one)
             generator_by_exponents = {
                 tuple(exponents): label
                 for label, exponents in zip(
                     self.algebra_generating_set(),
-                    self._preamble_degree_one_section_exponents,
+                    (
+                        degree_one_exponents[label]
+                        for label in degree_one.module_generating_set()
+                    ),
                     strict=True,
                 )
             }
-            base_degree = tuple(
-                int(value) for value in self._preamble_section_line_bundle_degree
-            )
-            block_widths = tuple(int(value) for value in self._preamble_section_block_widths)
+            base_degree, block_widths = _line_bundle_section_data(bundle)
+            base_degree = tuple(int(value) for value in base_degree)
+            block_widths = tuple(int(value) for value in block_widths)
             piece_exponents = _section_exponent_data(piece)
 
             def basis_image(label):
@@ -326,12 +354,7 @@ def _line_bundle_section_ring(category, bundle):
         names=names,
         extra_categories=(category,),
         extra_construction_data=(
-            ("_preamble_section_scheme", bundle.scheme()),
-            ("_preamble_section_line_bundle", bundle),
-            ("_preamble_section_semigroup_generators", semigroup_generators),
-            ("_preamble_degree_one_section_exponents", generator_exponents),
-            ("_preamble_section_line_bundle_degree", base_degree),
-            ("_preamble_section_block_widths", block_widths),
+            ("_section_ring_construction", _LineBundleSectionRingConstruction(bundle)),
         ),
     )
 
@@ -367,9 +390,7 @@ def _toric_divisor_section_ring(category, scheme, divisor):
         names=tuple(f"s{position}" for position in range(len(hilbert_basis))),
         extra_categories=(category, OwnedIntegralDomains()),
         extra_construction_data=(
-            ("_preamble_section_scheme", scheme),
-            ("_preamble_section_divisor", divisor),
-            ("_preamble_section_semigroup_generators", hilbert_basis),
+            ("_section_ring_construction", _ToricDivisorSectionRingConstruction(scheme, divisor)),
         ),
     )
 

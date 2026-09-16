@@ -11,7 +11,10 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
+    _own_ring,
 )
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _AffineSemigroupPresentation:
@@ -20,8 +23,7 @@ class _AffineSemigroupPresentation:
     def __init__(self, generator_coordinates) -> None:
         self._generator_coordinates = generator_coordinates
 
-    def generator_coordinates(self):
-        r"""Return the selected finite lattice-generator coordinates."""
+    def _raw_generator_coordinates(self):
         return self._generator_coordinates
 
 
@@ -53,9 +55,23 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         )
 
     class ParentMethods:
-        def affine_semigroup_presentation(self):
-            r"""Return the selected finite lattice-generator presentation."""
-            return self._affine_semigroup_presentation
+        def affine_semigroup_generator_coordinates(self):
+            r"""Return the selected lattice-generator coordinates as an owned family."""
+            raw = self._affine_semigroup_presentation._raw_generator_coordinates()
+            labels = self.algebra_generating_set()
+            coordinate_indices = Sets.Δ[len(raw[0]) - 1]
+            integers = _own_ring(SageZZ)
+            return finite_indexed_family(
+                labels,
+                lambda label: finite_indexed_family(
+                    coordinate_indices,
+                    lambda coordinate: integers(
+                        raw[int(labels.ranking_map()(label))][int(coordinate)]
+                    ),
+                    name=f"Coordinates of affine semigroup generator {label}",
+                ),
+                name="Affine semigroup generator coordinates",
+            )
 
     def _call_(
         self,
