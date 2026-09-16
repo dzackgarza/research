@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     Algebras,
-    AlgebraRestrictionOfScalarsFunctor,
     FramedAlgebras,
     QQ,
     ZZ,
@@ -132,7 +131,7 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
 
 def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() -> None:
     ring_map = ZZ.Mor(QQ)(lambda element: QQ(element))
-    restriction = AlgebraRestrictionOfScalarsFunctor(ring_map)
+    restriction = Algebras(QQ).Associative().Unital().restriction_of_scalars(ring_map)
 
     source = QQ.free_module(["x"]).symmetric_algebra()
     middle = QQ.free_module(["y"]).symmetric_algebra()

@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     ZZ,
-    DualizationFunctor,
     QuadraticField,
     Sets,
 )
@@ -226,7 +225,7 @@ def test_covector_type_one_one_adjacent_contraction() -> None:
 def test_type_one_one_dualization_belongs_to_module_duality() -> None:
     linear_components = tensor(ZZ, (2,), (3,), [[1, 2, 3], [4, 5, 6]])
     linear_map = ZZ.matrix_space(2, 3).from_tensor(linear_components)
-    dual = tensor.from_morphism(DualizationFunctor(ZZ)(linear_map))
+    dual = tensor.from_morphism(linear_map.domain().module_category().dualization()(linear_map))
 
     assert dual.tensor_valence() == (NN**2)((1, 1))
     _shape = dual.tensor_shape()
