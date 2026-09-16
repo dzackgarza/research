@@ -7,10 +7,7 @@ cotangent space at the origin still has dimension two while the curve has
 dimension one, which is what makes the origin singular.
 """
 
-from dzack_research.preamble.all import (
-    KahlerDifferentials,
-    QQ,
-)
+from dzack_research.preamble.all import QQ
 
 
 def test_the_affine_plane_has_a_two_dimensional_cotangent_space() -> None:
