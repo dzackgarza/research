@@ -15,7 +15,7 @@ not satisfy.
 
 from sage.all import CC as SageCC
 from sage.all import QQ as SageQQ
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.core import Functor
@@ -54,7 +54,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     return result
 
 
-class AffineSpaceAnalytificationFunctor(Functor):
+class _AffineSpaceAnalytificationFunctor(Functor):
     r"""Supported analytification of affine spaces and polynomial maps."""
 
     def __init__(self, scalar_embedding) -> None:
@@ -106,6 +106,11 @@ class AffineSpaceAnalytificationFunctor(Functor):
         return f"Affine analytification along {self.scalar_embedding()}"
 
 
+@cached_function
+def _affine_space_analytification_functor(scalar_embedding):
+    return _AffineSpaceAnalytificationFunctor(scalar_embedding)
+
+
 class AnalyticDiscFamily(SageObject):
     r"""The analytic family ``Delta x C -> Delta`` from algebraic projection.
 
@@ -128,7 +133,7 @@ class AnalyticDiscFamily(SageObject):
         )
         algebraic_family = algebraic_total.Mor(algebraic_base)(projection_pullback)
 
-        analytification = AffineSpaceAnalytificationFunctor(embedding)
+        analytification = AffineSpaces(source).analytification(embedding)
         analytic_total_ambient = analytification(algebraic_total)
         analytic_base_ambient = analytification(algebraic_base)
         analytified_family = analytification(algebraic_family)
@@ -234,6 +239,5 @@ class AnalyticDiscFamily(SageObject):
 
 
 __all__ = [
-    "AffineSpaceAnalytificationFunctor",
     "AnalyticDiscFamily",
 ]

@@ -380,7 +380,6 @@ from dzack_research.preamble.categories.schemes import (
     AffineInvariantQuotientBaseChangeComparison,
     AffineModuleSheaf,
     AffineSchemes,
-    AffineSpaceAnalytificationFunctor,
     AffineSpaces,
     AnalyticDiscFamily,
     AT21ADEDoubleCover,

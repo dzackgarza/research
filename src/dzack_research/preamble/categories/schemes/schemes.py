@@ -2186,6 +2186,18 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
+    def analytification(self, scalar_embedding):
+        r"""Return affine-space analytification along this base embedding."""
+        if _own_ring(scalar_embedding.domain()) is not self.base_ring():
+            raise ValueError(
+                "affine-space analytification is owned by the affine-space category over the embedding source"
+            )
+        from dzack_research.preamble.categories.schemes.analytic_families import (
+            _affine_space_analytification_functor,
+        )
+
+        return _affine_space_analytification_functor(scalar_embedding)
+
     def an_object(self):
         r"""The affine line over the base ring."""
         return self(1)
