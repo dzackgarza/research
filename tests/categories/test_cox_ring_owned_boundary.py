@@ -29,7 +29,7 @@ def test_cox_ring_category_uses_the_actual_toric_scheme_parameter() -> None:
 
 def test_cox_ring_category_rejects_a_nontoric_scheme_parameter() -> None:
     algebra = QQ.polynomial_ring("x")
-    affine_line = Spec(algebra)
+    affine_line = (algebra).affine_spectrum()
 
     assert affine_line not in RepresentedToricSchemes()
     with pytest.raises(AssertionError):

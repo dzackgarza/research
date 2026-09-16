@@ -10,7 +10,6 @@ from dzack_research.preamble.all import (
     Groups,
     ProjectiveSpace,
     Schemes,
-    Spec,
     Algebras,
 )
 
@@ -26,7 +25,7 @@ def _coordinate_swap_action() -> tuple:
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
@@ -59,7 +58,7 @@ def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -
 
 def test_generic_gobjects_constructor_does_not_construct_affine_actions() -> None:
     group = Groups.C(2)
-    scheme = Spec(QQ.polynomial_ring("x"))
+    scheme = (QQ.polynomial_ring("x")).affine_spectrum()
     identity = scheme.categorical_identity_morphism()
 
     with pytest.raises(TypeError):
@@ -87,7 +86,7 @@ def test_affine_scheme_action_rejects_generator_images_that_violate_relators() -
     group = Groups.C(2)
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     dilation = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": x + x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(

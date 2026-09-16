@@ -34,7 +34,7 @@ def test_two_chart_module_descent_builds_the_actual_compatible_section_module() 
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     left, right = cover.opens()
     left_module = left.coordinate_algebra().free_module(1)
@@ -88,12 +88,11 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
     from dzack_research.preamble.all import (
         QQ,
         Modules,
-        Spec,
-    )
+        )
 
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, y, algebra.one() - x - y)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -169,7 +168,7 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -228,7 +227,7 @@ def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> Non
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -269,7 +268,7 @@ def test_module_descent_morphisms_have_identities_and_compose_chartwise() -> Non
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -321,13 +320,12 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
     from dzack_research.preamble.all import (
         QQ,
         FinitelyPresentedModules,
-        Spec,
-    )
+        )
     from dzack_research.preamble.categories.sets import finite_ordered_set
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     relation = x - algebra(2)
 

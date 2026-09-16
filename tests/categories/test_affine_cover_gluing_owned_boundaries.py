@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 def _two_chart_cover():
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     return scheme, scheme.distinguished_open_cover(x, algebra.one() - x)
 
 

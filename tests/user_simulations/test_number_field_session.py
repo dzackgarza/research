@@ -125,7 +125,7 @@ def test_a_number_field_session(name) -> None:
     assert omega.cardinality() == abs(discriminant)
 
     # The arithmetic curve Spec O_K.
-    curve = Spec(integers)
+    curve = (integers).affine_spectrum()
     rendered(curve)
     assert curve in AffineSchemes(ZZ)
     assert curve.relative_dimension() == 0

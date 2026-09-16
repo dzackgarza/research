@@ -21,7 +21,6 @@ from dzack_research.preamble.all import (
     QuasiProjectiveSchemes,
     SeparatedSchemes,
     SmoothSchemes,
-    Spec,
     Surfaces,
 )
 
@@ -80,7 +79,7 @@ def test_a_mixed_affine_projective_product_retains_projections_and_exact_propert
 
 def test_terminal_affine_factor_retains_the_selected_product_without_algebra_framing() -> None:
     line = AffineSpace(1, QQ)
-    base = Spec(QQ, base_ring=QQ)
+    base = (QQ).affine_spectrum(base_ring=QQ)
     product = line.scheme_category().product((line, base))
 
     assert product is not line

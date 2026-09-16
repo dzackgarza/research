@@ -10,7 +10,7 @@ def test_localization_of_a_presented_domain_has_its_own_affine_spectrum() -> Non
     xbar = quadric.algebra_generator("x")
     localized = quadric.localization(xbar)
 
-    ambient = Spec(quadric, base_ring=QQ)
+    ambient = (quadric).affine_spectrum(base_ring=QQ)
     open_scheme = ambient.distinguished_open(xbar)
     localization_map = localized.localization_map()
 

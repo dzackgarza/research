@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 def _polynomial_algebra_descent(variable):
     ambient = QQ.polynomial_ring("x")
     x = ambient.algebra_generator("x")
-    scheme = Spec(ambient)
+    scheme = (ambient).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, ambient.one() - x)
     local_algebras = tuple(
         cover.open(index).coordinate_algebra().polynomial_ring(variable)

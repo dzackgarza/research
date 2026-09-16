@@ -12,7 +12,7 @@ ARCHIVE_RECONCILIATION = {
 def test_archived_scheme_point_is_an_actual_scheme_morphism() -> None:
     plane = AffineSpace(2, QQ, names=("x", "y"))
     point = plane.point_morphism([1, 2])
-    residue_scheme = Spec(QQ)
+    residue_scheme = (QQ).affine_spectrum()
 
     assert point.domain() is residue_scheme
     assert point.codomain() is plane
@@ -22,7 +22,7 @@ def test_archived_scheme_point_is_an_actual_scheme_morphism() -> None:
 def test_scheme_point_composes_with_the_structure_map_over_the_same_base() -> None:
     line = AffineSpace(1, QQ, names=("t",))
     point = line.point_morphism([3])
-    base = Spec(QQ)
+    base = (QQ).affine_spectrum()
 
     structural_value = line.structure_morphism().evaluate_at(point)
     assert structural_value.domain() is point.domain()

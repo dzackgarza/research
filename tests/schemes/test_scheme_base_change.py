@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     Schemes,
     SeparatedSchemes,
     SmoothSchemes,
-    Spec,
     Algebras,
 )
 
@@ -48,9 +47,9 @@ def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> 
     assert changed_cusp in AffineSchemes(field)
     assert changed_cusp in FiberProductSchemes(field)
     assert changed_cusp.relative_dimension() == 1
-    assert changed_cusp.fiber_product_base() is Spec(QQ)
+    assert changed_cusp.fiber_product_base() is (QQ).affine_spectrum()
     assert changed_cusp.left_projection().codomain() is cusp
-    assert changed_cusp.right_projection().codomain() is Spec(field)
+    assert changed_cusp.right_projection().codomain() is (field).affine_spectrum()
     changed_algebra = changed_cusp.coordinate_algebra()
     x_changed = changed_algebra.algebra_generator("x")
     y_changed = changed_algebra.algebra_generator("y")
@@ -182,9 +181,9 @@ def test_projective_space_base_change_is_the_selected_nonaffine_pullback() -> No
     assert changed in NormalSchemes(field)
     assert changed.scheme_base_ring() is field
     assert changed.relative_dimension() == 1
-    assert changed.fiber_product_base() is Spec(QQ)
+    assert changed.fiber_product_base() is (QQ).affine_spectrum()
     assert changed.left_projection().codomain() is line
-    assert changed.right_projection().codomain() is Spec(field)
+    assert changed.right_projection().codomain() is (field).affine_spectrum()
 
     left_square = line.structure_morphism() * changed.left_projection()
     right_square = change.base_morphism() * changed.right_projection()

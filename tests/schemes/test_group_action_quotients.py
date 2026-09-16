@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     AffineGSchemes,
     AlgebrasWithChosenFinitePresentation,
     Groups,
-    Spec,
     Algebras,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -24,7 +23,7 @@ def _coordinate_swap_action() -> tuple:
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
@@ -39,7 +38,7 @@ def _central_sign_action() -> tuple:
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     sign = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": -x, "y": -y}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(
@@ -52,7 +51,7 @@ def _central_sign_action() -> tuple:
 def _affine_map_from_polynomial(acted: Any, polynomial: Any) -> tuple:
     target_algebra = QQ.polynomial_ring("t")
     t = target_algebra.algebra_generator("t")
-    target = Spec(target_algebra)
+    target = (target_algebra).affine_spectrum()
     morphism = _affine_morphism_from_pullback(
         acted,
         target,
@@ -142,7 +141,7 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     rotation = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": -y, "y": x - y})
     )
@@ -180,7 +179,7 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
 def test_zero_dimensional_polynomial_space_is_its_own_invariant_quotient() -> None:
     group = Groups.C(2)
     algebra = QQ.polynomial_ring(())
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(scheme, lambda _element: identity)
 
@@ -205,7 +204,7 @@ def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend()
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     nonlinear = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": -x, "y": y + x**3})
     )

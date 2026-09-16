@@ -15,13 +15,12 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     FiberProductSchemes,
-    Spec,
 )
 
 
 def _line_over(ring):
     r"""``A^1_R`` built as a spectrum, so its coordinate algebra names it back."""
-    line = Spec(ring.polynomial_ring("x"), base_ring=ring)
+    line = (ring.polynomial_ring("x")).affine_spectrum(base_ring=ring)
     structure = line.structure_morphism()
     return line, line.scheme_category().fiber_product(structure, structure)
 
@@ -59,7 +58,7 @@ def test_the_category_exhibits_a_fibre_product_of_affine_spaces() -> None:
 
     assert witness in FiberProductSchemes(ZZ)
     assert witness.relative_dimension() == 2
-    assert witness.fiber_product_base() is Spec(ZZ, base_ring=ZZ)
+    assert witness.fiber_product_base() is (ZZ).affine_spectrum(base_ring=ZZ)
 
 
 def test_fiber_of_the_first_projection_over_the_origin_is_an_affine_line() -> None:

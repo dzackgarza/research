@@ -37,7 +37,7 @@ def test_an_algebraic_geometry_session(name) -> None:
     is_field = base in Fields()
 
     # The base scheme, affine plane and projective line.
-    point = Spec(base)
+    point = (base).affine_spectrum()
     rendered(point)
     assert point in AffineSchemes(base)
     assert point.relative_dimension() == 0
@@ -144,11 +144,11 @@ def test_an_algebraic_geometry_session(name) -> None:
     parametrization = ring.Mor(affine_line)({"x": t**2, "y": t**3})
     cusp_map = spec(parametrization)
     rendered(cusp_map)
-    assert cusp_map.domain() is Spec(affine_line)
-    assert cusp_map.codomain() is Spec(ring)
+    assert cusp_map.domain() is (affine_line).affine_spectrum()
+    assert cusp_map.codomain() is (ring).affine_spectrum()
     assert spec(affine_line).relative_dimension() == 1
     assert spec(ring) == plane
-    assert spec(ring.Mor(ring).identity()) == Spec(ring).Mor(Spec(ring)).identity()
+    assert spec(ring.Mor(ring).identity()) == (ring).affine_spectrum().Mor((ring).affine_spectrum()).identity()
 
     # Base change of the plane to an extension field, or to a residue field of ZZ.
     extension = EXTENSIONS[name]()

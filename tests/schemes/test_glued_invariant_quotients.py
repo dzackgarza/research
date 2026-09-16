@@ -11,7 +11,6 @@ from dzack_research.preamble.all import (
     FiniteGluedInvariantQuotient,
     Groups,
     Schemes,
-    Spec,
     Algebras,
 )
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -41,7 +40,7 @@ class _SwapChart:
         self.algebra = QQ.polynomial_ring(("x", "y"))
         self.x = self.algebra.algebra_generator("x")
         self.y = self.algebra.algebra_generator("y")
-        self.chart = Spec(self.algebra)
+        self.chart = (self.algebra).affine_spectrum()
         swap_pullback = self.algebra.Mor(self.algebra)({"x": self.y, "y": self.x})
         swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(swap_pullback)
         identity = self.chart.categorical_identity_morphism()
@@ -260,7 +259,7 @@ def test_glued_quotient_has_the_affine_target_universal_factorization(
     source = glued_swap_quotient.source
     quotient = glued_swap_quotient.quotient
     target_algebra = QQ.polynomial_ring("t")
-    target = Spec(target_algebra)
+    target = (target_algebra).affine_spectrum()
     coefficients = {0: 6, 1: 3, 2: 1}
     local_maps: IndexedFamily = finite_indexed_family(
         quotient.chart_index_set(),
@@ -291,7 +290,7 @@ def test_glued_quotient_rejects_a_noninvariant_global_map(
     source = glued_swap_quotient.source
     quotient = glued_swap_quotient.quotient
     target_algebra = QQ.polynomial_ring("t")
-    target = Spec(target_algebra)
+    target = (target_algebra).affine_spectrum()
     coefficients = {0: 6, 1: 3, 2: 1}
     local_maps: IndexedFamily = finite_indexed_family(
         quotient.chart_index_set(),
@@ -392,7 +391,7 @@ def test_one_chart_artin_schreier_glued_quotient_is_free() -> None:
     group = Groups.C(2)
     algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    chart = Spec(algebra)
+    chart = (algebra).affine_spectrum()
     translation = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + algebra.one()})
     )

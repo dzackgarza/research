@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     ZZ,
     ProjectiveSpace,
     QuadraticField,
-    Spec,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroups,
@@ -44,7 +43,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
     field = QuadraticField(-5, "a")
     assert field.class_number() == 2
     order = field.ring_of_integers()
-    base = Spec(order, base_ring=order)
+    base = (order).affine_spectrum(base_ring=order)
     base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
     relative_line = ProjectiveSpace(1, order)
     picard = relative_line.picard_group(base_picard)
@@ -88,7 +87,7 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     z = polynomial.algebra_generator("z")
     ring = polynomial.quotient_ring(polynomial.ideal(x * y - z**2))
     x, y, z = ring(x), ring(y), ring(z)
-    scheme = Spec(ring, base_ring=QQ)
+    scheme = (ring).affine_spectrum(base_ring=QQ)
 
     assert ring.is_normal()
     prime_ideal = ring.ideal(x, z)

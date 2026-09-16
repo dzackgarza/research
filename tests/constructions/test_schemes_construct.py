@@ -16,7 +16,7 @@ NOT_NORMAL = {"QQ[x,y]/(y^2-x^3)", "ZZ/12", "QQ[e]/(e^2)", "QQ[x,y]/(xy)"}
 
 def test_spec_of_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    spectrum = Spec(ring)
+    spectrum = (ring).affine_spectrum()
 
     assert spectrum in Schemes(ring)
     assert spectrum in AffineSchemes(ring)
@@ -31,8 +31,8 @@ def test_spec_of_every_commutative_ring(commutative_ring) -> None:
 @pytest.mark.parametrize("name", sorted(NORMAL | NOT_NORMAL))
 def test_normality_of_spec(build, name) -> None:
     ring = build(name)
-    assert (Spec(ring) in NormalSchemes(ring)) == (name in NORMAL)
-    assert (Spec(ring) in NormalSchemes(ZZ)) == (name in NORMAL)
+    assert ((ring).affine_spectrum() in NormalSchemes(ring)) == (name in NORMAL)
+    assert ((ring).affine_spectrum() in NormalSchemes(ZZ)) == (name in NORMAL)
 
 
 @pytest.mark.parametrize(
@@ -50,7 +50,7 @@ def test_normality_of_spec(build, name) -> None:
 def test_smoothness_of_spec_over_a_base(build, name, base, smooth) -> None:
     ring = build(name)
     base_ring = GF(2) if base == "GF(2)" else build(base)
-    assert (Spec(ring.as_algebra_over(base_ring)) in SmoothSchemes(base_ring)) == smooth
+    assert ((ring.as_algebra_over(base_ring)).affine_spectrum() in SmoothSchemes(base_ring)) == smooth
 
 
 def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
@@ -66,7 +66,7 @@ def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
     assert plane.coordinate_ring().krull_dimension() == ring.krull_dimension() + 2
     assert (plane in IntegralSchemes(ring)) == (ring in IntegralDomains())
     assert plane.scheme_base_ring() is ring
-    assert plane.structure_morphism().codomain() == Spec(ring)
+    assert plane.structure_morphism().codomain() == (ring).affine_spectrum()
 
 
 def test_projective_space_over_every_commutative_ring(commutative_ring) -> None:
@@ -154,7 +154,7 @@ def test_fiber_products_over_the_base(commutative_ring) -> None:
     assert square in FiberProductSchemes(ring)
     assert square.relative_dimension() == 2
     assert square.left_projection().codomain() is line
-    assert square.fiber_product_base() == Spec(ring)
+    assert square.fiber_product_base() == (ring).affine_spectrum()
 
 
 @pytest.mark.parametrize(
@@ -185,11 +185,11 @@ def test_spec_is_a_contravariant_functor(field) -> None:
     squaring = polynomials.Mor(polynomials)({"x": x**2})
     morphism = spec(squaring)
 
-    assert spec(polynomials) is Spec(polynomials)
-    assert morphism.domain() is Spec(polynomials)
-    assert morphism.codomain() is Spec(polynomials)
+    assert spec(polynomials) is (polynomials).affine_spectrum()
+    assert morphism.domain() is (polynomials).affine_spectrum()
+    assert morphism.codomain() is (polynomials).affine_spectrum()
     assert spec(squaring * squaring) == spec(squaring) * spec(squaring)
-    assert spec(polynomials.Mor(polynomials).identity()) == Spec(polynomials).Mor(Spec(polynomials)).identity()
+    assert spec(polynomials.Mor(polynomials).identity()) == (polynomials).affine_spectrum().Mor((polynomials).affine_spectrum()).identity()
 
 
 def test_the_stalk_of_the_structure_sheaf_is_the_local_ring() -> None:
@@ -208,10 +208,10 @@ def test_the_stalk_of_the_structure_sheaf_is_the_local_ring() -> None:
 
 def test_spec_of_a_field_is_a_point_and_spec_of_the_integers_is_not(build) -> None:
     for name in ("QQ", "GF(5)", "QQ(i)"):
-        assert Spec(build(name)).relative_dimension() == 0
-        assert Spec(build(name)) in IntegralSchemes(build(name))
-    integers = Spec(ZZ)
+        assert (build(name)).affine_spectrum().relative_dimension() == 0
+        assert (build(name)).affine_spectrum() in IntegralSchemes(build(name))
+    integers = (ZZ).affine_spectrum()
     assert integers.relative_dimension() == 0
     assert integers.underlying_space().generic_point().residue_field() is QQ
-    assert Spec(ZZ).Mor(Spec(QQ)).cardinality() == 0
-    assert Spec(QQ).Mor(Spec(ZZ)).cardinality() == 1
+    assert (ZZ).affine_spectrum().Mor((QQ).affine_spectrum()).cardinality() == 0
+    assert (QQ).affine_spectrum().Mor((ZZ).affine_spectrum()).cardinality() == 1

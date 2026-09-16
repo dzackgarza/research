@@ -9,7 +9,7 @@ def _three_chart_cover():
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(
         x,
         algebra.one() - x,

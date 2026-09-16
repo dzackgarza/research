@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     AffineSpaces,
     ProjectiveSpace,
     ProjectiveSpaces,
-    Spec,
 )
 
 
@@ -15,7 +14,7 @@ def test_spec_notation_is_the_affine_scheme_category_constructor() -> None:
     algebra = QQ.polynomial_ring("x")
 
     declared = AffineSchemes(QQ)(algebra)
-    notation = Spec(algebra, base_ring=QQ)
+    notation = (algebra).affine_spectrum(base_ring=QQ)
 
     assert declared is notation
     assert declared.coordinate_algebra() is algebra

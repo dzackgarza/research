@@ -14,14 +14,13 @@ from dzack_research.preamble.all import (
     ProjectiveSpaces,
     Schemes,
     SmoothSchemes,
-    Spec,
 )
 
 
 def test_affine_projective_and_base_schemes_live_in_the_owned_scheme_graph() -> None:
     affine = AffineSpace(2, QQ)
     projective = ProjectiveSpace(2, QQ)
-    base = Spec(QQ)
+    base = (QQ).affine_spectrum()
 
     assert affine in Schemes(QQ)
     assert affine in AffineSpaces(QQ)
@@ -61,7 +60,7 @@ def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_section
 
 def test_scheme_over_base_is_realized_in_the_generic_slice_category() -> None:
     affine = AffineSpace(2, QQ)
-    base = Spec(QQ)
+    base = (QQ).affine_spectrum()
     slice_category = Schemes(QQ).slice_category()
     slice_object = affine.as_slice_object()
 
@@ -83,9 +82,9 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
     assert point.codomain() is affine
 
     structural_value = affine.structure_morphism().evaluate_at(point)
-    assert structural_value in Schemes(QQ).Mor(point.domain(), Spec(QQ))
+    assert structural_value in Schemes(QQ).Mor(point.domain(), (QQ).affine_spectrum())
     assert structural_value.domain() is point.domain()
-    assert structural_value.codomain() is Spec(QQ)
+    assert structural_value.codomain() is (QQ).affine_spectrum()
 
 
 def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() -> None:
@@ -149,8 +148,7 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     from dzack_research.preamble.all import (
         Algebras,
-        Spec,
-    )
+        )
 
     left_free = QQ.polynomial_ring("x")
     right_free = QQ.polynomial_ring("y")
@@ -158,8 +156,8 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     y = right_free.algebra_generator("y")
     left_algebra = (left_free).quotient_by_relations((x**2,))
     right_algebra = (right_free).quotient_by_relations((y**3,))
-    left = Spec(left_algebra)
-    right = Spec(right_algebra)
+    left = (left_algebra).affine_spectrum()
+    right = (right_algebra).affine_spectrum()
 
     product = left.scheme_category().product((left, right))
     tensor = Algebras(QQ).Associative().Unital().Commutative().coproduct((left_algebra, right_algebra))
@@ -175,11 +173,11 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
 def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None:
     from dzack_research.preamble.all import Algebras
 
-    base = Spec(QQ)
+    base = (QQ).affine_spectrum()
     assert base.scheme_base_ring() is QQ
     assert base.structure_morphism().domain() is base
     assert base.structure_morphism().codomain() is base
-    assert Spec(QQ) is base
+    assert (QQ).affine_spectrum() is base
 
     common = QQ.polynomial_ring("s")
     left_algebra = QQ.polynomial_ring("x")
@@ -286,7 +284,7 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
     residue_algebra = parameter.quotient_ring(parameter.ideal(t))
 
     spec = Algebras(parameter).Associative().Unital().Commutative().spectrum()
-    parameter_scheme = Spec(parameter, base_ring=parameter)
+    parameter_scheme = (parameter).affine_spectrum(base_ring=parameter)
     family = spec(family_algebra)
     zero = spec(residue_algebra)
 
@@ -329,7 +327,7 @@ def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     special_algebra = (presentation).quotient_by_relations((x * y,))
-    special_fiber = Spec(special_algebra, base_ring=QQ)
+    special_fiber = (special_algebra).affine_spectrum(base_ring=QQ)
     x0 = special_algebra.algebra_generator("x")
     y0 = special_algebra.algebra_generator("y")
 
@@ -354,7 +352,7 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
     x = presentation.algebra_generator("x")
     y = presentation.algebra_generator("y")
     family_algebra = (presentation).quotient_by_relations((x * y - t,))
-    family = Spec(family_algebra, base_ring=parameter)
+    family = (family_algebra).affine_spectrum(base_ring=parameter)
     xbar = family_algebra.algebra_generator("x")
     ybar = family_algebra.algebra_generator("y")
 
@@ -371,7 +369,7 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
 
     killed_presentation = parameter.polynomial_ring(("z", "w"))
     nonflat_algebra = (killed_presentation).quotient_by_relations((t,))
-    nonflat = Spec(nonflat_algebra, base_ring=parameter)
+    nonflat = (nonflat_algebra).affine_spectrum(base_ring=parameter)
     assert not nonflat.is_flat()
     with raises(NotImplementedError, match="requires represented flatness"):
         nonflat.relative_nonsmooth_subscheme()
@@ -386,11 +384,11 @@ def test_spectra_of_distinct_owned_algebras_do_not_alias_through_one_engine_pare
     second_algebra = AffineSemigroupAlgebras(QQ)(((-1, 0), (-1, 1)))
 
     assert first_algebra is not second_algebra
-    first = Spec(first_algebra, base_ring=QQ)
-    second = Spec(second_algebra, base_ring=QQ)
+    first = (first_algebra).affine_spectrum(base_ring=QQ)
+    second = (second_algebra).affine_spectrum(base_ring=QQ)
 
     assert first is not second
     assert first.coordinate_algebra() is first_algebra
     assert second.coordinate_algebra() is second_algebra
-    assert Spec(first_algebra, base_ring=QQ) is first
-    assert Spec(second_algebra, base_ring=QQ) is second
+    assert (first_algebra).affine_spectrum(base_ring=QQ) is first
+    assert (second_algebra).affine_spectrum(base_ring=QQ) is second

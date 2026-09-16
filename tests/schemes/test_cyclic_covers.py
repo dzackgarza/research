@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     GF,
     QQ,
     Schemes,
-    Spec,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
 
@@ -113,7 +112,7 @@ def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
 
     assert cover in CyclicCovers(algebra, 2)
     assert cover.invariant_algebra() is algebra
-    assert cover.affine_quotient() is Spec(algebra, base_ring=algebra)
+    assert cover.affine_quotient() is (algebra).affine_spectrum(base_ring=algebra)
     assert quotient_morphism.domain() is cover
     assert quotient_morphism.codomain() is cover.affine_quotient()
     # The cover morphism is invariant, which is what makes it the quotient map.

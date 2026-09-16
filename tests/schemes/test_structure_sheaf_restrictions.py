@@ -6,7 +6,7 @@ def test_distinguished_affine_cover_has_function_restrictions_and_overlap_compos
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
 
     left, right = cover.opens()
@@ -46,7 +46,7 @@ def test_affine_module_sheaf_restriction_is_linear_over_function_restriction() -
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     left = cover.open(0)
     right = cover.open(1)
@@ -92,7 +92,7 @@ def test_distinguished_affine_cover_rejects_a_noncover_and_noncontainment() -> N
 
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
 
     try:
         scheme.distinguished_open_cover(x, y)

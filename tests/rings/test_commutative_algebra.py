@@ -329,7 +329,7 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     spec_middle = spec(middle)
     spec_target = spec(target)
 
-    assert spec_source is Spec(source)
+    assert spec_source is (source).affine_spectrum()
     assert spec_source.scheme_base_ring() is QQ
     assert spec_source.coordinate_algebra() is source
     assert spec_source.structure_sheaf().global_sections() is source

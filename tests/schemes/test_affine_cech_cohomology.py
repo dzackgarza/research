@@ -11,7 +11,7 @@ def _dual_number_sheaf():
     polynomial = QQ.polynomial_ring("e")
     e = polynomial.algebra_generator("e")
     algebra = polynomial.quotient_ring(polynomial.ideal(e**2))
-    scheme = Spec(algebra, base_ring=QQ)
+    scheme = (algebra).affine_spectrum(base_ring=QQ)
     module = algebra.free_module(1)
     return scheme.associated_module_sheaf(module)
 

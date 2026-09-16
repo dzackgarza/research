@@ -32,7 +32,7 @@ def _two_chart_sign_datum():
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_algebras = tuple(
         _quadratic_algebra(open_subscheme.coordinate_algebra())
@@ -93,7 +93,7 @@ def test_three_chart_algebra_descent_checks_the_algebra_cocycle() -> None:
 
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(
         x,
         y,

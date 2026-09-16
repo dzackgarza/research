@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     ZZ,
     ProjectiveSpace,
     QuadraticField,
-    Spec,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.picard_groups import (
@@ -46,7 +45,7 @@ def test_projective_n_space_over_a_field_has_picard_and_class_group_Z() -> None:
 def test_projective_n_space_over_a_base_keeps_the_base_picard_contribution() -> None:
     field = QuadraticField(-5, "a")
     order = field.ring_of_integers()
-    base = Spec(order, base_ring=order)
+    base = (order).affine_spectrum(base_ring=order)
     projective = ProjectiveSpace(2, order)
     base_picard = PicardGroups()(_cyclic_module(2), scheme=base)
     base_class = ClassGroups()(_cyclic_module(2), scheme=base)
@@ -74,7 +73,7 @@ def test_normal_singular_surface_has_a_noncartier_weil_class() -> None:
     z = polynomial.algebra_generator("z")
     ring = polynomial.quotient_ring(polynomial.ideal(x * y - z**2))
     x, y, z = ring(x), ring(y), ring(z)
-    scheme = Spec(ring, base_ring=QQ)
+    scheme = (ring).affine_spectrum(base_ring=QQ)
     prime = ring.spectrum()(ring.ideal(x, z))
     vertex = ring.spectrum()(ring.ideal(x, y, z))
     weil = scheme.full_weil_divisor_group()

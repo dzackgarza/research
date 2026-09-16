@@ -19,7 +19,6 @@ from dzack_research.preamble.all import (
     ProjectiveSpace,
     Schemes,
     SmoothSchemes,
-    Spec,
     Algebras,
 )
 
@@ -59,14 +58,14 @@ def test_a_scheme_over_a_ring_is_a_scheme_over_every_scalar_base_of_that_ring() 
     # Smoothness and affine-space structure are stated relative to the base.
     assert plane in SmoothSchemes(QQ)
     assert plane not in SmoothSchemes(ZZ)
-    assert Spec(QQ) in Schemes(ZZ)
-    assert Spec(QQ) not in SmoothSchemes(ZZ)
+    assert (QQ).affine_spectrum() in Schemes(ZZ)
+    assert (QQ).affine_spectrum() not in SmoothSchemes(ZZ)
 
-    structure = Spec(QQ).structure_morphism()
-    to_integers = Schemes(ZZ).Mor(Spec(QQ), Spec(ZZ))
-    assert structure.domain() is Spec(QQ)
-    assert to_integers.domain() is Spec(QQ)
-    assert to_integers.codomain() is Spec(ZZ)
+    structure = (QQ).affine_spectrum().structure_morphism()
+    to_integers = Schemes(ZZ).Mor((QQ).affine_spectrum(), (ZZ).affine_spectrum())
+    assert structure.domain() is (QQ).affine_spectrum()
+    assert to_integers.domain() is (QQ).affine_spectrum()
+    assert to_integers.codomain() is (ZZ).affine_spectrum()
 
 
 def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> None:

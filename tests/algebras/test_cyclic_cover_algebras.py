@@ -19,7 +19,7 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     QQ = _own_ring(SageQQ)
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)

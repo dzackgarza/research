@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 def test_ringed_space_hierarchy_is_owned_and_inhabited_by_actual_schemes() -> None:
     ringed = RingedSpaces()
     locally_ringed = LocallyRingedSpaces()
-    affine = Spec(ZZ)
+    affine = (ZZ).affine_spectrum()
 
     assert isinstance(ringed, OwnedCategory)
     assert isinstance(locally_ringed, OwnedCategory)
@@ -22,7 +22,7 @@ def test_ringed_space_hierarchy_is_owned_and_inhabited_by_actual_schemes() -> No
 
 
 def test_ringed_space_parent_methods_survive_the_owned_category_boundary() -> None:
-    affine = Spec(ZZ)
+    affine = (ZZ).affine_spectrum()
     sheaf = affine.structure_sheaf()
     space = affine.underlying_space()
 

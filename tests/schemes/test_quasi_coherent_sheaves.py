@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     AffineSpace,
     LocalRings,
     QQ,
-    Spec,
     Algebras,
 )
 
@@ -12,7 +11,7 @@ from dzack_research.preamble.all import (
 def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     sheaf = scheme.structure_sheaf()
     first = scheme.distinguished_open_cover(x, algebra.one() - x)
     second = scheme.distinguished_open_cover(y, algebra.one() - y)
@@ -102,7 +101,7 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     relative = line.relative_spectrum(structure)
 
     assert relative.arrow().codomain() is line
-    assert relative.arrow().domain() is Spec(cover_algebra)
+    assert relative.arrow().domain() is (cover_algebra).affine_spectrum()
     assert relative.arrow().coordinate_algebra_morphism() is structure
     assert relative in line.scheme_category().SliceOver(line)
 

@@ -92,7 +92,7 @@ def test_completions_of_localizations_and_fraction_fields_of_quotients() -> None
 )
 def test_the_underlying_space_of_the_spectrum_of_a_small_ring(build, name, points) -> None:
     ring = build(name)
-    assert Spec(ring).underlying_space().cardinality() == points
+    assert (ring).affine_spectrum().underlying_space().cardinality() == points
     assert ring.spectrum().cardinality() == points
 
 
@@ -137,7 +137,7 @@ def test_tensor_products_and_pushouts_of_algebras() -> None:
     assert glued in CommutativeAlgebraPushouts(QQ)
     assert glued.krull_dimension() == 1
     assert glued in IntegralDomains()
-    fibered = scheme_fiber_product(Spec(square), Spec(cube))
+    fibered = scheme_fiber_product((square).affine_spectrum(), (cube).affine_spectrum())
     assert fibered.relative_dimension() == 1
     assert fibered in AffineSchemes(QQ)
     assert fibered.coordinate_ring() == glued
@@ -192,6 +192,6 @@ def test_schemes_over_orders_and_over_quotients(build) -> None:
     assert line.relative_dimension() == 1
     assert line.coordinate_ring().krull_dimension() == 2
     assert projective.relative_dimension() == 1
-    assert Spec(Zp(3)).relative_dimension() == 0
-    assert Spec(gaussian) in AffineSchemes(ZZ)
-    assert Spec(gaussian.as_algebra_over(ZZ)).structure_morphism().codomain() == Spec(ZZ)
+    assert (Zp(3)).affine_spectrum().relative_dimension() == 0
+    assert (gaussian).affine_spectrum() in AffineSchemes(ZZ)
+    assert (gaussian.as_algebra_over(ZZ)).affine_spectrum().structure_morphism().codomain() == (ZZ).affine_spectrum()

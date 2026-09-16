@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     GObjects,
     Groups,
     Schemes,
-    Spec,
     Algebras,
 )
 
@@ -25,7 +24,7 @@ def _translation_of_the_affine_line():
     group = Groups.C(2)
     algebra = field.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     translation = Algebras(field).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": x + algebra.one()}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, field)(
@@ -60,7 +59,7 @@ def _klein_four_on_the_affine_plane():
     algebra = field.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     translation = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + algebra.one(), "y": y})
     )
@@ -146,7 +145,7 @@ def test_scheme_theoretic_fixed_locus_retains_nonreduced_structure() -> None:
     algebra = polynomial.quotient_ring(polynomial.ideal(e**3))
     x = algebra(x)
     e = algebra(e)
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     involution = Algebras(field).Associative().Unital().Commutative().spectrum()(
         algebra.Mor(algebra)({"x": x + e**2, "e": e})
     )

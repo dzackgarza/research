@@ -32,15 +32,14 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
 
     from dzack_research.preamble.all import (
         InvertibleSheaf,
-        Spec,
-    )
+        )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -80,15 +79,14 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
 
     from dzack_research.preamble.all import (
         InvertibleSheaf,
-        Spec,
-    )
+        )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(1)
@@ -139,15 +137,14 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
 
     from dzack_research.preamble.all import (
         InvertibleSheaf,
-        Spec,
-    )
+        )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     QQ = _own_ring(SageQQ)
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     cover = scheme.distinguished_open_cover(x, algebra.one() - x)
     local_modules = tuple(
         open_subscheme.coordinate_algebra().free_module(2)

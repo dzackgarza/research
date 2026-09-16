@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     GObjects,
     Groups,
     Schemes,
-    Spec,
     Algebras,
 )
 
@@ -23,7 +22,7 @@ def _swapped_plane():
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = Spec(algebra)
+    scheme = (algebra).affine_spectrum()
     swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
     acted = AffineGSchemes(group, QQ)(

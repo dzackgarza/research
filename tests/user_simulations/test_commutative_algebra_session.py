@@ -116,8 +116,8 @@ def test_a_plane_curve_session(name) -> None:
     assert curve not in SmoothSchemes(field)
     assert curve not in NormalSchemes(field)
     assert curve.dimension() == 1
-    assert Spec(cusp) in AffineSchemes(field)
-    assert Spec(cusp).relative_dimension() == 1
+    assert (cusp).affine_spectrum() in AffineSchemes(field)
+    assert (cusp).affine_spectrum().relative_dimension() == 1
     assert curve.coordinate_ring().Mor(cusp).cardinality() >= 1
 
     # Kähler differentials and the de Rham complex of the cusp.

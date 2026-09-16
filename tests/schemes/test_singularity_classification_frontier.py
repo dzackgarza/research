@@ -3,7 +3,6 @@ r"""Supported singularity equivalences and the regular/smooth boundary."""
 from dzack_research.preamble.all import (
     GF,
     QQ,
-    Spec,
 )
 from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
@@ -54,7 +53,7 @@ def test_regular_purely_inseparable_field_extension_is_not_smooth_over_its_base(
     extension = (line).quotient_by_relations((x**2 - a_in_base,))
 
     assert extension.is_field()
-    scheme = Spec(extension, base_ring=base)
+    scheme = (extension).affine_spectrum(base_ring=base)
     generic = scheme.underlying_space().generic_point()
     assert scheme.is_regular_at(generic)
 

@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     NormalSchemes,
     ProjectiveSpace,
     QQ,
-    Spec,
     ZZ,
     Zmod,
 )
@@ -34,7 +33,7 @@ def test_affine_space_is_normal_over_a_principal_ideal_domain() -> None:
     # The criterion reads the base: Z/12 is not a domain, so A^1 over it is
     # not asserted normal, and an unconditional placement would say it is.
     residues = Zmod(12)
-    assert Spec(residues, base_ring=residues) not in NormalSchemes(residues)
+    assert (residues).affine_spectrum(base_ring=residues) not in NormalSchemes(residues)
 
 
 def test_projective_space_is_normal_over_a_principal_ideal_domain() -> None:
@@ -48,6 +47,6 @@ def test_projective_space_is_normal_over_a_principal_ideal_domain() -> None:
 
 def test_the_base_scheme_and_the_witness_of_the_category_are_normal() -> None:
     r"""``Spec Z`` is normal, and the category exhibits a member of itself."""
-    assert Spec(ZZ, base_ring=ZZ) in NormalSchemes(ZZ)
+    assert (ZZ).affine_spectrum(base_ring=ZZ) in NormalSchemes(ZZ)
     assert NormalSchemes(ZZ).an_object() in NormalSchemes(ZZ)
     assert NormalSchemes(QQ).an_object() in NormalSchemes(QQ)

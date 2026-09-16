@@ -4,7 +4,6 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AffineCodimensionOneChowComparison,
-    Spec,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroups,
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
 def _affine_plane_divisor_presentation():
     ring = QQ.polynomial_ring("x,y")
     x = ring.algebra_generator("x")
-    scheme = Spec(ring, base_ring=QQ)
+    scheme = (ring).affine_spectrum(base_ring=QQ)
     full_weil = scheme.full_weil_divisor_group()
     prime = ring.spectrum()(ring.ideal(x))
     prime_divisor = full_weil.prime_divisor(prime)

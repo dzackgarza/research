@@ -452,10 +452,10 @@ def test_orbits_and_stabilizers_spelled_on_the_group() -> None:
 
 
 def test_dimensions_components_and_base_change_of_schemes() -> None:
-    assert Spec(ZZ).dimension() == 1
+    assert (ZZ).affine_spectrum().dimension() == 1
     assert AffineSpace(1, ZZ).dimension() == 2
     assert AffineSpace(2, QQ).dimension() == 2
-    assert Spec(QQ).dimension() == 0
+    assert (QQ).affine_spectrum().dimension() == 0
     axes = AffineSpace(2, QQ, names=("x", "y")).closed_subscheme(
         AffineSpace(2, QQ, names=("x", "y")).coordinate_ring().algebra_generator("x")
         * AffineSpace(2, QQ, names=("x", "y")).coordinate_ring().algebra_generator("y")
@@ -466,7 +466,7 @@ def test_dimensions_components_and_base_change_of_schemes() -> None:
     assert axes.is_reduced()
     assert axes.dimension() == 1
     assert AffineSpace(2, ZZ).base_change(ZZ.Mor(GF(5))(lambda n: GF(5)(n))).point_count() == 25
-    assert AffineSpace(1, ZZ).fiber(Spec(ZZ).underlying_space()(ZZ.ideal(5))).point_count() == 5
+    assert AffineSpace(1, ZZ).fiber((ZZ).affine_spectrum().underlying_space()(ZZ.ideal(5))).point_count() == 5
 
 
 def test_proj_blowups_and_global_sections() -> None:

@@ -185,8 +185,8 @@ def test_a_newcomer_does_commutative_algebra() -> None:
     assert R.derivation_module().module_rank() == 3
     assert R.differentials().module_rank() == 3
     assert R.jacobian_matrix((x * y, y * z)).nrows() == 2
-    assert Spec(R.quotient(I)).irreducible_components().cardinality() == 3
-    assert Spec(R.quotient(I)).dimension() == 1
+    assert (R.quotient(I)).affine_spectrum().irreducible_components().cardinality() == 3
+    assert (R.quotient(I)).affine_spectrum().dimension() == 1
     assert Proj(R).dimension() == 2
     assert Proj(R / I).dimension() == 0
     assert Proj(R / I).degree() == 3

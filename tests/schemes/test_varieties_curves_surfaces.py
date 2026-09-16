@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     IntegralSchemes,
     ProjectiveSpace,
     SeparatedSchemes,
-    Spec,
     Surfaces,
     Varieties,
 )
@@ -65,7 +64,7 @@ def test_the_integrality_hypothesis_excludes_a_reducible_subscheme() -> None:
 
 def test_the_finite_type_hypothesis_excludes_the_spectrum_of_a_function_field() -> None:
     rational_functions = QQ.polynomial_ring("t").fraction_field()
-    point = Spec(rational_functions, base_ring=QQ)
+    point = (rational_functions).affine_spectrum(base_ring=QQ)
 
     assert point in IntegralSchemes(QQ)
     assert point in SeparatedSchemes(QQ)
