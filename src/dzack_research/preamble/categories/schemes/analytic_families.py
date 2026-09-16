@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSpace,
     AffineSpaces,
     ProjectiveSchemes,
 )
@@ -120,8 +119,8 @@ class AnalyticDiscFamily(SageObject):
         qq = _own_ring(SageQQ)
         cc = _own_ring(SageCC)
         embedding = qq.Mor(cc)(lambda scalar: cc(scalar))
-        algebraic_total = AffineSpace(2, qq, names=("x", "t"))
-        algebraic_base = AffineSpace(1, qq, names=("t",))
+        algebraic_total = AffineSpaces(qq)(2, names=("x", "t"))
+        algebraic_base = AffineSpaces(qq)(1, names=("t",))
         total_algebra = algebraic_total.coordinate_algebra()
         base_algebra = algebraic_base.coordinate_algebra()
         projection_pullback = base_algebra.Mor(total_algebra)(

@@ -36,7 +36,7 @@ from dzack_research.preamble.categories.schemes.complete_intersections import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
-    ProjectiveSpace,
+    ProjectiveSpaces,
 )
 
 
@@ -206,7 +206,7 @@ class LegendreMonodromyFamily(SageObject):
         integers = _own_ring(SageZZ)
         parameter = rationals.polynomial_ring("t")
         t = parameter.algebra_generator("t")
-        ambient = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
+        ambient = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
         section_ring = ambient.O(3).global_sections().homogeneous_coordinate_ring()
         x = section_ring.algebra_generator("x")
         y = section_ring.algebra_generator("y")

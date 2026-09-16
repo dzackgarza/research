@@ -54,9 +54,9 @@ from dzack_research.preamble.owned_category import _object_of
 
 def _projective_line_over(base_ring):
     r"""Return the owned projective line over the invariant coefficient ring."""
-    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
-    return ProjectiveSpace(1, base_ring)
+    return ProjectiveSpaces(base_ring)(1)
 
 
 class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):

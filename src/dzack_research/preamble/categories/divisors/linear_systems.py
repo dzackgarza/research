@@ -23,7 +23,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     ProductProjectiveSpaces,
     ProjectiveSchemes,
-    ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
     _refine_scheme,
 )
@@ -781,7 +781,7 @@ def _projective_linear_system(line_bundle, sections):
         for section in sections
     )
     base_locus = scheme.closed_subscheme(polynomials)
-    system = ProjectiveSpace(len(sections) - 1, base)
+    system = ProjectiveSpaces(base)(len(sections) - 1)
     system._preamble_linear_system_line_bundle = line_bundle
     system._preamble_selected_section_space = selected
     system._preamble_section_embedding = embedding
@@ -956,7 +956,7 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
     if dimension == 0:
         raise ValueError("the imposed condition leaves no nonzero section to projectivize")
     base = line_bundle.projective_space().scheme_base_ring()
-    parameter_space = ProjectiveSpace(dimension - 1, base)
+    parameter_space = ProjectiveSpaces(base)(dimension - 1)
     parameter_space._preamble_ambient_section_space = evaluation.domain()
     parameter_space._preamble_constrained_section_space = constrained
     parameter_space._preamble_imposed_jet_evaluation = evaluation
@@ -1005,7 +1005,7 @@ def _complete_linear_system(scheme, divisor, section_space):
     dimension = int(section_space.dimension())
     if dimension == 0:
         raise ValueError("the empty linear system has no represented projective space")
-    system = ProjectiveSpace(dimension - 1, base)
+    system = ProjectiveSpaces(base)(dimension - 1)
     system._preamble_linear_system_scheme = scheme
     system._preamble_linear_system_divisor = divisor
     system._preamble_linear_system_section_space = section_space

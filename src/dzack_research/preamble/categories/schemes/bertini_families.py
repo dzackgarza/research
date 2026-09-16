@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
-from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
 
 
 class HesseBertiniFamily(SageObject):
@@ -35,7 +35,7 @@ class HesseBertiniFamily(SageObject):
         base = _own_ring(SageQQ)
         parameter = base.polynomial_ring("t")
         t = parameter.algebra_generator("t")
-        plane = ProjectiveSpace(2, parameter, names=("x", "y", "z"))
+        plane = ProjectiveSpaces(parameter)(2, names=("x", "y", "z"))
         relative_sections = plane.O(3).global_sections()
         relative_ring = relative_sections.homogeneous_coordinate_ring()
         x = relative_ring.algebra_generator("x")
@@ -45,7 +45,7 @@ class HesseBertiniFamily(SageObject):
         equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
         family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane.closed_subscheme(equation))
 
-        reference_plane = ProjectiveSpace(2, base, names=("x", "y", "z"))
+        reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
         bundle = reference_plane.O(3)
         sections = bundle.global_sections()
         ring = sections.homogeneous_coordinate_ring()

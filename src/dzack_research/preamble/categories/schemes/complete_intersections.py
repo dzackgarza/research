@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
     ProjectiveSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     _categorical_scheme_morphism,
     _refine_scheme,
@@ -98,7 +97,7 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        plane = ProjectiveSpace(2, self.base_ring())
+        plane = ProjectiveSpaces(self.base_ring())(2)
         x, y, z = plane.gens()
         return self(plane.closed_subscheme(x * z - y**2))
 

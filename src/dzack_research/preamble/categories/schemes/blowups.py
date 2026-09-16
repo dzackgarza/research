@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
     ProjectiveSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     SmoothSchemes,
     _categorical_scheme_morphism,
@@ -93,7 +92,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         return [ProjectiveSchemes(self.base_ring()), SmoothSchemes(self.base_ring())]
 
     def an_object(self):
-        plane = ProjectiveSpace(2, self.base_ring())
+        plane = ProjectiveSpaces(self.base_ring())(2)
         return plane.point_blowup(
             plane.point_morphism((1, 1, 1))
         )
@@ -357,7 +356,7 @@ def _projective_point_blowup(projective_plane, point):
     if point.codomain() is not projective_plane or point.domain() is not projective_plane.base_scheme():
         raise ValueError("the blowup center must be a represented rational point of this P^2")
 
-    direction = ProjectiveSpace(1, base, names=("U", "V"))
+    direction = ProjectiveSpaces(base)(1, names=("U", "V"))
     product = projective_plane.scheme_category().product((projective_plane, direction))
     graph_sections = product.O(1, 1).global_sections()
     source_embedding = graph_sections.factor_coordinate_embedding(0)

@@ -9,11 +9,10 @@ answers, so nothing is placed and no property is asserted twice.
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSpace,
+    AffineSpaces,
     FiniteTypeSchemes,
     IntegralSchemes,
     ProjectiveSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     Schemes,
     SeparatedSchemes,
@@ -27,7 +26,7 @@ class Varieties(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine line over the base ring."""
-        return AffineSpace(1, self.base_ring())
+        return AffineSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
         return f"varieties over {self.base_ring()}"
@@ -77,7 +76,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective line, of relative dimension one."""
-        return ProjectiveSpace(1, self.base_ring())
+        return ProjectiveSpaces(self.base_ring())(1)
 
     def _repr_object_names(self):
         return f"curves over {self.base_ring()}"
@@ -115,9 +114,8 @@ class Curves(_DimensionSubcategoryOfVarieties):
                         )
                     case True:
                         pass
-                ambient = AffineSpace(
+                ambient = AffineSpaces(base)(
                     len(labels),
-                    base,
                     names=tuple(str(label) for label in labels),
                 )
                 target = ambient.coordinate_algebra()
@@ -226,7 +224,7 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
 
     def an_object(self):
         r"""The projective plane, of relative dimension two."""
-        return ProjectiveSpace(2, self.base_ring())
+        return ProjectiveSpaces(self.base_ring())(2)
 
     def _repr_object_names(self):
         return f"surfaces over {self.base_ring()}"

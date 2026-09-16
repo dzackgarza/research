@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.schemes import (
-    ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -61,7 +61,7 @@ class HorikawaK3Family(SageObject):
                 "the represented Horikawa eigenspace family currently uses characteristic zero"
             )
         labels = finite_ordered_set(("left", "right"))
-        line = ProjectiveSpace(1, base, names=("x0", "x1"))
+        line = ProjectiveSpaces(base)(1, names=("x0", "x1"))
         factors = finite_indexed_family(
             labels,
             lambda _label: line,

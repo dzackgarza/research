@@ -29,7 +29,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
 )
 from dzack_research.preamble.categories.schemes.singularities import (
@@ -183,7 +182,7 @@ class ProjectiveCurveNormalizationData(SageObject):
 def _projective_quintic_normalization(curve, coordinate_formula):
     r"""Corestrict one basepoint-free degree-five map ``P1 -> P2`` to ``curve``."""
     base = curve.scheme_base_ring()
-    normalization = ProjectiveSpace(1, base, names=("s", "t"))
+    normalization = ProjectiveSpaces(base)(1, names=("s", "t"))
     ring = normalization.O(5).global_sections().homogeneous_coordinate_ring()
     s = ring.algebra_generator("s")
     t = ring.algebra_generator("t")
@@ -214,7 +213,7 @@ def rational_quintic_with_two_nodes_normalization():
 
     ``[s:t] |-> [s^2 t^3 : s(s^2-t^2)(s^2-4t^2) : t^5]``.
     """
-    plane = ProjectiveSpace(2, _RATIONALS, names=("X", "Y", "Z"))
+    plane = ProjectiveSpaces(_RATIONALS)(2, names=("X", "Y", "Z"))
     ring = plane.O(5).global_sections().homogeneous_coordinate_ring()
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
@@ -264,7 +263,7 @@ def rational_quintic_with_nonrational_node_normalization():
     local delta is one at each conjugate geometric point, so the one closed
     point contributes ``2`` over ``QQ``; it is never expanded into two entries.
     """
-    plane = ProjectiveSpace(2, _RATIONALS, names=("X", "Y", "Z"))
+    plane = ProjectiveSpaces(_RATIONALS)(2, names=("X", "Y", "Z"))
     ring = plane.O(5).global_sections().homogeneous_coordinate_ring()
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
