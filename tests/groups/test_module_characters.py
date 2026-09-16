@@ -84,5 +84,5 @@ def test_nonfree_finitely_presented_group_module_has_no_ordinary_matrix_characte
 
     acted = Modules(ZZ[group])(module, action)
     assert acted.act(generator, acted.module_generator(0)) == -acted.module_generator(0)
-    with pytest.raises(NotImplementedError, match="finite free group module"):
+    with pytest.raises(AssertionError, match="finite free group module"):
         acted.character()

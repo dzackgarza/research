@@ -169,19 +169,17 @@ class ModulesOverGroupAlgebra(Modules):
         )
 
         group = self.acting_group()
-        if group.is_finite() is not True:
-            raise NotImplementedError(
-                "the selected splitting field is currently represented for finite groups"
-            )
+        assert group.is_finite() is True, (
+            "the selected splitting field is represented here for finite groups"
+        )
         fraction_field = self.coefficient_ring().fraction_field()
         order = int(group.order())
         if order <= 2:
             return fraction_field
         cyclotomic = CyclotomicField(order)
-        if fraction_field.exact_embeddings(cyclotomic).cardinality() == 0:
-            raise NotImplementedError(
-                "the composite of the coefficient fraction field with the cyclotomic splitting field is not represented"
-            )
+        assert fraction_field.exact_embeddings(cyclotomic).cardinality() != 0, (
+            "the selected splitting-field representation requires the coefficient fraction field to embed into the chosen cyclotomic field"
+        )
         return cyclotomic
 
     def is_split(self) -> bool:
@@ -487,16 +485,14 @@ class ModulesOverGroupAlgebra(Modules):
                 return True
 
             group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "deciding triviality of this action requires a chosen finite group generating set"
-                )
+            assert group.is_finitely_generated() is True, (
+                "deciding triviality of this action requires a chosen finite group generating set"
+            )
             module = self.unacted_module()
             labels = module.module_generating_set()
-            if labels.cardinality().is_finite() is not True:
-                raise NotImplementedError(
-                    "deciding triviality of this action requires a chosen finite module generating set"
-                )
+            assert labels.cardinality().is_finite() is True, (
+                "deciding triviality of this action requires a chosen finite module generating set"
+            )
             for group_generator in group.group_generators():
                 action = self.action_of(group_generator)
                 for label in labels:
@@ -504,10 +500,9 @@ class ModulesOverGroupAlgebra(Modules):
                     equal = action(generator) == generator
                     if equal is False:
                         return False
-                    if equal is not True:
-                        raise NotImplementedError(
-                            "triviality of the represented action is undecidable on a selected generator"
-                        )
+                    assert equal is True, (
+                        "triviality of the represented action requires equality to be decided on each selected generator"
+                    )
             return True
 
         def scalar_multiple(self, scalar, element):
@@ -652,8 +647,9 @@ class ModulesOverGroupAlgebra(Modules):
             the universal-construction spelling.
             """
             group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError("the represented action equalizer/coequalizer requires a chosen finite group generating set")
+            assert group.is_finitely_generated() is True, (
+                "the represented action equalizer/coequalizer requires a chosen finite group generating set"
+            )
             generators = group.group_generators()
             indices = Sets().coproduct(
                 indexed_family(
@@ -828,14 +824,13 @@ class ModulesOverGroupAlgebra(Modules):
             group = self.group()
             coefficient_module = self.unacted_module()
             coefficient_ring = self.coefficient_ring()
-            if group.is_finite() is not True:
-                raise NotImplementedError("ordinary character tables here require a finite group")
-            if coefficient_module not in FinitelyGeneratedFreeModules(coefficient_ring):
-                raise NotImplementedError(
-                    "the ordinary character is implemented here for a finite free group module; "
-                    "a finite presentation alone does not supply the finite-dimensional linear "
-                    "representation used by this construction"
-                )
+            assert group.is_finite() is True, (
+                "ordinary character computation here requires a finite group"
+            )
+            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
+                "the ordinary character is represented here for a finite free group module; "
+                "a finite presentation alone does not supply the finite-dimensional linear representation used by this construction"
+            )
             if coefficient_ring.characteristic() != 0:
                 raise TypeError(
                     "ordinary characters are not obtained by treating modular traces as "
@@ -856,10 +851,12 @@ class ModulesOverGroupAlgebra(Modules):
             group = self.group()
             coefficient_module = self.unacted_module()
             coefficient_ring = self.coefficient_ring()
-            if group.is_finite() is not True:
-                raise NotImplementedError("Brauer characters here require a finite group")
-            if coefficient_module not in FinitelyGeneratedFreeModules(coefficient_ring):
-                raise NotImplementedError("the Brauer character is defined here for a finite free group module")
+            assert group.is_finite() is True, (
+                "Brauer character computation here requires a finite group"
+            )
+            assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
+                "the Brauer character is represented here for a finite free group module"
+            )
             if coefficient_ring.characteristic() == 0:
                 raise TypeError("Brauer characters are the positive-characteristic representation invariant")
             if not coefficient_ring.is_field():
@@ -1199,8 +1196,9 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
     """
 
     base_ring = module.base_ring()
-    if module not in FinitelyPresentedModules(base_ring):
-        raise NotImplementedError("equipping an action requires a represented finite presentation")
+    assert module in FinitelyPresentedModules(base_ring), (
+        "equipping an action requires a represented finite presentation"
+    )
     ring_action = None
     if action is None:
         action = group_or_action
@@ -1234,8 +1232,9 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
         group = _owned_group(group_or_action)
 
     labels = module.module_generating_set()
-    if not labels.cardinality().is_finite():
-        raise NotImplementedError("equipping an action currently materializes a finite framing")
+    assert labels.cardinality().is_finite(), (
+        "equipping an action materializes a finite selected framing"
+    )
 
     is_free = module in FinitelyGeneratedFreeModules(base_ring)
     if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
