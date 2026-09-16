@@ -32,7 +32,7 @@ def _equip_action_element(group_module, element):
     return group_module.equip_action_morphism()(element)
 
 
-class GroupModuleScalarExtensionFunctor(Functor):
+class _GroupModuleScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : R[G]-Mod -> S[G]-Mod`` along one scalar map."""
 
     def __init__(self, ring_map, group) -> None:
@@ -75,7 +75,7 @@ class GroupModuleScalarExtensionFunctor(Functor):
         return f"Scalar extension of {self.group()}-modules along {self.ring_map()}"
 
 
-class GroupModuleRestrictionOfScalarsFunctor(Functor):
+class _GroupModuleRestrictionOfScalarsFunctor(Functor):
     r"""``Res_f : S[G]-Mod -> R[G]-Mod``."""
 
     def __init__(self, ring_map, group) -> None:
@@ -140,15 +140,15 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
         return f"Restriction of {self.group()}-modules along {self.ring_map()}"
 
 
-class GroupModuleBaseChangeAdjunction(Adjunction):
+class _GroupModuleBaseChangeAdjunction(Adjunction):
     r"""``S tensor_R - ⊣ Res_f`` on modules carrying a fixed ``G``-action."""
 
     def __init__(self, ring_map, group) -> None:
         self._ring_map = ring_map
         self._group = group
         super().__init__(
-            GroupModuleScalarExtensionFunctor(ring_map, group),
-            GroupModuleRestrictionOfScalarsFunctor(ring_map, group),
+            _GroupModuleScalarExtensionFunctor(ring_map, group),
+            _GroupModuleRestrictionOfScalarsFunctor(ring_map, group),
         )
 
     def _underlying_adjunction(self):
@@ -193,12 +193,8 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
 
 
 @cached_function
-def _group_module_base_change_adjunction(ring_map, group) -> GroupModuleBaseChangeAdjunction:
-    return GroupModuleBaseChangeAdjunction(ring_map, group)
+def _group_module_base_change_adjunction(ring_map, group) -> _GroupModuleBaseChangeAdjunction:
+    return _GroupModuleBaseChangeAdjunction(ring_map, group)
 
 
-__all__ = [
-    "GroupModuleBaseChangeAdjunction",
-    "GroupModuleRestrictionOfScalarsFunctor",
-    "GroupModuleScalarExtensionFunctor",
-]
+__all__ = []

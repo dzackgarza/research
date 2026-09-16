@@ -240,15 +240,6 @@ from dzack_research.preamble.categories.functors.free_groups import (
 from dzack_research.preamble.categories.functors.free_groups import (
     GroupUnderlyingSetFunctor as GroupUnderlyingSetFunctor,
 )
-from dzack_research.preamble.categories.functors.group_scalar_change import (
-    GroupModuleBaseChangeAdjunction as GroupModuleBaseChangeAdjunction,
-)
-from dzack_research.preamble.categories.functors.group_scalar_change import (
-    GroupModuleRestrictionOfScalarsFunctor as GroupModuleRestrictionOfScalarsFunctor,
-)
-from dzack_research.preamble.categories.functors.group_scalar_change import (
-    GroupModuleScalarExtensionFunctor as GroupModuleScalarExtensionFunctor,
-)
 from dzack_research.preamble.categories.functors.linear_constructions import (
     BiproductBifunctor as BiproductBifunctor,
 )
