@@ -40,7 +40,7 @@ def test_projective_line_bundle_tensor_dual_and_canonical_degrees_are_exact() ->
     plane = ProjectiveSpaces(QQ)(2)
     hyperplane = plane.O(1)
     square = hyperplane.tensor_power(2)
-    dual = hyperplane.dual()
+    dual = hyperplane.dual_sheaf()
 
     assert hyperplane.tensor_product(hyperplane).degree() == 2
     assert square.degree() == 2

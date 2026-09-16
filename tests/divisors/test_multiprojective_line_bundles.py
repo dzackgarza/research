@@ -31,7 +31,7 @@ def test_multiprojective_tensor_dual_and_canonical_degrees_are_componentwise() -
     bundle = quadric.O(1, 2)
     other = quadric.O(2, 1)
     tensor = bundle.tensor_product(other)
-    dual = bundle.dual()
+    dual = bundle.dual_sheaf()
     canonical = quadric.canonical_line_bundle()
 
     assert tuple(tensor.multidegree()[label] for label in labels) == (3, 3)

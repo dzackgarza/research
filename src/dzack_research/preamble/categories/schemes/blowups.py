@@ -326,7 +326,7 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         @cached_method
         def anticanonical_line_bundle(self):
-            return self.canonical_line_bundle().dual()
+            return self.canonical_line_bundle().dual_sheaf()
 
         anticanonical_bundle = anticanonical_line_bundle
 

@@ -186,7 +186,7 @@ class InvertibleSheaf(SageObject):
                 )
         return self._from_transition_units(self.cover(), units)
 
-    def dual(self):
+    def dual_sheaf(self):
         r"""Return the dual line bundle, with transition units ``u_ij^{-1}``."""
 
         return self.tensor_power(-1)
@@ -379,7 +379,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
             )
         return type(self)(self.gluing_datum(), units)
 
-    def dual(self):
+    def dual_sheaf(self):
         return self.tensor_power(-1)
 
     def global_sections(self):
@@ -560,7 +560,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             return self
         return type(self)(self.projective_space(), exponent * self.degree())
 
-    def dual(self):
+    def dual_sheaf(self):
         return type(self)(self.projective_space(), -self.degree())
 
     def is_ample(self) -> bool:
@@ -864,8 +864,8 @@ class ProjectiveSubschemeLineBundle(SageObject):
             self.ambient_line_bundle().tensor_power(exponent),
         )
 
-    def dual(self):
-        return type(self)(self.scheme(), self.ambient_line_bundle().dual())
+    def dual_sheaf(self):
+        return type(self)(self.scheme(), self.ambient_line_bundle().dual_sheaf())
 
     def is_ample(self) -> bool:
         r"""Decide ampleness for restrictions of ``O(d)`` to projective subschemes."""
@@ -1049,7 +1049,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             ),
         )
 
-    def dual(self):
+    def dual_sheaf(self):
         return self.tensor_power(-1)
 
     def is_ample(self) -> bool:
@@ -1239,8 +1239,8 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
             self.ambient_line_bundle().tensor_power(exponent),
         )
 
-    def dual(self):
-        return type(self)(self.scheme(), self.ambient_line_bundle().dual())
+    def dual_sheaf(self):
+        return type(self)(self.scheme(), self.ambient_line_bundle().dual_sheaf())
 
     def is_ample(self) -> bool:
         r"""Return a theorem-backed positive ampleness decision from the ambient product."""

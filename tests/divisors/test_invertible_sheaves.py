@@ -59,7 +59,7 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     assert line.local_trivialization(0).domain() is local_modules[0]
 
     square = line.tensor_power(2)
-    dual = line.dual()
+    dual = line.dual_sheaf()
     neutral = line.tensor_product(dual)
     trivial = InvertibleSheaf.trivial(cover)
     assert square.transition_unit(0, 1) == overlap_x**2
