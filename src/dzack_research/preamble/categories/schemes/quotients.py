@@ -78,10 +78,9 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
         target = _own_ring(ring_map.codomain())
         if ring_map.domain() is not source:
             raise ValueError("quotient base change starts at the acted scheme's scalar field")
-        if source not in OwnedFields() or target not in OwnedFields():
-            raise NotImplementedError(
-                "the represented invariant-quotient base-change comparison currently requires a field extension"
-            )
+        assert source in OwnedFields() and target in OwnedFields(), (
+            "the represented invariant-quotient base-change comparison requires a field extension"
+        )
         if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
             raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
 
@@ -148,10 +147,9 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
 
     @cached_method
     def reynolds_isomorphism(self):
-        if not self.reynolds_hypothesis_holds():
-            raise NotImplementedError(
-                "invariant base change is promoted to an isomorphism here only when the finite group order is invertible in the target field"
-            )
+        assert self.reynolds_hypothesis_holds(), (
+            "invariant base change is promoted to an isomorphism here when the finite group order is invertible in the target field"
+        )
 
         forward = self.comparison_morphism()
         source_quotient = self.quotient_after_base_change()

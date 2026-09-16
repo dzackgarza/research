@@ -449,10 +449,9 @@ class ComplexManifoldHomset(CategoricalHomset):
     @staticmethod
     def _unique_chart(manifold):
         labels = tuple(manifold.chart_labels())
-        if len(labels) != 1:
-            raise NotImplementedError(
-                "the represented polynomial holomorphic-map constructor currently requires one selected global chart"
-            )
+        assert len(labels) == 1, (
+            "the represented polynomial holomorphic-map constructor requires one selected global chart"
+        )
         return manifold.atlas()[labels[0]]
 
     def polynomial(self, coordinate_expressions):
@@ -546,8 +545,9 @@ class ComplexManifolds(OwnedCategory):
         if ambient not in self:
             raise TypeError("a complex analytic open submanifold requires a complex ambient manifold")
         labels = tuple(ambient.chart_labels())
-        if len(labels) != 1:
-            raise NotImplementedError("represented analytic opens currently require one ambient global chart")
+        assert len(labels) == 1, (
+            "represented analytic opens require one selected ambient global chart"
+        )
         ambient_chart = ambient.atlas()[labels[0]]
         engine_open = ambient._engine_manifold().open_subset(
             str(name),

@@ -144,8 +144,9 @@ def _affine_geometric_cohomology_complex(sheaf, cover=None):
         if cover.ambient_scheme() is not sheaf.scheme():
             raise ValueError("the selected affine cover belongs to a different scheme")
         one = sheaf.scheme().coordinate_algebra().one()
-        if any(cover.defining_element(index) != one for index in cover.atlas()):
-            raise NotImplementedError("the represented contracted Cech comparison currently requires unit charts D(1)")
+        assert all(cover.defining_element(index) == one for index in cover.atlas()), (
+            "the represented contracted Cech comparison requires the selected unit charts D(1)"
+        )
     module = sheaf.global_sections()
     base = module.base_ring()
     zero = base._fresh_free_module_on(finite_ordered_set(()))
@@ -568,8 +569,9 @@ def _require_smooth_quartic_k3_complex_realization(scheme):
     )
 
     base = scheme.scheme_base_ring()
-    if _engine_ring(base) is not SageQQ:
-        raise NotImplementedError("the selected quartic K3 integral realization currently uses the specified QQ-to-CC embedding")
+    assert _engine_ring(base) is SageQQ, (
+        "the selected quartic K3 integral realization uses the specified QQ-to-CC embedding"
+    )
     if scheme not in ProjectiveCompleteIntersections(base):
         raise TypeError("the represented quartic K3 topology requires a projective complete intersection")
     if int(scheme.expected_dimension()) != 2 or tuple(scheme.defining_degrees()) != (4,):
@@ -703,8 +705,9 @@ class _QuarticK3IntegralTopology(SageObject):
         if line_bundle.scheme() is not self.scheme():
             raise ValueError("the first Chern class belongs to a line bundle on this K3 surface")
         degree = getattr(line_bundle, "degree", None)
-        if not callable(degree):
-            raise NotImplementedError("the represented K3 first Chern class currently uses restricted projective O(d) line bundles")
+        assert callable(degree), (
+            "the represented K3 first Chern class uses restricted projective O(d) line bundles"
+        )
         return int(degree()) * self.hyperplane_first_chern_class()
 
     @cached_method
@@ -1107,8 +1110,9 @@ class PGL2IntegralTopology(SageObject):
 
 
 def _require_smooth_complete_rational_toric_realization(scheme):
-    if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
-        raise NotImplementedError("the selected integral singular-cohomology comparison currently uses the specified QQ-to-CC realization")
+    assert _engine_ring(scheme.scheme_base_ring()) is SageQQ, (
+        "the selected integral singular-cohomology comparison uses the specified QQ-to-CC realization"
+    )
     if not scheme.fan().is_smooth() or not scheme.fan().is_complete():
         raise ValueError("the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety")
 
