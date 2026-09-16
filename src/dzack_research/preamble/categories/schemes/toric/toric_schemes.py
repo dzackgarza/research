@@ -41,9 +41,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
@@ -309,9 +306,11 @@ def _face_transition(source_cone, target_cone, base_ring):
         "a transition joins two cones neither of which is a face of the other"
     )
     face = source_cone.intersection(target_cone)
-    return Isomorphism(
-        _face_transition_morphism(face, source_cone, target_cone, base_ring),
-        _face_transition_morphism(face, target_cone, source_cone, base_ring),
+    forward = _face_transition_morphism(face, source_cone, target_cone, base_ring)
+    inverse = _face_transition_morphism(face, target_cone, source_cone, base_ring)
+    return Schemes(base_ring).Core().Mor(forward.domain(), forward.codomain())(
+        forward,
+        inverse,
     )
 
 
@@ -1041,7 +1040,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     for label in classes.module_generating_set()
                 }
             )
-            return Isomorphism(forward, inverse)
+            return picard.module_category().Core().Mor(picard, classes)(forward, inverse)
 
         def divisor_polytope(self, divisor):
             r"""``P_D = {m in M_R : <m,u_rho> >= -a_rho for all rho}`` (CLS (4.3.2)).
@@ -1260,7 +1259,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     )
                 }
             )
-            return Isomorphism(forward, inverse)
+            return source.module_category().Core().Mor(source, target)(forward, inverse)
 
         def complete_linear_system(self, divisor):
             r"""Return ``|D|`` as the projectivization of the represented section space."""

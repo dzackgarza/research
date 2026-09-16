@@ -16,9 +16,6 @@ from itertools import combinations
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
     Schemes,
@@ -92,10 +89,10 @@ def _relative_transition_morphism(datum, source_index, target_index):
 
 
 def _relative_transition(datum, left_index, right_index):
-    return Isomorphism(
-        _relative_transition_morphism(datum, left_index, right_index),
-        _relative_transition_morphism(datum, right_index, left_index),
-    )
+    schemes = Schemes(datum.scheme().scheme_base_ring())
+    forward = _relative_transition_morphism(datum, left_index, right_index)
+    inverse = _relative_transition_morphism(datum, right_index, left_index)
+    return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 def _finite_atlas_relative_overlap(datum, source_index, target_index):
@@ -147,10 +144,10 @@ def _finite_atlas_relative_transition_morphism(datum, source_index, target_index
 
 
 def _finite_atlas_relative_transition(datum, left_index, right_index):
-    return Isomorphism(
-        _finite_atlas_relative_transition_morphism(datum, left_index, right_index),
-        _finite_atlas_relative_transition_morphism(datum, right_index, left_index),
-    )
+    schemes = Schemes(datum.scheme().scheme_base_ring())
+    forward = _finite_atlas_relative_transition_morphism(datum, left_index, right_index)
+    inverse = _finite_atlas_relative_transition_morphism(datum, right_index, left_index)
+    return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 def _finite_atlas_relative_spectrum(datum):
