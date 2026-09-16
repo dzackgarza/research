@@ -61,10 +61,9 @@ class _AffineSpaceAnalytificationFunctor(Functor):
         self._scalar_embedding = scalar_embedding
         source = _own_ring(scalar_embedding.domain())
         target = _own_ring(scalar_embedding.codomain())
-        if _engine_ring(target) is not SageCC:
-            raise NotImplementedError(
-                "the represented affine analytification currently uses the selected embedding into Sage CC"
-            )
+        assert _engine_ring(target) is SageCC, (
+            "the represented affine analytification uses the selected embedding into Sage CC"
+        )
         super().__init__(AffineSpaces(source), ComplexManifolds())
 
     def scalar_embedding(self):
@@ -133,7 +132,7 @@ class AnalyticDiscFamily(SageObject):
         )
         algebraic_family = algebraic_total.Mor(algebraic_base)(projection_pullback)
 
-        analytification = AffineSpaces(source).analytification(embedding)
+        analytification = AffineSpaces(qq).analytification(embedding)
         analytic_total_ambient = analytification(algebraic_total)
         analytic_base_ambient = analytification(algebraic_base)
         analytified_family = analytification(algebraic_family)
@@ -217,20 +216,6 @@ class AnalyticDiscFamily(SageObject):
         r"""Return whether this selected family satisfies the proper GAGA hypothesis."""
         return self._algebraic_total in ProjectiveSchemes(
             self._algebraic_total.scheme_base_ring()
-        )
-
-    def coherent_cohomology_comparison(self):
-        if not self.coherent_gaga_applies():
-            raise NotImplementedError(
-                "transport of coherent sheaves/cohomology through analytification is asserted here only under proper complex-algebraic GAGA hypotheses; the selected affine family is not proper"
-            )
-        raise NotImplementedError(
-            "the proper coherent GAGA comparison is not yet represented on this affine-space analytification functor"
-        )
-
-    def formal_comparison(self):
-        raise NotImplementedError(
-            "an analytic disc is not constructed from a formal completion; a formal comparison requires separately selected convergence/comparison data"
         )
 
     def _repr_(self) -> str:

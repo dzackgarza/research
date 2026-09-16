@@ -1,7 +1,5 @@
 """Analytic disc families use complex-manifold topology and an algebraic analytification bridge."""
 
-import pytest
-
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
 from dzack_research.preamble.categories.schemes.analytic_families import (
     AnalyticDiscFamily,
@@ -40,11 +38,9 @@ def test_disc_family_is_the_restriction_of_the_selected_algebraic_analytificatio
     )
 
 
-def test_affine_analytic_comparison_does_not_claim_proper_gaga_or_formal_convergence() -> None:
+def test_affine_analytic_family_does_not_claim_unrepresented_comparisons() -> None:
     family = AnalyticDiscFamily()
 
     assert family.coherent_gaga_applies() is False
-    with pytest.raises(NotImplementedError, match="proper complex-algebraic GAGA"):
-        family.coherent_cohomology_comparison()
-    with pytest.raises(NotImplementedError, match="not constructed from a formal completion"):
-        family.formal_comparison()
+    assert not hasattr(family, "coherent_cohomology_comparison")
+    assert not hasattr(family, "formal_comparison")
