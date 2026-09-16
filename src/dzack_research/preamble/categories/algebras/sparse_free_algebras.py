@@ -605,9 +605,10 @@ class SparseFreeAlgebra(Parent):
     algebra_structure_morphism = _ring_morphism_defining_algebra_structure
 
     def ring_center(self):
-        if self.flavor() == "symmetric":
-            return self
-        raise NotImplementedError("the center of this tensor algebra is not selected")
+        assert self.flavor() == "symmetric", (
+            "the represented center is selected here for the symmetric sparse free algebra"
+        )
+        return self
 
     def _repr_(self):
         name = "T" if self.flavor() == "tensor" else "Sym"
@@ -777,9 +778,13 @@ def _sparse_free_algebra_of(module, flavor):
             "module_label_from_component",
         )
     )
-    if not component_protocol:
-        if module not in FramedFreeModules(module.base_ring()):
-            raise NotImplementedError("an infinite relationful source requires finite presented module components")
+    match component_protocol:
+        case False:
+            assert module in FramedFreeModules(module.base_ring()), (
+                "an infinite relationful sparse-free source requires represented finite presented module components"
+            )
+        case True:
+            pass
     algebra = SparseFreeAlgebra(module, flavor)
     return algebra
 

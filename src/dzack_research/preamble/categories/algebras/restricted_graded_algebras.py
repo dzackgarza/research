@@ -209,8 +209,9 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         return self.one()
 
     def algebra_generating_set(self):
-        if self._preamble_algebra_generating_set is None:
-            raise NotImplementedError("this restricted graded algebra has no selected finite algebra framing")
+        assert self._preamble_algebra_generating_set is not None, (
+            "algebra_generating_set requires a selected finite algebra framing on this restricted graded algebra"
+        )
         return self._preamble_algebra_generating_set
 
     def algebra_generator(self, label):
