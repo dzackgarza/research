@@ -40,6 +40,23 @@ def test_hermite_form_changes_only_the_relation_rows() -> None:
     assert normalization.inverse()(normalized.module_generator("x")) == module.module_generator("x")
 
 
+def test_selected_presentation_retains_its_quotient_map_as_the_module_framing() -> None:
+    free = ZZ.free_module(finite_ordered_set(("x",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
+    presentation = relations.module_category().Mor(relations, free)(
+        {"r": 2 * free.module_generator("x")}
+    )
+
+    module = presentation.cokernel()
+    framing = module.__dict__.get("_preamble_framing_morphism")
+
+    assert framing is not None
+    assert module.framing_morphism() is framing
+    assert module.framing_source() is free
+    assert module.presentation_projection() is framing
+    assert module.module_generator("x") == framing(free.module_generator("x"))
+
+
 def test_hermite_and_smith_normalizations_are_distinct_constructions() -> None:
     free = ZZ.free_module(finite_ordered_set(("x", "y")))
     relations = ZZ.free_module(finite_ordered_set(("r",)))

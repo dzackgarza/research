@@ -786,20 +786,16 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
 
         def module_generating_set(self):
-            return self._preamble_module_generating_set
+            return self.framing_source().module_generating_set()
 
         def number_of_module_generators(self):
             return self.module_generating_set().cardinality()
 
         def module_generator(self, label):
-            custom = self.__dict__.get("_preamble_module_generator_function")
-            if custom is not None:
-                return custom(label)
-            labels = self.module_generating_set()
-            position = labels.ranking_map()(label)
-            if position is None:
+            source = self.framing_source()
+            if label not in source.module_generating_set():
                 raise ValueError(f"{label!r} is not a module-generator label")
-            return self._cover_generator(position)
+            return self.framing_morphism()(source.module_generator(label))
 
         def _from_coordinates(self, coordinates):
             r"""Return the element with these coordinates in the chosen framing.
@@ -1253,9 +1249,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation_projection(self):
             r"""Return the selected quotient map ``F_0 -> M``."""
-
             source = self.presentation().codomain()
-            return source.module_category().Mor(source, self)({label: self.module_generator(label) for label in source.module_generating_set()})
+            framing = self.framing_morphism()
+            assert framing.domain() is source, (
+                "the selected presentation target is the selected framing source"
+            )
+            return framing
 
         def torsion_free_quotient_projection(self):
             r"""Return ``M -> M/Tor(M)`` from invariant-factor coordinates."""

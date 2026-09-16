@@ -1536,8 +1536,12 @@ def _initialize_module_hom_parent(
     )
 
     if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-        parent._preamble_framing_source = ring._fresh_free_module_on(labels)
-        parent._preamble_framing_morphism = None
+        framing_source = ring._fresh_free_module_on(labels)
+        parent._preamble_framing_morphism = _framing_morphism(
+            framing_source,
+            parent,
+            parent._preamble_module_generator_function,
+        )
 
     if ring in OwnedRings().Commutative() and full_internal_hom:
         from dzack_research.preamble.categories.modules.internal_hom import (
@@ -1557,8 +1561,11 @@ def _initialize_module_hom_parent(
             parent._preamble_module_generating_set = model.module_generating_set()
             parent._preamble_relation_matrix = relation_matrix
             parent._preamble_presentation = presentation
-            parent._preamble_framing_source = model.framing_source()
-            parent._preamble_framing_morphism = None
+            parent._preamble_framing_morphism = _framing_morphism(
+                model.framing_source(),
+                parent,
+                parent._preamble_module_generator_function,
+            )
 
 
 class _ModuleHomsetCommonMethods:

@@ -15,10 +15,14 @@ ARCHIVE_RECONCILIATION = {
 def test_selected_framing_retains_its_index_set_generators_and_surjection() -> None:
     labels = finite_ordered_set(("x", "y"))
     module = ZZ.free_module(labels)
-    framing = module.framing_morphism()
+    framing = module.__dict__.get("_preamble_framing_morphism")
 
     assert module in FramedModules(ZZ)
+    assert framing is not None
+    assert module.framing_morphism() is framing
+    assert module.framing_source() is module
     assert module.module_generating_set() is labels
+    assert module.module_generator_morphism() is framing.module_generator_morphism()
     assert module.module_generator_morphism().domain() is labels
     assert framing.codomain() is module
     assert framing.domain().module_generating_set() is labels

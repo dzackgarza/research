@@ -6,7 +6,6 @@ from dataclasses import dataclass
 
 from sage.categories.action import Action
 from sage.categories.category import Category
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
@@ -2493,7 +2492,7 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
 
 
 class FramedModules(OwnedCategoryOverBaseRing):
-    r"""Modules carrying a specified generating map from a set."""
+    r"""Modules carrying a selected epimorphism from a free module."""
 
     @classmethod
     def _repr_object_names(cls):
@@ -2528,33 +2527,38 @@ class FramedModules(OwnedCategoryOverBaseRing):
             r"""Install one selected framing as defining construction data.
 
             The source free module and the epimorphism from it are retained here;
-            accessors below never reconstruct an isomorphic source from labels.
-            A specialization whose framing is derived outside this constructor
-            installs the same three data at its owning construction boundary.
+            accessors below project from that one arrow and never reconstruct an
+            isomorphic source from labels.  A specialization whose framing is
+            derived outside this constructor installs the same actual arrow at
+            its owning construction boundary.
             """
             self._preamble_module_generating_set = module_generating_set
             self._preamble_module_generator_function = module_generator_function
-            self._preamble_framing_source = framing_source
             self._preamble_framing_morphism = None
             super().__init__(**rest)
             if module_generating_set is not None and module_generator_function is not None:
                 source = framing_source
                 if source is None:
-
                     source = self.base_ring().free_module(module_generating_set)
-                # The mathematical framing is fixed here by its actual source and
-                # selected generator map.  The Hom wrapper is realized lazily only
-                # because some specialized parents finish their own initialization
-                # after this category method returns.
-                self._preamble_framing_source = source
+                if source.module_generating_set() != module_generating_set:
+                    raise ValueError(
+                        "the selected framing source does not have the requested generator set"
+                    )
+                self._preamble_framing_morphism = _framing_morphism(
+                    source,
+                    self,
+                    module_generator_function,
+                )
+                self._preamble_module_generating_set = source.module_generating_set()
 
         def module_generating_set(self):
-            return self._preamble_module_generating_set
+            return self.framing_source().module_generating_set()
 
         def module_generator(self, label):
-            if label not in self.module_generating_set():
+            source = self.framing_source()
+            if label not in source.module_generating_set():
                 raise ValueError(f"{label!r} is not a module-generator label")
-            return self._preamble_module_generator_function(label)
+            return self.framing_morphism()(source.module_generator(label))
 
         def number_of_module_generators(self):
             return self.module_generating_set().cardinality()
@@ -2569,16 +2573,11 @@ class FramedModules(OwnedCategoryOverBaseRing):
             )
 
         def module_generator_morphism(self):
-            return SetMorphism(
-                Sets().Mor(self.module_generating_set(), self),
-                self.module_generator,
-            )
+            return self.framing_morphism().module_generator_morphism()
 
         def framing_source(self):
             r"""Return the actual free module selected as the source of this framing."""
-            source = self.__dict__.get("_preamble_framing_source")
-            assert source is not None, f"{self} has no installed framing source"
-            return source
+            return self.framing_morphism().domain()
 
         def sub_framing_morphism(self, codomain):
             r"""Return the inclusion induced by this framing inside ``codomain``'s framing."""
@@ -2593,13 +2592,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
         def framing_morphism(self):
             r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""
             morphism = self.__dict__.get("_preamble_framing_morphism")
-            if morphism is None:
-                morphism = _framing_morphism(
-                    self.framing_source(),
-                    self,
-                    self.module_generator,
-                )
-                self._preamble_framing_morphism = morphism
+            assert morphism is not None, f"{self} has no installed framing morphism"
             return morphism
 
         @cached_method
@@ -2789,10 +2782,14 @@ class RestrictedScalarsModuleView(Parent):
         )
         realize_owned_category(self)
         if self._preamble_module_generating_set is not None:
-            self._preamble_framing_source = base_ring._fresh_free_module_on(
+            framing_source = base_ring._fresh_free_module_on(
                 self._preamble_module_generating_set,
             )
-            self._preamble_framing_morphism = None
+            self._preamble_framing_morphism = _framing_morphism(
+                framing_source,
+                self,
+                self._preamble_module_generator_function,
+            )
 
 
     def __call__(self, value):

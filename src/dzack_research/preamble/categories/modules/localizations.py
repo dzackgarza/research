@@ -143,8 +143,18 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             if framed_source:
                 # The transported framing is part of the localized module's
                 # construction, not something framing_morphism() reconstructs.
-                self._preamble_framing_source = localization_ring.free_module(self._preamble_module_generating_set)
-                self._preamble_framing_morphism = None
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                    _framing_morphism,
+                )
+
+                framing_source = localization_ring.free_module(
+                    self._preamble_module_generating_set
+                )
+                self._preamble_framing_morphism = _framing_morphism(
+                    framing_source,
+                    self,
+                    self._preamble_module_generator_function,
+                )
 
         def _framing_coefficients(self, element):
             r"""Return coefficients of a localization fraction in the source framing."""
