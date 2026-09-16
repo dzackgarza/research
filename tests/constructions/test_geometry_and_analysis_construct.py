@@ -206,18 +206,18 @@ def test_a_gram_tensor_and_its_pullback() -> None:
 
 def test_divisor_groups_on_a_finite_set_of_points() -> None:
     points = Set(("p", "q", "r"))
-    free = FreeModuleOn(ZZ, points)
-    divisors = DivisorGroup(free)
-    picard = PicardGroup(free)
-    classes = ClassGroup(free)
+    free = ZZ.free_module(points)
+    divisors = DivisorGroups()(free)
+    picard = PicardGroups()(free)
+    classes = ClassGroups()(free)
     assert divisors in DivisorGroups()
     assert picard in PicardGroups()
     assert classes in ClassGroups()
     assert divisors.module_rank() == 3
-    formal = FormalDivisor(ZZ, {"p": 2, "q": -1})
+    formal = FormalDivisorGroups(ZZ).from_terms({"p": 2, "q": -1})
     assert formal.parent() in FormalDivisorGroups(ZZ)
     assert formal.parent().terms(formal).cardinality() == 2
-    assert formal + formal == FormalDivisor(ZZ, {"p": 4, "q": -2})
+    assert formal + formal == FormalDivisorGroups(ZZ).from_terms({"p": 4, "q": -2})
 
 
 # ---------------------------------------------------------------------------
