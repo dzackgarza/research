@@ -401,9 +401,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
     @cached_method
     def compatible_sections(self):
-        sections = self.module_sheaf().global_sections()
-        sections._preamble_line_bundle = self
-        return sections
+        return self.module_sheaf().global_sections()
 
     def sheaf(self):
         return self
