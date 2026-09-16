@@ -515,6 +515,59 @@ class Coverage(SageObject):
         return self._name or f"Coverage on {self.site_category()}"
 
 
+class DescentDataOnCover(OwnedCategoryBase):
+    r"""Represented descent data relative to one covering family.
+
+    This is the placement common to concrete descent theories: modules,
+    algebras, or objects of another represented fibre theory may carry
+    different local data and different Hom constructions, but they are all
+    descent data on the same cover.  The concrete theory remains responsible
+    for its transition maps, cocycle law, and morphisms; this category records
+    the cover-relative mathematical placement instead of rediscovering it by
+    inspecting the implementation class afterwards.
+    """
+
+    @staticmethod
+    @cached_function(
+        key=lambda cls, coverage, covering_family: (
+            cls,
+            id(coverage),
+            id(covering_family),
+        )
+    )
+    def __classcall__(cls, coverage: Coverage, covering_family):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(coverage, covering_family)
+        return typecall(cls, coverage, covering_family)
+
+    def __init__(self, coverage: Coverage, covering_family) -> None:
+        if covering_family not in coverage.covering_families():
+            raise TypeError("descent data are attached to a covering family of the coverage")
+        self._coverage = coverage
+        self._covering_family = covering_family
+        OwnedCategoryBase.__init__(self)
+
+    def coverage(self) -> Coverage:
+        return self._coverage
+
+    def covering_family(self):
+        return self._covering_family
+
+    cover = covering_family
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        try:
+            return candidate.category().is_subcategory(self)
+        except (AttributeError, TypeError, ValueError):
+            return False
+
+    def _repr_(self) -> str:
+        return f"Descent data on {self.covering_family()}"
+
+
 @cached_function(key=lambda site_category: id(site_category))
 def trivial_coverage(site_category: Category) -> Coverage:
     r"""Return the trivial coverage consisting only of identity singleton covers."""
@@ -910,6 +963,7 @@ __all__ = [
     "CoveringFamily",
     "CoveringOverlap",
     "DescentData",
+    "DescentDataOnCover",
     "DescentEqualizer",
     "DescentEqualizerComparison",
     "SheafObject",

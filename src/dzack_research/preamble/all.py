@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     CoveringFamily,
     CoveringOverlap,
     DescentData,
+    DescentDataOnCover,
     DescentEqualizer,
     DescentEqualizerComparison,
     DirectedSystem,

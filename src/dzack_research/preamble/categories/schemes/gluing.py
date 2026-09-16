@@ -19,8 +19,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
     OwnedParameterizedCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.presheaves import (
+    DescentDataOnCover,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -2861,13 +2863,8 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
-        return [Objects()]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            isinstance(candidate, ModuleGluingDatum)
-            and candidate.cover() is self.cover()
-        )
+        cover = self.cover()
+        return [DescentDataOnCover(cover.coverage(), cover)]
 
     def _repr_object_names(self):
         return f"module descent data on {self.cover()}"
@@ -3363,13 +3360,8 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
-        return [Objects()]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            isinstance(candidate, AlgebraGluingDatum)
-            and candidate.cover() is self.cover()
-        )
+        cover = self.cover()
+        return [DescentDataOnCover(cover.coverage(), cover)]
 
     def _repr_object_names(self):
         return f"algebra descent data on {self.cover()}"
