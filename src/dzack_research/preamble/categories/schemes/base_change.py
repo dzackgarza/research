@@ -181,9 +181,6 @@ class _SchemeBaseChangeFunctor(Functor):
                     codomain=scheme,
                 )
                 scalar_projection = changed.structure_morphism()
-                projection._preamble_fiber_projection_index = 0
-                scalar_projection._preamble_fiber_projection_index = 1
-
                 def factor(to_scheme, to_base):
                     factor_legs = indexed_family(
                         factor_indices,
@@ -194,11 +191,6 @@ class _SchemeBaseChangeFunctor(Functor):
                         name="Factorwise maps into a multiprojective base change",
                     )
                     induced = changed.from_product_cone(factor_legs)
-                    induced._preamble_fiber_product_cone_target = changed
-                    induced._preamble_fiber_product_cone_legs = (
-                        to_scheme,
-                        to_base,
-                    )
                     return induced
 
                 return FiberProductSchemes(target)._install_construction(

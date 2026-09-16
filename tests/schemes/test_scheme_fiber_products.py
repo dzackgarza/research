@@ -51,7 +51,11 @@ def test_the_diagonal_is_the_map_induced_by_the_pair_of_identities() -> None:
 
     diagonal = plane.from_pullback_cone(identity, identity)
     left_projection, right_projection = plane.fiber_product_projections()
+    construction = diagonal.cone_construction()
 
+    assert construction.target() is plane
+    assert construction.legs()[0] is identity
+    assert construction.legs()[1] is identity
     assert diagonal.domain() is line
     assert diagonal.codomain() is plane
     assert left_projection * diagonal == identity

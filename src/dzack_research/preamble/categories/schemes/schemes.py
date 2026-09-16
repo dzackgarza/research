@@ -120,10 +120,44 @@ def _elements_determining_maps_out_of(algebra, base):
     return None
 
 
+class SchemeConeMorphismConstruction:
+    r"""The selected universal-cone target and legs defining an induced map."""
+
+    def __init__(self, target, legs) -> None:
+        self._target = target
+        self._legs = legs
+
+    def target(self):
+        return self._target
+
+    def legs(self):
+        return self._legs
+
+    def image_of(self, image):
+        r"""Return ``image`` with this cone construction established at construction."""
+        if isinstance(image, _RepresentedAffineSchemeMorphism):
+            return _RepresentedAffineSchemeMorphism(
+                image.parent(),
+                image.coordinate_algebra_morphism(),
+                cone_construction=self,
+            )
+        if type(image) is SchemeMorphism:
+            return SchemeMorphism(
+                image.native_morphism(),
+                homset=image.parent(),
+                pullback=image._coordinate_pullback,
+                cone_construction=self,
+            )
+        raise TypeError(
+            "the selected universal cone requires a represented affine or native scheme morphism"
+        )
+
+
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
     _coordinate_pullback = None
+    _cone_construction = None
 
     def __init__(
         self,
@@ -133,8 +167,10 @@ class SchemeMorphism(Morphism):
         codomain=None,
         homset=None,
         pullback=None,
+        cone_construction=None,
     ) -> None:
         self._native_morphism = native_morphism
+        self._cone_construction = cone_construction
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
         if pullback is not None:
@@ -153,6 +189,10 @@ class SchemeMorphism(Morphism):
             if codomain is not None and codomain is not homset.codomain():
                 raise ValueError("the stated scheme-morphism codomain disagrees with its Hom")
         Morphism.__init__(self, homset)
+
+    def cone_construction(self):
+        r"""Return the selected universal-cone datum defining this map, if any."""
+        return self._cone_construction
 
     def native_morphism(self):
         native = getattr(self, "_native_morphism", None)
@@ -203,15 +243,12 @@ class SchemeMorphism(Morphism):
                 projection_label = projection_domain.projection_label(self)
             except ValueError:
                 pass
-        product_cone_target = getattr(
-            other,
-            "_preamble_product_cone_target",
-            None,
+        cone_construction = other.cone_construction()
+        product_cone_target = (
+            None if cone_construction is None else cone_construction.target()
         )
-        product_cone_legs = getattr(
-            other,
-            "_preamble_product_cone_legs",
-            None,
+        product_cone_legs = (
+            None if cone_construction is None else cone_construction.legs()
         )
         if (
             projection_label is not None
@@ -220,21 +257,16 @@ class SchemeMorphism(Morphism):
         ):
             return product_cone_legs[projection_label]
 
-        fiber_projection_index = getattr(
-            self,
-            "_preamble_fiber_projection_index",
-            None,
-        )
-        fiber_cone_target = getattr(
-            other,
-            "_preamble_fiber_product_cone_target",
-            None,
-        )
-        fiber_cone_legs = getattr(
-            other,
-            "_preamble_fiber_product_cone_legs",
-            None,
-        )
+        fiber_projection_index = None
+        if projection_domain in FiberProductSchemes(projection_base):
+            for index, projection in enumerate(
+                projection_domain.fiber_product_projections()
+            ):
+                if self is projection:
+                    fiber_projection_index = index
+                    break
+        fiber_cone_target = product_cone_target
+        fiber_cone_legs = product_cone_legs
         if (
             fiber_projection_index is not None
             and fiber_cone_target is self.domain()
@@ -385,8 +417,9 @@ class SchemeMorphism(Morphism):
         domain = self.domain()
         base = domain.scheme_base_ring()
         if domain in ProductProjectiveSpaces(base):
-            target = getattr(self, "_preamble_product_cone_target", None)
-            legs = getattr(self, "_preamble_product_cone_legs", None)
+            construction = self.cone_construction()
+            target = None if construction is None else construction.target()
+            legs = None if construction is None else construction.legs()
             if target is domain and legs is not None:
                 equations = []
                 for label in domain.factors().index_set():
@@ -646,12 +679,13 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
 class _RepresentedAffineSchemeMorphism(SchemeMorphism):
     r"""An affine scheme morphism carried exactly by its coordinate pullback."""
 
-    def __init__(self, parent, pullback) -> None:
+    def __init__(self, parent, pullback, *, cone_construction=None) -> None:
         Morphism.__init__(self, parent)
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
         self._coordinate_pullback = pullback
         self._native_realization = None
+        self._cone_construction = cone_construction
 
     def native_morphism(self):
         if self._native_realization is None:
@@ -2787,8 +2821,7 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                     "a general map into a glued mixed scheme product is not yet represented"
                 )
 
-            cone._preamble_product_cone_target = self
-            cone._preamble_product_cone_legs = legs
+            cone = SchemeConeMorphismConstruction(self, legs).image_of(cone)
             for factor_label in factor_labels:
                 if self.projection(factor_label) * cone != legs[factor_label]:
                     raise ArithmeticError(
@@ -4147,12 +4180,10 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
                     induced,
                 )
 
-            factorization._preamble_fiber_product_cone_target = self
-            factorization._preamble_fiber_product_cone_legs = (
-                left_map,
-                right_map,
-            )
-            return factorization
+            return SchemeConeMorphismConstruction(
+                self,
+                (left_map, right_map),
+            ).image_of(factorization)
 
 
 def _quotient_base_change_pushout(left_pullback, right_pullback):
@@ -4311,9 +4342,6 @@ def _projective_space_scalar_base_change(left_map, right_map):
             if projective_on_left
             else (scalar_projection, projective_projection)
         )
-        for index, projection in enumerate(projections):
-            projection._preamble_fiber_projection_index = index
-
         def factor(left_cone_map, right_cone_map):
             projective_cone_map = (
                 left_cone_map if projective_on_left else right_cone_map
@@ -4425,8 +4453,6 @@ def _scheme_fiber_product(left_map, right_map):
         algebra_pushout=algebra_pushout,
         cocone_factorization=cocone_factorization,
     )
-    left_projection._preamble_fiber_projection_index = 0
-    right_projection._preamble_fiber_projection_index = 1
     return product
 
 
