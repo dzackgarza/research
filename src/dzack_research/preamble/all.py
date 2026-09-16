@@ -192,18 +192,6 @@ from dzack_research.preamble.categories.functors.core import (
 from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
 )
-from dzack_research.preamble.categories.functors.linear_constructions import (
-    BiproductBifunctor as BiproductBifunctor,
-)
-from dzack_research.preamble.categories.functors.linear_constructions import (
-    CokernelArrowFunctor as CokernelArrowFunctor,
-)
-from dzack_research.preamble.categories.functors.linear_constructions import (
-    KernelArrowFunctor as KernelArrowFunctor,
-)
-from dzack_research.preamble.categories.functors.linear_constructions import (
-    OrthogonalDirectSumBifunctor as OrthogonalDirectSumBifunctor,
-)
 from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,

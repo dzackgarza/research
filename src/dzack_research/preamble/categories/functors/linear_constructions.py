@@ -49,7 +49,7 @@ class _DualizationFunctor(ContravariantFunctor):
         )
 
 
-class BiproductBifunctor(Bifunctor):
+class _BiproductBifunctor(Bifunctor):
     r"""The direct-sum/biproduct bifunctor on finitely presented modules."""
 
     def __init__(self, base_ring) -> None:
@@ -74,7 +74,7 @@ class _ArrowConstructionFunctor(Functor):
         super().__init__(object_category.ArrowCategory(), codomain)
 
 
-class KernelArrowFunctor(_ArrowConstructionFunctor):
+class _KernelArrowFunctor(_ArrowConstructionFunctor):
     r"""The kernel functor from the finite-free module arrow category."""
 
     def __init__(self, base_ring) -> None:
@@ -100,7 +100,7 @@ class KernelArrowFunctor(_ArrowConstructionFunctor):
         )
 
 
-class CokernelArrowFunctor(_ArrowConstructionFunctor):
+class _CokernelArrowFunctor(_ArrowConstructionFunctor):
     r"""The cokernel functor from the finite-free module arrow category."""
 
     def __init__(self, base_ring) -> None:
@@ -127,7 +127,7 @@ class CokernelArrowFunctor(_ArrowConstructionFunctor):
         )
 
 
-class OrthogonalDirectSumBifunctor(Bifunctor):
+class _OrthogonalDirectSumBifunctor(Bifunctor):
     r"""The orthogonal-direct-sum bifunctor on finite-rank lattices."""
 
     def __init__(self, base_ring) -> None:
@@ -188,9 +188,24 @@ def _dualization_functor(base_ring) -> _DualizationFunctor:
     return _DualizationFunctor(base_ring)
 
 
-__all__ = [
-    "BiproductBifunctor",
-    "CokernelArrowFunctor",
-    "KernelArrowFunctor",
-    "OrthogonalDirectSumBifunctor",
-]
+@cached_function
+def _biproduct_bifunctor(base_ring) -> _BiproductBifunctor:
+    return _BiproductBifunctor(base_ring)
+
+
+@cached_function
+def _kernel_arrow_functor(base_ring) -> _KernelArrowFunctor:
+    return _KernelArrowFunctor(base_ring)
+
+
+@cached_function
+def _cokernel_arrow_functor(base_ring) -> _CokernelArrowFunctor:
+    return _CokernelArrowFunctor(base_ring)
+
+
+@cached_function
+def _orthogonal_direct_sum_bifunctor(base_ring) -> _OrthogonalDirectSumBifunctor:
+    return _OrthogonalDirectSumBifunctor(base_ring)
+
+
+__all__ = []

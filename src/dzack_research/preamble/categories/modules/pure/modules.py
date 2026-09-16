@@ -1783,6 +1783,22 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FinitelyGeneratedModules(self.base_ring())]
 
+    def biproduct_bifunctor(self):
+        r"""Return the biproduct bifunctor on finitely presented modules."""
+        from dzack_research.preamble.categories.functors.linear_constructions import (
+            _biproduct_bifunctor,
+        )
+
+        return _biproduct_bifunctor(self.base_ring())
+
+    def cokernel_arrow_functor(self):
+        r"""Return the cokernel functor on this module arrow category."""
+        from dzack_research.preamble.categories.functors.linear_constructions import (
+            _cokernel_arrow_functor,
+        )
+
+        return _cokernel_arrow_functor(self.base_ring())
+
     class ParentMethods:
         def is_finitely_presented(self) -> bool:
             return True
@@ -2297,6 +2313,14 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             ModulesWithChosenFinitePresentation(self.base_ring()),
             ProjectiveModules(self.base_ring()),
         ]
+
+    def kernel_arrow_functor(self):
+        r"""Return the kernel functor on the finite-free arrow category."""
+        from dzack_research.preamble.categories.functors.linear_constructions import (
+            _kernel_arrow_functor,
+        )
+
+        return _kernel_arrow_functor(self.base_ring())
 
     class ParentMethods:
         def _fresh_free_module_on(self, labels, **options):

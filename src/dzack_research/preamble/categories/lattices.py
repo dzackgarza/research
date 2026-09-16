@@ -766,6 +766,14 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         return _colimit_lattice(stage, category=self)
 
+    def orthogonal_direct_sum_bifunctor(self):
+        r"""Return the orthogonal direct-sum bifunctor on lattices over this ring."""
+        from dzack_research.preamble.categories.functors.linear_constructions import (
+            _orthogonal_direct_sum_bifunctor,
+        )
+
+        return _orthogonal_direct_sum_bifunctor(self.base_ring())
+
     def an_object(self):
         r"""The hyperbolic plane U."""
         return self("U")

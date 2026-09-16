@@ -1,13 +1,9 @@
 from dzack_research.preamble.all import (
     ZZ,
-    BiproductBifunctor,
-    CokernelArrowFunctor,
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
-    KernelArrowFunctor,
     Lattices,
-    OrthogonalDirectSumBifunctor,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -51,7 +47,7 @@ def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> N
     right = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
     left_generator = left.module_generator(0)
     right_generator = right.module_generator(0)
-    biproduct = BiproductBifunctor(ZZ)
+    biproduct = FinitelyPresentedModules(ZZ).biproduct_bifunctor()
     direct_sum = biproduct(left, right)
 
     left_identity = left.module_category().Mor(left, left).identity()
@@ -120,7 +116,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
         projection_arrow, projection_arrow, left_seven, right_five
     )
 
-    kernel = KernelArrowFunctor(ZZ)
+    kernel = FinitelyGeneratedFreeModules(ZZ).kernel_arrow_functor()
     kernel_object = kernel(projection_arrow)
     assert kernel_object.module_rank() == 1
     induced_kernel = kernel(first_square)
@@ -151,7 +147,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     right5 = cyclic_target.module_category().Mor(cyclic_target, cyclic_target)({"b": 5 * b})
     square5 = arrow_category.morphism(twice_arrow, twice_arrow, left5, right5)
 
-    cokernel = CokernelArrowFunctor(ZZ)
+    cokernel = FinitelyPresentedModules(ZZ).cokernel_arrow_functor()
     cokernel_object = cokernel(twice_arrow)
     invariants = cokernel_object.invariant_factors()
     assert int(invariants.cardinality()) == 1
@@ -213,7 +209,7 @@ def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     left_identity = left.Aut().identity()
     right_identity = right.Aut().identity()
 
-    orthogonal_sum = OrthogonalDirectSumBifunctor(ZZ)
+    orthogonal_sum = Lattices(ZZ).orthogonal_direct_sum_bifunctor()
     summed = orthogonal_sum(left, right)
     image = orthogonal_sum(left_negation, right_identity)
     source_labels = summed.module_generating_set()
