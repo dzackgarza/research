@@ -34,9 +34,6 @@ group-scheme geometry.
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.functors import (
-    ContravariantFunctor,
-)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -249,7 +246,7 @@ class AffineQuotientFunctor(Functor):
         return f"Affine quotient by {self.acting_group()}"
 
 
-class _AffineSectionModuleFunctor(ContravariantFunctor):
+class _AffineSectionModuleFunctor(Functor):
     r"""``Gamma: AffGSch_G^op -> Modules(R[G])`` on represented affine actions.
 
     The sections of an affine ``G``-scheme ``X = Spec(B)`` carry one
@@ -276,11 +273,8 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
         base = _own_ring(base_ring)
         self._group = group
         self._base_ring = base
-        ContravariantFunctor.__init__(
-            self,
-            AffineGSchemes(group, base),
-            Modules(base[group]),
-        )
+        schemes = AffineGSchemes(group, base)
+        Functor.__init__(self, schemes.opposite(), Modules(base[group]))
 
     def acting_group(self):
         return self._group
@@ -288,7 +282,8 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
     def base_ring(self):
         return self._base_ring
 
-    def _apply_contravariant_object(self, acted):
+    def _apply_object(self, opposite_acted):
+        acted = opposite_acted.underlying_object()
         algebra = acted.coordinate_algebra()
 
         def action(group_element, section):
@@ -299,9 +294,10 @@ class _AffineSectionModuleFunctor(ContravariantFunctor):
 
         return self.codomain()(algebra, action)
 
-    def _apply_contravariant_morphism(self, arrow):
-        source = self.object_image(arrow.codomain())
-        target = self.object_image(arrow.domain())
+    def _apply_morphism(self, opposite_arrow):
+        arrow = opposite_arrow.underlying_arrow()
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
         pullback = arrow.underlying_arrow().coordinate_algebra_morphism()
         forget = source.forget_action_morphism()
         equip = target.equip_action_morphism()

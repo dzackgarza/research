@@ -716,8 +716,12 @@ def dual_module(module):
 
 
 def dualize_module_morphism(morphism):
-    """Apply the live contravariant finite-free dualization functor."""
-    return morphism.domain().module_category().dualization()(morphism)
+    """Apply finite-free dualization as a functor from the opposite category."""
+    dualization = morphism.domain().module_category().dualization()
+    opposite = dualization.domain()
+    source = opposite(morphism.codomain())
+    target = opposite(morphism.domain())
+    return dualization(opposite.Mor(source, target)(morphism))
 
 
 def double_dual_morphism(module):

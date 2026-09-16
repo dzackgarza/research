@@ -3,7 +3,6 @@ r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.functors import ContravariantFunctor
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -13,19 +12,20 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-class _DualizationFunctor(ContravariantFunctor):
+class _DualizationFunctor(Functor):
     r"""Finite-free duality ``(-)^* : C^op -> C``."""
 
     def __init__(self, base_ring) -> None:
         category = FinitelyGeneratedFreeModules(_owned_ring(base_ring))
-        super().__init__(category, category)
+        super().__init__(category.opposite(), category)
 
-    def _apply_contravariant_object(self, module):
-        return module.dual_module()
+    def _apply_object(self, opposite_module):
+        return opposite_module.underlying_object().dual_module()
 
-    def _apply_contravariant_morphism(self, morphism):
-        source_dual = self(morphism.codomain())
-        target_dual = self(morphism.domain())
+    def _apply_morphism(self, opposite_morphism):
+        morphism = opposite_morphism.underlying_arrow()
+        source_dual = self(opposite_morphism.domain())
+        target_dual = self(opposite_morphism.codomain())
         images = {}
         for codomain_label in morphism.codomain().module_generating_set():
             coefficients = {}
@@ -41,7 +41,9 @@ class _DualizationFunctor(ContravariantFunctor):
 
     def double_dual_morphism(self, module):
         r"""Return the canonical finite-free biduality map ``M -> M**``."""
-        double_dual = self(self(module))
+        opposite = self.domain()
+        dual = self(opposite(module))
+        double_dual = self(opposite(dual))
         return module.module_category().Mor(module, double_dual)(
             {
                 label: double_dual.module_generator(label)

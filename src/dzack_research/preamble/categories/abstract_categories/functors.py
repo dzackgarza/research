@@ -3,7 +3,7 @@ r"""Basic categorical functors used by the abstract construction layer."""
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TypeVar, overload
+from typing import TypeVar
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -15,9 +15,6 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
-from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-    OppositeMorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -32,55 +29,6 @@ from dzack_research.preamble.owned_category import _object_of
 
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
-
-
-class ContravariantFunctor(Functor):
-    r"""A functor ``C^op -> D`` with convenience calls on arrows of ``C``."""
-
-    def __init__(self, domain: Category, codomain: Category) -> None:
-
-        self._base_domain = domain
-        super().__init__(domain.opposite(), codomain)
-
-    def base_domain(self) -> Category:
-        return self._base_domain
-
-    @abstract_method
-    def _apply_contravariant_object(self, obj: Parent) -> Parent:
-        r"""Return the image of one object of the underlying covariant domain."""
-
-    @abstract_method
-    def _apply_contravariant_morphism(self, morphism: Map) -> Map:
-        r"""Return the reversed image of one morphism of the underlying domain."""
-
-    def _apply_object(self, opposite_object: Parent) -> Parent:
-        return self._apply_contravariant_object(opposite_object.underlying_object())
-
-    def _apply_morphism(self, opposite_morphism: Map) -> Map:
-        return self._apply_contravariant_morphism(opposite_morphism.underlying_arrow())
-
-    def object_image(self, obj: Parent) -> Parent:
-        if obj in self.base_domain():
-            obj = self.domain()(obj)
-        return super().object_image(obj)
-
-    def morphism_image(self, morphism: Map) -> Map:
-
-        if not isinstance(morphism, Map):
-            raise TypeError("a contravariant functor acts on morphisms")
-        if not isinstance(morphism, OppositeMorphism):
-            source = self.domain()(morphism.codomain())
-            target = self.domain()(morphism.domain())
-            morphism = self.domain().Mor(source, target)(morphism)
-        return super().morphism_image(morphism)
-
-    def chosen_preimage(self, image: Parent) -> Parent:
-        return super().chosen_preimage(image).underlying_object()
-
-    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
-        if preimage in self.base_domain():
-            preimage = self.domain()(preimage)
-        return super().adopt_object_image(preimage, image)
 
 
 

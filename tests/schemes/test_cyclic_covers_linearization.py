@@ -31,7 +31,8 @@ def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
     group = covers.constant_deck_group()
     generator = group.group_generators()[0]
     acted = cover.constant_deck_action()
-    sections = AffineGSchemes(group, algebra).global_sections_functor().object_image(acted)
+    sections_functor = AffineGSchemes(group, algebra).global_sections_functor()
+    sections = sections_functor(sections_functor.domain()(acted))
 
     trivial_summand = sections.module_generator(0)
     sign_summand = sections.module_generator(1)
@@ -52,10 +53,12 @@ def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
     root_of_unity = covers.deck_root_of_unity()
     acted = cover.constant_deck_action()
     sections_functor = AffineGSchemes(group, algebra).global_sections_functor()
-    sections = sections_functor.object_image(acted)
+    opposite = sections_functor.domain()
+    opposite_acted = opposite(acted)
+    sections = sections_functor(opposite_acted)
 
     deck = acted.Mor(acted)(acted.action_of(generator))
-    pullback = sections_functor.morphism_image(deck)
+    pullback = sections_functor(opposite.Mor(opposite_acted, opposite_acted)(deck))
     sign_summand = sections.module_generator(1)
 
     assert root_of_unity**3 == root_of_unity.parent().one()

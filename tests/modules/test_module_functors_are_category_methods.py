@@ -46,11 +46,14 @@ def test_dualization_is_asked_of_the_module_category() -> None:
     dualize = Modules(ZZ).dualization()
 
     assert dualize.codomain() == FinitelyGeneratedFreeModules(Modules(ZZ).base_ring())
-    dual = dualize(plane)
+    opposite = dualize.domain()
+    opposite_plane = opposite(plane)
+    dual = dualize(opposite_plane)
     assert dual in FinitelyGeneratedFreeModules(ZZ)
     assert dual.module_rank() == plane.module_rank()
 
-    transpose = dualize(swap)
+    opposite_swap = opposite.Mor(opposite_plane, opposite_plane)(swap)
+    transpose = dualize(opposite_swap)
     assert transpose.domain() is dual
     assert transpose.codomain() is dual
     assert transpose(dual.module_generator(0)) == dual.module_generator(1)

@@ -26,6 +26,16 @@ def _product_morphism(functor, left, right):
     return functor.domain().Mor(source, target)(left, right)
 
 
+def _opposite_object(functor, obj):
+    return functor.domain()(obj)
+
+
+def _opposite_morphism(functor, morphism):
+    source = _opposite_object(functor, morphism.codomain())
+    target = _opposite_object(functor, morphism.domain())
+    return functor.domain().Mor(source, target)(morphism)
+
+
 def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> None:
     m = ZZ.free_module(finite_ordered_set(("x", "y")))
     n = ZZ.free_module(finite_ordered_set(("u", "v")))
@@ -37,19 +47,27 @@ def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> 
     g = n.module_category().Mor(n, p)({"u": 2 * r + s, "v": r - 4 * s})
 
     dual = FinitelyGeneratedFreeModules(ZZ).dualization()
-    f_dual = dual(f)
-    assert f_dual(dual(n).module_generator("u")) == (
-        dual(m).module_generator("x") + 3 * dual(m).module_generator("y")
+    f_dual = dual(_opposite_morphism(dual, f))
+    assert f_dual(dual(_opposite_object(dual, n)).module_generator("u")) == (
+        dual(_opposite_object(dual, m)).module_generator("x")
+        + 3 * dual(_opposite_object(dual, m)).module_generator("y")
     )
-    assert f_dual(dual(n).module_generator("v")) == (
-        2 * dual(m).module_generator("x") - dual(m).module_generator("y")
+    assert f_dual(dual(_opposite_object(dual, n)).module_generator("v")) == (
+        2 * dual(_opposite_object(dual, m)).module_generator("x")
+        - dual(_opposite_object(dual, m)).module_generator("y")
     )
 
-    _assert_module_maps_agree(dual(g * f), dual(f) * dual(g))
+    _assert_module_maps_agree(
+        dual(_opposite_morphism(dual, g * f)),
+        dual(_opposite_morphism(dual, f)) * dual(_opposite_morphism(dual, g)),
+    )
 
     eta_m = dual.double_dual_morphism(m)
     eta_n = dual.double_dual_morphism(n)
-    _assert_module_maps_agree(dual(dual(f)) * eta_m, eta_n * f)
+    _assert_module_maps_agree(
+        dual(_opposite_morphism(dual, dual(_opposite_morphism(dual, f)))) * eta_m,
+        eta_n * f,
+    )
 
 
 def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> None:
