@@ -273,10 +273,10 @@ class RationalReductionCell(SageObject):
         if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
             raise ValueError("a cell transporter group acts on the ambient lattice")
         group_cardinality = group.cardinality()
-        if not group_cardinality.is_finite():
-            raise NotImplementedError(
-                "cell transporter search through an infinite arithmetic group belongs to the reduction-complex traversal provider"
-            )
+        assert group_cardinality.is_finite(), (
+            "cell transporter search requires a finite represented acting group; "
+            "infinite arithmetic traversal belongs to the reduction-complex provider"
+        )
         for isometry in group:
             if self.transported_by(isometry).is_equal_to(other):
                 return isometry
@@ -544,10 +544,10 @@ class MarkedReductionCell(SageObject):
         if other.lattice() is not self.lattice():
             return None
         group_cardinality = group.cardinality()
-        if not group_cardinality.is_finite():
-            raise NotImplementedError(
-                "marked-cell transport through an infinite arithmetic group belongs to the reduction-complex traversal provider"
-            )
+        assert group_cardinality.is_finite(), (
+            "marked-cell transport requires a finite represented acting group; "
+            "infinite arithmetic traversal belongs to the reduction-complex provider"
+        )
         for isometry in group:
             if self.transported_by(isometry).is_equal_to(other):
                 return isometry
@@ -710,10 +710,10 @@ class RationalReductionComplexExploration(SageObject):
             )
         if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
             raise ValueError("the reduction-complex group acts on its ambient lattice")
-        if not group.cardinality().is_finite():
-            raise NotImplementedError(
-                "arithmetic-group generation from a complete Lorentzian reduction complex belongs to the traversal provider"
-            )
+        assert group.cardinality().is_finite(), (
+            "group generation from the represented complete reduction complex requires a finite acting group; "
+            "infinite arithmetic generation belongs to the traversal provider"
+        )
         generators = []
         for cell in self.cells():
             stabilizer = cell.stabilizer(group)
@@ -999,11 +999,10 @@ def _lorentzian_reduction_complex(lattice, marked_vectors=None):
     local marked-cell objects above do not turn an unmarked traversal into the
     orbit decomposition of marked cells.
     """
-    if marked_vectors is not None:
-        raise NotImplementedError(
-            "the registered perfect-domain provider enumerates unmarked Lorentzian domains; "
-            "marked nonzero-norm traversal requires a provider that traverses the marked cells themselves"
-        )
+    assert marked_vectors is None, (
+        "the registered perfect-domain provider enumerates unmarked Lorentzian domains; "
+        "marked nonzero-norm traversal requires a provider that traverses the marked cells themselves"
+    )
     signature = lattice.signature_pair()
     positive = signature.first()
     negative = signature.second()
