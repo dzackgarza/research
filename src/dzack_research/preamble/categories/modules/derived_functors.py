@@ -19,7 +19,6 @@ asked to go; over a polynomial ring it continues by syzygies.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -41,7 +40,7 @@ def _tensored_resolution(module, other, shift, steps):
     ring = _common_base_ring(module, other)
     resolution = module.free_resolution(steps)
     length = resolution.length()
-    tensor = TensorByFunctor(other)
+    tensor = other.tensor_hom_adjunction().left_adjoint()
     return CochainComplexes(ring)(
         {shift - term: tensor(resolution.term(term)) for term in range(length + 1)},
         {
@@ -119,7 +118,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
                 raise ValueError("the selected Tor lift uses different resolutions")
             if lifted.module_morphism() is not morphism:
                 raise ValueError("the selected Tor lift lies over a different module morphism")
-            tensor = TensorByFunctor(other)
+            tensor = other.tensor_hom_adjunction().left_adjoint()
             component = tensor(lifted.component(degree))
             source = morphism.domain().tor(other, degree=degree)
             target = morphism.codomain().tor(other, degree=degree)

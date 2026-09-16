@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.modules.pure.modules import BilinearMap,
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
-class TensorByFunctor(Functor):
+class _TensorByFunctor(Functor):
     r"""The endofunctor ``- tensor_R M`` on chosen finite presentations."""
 
     def __init__(self, fixed_module) -> None:
@@ -35,7 +35,7 @@ class TensorByFunctor(Functor):
         return f"- tensor {self.fixed_module()}"
 
 
-class InternalHomFromFunctor(Functor):
+class _InternalHomFromFunctor(Functor):
     r"""The endofunctor ``Hom_R(M,-)`` represented by internal Hom modules."""
 
     def __init__(self, fixed_source) -> None:
@@ -64,14 +64,14 @@ class InternalHomFromFunctor(Functor):
         return f"Internal Hom({self.fixed_source()}, -)"
 
 
-class TensorHomAdjunction(Adjunction):
+class _TensorHomAdjunction(Adjunction):
     r"""The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``."""
 
     def __init__(self, fixed_module) -> None:
         self._fixed_module = fixed_module
         super().__init__(
-            TensorByFunctor(fixed_module),
-            InternalHomFromFunctor(fixed_module),
+            _TensorByFunctor(fixed_module),
+            _InternalHomFromFunctor(fixed_module),
         )
 
     def fixed_module(self):
@@ -108,8 +108,4 @@ class TensorHomAdjunction(Adjunction):
         return f"Tensor/internal-Hom adjunction with {self.fixed_module()}"
 
 
-__all__ = [
-    "InternalHomFromFunctor",
-    "TensorByFunctor",
-    "TensorHomAdjunction",
-]
+__all__ = []

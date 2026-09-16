@@ -6,11 +6,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _SelectedFinitePresentationModules,
     _presentation_matrix,
 )
-from dzack_research.preamble.categories.functors.tensor_hom import (
-    TensorByFunctor,
-    InternalHomFromFunctor,
-)
-
 
 def test_finite_free_has_chosen_zero_presentation_without_selected_backend():
     module = ZZ**2
@@ -23,5 +18,6 @@ def test_finite_free_has_chosen_zero_presentation_without_selected_backend():
 
 def test_tensor_hom_functors_are_defined_on_chosen_presentations():
     module = ZZ**2
-    assert TensorByFunctor(module).domain() is ModulesWithChosenFinitePresentation(ZZ)
-    assert InternalHomFromFunctor(module).domain() is ModulesWithChosenFinitePresentation(ZZ)
+    adjunction = module.tensor_hom_adjunction()
+    assert adjunction.left_adjoint().domain() is ModulesWithChosenFinitePresentation(ZZ)
+    assert adjunction.right_adjoint().domain() is ModulesWithChosenFinitePresentation(ZZ)

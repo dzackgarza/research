@@ -1903,10 +1903,10 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         def tensor_hom_adjunction(self):
             r"""Return ``- tensor self ⊣ Hom_R(self,-)`` on chosen finite presentations."""
             from dzack_research.preamble.categories.functors.tensor_hom import (
-                TensorHomAdjunction,
+                _TensorHomAdjunction,
             )
 
-            return TensorHomAdjunction(self)
+            return _TensorHomAdjunction(self)
 
         @cached_method
         def presentation_object(self):

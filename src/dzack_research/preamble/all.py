@@ -391,15 +391,6 @@ from dzack_research.preamble.categories.functors.subobject_images import (
 from dzack_research.preamble.categories.functors.subobject_images import (
     SubobjectImageAdjunction as SubobjectImageAdjunction,
 )
-from dzack_research.preamble.categories.functors.tensor_hom import (
-    InternalHomFromFunctor as InternalHomFromFunctor,
-)
-from dzack_research.preamble.categories.functors.tensor_hom import (
-    TensorByFunctor as TensorByFunctor,
-)
-from dzack_research.preamble.categories.functors.tensor_hom import (
-    TensorHomAdjunction as TensorHomAdjunction,
-)
 from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,
