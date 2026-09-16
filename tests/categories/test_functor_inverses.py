@@ -2,11 +2,9 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AbelianizationAdjunction,
-    AlgebraBaseChangeAdjunction,
-    FreeGroupUnderlyingSetAdjunction,
+    Algebras,
     Groups,
-    OrderNumberFieldAdjunction,
+    OwnedOrders,
     QuadraticField,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
@@ -27,7 +25,7 @@ def test_algebra_transpose_uses_the_left_functors_recorded_preimage() -> None:
     target = (target_presentation).quotient_by_relations((y**2 - extension_ring.algebra_generator("s"),),
     )
 
-    adjunction = AlgebraBaseChangeAdjunction(ring_map)
+    adjunction = Algebras(QQ).Associative().Unital().base_change_adjunction(ring_map)
     independently_extended = adjunction.left_adjoint()(source)
     morphism = independently_extended.Mor(target)(
         {"x": target.algebra_generator("y")}
@@ -54,7 +52,7 @@ def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -
         }
     )
 
-    first_adjunction = AbelianizationAdjunction()
+    first_adjunction = Groups().abelianization_adjunction()
     assert first_adjunction.right_adjoint()(target) is target
     factored = first_adjunction.hom_set_isomorphism_inverse(group_morphism)
     recovered = first_adjunction.hom_set_isomorphism_forward(factored)
@@ -67,7 +65,7 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
     field = QuadraticField(2, "a")
     maximal_order = field.ring_of_integers()
     nonmaximal_order = field.order_generated_by(2 * field.primitive_element())
-    adjunction = OrderNumberFieldAdjunction()
+    adjunction = OwnedOrders().fraction_field_adjunction()
     fraction_field = adjunction.left_adjoint()
 
     assert maximal_order is not nonmaximal_order
@@ -99,7 +97,7 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
 
 def test_free_group_transpose_uses_the_left_functors_recorded_preimage() -> None:
     source = finite_ordered_set((ZZ(11), ZZ(13)))
-    adjunction = FreeGroupUnderlyingSetAdjunction()
+    adjunction = Sets().free_group_adjunction()
     free_group = adjunction.left_adjoint()(source)
     target = Groups.C(3)
     target_generator = target.group_generators()[0]
