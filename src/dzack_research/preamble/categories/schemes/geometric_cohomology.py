@@ -275,6 +275,30 @@ class _AffineCoverRefinementCohomologyComparison(SageObject):
 
     def cohomology_map(self):
         return self._cohomology_map
+
+
+class _IntegralTopologicalCohomologyConstruction:
+    r"""The selected realization and degree defining one integral cohomology group."""
+
+    def __init__(self, scheme, degree, theory, realization) -> None:
+        self._scheme = scheme
+        self._degree = int(degree)
+        self._theory = theory
+        self._realization = realization
+
+    def scheme(self):
+        return self._scheme
+
+    def degree(self):
+        return self._degree
+
+    def theory(self):
+        return self._theory
+
+    def realization_description(self):
+        return self._realization
+
+
 class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral cohomology groups of a specified topological realization/theory."""
 
@@ -290,34 +314,39 @@ class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedModules(self.base_ring())]
 
     class ParentMethods:
-        def __init__(
-            self,
-            topological_scheme,
-            topological_cohomological_degree,
-            topological_cohomology_theory,
-            topological_realization_description,
-            **rest,
-        ) -> None:
-            self._preamble_topological_scheme = topological_scheme
-            self._preamble_topological_cohomological_degree = int(topological_cohomological_degree)
-            self._preamble_topological_cohomology_theory = topological_cohomology_theory
-            self._preamble_topological_realization_description = topological_realization_description
+        def __init__(self, _integral_topological_cohomology_construction, **rest) -> None:
+            if not isinstance(
+                _integral_topological_cohomology_construction,
+                _IntegralTopologicalCohomologyConstruction,
+            ):
+                raise TypeError(
+                    "integral topological cohomology requires selected realization data"
+                )
+            self._integral_topological_cohomology_construction = (
+                _integral_topological_cohomology_construction
+            )
             super().__init__(**rest)
 
+        def integral_topological_cohomology_construction(self):
+            return self._integral_topological_cohomology_construction
+
         def topological_scheme(self):
-            return self._preamble_topological_scheme
+            return self.integral_topological_cohomology_construction().scheme()
 
         def cohomological_degree(self):
-            return self._preamble_topological_cohomological_degree
+            return self.integral_topological_cohomology_construction().degree()
 
         def cohomology_coefficients(self):
             return self.base_ring()
 
         def cohomology_topology(self):
-            return self._preamble_topological_cohomology_theory
+            return self.integral_topological_cohomology_construction().theory()
 
         def realization_description(self):
-            return self._preamble_topological_realization_description
+            return (
+                self.integral_topological_cohomology_construction()
+                .realization_description()
+            )
 
 
 class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
@@ -851,10 +880,14 @@ def _integral_topology_construction_data(
     theory="ordinary singular cohomology",
 ):
     return {
-        "topological_scheme": scheme,
-        "topological_cohomological_degree": int(degree),
-        "topological_cohomology_theory": theory,
-        "topological_realization_description": realization,
+        "_integral_topological_cohomology_construction": (
+            _IntegralTopologicalCohomologyConstruction(
+                scheme,
+                degree,
+                theory,
+                realization,
+            )
+        ),
     }
 
 
@@ -1188,12 +1221,12 @@ def _toric_integral_singular_cohomology(scheme, degree):
     if degree < 0 or degree > 2 * dimension:
         raise ValueError("singular cohomological degree lies between zero and twice the complex dimension")
     integers = _own_ring(SageZZ)
-    construction_data = {
-        "topological_scheme": scheme,
-        "topological_cohomological_degree": degree,
-        "topological_cohomology_theory": "singular cohomology of the complex analytic realization",
-        "topological_realization_description": "complex analytic realization under the selected QQ-to-CC embedding",
-    }
+    construction_data = _integral_topology_construction_data(
+        scheme,
+        degree,
+        "complex analytic realization under the selected QQ-to-CC embedding",
+        "singular cohomology of the complex analytic realization",
+    )
     if degree % 2:
         return integers._fresh_free_module_on(
             finite_ordered_set(()),

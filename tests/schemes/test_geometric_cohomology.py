@@ -75,6 +75,11 @@ def test_projective_plane_integral_singular_cohomology_is_even_and_cycle_generat
     assert all(group in ToricIntegralSingularCohomologyGroups(ZZ) for group in groups)
     assert tuple(group.module_rank() for group in groups) == (1, 0, 1, 0, 1)
     assert groups[2].cohomology_topology() == "singular cohomology of the complex analytic realization"
+    assert groups[2].integral_topological_cohomology_construction().scheme() is plane
+    assert "_preamble_topological_scheme" not in groups[2].__dict__
+    assert "_preamble_topological_cohomological_degree" not in groups[2].__dict__
+    assert "_preamble_topological_cohomology_theory" not in groups[2].__dict__
+    assert "_preamble_topological_realization_description" not in groups[2].__dict__
 
 
 def test_projective_plane_cycle_class_is_an_explicit_integral_isomorphism() -> None:
