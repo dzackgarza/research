@@ -46,7 +46,6 @@ _EXPORTS = {
     "CommutativeSquare": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CommutativeSquare"),
     "SubobjectHomset": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectHomset"),
     "SubobjectMorphism": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectMorphism"),
-    "WideSubcategory": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "WideSubcategory"),
 }
 
 __all__ = [
@@ -88,7 +87,6 @@ __all__ = [
     "CommutativeSquare",
     "SubobjectHomset",
     "SubobjectMorphism",
-    "WideSubcategory",
 ]
 
 

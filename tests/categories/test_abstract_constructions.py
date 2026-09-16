@@ -51,7 +51,6 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
 def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objects() -> None:
     from dzack_research.preamble.all import (
         Sets,
-        WideSubcategory,
     )
 
     x = Sets.Δ[2]
@@ -75,5 +74,5 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     assert iso_object in Sets().IsoArrowCategory()
     assert aut_object in Sets().AutomorphismArrowCategory()
 
-    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
+    injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
     assert injections.admits(inclusion)

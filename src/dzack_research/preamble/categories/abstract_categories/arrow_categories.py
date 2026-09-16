@@ -1008,7 +1008,7 @@ class WideHomCategoryConstruction(_RestrictedHomCategoryOf):
         return [self.base_category().base_category().category_packet().Homs()]
 
 
-class WideSubcategory(OwnedCategoryBase):
+class _WideSubcategory(OwnedCategoryBase):
     r"""A category with the same objects as ``C`` and a selected class of arrows.
 
     The selected arrows must include every identity and be closed under
@@ -1022,7 +1022,7 @@ class WideSubcategory(OwnedCategoryBase):
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor, NaturalTransformation
         sage: points = finite_ordered_set(("a", "b"))
-        sage: injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
+        sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
         sage: maps = Sets().Mor(points, points)
         sage: hom = injections.Mor(points, points)
         sage: hom is injections.HomCategory().Of(points, points)
@@ -1286,5 +1286,4 @@ __all__ = [
     "SubobjectHomset",
     "SubobjectMorphism",
     "SuperobjectCategory",
-    "WideSubcategory",
 ]

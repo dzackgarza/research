@@ -1,9 +1,6 @@
 r"""Pure abstract category objects use the owned runtime category boundary."""
 
 from dzack_research.preamble.all import Cat, Sets
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    WideSubcategory,
-)
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategories,
@@ -64,7 +61,7 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
     categories = (
         Sets().Core(),
         Sets().Subobjects(points),
-        WideSubcategory(Sets(), Sets().MonomorphismArrowCategory()),
+        Sets().WideSubcategory(Sets().MonomorphismArrowCategory()),
         IdentityFunctor(Sets()).algebras(),
         HomCategories(),
         Sets().HomCategory(),

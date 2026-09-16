@@ -52,7 +52,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectHomset,
     SubobjectMorphism,
     TensorProductCategory,
-    WideSubcategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
     Bifunctor,

@@ -8,9 +8,6 @@ whether a universal limit/colimit has been selected.
 
 import pytest
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    WideSubcategory,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.functors import (
     DiscreteCategory,
@@ -62,7 +59,7 @@ def test_cocone_retains_injection_and_composes_apex_maps() -> None:
 def test_cone_apex_map_must_belong_to_the_target_category_even_for_empty_diagram() -> None:
     points = finite_ordered_set(("a", "b"))
     empty = finite_ordered_set(())
-    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
+    injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
     diagram = Cat().Mor(DiscreteCategory(empty), injections).constant_functor(points)
     cones = (diagram).Cones()
     cone = cones.cone(points, lambda _obj: injections.identity(points))

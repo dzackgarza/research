@@ -749,6 +749,13 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return _EpimorphismArrowCategory(self)
+        def WideSubcategory(self, arrow_category: Category) -> Category:
+            r"""Return the wide subcategory with the selected arrow class."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _WideSubcategory,
+            )
+
+            return _WideSubcategory(self, arrow_category)
         def SliceOver(self, base_object: Parent) -> Category:
             r"""Return the slice \(C/X\)."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (

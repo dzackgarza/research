@@ -3,7 +3,6 @@ r"""Archive reconciliation for arrow categories, restricted arrows, and cores.""
 from dzack_research.preamble.all import (
     Cat,
     Sets,
-    WideSubcategory,
 )
 
 ARCHIVE_RECONCILIATION = {
@@ -53,7 +52,7 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     maps = Sets().Mor(points, points)
     swap = maps(lambda point: points[1 - int(point)])
     collapse = maps(lambda _point: points[0])
-    injections = WideSubcategory(Sets(), Sets().MonomorphismArrowCategory())
+    injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
 
     assert injections.admits(swap)
     assert not injections.admits(collapse)
