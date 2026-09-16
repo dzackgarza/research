@@ -1,5 +1,6 @@
 """Algebras graded by a monoid."""
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -31,6 +32,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
+
+# Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
+# the Koszul sign rule in which every odd-degree element squares to zero.
+if "Alternating" not in all_axioms:
+    all_axioms.add("Alternating")
 
 
 def _homogeneous_degree(element):
@@ -255,6 +261,33 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             refine(algebra, Algebras(self.base_ring()).Commutative())
             refine(algebra, self)
             return algebra
+
+        class SubcategoryMethods:
+            def Alternating(self):
+                r"""Return the refinement whose odd-degree elements square to zero."""
+                return self._with_axiom("Alternating")
+
+        class Alternating(CategoryWithAxiom):
+            r"""Supercommutative graded algebras with ``x^2 = 0`` for ``eps(deg x) = 1``.
+
+            Bourbaki, Algebra III §4.9, "alternating graded algebra"; Sage's
+            ``commutative_dga`` calls the differential graded case strictly
+            commutative.  The condition is independent of the sign rule over
+            rings with 2-torsion.
+            """
+
+            def grading_monoid(self) -> Parent:
+                return self._base_category.grading_monoid()
+
+            def parity_homomorphism(self):
+                r"""Return the parity ``M -> ZZ/2`` odd degree is read through."""
+                return self._base_category.parity_homomorphism()
+
+            def an_object(self):
+                r"""The identity-degree rank-one algebra, where odd-square conditions are vacuous."""
+                algebra = self._base_category.an_object()
+                refine(algebra, self)
+                return algebra
 
     class ParentMethods:
         def restrict_scalars(self, ring_map):

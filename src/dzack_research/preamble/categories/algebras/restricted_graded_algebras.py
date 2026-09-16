@@ -7,7 +7,6 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -95,7 +94,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
         categories = [
             GradedAlgebras(base),
-            StrictlyGradedCommutativeAlgebras(base),
+            GradedAlgebras(base).Supercommutative().Alternating(),
             *tuple(extra_categories),
         ]
         try:

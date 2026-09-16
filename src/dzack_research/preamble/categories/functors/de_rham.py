@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
-    StrictlyCommutativeDifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -73,7 +72,7 @@ class _DeRhamFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
             Algebras(self._base_ring).Associative().Unital().Commutative(),
-            StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
+            DifferentialGradedAlgebras(self._base_ring).Supercommutative().Alternating(),
         )
 
     def base_ring(self):
@@ -97,7 +96,7 @@ class _DegreeZeroDGAFunctor(Functor):
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
+            DifferentialGradedAlgebras(self._base_ring).Supercommutative().Alternating(),
             Algebras(self._base_ring).Associative().Unital().Commutative(),
         )
 

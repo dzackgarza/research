@@ -9,9 +9,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.algebras.derivations import GradedDerivation
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-    StrictlyGradedCommutativeAlgebras,
-)
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
@@ -183,29 +180,12 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             return DifferentialComponentMorphism(source, target, component)
 
 
-class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Supercommutative DGAs whose odd elements square to zero.
+def StrictlyCommutativeDifferentialGradedAlgebras(base_ring):
+    r"""The computed join ``DifferentialGradedAlgebras(R).Supercommutative().Alternating()``.
 
-    The supercommutative DGAs themselves are the computed join
-    ``DifferentialGradedAlgebras(R).Supercommutative()``.
+    The specification names the category; the join has no class of its own.
     """
-
-    def an_object(self):
-        r"""That de Rham algebra, strictly graded-commutative."""
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-
-        ring = self.base_ring()
-        return DeRhamAlgebras(ring).an_object()
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "strictly commutative differential graded algebras"
-
-    def super_categories(self):
-        return [
-            DifferentialGradedAlgebras(self.base_ring()).Supercommutative(),
-            StrictlyGradedCommutativeAlgebras(self.base_ring()),
-        ]
+    return DifferentialGradedAlgebras(base_ring).Supercommutative().Alternating()
 
 
 class Differential(GradedDerivation):

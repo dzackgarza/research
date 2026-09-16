@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras.cohomology_algebras import (
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
-    StrictlyCommutativeDifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import (
     _CompositeFunctor,
@@ -73,9 +72,12 @@ class _DeRhamCohomologyFunctor(_CompositeFunctor):
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
         de_rham = Algebras(self._base_ring).Associative().Unital().Commutative().de_rham()
-        forget_to_complex = StrictlyCommutativeDifferentialGradedAlgebras(
-            self._base_ring
-        ).inclusion_into(CochainComplexes(self._base_ring))
+        forget_to_complex = (
+            DifferentialGradedAlgebras(self._base_ring)
+            .Supercommutative()
+            .Alternating()
+            .inclusion_into(CochainComplexes(self._base_ring))
+        )
         de_rham_complex = _CompositeFunctor(de_rham, forget_to_complex)
         super().__init__(
             de_rham_complex,

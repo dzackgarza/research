@@ -3,7 +3,7 @@ r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
-    StrictlyCommutativeDifferentialGradedAlgebras,
+    DifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
@@ -71,7 +71,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         return "algebraic de Rham algebras"
 
     def super_categories(self):
-        return [StrictlyCommutativeDifferentialGradedAlgebras(self.base_ring())]
+        return [DifferentialGradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
     class ParentMethods:
         def de_rham_construction(self):

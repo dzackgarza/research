@@ -34,9 +34,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-    StrictlyGradedCommutativeAlgebras,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -1236,8 +1233,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         return "alternating algebras"
 
     def super_categories(self):
-
-        return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
+        return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 

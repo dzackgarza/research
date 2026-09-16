@@ -20,12 +20,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
-    StrictlyCommutativeDifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-    StrictlyGradedCommutativeAlgebras,
-)
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -110,8 +106,8 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         extra_categories = [CohomologyAlgebras(dga.base_ring())]
         if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative():
             extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative())
-        if dga in StrictlyCommutativeDifferentialGradedAlgebras(dga.base_ring()):
-            extra_categories.append(StrictlyGradedCommutativeAlgebras(dga.base_ring()))
+        if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative().Alternating():
+            extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative().Alternating())
         GradedDirectSumModule.__init__(
             self,
             dga.base_ring(),
