@@ -466,6 +466,57 @@ class PredicateSubrings(OwnedCategory):
             return f"{{z in {self._ambient_ring} : {self._description}}}"
 
 
+class _LocalizationConstruction:
+    r"""The selected source, submonoid, and comparison data defining ``S^-1 R``."""
+
+    def __init__(
+        self,
+        source,
+        submonoid,
+        *,
+        engine_source_decoder=None,
+        engine_units_exact=False,
+        algebra_source=None,
+        fraction_field_realization=None,
+    ) -> None:
+        self._source = source
+        self._submonoid = submonoid
+        self._engine_source_decoder = engine_source_decoder
+        self._engine_units_exact = bool(engine_units_exact)
+        self._algebra_source = algebra_source
+        self._fraction_field_realization = fraction_field_realization
+        self._localization_map = None
+
+    def source(self):
+        return self._source
+
+    def submonoid(self):
+        return self._submonoid
+
+    def engine_source_decoder(self):
+        return self._engine_source_decoder
+
+    def engine_units_exact(self) -> bool:
+        return self._engine_units_exact
+
+    def algebra_source(self):
+        return self._algebra_source
+
+    def fraction_field_realization(self):
+        return self._fraction_field_realization
+
+    def set_localization_map(self, morphism) -> None:
+        if self._localization_map is not None and self._localization_map is not morphism:
+            raise ValueError("this localization construction already has its canonical map")
+        self._localization_map = morphism
+
+    def localization_map(self):
+        assert self._localization_map is not None, (
+            "a localization construction must acquire its canonical map during construction"
+        )
+        return self._localization_map
+
+
 class LocalizationRings(OwnedCategory):
     r"""Commutative localizations carrying their selected source and submonoid."""
 
@@ -560,7 +611,7 @@ class LocalizationRings(OwnedCategory):
                     return True
             except NotImplementedError:
                 pass
-            if parent._preamble_engine_units_exact:
+            if parent._localization_construction.engine_units_exact():
                 engine = parent._selected_engine_ring()
                 return bool(engine(parent._engine_element(self)).is_unit())
             bottom, inverted_family = _one_step_inverted_family(
@@ -627,21 +678,25 @@ class LocalizationRings(OwnedCategory):
             fraction_field_realization=None,
             **rest,
         ) -> None:
-            self._preamble_localization_source = source
-            self._preamble_localization_submonoid = submonoid
+            self._localization_construction = _LocalizationConstruction(
+                source,
+                submonoid,
+                engine_source_decoder=_engine_source_decoder,
+                engine_units_exact=_engine_units_exact,
+                algebra_source=algebra_source,
+                fraction_field_realization=fraction_field_realization,
+            )
             self._preamble_engine_ring = _engine_ring
-            self._preamble_engine_source_decoder = _engine_source_decoder
-            self._preamble_engine_units_exact = bool(_engine_units_exact)
-            self._preamble_fraction_field_realization = fraction_field_realization
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
             super().__init__(base=source.base_ring(), **rest)
 
-            self._preamble_localization_map = source.Mor(self)(
+            localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
             )
+            self._localization_construction.set_localization_map(localization_map)
             if algebra_source is not None:
-                self._preamble_structure_map = self._preamble_localization_map * algebra_source.algebra_structure_morphism()
+                self._preamble_structure_map = self.localization_map() * algebra_source.algebra_structure_morphism()
 
         def _selected_engine_ring(self):
             r"""Return the private realization that computes in this localization.
@@ -732,7 +787,7 @@ class LocalizationRings(OwnedCategory):
             represented = engine(value)
             source = self.localization_source()
             source_engine = _engine_ring(source)
-            decoder = self._preamble_engine_source_decoder
+            decoder = self._localization_construction.engine_source_decoder()
             if decoder is not None:
                 return self.fraction(
                     decoder(represented.numerator()),
@@ -909,10 +964,10 @@ class LocalizationRings(OwnedCategory):
             return f"Localization of {self.localization_source()} at {self.localization_submonoid()}"
 
         def localization_source(self):
-            return self._preamble_localization_source
+            return self._localization_construction.source()
 
         def localization_submonoid(self):
-            return self._preamble_localization_submonoid
+            return self._localization_construction.submonoid()
 
         def is_fraction_field_localization(self) -> bool:
             r"""Whether this localizes a domain at all of its nonzero elements."""
@@ -925,7 +980,7 @@ class LocalizationRings(OwnedCategory):
             r"""Return the canonical owned field privately realizing this localization."""
             if not self.is_fraction_field_localization():
                 raise ValueError("this localization is not the fraction-field specialization")
-            field = self._preamble_fraction_field_realization
+            field = self._localization_construction.fraction_field_realization()
             if field is None:
                 raise ArithmeticError("a fraction-field localization has no selected field realization")
             return field
@@ -1059,7 +1114,7 @@ class LocalizationRings(OwnedCategory):
             )
 
         def localization_map(self):
-            return self._preamble_localization_map
+            return self._localization_construction.localization_map()
 
         def restriction_to(self, target):
             r"""Return the unique map ``S^{-1}R -> T^{-1}R`` commuting with the maps from ``R``.
