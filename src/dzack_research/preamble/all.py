@@ -240,36 +240,6 @@ from dzack_research.preamble.categories.functors.free_groups import (
 from dzack_research.preamble.categories.functors.free_groups import (
     GroupUnderlyingSetFunctor as GroupUnderlyingSetFunctor,
 )
-from dzack_research.preamble.categories.functors.group_actions import (
-    CoinvariantsFunctor as CoinvariantsFunctor,
-)
-from dzack_research.preamble.categories.functors.group_actions import (
-    CoinvariantsTrivialAdjunction as CoinvariantsTrivialAdjunction,
-)
-from dzack_research.preamble.categories.functors.group_actions import (
-    InvariantsFunctor as InvariantsFunctor,
-)
-from dzack_research.preamble.categories.functors.group_actions import (
-    TrivialActionFunctor as TrivialActionFunctor,
-)
-from dzack_research.preamble.categories.functors.group_actions import (
-    TrivialInvariantsAdjunction as TrivialInvariantsAdjunction,
-)
-from dzack_research.preamble.categories.functors.group_induction import (
-    CoinductionFunctor as CoinductionFunctor,
-)
-from dzack_research.preamble.categories.functors.group_induction import (
-    InductionFunctor as InductionFunctor,
-)
-from dzack_research.preamble.categories.functors.group_induction import (
-    InductionRestrictionAdjunction as InductionRestrictionAdjunction,
-)
-from dzack_research.preamble.categories.functors.group_induction import (
-    RestrictionCoinductionAdjunction as RestrictionCoinductionAdjunction,
-)
-from dzack_research.preamble.categories.functors.group_induction import (
-    RestrictionOfActingGroupFunctor as RestrictionOfActingGroupFunctor,
-)
 from dzack_research.preamble.categories.functors.group_scalar_change import (
     GroupModuleBaseChangeAdjunction as GroupModuleBaseChangeAdjunction,
 )

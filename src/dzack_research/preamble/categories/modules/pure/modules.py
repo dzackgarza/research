@@ -245,7 +245,7 @@ class Modules(OwnedCategoryOverBaseRing):
         Along the augmentation ``R[G] -> R`` this is the trivial action.
         """
         from dzack_research.preamble.categories.functors.group_actions import (
-            TrivialActionFunctor,
+            _TrivialActionFunctor,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             _RestrictionOfScalarsFunctor,
@@ -254,7 +254,7 @@ class Modules(OwnedCategoryOverBaseRing):
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
         match ring_map:
             case _ if ring_map.is_group_algebra_augmentation():
-                return TrivialActionFunctor(ring_map)
+                return _TrivialActionFunctor(ring_map)
             case _:
                 return _RestrictionOfScalarsFunctor(ring_map)
 
@@ -282,7 +282,7 @@ class Modules(OwnedCategoryOverBaseRing):
         Along the augmentation ``R[G] -> R`` this is ``Triv_G -| (-)^G``.
         """
         from dzack_research.preamble.categories.functors.group_actions import (
-            TrivialInvariantsAdjunction,
+            _TrivialInvariantsAdjunction,
         )
         from dzack_research.preamble.categories.functors.scalar_change import (
             _restriction_coextension_adjunction,
@@ -291,7 +291,7 @@ class Modules(OwnedCategoryOverBaseRing):
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
         match ring_map:
             case _ if ring_map.is_group_algebra_augmentation():
-                return TrivialInvariantsAdjunction(ring_map)
+                return _TrivialInvariantsAdjunction(ring_map)
             case _:
                 return _restriction_coextension_adjunction(ring_map)
 

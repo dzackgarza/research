@@ -140,7 +140,7 @@ def _finite_coset_sum(module, representatives):
     return presentation.cokernel()
 
 
-class RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
+class _RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
     r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -187,7 +187,7 @@ class RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
         return f"Restriction from {self.supergroup()} to {self.subgroup()}"
 
 
-class InductionFunctor(_ScalarExtensionFunctor):
+class _InductionFunctor(_ScalarExtensionFunctor):
     r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -286,7 +286,7 @@ class InductionFunctor(_ScalarExtensionFunctor):
         return f"Induction from {self.subgroup()} to {self.supergroup()}"
 
 
-class CoinductionFunctor(_CoextensionOfScalarsFunctor):
+class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
     r"""``Coind_H^G : Modules(R[H]) -> Modules(R[G])``, coextension along ``R[H] -> R[G]``."""
 
     def __init__(self, ring_map) -> None:
@@ -422,11 +422,11 @@ class CoinductionFunctor(_CoextensionOfScalarsFunctor):
         return f"Coinduction from {self.subgroup()} to {self.supergroup()}"
 
 
-class InductionRestrictionAdjunction(_BaseChangeAdjunction):
+class _InductionRestrictionAdjunction(_BaseChangeAdjunction):
     r"""``Ind_H^G ⊣ Res_H^G``, the base-change adjunction along ``R[H] -> R[G]``."""
 
-    _extension_functor = InductionFunctor
-    _restriction_functor = RestrictionOfActingGroupFunctor
+    _extension_functor = _InductionFunctor
+    _restriction_functor = _RestrictionOfActingGroupFunctor
 
     def unit(self, group_module):
         induced = self.left_adjoint()(group_module)
@@ -457,11 +457,11 @@ class InductionRestrictionAdjunction(_BaseChangeAdjunction):
         )
 
 
-class RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
+class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
     r"""``Res_H^G ⊣ Coind_H^G``, the restriction/coextension adjunction along ``R[H] -> R[G]``."""
 
-    _restriction_functor = RestrictionOfActingGroupFunctor
-    _coextension_functor = CoinductionFunctor
+    _restriction_functor = _RestrictionOfActingGroupFunctor
+    _coextension_functor = _CoinductionFunctor
 
     def unit(self, group_module):
         restricted = self.left_adjoint()(group_module)
@@ -500,9 +500,4 @@ class RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
 
 
 __all__ = [
-    "CoinductionFunctor",
-    "InductionFunctor",
-    "InductionRestrictionAdjunction",
-    "RestrictionCoinductionAdjunction",
-    "RestrictionOfActingGroupFunctor",
 ]

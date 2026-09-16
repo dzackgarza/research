@@ -224,7 +224,7 @@ def _coinvariant_projection(group_module, coinvariants, element):
     )
 
 
-class TrivialActionFunctor(_RestrictionOfScalarsFunctor):
+class _TrivialActionFunctor(_RestrictionOfScalarsFunctor):
     r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -249,7 +249,7 @@ class TrivialActionFunctor(_RestrictionOfScalarsFunctor):
         return f"Trivial {self.group()}-action functor"
 
 
-class InvariantsFunctor(_CoextensionOfScalarsFunctor):
+class _InvariantsFunctor(_CoextensionOfScalarsFunctor):
     r"""``(-)^G : Modules(R[G]) -> Modules(R)``, coextension along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -284,7 +284,7 @@ class InvariantsFunctor(_CoextensionOfScalarsFunctor):
         return f"{self.group()}-invariants functor"
 
 
-class CoinvariantsFunctor(_ScalarExtensionFunctor):
+class _CoinvariantsFunctor(_ScalarExtensionFunctor):
     r"""``(-)_G : Modules(R[G]) -> Modules(R)``, scalar extension along the augmentation."""
 
     def __init__(self, ring_map) -> None:
@@ -315,11 +315,11 @@ class CoinvariantsFunctor(_ScalarExtensionFunctor):
         return f"{self.group()}-coinvariants functor"
 
 
-class TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
+class _TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
     r"""``Triv_G ⊣ (-)^G``, restriction/coextension along the augmentation."""
 
-    _restriction_functor = TrivialActionFunctor
-    _coextension_functor = InvariantsFunctor
+    _restriction_functor = _TrivialActionFunctor
+    _coextension_functor = _InvariantsFunctor
 
     def unit(self, module):
         invariants = self.right_adjoint()(self.left_adjoint()(module))
@@ -342,11 +342,11 @@ class TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
         return f"Trivial-action/invariants adjunction for {self.left_adjoint().group()}"
 
 
-class CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
+class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     r"""``(-)_G ⊣ Triv_G``, base change along the augmentation."""
 
-    _extension_functor = CoinvariantsFunctor
-    _restriction_functor = TrivialActionFunctor
+    _extension_functor = _CoinvariantsFunctor
+    _restriction_functor = _TrivialActionFunctor
 
     def unit(self, group_module):
         coinvariants = self.left_adjoint()(group_module)
@@ -392,7 +392,7 @@ class RestrictionOfGroupActionFunctor(Functor):
     projection of a semidirect factor is admitted on the same footing.  On
     ``Modules(R[G])`` this is restriction of scalars along ``R[H] -> R[G]``
     (Serre, *Linear Representations of Finite Groups*, §7.1), which
-    ``RestrictionOfActingGroupFunctor`` computes for a subgroup with the
+    restriction along a subgroup computes with the
     module presentation in hand.
     """
 
@@ -518,13 +518,8 @@ class RestrictionOfGroupActionFunctor(Functor):
 
 
 __all__ = [
-    "CoinvariantsFunctor",
-    "CoinvariantsTrivialAdjunction",
     "ForgetGroupActionFunctor",
     "GroupActionFunctor",
-    "InvariantsFunctor",
     "RestrictionOfGroupActionFunctor",
     "TransportGroupActionFunctor",
-    "TrivialActionFunctor",
-    "TrivialInvariantsAdjunction",
 ]
