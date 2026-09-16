@@ -3,9 +3,6 @@ from __future__ import annotations
 
 def _doubled_origin_gluing():
     from dzack_research.preamble.all import QQ, AffineSpace
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     chart = AffineSpace(1, QQ, names=("x",))
@@ -15,16 +12,13 @@ def _doubled_origin_gluing():
     glued = Schemes(QQ).glue_affine_charts(
         chart,
         chart,
-        Isomorphism(identity, identity),
+        Schemes(QQ).Core().Mor(punctured, punctured)(identity, identity),
     )
     return chart, punctured, glued
 
 
 def _scaled_punctured_line_isomorphism(chart, punctured, scale):
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
-
+    from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     algebra = chart.coordinate_algebra()
     x = algebra.algebra_generator("x")
@@ -46,9 +40,10 @@ def _scaled_punctured_line_isomorphism(chart, punctured, scale):
             localized.Mor(localized)(pullback)
         )
 
-    return Isomorphism(
-        scaled_map(scale),
-        scaled_map(algebra.base_ring().one() / scale),
+    forward = scaled_map(scale)
+    inverse = scaled_map(algebra.base_ring().one() / scale)
+    return Schemes(algebra.base_ring()).Core().Mor(punctured, punctured)(
+        forward, inverse
     )
 
 
@@ -132,9 +127,6 @@ def test_maps_out_of_a_glued_scheme_are_exactly_compatible_chart_maps() -> None:
 
 def test_scheme_gluing_requires_an_actual_open_overlap() -> None:
     from dzack_research.preamble.all import QQ, AffineSpace
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     chart = AffineSpace(1, QQ, names=("x",))
@@ -144,7 +136,7 @@ def test_scheme_gluing_requires_an_actual_open_overlap() -> None:
         Schemes(QQ).glue_affine_charts(
             chart,
             chart,
-            Isomorphism(identity, identity),
+            Schemes(QQ).Core().Mor(chart, chart)(identity, identity),
         )
     except ValueError as error:
         assert "open subscheme of the left chart" in str(error)
@@ -154,9 +146,6 @@ def test_scheme_gluing_requires_an_actual_open_overlap() -> None:
 
 def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> None:
     from dzack_research.preamble.all import QQ, AffineSpace
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.schemes.schemes import (
         OpenImmersions,
         Schemes,
@@ -178,10 +167,13 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
         lambda _label: chart,
         name="Three affine-line charts",
     )
+    overlap_isomorphism = Schemes(QQ).Core().Mor(punctured, punctured)(
+        overlap_identity, overlap_identity
+    )
     transitions = {
-        ("left", "middle"): Isomorphism(overlap_identity, overlap_identity),
-        ("left", "right"): Isomorphism(overlap_identity, overlap_identity),
-        ("middle", "right"): Isomorphism(overlap_identity, overlap_identity),
+        ("left", "middle"): overlap_isomorphism,
+        ("left", "right"): overlap_isomorphism,
+        ("middle", "right"): overlap_isomorphism,
     }
 
     glued = Schemes(QQ).glue_affine_atlas(charts, transitions)
@@ -289,9 +281,6 @@ def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() ->
 
 def test_finite_affine_atlas_verifies_triple_overlap_domains() -> None:
     from dzack_research.preamble.all import QQ, AffineSpace
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-        Isomorphism,
-    )
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     chart = AffineSpace(1, QQ, names=("x",))
@@ -301,7 +290,7 @@ def test_finite_affine_atlas_verifies_triple_overlap_domains() -> None:
     def identity_transition(element):
         overlap = chart.distinguished_open(element)
         identity = overlap.categorical_identity_morphism()
-        return Isomorphism(identity, identity)
+        return Schemes(QQ).Core().Mor(overlap, overlap)(identity, identity)
 
     try:
         Schemes(QQ).glue_affine_atlas(

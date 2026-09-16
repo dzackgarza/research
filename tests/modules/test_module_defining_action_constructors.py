@@ -17,9 +17,6 @@ from dzack_research.preamble.all import (
     ModulesWithChosenFinitePresentation,
     Set,
 )
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPowerModules,
     DividedPowerModules,
@@ -63,7 +60,7 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
         ),
         verify_linearity=False,
     )
-    comparison = Isomorphism(forward, inverse)
+    comparison = Modules(ZZ).Core().Mor(presented, acted)(forward, inverse)
 
     assert comparison.domain() is presented
     assert comparison.codomain() is acted

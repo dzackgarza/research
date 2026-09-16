@@ -687,9 +687,10 @@ def compose_automorphisms(outer, inner):
 
 def inverse_automorphism(automorphism):
     """Return the inverse automorphism without changing its endpoint object."""
-    from dzack_research.preamble.categories.abstract_categories import Isomorphism
-
-    return Isomorphism(automorphism.inverse(), automorphism.forward())
+    category = automorphism.parent().base_category()
+    return category.Core().Mor(automorphism.codomain(), automorphism.domain())(
+        automorphism.inverse(), automorphism.forward()
+    )
 
 
 def apply_module_morphism(morphism, element):

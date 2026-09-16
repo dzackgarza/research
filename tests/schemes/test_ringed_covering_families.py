@@ -1,7 +1,4 @@
 from dzack_research.preamble.all import QQ, AffineSpace, Schemes
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.schemes.covering_families import (
     RingedCoveringFamily,
 )
@@ -41,17 +38,21 @@ def _redundant_third_chart_refinement(coarse):
     right = coarse.chart(right_index)
     overlap = coarse.overlap(left_index, right_index)
     whole_overlap = overlap.distinguished_open(overlap.coordinate_algebra().one())
-    left_to_overlap = Isomorphism(
-        whole_overlap.corestriction(overlap.categorical_identity_morphism()),
-        whole_overlap.inclusion(),
+    left_forward = whole_overlap.corestriction(overlap.categorical_identity_morphism())
+    left_inverse = whole_overlap.inclusion()
+    left_to_overlap = Schemes(QQ).Core().Mor(
+        left_forward.domain(), left_forward.codomain()
+    )(left_forward, left_inverse)
+    right_forward = whole_overlap.corestriction(
+        coarse.transition_between(right_index, left_index).forward()
     )
-    right_to_overlap = Isomorphism(
-        whole_overlap.corestriction(
-            coarse.transition_between(right_index, left_index).forward()
-        ),
+    right_inverse = (
         coarse.transition_between(left_index, right_index).forward()
-        * whole_overlap.inclusion(),
+        * whole_overlap.inclusion()
     )
+    right_to_overlap = Schemes(QQ).Core().Mor(
+        right_forward.domain(), right_forward.codomain()
+    )(right_forward, right_inverse)
     fine = Schemes(QQ).glue_affine_atlas(
         (left, right, overlap),
         (

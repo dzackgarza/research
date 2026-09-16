@@ -5,7 +5,6 @@ from dzack_research.preamble.all import (
     AffineSpace,
     Algebras,
     Groups,
-    Isomorphism,
     Lattices,
     Modules,
     OpenImmersions,
@@ -58,7 +57,7 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
     assert constant not in source_epis
     assert swap in source_monos
     assert swap in source_epis
-    isomorphism = Isomorphism(swap, swap)
+    isomorphism = Sets().Core().Mor(source, source)(swap, swap)
     isos = Sets().Iso(source, source)
     auts = Sets().Aut(source)
     assert auts is isos
@@ -136,7 +135,7 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     x = polynomial.algebra_generator("x")
     algebra = (polynomial).quotient_by_relations([x**2])
     identity = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra).identity()
-    isomorphism = Isomorphism(identity, identity)
+    isomorphism = Algebras(QQ).Core().Mor(algebra, algebra)(identity, identity)
     forget = Algebras(QQ).underlying_module()
 
     hom_source = Algebras(QQ).Mor(algebra, algebra)(identity)

@@ -227,7 +227,7 @@ def test_natural_transformations_between_functors() -> None:
 def test_isomorphisms_and_the_core() -> None:
     two = Sets.Δ[1]
     swap = Sets().Mor(two, two)(lambda point: two(1 - int(point)))
-    isomorphism = Isomorphism(swap, swap)
+    isomorphism = Sets().Core().Mor(two, two)(swap, swap)
     assert isomorphism in Sets().Iso(two, two)
     assert isomorphism in Sets().Core().Mor(two, two)
     assert isomorphism.inverse() * isomorphism == Sets().Iso(two, two).identity()

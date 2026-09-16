@@ -1,7 +1,4 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     FiniteAtlasInvertibleSheaf,
 )
@@ -16,14 +13,18 @@ def _projective_line_with_redundant_overlap_chart():
     overlap = coarse.overlap(0, 1)
     whole_overlap = overlap.distinguished_open(overlap.coordinate_algebra().one())
 
-    left_to_overlap = Isomorphism(
-        whole_overlap.corestriction(overlap.categorical_identity_morphism()),
-        whole_overlap.inclusion(),
+    left_forward = whole_overlap.corestriction(overlap.categorical_identity_morphism())
+    left_inverse = whole_overlap.inclusion()
+    left_to_overlap = Schemes(QQ).Core().Mor(
+        left_forward.domain(), left_forward.codomain()
+    )(left_forward, left_inverse)
+    right_forward = whole_overlap.corestriction(
+        coarse.transition_between(1, 0).forward()
     )
-    right_to_overlap = Isomorphism(
-        whole_overlap.corestriction(coarse.transition_between(1, 0).forward()),
-        coarse.transition_between(0, 1).forward() * whole_overlap.inclusion(),
-    )
+    right_inverse = coarse.transition_between(0, 1).forward() * whole_overlap.inclusion()
+    right_to_overlap = Schemes(QQ).Core().Mor(
+        right_forward.domain(), right_forward.codomain()
+    )(right_forward, right_inverse)
     fine_scheme = Schemes(QQ).glue_affine_atlas(
         (left, right, overlap),
         (

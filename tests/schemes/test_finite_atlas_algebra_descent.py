@@ -1,10 +1,6 @@
 r"""Algebra descent across affine atlases with genuinely distinct overlap rings."""
 
 from dzack_research.preamble.all import QQ, AffineSpace
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
-
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasAlgebraGluingDatum,
     SemilinearAlgebraMorphism,
@@ -60,7 +56,7 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
     reverse = target_overlap.Mor(source_overlap)(
         source_ring.Mor(target_ring)(pull_to_target)
     )
-    return Isomorphism(forward, reverse)
+    return Schemes(QQ).Core().Mor(source_overlap, target_overlap)(forward, reverse)
 
 
 def _three_chart_datum():

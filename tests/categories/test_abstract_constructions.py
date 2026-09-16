@@ -53,7 +53,6 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
         AutomorphismArrowCategory,
         EndArrowCategory,
         IsoArrowCategory,
-        Isomorphism,
         Sets,
         WideSubcategory,
     )
@@ -71,7 +70,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     assert end_object in EndArrowCategory(Sets())
 
     inverse = end
-    isomorphism = Isomorphism(end, inverse)
+    isomorphism = Sets().Core().Mor(x, x)(end, inverse)
     core = Sets().Core()
     assert isomorphism in core.Mor(x, x)
     iso_object = IsoArrowCategory(Sets())(isomorphism)

@@ -1,8 +1,4 @@
 from dzack_research.preamble.all import QQ, AffineSpace
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
-
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasModuleGluingMorphism,
@@ -54,7 +50,8 @@ def _distinct_punctured_lines():
     reverse = right_overlap.Mor(left_overlap)(
         left_ring.Mor(right_ring)(to_right)
     )
-    return left, right, Isomorphism(forward, reverse)
+    transition = Schemes(QQ).Core().Mor(left_overlap, right_overlap)(forward, reverse)
+    return left, right, transition
 
 
 def _punctured_line(name):
@@ -99,7 +96,7 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
     reverse = target_overlap.Mor(source_overlap)(
         source_ring.Mor(target_ring)(pull_to_target)
     )
-    return Isomorphism(forward, reverse)
+    return Schemes(QQ).Core().Mor(source_overlap, target_overlap)(forward, reverse)
 
 
 def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:

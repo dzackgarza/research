@@ -6,7 +6,6 @@ from dzack_research.preamble.all import (
     EndArrowCategory,
     EpimorphismArrowCategory,
     IsoArrowCategory,
-    Isomorphism,
     MonomorphismArrowCategory,
     Sets,
     WideSubcategory,
@@ -44,7 +43,7 @@ def test_archived_arrow_subcategories_retain_their_semantic_predicates() -> None
     inclusion = Sets().Mono(two, three)(lambda point: three(int(point)))
     quotient = Sets().Epi(three, one)(lambda _point: one[0])
     swap = Sets().Mor(two, two)(lambda point: two[1 - int(point)])
-    isomorphism = Isomorphism(swap, swap)
+    isomorphism = Sets().Core().Mor(two, two)(swap, swap)
 
     assert Cat().join((two.category(), three.category())).is_subcategory(Sets())
     assert MonomorphismArrowCategory(Sets())(inclusion).arrow() is inclusion
@@ -68,7 +67,7 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     assert injection_object in injections.Mor(points, points)
     assert injections.compose(swap, swap) == injections.identity(points)
 
-    isomorphism = Isomorphism(swap, swap)
+    isomorphism = Sets().Core().Mor(points, points)(swap, swap)
     core = Sets().Core()
     core_hom = core.Mor(points, points)
     assert isomorphism in core_hom
