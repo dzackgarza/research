@@ -1,9 +1,6 @@
 r"""Graded derivations use the owned category meet for restricted-Hom placement."""
 
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras import (
-    KahlerDifferentials,
-)
 from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
 
 

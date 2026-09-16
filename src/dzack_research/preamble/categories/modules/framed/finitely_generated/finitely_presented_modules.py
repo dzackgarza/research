@@ -525,10 +525,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             # Fitt_i(S^{-1}M) = S^{-1}Fitt_i(M).
             if ring in LocalizationRings():
                 from dzack_research.preamble.categories.modules.localizations import (
-                    _localized_modules,
+                    LocalizedModules,
                 )
 
-                if self in _localized_modules(ring):
+                if self in LocalizedModules(ring):
                     source = self.localization_source_module()
                     source_ring = ring.localization_source()
                     if source in _SelectedFinitePresentationModules(source_ring):

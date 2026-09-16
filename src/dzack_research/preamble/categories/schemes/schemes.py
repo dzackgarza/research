@@ -1682,10 +1682,6 @@ class Schemes(OwnedCategoryOverBaseRing):
             def relative_differentials(self):
                 r"""Return the affine module of relative Kähler differentials."""
 
-                from dzack_research.preamble.categories.algebras.kahler_differentials import (
-                    KahlerDifferentials,
-                )
-
                 return self.coordinate_algebra().kahler_differentials()
 
             def is_flat(self) -> bool:

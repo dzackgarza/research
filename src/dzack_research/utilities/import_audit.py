@@ -30,6 +30,8 @@ def bound_names(path: Path) -> set[str] | None:
         for statement in body:
             if isinstance(statement, (ast.ClassDef, ast.FunctionDef)):
                 names.add(statement.name)
+            elif isinstance(statement, ast.TypeAlias) and isinstance(statement.name, ast.Name):
+                names.add(statement.name.id)
             elif isinstance(statement, ast.Assign):
                 targets = [t.id for t in statement.targets if isinstance(t, ast.Name)]
                 names.update(targets)
@@ -51,22 +53,58 @@ def bound_names(path: Path) -> set[str] | None:
     return names
 
 
+def _export_table_entries(tree: ast.Module) -> list[tuple[int, str, str, str]]:
+    """Each ``(line, key, module, attribute)`` of a module-level ``_EXPORTS`` table."""
+    entries: list[tuple[int, str, str, str]] = []
+    for statement in tree.body:
+        if not isinstance(statement, ast.Assign) or not isinstance(statement.value, ast.Dict):
+            continue
+        if not any(isinstance(t, ast.Name) and t.id == "_EXPORTS" for t in statement.targets):
+            continue
+        for key, value in zip(statement.value.keys, statement.value.values, strict=True):
+            if not (isinstance(key, ast.Constant) and isinstance(value, ast.Tuple)):
+                continue
+            module, attribute = (element.value for element in value.elts)
+            entries.append((key.lineno, key.value, module, attribute))
+    return entries
+
+
+def _module_source(root: Path, package: str, module: str) -> tuple[Path, Path]:
+    """The source file of ``module`` (a module or a package) and its directory."""
+    as_path = module.replace(".", "/")[len(package) :].lstrip("/")
+    target = root / (as_path + ".py")
+    directory = root / as_path
+    if not target.exists():
+        target = directory / "__init__.py"
+    return target, directory
+
+
 def unresolved_imports(root: Path, package: str) -> list[tuple[Path, int, str, str]]:
-    """Every ``(file, line, module, name)`` whose import names nothing bound."""
+    """Every ``(file, line, module, name)`` whose import names nothing bound.
+
+    A lazy ``_EXPORTS`` table is an import deferred to attribute access, so
+    each of its ``(module, attribute)`` values is checked the same way.
+    """
     cache: dict[Path, set[str] | None] = {}
     missing: list[tuple[Path, int, str, str]] = []
     for path in sorted(root.rglob("*.py")):
         tree = ast.parse(path.read_text(encoding="utf-8"))
+        for line, key, module, attribute in _export_table_entries(tree):
+            target, _directory = _module_source(root, package, module)
+            if not target.exists():
+                missing.append((path, line, module, "<module missing>"))
+                continue
+            if target not in cache:
+                cache[target] = bound_names(target)
+            bound = cache[target]
+            if bound is not None and attribute not in bound:
+                missing.append((path, line, module, f"{key} -> {attribute}"))
         for node in ast.walk(tree):
             if not isinstance(node, ast.ImportFrom) or not node.module:
                 continue
             if not node.module.startswith(package):
                 continue
-            as_path = node.module.replace(".", "/")
-            target = root / (as_path[len(package) :].lstrip("/") + ".py")
-            directory = root / as_path[len(package) :].lstrip("/")
-            if not target.exists():
-                target = directory / "__init__.py"
+            target, directory = _module_source(root, package, node.module)
             if not target.exists():
                 missing.append((path, node.lineno, node.module, "<module missing>"))
                 continue

@@ -62,8 +62,8 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         ``KahlerDifferentialModules(A)`` is a category of ``A``-modules, so
         the parameter and the source algebra are definitionally the same
         object.  Localization and conormal-sequence realizations are private
-        branches of this constructor; :func:`KahlerDifferentials` is notebook
-        notation for this operation rather than another factory.
+        branches of this constructor; ``A.kahler_differentials()`` is the
+        algebra's spelling of it.
         """
         if algebra is not self.base_ring():
             raise ValueError(

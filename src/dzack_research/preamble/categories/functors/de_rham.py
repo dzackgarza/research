@@ -4,7 +4,6 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
 )
-from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
 )

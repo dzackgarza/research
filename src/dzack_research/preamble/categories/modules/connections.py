@@ -16,11 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
-from dzack_research.preamble.categories.algebras.kahler_differentials import (
-    KahlerDifferentials,
-)
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule

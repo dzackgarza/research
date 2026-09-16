@@ -733,10 +733,6 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
 
 
 def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
-    from dzack_research.preamble.categories.algebras import (
-        KahlerDifferentials,
-    )
-
     presentation = QQ.polynomial_ring(("x", "y"))
     x, y = presentation.algebra_generators()
     axes = (presentation).quotient_by_relations((x * y,))

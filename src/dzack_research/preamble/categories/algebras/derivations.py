@@ -372,9 +372,6 @@ class DerivationSpace(RestrictedHomCategoryParent):
         algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
         self._restricted_target = restricted_target
-        from dzack_research.preamble.categories.algebras.kahler_differentials import (
-            KahlerDifferentials,
-        )
         differentials = algebra.kahler_differentials()
         classifiers = differentials.module_category().Mor(differentials, target_module)
         self._preamble_kahler_classifier_module = classifiers

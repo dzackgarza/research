@@ -5,9 +5,6 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     Differential,
     DifferentialGradedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.kahler_differentials import (
-    KahlerDifferentials,
-)
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     RestrictedGradedAlgebra,
 )
@@ -50,7 +47,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
 
         The source algebra is the defining datum.  This category constructor
         owns the Kähler-differential/exterior-algebra realization and identity
-        cache; :func:`DeRhamAlgebra` is notation for this operation.
+        cache; ``A.de_rham_algebra()`` is the algebra's spelling of it.
         """
         if algebra not in Algebras(self.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
