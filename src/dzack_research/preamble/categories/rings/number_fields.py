@@ -333,8 +333,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 case ring if ring is rationals:
                     return self.as_algebra()
                 case _:
-                    raise NotImplementedError(
-                        "the selected number-field integral form is currently represented over ZZ or QQ"
+                    assert base_ring is integers or base_ring is rationals, (
+                        "the selected number-field integral/algebra form is represented over ZZ or QQ"
                     )
 
         def base_change_functor(self, base_ring=None):
@@ -361,8 +361,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 case ring if ring is rationals:
                     ring_map = rationals.Mor(rationals).identity()
                 case _:
-                    raise NotImplementedError(
-                        "number-field base change is currently represented from ZZ or QQ"
+                    assert base_ring is integers or base_ring is rationals, (
+                        "number-field base change is represented from ZZ or QQ"
                     )
             return Algebras(base_ring).Associative().Unital().Commutative().base_change_adjunction(ring_map).left_adjoint()
 
@@ -616,8 +616,8 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
 
                 field = _own_number_field(_engine_ring(self).fraction_field())
                 return field.as_algebra()
-            raise NotImplementedError(
-                "the active order algebra-base-change adapter currently constructs ZZ -> ZZ and ZZ -> QQ"
+            assert target is SageZZ or target is SageQQ, (
+                "the represented order algebra base-change adapter constructs ZZ -> ZZ and ZZ -> QQ"
             )
 
         def integral_basis(self):
