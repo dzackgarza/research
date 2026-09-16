@@ -60,9 +60,6 @@ from dzack_research.preamble.categories.divisors.picard_groups import PicardGrou
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
-)
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -651,12 +648,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             orbit-cone correspondence restricted to codimension one: ``D_rho``
             is the closure of the orbit of ``rho``.
             """
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreshFreeModuleOn,
-            )
-
-            module = FreshFreeModuleOn(
-                _integers(),
+            module = _integers()._fresh_free_module_on(
                 finite_ordered_set(tuple(self.fan().cones(1))),
             )
             return WeilDivisorGroups()(module)
@@ -863,8 +855,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         @cached_method
         def local_divisor_group(self, cone):
             r"""``Div_T(U_sigma)``, free on the rays of one cone (CLS §4.1)."""
-            return FreshFreeModuleOn(
-                _integers(),
+            return _integers()._fresh_free_module_on(
                 finite_ordered_set(tuple(cone.faces(1))),
             )
 
@@ -1619,8 +1610,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if cycle_dimension < 0 or cycle_dimension > dimension:
                 raise ValueError("a cycle degree lies between zero and the scheme dimension")
             cone_dimension = dimension - cycle_dimension
-            return FreshFreeModuleOn(
-                _integers(),
+            return _integers()._fresh_free_module_on(
                 self.fan().cones(cone_dimension),
                 _extra_categories=(TorusInvariantCycleGroups(_integers()),),
                 _extra_construction_data=(

@@ -75,7 +75,7 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
 
     So a free module on a different set of the same cardinality is isomorphic
     to F_R(Delta[n-1]) and is not equal to it, and its Hom is a different
-    object.  That is why FreshFreeModuleOn does not intern its parents.
+    object.  That is why fresh free-module construction does not intern its parents.
     """
     with pytest.raises(TypeError):
         tensor.matrix(ZZ, row_keys=("a", "b"), entries=[1, 2])

@@ -817,7 +817,7 @@ def _matrix_space(base_ring, nrows, ncols=None):
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
     return _refine_matrix_hom(source.module_category().Mor(source, target))
-def FreshFreeModuleOn(
+def _fresh_free_module_on(
     base_ring,
     module_generating_set,
     *,
@@ -839,7 +839,7 @@ def FreshFreeModuleOn(
 
     ring = base_ring
     if ring not in OwnedRings():
-        raise TypeError("FreshFreeModuleOn expects a preamble ring")
+        raise TypeError("fresh free-module construction expects a preamble ring")
     labels = _module_generating_set(module_generating_set)
     return _new_sparse_free_module(
         ring,

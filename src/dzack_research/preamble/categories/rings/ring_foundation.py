@@ -1449,7 +1449,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             asked of the placement rather than of state a leaf restated.
             """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreshFreeModuleOn,
+                _fresh_free_module_on,
             )
             from dzack_research.preamble.categories.modules.pure.modules import (
                 FinitelyGeneratedFreeModules,
@@ -1461,7 +1461,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 and scalars is not self
                 and self in FinitelyGeneratedFreeModules(scalars)
             )
-            return FreshFreeModuleOn(
+            return _fresh_free_module_on(
                 scalars if over_a_smaller_base else self,
                 labels,
                 **options,
