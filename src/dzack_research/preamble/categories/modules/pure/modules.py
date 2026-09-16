@@ -2116,24 +2116,6 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
             return represented
 
 
-class _AdicModuleCompletion:
-    r"""The source module, ideal, and completed scalar ring defining ``M_hat``."""
-
-    def __init__(self, source_module, defining_ideal, completion_ring) -> None:
-        self._source_module = source_module
-        self._defining_ideal = defining_ideal
-        self._completion_ring = completion_ring
-
-    def source_module(self):
-        return self._source_module
-
-    def defining_ideal(self):
-        return self._defining_ideal
-
-    def completion_ring(self):
-        return self._completion_ring
-
-
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented modules carrying one selected finite presentation."""
 
@@ -2166,47 +2148,6 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
-        def __init__(
-            self,
-            *,
-            completion_source_module=None,
-            completion_defining_ideal=None,
-            completion_ring=None,
-            **rest,
-        ) -> None:
-            completion_data = (
-                completion_source_module,
-                completion_defining_ideal,
-                completion_ring,
-            )
-            if any(value is not None for value in completion_data) and not all(
-                value is not None for value in completion_data
-            ):
-                raise ValueError(
-                    "an adically completed module requires its source, defining ideal, and completion ring"
-                )
-            self._completion_construction = None
-            super().__init__(**rest)
-            if completion_source_module is None:
-                return
-            if completion_source_module.base_ring() is not completion_ring.completion_source():
-                raise ValueError(
-                    "the completed module source has the wrong ring for this completion"
-                )
-            if completion_defining_ideal.ring() is not completion_source_module.base_ring():
-                raise ValueError(
-                    "the completed module ideal is not an ideal of the source base ring"
-                )
-            if self.base_ring() is not completion_ring:
-                raise ValueError(
-                    "the completed module must be a module over the selected completion ring"
-                )
-            self._completion_construction = _AdicModuleCompletion(
-                completion_source_module,
-                completion_defining_ideal,
-                completion_ring,
-            )
-
         @cached_method
         def tensor_hom_adjunction(self):
             r"""Return ``- tensor self ⊣ Hom_R(self,-)`` on chosen finite presentations."""
@@ -2240,57 +2181,35 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             adjunction = Modules(ring).base_change_adjunction(completion.completion_map())
             return adjunction.left_adjoint()(self)
 
-        def is_adically_completed_module(self) -> bool:
-            return self._completion_construction is not None
+        # The completion M_hat is an ordinary scalar-extension image and holds
+        # no record of M; the maps that need both are stated on M, whose
+        # base-change functor answers M_hat by object identity.
 
-        def completion_source_module(self):
-            construction = self._completion_construction
-            if construction is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return construction.source_module()
-
-        def completion_defining_ideal(self):
-            construction = self._completion_construction
-            if construction is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return construction.defining_ideal()
-
-        def completion_ring(self):
-            construction = self._completion_construction
-            if construction is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return construction.completion_ring()
+        def completion_unit(self, completion):
+            r"""Return the canonical ``R``-linear map ``M -> Res_R(M_hat)`` for one selected completion."""
+            ring = self.base_ring()
+            if completion.completion_source() is not ring:
+                raise ValueError("the completion has the wrong source ring for this module")
+            return Modules(ring).base_change_adjunction(completion.completion_map()).unit(self)
 
         @cached_method
-        def completion_unit(self):
-            r"""Return the canonical ``R``-linear map ``M -> Res_R(M_hat)``."""
-            source = self.completion_source_module()
-            ring_map = self.completion_ring().completion_map()
-            adjunction = Modules(source.base_ring()).base_change_adjunction(ring_map)
-            if adjunction.left_adjoint()(source) is not self:
-                raise ArithmeticError(
-                    "the selected completed module is not the scalar-extension image of its retained source"
-                )
-            return adjunction.unit(source)
-
-        @cached_method
-        def adic_module_truncation(self, exponent):
+        def adic_module_truncation(self, completion, exponent):
             r"""Return ``M tensor_R R/I^exponent`` from the same selected presentation."""
-            source = self.completion_source_module()
-            quotient = self.completion_ring().adic_truncation(exponent)
-            return source.base_change(quotient.quotient_map())
+            quotient = completion.adic_truncation(exponent)
+            return self.base_change(quotient.quotient_map())
 
         @cached_method
-        def adic_module_projection(self, exponent):
+        def adic_module_projection(self, completion, exponent):
             r"""Return ``M_hat -> Res(M/I^exponent M)`` over ``R_hat``."""
-            target = self.adic_module_truncation(exponent)
-            ring_map = self.completion_ring().adic_projection(exponent)
+            completed = self.base_change_to_completion(completion)
+            target = self.adic_module_truncation(completion, exponent)
+            ring_map = completion.adic_projection(exponent)
             restricted = target.restrict_scalars(ring_map)
-            labels = self.module_generating_set()
+            labels = completed.module_generating_set()
             target_labels = target.module_generating_set()
             if labels.cardinality() != target_labels.cardinality():
                 raise ArithmeticError("adic base change changed the selected module framing cardinality")
-            return self.module_category().Mor(self, restricted)(
+            return completed.module_category().Mor(completed, restricted)(
                 {
                     label: restricted(
                         target.module_generator(

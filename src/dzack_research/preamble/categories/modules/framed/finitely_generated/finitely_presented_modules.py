@@ -529,7 +529,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 )
 
                 if self in LocalizedModules(ring):
-                    source = self.localization_source_module()
+                    source = self.numerator_module()
                     source_ring = ring.localization_source()
                     if source in _SelectedFinitePresentationModules(source_ring):
                         return source.fitting_ideal(index).extension_to_localization(ring)

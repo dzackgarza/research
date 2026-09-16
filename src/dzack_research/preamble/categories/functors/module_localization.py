@@ -68,9 +68,8 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         target = self(morphism.codomain())
 
         if source in ModuleSubobjects(source.base_ring()):
-            source_module = source.localization_source_module()
             if (
-                morphism is source_module.inclusion()
+                morphism is morphism.domain().inclusion()
                 and source.inclusion().codomain() is target
             ):
                 embedded = source.inclusion()

@@ -831,8 +831,8 @@ class ModuleMorphism(Morphism):
             if domain in LocalizedModules(ring) and codomain in LocalizedModules(ring):
                 functor = domain.localization_functor()
                 if codomain.localization_functor() is functor:
-                    source_domain = domain.localization_source_module()
-                    source_codomain = codomain.localization_source_module()
+                    source_domain = domain.numerator_module()
+                    source_codomain = codomain.numerator_module()
                     labels = tuple(source_domain.module_generating_set())
                     images = tuple(self(domain.module_generator(label)) for label in labels)
                     denominators = tuple(image.denominator() for image in images)

@@ -309,8 +309,7 @@ class Connection(Element):
         cached = self.__dict__.get("_preamble_underlying_linear_morphism")
         if cached is not None:
             return cached
-        self.parent().restricted_source_module()
-        target = self.parent().restricted_target_module()
+        target = self.parent().codomain_object()
         morphism = ConnectionUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
@@ -439,8 +438,6 @@ class ConnectionSpace(RestrictedHomCategoryParent):
         )
         if self._target_module is not expected_target:
             raise ValueError("the restricted connection target is not E tensor_A Omega^1")
-        self._restricted_source = restricted_source
-        self._restricted_target = restricted_target
         # A connection is an R-linear map E -> E (x) Omega satisfying Leibniz,
         # so this is the subcategory of the existing R-linear Mor category cut
         # out by that rule.
@@ -467,12 +464,6 @@ class ConnectionSpace(RestrictedHomCategoryParent):
     def target_module(self):
         return self._target_module
 
-    def restricted_source_module(self):
-        return self._restricted_source
-
-    def restricted_target_module(self):
-        return self._restricted_target
-
     def inclusion(self):
         return self._inclusion
 
@@ -481,8 +472,8 @@ class ConnectionSpace(RestrictedHomCategoryParent):
             return generator_images
         if isinstance(generator_images, Morphism):
             if (
-                generator_images.domain() is not self.restricted_source_module()
-                or generator_images.codomain() is not self.restricted_target_module()
+                generator_images.domain() is not self.domain_object()
+                or generator_images.codomain() is not self.codomain_object()
             ):
                 raise ValueError("the linear map has the wrong connection endpoints")
             if not isinstance(generator_images, ConnectionUnderlyingLinearMorphism):
