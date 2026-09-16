@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_structure_morphism_to_base,
     _fresh_affine_spectrum,
+    _install_scheme_subobject_construction,
     _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
@@ -494,7 +495,7 @@ def _install_glued_scheme_structure(datum, scheme) -> None:
             datum,
             index,
         )
-        chart_image._preamble_inclusion = open_inclusion
+        _install_scheme_subobject_construction(chart_image, open_inclusion)
         identity_pullback = algebra.Mor(algebra).identity()
         chart_forward = schemes.Mor(chart, chart_image)(identity_pullback)
         chart_inverse = schemes.Mor(chart_image, chart)(identity_pullback)
@@ -4711,6 +4712,7 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
     and their inclusions glue to one closed immersion into ``glued_scheme``.
     """
     from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedEmbeddings,
         ClosedSubschemes,
         Schemes,
         _refine_scheme,
@@ -4764,9 +4766,13 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
             for index in indices
         }
     )
-    glued._preamble_inclusion = inclusion
+    _install_scheme_subobject_construction(glued, inclusion)
     glued._preamble_local_closed_subschemes = local_closed
-    return _refine_scheme(glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(
+        glued,
+        base,
+        (ClosedEmbeddings(glued_scheme), ClosedSubschemes(base)),
+    )
 
 
 def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
@@ -4780,6 +4786,7 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
     local on the target for this finite affine cover.
     """
     from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedEmbeddings,
         ClosedSubschemes,
         Schemes,
         _refine_scheme,
@@ -4836,13 +4843,17 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
             for index in indices
         }
     )
-    fixed_glued._preamble_inclusion = inclusion
+    _install_scheme_subobject_construction(fixed_glued, inclusion)
     fixed_glued._preamble_local_fixed_subschemes = finite_indexed_family(
         indices,
         lambda index: local_fixed[index],
         name="Affine charts of the glued fixed subscheme",
     )
-    return _refine_scheme(fixed_glued, base, (ClosedSubschemes(base),))
+    return _refine_scheme(
+        fixed_glued,
+        base,
+        (ClosedEmbeddings(glued_scheme), ClosedSubschemes(base)),
+    )
 
 
 __all__ = [

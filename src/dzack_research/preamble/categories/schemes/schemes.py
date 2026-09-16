@@ -1701,7 +1701,7 @@ class AffineSchemes(_SchemePropertyCategory):
                 codomain=self,
                 pullback=quotient_map,
             )
-            subscheme._preamble_inclusion = inclusion
+            _install_scheme_subobject_construction(subscheme, inclusion)
             return _refine_closed_subscheme(
                 subscheme,
                 self,
@@ -1822,7 +1822,7 @@ class AffineSchemes(_SchemePropertyCategory):
                 self,
                 localization_map,
             )
-            open_subscheme._preamble_inclusion = inclusion
+            _install_scheme_subobject_construction(open_subscheme, inclusion)
             open_subscheme._preamble_distinguished_open_ambient = self
             open_subscheme._preamble_distinguished_open_element = element
             self._preamble_distinguished_open_cache = (
@@ -2191,6 +2191,37 @@ class QuasiProjectiveSchemes(_SchemePropertyCategory):
             return True
 
 
+def _native_projective_closed_subscheme(ambient, equations):
+    r"""Cut out ``equations`` in a projective scheme without selecting its subobject arrow."""
+    equations = tuple(equations)
+    engine_equations = []
+    retain_owned_equations = True
+    ambient_engine = ambient.coordinate_ring()
+    ambient_variables = tuple(ambient_engine.gens())
+    for equation in equations:
+        if not equation.is_homogeneous():
+            raise ValueError(
+                f"{equation} is not homogeneous, so it cuts out no closed subscheme of {ambient}"
+            )
+        parent = getattr(equation, "parent", lambda: None)()
+        try:
+            backend = _engine_element(parent, equation)
+        except (AttributeError, TypeError, ValueError):
+            backend = equation
+            retain_owned_equations = False
+        engine_equations.append(
+            _copy_polynomial_by_exponents(
+                backend,
+                ambient_engine,
+                ambient_variables,
+            )
+        )
+    return (
+        ambient.subscheme(tuple(engine_equations)),
+        equations if retain_owned_equations else None,
+    )
+
+
 class ProjectiveSchemes(_SchemePropertyCategory):
     property_name = "projective"
 
@@ -2217,32 +2248,14 @@ class ProjectiveSchemes(_SchemePropertyCategory):
                 if len(equations) == 1 and isinstance(equations[0], (tuple, list))
                 else tuple(equations)
             )
-            engine_equations = []
-            retain_owned_equations = True
-            ambient_engine = self.coordinate_ring()
-            ambient_variables = tuple(ambient_engine.gens())
-            for equation in equations:
-                if not equation.is_homogeneous():
-                    raise ValueError(
-                        f"{equation} is not homogeneous, so it cuts out no closed subscheme of {self}"
-                    )
-                parent = getattr(equation, "parent", lambda: None)()
-                try:
-                    backend = _engine_element(parent, equation)
-                except (AttributeError, TypeError, ValueError):
-                    backend = equation
-                    retain_owned_equations = False
-                engine_equations.append(
-                    _copy_polynomial_by_exponents(
-                        backend,
-                        ambient_engine,
-                        ambient_variables,
-                    )
-                )
-            return _refine_closed_subscheme(
-                self.subscheme(tuple(engine_equations)),
+            subscheme, retained_equations = _native_projective_closed_subscheme(
                 self,
-                defining_equations=equations if retain_owned_equations else None,
+                equations,
+            )
+            return _refine_closed_subscheme(
+                subscheme,
+                self,
+                defining_equations=retained_equations,
             )
 
 
@@ -4471,13 +4484,44 @@ class _SchemeSubobjectsOf(OwnedParameterizedCategory):
         return [Schemes(base_object.scheme_base_ring()).SubobjectCategory(base_object)]
 
     class ParentMethods:
+        def scheme_subobject_construction(self):
+            r"""Return the selected monomorphism that defines this subobject."""
+            construction = self.__dict__.get("_scheme_subobject_construction")
+            assert construction is not None, f"{self} has no selected scheme-subobject construction"
+            return construction
+
         def inclusion(self):
             r"""Return the chosen monomorphism representing this subobject.
 
             A subobject of ``X`` is the pair ``(Z, i: Z -> X)``, so the scheme
             it sits inside is ``i.codomain()`` and is never separate data.
             """
-            return self._preamble_inclusion
+            return self.scheme_subobject_construction().inclusion()
+
+
+class SchemeSubobjectConstruction:
+    r"""The selected monomorphism ``i: Z -> X`` defining one scheme subobject."""
+
+    def __init__(self, inclusion) -> None:
+        if not isinstance(inclusion, SchemeMorphism):
+            raise TypeError("a scheme subobject is defined by an owned scheme morphism")
+        self._inclusion = inclusion
+
+    def inclusion(self):
+        return self._inclusion
+
+
+def _install_scheme_subobject_construction(scheme, inclusion):
+    r"""Install the one selected subobject arrow before ``scheme`` is exposed."""
+    if inclusion.domain() is not scheme:
+        raise ValueError("a scheme-subobject inclusion must start at the represented subobject")
+    existing = scheme.__dict__.get("_scheme_subobject_construction")
+    if existing is not None:
+        if existing.inclusion() is not inclusion:
+            raise ValueError("this scheme already has a different selected subobject inclusion")
+        return scheme
+    scheme._scheme_subobject_construction = SchemeSubobjectConstruction(inclusion)
+    return scheme
 
 
 def _distinguished_overlap_transition(
@@ -4812,9 +4856,12 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     base,
                     [OpenImmersions(codomain), QuasiProjectiveSchemes(base)],
                 )
-                opened._preamble_inclusion = _OpenComplementInclusion(
-                    opened.Mor(codomain),
-                    self,
+                _install_scheme_subobject_construction(
+                    opened,
+                    _OpenComplementInclusion(
+                        opened.Mor(codomain),
+                        self,
+                    ),
                 )
                 opened._preamble_open_complement_closed_subscheme = self
                 return opened
@@ -4839,7 +4886,12 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     for left, right in combinations(tuple(indices), 2)
                 },
             )
-            glued._preamble_inclusion = glued.Mor(codomain)({index: chart.inclusion() for index, chart in charts.items()})
+            _install_scheme_subobject_construction(
+                glued,
+                glued.Mor(codomain)(
+                    {index: chart.inclusion() for index, chart in charts.items()}
+                ),
+            )
             return _refine_scheme(glued, base, [OpenImmersions(codomain)])
 
 
@@ -4988,24 +5040,24 @@ def _refine_closed_subscheme(
     base = codomain.scheme_base_ring()
     if defining_equations is not None:
         subscheme._preamble_defining_equations = tuple(defining_equations)
-    native_inclusion = (
-        subscheme.embedding_morphism()
-        if getattr(subscheme, "_preamble_inclusion", None) is None
-        else None
-    )
+    construction = subscheme.__dict__.get("_scheme_subobject_construction")
+    native_inclusion = subscheme.embedding_morphism() if construction is None else None
     if subscheme not in Schemes(base):
         # The inclusion is an arrow in ``Sch/base``.  Establish that endpoint
         # before asking the owned scheme Hom to construct the arrow.  Capture
         # Sage's native embedding first: refining the endpoint changes its Hom
         # category, but not the underlying closed immersion being retained.
         _refine_scheme(subscheme, base)
-    if getattr(subscheme, "_preamble_inclusion", None) is None:
+    if construction is None:
         # The subobject is the arrow, so a route that did not build one takes
         # the native embedding, retargeted at the stated codomain.
-        subscheme._preamble_inclusion = _categorical_scheme_morphism(
-            native_inclusion,
-            domain=subscheme,
-            codomain=codomain,
+        _install_scheme_subobject_construction(
+            subscheme,
+            _categorical_scheme_morphism(
+                native_inclusion,
+                domain=subscheme,
+                codomain=codomain,
+            ),
         )
     return _refine_scheme(
         subscheme,

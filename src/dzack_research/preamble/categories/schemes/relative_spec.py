@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _affine_morphism_from_pullback,
     _fresh_affine_spectrum,
     _affine_spec_morphism,
+    _install_scheme_subobject_construction,
 )
 
 
@@ -65,7 +66,7 @@ def _relative_overlap(datum, source_index, target_index):
         extra_categories=(OpenImmersions(ambient),),
     )
     inclusion = _affine_morphism_from_pullback(overlap, ambient, pullback)
-    overlap._preamble_inclusion = inclusion
+    _install_scheme_subobject_construction(overlap, inclusion)
     overlap._preamble_distinguished_open_ambient = ambient
     source_base = cover.open(source_index).coordinate_algebra()
     ambient_element = cover.defining_element(target_index)
@@ -120,7 +121,7 @@ def _finite_atlas_relative_overlap(datum, source_index, target_index):
         extra_categories=(OpenImmersions(ambient),),
     )
     inclusion = _affine_morphism_from_pullback(overlap, ambient, pullback)
-    overlap._preamble_inclusion = inclusion
+    _install_scheme_subobject_construction(overlap, inclusion)
     overlap._preamble_distinguished_open_ambient = ambient
     base_element = atlas.overlap(
         source_index, target_index
