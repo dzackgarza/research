@@ -41,8 +41,8 @@ def test_an_algebraic_geometry_session(name) -> None:
     rendered(point)
     assert point in AffineSchemes(base)
     assert point.relative_dimension() == 0
-    plane = AffineSpace(2, base, names=("x", "y"))
-    line = ProjectiveSpace(1, base)
+    plane = AffineSpaces(base)(2, names=("x", "y"))
+    line = ProjectiveSpaces(base)(1)
     rendered(plane)
     rendered(line)
     assert plane in AffineSchemes(base)
@@ -98,10 +98,10 @@ def test_an_algebraic_geometry_session(name) -> None:
         assert smooth.point_count() >= 1
         assert smooth.point_count() <= 2 * q + 1
         rendered(line.zeta_function())
-        assert ProjectiveSpace(2, base).point_count() == q**2 + q + 1
+        assert ProjectiveSpaces(base)(2).point_count() == q**2 + q + 1
 
     # Products and fiber products.
-    quadric = scheme_product(line, line)
+    quadric = Schemes(base).product((line, line))
     rendered(quadric)
     assert quadric in ProductSchemes(base)
     assert quadric in ProjectiveSchemes(base)
@@ -117,7 +117,7 @@ def test_an_algebraic_geometry_session(name) -> None:
     mixed = plane.product(line)
     rendered(mixed)
     assert mixed.relative_dimension() == 3
-    square = scheme_fiber_product(smooth.structure_morphism(), smooth.structure_morphism())
+    square = Schemes(base).fiber_product(smooth.structure_morphism(), smooth.structure_morphism())
     rendered(square)
     assert square.relative_dimension() == 2
     assert square.fiber_product_base() == point
@@ -139,7 +139,7 @@ def test_an_algebraic_geometry_session(name) -> None:
 
     # Spec is a contravariant functor: a ring map gives a scheme map the other way.
     spec = Algebras(base).Associative().Unital().Commutative().spectrum()
-    affine_line = PolynomialRing(base, "t")
+    affine_line = base.polynomial_ring("t")
     t = affine_line.algebra_generator("t")
     parametrization = ring.Mor(affine_line)({"x": t**2, "y": t**3})
     cusp_map = spec(parametrization)

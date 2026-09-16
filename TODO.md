@@ -767,7 +767,7 @@ The audit counts are discovery measurements, not acceptance thresholds.  A node 
   **Deliver:** keep explicit coordinate views only on the selected finite framing/presentation object where coordinates are mathematically part of that chosen datum.  Ordinary element/morphism APIs route through owned operations, Homs and universal constructions; downstream research code migrates before the old hatches are removed.
   **Acceptance:** a user cannot bypass the semantic object merely by calling an equally public raw-storage method; the retained finite-coordinate boundary names the framing/presentation that makes the coordinates meaningful and distinguishes it from unframed/infinite cases.
 
-- [ ] **`ownership-test-contract`**. **Needs:** `owner-api-convergence`.
+- [x] **`ownership-test-contract`**. **Needs:** `owner-api-convergence`.
   Replace the compatibility behavior in `tests/conftest.py` and old-global test consumers with behavioral proof of the owner API (`DEV-06`, `DEV-37`, `DEV-43`, `STY-118`, `STY-125`).
   **Observed gap:** the harness claims global operations are absent but uses `setdefault` injections that leave existing forbidden exports untouched; 135 old-global call sites and 51 star-importing test files mean a green suite can coexist with the violation.
   **Deliver:** remove the compatibility injection, migrate tests to the owner spelling, add a negative public-surface assertion that fails when a forbidden owner-in-argument global is exported, and keep mathematical expectations independent of implementation helper names.

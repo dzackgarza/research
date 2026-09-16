@@ -55,7 +55,7 @@ def test_smoothness_of_spec_over_a_base(build, name, base, smooth) -> None:
 
 def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    plane = AffineSpace(2, ring, names=("x", "y"))
+    plane = AffineSpaces(ring)(2, names=("x", "y"))
 
     assert plane in AffineSpaces(ring)
     assert plane in AffineSchemes(ring)
@@ -71,7 +71,7 @@ def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
 
 def test_projective_space_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
-    line = ProjectiveSpace(1, ring)
+    line = ProjectiveSpaces(ring)(1)
 
     assert line in ProjectiveSpaces(ring)
     assert line in ProjectiveSchemes(ring)
@@ -83,21 +83,21 @@ def test_projective_space_over_every_commutative_ring(commutative_ring) -> None:
 
 
 def test_varieties_over_every_field(field) -> None:
-    line = AffineSpace(1, field)
-    plane = ProjectiveSpace(2, field)
+    line = AffineSpaces(field)(1)
+    plane = ProjectiveSpaces(field)(2)
     assert line in Varieties(field)
     assert line in Curves(field)
-    assert ProjectiveSpace(1, field) in Curves(field)
+    assert ProjectiveSpaces(field)(1) in Curves(field)
     assert plane in Varieties(field)
     assert plane in Surfaces(field)
-    assert AffineSpace(2, field) in Surfaces(field)
+    assert AffineSpaces(field)(2) in Surfaces(field)
     assert line.dimension() == 1
     assert plane.dimension() == 2
 
 
 def test_closed_subschemes_of_the_affine_plane(commutative_ring) -> None:
     ring = commutative_ring
-    plane = AffineSpace(2, ring, names=("x", "y"))
+    plane = AffineSpaces(ring)(2, names=("x", "y"))
     x = plane.coordinate_ring().algebra_generator("x")
     y = plane.coordinate_ring().algebra_generator("y")
     cusp = plane.closed_subscheme(y**2 - x**3)
@@ -116,7 +116,7 @@ def test_closed_subschemes_of_the_affine_plane(commutative_ring) -> None:
 
 
 def test_closed_subscheme_over_a_field_is_a_curve(field) -> None:
-    plane = AffineSpace(2, field, names=("x", "y"))
+    plane = AffineSpaces(field)(2, names=("x", "y"))
     x = plane.coordinate_ring().algebra_generator("x")
     y = plane.coordinate_ring().algebra_generator("y")
     parabola = plane.closed_subscheme(y - x**2)
@@ -128,10 +128,10 @@ def test_closed_subscheme_over_a_field_is_a_curve(field) -> None:
 
 def test_products_of_schemes(commutative_ring) -> None:
     ring = commutative_ring
-    line = AffineSpace(1, ring)
-    projective = ProjectiveSpace(1, ring)
-    plane = scheme_product(line, line)
-    quadric = scheme_product(projective, projective)
+    line = AffineSpaces(ring)(1)
+    projective = ProjectiveSpaces(ring)(1)
+    plane = Schemes(ring).product((line, line))
+    quadric = Schemes(ring).product((projective, projective))
     mixed = line.product(projective)
 
     assert plane in ProductSchemes(ring)
@@ -149,8 +149,8 @@ def test_products_of_schemes(commutative_ring) -> None:
 
 def test_fiber_products_over_the_base(commutative_ring) -> None:
     ring = commutative_ring
-    line = AffineSpace(1, ring)
-    square = scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
+    line = AffineSpaces(ring)(1)
+    square = Schemes(ring).fiber_product(line.structure_morphism(), line.structure_morphism())
     assert square in FiberProductSchemes(ring)
     assert square.relative_dimension() == 2
     assert square.left_projection().codomain() is line
@@ -163,14 +163,14 @@ def test_fiber_products_over_the_base(commutative_ring) -> None:
 )
 def test_point_counts_over_finite_fields(dimension, size, affine_count, projective_count) -> None:
     field = GF(size)
-    assert AffineSpace(dimension, field).point_count() == affine_count
-    assert ProjectiveSpace(dimension, field).point_count() == projective_count
-    assert AffineSpace(dimension, field).point_count(2) == size ** (2 * dimension)
+    assert AffineSpaces(field)(dimension).point_count() == affine_count
+    assert ProjectiveSpaces(field)(dimension).point_count() == projective_count
+    assert AffineSpaces(field)(dimension).point_count(2) == size ** (2 * dimension)
 
 
 def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
     field = GF(5)
-    plane = AffineSpace(2, field, names=("x", "y"))
+    plane = AffineSpaces(field)(2, names=("x", "y"))
     x = plane.coordinate_ring().algebra_generator("x")
     y = plane.coordinate_ring().algebra_generator("y")
     parabola = plane.closed_subscheme(y - x**2)
@@ -180,7 +180,7 @@ def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
 
 def test_spec_is_a_contravariant_functor(field) -> None:
     spec = Algebras(field).Associative().Unital().Commutative().spectrum()
-    polynomials = PolynomialRing(field, "x")
+    polynomials = field.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     squaring = polynomials.Mor(polynomials)({"x": x**2})
     morphism = spec(squaring)
@@ -193,7 +193,7 @@ def test_spec_is_a_contravariant_functor(field) -> None:
 
 
 def test_the_stalk_of_the_structure_sheaf_is_the_local_ring() -> None:
-    line = AffineSpace(1, QQ, names=("x",))
+    line = AffineSpaces(QQ)(1, names=("x",))
     ring = line.coordinate_ring()
     x = ring.algebra_generator("x")
     origin = line.underlying_space()(ring.ideal(x))

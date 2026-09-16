@@ -32,7 +32,7 @@ def test_a_plane_curve_session(name) -> None:
     rendered(field)
 
     # The polynomial ring and a few ideals.
-    plane = PolynomialRing(field, ("x", "y"))
+    plane = field.polynomial_ring(("x", "y"))
     rendered(plane)
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
@@ -108,7 +108,7 @@ def test_a_plane_curve_session(name) -> None:
     assert completion.residue_field().characteristic() == field.characteristic()
 
     # The curve as a scheme.
-    affine = AffineSpace(2, field, names=("x", "y"))
+    affine = AffineSpaces(field)(2, names=("x", "y"))
     curve = affine.closed_subscheme(affine.coordinate_ring().algebra_generator("y") ** 2 - affine.coordinate_ring().algebra_generator("x") ** 3)
     rendered(curve)
     assert curve in Curves(field)
@@ -138,7 +138,7 @@ def test_a_plane_curve_session(name) -> None:
     rendered(de_rham.cohomology(1))
 
     # Over the smooth affine line the Poincaré lemma holds in characteristic zero.
-    line = PolynomialRing(field, "t")
+    line = field.polynomial_ring("t")
     line_de_rham = line.de_rham_algebra()
     rendered(line_de_rham)
     if field.characteristic() == 0:

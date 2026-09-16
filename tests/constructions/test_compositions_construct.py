@@ -23,9 +23,9 @@ def test_lattices_over_orders_and_over_p_adics(build) -> None:
 
 
 def test_polynomials_over_quotients_orders_and_polynomial_rings(build) -> None:
-    over_order = PolynomialRing(build("ZZ[i]"), "x")
-    over_quotient = PolynomialRing(Zmod(12), "x")
-    iterated = PolynomialRing(PolynomialRing(QQ, "x"), "y")
+    over_order = build("ZZ[i]").polynomial_ring("x")
+    over_quotient = Zmod(12).polynomial_ring("x")
+    iterated = QQ.polynomial_ring("x").polynomial_ring("y")
     assert over_order in IntegralDomains()
     assert over_order in NoetherianRings()
     assert over_order.krull_dimension() == 2
@@ -33,20 +33,20 @@ def test_polynomials_over_quotients_orders_and_polynomial_rings(build) -> None:
     assert over_quotient.krull_dimension() == 1
     assert iterated in IntegralDomains()
     assert iterated.krull_dimension() == 2
-    assert iterated in Algebras(PolynomialRing(QQ, "x")).Associative().Unital().Commutative()
+    assert iterated in Algebras(QQ.polynomial_ring("x")).Associative().Unital().Commutative()
     assert iterated in Algebras(QQ).Associative().Unital().Commutative()
 
 
 def test_matrices_over_polynomial_rings_and_modules_over_matrix_algebras() -> None:
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
-    matrices = MatrixSpace(polynomials, 2)
+    matrices = polynomials.matrix_space(2)
     jordan = matrices.from_rows([[x, 1], [0, x]])
     assert jordan.determinant() == x**2
     assert (jordan * jordan).matrix_entry(0, 1) == 2 * x
     assert jordan.transpose().matrix_entry(1, 0) == 1
-    over_matrices = FreeModule(MatrixSpace(QQ, 2), 2)
-    assert over_matrices in Modules(MatrixSpace(QQ, 2))
+    over_matrices = QQ.matrix_space(2).free_module(2)
+    assert over_matrices in Modules(QQ.matrix_space(2))
     assert over_matrices.module_rank() == 2
 
 
@@ -60,7 +60,7 @@ def test_quotients_of_quotients_and_localizations_of_quotients() -> None:
     assert local.cardinality() == 4
     assert local.residue_field().cardinality() == 2
     assert twelve.spectrum().closed_set(twelve.ideal(twelve(2)))
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     cubic = polynomials.quotient_ring(polynomials.ideal(x**3))
     assert cubic.quotient_ring(cubic.ideal(cubic.quotient_map()(x**2))).cardinality() == aleph0
@@ -76,7 +76,7 @@ def test_completions_of_localizations_and_fraction_fields_of_quotients() -> None
     assert completion.residue_field().cardinality() == 5
     assert completion.characteristic() == 0
     assert local.fraction_field() is QQ
-    polynomials = PolynomialRing(ZZ, "x")
+    polynomials = ZZ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
     fractions = gaussian.fraction_field()
@@ -109,15 +109,15 @@ def test_kahler_differentials_of_localizations_and_quotients(build) -> None:
     assert local.cardinality() == 1
     assert dual.cardinality() == 4
     assert finite.cardinality() == 1
-    integers = PolynomialRing(ZZ, "x")
+    integers = ZZ.polynomial_ring("x")
     x = integers.algebra_generator("x")
     quotient = integers.quotient_ring(integers.ideal(x**2 + 1))
     assert quotient.as_algebra_over(ZZ).kahler_differentials().cardinality() == 4
 
 
 def test_tensor_products_and_pushouts_of_algebras() -> None:
-    first = PolynomialRing(QQ, "x")
-    second = PolynomialRing(QQ, "y")
+    first = QQ.polynomial_ring("x")
+    second = QQ.polynomial_ring("y")
     plane = Algebras(QQ).Associative().Unital().Commutative().coproduct((first, second))
     assert plane in CommutativeAlgebraCoproducts(QQ)
     assert plane in Algebras(QQ).Associative().Unital().Commutative()
@@ -129,7 +129,7 @@ def test_tensor_products_and_pushouts_of_algebras() -> None:
     assert split not in IntegralDomains()
     assert split.krull_dimension() == 0
 
-    parameter = PolynomialRing(QQ, "t")
+    parameter = QQ.polynomial_ring("t")
     t = parameter.algebra_generator("t")
     square = parameter.Mor(first)({"t": first.algebra_generator("x") ** 2})
     cube = parameter.Mor(second)({"t": second.algebra_generator("y") ** 3})
@@ -137,7 +137,7 @@ def test_tensor_products_and_pushouts_of_algebras() -> None:
     assert glued in CommutativeAlgebraPushouts(QQ)
     assert glued.krull_dimension() == 1
     assert glued in IntegralDomains()
-    fibered = scheme_fiber_product((square).affine_spectrum(), (cube).affine_spectrum())
+    fibered = Schemes(QQ).fiber_product(square.affine_spectrum(), cube.affine_spectrum())
     assert fibered.relative_dimension() == 1
     assert fibered in AffineSchemes(QQ)
     assert fibered.coordinate_ring() == glued
@@ -160,7 +160,7 @@ def test_the_trace_form_of_a_number_field_is_a_lattice(build) -> None:
 
 
 def test_a_torsion_module_with_a_form_and_a_lattice_over_it() -> None:
-    values = FractionFieldQuotient(ZZ, 1)
+    values = FractionFieldQuotients(ZZ)(1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram([[4]], [[QQ(1) / 4]], values)
     assert form.cardinality() == 4
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
@@ -170,13 +170,13 @@ def test_a_torsion_module_with_a_form_and_a_lattice_over_it() -> None:
 
 def test_module_morphisms_as_matrices_and_back(commutative_ring) -> None:
     ring = commutative_ring
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     e0, e1 = module.module_generator(0), module.module_generator(1)
     morphism = module.Mor(module)({0: e0 + e1, 1: 2 * e1})
     matrix = morphism.matrix()
     homs = module.Hom(module)
 
-    assert matrix in MatrixSpace(ring, 2)
+    assert matrix in ring.matrix_space(2)
     assert matrix.determinant() == 2 * ring.one()
     assert homs.from_morphism(morphism) in homs
     assert homs.as_morphism(homs.from_morphism(morphism)) == morphism
@@ -186,8 +186,8 @@ def test_module_morphisms_as_matrices_and_back(commutative_ring) -> None:
 
 def test_schemes_over_orders_and_over_quotients(build) -> None:
     gaussian = build("ZZ[i]")
-    line = AffineSpace(1, gaussian)
-    projective = ProjectiveSpace(1, Zmod(12))
+    line = AffineSpaces(gaussian)(1)
+    projective = ProjectiveSpaces(Zmod(12))(1)
     assert line in AffineSchemes(gaussian)
     assert line.relative_dimension() == 1
     assert line.coordinate_ring().krull_dimension() == 2

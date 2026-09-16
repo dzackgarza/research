@@ -20,7 +20,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
     ring = build(name)
     group = Groups.S(3)
-    algebra = GroupAlgebra(ring, group)
+    algebra = Groups().group_algebra(ring)(group)
     assert algebra in Algebras(ring)
     assert algebra.module_rank() == 6
     assert algebra not in Algebras(ring).Associative().Unital().Commutative()
@@ -41,7 +41,7 @@ def test_the_group_algebra_by_subscript_notation() -> None:
 
 def test_the_regular_representation_is_the_group_algebra_as_a_module() -> None:
     group = Groups.S(3)
-    regular = GroupAlgebra(QQ, group).regular_representation()
+    regular = Groups().group_algebra(QQ)(group).regular_representation()
     assert regular in Modules(QQ[group])
     assert regular.module_rank() == 6
     assert regular.module_invariants().module_rank() == 1
@@ -158,7 +158,7 @@ def test_dedekind_zeta_and_the_algebraic_closure(build) -> None:
 
 
 def test_the_genus_and_points_of_plane_curves() -> None:
-    plane = AffineSpace(2, GF(5), names=("x", "y"))
+    plane = AffineSpaces(GF(5))(2, names=("x", "y"))
     x = plane.coordinate_ring().algebra_generator("x")
     y = plane.coordinate_ring().algebra_generator("y")
     elliptic = plane.closed_subscheme(y**2 - x**3 - x)
@@ -166,7 +166,7 @@ def test_the_genus_and_points_of_plane_curves() -> None:
     assert elliptic.genus() == 1
     assert cusp.geometric_genus() == 0
     assert cusp.arithmetic_genus() == 1
-    assert ProjectiveSpace(1, GF(5)).genus() == 0
+    assert ProjectiveSpaces(GF(5))(1).genus() == 0
     assert elliptic.is_smooth()
     assert not cusp.is_smooth()
     assert cusp.singular_points().cardinality() == 1
@@ -180,7 +180,7 @@ def test_the_genus_and_points_of_plane_curves() -> None:
 
 
 def test_riemann_roch_on_the_projective_line() -> None:
-    line = ProjectiveSpace(1, QQ)
+    line = ProjectiveSpaces(QQ)(1)
     point = line.point((1, 0))
     divisor = 3 * line.divisor(point)
     assert divisor.degree() == 3
@@ -240,7 +240,7 @@ def test_clifford_algebras_and_witt_invariants() -> None:
 
 def test_quotients_of_modules_by_the_slash(pid) -> None:
     ring = pid
-    module = FreeModule(ring, 2)
+    module = ring.free_module(2)
     submodule = module.subobject_on([2 * module.module_generator(0), module.module_generator(1)])
     quotient = module / submodule
     assert quotient in Modules(ring)
@@ -251,8 +251,8 @@ def test_quotients_of_modules_by_the_slash(pid) -> None:
 
 def test_hom_tensor_and_sum_spelled_as_a_sage_user_would(commutative_ring) -> None:
     ring = commutative_ring
-    plane = FreeModule(ring, 2)
-    line = FreeModule(ring, 1)
+    plane = ring.free_module(2)
+    line = ring.free_module(1)
     assert Hom(plane, line).module_rank() == 2
     assert plane.hom(line) in Cat()
     assert plane.tensor(line).module_rank() == 2
@@ -268,19 +268,19 @@ def test_hom_tensor_and_sum_spelled_as_a_sage_user_would(commutative_ring) -> No
 
 
 def test_symmetric_and_exterior_powers_by_their_usual_names(commutative_ring) -> None:
-    module = FreeModule(commutative_ring, 3)
-    assert SymmetricPower(module, 2).module_rank() == 6
+    module = commutative_ring.free_module(3)
+    assert module.symmetric_power(2).module_rank() == 6
     assert ExteriorPower(module, 2).module_rank() == 3
     assert ExteriorPower(module, 3).module_rank() == 1
     assert ExteriorPower(module, 4).module_rank() == 0
-    assert TensorPower(module, 2).module_rank() == 9
+    assert module.tensor_power(2).module_rank() == 9
     assert Sym(module, 2).module_rank() == 6
     assert Alt(module, 2).module_rank() == 3
 
 
 def test_torsion_and_length_of_modules_over_the_integers() -> None:
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 6))
-    free = FreeModule(ZZ, 2)
+    free = ZZ.free_module(2)
     assert module.torsion_submodule() == module
     assert free.torsion_submodule().cardinality() == 1
     assert free.is_torsion_free()
@@ -327,7 +327,7 @@ def test_dual_numbers_are_not_reduced_and_their_radical_is_epsilon() -> None:
 
 
 def test_normalization_of_the_cusp_and_regularity() -> None:
-    plane = PolynomialRing(QQ, ("x", "y"))
+    plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     cusp = plane.quotient_ring(plane.ideal(y**2 - x**3))
@@ -354,7 +354,7 @@ def test_factoring_elements_and_counting_divisors() -> None:
     assert ZZ(12).number_of_divisors() == 6
     assert ZZ(97).is_prime()
     assert ZZ(0).factorial() == 1
-    polynomials = PolynomialRing(QQ, "x")
+    polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
     assert (x**2 - 1).factor().cardinality() == 2
     assert (x**2 + 1).is_irreducible()
@@ -453,39 +453,39 @@ def test_orbits_and_stabilizers_spelled_on_the_group() -> None:
 
 def test_dimensions_components_and_base_change_of_schemes() -> None:
     assert (ZZ).affine_spectrum().dimension() == 1
-    assert AffineSpace(1, ZZ).dimension() == 2
-    assert AffineSpace(2, QQ).dimension() == 2
+    assert AffineSpaces(ZZ)(1).dimension() == 2
+    assert AffineSpaces(QQ)(2).dimension() == 2
     assert (QQ).affine_spectrum().dimension() == 0
-    axes = AffineSpace(2, QQ, names=("x", "y")).closed_subscheme(
-        AffineSpace(2, QQ, names=("x", "y")).coordinate_ring().algebra_generator("x")
-        * AffineSpace(2, QQ, names=("x", "y")).coordinate_ring().algebra_generator("y")
+    axes = AffineSpaces(QQ)(2, names=("x", "y")).closed_subscheme(
+        AffineSpaces(QQ)(2, names=("x", "y")).coordinate_ring().algebra_generator("x")
+        * AffineSpaces(QQ)(2, names=("x", "y")).coordinate_ring().algebra_generator("y")
     )
     assert axes.irreducible_components().cardinality() == 2
     assert not axes.is_irreducible()
-    assert AffineSpace(2, QQ).is_irreducible()
+    assert AffineSpaces(QQ)(2).is_irreducible()
     assert axes.is_reduced()
     assert axes.dimension() == 1
-    assert AffineSpace(2, ZZ).base_change(ZZ.Mor(GF(5))(lambda n: GF(5)(n))).point_count() == 25
-    assert AffineSpace(1, ZZ).fiber((ZZ).affine_spectrum().underlying_space()(ZZ.ideal(5))).point_count() == 5
+    assert AffineSpaces(ZZ)(2).base_change(ZZ.Mor(GF(5))(lambda n: GF(5)(n))).point_count() == 25
+    assert AffineSpaces(ZZ)(1).fiber((ZZ).affine_spectrum().underlying_space()(ZZ.ideal(5))).point_count() == 5
 
 
 def test_proj_blowups_and_global_sections() -> None:
-    graded = PolynomialRing(QQ, ("x", "y", "z"))
+    graded = QQ.polynomial_ring(("x", "y", "z"))
     plane = Proj(graded)
-    assert plane == ProjectiveSpace(2, QQ)
+    assert plane == ProjectiveSpaces(QQ)(2)
     assert plane.dimension() == 2
     assert plane.global_sections().module_rank() == 1
     assert H(0, plane, plane.structure_sheaf()).module_rank() == 1
     assert H(1, plane, plane.structure_sheaf()).module_rank() == 0
     assert plane.euler_characteristic() == 3
     assert plane.picard_group().module_rank() == 1
-    blown_up = AffineSpace(2, QQ).blowup(AffineSpace(2, QQ).point((0, 0)))
+    blown_up = AffineSpaces(QQ)(2).blowup(AffineSpaces(QQ)(2).point((0, 0)))
     assert blown_up.dimension() == 2
     assert blown_up.exceptional_divisor().dimension() == 1
-    assert blown_up.exceptional_divisor().is_isomorphic_to(ProjectiveSpace(1, QQ))
-    assert AffineSpace(2, QQ).point((1, 2)).residue_field() is QQ
-    assert AffineSpace(2, QQ).local_ring(AffineSpace(2, QQ).point((1, 2))) in LocalRings()
-    assert AffineSpace(2, QQ).tangent_space(AffineSpace(2, QQ).point((1, 2))).module_rank() == 2
+    assert blown_up.exceptional_divisor().is_isomorphic_to(ProjectiveSpaces(QQ)(1))
+    assert AffineSpaces(QQ)(2).point((1, 2)).residue_field() is QQ
+    assert AffineSpaces(QQ)(2).local_ring(AffineSpaces(QQ)(2).point((1, 2))) in LocalRings()
+    assert AffineSpaces(QQ)(2).tangent_space(AffineSpaces(QQ)(2).point((1, 2))).module_rank() == 2
 
 
 # ---------------------------------------------------------------------------
@@ -548,7 +548,7 @@ def test_forgetful_and_free_functors_by_their_usual_names() -> None:
     assert forget.left_adjoint() == free
     assert (forget * free)(Sets.Δ[0]).cardinality() == aleph0
     assert forget.compose(free) == forget * free
-    assert Modules(ZZ).underlying_abelian_group()(FreeModule(ZZ, 2)).is_abelian()
+    assert Modules(ZZ).underlying_abelian_group()(ZZ.free_module(2)).is_abelian()
     assert OwnedRings().underlying_abelian_group()(ZZ) in AbelianGroups()
     assert Yoneda(Sets())(Sets.Δ[1]) in Cat().Mor(Sets().opposite(), Sets())
     assert Sets().hom_functor(Sets.Δ[1])(Sets.Δ[2]).cardinality() == 9
