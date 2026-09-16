@@ -653,7 +653,7 @@ Some members are sets with structure and belong there.
 Others are not sets at all, and declare `Sets()` because the category their objects belong to is not in the tree.
 These nodes build the missing categories rather than leaving the false declarations standing.
 
-- [ ] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
+- [x] **`sheaf-descent-subcategory`**. **Needs:** `arrow-category-placement`, `cat-valued-placement`.
   **Goal:** Own a coverage on a category and the sheaf condition it defines, so that sheaves on \(C\) are the full subcategory of \(\mathrm{Presh}(C, D)\) cut out by descent.
   **Observed gap:** the descent condition exists in exactly one situation and as gluing data rather than as a definition: `DistinguishedAffineCover.glue_modules` assembles a module sheaf from charts and transition isomorphisms.  Nothing states the condition a presheaf must satisfy.
   **Owners:** the coverage on \(C\), the descent diagram it produces for a covering family, and the full subcategory of the presheaf category.
