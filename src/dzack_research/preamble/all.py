@@ -273,15 +273,6 @@ from dzack_research.preamble.categories.functors.set_constructions import (
 from dzack_research.preamble.categories.functors.set_constructions import (
     InverseImagePowerSetFunctor as InverseImagePowerSetFunctor,
 )
-from dzack_research.preamble.categories.functors.subobject_images import (
-    DirectImageSubobjectFunctor as DirectImageSubobjectFunctor,
-)
-from dzack_research.preamble.categories.functors.subobject_images import (
-    InverseImageSubobjectFunctor as InverseImageSubobjectFunctor,
-)
-from dzack_research.preamble.categories.functors.subobject_images import (
-    SubobjectImageAdjunction as SubobjectImageAdjunction,
-)
 from dzack_research.preamble.categories.group import (
     AbelianGroups,
     AbsoluteDecompositionGroup,

@@ -17,7 +17,7 @@ def _inverse_image_subobject(morphism, subobject):
     return (direct_sum.left_projection() * kernel.inclusion()).image()
 
 
-class DirectImageSubobjectFunctor(Functor):
+class _DirectImageSubobjectFunctor(Functor):
     r"""The monotone map ``f_* : Sub(M) -> Sub(N)``."""
 
     def __init__(self, morphism) -> None:
@@ -40,7 +40,7 @@ class DirectImageSubobjectFunctor(Functor):
         ).canonical_morphism()
 
 
-class InverseImageSubobjectFunctor(Functor):
+class _InverseImageSubobjectFunctor(Functor):
     r"""The monotone map ``f^{-1} : Sub(N) -> Sub(M)``."""
 
     def __init__(self, morphism) -> None:
@@ -63,14 +63,14 @@ class InverseImageSubobjectFunctor(Functor):
         ).canonical_morphism()
 
 
-class SubobjectImageAdjunction(Adjunction):
+class _SubobjectImageAdjunction(Adjunction):
     r"""The Galois connection ``f_* ⊣ f^{-1}`` on fixed-ambient subobjects."""
 
     def __init__(self, morphism) -> None:
         self._morphism = morphism
         super().__init__(
-            DirectImageSubobjectFunctor(morphism),
-            InverseImageSubobjectFunctor(morphism),
+            _DirectImageSubobjectFunctor(morphism),
+            _InverseImageSubobjectFunctor(morphism),
         )
 
 
@@ -83,8 +83,4 @@ class SubobjectImageAdjunction(Adjunction):
         return self.left_adjoint().codomain().Mor(source, subobject).canonical_morphism()
 
 
-__all__ = [
-    "DirectImageSubobjectFunctor",
-    "InverseImageSubobjectFunctor",
-    "SubobjectImageAdjunction",
-]
+__all__ = []

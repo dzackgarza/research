@@ -763,10 +763,10 @@ class ModuleMorphism(Morphism):
     def subobject_image_adjunction(self):
         r"""Return ``f_* ⊣ f^{-1}`` on fixed-ambient module subobjects."""
         from dzack_research.preamble.categories.functors.subobject_images import (
-            SubobjectImageAdjunction,
+            _SubobjectImageAdjunction,
         )
 
-        return SubobjectImageAdjunction(self)
+        return _SubobjectImageAdjunction(self)
 
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
