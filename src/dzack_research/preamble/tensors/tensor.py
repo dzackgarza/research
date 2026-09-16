@@ -500,8 +500,9 @@ class Tensor:
             raise IndexError("the selected slot is not a lower index of the right tensor")
         if upper[slot] != other_lower[other_slot]:
             raise ValueError("contracted tensor slots must have the same rank")
-        if Infinity in self._index_ranks() + other._index_ranks():
-            raise NotImplementedError("coordinate contraction currently requires finite index ranks")
+        assert Infinity not in self._index_ranks() + other._index_ranks(), (
+            "coordinate contraction requires finite represented index ranks"
+        )
 
         from itertools import product as cartesian_product
 
@@ -609,8 +610,9 @@ class Tensor:
             raise IndexError("the tensor has no such upper/lower pair of slots")
         if upper[slot] != lower[other_slot]:
             raise ValueError("traced tensor slots must have the same rank")
-        if Infinity in self._index_ranks():
-            raise NotImplementedError("coordinate trace currently requires finite index ranks")
+        assert Infinity not in self._index_ranks(), (
+            "coordinate trace requires finite represented index ranks"
+        )
 
         from itertools import product as cartesian_product
 
@@ -652,8 +654,9 @@ class Tensor:
             raise TypeError("tensor_product requires another represented tensor")
         if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
             raise TypeError("a tensor product requires one base ring")
-        if Infinity in self._index_ranks() + other._index_ranks():
-            raise NotImplementedError("coordinate tensor products currently require finite index ranks")
+        assert Infinity not in self._index_ranks() + other._index_ranks(), (
+            "coordinate tensor products require finite represented index ranks"
+        )
 
         from itertools import product as cartesian_product
 
@@ -716,8 +719,9 @@ class Tensor:
         rank = int(formed_module.module_rank())
         if lower[slot] != rank:
             raise ValueError("the selected lower slot has the wrong rank for this form")
-        if Infinity in self._index_ranks():
-            raise NotImplementedError("coordinate index raising currently requires finite index ranks")
+        assert Infinity not in self._index_ranks(), (
+            "coordinate index raising requires finite represented index ranks"
+        )
 
         inverse = _engine_component_matrix(formed_module.gram_tensor()).inverse()
         ring = self.base_ring()
@@ -774,8 +778,9 @@ class Tensor:
         rank = int(formed_module.module_rank())
         if upper[slot] != rank:
             raise ValueError("the selected upper slot has the wrong rank for this form")
-        if Infinity in self._index_ranks():
-            raise NotImplementedError("coordinate index lowering currently requires finite index ranks")
+        assert Infinity not in self._index_ranks(), (
+            "coordinate index lowering requires finite represented index ranks"
+        )
 
         gram = formed_module.gram_tensor()
         ring = self.base_ring()
