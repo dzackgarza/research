@@ -484,8 +484,38 @@ def _declared_edges(
 def _axiom_edges(
     declarations: list[CategoryDeclaration], declared: set[tuple[str, str]]
 ) -> set[tuple[str, str]]:
-    """The edges Sage's join supplies: each axiom vertex declares every vertex
-    with one axiom fewer, down to the base.  These are computed, not written."""
+    """The edges Sage's join supplies, computed rather than written.
+
+    Each axiom vertex declares every vertex with one axiom fewer, down to the
+    base; and for a written ``X -> Y``, ``X.S`` declares ``Y.T`` where ``T`` is
+    the part of ``S`` that ``Y`` or a category above it defines
+    (``CategoryWithAxiom.super_categories`` applies the axiom to every
+    supercategory of the base, and ``_with_axiom_as_tuple`` walks upward to
+    the nearest category defining it).
+    """
+    nested: dict[str, set[str]] = {}
+    for d in declarations:
+        if d.axiom_of:
+            nested.setdefault(d.axiom_of, set()).update(d.qualified_name.split(".")[1:])
+    above: dict[str, set[str]] = {}
+    for below, over in declared:
+        if "." not in below and "." not in over:
+            above.setdefault(below, set()).add(over)
+
+    # Axioms a base can apply: its own nested ones and those of every category
+    # above it, closed by iteration until nothing changes.
+    defined: dict[str, set[str]] = {b: set(a) for b, a in nested.items()}
+    changed = True
+    while changed:
+        changed = False
+        for base, overs in above.items():
+            gathered = set(defined.get(base, set()))
+            for over in overs:
+                gathered |= defined.get(over, set())
+            if gathered != defined.get(base, set()):
+                defined[base] = gathered
+                changed = True
+
     pending = {v for edge in declared for v in edge if "." in v} | {
         d.vertex for d in declarations if d.axiom_of
     }
@@ -493,12 +523,18 @@ def _axiom_edges(
     while pending:
         vertex = pending.pop()
         base, *axioms = vertex.split(".")
-        for dropped in axioms:
-            below = _vertex(base, tuple(a for a in axioms if a != dropped))
-            if (vertex, below) not in edges:
-                edges.add((vertex, below))
-                if "." in below:
-                    pending.add(below)
+        targets = [
+            _vertex(base, tuple(a for a in axioms if a != dropped)) for dropped in axioms
+        ]
+        for over in above.get(base, ()):
+            carried = tuple(a for a in axioms if a in defined.get(over, ()))
+            if carried:
+                targets.append(_vertex(over, carried))
+        for target in targets:
+            if (vertex, target) not in edges:
+                edges.add((vertex, target))
+                if "." in target:
+                    pending.add(target)
     return edges
 
 
@@ -641,10 +677,17 @@ def render_cells(declarations: list[CategoryDeclaration]) -> str:
     def through_a_shortcut(cycle: list[str]) -> bool:
         return any(frozenset(pair) in dropped for pair in zip(cycle, cycle[1:] + cycle[:1]))
 
+    written = {frozenset(edge) for edge in _declared_edges(declarations)}
+
     def is_axiom_join(cycle: list[str]) -> bool:
-        # Every vertex is one base with a subset of its axioms: Sage computes
-        # this join, so the two routes are the same functor by construction.
-        return len({_base_of(v) for v in cycle}) == 1
+        # Inside one base every route is an inclusion of axiom subcategories,
+        # and a cycle with at most one written edge closes through edges Sage
+        # computes; either way the two routes are the same functor.
+        one_base = len({_base_of(v) for v in cycle}) == 1
+        written_edges = sum(
+            frozenset(pair) in written for pair in zip(cycle, cycle[1:] + cycle[:1])
+        )
+        return one_base or written_edges <= 1
 
     lines = [
         "Homology of the declaration graph.",
