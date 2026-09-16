@@ -1,7 +1,7 @@
 """Algebras graded by a monoid."""
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
@@ -26,41 +26,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
     OwnedRings,
-    Zmod,
     _engine_element,
     _own_ring,
 )
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
-
-
-@cached_function
-def _integer_koszul_parity():
-    r"""The reduction ``ZZ -> ZZ/2``, built once."""
-    integers = _own_ring(SageZZ)
-    parity_target = Zmod(2)
-    return integers.Mor(parity_target)(parity_target)
-
-
-def _koszul_parity(grading_monoid):
-    r"""The parity ``M -> ZZ/2`` the Koszul sign ``(-1)^(eps(p) eps(q))`` reads through.
-
-    Convention: the integers reduce mod 2 and ``ZZ/2`` (a superalgebra's
-    grading) is its own parity.  Any other grading monoid has no canonical
-    parity, and the axiom asserts rather than choosing one.
-    """
-    parity_target = Zmod(2)
-    match grading_monoid:
-        case _ if grading_monoid is _own_ring(SageZZ):
-            return _integer_koszul_parity()
-        case _ if grading_monoid is parity_target:
-            return parity_target.Mor(parity_target).identity()
-        case _:
-            assert False, (
-                f"{grading_monoid} is a grading monoid with no canonical parity "
-                f"homomorphism to {parity_target}; supercommutativity is stated "
-                "over ZZ or ZZ/2"
-            )
 
 
 def _homogeneous_degree(element):
@@ -247,33 +216,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             Algebras(self.base_ring()).Associative().Unital(),
             GradedModules(self.base_ring(), self.grading_monoid()),
         ]
-
-    class SubcategoryMethods:
-        def Supercommutative(self):
-            r"""Return the refinement satisfying the Koszul sign rule."""
-            return self._with_axiom("Supercommutative")
-
-    class Supercommutative(CategoryWithAxiom):
-        r"""Graded algebras with ``xy = (-1)^(eps(p) eps(q)) yx`` on homogeneous elements.
-
-        ``eps`` is the parity of the grading monoid, as in
-        :func:`_koszul_parity`.  Sage's ``Supercommutative`` axiom states the
-        same rule on ``ZZ/2``-graded algebras.
-        """
-
-        def grading_monoid(self) -> Parent:
-            return self._base_category.grading_monoid()
-
-        def parity_homomorphism(self):
-            r"""Return the ``M -> ZZ/2`` this category's Koszul sign is read through."""
-            return _koszul_parity(self.grading_monoid())
-
-        def an_object(self):
-            r"""The identity-degree rank-one algebra, where the sign rule is vacuous."""
-            algebra = self._base_category.an_object()
-            refine(algebra, Algebras(self.base_ring()).Commutative())
-            refine(algebra, self)
-            return algebra
 
     class ParentMethods:
         def restrict_scalars(self, ring_map):

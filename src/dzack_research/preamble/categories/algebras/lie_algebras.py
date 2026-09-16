@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    _proper_restriction_base_ring,
 )
 
 
@@ -133,11 +132,7 @@ class CommutatorLieAlgebras(OwnedCategoryOverBaseRing):
         return "commutator Lie algebras"
 
     def super_categories(self):
-        ring = self.base_ring()
-        base = _proper_restriction_base_ring(ring)
-        if base is not None:
-            return [Algebras(ring).Lie(), CommutatorLieAlgebras(base)]
-        return [Algebras(ring).Lie()]
+        return [Algebras(self.base_ring()).Lie()]
 
 
 __all__ = [

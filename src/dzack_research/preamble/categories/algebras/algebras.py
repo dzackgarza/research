@@ -48,7 +48,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
-    _proper_restriction_base_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -647,9 +646,6 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        base = _proper_restriction_base_ring(self.base_ring())
-        if base is not None:
-            return [Algebras(base), Modules(self.base_ring())]
         return [Modules(self.base_ring())]
 
     def underlying_module(self):
