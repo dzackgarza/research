@@ -71,3 +71,24 @@ def test_predicate_subring_initializes_its_scalar_action_product_and_unit() -> N
     assert subring.multiplication()(subring.one(), four) == four
     assert subring.algebra_structure_morphism() is subring.Mor(subring).identity()
     assert subring.inclusion()(subring.multiplication()(three, four)) == QQ(12)
+
+
+def test_predicate_subring_elements_and_regular_coefficients_keep_the_subring_parent() -> None:
+    subring = QQ.predicate_subring(lambda value: value.denominator() == 1, "z is integral")
+    three, four = subring(3), subring(4)
+    assert three.parent() is subring
+    assert subring.one().parent() is subring
+    assert subring.zero().parent() is subring
+    assert (three + four).parent() is subring
+    assert (three * four).parent() is subring
+    assert all(value.parent() is subring for value in subring.framing_coefficients(three).values())
+    assert subring.inclusion()(three).parent() is QQ
+    assert subring.inclusion()(three * four) == QQ(12)
+    assert subring.one().is_unit() is True
+    assert subring(-1).is_unit() is True
+    assert three.is_unit() is False
+    assert QQ(3).is_unit() is True
+    product = subring.multiplication()
+    assert product.domain().tensor_factor(0) is subring
+    assert product.domain().tensor_factor(1) is subring
+    assert product(three, four).parent() is subring

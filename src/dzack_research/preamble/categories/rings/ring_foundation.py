@@ -449,11 +449,17 @@ class PredicateSubrings(OwnedCategory):
             return self._predicate
 
         def __contains__(self, element):
-            if element not in self._ambient_ring:
+            from sage.structure.element import parent as element_parent
+
+            if element_parent(element) is self:
+                return True
+            try:
+                candidate = self._ambient_ring(element)
+            except (TypeError, ValueError):
                 return False
-            answer = self._predicate(element)
+            answer = self._predicate(candidate)
             assert answer is True or answer is False, (
-                f"membership in {self} requires the selected predicate to decide {element}"
+                f"membership in {self} requires the selected predicate to decide {candidate}"
             )
             return answer
 
@@ -462,6 +468,8 @@ class PredicateSubrings(OwnedCategory):
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             source = element_parent(element)
+            if source is self:
+                return element
             if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
                 return source._element_of_unformed_module(element)
             try:
@@ -470,7 +478,7 @@ class PredicateSubrings(OwnedCategory):
                 raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
             if candidate not in self:
                 raise ValueError(f"{candidate} does not satisfy {self._description}")
-            return candidate
+            return self.element_class(self, _engine_element(self._ambient_ring, candidate))
 
         def one(self):
             return self._one
@@ -1273,9 +1281,14 @@ class LocalizationRings(OwnedCategory):
 
 
 class _PredicateSubringParent(Parent):
+    @lazy_attribute
+    def Element(self):
+        return _PredicateSubringElement
+
     def __init__(self, ambient_ring, predicate, description, category):
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
             raise TypeError(f"{ambient_ring} is not a ring")
+        ambient_ring = _own_ring(ambient_ring)
         self._ambient_ring = ambient_ring
         self._predicate = predicate
         self._description = description
@@ -1284,8 +1297,14 @@ class _PredicateSubringParent(Parent):
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
         base = self if self._preamble_is_commutative else _own_ring(SageZZ)
-        Parent.__init__(self, base=base, facade=ambient_ring, category=category)
+        Parent.__init__(self, base=base, category=category)
         realize_owned_category(self)
+        # A predicate-subring datum asserts closure and the ring constants.
+        # Refute a decided false constant, but do not treat an undecided
+        # predicate as false. Constants are supplied by those defining laws.
+        assert predicate(self._one) is not False and predicate(self._zero) is not False, "a unital subring contains zero and one"
+        self._one = self.element_class(self, _engine_element(ambient_ring, self._one))
+        self._zero = self.element_class(self, _engine_element(ambient_ring, self._zero))
         from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
         _algebra_from_native_ring(self, lambda left, right: self(left * right), self._one,
@@ -1306,21 +1325,20 @@ class _PredicateSubringParent(Parent):
         return PredicateSubrings.ParentMethods._element_constructor_(self, element)
 
     def _from_engine_element(self, element):
-        r"""Cross one ambient-engine element into this predicate subring."""
+        r"""Cross a computation in the larger ring back into this subring."""
         converter = getattr(self._ambient_ring, "_from_engine_element", None)
         candidate = converter(element) if converter is not None else self._ambient_ring(element)
+        if (candidate == self._ambient_ring.zero()) is True:
+            return self._zero
+        if (candidate == self._ambient_ring.one()) is True:
+            return self._one
         return self(candidate)
 
+    def _engine_element(self, element):
+        return self(element)._backend()
+
     def __contains__(self, element):
-        try:
-            candidate = self._ambient_ring(element)
-        except (TypeError, ValueError):
-            return False
-        answer = self._predicate(candidate)
-        assert answer is True or answer is False, (
-            f"membership in {self} requires the selected predicate to decide {candidate}"
-        )
-        return answer
+        return PredicateSubrings.ParentMethods.__contains__(self, element)
 
 
 def _predicate_subring(ambient_ring, predicate, description, category=None):
@@ -3044,6 +3062,24 @@ class _OwnedRingElement(RingElement):
         return _own_ring(polynomial.parent())._from_engine_element(polynomial)
 
 
+class _PredicateSubringElement(_OwnedRingElement):
+    r"""The shared native scalar realization with this subring as its parent.
+
+    Computation may use the larger ring, but results re-enter the predicate
+    subring. A unit of the larger ring is a unit here exactly when its inverse
+    lies here; field arithmetic must not classify every nonzero subring
+    element as a unit.
+    """
+
+    def is_unit(self):
+        value = self.parent().inclusion()(self)
+        decision = value.is_unit()
+        if decision is False:
+            return False
+        assert decision is True, "unit membership in the larger ring is undecided"
+        return value.inverse_of_unit() in self.parent()
+
+
 class _OwnedIntegerElement(_OwnedRingElement):
     r"""An integer engine value implementing Python's exact index protocol.
 
@@ -3498,7 +3534,7 @@ def _engine_element(ring, element):
     """
     owned = _own_ring(ring)
     if isinstance(owned, _PredicateSubringParent):
-        return _engine_element(owned._ambient_ring, owned(element))
+        return owned._engine_element(element)
     if getattr(element, "parent", lambda: None)() is owned:
         backend = getattr(element, "_backend", None)
         if callable(backend):
