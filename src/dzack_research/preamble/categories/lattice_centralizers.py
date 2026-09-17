@@ -29,6 +29,8 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.orthogonal_quotients import (
     _finite_supergroup_elements,
 )
@@ -162,18 +164,6 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         return f"Vector orbits of square {self.square()} under {self.group()}: {self.representatives()}"
 
 
-
-def _same_embedded_sublattice(left, right) -> bool:
-    if left.ambient_lattice() is not right.ambient_lattice():
-        return False
-    try:
-        left.inclusion().factor_through(right.inclusion())
-        right.inclusion().factor_through(left.inclusion())
-    except (AttributeError, TypeError, ValueError):
-        return False
-    return True
-
-
 def _transport_sublattice(automorphism, sublattice):
     return (automorphism * sublattice.inclusion()).image()
 
@@ -217,7 +207,7 @@ def _same_equivariant_flag(left, right) -> bool:
     right_terms = tuple(right.terms())
     if len(left_terms) != len(right_terms):
         return False
-    return all(_same_embedded_sublattice(source, target) for source, target in zip(left_terms, right_terms, strict=True))
+    return all(_same_subobject(source, target) for source, target in zip(left_terms, right_terms, strict=True))
 
 
 def _transport_equivariant_flag(automorphism, flag):
@@ -497,30 +487,31 @@ class CyclotomicDecomposition(SageObject):
             name=f"Cyclotomic restrictions of an element of {self.centralizer_group()}",
         )
 
-    def lift_component_isometries(self, component_isometries):
-        r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
+    def _component_tuple(self, component_isometries):
+        r"""Return the stated component isometries, one per nonzero divisor.
 
-        Compatibility is tested by extension, not by comparing only finite
-        discriminant images.  If ``m`` is the index of the cyclotomic sum,
-        every ``m*x`` lies in that sum.  Apply the component tuple there and
-        divide by ``m`` again.  The division succeeds in ``L`` exactly when
-        the tuple preserves the integral glue; the ambient ``O(L)`` constructor
-        then verifies the form and bijectivity, and commutation with ``f`` is
-        checked separately.
+        ``component_isometries`` is indexed by the divisors, either as an
+        indexed family over them or keyed by their integer values.
         """
-        components = {}
-        restrictions = self.component_isometries()
-        for divisor in self.nonzero_divisors():
-            summand = self.summand(divisor)
-            try:
-                component = component_isometries[divisor]
-            except (KeyError, TypeError):
-                component = component_isometries[int(divisor)]
-            component = summand.O()(component)
-            if component * restrictions[divisor] != restrictions[divisor] * component:
-                raise ValueError("a component isometry does not commute with the cyclotomic action")
-            components[divisor] = component
+        return {
+            divisor: self.summand(divisor).O()(component_isometries[int(divisor)])
+            for divisor in self.nonzero_divisors()
+        }
 
+    def _components_commute(self, components) -> bool:
+        r"""Whether every component commutes with the restriction of ``f`` to its summand."""
+        restrictions = self.component_isometries()
+        return all(
+            components[divisor] * restrictions[divisor] == restrictions[divisor] * components[divisor]
+            for divisor in self.nonzero_divisors()
+        )
+
+    def _scaled_extension(self, components):
+        r"""Return multiplication by the index ``m`` on ``L`` and ``x -> g(m x)``.
+
+        ``g`` is the orthogonal sum of the components on the cyclotomic sum,
+        which contains ``m L``.
+        """
         lattice = self.lattice()
         moved_images = []
         for divisor in self.nonzero_divisors():
@@ -535,21 +526,48 @@ class CyclotomicDecomposition(SageObject):
         scaling = lattice.module_category().Mor(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
         inclusion = self.orthogonal_sum_inclusion()
 
-        def image(label):
+        def scaled_image(label):
             scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
-            return scaling.lift(moved(inclusion.lift(scaled)))
+            return moved(inclusion.lift(scaled))
 
-        lifted = lattice.O()(image)
+        return scaling, scaled_image
+
+    def lift_component_isometries(self, component_isometries):
+        r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
+
+        Compatibility is tested by extension, not by comparing only finite
+        discriminant images.  If ``m`` is the index of the cyclotomic sum,
+        every ``m*x`` lies in that sum.  Apply the component tuple there and
+        divide by ``m`` again.  The division succeeds in ``L`` exactly when
+        the tuple preserves the integral glue; the ambient ``O(L)`` constructor
+        then verifies the form and bijectivity, and commutation with ``f`` is
+        checked separately.
+        """
+        components = self._component_tuple(component_isometries)
+        if not self._components_commute(components):
+            raise ValueError("a component isometry does not commute with the cyclotomic action")
+        scaling, scaled_image = self._scaled_extension(components)
+        lifted = self.lattice().O()(lambda label: scaling.lift(scaled_image(label)))
         if lifted * self.isometry() != self.isometry() * lifted:
             raise ArithmeticError("the lifted component tuple does not centralize the equipped isometry")
         return lifted
 
     def component_isometries_extend(self, component_isometries) -> bool:
-        try:
-            self.lift_component_isometries(component_isometries)
-        except (ArithmeticError, AssertionError, ValueError):
+        r"""Whether the component tuple extends to an isometry of ``L`` commuting with ``f``.
+
+        The orthogonal sum ``g`` of commuting components is an isometry of
+        ``L tensor QQ``; it preserves ``L`` exactly when ``g(m x)`` lies in
+        ``m L`` for every generator ``x``, and it then commutes with ``f``
+        because it does so on the finite-index cyclotomic sum.
+        """
+        components = self._component_tuple(component_isometries)
+        if not self._components_commute(components):
             return False
-        return True
+        scaling, scaled_image = self._scaled_extension(components)
+        return all(
+            scaling.is_in_image(scaled_image(label))
+            for label in self.lattice().module_generating_set()
+        )
 
 
 class EquivariantLattice(SageObject):
@@ -599,12 +617,13 @@ class EquivariantLattice(SageObject):
 
     def equivariant_sublattice(self, sublattice):
         r"""Equip an ``f``-stable represented sublattice with the restricted isometry."""
-        if not callable(getattr(sublattice, "inclusion", None)):
-            raise TypeError("an equivariant sublattice is a represented lattice subobject")
-        if sublattice.ambient_lattice() is not self.lattice():
-            raise ValueError("the selected sublattice has the wrong ambient lattice")
-
+        assert sublattice in ModuleSubobjects(self.lattice().base_ring()), (
+            "an equivariant sublattice is a represented lattice subobject"
+        )
         inclusion = sublattice.inclusion()
+        if inclusion.codomain() is not self.lattice():
+            raise ValueError("the selected sublattice is a subobject of another lattice")
+
         images = {}
         for label in sublattice.module_generating_set():
             embedded = inclusion(sublattice.module_generator(label))
@@ -624,8 +643,6 @@ class EquivariantLattice(SageObject):
         classifier; a non-equivariant witness is therefore not evidence that
         no equivariant isometry exists, and this method refuses in that case.
         """
-        if not isinstance(other, EquivariantLattice):
-            raise TypeError("equivariant_isometry_to expects another equipped lattice")
         source = self.lattice()
         target = other.lattice()
         if source is target and self.isometry() == other.isometry():
@@ -675,7 +692,7 @@ class EquivariantLattice(SageObject):
             self,
             sublattices,
             _transport_sublattice,
-            _same_embedded_sublattice,
+            _same_subobject,
         )
 
     def equivariant_flag(self, terms):
@@ -708,8 +725,6 @@ class PolarizedEquivariantLattice(SageObject):
     """
 
     def __init__(self, decorated_lattice, polarization) -> None:
-        if not isinstance(decorated_lattice, EquivariantLattice):
-            raise TypeError("a polarized equivariant lattice starts from an EquivariantLattice")
         lattice = decorated_lattice.lattice()
         polarization = lattice(polarization)
         if decorated_lattice.isometry()(polarization) != polarization:
