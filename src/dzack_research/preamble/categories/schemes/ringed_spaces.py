@@ -908,7 +908,7 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         assert module in self.module_category(), (
             "the associated sheaf is taken of a module over the coordinate algebra"
         )
-        return self.scheme().associated_module_sheaf(module)
+        return AffineModuleSheaf(self.scheme(), module)
 
     def global_sections(self, sheaf):
         r"""``M~ |-> M``, the inverse equivalence."""
