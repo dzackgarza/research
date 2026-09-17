@@ -641,6 +641,30 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""The module ``M`` this algebra is built on, retained by ``Algebras(R)(M, m)``."""
             return self._preamble_unformed_module
 
+        def _element_of_unformed_module(self, element):
+            r"""The element of :meth:`unformed_module` on the data of ``element``.
+
+            ``Algebras(R)(M, m)`` builds on the framing of ``M`` when ``M``
+            has one, so an element reads there with the same coefficients;
+            otherwise it builds on the underlying additive group of ``M``, and
+            an element reads there as its underlying additive element.
+            """
+            module = self.unformed_module()
+            match self:
+                case _ if self in FramedModules(self.algebra_base_ring()):
+                    return module.linear_combination(self.framing_coefficients(element))
+                case _:
+                    return module(self._underlying_additive_element(element))
+
+        def _element_from_unformed_module(self, element):
+            r"""The element of this algebra on the data of an element of :meth:`unformed_module`."""
+            module = self.unformed_module()
+            match self:
+                case _ if self in FramedModules(self.algebra_base_ring()):
+                    return self.linear_combination(module.framing_coefficients(element))
+                case _:
+                    return self(module.underlying_additive_group()(element))
+
         def multiplication(self):
             r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with."""
             return self._preamble_multiplication
