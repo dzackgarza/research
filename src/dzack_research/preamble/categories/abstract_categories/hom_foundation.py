@@ -66,16 +66,18 @@ def _underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHom
 
 
 def _has_category_packet_surface(category) -> bool:
-    r"""Return whether ``category`` carries the coordinated Hom packet surface.
+    r"""Whether ``category`` is an object of ``Cat``, hence has the Hom packet.
 
-    Owned category objects receive these operations through ``Cat.ParentMethods``
-    in their dynamic ``subcategory_class``.  That is a mathematical capability,
-    not reliably a Python ``isinstance`` relation: Sage requires nested method
-    providers themselves to have no superclass.
+    The packet operations (``Mor``, ``End``, ``Aut``, ...) are what a category
+    can do as an object of ``Cat``; asking whether a category has them is
+    asking whether it lies in ``Cat``.  An owned category records ``Cat()``
+    as its category when it is built, and ``Cat.__contains__`` states how a
+    category Sage assembles from owned members is placed.  A Sage-native
+    category is the engine's and lies outside.
     """
-    return callable(getattr(category, "category_packet", None)) and callable(
-        getattr(category, "_hom_endpoint", None)
-    )
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    return category in Cat()
 
 
 class CategoryPacketMethods:
