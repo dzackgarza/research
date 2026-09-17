@@ -1643,7 +1643,6 @@ class _GeneralPresentedModule:
         """
         from sage.libs.singular.function_factory import ff
         from sage.matrix.constructor import matrix
-        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
         engine = _engine_ring(self.base_ring())
         if "polynomial" not in type(engine).__module__:
@@ -2237,7 +2236,6 @@ def _singular_presentation_kernel(morphism):
     from sage.libs.singular.function_factory import ff
     from sage.matrix.constructor import matrix
     from sage.matrix.special import identity_matrix
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
     domain = morphism.domain()
     codomain = morphism.codomain()
