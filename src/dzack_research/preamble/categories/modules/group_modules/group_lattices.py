@@ -25,22 +25,12 @@ from dzack_research.preamble.categories.lattices import (
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     ModulesOverGroupAlgebra,
-    _equip_action,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class GroupLatticeConstruction:
-    r"""The selected acted module whose action is transported to a lattice."""
-
-    def __init__(self, source_group_module) -> None:
-        self._source_group_module = source_group_module
-
-    def source_group_module(self):
-        return self._source_group_module
 
 
 class GroupLatticeMorphism(LatticeMorphism):
@@ -153,12 +143,9 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
-        def group_lattice_construction(self):
-            r"""Return the selected acted-module construction defining this group lattice."""
-            return self._preamble_group_lattice_construction
-
         def source_group_module(self):
-            return self.group_lattice_construction().source_group_module()
+            r"""The ``R[G]``-module built on the lattice this action was stated on."""
+            return self._preamble_source_group_module
 
         def group(self):
             return self.source_group_module().group()
@@ -185,8 +172,24 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         def is_trivial_action(self) -> bool:
             return self.source_group_module().is_trivial_action()
 
-        def unacted_module(self):
-            return self.source_group_module().unacted_module()
+        def _element_of_unformed_module(self, element):
+            r"""The element of the lattice the action was stated on, with the same coefficients.
+
+            A group lattice is built on the generating set of that lattice,
+            so an element reads there with the coefficients it has here.
+            Stated at this level because a group lattice is also an object of
+            ``Modules(R[G])``, whose reading through the underlying additive
+            group describes a module built on that group, not a lattice.
+            """
+            return self.unformed_module().linear_combination(
+                self.framing_coefficients(element)
+            )
+
+        def _element_from_unformed_module(self, element):
+            r"""The element of this group lattice with the coefficients ``element`` has in the lattice the action was stated on."""
+            return self.linear_combination(
+                self.unformed_module().framing_coefficients(element)
+            )
 
         @cached_method
         def action(self):
@@ -216,7 +219,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         @cached_method
         def group_module(self):
-            return _equip_action(self, self.action())
+            return Modules(self.group_algebra())(self, self.action())
 
         def act(self, group_element, vector):
 
@@ -305,30 +308,24 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             return self.group_module().character()
 
 
-def _group_lattice(lattice, group_or_action, action=None):
-    r"""Equip ``lattice`` with a selected action preserving its form."""
+def _group_lattice(lattice, group, action):
+    r"""Equip ``lattice`` with a selected action of ``group`` preserving its form."""
 
     base_ring = lattice.base_ring()
     assert lattice in Lattices(base_ring).FinitelyGenerated()
-    source_group_module = _equip_action(lattice, group_or_action, action)
+    source_group_module = Modules(base_ring[group])(lattice, action)
     group = source_group_module.group()
 
-    prototype = Lattices(base_ring)(
-        lattice.gram_tensor(),
-        module_generators=lattice.module_generating_set(),
-    )
     extra_categories = [Lattices(base_ring[group])]
-    construction_data = [
-        ("group_lattice_construction", GroupLatticeConstruction(source_group_module))
-    ]
+    construction_data = [("source_group_module", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
         construction_data.append(("cartan_type", lattice.cartan_type()))
     result = Lattices(base_ring)._specialize_existing_lattice(
-        prototype,
+        lattice,
         extra_categories=tuple(extra_categories),
         construction_data=tuple(construction_data),
-        subobject_source=lattice,
+        unformed_module=lattice,
     )
     assert group.is_finitely_generated() is True
     for group_generator in group.group_generators():

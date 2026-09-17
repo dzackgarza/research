@@ -14,6 +14,8 @@ from sage.misc.repr import repr_lincomb
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
+from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -257,12 +259,24 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=extra_construction_data,
             )
 
+        def cokernel_morphism(self):
+            r"""Return the morphism ``rho: F -> G`` of which this module is the cokernel.
+
+            A module constructed as ``coker(rho)`` retains ``rho`` as its
+            datum; the quotient map ``G -> coker(rho)`` is
+            :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
+            ``kernel_morphism()``.
+            """
+            morphism = self._selected_module_presentation.cokernel_morphism()
+            assert morphism is not None, (
+                f"{self} was not constructed as the cokernel of a morphism"
+            )
+            return morphism
+
         @cached_method
         def cokernel_projection(self):
             r"""Return the canonical quotient map when this object is a selected cokernel."""
-            morphism = self._selected_module_presentation.cokernel_morphism()
-            if morphism is None:
-                raise ValueError("this finitely presented module was not constructed as a cokernel")
+            morphism = self.cokernel_morphism()
             source = morphism.codomain()
             return source.module_category().Mor(source, self)(
                 {label: self.module_generator(label) for label in source.module_generating_set()}
@@ -529,7 +543,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 )
 
                 if self in LocalizedModules(ring):
-                    source = self.localization_source_module()
+                    source = self.numerator_module()
                     source_ring = ring.localization_source()
                     if source in _SelectedFinitePresentationModules(source_ring):
                         return source.fitting_ideal(index).extension_to_localization(ring)
@@ -1641,7 +1655,6 @@ class _GeneralPresentedModule:
         """
         from sage.libs.singular.function_factory import ff
         from sage.matrix.constructor import matrix
-        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
         engine = _engine_ring(self.base_ring())
         if "polynomial" not in type(engine).__module__:
@@ -1756,6 +1769,9 @@ class _GeneralPresentedModule:
             if value.parent() is self:
                 return value
             value = value._representative()
+        match element_parent(value):
+            case Parent() as source if source is not self and self._built_on_the_same_data(source):
+                return self._element_on_the_same_data(source, value)
         return self.element_class(self, value)
 
     def zero(self):
@@ -2232,7 +2248,6 @@ def _singular_presentation_kernel(morphism):
     from sage.libs.singular.function_factory import ff
     from sage.matrix.constructor import matrix
     from sage.matrix.special import identity_matrix
-    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
     domain = morphism.domain()
     codomain = morphism.codomain()

@@ -7,6 +7,8 @@ from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
+from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -236,11 +238,9 @@ class _SparseFreeModuleParent:
     def _element_constructor_(self, value):
         if isinstance(value, _SparseFreeModuleElement) and value.parent() is self:
             return value
-        underlying = getattr(value, "underlying_element", None)
-        if callable(underlying):
-            candidate = underlying()
-            if getattr(candidate, "parent", lambda: None)() is self:
-                return candidate
+        match element_parent(value):
+            case Parent() as source if source is not self and self._built_on_the_same_data(source):
+                return self._element_on_the_same_data(source, value)
         if isinstance(value, dict):
             labels = self.module_generating_set()
             ring = self.base_ring()

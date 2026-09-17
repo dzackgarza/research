@@ -80,33 +80,17 @@ class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
         return GroupModuleHomset
 
 
-class _GroupModuleConstruction:
-    r"""The coefficient module and selected group action defining an ``R[G]``-module."""
-
-    def __init__(self, unacted_module, source_action, action_is_trivial=False) -> None:
-        self._unacted_module = unacted_module
-        self._source_action = source_action
-        self._action_is_trivial = bool(action_is_trivial)
-
-    def unacted_module(self):
-        return self._unacted_module
-
-    def source_action(self):
-        return self._source_action
-
-    def action_is_trivial(self) -> bool:
-        return self._action_is_trivial
-
-
 class ModulesOverGroupAlgebra(Modules):
     r"""``Modules(R[G])``: the modules over a group algebra.
 
     ``Modules(S)`` constructs this category whenever ``S`` is a group
     algebra, so the spelling is ``Modules(R[G])``.  A represented object is an
-    actual module with scalar ring ``R[G]``.  It retains the exact ``R``-module
-    whose action was linearized as its coefficient restriction; equivariant
-    morphisms are the ``R``-linear maps between those restrictions commuting
-    with ``G``.
+    actual module with scalar ring ``R[G]``, built on the data of the
+    ``R``-module ``M`` the action was stated on: ``Modules(R[G])(M, rho)``
+    retains ``M`` as its datum and answers ``unformed_module()`` with it, and
+    elements pass between the two by coercion, ``N(m)`` and ``M(n)``.
+    Equivariant morphisms are the ``R``-linear maps between the retained
+    modules commuting with ``G``.
     """
 
     def __init__(self, group_algebra) -> None:
@@ -367,16 +351,12 @@ class ModulesOverGroupAlgebra(Modules):
     class ParentMethods:
         def __init__(
             self,
-            unacted_module,
+            unformed_module,
             source_action,
-            action_is_trivial=False,
             **rest,
         ) -> None:
-            self._group_module_construction = _GroupModuleConstruction(
-                unacted_module,
-                source_action,
-                action_is_trivial,
-            )
+            self._preamble_unformed_module = unformed_module
+            self._preamble_source_action = source_action
             super().__init__(**rest)
 
         def _group_module_placement(self):
@@ -418,7 +398,7 @@ class ModulesOverGroupAlgebra(Modules):
 
         @cached_method
         def action(self):
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             endomorphisms = Modules(self.coefficient_ring()).Mor(
                 coefficient_module,
                 coefficient_module,
@@ -433,7 +413,7 @@ class ModulesOverGroupAlgebra(Modules):
                         }
                     )
                 )
-            source_action = self._group_module_construction.source_action()
+            source_action = self._preamble_source_action
             return Sets().Mor(self.group(), endomorphisms)(
                 lambda group_element: endomorphisms.elementwise(
                     lambda vector: _apply_action(source_action, group_element, vector),
@@ -451,7 +431,7 @@ class ModulesOverGroupAlgebra(Modules):
             return GroupActionFunctor(
                 self.group(),
                 Modules(self.coefficient_ring()),
-                self.unacted_module(),
+                self.unformed_module(),
                 lambda group_element: action(group_element),
             )
 
@@ -467,11 +447,9 @@ class ModulesOverGroupAlgebra(Modules):
             return self.action_of(group_element).matrix()
 
         def act(self, group_element, element):
-            r"""Act on an ``R[G]``-module element through its coefficient restriction."""
-            if self._is_the_regular_module():
-                return self.action_of(group_element)(element)
-            coefficient = self.forget_action_morphism()(element)
-            return self.equip_action_morphism()(self.action_of(group_element)(coefficient))
+            r"""Act on an ``R[G]``-module element through the module the action was stated on."""
+            module = self.unformed_module()
+            return self(self.action_of(group_element)(module(element)))
 
         def is_invariant(self, element):
             r"""Decide ``g . element = element`` for every ``g``, on the chosen group generators."""
@@ -489,22 +467,19 @@ class ModulesOverGroupAlgebra(Modules):
         def is_trivial_action(self) -> bool:
             r"""Decide whether every represented group element acts as the identity.
 
-            A constructor may record a known trivial action, but triviality is a
-            property of the action rather than provenance of the constructor.
-            For a finitely generated group acting on a finitely generated module,
-            it is enough to check the selected group generators on the selected
+            Triviality is a property of the action, decided from it: for a
+            finitely generated group acting on a finitely generated module it
+            is enough to check the selected group generators on the selected
             module generators.
             """
             if self._is_the_regular_module():
                 return bool(self.group().cardinality() == 1)
-            if self._group_module_construction.action_is_trivial():
-                return True
 
             group = self.group()
             assert group.is_finitely_generated() is True, (
                 "deciding triviality of this action requires a chosen finite group generating set"
             )
-            module = self.unacted_module()
+            module = self.unformed_module()
             labels = module.module_generating_set()
             assert labels.cardinality().is_finite() is True, (
                 "deciding triviality of this action requires a chosen finite module generating set"
@@ -521,40 +496,27 @@ class ModulesOverGroupAlgebra(Modules):
                     )
             return True
 
-        def scalar_multiple(self, scalar, element):
-            r"""Apply the actual ``R[G]`` scalar action."""
-            if self._is_the_regular_module():
-                return super().scalar_multiple(scalar, element)
-            return super().scalar_multiple(scalar, element)
-
-        def unacted_module(self):
-            r"""Return the exact coefficient restriction on which ``G`` acts."""
+        def unformed_module(self):
+            r"""Return the ``R``-module the action was stated on: the datum this module is built on."""
             if self._is_the_regular_module():
                 return self
-            return self._group_module_construction.unacted_module()
+            return self._preamble_unformed_module
 
-        scalar_restriction = unacted_module
+        def _element_of_unformed_module(self, element):
+            r"""The element of the module the action was stated on, on the same data.
 
-        @cached_method
-        def forget_action_morphism(self):
-            unacted = self.unacted_module()
-            if unacted is self:
-                return self.module_category().Mor(self, self).identity()
-            return Sets().Mor(self, unacted)(
-                lambda element: unacted(self(element).underlying_element())
-            )
+            The ``R[G]``-module is built on the underlying additive group of
+            that module, so an element reads there as its underlying additive
+            element.
+            """
+            return self.unformed_module()(self._underlying_additive_element(element))
 
-        @cached_method
-        def equip_action_morphism(self):
-            unacted = self.unacted_module()
-            if unacted is self:
-                return self.module_category().Mor(self, self).identity()
-            return Sets().Mor(unacted, self)(
-                lambda element: self(unacted._underlying_additive_element(unacted(element)))
-            )
+        def _element_from_unformed_module(self, element):
+            r"""The element of this ``R[G]``-module on the data of an element of the module the action was stated on."""
+            return self(element)
 
-        # The selected R-framing belongs to the scalar restriction.  These
-        # accessors intentionally expose that retained presentation without
+        # The selected R-framing belongs to the module the action was stated
+        # on.  These accessors expose that retained presentation without
         # asserting that it is an R[G]-basis.
 
         def module_generating_set(self):
@@ -565,13 +527,13 @@ class ModulesOverGroupAlgebra(Modules):
             """
             if self._is_the_regular_module():
                 return super().module_generating_set()
-            return self.unacted_module().module_generating_set()
+            return self.unformed_module().module_generating_set()
 
         def module_generator(self, label):
             r"""Transport one retained coefficient-module generator into this action."""
             if self._is_the_regular_module():
                 return super().module_generator(label)
-            return self.equip_action_morphism()(self.unacted_module().module_generator(label))
+            return self(self.unformed_module().module_generator(label))
 
         @cached_method
         def module_generators(self):
@@ -588,8 +550,8 @@ class ModulesOverGroupAlgebra(Modules):
                     coefficients,
                     factor_on_left=factor_on_left,
                 )
-            return self.equip_action_morphism()(
-                self.unacted_module().linear_combination(
+            return self(
+                self.unformed_module().linear_combination(
                     coefficients,
                     factor_on_left=factor_on_left,
                 )
@@ -598,15 +560,16 @@ class ModulesOverGroupAlgebra(Modules):
         def _selected_module_coefficients(self, element):
             if self._is_the_regular_module():
                 return super()._selected_module_coefficients(element)
-            return self.unacted_module().framing_coefficients(self.forget_action_morphism()(element))
+            module = self.unformed_module()
+            return module.framing_coefficients(module(element))
 
         def _selected_presentation_rows(self):
             if self._is_the_regular_module():
                 return super()._selected_presentation_rows()
-            return self.unacted_module()._selected_presentation_rows()
+            return self.unformed_module()._selected_presentation_rows()
 
         def coefficient_module_rank(self):
-            return self.unacted_module().module_rank()
+            return self.unformed_module().module_rank()
 
         def module_rank(self):
             r"""Return the rank of the retained coefficient-module presentation.
@@ -618,13 +581,13 @@ class ModulesOverGroupAlgebra(Modules):
 
         def invariant_factors(self):
             r"""Invariant factors of the retained coefficient module."""
-            return self.unacted_module().invariant_factors()
+            return self.unformed_module().invariant_factors()
 
         def Mor(self, codomain, category=None):
             r"""``Mor_{R[G]}(M,N)``, the equivariant maps.
 
             The underlying coefficient-linear Hom is
-            ``Hom_R(M.scalar_restriction(), N.scalar_restriction())`` and is
+            ``Hom_R(M.unformed_module(), N.unformed_module())`` and is
             exposed by the resulting Hom object's :meth:`underlying_homset`.
             """
             if category is None or category.is_subcategory(Modules(self.group_algebra())):
@@ -635,7 +598,7 @@ class ModulesOverGroupAlgebra(Modules):
             r"""``End_{R[G]}(M)``, the equivariant endomorphism object.
 
             The underlying ``R``-linear endomorphisms are
-            ``Modules(R).End(M.scalar_restriction())``.  A group module's
+            ``Modules(R).End(M.unformed_module())``.  A group module's
             default Hom is already equivariant, so its default End uses the
             same owner.
             """
@@ -644,7 +607,7 @@ class ModulesOverGroupAlgebra(Modules):
         def Aut(self):
             r"""``Aut_{R[G]}(M)``, the equivariant module automorphisms.
 
-            Use ``Modules(R).Aut(M.scalar_restriction())`` explicitly when the
+            Use ``Modules(R).Aut(M.unformed_module())`` explicitly when the
             action is to be forgotten and all underlying ``R``-linear
             automorphisms are wanted.
             """
@@ -673,7 +636,7 @@ class ModulesOverGroupAlgebra(Modules):
                     lambda side: Sets.Δ[0] if int(side) == 0 else generators,
                 )
             )
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             identity = coefficient_module.module_category().Mor(coefficient_module, coefficient_module).identity()
             return finite_indexed_family(
                 indices,
@@ -684,8 +647,8 @@ class ModulesOverGroupAlgebra(Modules):
         def module_invariants(self):
             r"""``M^G = Hom_{R[G]}(R, M)``, the wide equalizer of the action and the identity."""
             if self.is_trivial_action():
-                return self.unacted_module()
-            coefficient_module = self.unacted_module()
+                return self.unformed_module()
+            coefficient_module = self.unformed_module()
             return Modules(coefficient_module.base_ring()).equalizer_of_family(
                 self._finite_action_endomorphism_family()
             )
@@ -693,8 +656,8 @@ class ModulesOverGroupAlgebra(Modules):
         def module_coinvariants(self):
             r"""``M_G = R tensor_{R[G]} M``, the wide coequalizer of the action and the identity."""
             if self.is_trivial_action():
-                return self.unacted_module()
-            coefficient_module = self.unacted_module()
+                return self.unformed_module()
+            coefficient_module = self.unformed_module()
             return Modules(coefficient_module.base_ring()).coequalizer_of_family(
                 self._finite_action_endomorphism_family()
             )
@@ -706,7 +669,7 @@ class ModulesOverGroupAlgebra(Modules):
             ``G`` acts on ``Hom_R(M, M)`` by ``g . f = rho(g) f rho(g)^{-1}``,
             and the equivariant endomorphisms are its fixed points.
             """
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             endomorphisms = coefficient_module.module_category().Mor(
                 coefficient_module,
                 coefficient_module,
@@ -715,7 +678,10 @@ class ModulesOverGroupAlgebra(Modules):
             def conjugation(group_element, endomorphism):
                 return self.action_of(group_element) * endomorphism * self.action_of(group_element.inverse())
 
-            return _equip_action(endomorphisms, self.group(), conjugation).module_invariants()
+            return Modules(endomorphisms.base_ring()[self.group()])(
+                endomorphisms,
+                conjugation,
+            ).module_invariants()
 
         def isotypic_characters(self):
             r"""The characters of the isotypic components present in this module.
@@ -759,7 +725,7 @@ class ModulesOverGroupAlgebra(Modules):
             leaves the submodule.
             """
             submodule = inclusion.domain()
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             assert inclusion.codomain() is coefficient_module, (
                 f"{inclusion} is not a subobject inclusion into {coefficient_module}"
             )
@@ -767,16 +733,11 @@ class ModulesOverGroupAlgebra(Modules):
             def restricted_action(group_element, vector):
                 return inclusion.lift(self.action_of(group_element)(inclusion(vector)))
 
-            acted = _equip_action(submodule, self.group(), restricted_action)
-            equivariant_inclusion = acted.Mor(self)(
-                lambda label: self.equip_action_morphism()(
-                    inclusion(submodule.module_generator(label))
-                ),
-                lift=lambda element: acted.equip_action_morphism()(
-                    inclusion.lift(self.forget_action_morphism()(element))
-                ),
+            acted = Modules(submodule.base_ring()[self.group()])(submodule, restricted_action)
+            return acted.Mor(self)(
+                lambda label: self(inclusion(submodule.module_generator(label))),
+                lift=lambda element: acted(inclusion.lift(coefficient_module(element))),
             )
-            return equivariant_inclusion
 
         def restrict_endomorphism_to(self, endomorphism, inclusion):
             r"""Restrict an equivariant endomorphism of ``M`` to a stable subobject.
@@ -788,7 +749,7 @@ class ModulesOverGroupAlgebra(Modules):
             with the action.  Stability of ``S`` under the endomorphism is not
             assumed: the exact lift through the inclusion decides it.
             """
-            if inclusion.codomain() is not self.unacted_module():
+            if inclusion.codomain() is not self.unformed_module():
                 raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
             equivariant = self.Mor(self)(endomorphism)
             acted_inclusion = self.restrict_action_to(inclusion)
@@ -805,7 +766,7 @@ class ModulesOverGroupAlgebra(Modules):
             """
             if automorphism.domain() is not self or automorphism.codomain() is not self:
                 raise ValueError("the automorphism must be an endomorphism of this group module")
-            if inclusion.codomain() is not self.unacted_module():
+            if inclusion.codomain() is not self.unformed_module():
                 raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
 
             from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -832,7 +793,7 @@ class ModulesOverGroupAlgebra(Modules):
         def character(self):
             r"""Return the ordinary trace character in characteristic zero."""
             group = self.group()
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             coefficient_ring = self.coefficient_ring()
             assert group.is_finite() is True, (
                 "ordinary character computation here requires a finite group"
@@ -859,7 +820,7 @@ class ModulesOverGroupAlgebra(Modules):
         def brauer_character(self):
             r"""Return the Brauer character of a finite-dimensional modular representation."""
             group = self.group()
-            coefficient_module = self.unacted_module()
+            coefficient_module = self.unformed_module()
             coefficient_ring = self.coefficient_ring()
             assert group.is_finite() is True, (
                 "Brauer character computation here requires a finite group"
@@ -944,8 +905,8 @@ def _coefficient_morphism_from_images(
     verify_linearity=True,
 ):
     r"""Read equivariant-map data as a map of the retained coefficient modules."""
-    source = parent.domain().unacted_module()
-    target = parent.codomain().unacted_module()
+    source = parent.domain().unformed_module()
+    target = parent.codomain().unformed_module()
     homset = source.module_category().Mor(source, target)
 
     if isinstance(images, GroupModuleMorphism):
@@ -958,35 +919,26 @@ def _coefficient_morphism_from_images(
             return homset(images)
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():
             return homset.elementwise(
-                lambda element: parent.codomain().forget_action_morphism()(
-                    images(parent.domain().equip_action_morphism()(element))
-                ),
+                lambda element: target(images(parent.domain()(element))),
                 verify_linearity=False,
             )
 
-    def coefficient_value(value):
-        try:
-            acted = parent.codomain()(value)
-        except (TypeError, ValueError):
-            return target(value)
-        return parent.codomain().forget_action_morphism()(acted)
-
+    # An image stated in the acted codomain or in its retained module reads
+    # in the retained module by coercion.
     if elementwise:
         if not callable(images):
             raise TypeError("an elementwise equivariant map must be callable")
         return homset.elementwise(
-            lambda element: coefficient_value(
-                images(parent.domain().equip_action_morphism()(element))
-            ),
+            lambda element: target(images(parent.domain()(element))),
             verify_linearity=verify_linearity,
         )
 
     if isinstance(images, dict):
-        return homset({label: coefficient_value(value) for label, value in images.items()})
+        return homset({label: target(value) for label, value in images.items()})
     if isinstance(images, (tuple, list)):
-        return homset(tuple(coefficient_value(value) for value in images))
+        return homset(tuple(target(value) for value in images))
     if callable(images):
-        return homset(lambda label: coefficient_value(images(label)))
+        return homset(lambda label: target(images(label)))
     return homset(images)
 
 
@@ -1012,8 +964,8 @@ class GroupModuleMorphism(ModuleMorphism):
         self._preamble_underlying_module_morphism = underlying
         super().__init__(
             parent,
-            lambda element: parent.codomain().equip_action_morphism()(
-                underlying(parent.domain().forget_action_morphism()(element))
+            lambda element: parent.codomain()(
+                underlying(parent.domain().unformed_module()(element))
             ),
             elementwise=True,
             verify_linearity=False,
@@ -1135,8 +1087,8 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
     def underlying_homset(self):
         r"""``Hom_R(Res M, Res N)``, containing the equivariant maps."""
-        source = self.domain().unacted_module()
-        target = self.codomain().unacted_module()
+        source = self.domain().unformed_module()
+        target = self.codomain().unformed_module()
         return source.module_category().Mor(source, target)
 
     def is_equivariant(self, arrow):
@@ -1195,12 +1147,12 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
 
 
-def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=False):
+def _equip_action(module, group_or_action, action=None):
     r"""Linearize a left ``G``-action to an actual ``R[G]``-module.
 
-    The carrier is constructed by the generic module action
-    ``R[G] -> End_Ab(U_R(M))``.  The original ``R``-module ``M`` is retained
-    literally as the scalar restriction, including its selected presentation.
+    The ``R[G]``-module is built on the data of ``M`` by the generic module
+    action ``R[G] -> End_Ab(U_R(M))``; ``M`` is retained as the datum and
+    answered by ``unformed_module()``, with its selected presentation.
     ``action`` may be an actual ``BG -> Modules(R)`` functor, a ring morphism
     out of ``R[G]``, or the binary action ``action(g,m)``.
     """
@@ -1290,19 +1242,8 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
         GeneralModules(group_algebra),
         base_ring=group_algebra,
         rho=scalar_action,
-        unacted_module=module,
+        unformed_module=module,
         source_action=action,
-        action_is_trivial=_action_is_trivial,
-    )
-
-
-def _trivial_action(module, group):
-    r"""Equip ``module`` with the trivial action of ``group``."""
-    return _equip_action(
-        module,
-        group,
-        lambda _group_element, vector: vector,
-        _action_is_trivial=True,
     )
 
 
@@ -1380,7 +1321,7 @@ class _LinearizationEquivalence(Adjunction):
 
     def unit(self, acted):
         linearized = self.left_adjoint()(acted)
-        underlying = linearized.unacted_module()
+        underlying = linearized.unformed_module()
         identity = underlying.module_category().Mor(underlying, underlying).identity()
         return self.left_adjoint().domain().Mor(acted, self.right_adjoint()(linearized))(
             lambda _obj: identity
@@ -1388,7 +1329,7 @@ class _LinearizationEquivalence(Adjunction):
 
     def counit(self, module):
         relinearized = self.left_adjoint()(self.right_adjoint()(module))
-        underlying = module.unacted_module()
+        underlying = module.unformed_module()
         identity = underlying.module_category().Mor(underlying, underlying).identity()
         return self.right_adjoint().domain().Mor(relinearized, module)._from_equivariant_images(
             identity,

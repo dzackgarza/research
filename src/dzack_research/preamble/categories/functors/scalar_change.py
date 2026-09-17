@@ -43,23 +43,6 @@ class _ScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.rings.commutative_algebra import (
-            AdicCompletions,
-        )
-
-        if (
-            self._target_ring in AdicCompletions()
-            and self._target_ring.completion_map() is self.ring_map()
-        ):
-            return module.base_change(
-                self.ring_map(),
-                _extra_construction_data={
-                    "completion_source_module": module,
-                    "completion_defining_ideal": self._target_ring.ideal_of_definition(),
-                    "completion_ring": self._target_ring,
-                },
-            )
-
         if isinstance(module, RestrictedScalarsModuleView):
             if (
                 _engine_ring(module.ring_map().domain()) is _engine_ring(self._source_ring)
@@ -127,27 +110,25 @@ class _RestrictionOfScalarsFunctor(Functor):
 
     # Along ``R -> R[G]`` an ``R[G]``-module is an ``R``-module with a chosen
     # action, and restriction forgets the action: the image is the module the
-    # action was equipped on, read through the forget and equip morphisms.
-    # Along any other map the image is the restricted-scalars view.
+    # action was stated on, and elements pass to it by coercion.  Along any
+    # other map the image is the restricted-scalars view.
 
     def _restricts_group_modules(self) -> bool:
         return self._target_ring in GroupAlgebras(self._source_ring)
 
     def _apply_object(self, module):
         if self._restricts_group_modules():
-            return module.unacted_module()
+            return module.unformed_module()
         return module.restrict_scalars(self.ring_map())
 
     def _restricted_element(self, source_module, restricted, element):
         r"""Read an element of ``source_module`` in its restriction ``restricted``."""
-        if self._restricts_group_modules():
-            return source_module.forget_action_morphism()(element)
         return restricted(element)
 
     def _extension_element(self, source_module, restricted, element):
         r"""Read an element of ``restricted`` back in ``source_module``."""
         if self._restricts_group_modules():
-            return source_module.equip_action_morphism()(element)
+            return source_module(element)
         return element.underlying_element()
 
     def _apply_morphism(self, morphism):
@@ -209,10 +190,9 @@ class _CoextensionOfScalarsFunctor(Functor):
             }
         )
 
-    # A coextended module over a group algebra is a group module, whose
-    # elements are those of ``Hom_R(S, M)`` transported along the equip and
-    # forget morphisms; over any other ring it is the general module carried
-    # by ``Hom_R(S, M)``.
+    # A coextended module over a group algebra is a group module built on
+    # ``Hom_R(S, M)``, whose elements pass to it by coercion; over any other
+    # ring it is the general module built on ``Hom_R(S, M)``.
 
     def _coextends_to_group_modules(self) -> bool:
         return self._target_ring in GroupAlgebras(self._source_ring)
@@ -220,12 +200,10 @@ class _CoextensionOfScalarsFunctor(Functor):
     def _hom_element(self, coextended, element):
         r"""Read an element of ``Hom_R(S, M)`` off the coextended module."""
         if self._coextends_to_group_modules():
-            return coextended.forget_action_morphism()(element)
+            return coextended.unformed_module()(element)
         return element.underlying_element()
 
     def _coextended_element(self, coextended, hom_element):
-        if self._coextends_to_group_modules():
-            return coextended.equip_action_morphism()(hom_element)
         return coextended(hom_element)
 
     def _linear_map(self, domain, codomain, function):

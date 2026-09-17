@@ -296,11 +296,10 @@ class _AffineSectionModuleFunctor(Functor):
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
         pullback = arrow.underlying_arrow().coordinate_algebra_morphism()
-        forget = source.forget_action_morphism()
-        equip = target.equip_action_morphism()
+        sections = source.unformed_module()
         return source.Mor(target)(
             {
-                label: equip(pullback(forget(source.module_generator(label))))
+                label: target(pullback(sections(source.module_generator(label))))
                 for label in source.module_generating_set()
             }
         )

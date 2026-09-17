@@ -58,7 +58,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
         def _add_(self, other):
             parent = self.parent()
-            source = parent.localization_source_module()
+            source = parent.numerator_module()
             numerator = (
                 source.scalar_multiple(other.denominator(), self.numerator())
                 + source.scalar_multiple(self.denominator(), other.numerator())
@@ -115,17 +115,17 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
         def __init__(
             self,
-            source_module,
+            numerator_module,
             localization_ring,
             localization_functor,
             **rest,
         ) -> None:
-            self._source_module = source_module
+            self._preamble_numerator_module = numerator_module
             self._preamble_localization_ring = localization_ring
             self._preamble_localization_submonoid = localization_ring.localization_submonoid()
             self._preamble_localization_functor = localization_functor
             source_ring = localization_ring.localization_source()
-            framed_source = source_module in FramedModules(source_ring)
+            framed_source = numerator_module in FramedModules(source_ring)
             if framed_source:
                 # Localization chooses no new framing: it carries the source
                 # generators to their images in S^{-1}M.  This specialization
@@ -133,10 +133,10 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 # depending on a particular ParentMethods MRO for the joined
                 # refinement categories.
                 self._preamble_module_generating_set = (
-                    source_module.module_generating_set()
+                    numerator_module.module_generating_set()
                 )
                 self._preamble_module_generator_function = (
-                    lambda label: self.fraction(source_module.module_generator(label))
+                    lambda label: self.fraction(numerator_module.module_generator(label))
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
             super().__init__(base_ring=localization_ring, **rest)
@@ -160,7 +160,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             r"""Return coefficients of a localization fraction in the source framing."""
 
             element = self(element)
-            source_coefficients = self.localization_source_module().framing_coefficients(element.numerator())
+            source_coefficients = self.numerator_module().framing_coefficients(element.numerator())
             localization_map = self.localization_ring().localization_map()
             denominator = localization_map(element.denominator())
             denominator_inverse = denominator.inverse_of_unit()
@@ -192,7 +192,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     return False
 
         def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
-            source_module = self.localization_source_module()
+            source_module = self.numerator_module()
             numerator = source_module(numerator)
             source = self.source_ring()
             denominator = source.one() if denominator is None else source(denominator)
@@ -210,10 +210,10 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self.fraction(value)
 
         def zero(self):
-            return self.fraction(self.localization_source_module().zero())
+            return self.fraction(self.numerator_module().zero())
 
         def _fraction_equality_status(self, left, right):
-            source = self.localization_source_module()
+            source = self.numerator_module()
             cross_difference = (
                 source.scalar_multiple(right.denominator(), left.numerator())
                 - source.scalar_multiple(left.denominator(), right.numerator())
@@ -296,7 +296,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         def _raw_localized_scalar_multiple(self, scalar, element):
             element = self(element)
             numerator, denominator = self.localization_ring().localization_fraction_data(scalar)
-            source = self.localization_source_module()
+            source = self.numerator_module()
             return self.fraction(
                 source.scalar_multiple(numerator, element.numerator()),
                 denominator * element.denominator(),
@@ -308,7 +308,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self._raw_localized_scalar_multiple(scalar, element)
 
         def is_finite(self):
-            answer = self.localization_source_module().is_finite()
+            answer = self.numerator_module().is_finite()
             return answer if answer is Unknown else bool(answer)
 
         def _vanishes_by_annihilator(self):
@@ -329,7 +329,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             """
 
             ring = self.source_ring()
-            source = self.localization_source_module()
+            source = self.numerator_module()
             if source not in FinitelyGeneratedModules(ring):
                 return Unknown
             try:
@@ -359,7 +359,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
         def is_zero(self):
             r"""Decide whether this localization is zero from finite generators or a finite source."""
-            source = self.localization_source_module()
+            source = self.numerator_module()
 
             vanishing = self._vanishes_by_annihilator()
             if vanishing is not Unknown:
@@ -399,12 +399,12 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
         def _repr_(self):
             return (
-                f"{self.localization_source_module()} localized along "
+                f"{self.numerator_module()} localized along "
                 f"{self.localization_ring().localization_map()}"
             )
-        def localization_source_module(self):
-            r"""Return the ``M`` this module is ``S^{-1}M`` of."""
-            return self._source_module
+        def numerator_module(self):
+            r"""The module the numerators of these fractions lie in: the ``M`` this is ``S^{-1}M`` of."""
+            return self._preamble_numerator_module
 
         def localization_ring(self):
             return self._preamble_localization_ring
@@ -417,7 +417,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
         def localization_unit(self):
             return self.localization_functor().unit(
-                self.localization_source_module(),
+                self.numerator_module(),
                 localized=self,
             )
 
@@ -434,7 +434,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             at a prime it is the map from a section to its germ in the stalk.
             """
 
-            source_module = self.localization_source_module()
+            source_module = self.numerator_module()
             target = target_ring.localize_module(source_module)
             restriction = self.localization_ring().restriction_to(target_ring)
             restricted = target.restrict_scalars(restriction)
@@ -471,7 +471,7 @@ __all__ = [
 
 
 def _localized_module(
-    source_module,
+    numerator_module,
     localization_ring,
     localization_functor,
     *,
@@ -493,7 +493,7 @@ def _localized_module(
     """
     placement = [LocalizedModules(localization_ring), *tuple(extra_categories)]
     data = {
-        "source_module": source_module,
+        "numerator_module": numerator_module,
         "localization_ring": localization_ring,
         "localization_functor": localization_functor,
     }
@@ -513,13 +513,13 @@ def _localized_module(
         )
 
     source_ring = localization_ring.localization_source()
-    if source_module in FramedModules(source_ring):
+    if numerator_module in FramedModules(source_ring):
         placement.append(FramedModules(localization_ring))
-        if source_module in FinitelyGeneratedModules(source_ring):
+        if numerator_module in FinitelyGeneratedModules(source_ring):
             placement.append(FinitelyGeneratedModules(localization_ring))
-        if source_module in ModulesWithChosenFinitePresentation(source_ring):
+        if numerator_module in ModulesWithChosenFinitePresentation(source_ring):
             data.update(
-                _transported_presentation(source_module, localization_ring)
+                _transported_presentation(numerator_module, localization_ring)
             )
             if selected_presentation_data is not None:
                 data.update(selected_presentation_data)
@@ -534,7 +534,7 @@ def _localized_module(
     return _object_of(Category.join(placement), **data)
 
 
-def _transported_presentation(source_module, localization_ring):
+def _transported_presentation(numerator_module, localization_ring):
     r"""Return the presentation of ``S^{-1}M`` induced by one of ``M``.
 
     Localization is exact, so applying ``R -> S^{-1}R`` to the relation rows of
@@ -542,12 +542,12 @@ def _transported_presentation(source_module, localization_ring):
     generators.
     """
     source_ring = localization_ring.localization_source()
-    relation_rows = _presentation_rows(source_module)
-    if source_module in _SelectedFinitePresentationModules(source_ring):
-        relation_labels = source_module.presentation().domain().module_generating_set()
+    relation_rows = _presentation_rows(numerator_module)
+    if numerator_module in _SelectedFinitePresentationModules(source_ring):
+        relation_labels = numerator_module.presentation().domain().module_generating_set()
     else:
         relation_labels = Sets.Δ[len(relation_rows) - 1]
-    generator_labels = source_module.module_generating_set()
+    generator_labels = numerator_module.module_generating_set()
     localization_map = localization_ring.localization_map()
     transported_rows = tuple(
         tuple(localization_map(coefficient) for coefficient in row)

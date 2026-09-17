@@ -106,11 +106,7 @@ class _FreeBilinearFormFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        module_map = (
-            target.equip_form_morphism()
-            * morphism
-            * source.forget_form_morphism()
-        )
+        module_map = _read_between_free_formed(morphism, source, target)
         value_map = morphism.tensor_product_map(
             morphism,
             source=source.value_module(),
@@ -147,11 +143,7 @@ class _FreeQuadraticFormFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        module_map = (
-            target.equip_form_morphism()
-            * morphism
-            * source.forget_form_morphism()
-        )
+        module_map = _read_between_free_formed(morphism, source, target)
         value_map = morphism.divided_square()
         return source.Mor(target)((module_map, value_map))
 
@@ -163,21 +155,43 @@ class _TautologicalFormFunctor(Functor):
         raise NotImplementedError("a tautological form functor must supply its classifier")
 
 
+def _read_between_free_formed(morphism, source, target):
+    r"""``F(f)`` on the free formed objects: ``f`` read between the copies built on its endpoints.
+
+    ``source`` and ``target`` are built on the data of ``f``'s domain and
+    codomain, so the generator of ``source`` labelled ``l`` is the generator
+    of the domain labelled ``l``, and its image reads in ``target`` by
+    coercion.
+    """
+    domain = morphism.domain()
+    return source.module_category().Mor(source, target)(
+        {label: target(morphism(domain.module_generator(label))) for label in source.module_generating_set()}
+    )
+
+
 class _FreeFormAdjunction(Adjunction):
     def _repr_(self):
         return f"{self.left_adjoint()} ⊣ {self.right_adjoint()}"
 
     def unit(self, module):
-        return self.left_adjoint()(module).equip_form_morphism()
+        r"""``M -> U(F(M))``: the generator of ``M`` labelled ``l`` to the generator of ``F(M)`` labelled ``l``."""
+        free_formed = self.left_adjoint()(module)
+        return module.module_category().Mor(module, free_formed)(
+            {label: free_formed.module_generator(label) for label in module.module_generating_set()}
+        )
 
     def _counit_value_map(self, free_formed, formed):
         raise NotImplementedError("a free-form adjunction must classify the target form")
 
     def counit(self, formed):
+        r"""``F(U(N)) -> N``: the identity of the module ``N`` is built on, read between the two formed objects."""
         free_formed = self.left_adjoint()(self.right_adjoint()(formed))
+        module_map = free_formed.module_category().Mor(free_formed, formed)(
+            {label: formed.module_generator(label) for label in free_formed.module_generating_set()}
+        )
         return free_formed.Mor(formed)(
             (
-                free_formed.forget_form_morphism(),
+                module_map,
                 self._counit_value_map(free_formed, formed),
             )
         )

@@ -670,6 +670,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         *,
         extra_categories=(),
         construction_data=(),
+        unformed_module=None,
         subobject_source=None,
         subobject_ambient=None,
         subobject_generator_images=None,
@@ -686,9 +687,15 @@ class Lattices(OwnedCategoryOverBaseRing):
         subobject placement, isotropic-reduction datum, root framing or group
         action.  Callers supply only owned mathematical data; concrete
         ``Lattice`` storage stays inside this owner.
+
+        ``unformed_module`` is the module the specialization is built on:
+        the lattice itself when the added structure is stated on it, as for
+        a group action, and otherwise the module ``lattice`` is built on.
         """
         if lattice.base_ring() is not self.base_ring():
             raise ValueError("a lattice specialization must stay over its base ring")
+        if unformed_module is None:
+            unformed_module = lattice.unformed_module()
         retained = lattice if subobject_source is None else subobject_source
         if subobject_ambient is None:
             subobject_ambient = retained.__dict__.get("_preamble_subobject_ambient")
@@ -711,6 +718,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             lattice.gram_tensor(),
             self,
             lattice._sage_lattice,
+            unformed_module=unformed_module,
             extra_categories=tuple(extra_categories),
             construction_data=tuple(construction_data),
             subobject_ambient=subobject_ambient,
@@ -1103,23 +1111,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.base_ring()
 
         def unformed_module(self):
-            r"""Return the actual free module equipped with this lattice form."""
-            return self._module
+            r"""Return the module this lattice is built on, recorded at its construction.
 
-        @cached_method
-        def forget_form_morphism(self):
-            r"""Return the canonical module identification from the lattice to its free module."""
-            module = self.unformed_module()
-            return self.module_category().Mor(self, module)(
-                {
-                    label: module.module_generator(label)
-                    for label in module.module_generating_set()
-                }
-            )
-
-        def equip_form_morphism(self):
-            r"""Return the selected framing that equips the free module with this form."""
-            return self.framing_morphism()
+            For a lattice given by its form it is the free module the form was
+            stated on; for a lattice with an action stated on a lattice ``L``,
+            it is ``L``.
+            """
+            return self._preamble_unformed_module
 
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
@@ -2284,9 +2282,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             # itself when it is the discriminant module and its bilinear
             # reading when the summand is even inside an odd L, so the classes
             # cross into the twist the same way in both parities.
-            second_forget = second_discriminant.forget_form_morphism()
             second_twist = second_discriminant.twist(-1)
-            target_images = {label: second_twist.equip_form_morphism()(second_forget(target_class)) for label, target_class in zip(labels, target_classes, strict=True)}
+            target_images = {label: second_twist(target_class) for label, target_class in zip(labels, target_classes, strict=True)}
 
             def target_inclusion(target):
                 return target.Mono(second_twist)(target_images, quadratic=quadratic)
@@ -2300,8 +2297,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 _subobject_inclusion_factory=target_inclusion,
             )
 
-            target_subgroup = second_discriminant.unformed_module().subobject_on(
-                tuple(second_forget(target_class) for target_class in target_classes)
+            second_unformed = second_discriminant.unformed_module()
+            target_subgroup = second_unformed.subobject_on(
+                tuple(second_unformed(target_class) for target_class in target_classes)
             )
             extension_index = first.sum(second).index()
             if source_form.cardinality() != extension_index:

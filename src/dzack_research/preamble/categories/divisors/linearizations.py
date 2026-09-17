@@ -288,9 +288,7 @@ class _ProjectiveLineBundleLinearization(SageObject):
 
         target = Modules(group_algebra)(target_unacted, target_action)
         images = {
-            label: target.equip_action_morphism()(
-                restriction(source.unacted_module().module_generator(label))
-            )
+            label: target(restriction(source.unformed_module().module_generator(label)))
             for label in source.module_generating_set()
         }
         return source.Mor(target)(images)
@@ -371,10 +369,9 @@ class _ProjectiveLineBundleLinearization(SageObject):
         if not self.point_is_fixed(point):
             raise ValueError("equivariant fiber evaluation requires a fixed point")
         source = self.section_group_module()
-        sections = source.unacted_module()
+        sections = source.unformed_module()
         evaluation = self.line_bundle().jet_evaluation(point, 1)
         fiber = evaluation.codomain()
-        base = fiber.base_ring()
         group_algebra = source.group_algebra()
         target = Modules(group_algebra)(
             fiber,
@@ -384,9 +381,7 @@ class _ProjectiveLineBundleLinearization(SageObject):
             ),
         )
         images = {
-            label: target.equip_action_morphism()(
-                evaluation(sections.module_generator(label))
-            )
+            label: target(evaluation(sections.module_generator(label)))
             for label in source.module_generating_set()
         }
         return source.Mor(target)(images)
@@ -500,7 +495,6 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
                 lambda section: sections.scalar_multiple(scalar_twist, section),
                 verify_linearity=False,
             )
-        section_construction = sections.section_space_construction()
         factor_labels = tuple(self.projective_product().factors().index_set())
         weights = self.coordinate_weights()
         images = {}
@@ -508,7 +502,7 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
             weight = base.one()
             for factor_label, block in zip(
                 factor_labels,
-                section_construction.exponents_of(monomial),
+                sections.monomial_exponents(monomial),
                 strict=True,
             ):
                 factor_weights = weights[factor_label]

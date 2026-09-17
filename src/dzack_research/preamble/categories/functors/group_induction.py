@@ -23,9 +23,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_from_relation_rows,
     _presentation_matrix,
 )
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    _equip_action,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -100,7 +97,7 @@ def _finite_coset_sum(module, representatives):
     framing.  Presentation rows are generated directly from this product; no
     Python pair family or block-row list is a mathematical object.
     """
-    module = module.unacted_module()
+    module = module.unformed_module()
     source_labels = module.module_generating_set()
     labels = _coset_sum_labels(representatives, source_labels)
     source_relations = _presentation_matrix(module)
@@ -157,17 +154,15 @@ class _RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
         return self._inclusion
 
     def _apply_object(self, group_module):
-        coefficient_module = group_module.unacted_module()
-        restricted = _equip_action(
+        coefficient_module = group_module.unformed_module()
+        return self.codomain()(
             coefficient_module,
-            self.subgroup(),
             lambda subgroup_element, vector: group_module.action_of(
                 self.inclusion()(subgroup_element)
             )(
                 vector
             ),
         )
-        return restricted
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -258,7 +253,7 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                     )
             return module.linear_combination(output_coefficients)
 
-        return _equip_action(module, self.supergroup(), action)
+        return self.codomain()(module, action)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -367,7 +362,7 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                         ] = coefficient
             return module.linear_combination(output_coefficients)
 
-        return _equip_action(module, self.supergroup(), action)
+        return self.codomain()(module, action)
 
     def value_at(self, source, coinduced, vector, representative):
         coefficients = coinduced.framing_coefficients(vector)

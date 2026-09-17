@@ -306,6 +306,7 @@ class Lattice(Parent, IndexedGenerators):
         sage_lattice,
         names=None,
         *,
+        unformed_module,
         extra_categories=(),
         construction_data=(),
         subobject_ambient=None,
@@ -315,6 +316,7 @@ class Lattice(Parent, IndexedGenerators):
         subobject_verify_linearity=True,
     ) -> None:
         self._module = module
+        self._preamble_unformed_module = unformed_module
         self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
@@ -385,6 +387,11 @@ class Lattice(Parent, IndexedGenerators):
         r"""Return a lattice vector from finite coordinates or keyed support."""
         if isinstance(x, self.element_class) and x.parent() is self:
             return x
+        match element_parent(x):
+            case source if source is self._module:
+                return self.element_class(self, x)
+            case Parent() as source if source is not self and self._built_on_the_same_data(source):
+                return self._element_on_the_same_data(source, x)
         if isinstance(x, (tuple, list)):
 
             size = self.module_generating_set().cardinality()
@@ -528,6 +535,7 @@ def _lattice_parent(
         category,
         sage_lattice,
         names,
+        unformed_module=module,
         extra_categories=extra_categories,
         construction_data=construction_data,
     )
@@ -1187,6 +1195,7 @@ def _tensor_product_lattice(factors):
         gram,
         category,
         None,
+        unformed_module=module,
         extra_categories=(TensorProductModules(ring),),
         construction_data=(("tensor_factors", factors),),
     )
