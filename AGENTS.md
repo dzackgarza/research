@@ -1920,6 +1920,14 @@ its own name over a lower base; `__contains__` deciding membership by a
 predicate, a base tower or an attribute probe; a declaration computed from a
 local variable; a second class for a notion the tree already owns.
 
+Banned on 2026-09-17 (`CAT-28`): a category declared for the class of objects
+an engine or a construction produces (a condition set is a class; the groups
+\(\operatorname{Aut}(L/K)\) form a class), and an engine class deleted or
+turned into a category.  Engines are threaded into the category their objects
+already belong to.  An \(R\)-algebra is constructed from \((A, m)\), and its
+structure morphism \(\rho\colon R\to Z(A)\) is produced from \(m\); for \(R\)
+over itself \(\rho\) is the identity (`CON-16`).
+
 # Categorical organization model (always-on)
 
 How the preamble's category tree is organized, and where new content goes.
