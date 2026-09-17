@@ -255,6 +255,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
         codomain: Parent,
         *,
         category: Category | None = None,
+        base: Parent | None = None,
     ) -> None:
         self._family = family
         self._end_family = None
@@ -275,6 +276,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             domain,
             codomain,
             category=SageSets(),
+            base=base,
         )
         if category is not None:
             # Sage ``Homset`` insists on constructing first in ``Sets`` so it

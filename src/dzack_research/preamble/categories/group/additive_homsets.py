@@ -169,11 +169,23 @@ class AdditiveMorphism(Morphism):
             return NotImplemented
         if self is other:
             return op == op_EQ
-        assert self.domain().is_finite() is True, (
-            "equality of elementwise additive maps requires a finite enumerable source"
-        )
-        equal = all(self(element) == other(element) for element in self.domain())
-        return equal if op == op_EQ else not equal
+        from sage.structure.element import parent as element_parent
+        from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets
+
+        if element_parent(other) is not self.parent():
+            return op == op_NE
+        domain = self.domain()
+        if domain.is_finite() is not True or domain not in EnumeratedSets():
+            return Unknown
+        decisions = tuple(self(element) == other(element) for element in domain)
+        match (all(value is True for value in decisions), any(value is False for value in decisions)):
+            case (True, _):
+                equal = True
+            case (_, True):
+                equal = False
+            case _:
+                equal = Unknown
+        return equal if op == op_EQ or equal is Unknown else not equal
 
 
 class AdditiveHomset(CategoricalHomset):
@@ -187,7 +199,14 @@ class AdditiveHomset(CategoricalHomset):
         self._preamble_base_ring = _own_ring(SageZZ)
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
         category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveHomGroups()
-        super().__init__(family, domain, codomain, category=category)
+        super().__init__(family, domain, codomain, category=category, base=self._preamble_base_ring)
+        if domain is codomain:
+            from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+
+            _algebra_from_native_ring(
+                self, lambda left, right: self.elementwise(lambda element: left(right(element))),
+                self.identity(), lambda scalar, arrow: AdditiveHomset._owned_scalar_multiple(self, scalar, arrow),
+            )
 
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):

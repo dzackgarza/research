@@ -846,22 +846,8 @@ class Algebras(OwnedCategoryOverBaseRing):
             return self(left) * self(right)
 
         def algebra_base_ring(self):
-            r"""The scalar ring this algebra is an algebra over.
-
-            Every route that builds an algebra states the ring it is an
-            algebra over -- the module level threads it to the host as the
-            base, and a ring the preamble adopts declares the ring its engine
-            presents it over -- so the answer is read off the construction.
-            A ring presented over nothing smaller is an algebra over itself.
-            """
-            host_base = self.base()
-            match host_base:
-                case None:
-                    return self
-                case _ if host_base is self:
-                    return self
-                case _:
-                    return _own_ring(host_base)
+            r"""The scalar ring established by this algebra's module constructor."""
+            return self.base_ring()
 
         def underlying_module(self):
             r"""This algebra under the forgetful functor ``Alg_R -> Mod_R`` of its category."""

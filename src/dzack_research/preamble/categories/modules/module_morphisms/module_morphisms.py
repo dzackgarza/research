@@ -1578,6 +1578,7 @@ def _initialize_module_hom_parent(
         domain,
         codomain,
         category=placement,
+        base=ring.ring_center(),
     )
 
     # The Hom parent is refined into its placement rather than constructed
@@ -1607,6 +1608,19 @@ def _initialize_module_hom_parent(
                 model.framing_source(),
             )
             parent._install_presentation(relation_matrix, presentation)
+
+    if domain is codomain:
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+
+        # Construct composition in this exact parent; asking the Hom factory
+        # for these same endpoints while it is still constructing would
+        # recursively allocate another copy before it can be cached.
+        _algebra_from_native_ring(
+            parent,
+            lambda left, right: parent.elementwise(lambda element: left(right(element)), verify_linearity=False),
+            _ModuleHomsetCommonMethods.identity(parent),
+            lambda scalar, arrow: _ModuleHomsetCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
+        )
 
 
 class _ModuleHomsetCommonMethods:
