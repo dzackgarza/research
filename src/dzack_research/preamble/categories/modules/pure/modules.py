@@ -1237,8 +1237,8 @@ class Modules(OwnedCategoryOverBaseRing):
             supplies their selected coefficients.
             """
             native = self._native_module_presentation()
-            if native is not None and native.is_regular():
-                return native.regular_coefficients(element)
+            if native is not None and native.basis() is not None:
+                return native.coefficients(element)
             match self:
                 case _ if self in OwnedOrders():
                     # The selected integral basis of an order: the engine

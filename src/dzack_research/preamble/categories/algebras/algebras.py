@@ -235,7 +235,7 @@ class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
 
 
-def _algebra_from_native_ring(algebra, product, unit, scalar_action):
+def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_basis=None):
     r"""Compute (M,m) from a native ring and enter the ordinary algebra constructor.
 
     The native unit is needed by the coefficient arithmetic of a self-based
@@ -249,7 +249,7 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action):
 
     ring = algebra.algebra_base_ring()
     Algebras.Unital.ParentMethods._retain_unit(algebra, unit)
-    presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action)
+    presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action, basis=module_basis)
     module = Modules(ring)(presentation)
     category = Algebras(ring).Associative().Unital()
     if algebra.is_commutative() is True:

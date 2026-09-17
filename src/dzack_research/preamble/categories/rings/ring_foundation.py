@@ -3118,6 +3118,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     """
 
     _preamble_owned_ring_parent = True
+    _native_module_basis = None
+
 
     @lazy_attribute
     def Element(self):
@@ -3178,7 +3180,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                 _owned_integers.set_cache(self)
         try:
             _algebra_from_native_ring(self, lambda left, right: left * right,
-                self._from_engine_element(engine.one()), self._native_scalar_action)
+                self._from_engine_element(engine.one()), self._native_scalar_action,
+                module_basis=self._native_module_basis)
         except BaseException:
             # A failed constructor cannot leave its incomplete refinement in
             # the canonical cache. Remove only this exact object's entries.

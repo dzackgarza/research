@@ -58,3 +58,21 @@ def test_alternate_product_on_real_scalars_preserves_both_element_readings() -> 
     assert algebra.one() * element == element
     assert RR(element * element) == -RR(9)
     assert RR(3) * RR(3) == RR(9)
+
+
+def test_monic_quotient_supplies_its_basis_before_the_native_tensor_product() -> None:
+    polynomial = QQ.polynomial_ring("z")
+    z = polynomial.algebra_generator("z")
+    algebra = polynomial.quotient_by_relations((z**2 - QQ(2),))
+    one, generator = algebra.module_generator(0), algebra.module_generator(1)
+    frame = algebra.framing_morphism()
+    assert frame.domain().module_rank() == 2
+    assert frame.codomain() is algebra
+    assert one == algebra.one()
+    assert generator * generator == 2 * one
+    element = one + 3 * generator
+    assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
+    multiplication = algebra.multiplication()
+    assert multiplication.domain() in FramedFreeModules(QQ).FinitelyGenerated()
+    assert multiplication.domain().module_rank() == 4
+    assert multiplication(generator, generator) == 2 * one

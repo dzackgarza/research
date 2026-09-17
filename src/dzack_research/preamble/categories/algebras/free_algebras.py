@@ -334,20 +334,25 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             *tuple(extra_categories),
         ]
         if finite_free_degree is not None:
-            module_labels = Sets.Δ[finite_free_degree - 1]
-            self._preamble_module_generating_set = module_labels
-            module_primitive = (
-                quotient_engine.gen()
-                if finite_free_generator is None
-                else finite_free_generator
-            )
-            self._preamble_module_generator_values = indexed_family(
-                module_labels,
-                lambda exponent: self._from_engine_element(module_primitive) ** int(exponent),
-                name="Quotient module generator values",
-            )
+            from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
 
-            self._finite_free_coordinates = finite_free_coordinates
+            module_labels = Sets.Δ[finite_free_degree - 1]
+            source = base.free_module(module_labels)
+            module_primitive = quotient_engine.gen() if finite_free_generator is None else finite_free_generator
+
+            def basis_image(exponent):
+                return self._from_engine_element(module_primitive) ** int(exponent)
+
+            def basis_coordinates(element):
+                backend = self._engine_element(self(element))
+                coordinates = backend if finite_free_coordinates is None else finite_free_coordinates(backend)
+                return {
+                    label: base._from_engine_element(coefficient)
+                    for label, coefficient in zip(module_labels, coordinates, strict=True)
+                    if coefficient != 0
+                }
+
+            self._native_module_basis = _NativeModuleBasis(source, basis_image, basis_coordinates)
             placement.append(FinitelyGeneratedFreeModules(base))
 
         selected_generator_values = generator_values
@@ -386,24 +391,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             )
 
 
-    def _selected_module_coefficients(self, element):
-        r"""Read coordinates in the selected finite-free algebra basis.
-
-        The algebra engine owns its coefficient conversion, rather than
-        attaching a coordinate callback for the lower module layer to find.
-        """
-        backend = self._engine_element(self(element))
-        coordinates = (
-            backend
-            if self._finite_free_coordinates is None
-            else self._finite_free_coordinates(backend)
-        )
-        base = self.base_ring()
-        return {
-            label: base._from_engine_element(coefficient)
-            for label, coefficient in zip(self.module_generating_set(), coordinates, strict=True)
-            if coefficient != 0
-        }
 
 
 def _presented_algebra_on_engine(

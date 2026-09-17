@@ -17,6 +17,31 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.refine import refine
 
 
+class _NativeModuleBasis:
+    r"""A native realization's chosen free source, images and inverse coordinates.
+
+    This is input at the module construction boundary, not a second module.
+    The source is already constructed and its image/coordinate correspondence
+    is supplied by the chosen native presentation. Values are normalized by
+    that free module, so its actual scalar ring remains authoritative.
+    """
+
+    def __init__(self, source, images, coordinates):
+        self._source = source
+        self._images = images
+        self._coordinates = coordinates
+
+    def source(self):
+        return self._source
+
+    def image(self, label):
+        return self._images(label)
+
+    def coefficients(self, element):
+        source = self.source()
+        return source.framing_coefficients(source.linear_combination(self._coordinates(element)))
+
+
 class _RingModulePresentation:
     r"""The native additive-group realization and its specified scalar action.
 
@@ -31,12 +56,13 @@ class _RingModulePresentation:
     same module takes the ordinary stronger-object construction instead.
     """
 
-    def __init__(self, group, scalar_ring, product, unit, scalar_action):
+    def __init__(self, group, scalar_ring, product, unit, scalar_action, *, basis=None):
         self._group = group
         self._ring = scalar_ring
         self._product = product
         self._unit = unit
         self._scalar_action = scalar_action
+        self._basis = basis
 
     def module(self):
         return self._group
@@ -63,22 +89,28 @@ class _RingModulePresentation:
         module._preamble_base_ring = self.base_ring()
         refine(module, category)
         if self.is_regular():
+            assert self._basis is None, "the canonical regular frame is supplied by its unit"
             free = self.base_ring().free_module(1)
-            labels = free.module_generating_set()
-            # The selected map and its coefficient inverse precede the free
-            # placement. No property label supplies this frame afterwards.
+            label = next(iter(free.module_generating_set()))
+            self._basis = _NativeModuleBasis(free, lambda _: self.unit(), lambda value: {label: module(value)})
+        if self._basis is not None:
+            source = self._basis.source()
+            assert source.base_ring() is self.base_ring(), "the basis uses the native action's exact scalars"
+            labels = source.module_generating_set()
             refine(module, FramedModules(self.base_ring()))
-            FramedModules.ParentMethods._install_framing(module, labels, lambda _: self.unit(), free)
-            refine(module, FramedFreeModules(self.base_ring()).FinitelyGenerated())
+            FramedModules.ParentMethods._install_framing(module, labels, self._basis.image, source)
+            placement = FramedFreeModules(self.base_ring())
+            if labels.cardinality().is_finite():
+                placement = placement.FinitelyGenerated()
+            refine(module, placement)
         return module
 
-    def regular_coefficients(self, element):
-        assert self.is_regular(), "these coordinates are the regular rank-one frame"
-        module = self.module()
-        coefficient = module(element)
-        if (coefficient == module.zero()) is True:
-            return {}
-        return {next(iter(module.module_generating_set())): coefficient}
+    def basis(self):
+        return self._basis
+
+    def coefficients(self, element):
+        assert self._basis is not None, "coordinates require the native construction's chosen basis"
+        return self._basis.coefficients(self.module()(element))
 
     @cached_method
     def multiplication(self):
