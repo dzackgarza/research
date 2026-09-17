@@ -43,7 +43,7 @@ class HesseBertiniFamily(SageObject):
         z = relative_ring.algebra_generator("z")
         scalar = relative_ring.algebra_structure_morphism()
         equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane, equation)
 
         reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
         bundle = reference_plane.O(3)
