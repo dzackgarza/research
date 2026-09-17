@@ -80,35 +80,53 @@ def _chart_pair(cover, left_index, right_index):
 
 
 def _family_on_finite_ordered_set(index_set, values, *, name, noun):
-    r"""Normalize finite input to an indexed family on ``index_set``."""
+    r"""Read finite labelled data as an indexed family on ``index_set``.
 
-    expected = int(index_set.cardinality().finite_value())
+    This is the literal ingress of the gluing constructors, and the one place
+    in this module that reads a Python container.  An indexed family is read
+    at its labels, a mapping at its keys and any other finite collection at the
+    positions of ``index_set``.  With ``index_set`` omitted the labels are the
+    family's own, the mapping's keys, or the positions of the collection.
+    """
     if isinstance(values, IndexedFamily):
-        if not values.cardinality().is_finite():
-            raise TypeError(f"{noun} must be a finite indexed family")
-        if int(values.cardinality().finite_value()) != expected:
-            raise ValueError(f"{noun} has the wrong number of entries")
-        try:
-            entries = tuple(values[index] for index in index_set)
-        except (IndexError, KeyError, TypeError, ValueError) as error:
-            raise ValueError(f"{noun} is not indexed by the required labels") from error
+        labels = finite_ordered_set(values.index_set()) if index_set is None else index_set
+        family = finite_indexed_family(labels, values.__getitem__, name=name)
+        supplied = values
     elif isinstance(values, Mapping):
-        if len(values) != expected:
-            raise ValueError(f"{noun} has the wrong number of entries")
-        try:
-            entries = tuple(values[index] for index in index_set)
-        except (KeyError, TypeError) as error:
-            raise ValueError(f"{noun} is not indexed by the required labels") from error
+        labels = finite_ordered_set(tuple(values)) if index_set is None else index_set
+        family = finite_indexed_family(labels, values.__getitem__, name=name)
+        supplied = finite_family(tuple(values))
     else:
-        entries = tuple(values)
-        if len(entries) != expected:
-            raise ValueError(f"{noun} has the wrong number of entries")
+        supplied = finite_family(values)
+        labels = (
+            finite_ordered_set(range(int(supplied.cardinality().finite_value())))
+            if index_set is None
+            else index_set
+        )
+        family = finite_indexed_family(
+            labels,
+            lambda label: supplied[int(labels.ranking_map()(label))],
+            name=name,
+        )
+    assert supplied.cardinality().is_finite(), f"{noun} is finite data"
+    if supplied.cardinality() != family.cardinality():
+        raise ValueError(f"{noun} has the wrong number of entries")
+    return family
 
-    return finite_indexed_family(
-        index_set,
-        lambda index: entries[int(index_set.ranking_map()(index))],
-        name=name,
+
+def _lands_in_distinguished_open(morphism, distinguished_open):
+    r"""Whether ``g: T -> U`` of affine schemes factors through ``D(f) <= U``.
+
+    It does exactly when ``g^#(f)`` is a unit of ``O(T)``: that is the
+    universal property of ``O(D(f)) = O(U)[1/f]`` (Stacks, Tag 01HR), and it
+    is the hypothesis under which ``corestriction`` constructs the factor.
+    """
+    defining_element = morphism.codomain().coordinate_algebra()(
+        distinguished_open.distinguished_open_element()
     )
+    return morphism.domain().coordinate_algebra()(
+        morphism.coordinate_algebra_morphism()(defining_element)
+    ).is_unit()
 
 
 def _scheme_core_hom(isomorphism):
@@ -136,31 +154,12 @@ def _algebra_homset(source, target):
 
 def _finite_chart_family(charts):
     r"""Return one nonempty finite ordered family of chart candidates."""
-
-    if isinstance(charts, IndexedFamily):
-        if not charts.cardinality().is_finite():
-            raise TypeError("scheme gluing requires a finite indexed family of affine charts")
-        index_set = finite_ordered_set(charts.index_set())
-        family = finite_indexed_family(
-            index_set,
-            lambda index: charts[index],
-            name="Affine charts of a finite scheme gluing",
-        )
-    elif isinstance(charts, Mapping):
-        index_set = finite_ordered_set(tuple(charts))
-        family = finite_indexed_family(
-            index_set,
-            lambda index: charts[index],
-            name="Affine charts of a finite scheme gluing",
-        )
-    else:
-        entries = tuple(charts)
-        index_set = finite_ordered_set(range(len(entries)))
-        family = finite_indexed_family(
-            index_set,
-            lambda index: entries[int(index_set.ranking_map()(index))],
-            name="Affine charts of a finite scheme gluing",
-        )
+    family = _family_on_finite_ordered_set(
+        None,
+        charts,
+        name="Affine charts of a finite scheme gluing",
+        noun="the affine charts of a finite scheme gluing",
+    )
     if int(family.cardinality().finite_value()) == 0:
         raise ValueError("scheme gluing requires at least one affine chart")
     return family
@@ -170,9 +169,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     r"""The chosen inclusion of one chart image into the glued scheme."""
 
     def __init__(self, parent, gluing_datum, chart_index) -> None:
-        Morphism.__init__(self, parent)
-        self._preamble_domain_override = None
-        self._preamble_codomain_override = None
+        super().__init__(None, homset=parent)
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
 
@@ -211,9 +208,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         open_image,
         chart_isomorphism,
     ) -> None:
-        Morphism.__init__(self, parent)
-        self._preamble_domain_override = None
-        self._preamble_codomain_override = None
+        super().__init__(None, homset=parent)
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
         self._open_image = open_image
@@ -235,15 +230,21 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return self.open_image().inclusion()
 
     def __mul__(self, other):
-        if not isinstance(other, SchemeMorphism):
+        if other.codomain() is not self.domain():
             return NotImplemented
         schemes = Schemes(self.codomain().scheme_base_ring())
-        try:
-            chart_map = schemes.Mor(other.domain(), self.domain())(other)
-        except (NotImplementedError, TypeError, ValueError):
+        chart_map = schemes.Mor(other.domain(), self.domain())(other)
+        return _GluedSchemeChartMap(
+            schemes.Mor(chart_map.domain(), self.codomain()),
+            self,
+            chart_map,
+        )
+
+    def _postcompose_with(self, after):
+        r"""``after o e_i`` is the local map of ``after`` on chart ``i``."""
+        if after.domain() is not self.codomain():
             return NotImplemented
-        parent = schemes.Mor(chart_map.domain(), self.codomain())
-        return _GluedSchemeChartMap(parent, self, chart_map)
+        return after.local_map(self.chart_index())
 
     def __eq__(self, other) -> bool:
         if isinstance(other, _GluedSchemeChartMap):
@@ -278,11 +279,9 @@ class _GluedSchemeChartMap(SchemeMorphism):
     r"""A map into a glued scheme factoring through one selected affine chart."""
 
     def __init__(self, parent, chart_embedding, chart_map) -> None:
-        Morphism.__init__(self, parent)
-        self._preamble_domain_override = None
-        self._preamble_codomain_override = None
-        if not isinstance(chart_embedding, _GluedSchemeChartEmbedding):
-            raise TypeError("a glued chart-factor map requires a selected chart embedding")
+        super().__init__(None, homset=parent)
+        if chart_embedding is not chart_embedding.gluing_datum().chart_embedding(chart_embedding.chart_index()):
+            raise TypeError("a glued chart-factor map factors through a chart embedding selected by the gluing datum")
         if chart_map.codomain() is not chart_embedding.domain():
             raise ValueError("the affine factor must land in the selected glued chart")
         if chart_map.domain() is not self.domain() or chart_embedding.codomain() is not self.codomain():
@@ -303,8 +302,6 @@ class _GluedSchemeChartMap(SchemeMorphism):
         return self.chart_embedding().gluing_datum()
 
     def __mul__(self, other):
-        if not isinstance(other, SchemeMorphism):
-            return NotImplemented
         composite = self.chart_map() * other
         if composite is NotImplemented:
             return NotImplemented
@@ -316,7 +313,8 @@ class _GluedSchemeChartMap(SchemeMorphism):
         )
 
     def _postcompose_with(self, after):
-        if not isinstance(after, _GluedSchemeMorphism) or after.domain() is not self.codomain():
+        r"""``after o e_i o g`` is the local map of ``after`` on chart ``i`` after ``g``."""
+        if after.domain() is not self.codomain():
             return NotImplemented
         return after.local_map(self.chart_index()) * self.chart_map()
 
@@ -338,11 +336,12 @@ class _GluedSchemeChartMap(SchemeMorphism):
             return False
         left_overlap = datum.overlap(self.chart_index(), other.chart_index())
         right_overlap = datum.overlap(other.chart_index(), self.chart_index())
-        try:
-            left = left_overlap.corestriction(self.chart_map())
-            right = right_overlap.corestriction(other.chart_map())
-        except (AssertionError, NotImplementedError, TypeError, ValueError):
+        if not _lands_in_distinguished_open(self.chart_map(), left_overlap):
             return False
+        if not _lands_in_distinguished_open(other.chart_map(), right_overlap):
+            return False
+        left = left_overlap.corestriction(self.chart_map())
+        right = right_overlap.corestriction(other.chart_map())
         transition = datum.transition_between(
             self.chart_index(), other.chart_index()
         ).forward()
@@ -358,9 +357,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
     r"""A morphism out of a glued scheme, represented by compatible chart maps."""
 
     def __init__(self, parent, local_maps, *, verify_compatibility=True) -> None:
-        Morphism.__init__(self, parent)
-        self._preamble_domain_override = None
-        self._preamble_codomain_override = None
+        super().__init__(None, homset=parent)
         datum = self.domain().gluing_datum()
         raw_local_maps = _family_on_finite_ordered_set(
             datum.chart_index_set(),
@@ -412,32 +409,19 @@ class _GluedSchemeMorphism(SchemeMorphism):
         )
 
     def __mul__(self, other):
+        r"""``self o other``, asked of ``other``, which knows how it reaches the glued scheme.
+
+        A morphism into the glued scheme through chart ``i`` composes with the
+        local map on chart ``i``; a morphism out of another glued scheme
+        composes chart by chart.  Both are its ``_postcompose_with``.
+        """
         if self._is_the_identity():
             return other
-        if (
-            isinstance(other, _GluedSchemeChartMap)
-            and other.codomain() is self.domain()
-            and other.gluing_datum() is self.domain().gluing_datum()
-        ):
-            return self.local_map(other.chart_index()) * other.chart_map()
-        if (
-            isinstance(other, _GluedSchemeChartEmbedding)
-            and other.codomain() is self.domain()
-            and other.gluing_datum() is self.domain().gluing_datum()
-        ):
-            return self.local_map(other.chart_index())
-        if isinstance(other, _GluedSchemeMorphism) and other.codomain() is self.domain():
-            return other.domain().Mor(self.codomain())(
-                tuple(
-                    self * other.local_map(index)
-                    for index in other.domain().gluing_datum().chart_indices()
-                )
-            )
         if other.codomain() is not self.domain():
             return NotImplemented
         if other._is_the_identity():
             return self
-        return NotImplemented
+        return other._postcompose_with(self)
 
     def __eq__(self, other) -> bool:
         return (
@@ -1000,14 +984,11 @@ class _FiniteSchemeGluingDatum(SageObject):
             source_index,
             third_index,
         )
-        # A transition that does not preserve the triple overlap fails to land
-        # in this distinguished open, and the corestriction says so.
-        try:
-            restricted = target_triple.corestriction(target_chart_map)
-        except ValueError as error:
+        if not _lands_in_distinguished_open(target_chart_map, target_triple):
             raise ValueError(
                 "finite-atlas transition does not preserve the represented triple-overlap domain"
-            ) from error
+            )
+        restricted = target_triple.corestriction(target_chart_map)
         self._triple_transition_maps.append((key, restricted))
         return restricted
 
