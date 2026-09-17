@@ -39,17 +39,16 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
-## Owner resume — 2026-09-17: remote remediation branches first
+## Owner resume — 2026-09-17
 
-The repository owner resumed this workstream on 2026-09-17 with one first objective:
-the in-flight complaint remediations pushed to the `origin/remediate/*` branches are
-checked in, reviewed for actual compliance with `CONTRIBUTING.md` and `COMPLAINTS.md`,
-and finished and absorbed into `main`. That objective is the `remote-remediation-branches`
-node at the head of `TODO.md`, and it precedes every other ready node. A branch whose
-diff only renames, wraps, or relabels the complaint it claims to repair is not absorbed
-as it stands; it is finished at its owner or its commits are rejected with the reason
-recorded against the complaint. Recurrence of an older scheduled pause does not supersede
-this resume; only a later explicit owner instruction stops the repository again.
+The repository owner resumed this workstream on 2026-09-17. The initial
+`remote-remediation-branches` objective is complete at `356a47ccb`: the two
+`origin/remediate/*` branches were reviewed, compliant work was absorbed into `main`,
+rejected changes were recorded at their complaint owners, and the remote branches were
+deleted with exact-tip leases. That completed objective is no longer an execution gate.
+Select subsequent work from the current `TODO.md` dependency graph and its priority rule.
+Recurrence of an older scheduled pause does not supersede this resume; only a later
+explicit owner instruction stops the repository again.
 
 ## Preamble coding prerequisites
 
