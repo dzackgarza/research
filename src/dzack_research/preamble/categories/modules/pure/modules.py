@@ -3182,6 +3182,8 @@ def _restricted_scalars_view(
         _subobject_ambient is not None and _subobject_generator_images is not None
     ):
         placement.append(ModuleSubobjects(base_ring))
+        if _subobject_ambient is not None:
+            placement.append(Modules(base_ring).Subobjects(_subobject_ambient))
         data.update(
             subobject_ambient=_subobject_ambient,
             subobject_generator_images=_subobject_generator_images,

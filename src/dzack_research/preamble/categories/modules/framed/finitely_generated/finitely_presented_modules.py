@@ -1844,6 +1844,8 @@ def _new_presented_module(
     }
     if subobject_ambient is not None or subobject_inclusion_factory is not None:
         categories.append(ModuleSubobjects(base_ring))
+        if subobject_ambient is not None:
+            categories.append(Modules(base_ring).Subobjects(subobject_ambient))
         data.update(
             subobject_ambient=subobject_ambient,
             subobject_generator_images=subobject_generator_images,

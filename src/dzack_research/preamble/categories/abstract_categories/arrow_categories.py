@@ -1084,29 +1084,8 @@ class SubobjectCategory(OwnedCategoryBase):
         return self.slice_category()(subobject.inclusion())
 
     def __contains__(self, candidate: Any) -> bool:
-        r"""Placement, or an object whose chosen inclusion is a monomorphism into the fixed object.
-
-        No category of the tree states "has a chosen inclusion": the
-        subobject constructions of sets, modules, groups and lattices each
-        define ``inclusion()`` on their own objects.  So the chosen arrow is
-        read here, and whether it is a subobject of ``X`` is asked of the
-        slice over ``X`` and of the monomorphisms of ``C``, without building
-        either object.
-        """
-        match candidate:
-            case _ if super().__contains__(candidate):
-                return True
-        match getattr(candidate, "inclusion", None):
-            case None:
-                return False
-            case chosen:
-                inclusion = chosen()
-        represented_source = inclusion is candidate or inclusion.domain() is candidate
-        return (
-            represented_source
-            and self.slice_category().admits_arrow(inclusion)
-            and self.monomorphism_category().admits_arrow(inclusion)
-        )
+        r"""Whether construction placed the object among these fixed-base subobjects."""
+        return super().__contains__(candidate)
 
     def Mor(self, domain: Parent, codomain: Parent) -> SubobjectHomset:
         if domain not in self or codomain not in self:

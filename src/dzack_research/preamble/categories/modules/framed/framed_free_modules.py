@@ -633,6 +633,8 @@ def _new_sparse_free_module(
     }
     if subobject_ambient is not None or subobject_inclusion_factory is not None:
         categories.append(ModuleSubobjects(ring))
+        if subobject_ambient is not None:
+            categories.append(Modules(ring).Subobjects(subobject_ambient))
         data.update(
             subobject_ambient=subobject_ambient,
             subobject_generator_images=subobject_generator_images,

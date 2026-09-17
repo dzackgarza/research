@@ -193,6 +193,9 @@ def test_module_subobject_order_is_decided_without_failed_factorization() -> Non
     multiples_of_four = ZZ.ideal(4)
     multiples_of_three = ZZ.ideal(3)
 
+    assert evens.category().is_subcategory(subobjects)
+    assert multiples_of_four.category().is_subcategory(subobjects)
+    assert multiples_of_three.category().is_subcategory(subobjects)
     assert subobjects.Mor(multiples_of_four, evens).has_morphism()
     assert not subobjects.Mor(evens, multiples_of_four).has_morphism()
     assert not subobjects.Mor(evens, multiples_of_three).has_morphism()
