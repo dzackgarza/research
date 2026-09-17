@@ -27,6 +27,13 @@ def test_distinguished_affine_cover_is_an_owned_parameter_object() -> None:
 
     assert cover in DistinguishedAffineCovers()
     assert scheme not in DistinguishedAffineCovers()
+    assert cover in DistinguishedAffineCovers(scheme)
+    assert cover.defining_elements().index_set() is cover.index_set()
+    assert cover.atlas() is cover.index_set()
+    for label in cover.atlas():
+        assert cover.open(label) is cover.member(label).domain().arrow().domain()
+    span = cover.overlap_span(0, 1)
+    assert span.apex().arrow().domain() is cover.overlap(0, 1)
 
     modules = ModuleGluingData(cover)
     algebras = AlgebraGluingData(cover)

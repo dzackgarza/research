@@ -1,7 +1,12 @@
 r"""Presheaves are objects of the functor category ``[C^op, D]``; Yoneda is a functor into it."""
 
 from dzack_research.preamble.all import ZZ, Cat, Modules, Sets
-from dzack_research.preamble.categories.abstract_categories import FiniteOrdinalCategory
+from dzack_research.preamble.categories.abstract_categories import (
+    CoveringFamilies,
+    DescentData,
+    FiniteOrdinalCategory,
+    Sheaves,
+)
 from dzack_research.preamble.categories.functors.core import IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -100,3 +105,37 @@ def test_presheaf_transport_acts_on_objects_and_natural_transformations() -> Non
     transported_swap = transport(yoneda(swap))
     assert transported_swap.domain() is transported
     assert transported_swap.codomain() is transported
+
+
+def test_cover_overlap_reverses_its_two_legs_without_changing_the_overlap() -> None:
+    site = FiniteOrdinalCategory(3)
+    small, large = site(1), site(2)
+    inclusion = site.Mor(small, large).unique()
+    identity_small = site.Mor(small, small).identity()
+    identity_large = site.Mor(large, large).identity()
+    cover = CoveringFamilies(site).family(
+        large,
+        (inclusion, identity_large),
+        {(0, 1): (small, identity_small, inclusion)},
+    )
+    overlap = cover.overlap_span(0, 1)
+    reverse = cover.overlap_span(1, 0)
+
+    assert overlap.apex() is small and reverse.apex() is small
+    assert reverse.left_leg() is overlap.right_leg()
+    assert reverse.right_leg() is overlap.left_leg()
+
+
+def test_sheaf_entry_retains_the_functor_and_its_descent_datum() -> None:
+    site = FiniteOrdinalCategory(2)
+    points = finite_ordered_set(("a", "b"))
+    presheaf = site.presheaves(Sets()).constant_functor(points)
+    descent = DescentData.trivial(presheaf)
+    sheaves = Sheaves(descent.coverage(), Sets())
+    sheaf = sheaves.object(presheaf, descent)
+
+    assert sheaf in sheaves
+    assert sheaf in site.presheaves(Sets())
+    assert sheaf.functor() is presheaf
+    assert sheaf.descent_data() is descent
+    assert sheaves.object(presheaf, descent) is sheaf

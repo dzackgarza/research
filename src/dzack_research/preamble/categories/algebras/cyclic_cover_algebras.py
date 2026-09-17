@@ -35,7 +35,7 @@ if TYPE_CHECKING:
         ModuleGluingDatum,
     )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
-        DistinguishedAffineCover,
+        DistinguishedAffineCovers,
     )
 
 
@@ -176,7 +176,7 @@ class CyclicCoverAlgebra(SageObject):
     def degree(self) -> Integer:
         return self._degree
 
-    def cover(self) -> DistinguishedAffineCover:
+    def cover(self) -> DistinguishedAffineCovers().ObjectType:
         return self.line_bundle().cover()
 
     def chart_index_set(self) -> Parent:

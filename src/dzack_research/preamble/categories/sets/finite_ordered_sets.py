@@ -420,7 +420,7 @@ class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
 
     def __init__(
         self,
-        source: Sets.ObjectType,
+        source: Sets().ObjectType,
         map_: Callable[[IndexT], PointT],
         inverse: Callable[[PointT], IndexT | None],
     ) -> None:
@@ -445,7 +445,7 @@ class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
             category=placement,
         )
 
-    def source_set(self) -> Sets.ObjectType:
+    def source_set(self) -> Sets().ObjectType:
         r"""The source of the injective map presenting this image."""
         return self.index_set()
 

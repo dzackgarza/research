@@ -1859,10 +1859,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                 if len(elements) == 1 and isinstance(elements[0], (tuple, list)):
                     elements = tuple(elements[0])
                 from dzack_research.preamble.categories.schemes.ringed_spaces import (
-                    DistinguishedAffineCover,
+                    DistinguishedAffineCovers,
                 )
 
-                return DistinguishedAffineCover(self, elements)
+                return DistinguishedAffineCovers(self)(elements)
 
             def associated_module_sheaf(self, module):
                 r"""Return ``M~`` on the represented distinguished-open basis of this affine scheme."""

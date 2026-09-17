@@ -40,13 +40,10 @@ _EXPORTS = {
     "SubobjectMorphism": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectMorphism"),
     "Coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Coverage"),
     "CoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamilies"),
-    "CoveringFamily": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamily"),
-    "CoveringOverlap": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringOverlap"),
     "DescentData": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentData"),
     "DescentDataOnCover": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentDataOnCover"),
     "DescentEqualizer": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizer"),
     "DescentEqualizerComparison": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizerComparison"),
-    "SheafObject": ("dzack_research.preamble.categories.abstract_categories.presheaves", "SheafObject"),
     "Sheaves": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Sheaves"),
     "TrivialCoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "TrivialCoveringFamilies"),
     "trivial_coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "trivial_coverage"),
@@ -85,13 +82,10 @@ __all__ = [
     "SubobjectMorphism",
     "Coverage",
     "CoveringFamilies",
-    "CoveringFamily",
-    "CoveringOverlap",
     "DescentData",
     "DescentDataOnCover",
     "DescentEqualizer",
     "DescentEqualizerComparison",
-    "SheafObject",
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",
@@ -99,10 +93,11 @@ __all__ = [
 
 
 def __getattr__(name):
-    try:
-        module_name, attribute = _EXPORTS[name]
-    except KeyError as error:
-        raise AttributeError(name) from error
+    # Python's module attribute protocol: a name this package does not
+    # export is an AttributeError.
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module_name, attribute = _EXPORTS[name]
     value = getattr(_import_module(module_name), attribute)
     globals()[name] = value
     return value

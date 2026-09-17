@@ -14,15 +14,17 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
-from sage.structure.element import Element
+from sage.structure.element import Element, parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
     FixedHomCategory,
+    HomCategories,
     HomCategoryConstruction,
     _category_homset,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
@@ -32,6 +34,7 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.owned_category import _object_of
 
 
 class CategoryObject(Parent):
@@ -54,28 +57,6 @@ class CategoryObject(Parent):
 
     def _repr_(self) -> str:
         return f"[{self.represented_category()}]"
-
-
-class _FunctorObject(Parent):
-    r"""A represented functor as an object of its functor category."""
-
-    def __init__(self, functor_category, functor: Functor) -> None:
-        self._functor_category = functor_category
-        self._functor = functor
-        Parent.__init__(self, category=functor_category)
-
-    def functor_category(self):
-        return self._functor_category
-
-    def functor(self) -> Functor:
-        return self._functor
-
-    def arrow(self) -> CategoryFunctorMorphism:
-        r"""Return the same functor as the corresponding morphism in ``Cat``."""
-        return self.functor_category().category_of_categories().arrow(self.functor())
-
-    def _repr_(self) -> str:
-        return f"Functor object ({self.functor()})"
 
 
 class CategoryFunctorMorphism(Morphism):
@@ -107,7 +88,7 @@ class CategoryFunctorMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, CategoryFunctorMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         left, right = self.functor().factors(), other.functor().factors()
         # Reassociation and insertion/removal of identity functors do not
@@ -125,9 +106,8 @@ class CategoryFunctorMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, CategoryFunctorMorphism) or other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
-
         return self.parent().category_of_categories().arrow(
             _CompositeFunctor(other.functor(), self.functor())
         )
@@ -175,10 +155,11 @@ class CategoryFunctorHomset(CategoricalHomset):
         return candidate in self.functor_category()
 
     def _element_constructor_(self, functor):
-        if isinstance(functor, CategoryFunctorMorphism):
-            if functor.parent() is self:
-                return functor
-            functor = functor.functor()
+        match functor:
+            case CategoryFunctorMorphism():
+                if functor.parent() is self:
+                    return functor
+                functor = functor.functor()
         return CategoryFunctorMorphism(self, functor)
 
     @cached_method
@@ -195,6 +176,31 @@ class FunctorHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self) -> type[_FunctorCategory]:
         return _FunctorCategory
 
+    def fixed_category_class_for(
+        self,
+        domain: CategoryObject,
+        codomain: CategoryObject,
+    ) -> type[_FunctorCategory]:
+        r"""The realization of ``[C, D]`` for these endpoints.
+
+        One category object for each pair.  Out of the walking arrow
+        ``[1] = FiniteOrdinalCategory(2)`` it is the arrow category, whose
+        realization adds the vocabulary the shape ``[1]`` names (an arrow,
+        its source and target, the two edges of a square) and nothing else.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _WalkingArrowFunctorCategory,
+        )
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        match domain.represented_category():
+            case shape if shape is FiniteOrdinalCategory(2):
+                return _WalkingArrowFunctorCategory
+            case _:
+                return self.fixed_category_class()
+
     def Of(
         self,
         domain: Category | CategoryObject,
@@ -208,7 +214,10 @@ class FunctorHomCategoryConstruction(HomCategoryConstruction):
         return self._remember_between(
             source, target,
             typecall(
-                _FunctorCategory, category, source.represented_category(), target.represented_category()
+                self.fixed_category_class_for(source, target),
+                category,
+                source.represented_category(),
+                target.represented_category(),
             ),
         )
 
@@ -218,11 +227,13 @@ class FunctorHomCategoryConstruction(HomCategoryConstruction):
 class Cat(CategoryPacketMethods, Category):
     r"""The represented category of categories.
 
-    ``Cat`` deliberately does not take the owned base that makes a category an
-    object of ``Cat``.  Applying it here would assert a self-membership
-    statement and would make ``Cat().Mor(Cat(), Cat())`` an apparent
-    1-categorical construction; that higher level is not modelled.  Every
-    other owned category is such an object.
+    A category is an object of ``Cat`` by placement: the owned category bases
+    record ``Cat()`` as a category's category when it is built
+    (``OwnedCategoryObject`` in ``owned_category.py``), a fixed Hom category
+    records ``HomCategories()``, and ``Cat`` records itself.  The expectation
+    ``Cat() in Cat()`` (``tests/constructions/test_categorical_constructions_construct.py``)
+    is that last placement; ``Cat`` is not built on the owned base, which
+    would ask for ``Cat()`` while ``Cat`` is under construction.
     """
 
     _HomCategory = FunctorHomCategoryConstruction
@@ -246,15 +257,36 @@ class Cat(CategoryPacketMethods, Category):
         # Sage runtime edge that is Sage's.
         return [SageObjects()]
 
+    def category(self) -> Cat:
+        r"""``Cat`` is placed in itself."""
+        return self
+
     def __contains__(self, candidate: Any) -> bool:
-        return isinstance(candidate, (Category, CategoryObject))
+        r"""Whether ``candidate`` is a category, read from its placement.
+
+        Placement answers it for every category whose ``category()`` records
+        ``Cat`` or a subcategory of it.  A Hom category realized on Sage's
+        ``Homset`` records its enrichment there instead, and its placement
+        among Hom categories is recorded by the family that built it, which
+        ``HomCategories`` reads.
+        """
+        return super().__contains__(candidate) or candidate in HomCategories()
 
     def object(self, category: Category | CategoryObject) -> CategoryObject:
-        if isinstance(category, CategoryObject):
-            return category
-        if not isinstance(category, Category):
-            raise TypeError("an object of Cat is a category")
-        return self._object_on(category)
+        r"""The Hom endpoint representing ``category`` in ``Cat``.
+
+        Sage's morphisms need a ``Parent`` at each end, and ``Cat`` itself, the
+        joins Sage assembles and Sage's own categories are not parents, so
+        every category enters ``Cat``'s Homs through one represented endpoint.
+        The input is the category or an endpoint already built for it.
+        """
+        match category:
+            case CategoryObject():
+                return category
+            case Category():
+                return self._object_on(category)
+            case _:
+                raise TypeError("an object of Cat is a category")
 
     _hom_endpoint = object
 
@@ -310,6 +342,8 @@ class Cat(CategoryPacketMethods, Category):
         """
 
         _hom_endpoint = CategoryPacketMethods._hom_endpoint
+        ArrowCategory = CategoryPacketMethods.ArrowCategory
+        Core = CategoryPacketMethods.Core
         category_packet = CategoryPacketMethods.category_packet
         HomCategory = CategoryPacketMethods.HomCategory
         EndCategory = CategoryPacketMethods.EndCategory
@@ -744,20 +778,6 @@ class Cat(CategoryPacketMethods, Category):
 
             return _YonedaEmbedding(self)
 
-        def Core(self) -> Category:
-            r"""Return the maximal groupoid inside this category."""
-            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                _CoreCategory,
-            )
-
-            return _CoreCategory(self)
-        def ArrowCategory(self) -> Category:
-            r"""Return \(\mathrm{Ar}(C)=\mathrm{Fun}([1],C)\)."""
-            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                _ArrowCategory,
-            )
-
-            return _ArrowCategory(self)
         def EndArrowCategory(self) -> Category:
             r"""Return the full arrow subcategory on endomorphisms."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -850,18 +870,6 @@ class Cat(CategoryPacketMethods, Category):
             return self.CoveringObjectCategory(base_object)
         def CoveredObjects(self, base_object: Parent) -> Category:
             return self.CoveredObjectCategory(base_object)
-
-    def ArrowCategory(self) -> Category:
-        r"""Return the arrow category of ``Cat``.
-
-        Its own method because ``Cat`` is not an object of ``Cat``, so it
-        does not inherit the constructions every other category gets.
-        """
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            _ArrowCategory,
-        )
-
-        return _ArrowCategory(self)
 
     def meet(self, categories: Iterable[Category]) -> Category:
         r"""Return the largest category contained in all of ``categories``.
@@ -1005,7 +1013,7 @@ class NaturalTransformationMorphism(Morphism):
         return self.transformation().naturality_square(morphism)
 
     def __eq__(self, other: Any) -> bool | UnknownClass:
-        if not isinstance(other, NaturalTransformationMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         if self.transformation() is other.transformation():
             return True
@@ -1021,7 +1029,7 @@ class NaturalTransformationMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, NaturalTransformationMorphism) or other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         if self.domain() is self.codomain() and self is self.parent().identity():
             return other
@@ -1063,14 +1071,18 @@ class NaturalTransformationHomset(CategoricalHomset):
         return self.codomain().functor()
 
     def _element_constructor_(self, transformation):
-        if isinstance(transformation, NaturalTransformationMorphism):
-            if transformation.parent() is self:
-                return transformation
-            transformation = transformation.transformation()
-        if callable(transformation) and not isinstance(transformation, NaturalTransformation):
-            transformation = NaturalTransformation(
-                self.domain().functor(), self.codomain().functor(), transformation
-            )
+        r"""A natural transformation between these two functors, given as one or by its components."""
+        match transformation:
+            case NaturalTransformationMorphism():
+                if transformation.parent() is self:
+                    return transformation
+                transformation = transformation.transformation()
+            case NaturalTransformation():
+                pass
+            case _:
+                transformation = NaturalTransformation(
+                    self.domain().functor(), self.codomain().functor(), transformation
+                )
         return NaturalTransformationMorphism(self, transformation)
 
     @cached_method
@@ -1143,11 +1155,16 @@ class _FunctorCategory(FixedHomCategory):
 
     @staticmethod
     def __classcall__(cls, category_of_categories: Cat, domain: Category, codomain: Category):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(category_of_categories, domain, codomain)
-        if cls is _FunctorCategory:
-            return category_of_categories.HomCategory().Of(domain, codomain)
-        return typecall(cls, category_of_categories, domain, codomain)
+        r"""``[C, D]`` is built only by ``Cat``'s Hom family, which interns it.
+
+        Naming a realization directly asks that family, so the walking-arrow
+        realization is the same object as ``Cat().Mor([1], C)``.  A subclass
+        that is a category of its own states its own classcall.
+        """
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(category_of_categories, domain, codomain)
+        return category_of_categories.HomCategory().Of(domain, codomain)
 
     def __init__(
         self,
@@ -1222,46 +1239,79 @@ class _FunctorCategory(FixedHomCategory):
     def super_categories(self):
         return [Objects()]
 
-    def object(self, functor: Functor | CategoryFunctorMorphism) -> Parent:
-        if isinstance(functor, CategoryFunctorMorphism):
-            functor = functor.functor()
-        if functor.domain() != self.domain_category() or functor.codomain() != self.codomain_category():
+    class ParentMethods:
+        r"""A functor ``F: C -> D`` as an object of ``[C, D]``.
+
+        The functor is the defining datum.  It is stored here and nowhere
+        else; every other operation on the object reads it.
+        """
+
+        def __init__(self, functor: Functor, **rest) -> None:
+            self._functor = functor
+            super().__init__(**rest)
+
+        def functor(self) -> Functor:
+            return self._functor
+
+        def functor_category(self) -> _FunctorCategory:
+            r"""``[C, D]`` for the functor's own endpoints, whichever subcategory the object was built in."""
+            return self.functor().functor_category()
+
+        def arrow(self) -> CategoryFunctorMorphism:
+            r"""Return the same functor as the corresponding morphism in ``Cat``."""
+            return Cat().arrow(self.functor())
+
+        def _repr_(self) -> str:
+            return f"Functor object ({self.functor()})"
+
+    def object(self, functor: Functor | CategoryFunctorMorphism):
+        r"""The object of ``[C, D]`` on a functor ``C -> D``: this category's one entry.
+
+        The input is the functor, or the morphism of ``Cat`` that is the same
+        functor.  One object per functor.
+        """
+        match functor:
+            case CategoryFunctorMorphism():
+                functor = functor.functor()
+        if not self._has_endpoints_of(functor):
             raise ValueError("the functor has the wrong functor-category endpoints")
         return self._object_on(functor)
 
+    def _has_endpoints_of(self, functor: Functor) -> bool:
+        r"""Whether ``functor`` runs from this category's domain to its codomain."""
+        return functor.domain() == self.domain_category() and functor.codomain() == self.codomain_category()
+
     @cached_method(key=lambda self, functor: id(functor))
-    def _object_on(self, functor):
-        return _FunctorObject(self, functor)
+    def _object_on(self, functor: Functor):
+        return _object_of(self, functor=functor)
 
     __call__ = object
 
     def _hom_endpoint(
         self,
         obj: Parent | Category | Functor | CategoryFunctorMorphism,
-    ) -> Parent:
-        if isinstance(obj, (Functor, CategoryFunctorMorphism)):
-            return self.object(obj)
-        if not isinstance(obj, Parent):
-            raise TypeError("a functor-category endpoint must represent a functor")
-        return obj
+    ):
+        r"""An endpoint of a natural-transformation Hom: an object, or the functor it is built on."""
+        match obj:
+            case Functor() | CategoryFunctorMorphism():
+                return self.object(obj)
+            case _:
+                return obj
 
     def __contains__(self, candidate: Any) -> bool:
-        if isinstance(candidate, CategoryFunctorMorphism):
-            return self.accepts(candidate)
-        try:
-            if candidate.category().is_subcategory(self):
-                return True
-        except AttributeError:
-            pass
-        selected = getattr(candidate, "functor", None)
-        if not callable(selected):
-            return False
-        functor = selected()
-        return (
-            isinstance(functor, Functor)
-            and functor.domain() == self.domain_category()
-            and functor.codomain() == self.codomain_category()
-        )
+        r"""Whether ``candidate`` is an object of ``[C, D]``.
+
+        An object built by this category's entry, or in a subcategory of it,
+        is one by placement.  A functor ``C -> D`` is the defining datum of
+        one, and so is the morphism of ``Cat`` that is that functor.
+        """
+        match candidate:
+            case Functor():
+                return self._has_endpoints_of(candidate)
+            case CategoryFunctorMorphism():
+                return self._has_endpoints_of(candidate.functor())
+            case _:
+                return Category.__contains__(self, candidate)
 
     def Mor(
         self,

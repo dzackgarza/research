@@ -2,6 +2,7 @@
 
 from itertools import combinations
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
@@ -19,7 +20,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
     CoveringFamilies,
-    CoveringFamily,
 )
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -396,15 +396,261 @@ class DistinguishedAffineCovers(OwnedCategory):
         return f"distinguished affine covering families of {scheme}"
 
 
+    def _call_(self, elements):
+        r"""Construct ``{D(f_i) -> X}`` through the covering-family entry."""
+        scheme = self.scheme()
+        assert scheme is not None, "a distinguished cover is constructed over its specified scheme"
+        algebra = scheme.coordinate_algebra()
+        values = tuple(algebra(element) for element in elements)
+        assert values, "a represented distinguished cover has at least one open"
+        assert algebra.ideal(*values).contains_ambient_element(algebra.one()), (
+            "the defining elements of a distinguished affine cover generate the unit ideal"
+        )
+        labels = finite_ordered_set(range(len(values)))
+        defining_elements = finite_indexed_family(
+            labels, lambda label: values[int(labels.ranking_map()(label))],
+            name="Defining elements of the distinguished opens",
+        )
+        site = self.site_category()
+        target = site.an_object()
+        opens = finite_indexed_family(
+            labels, lambda label: scheme.distinguished_open(defining_elements[label]),
+            name="Distinguished opens",
+        )
+        charts = finite_indexed_family(
+            labels, lambda label: site.object(opens[label].inclusion()),
+            name="Affine charts over the covered scheme",
+        )
+        members = finite_indexed_family(
+            labels, lambda label: site.Mor(charts[label], target)(opens[label].inclusion()),
+            name="Distinguished affine cover arrows",
+        )
+
+        def overlap_data(left, right):
+            overlap = scheme.distinguished_open(defining_elements[left] * defining_elements[right])
+            apex = site.object(overlap.inclusion())
+            return (
+                apex,
+                site.Mor(apex, charts[left])(overlap.inclusion_into(opens[left])),
+                site.Mor(apex, charts[right])(overlap.inclusion_into(opens[right])),
+            )
+
+        overlaps = {pair: overlap_data(*pair) for pair in combinations(tuple(labels), 2)}
+        return self.family(target, members, overlaps, defining_elements=defining_elements)
+
+    class ParentMethods:
+        r"""A cover whose defining elements refine its already constructed family.
+
+        The family owns its target, index set, arrows and overlap spans.
+        This level adds only the elements defining its distinguished opens;
+        their corresponding family has already been checked at the entry.
+        """
+
+        def __init__(self, defining_elements, **rest) -> None:
+            self._defining_elements = defining_elements
+            super().__init__(**rest)
+            scheme = self.ambient_scheme()
+            algebra = scheme.coordinate_algebra()
+            assert defining_elements.index_set() is self.index_set(), (
+                "the defining elements and cover arrows have one indexing set"
+            )
+            assert self.target().arrow() == scheme.categorical_identity_morphism(), (
+                "a distinguished cover of X has target id_X in the slice"
+            )
+            assert algebra.ideal(*defining_elements).contains_ambient_element(algebra.one()), (
+                "the defining elements generate the unit ideal"
+            )
+            assert all(
+                self.open(label) is scheme.distinguished_open(self.defining_element(label))
+                for label in self.index_set()
+            ), "each selected chart is the distinguished open of its defining element"
+
+        def _cache_key(self) -> int:
+            return id(self)
+
+        def ambient_scheme(self):
+            r"""The affine scheme ``X`` this is a cover of."""
+            return self.target().arrow().codomain()
+
+        def defining_elements(self):
+            return self._defining_elements
+
+        def defining_element(self, index):
+            r"""``f_i``, the element whose distinguished open is the chart at ``index``."""
+            return self._defining_elements[self.chart_label(index)]
+
+        def opens(self):
+            return tuple(self.open(index) for index in self.atlas())
+
+        def atlas(self):
+            r"""The set the charts are indexed by, and the only source of chart labels."""
+            return self.index_set()
+
+        def chart_label(self, index):
+            r"""Read ``index`` as a label of this cover's atlas."""
+            return self.atlas()(index)
+
+        def chart_position(self, index):
+            r"""Where the chart at ``index`` sits in the atlas order."""
+            return int(self.atlas().ranking_map()(self.chart_label(index)))
+
+        def open(self, index):
+            r"""``D(f_i)``, the chart at ``index``."""
+            return self.member(self.chart_label(index)).domain().arrow().domain()
+
+        def intersection_indices(self, *indices):
+            r"""Read the stated chart labels, deduplicated and in the atlas order."""
+            labels = {self.chart_label(index) for index in indices}
+            assert labels, "an affine-cover intersection requires at least one chart"
+            return tuple(sorted(labels, key=self.atlas().ranking_map()))
+
+        def intersection(self, *indices):
+            r"""Return ``D(prod_i f_i)``, the intersection of the selected charts."""
+            return self._intersection_of_labels(self.intersection_indices(*indices))
+
+        @cached_method
+        def _intersection_of_labels(self, labels):
+            match len(labels):
+                case 1:
+                    return self.open(labels[0])
+                case _:
+                    element = self.ambient_scheme().coordinate_algebra().one()
+                    for label in labels:
+                        element *= self.defining_element(label)
+                    return self.ambient_scheme().distinguished_open(element)
+
+        def overlap(self, left_index, right_index):
+            return self.intersection(left_index, right_index)
+
+        @cached_method
+        def cech_site(self):
+            r"""The finite Čech site of this cover.
+
+            Its objects are the whole scheme, the charts, and the pairwise
+            intersections, ordered by reverse inclusion, so its arrows are the
+            restriction directions of the cover equalizer.  It records the finite
+            computation the descent data perform; it does not replace the
+            Zariski site.
+            """
+            labels = [()]
+            labels.extend((index,) for index in self.atlas())
+            labels.extend(combinations(tuple(self.atlas()), 2))
+            return PosetCategory(
+                finite_ordered_set(tuple(labels)),
+                le=lambda finer, coarser: set(coarser).issubset(set(finer)),
+            )
+
+        @cached_method
+        def cech_covering_family(self):
+            r"""The chart family as a covering family of :meth:`cech_site`."""
+            site = self.cech_site()
+            category = _DistinguishedCechCoveringFamilies(self)
+            target = site(())
+            members = finite_indexed_family(
+                self.atlas(),
+                lambda index: site.Mor(site((index,)), target).unique(),
+                name="Čech cover arrows",
+            )
+            overlaps = {
+                (left_index, right_index): (
+                    site(self.intersection_indices(left_index, right_index)),
+                    site.Mor(site(self.intersection_indices(left_index, right_index)), site((left_index,))).unique(),
+                    site.Mor(site(self.intersection_indices(left_index, right_index)), site((right_index,))).unique(),
+                )
+                for left_index, right_index in combinations(tuple(self.atlas()), 2)
+            }
+            return category.family(target, members, overlaps)
+
+        @cached_method
+        def cech_coverage(self) -> Category:
+            r"""Return the coverage generated by this cover's Čech family."""
+            return Coverage(
+                self.cech_site(),
+                _DistinguishedCechCoveringFamilies(self),
+            )
+
+        def structure_sheaf_restriction(self, chart_index, other_index):
+            r"""``O(U_i) -> O(U_i cap U_j)``."""
+            return self.ambient_scheme().structure_sheaf().restriction_map(
+                self.open(chart_index),
+                self.overlap(chart_index, other_index),
+            )
+
+        @cached_method
+        def restrict_module(self, module, chart_index, *intersection_indices):
+            r"""Return ``M_i|_{U_I}`` by scalar extension along ``O(U_i) -> O(U_I)``.
+
+            A local algebra restricted as a module is the restricted algebra, so
+            forgetting algebra structure does not construct a second scalar
+            extension.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            chart = self.open(chart_index)
+            chart_ring = chart.coordinate_algebra()
+            assert module.base_ring() is chart_ring, "a local module is defined over the selected affine chart"
+            target = self.intersection(chart_index, *intersection_indices)
+            match module:
+                case _ if target is chart:
+                    return module
+                case _ if module in Algebras(chart_ring).Associative().Unital():
+                    return self.restrict_algebra(module, chart_index, *intersection_indices)
+                case _:
+                    ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
+                    restricted = module.base_change(ring_map)
+                    assert restricted.base_ring() is target.coordinate_algebra(), (
+                        "module base change did not land over the intersection section ring"
+                    )
+                    return restricted
+
+        @cached_method
+        def restrict_algebra(self, algebra, chart_index, *intersection_indices):
+            r"""Return ``A_i|_{U_I}`` by algebra scalar extension along ``O(U_i) -> O(U_I)``."""
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            chart = self.open(chart_index)
+            chart_ring = chart.coordinate_algebra()
+            assert algebra in Algebras(chart_ring).Associative().Unital(), "a local algebra is defined over the selected affine chart"
+            target = self.intersection(chart_index, *intersection_indices)
+            if target is chart:
+                return algebra
+            ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
+            restricted = Algebras(chart_ring).Associative().Unital().scalar_extension(ring_map)(algebra)
+            assert restricted in Algebras(target.coordinate_algebra()).Associative().Unital(), (
+                "algebra scalar extension did not land over the intersection section ring"
+            )
+            return restricted
+
+        def glue_modules(self, local_modules, transitions):
+            r"""Return the descent datum and glued module sheaf on this affine cover."""
+
+            from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
+
+            return ModuleGluingDatum(self, local_modules, transitions)
+
+        def glue_algebras(self, local_algebras, transitions):
+            r"""Return finite algebra descent data on this affine cover."""
+            from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingDatum
+
+            return AlgebraGluingDatum(self, local_algebras, transitions)
+
+        def common_refinement(self, other):
+            r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
+            assert other.ambient_scheme() is self.ambient_scheme(), "covers of one scheme are refined together"
+            return CoverRefinement(self, other)
+
+        def _repr_(self):
+            return f"Distinguished affine cover of {self.ambient_scheme()} by {self.atlas().cardinality()} opens"
+
+
 @cached_function(key=lambda scheme: id(scheme))
-def distinguished_affine_coverage(scheme) -> Coverage:
+def distinguished_affine_coverage(scheme) -> Category:
     r"""The distinguished-open coverage in ``AffSch_R/X``."""
 
     category = DistinguishedAffineCovers(scheme)
     return Coverage(
         category.site_category(),
         category,
-        name=f"Distinguished-affine coverage of {scheme}",
     )
 
 
@@ -438,265 +684,6 @@ class _DistinguishedCechCoveringFamilies(OwnedCategory):
         return f"chosen Čech covering family of {self.cover()}"
 
 
-class DistinguishedAffineCover(CoveringFamily):
-    r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
-
-    def _cache_key(self) -> int:
-        r"""Use identity when this cover parametrizes a descent category."""
-        return id(self)
-
-    def __init__(self, scheme, elements) -> None:
-        algebra = scheme.coordinate_algebra()
-        elements = tuple(algebra(element) for element in elements)
-        if not elements:
-            raise ValueError("a distinguished affine cover requires at least one open")
-        cover_ideal = algebra.ideal(*elements)
-        if not cover_ideal.contains_ambient_element(algebra.one()):
-            raise ValueError("the stated distinguished opens do not cover the affine scheme")
-        self._scheme = scheme
-        self._elements = elements
-        self._opens = tuple(scheme.distinguished_open(element) for element in elements)
-        self._atlas = finite_ordered_set(range(len(self._opens)))
-        self._intersections = {
-            (label,): self._opens[int(self._atlas.ranking_map()(label))]
-            for label in self._atlas
-        }
-        self._restricted_modules = {}
-        self._restricted_algebras = {}
-
-        category = DistinguishedAffineCovers(scheme)
-        site = category.site_category()
-        target = site.an_object()
-        chart_objects = {
-            index: site.object(self.open(index).inclusion()) for index in self._atlas
-        }
-        members = finite_indexed_family(
-            self._atlas,
-            lambda index: site.Mor(chart_objects[index], target)(
-                self.open(index).inclusion()
-            ),
-            name="Distinguished affine cover arrows",
-        )
-        overlaps = {}
-        for left_index, right_index in combinations(tuple(self._atlas), 2):
-            overlap = self.intersection(left_index, right_index)
-            overlap_object = site.object(overlap.inclusion())
-            overlaps[left_index, right_index] = (
-                overlap_object,
-                site.Mor(overlap_object, chart_objects[left_index])(
-                    overlap.inclusion_into(self.open(left_index))
-                ),
-                site.Mor(overlap_object, chart_objects[right_index])(
-                    overlap.inclusion_into(self.open(right_index))
-                ),
-            )
-        CoveringFamily.__init__(self, category, target, members, overlaps)
-
-    def ambient_scheme(self):
-        return self._scheme
-
-    def defining_elements(self):
-        return self._elements
-
-    def defining_element(self, index):
-        r"""``f_i``, the element whose distinguished open is the chart at ``index``."""
-        return self._elements[self.chart_position(index)]
-
-    def opens(self):
-        return self._opens
-
-    def atlas(self):
-        r"""The set the charts are indexed by, and the only source of chart labels.
-
-        A cover has as many charts as it has defining elements, and each is
-        addressed by its own label rather than by a position in a sequence, so
-        a caller ranges over this set instead of counting the charts.
-        """
-        return self._atlas
-
-    def chart_label(self, index):
-        r"""Read ``index`` as a label of this cover's atlas."""
-        return self.atlas()(index)
-
-    def chart_position(self, index):
-        r"""Where the chart at ``index`` sits in the atlas order.
-
-        The charts and the defining elements are held in that order, so this
-        is the one place a position is read, and it is read from the atlas
-        rather than assumed of the label.
-        """
-        return int(self.atlas().ranking_map()(self.chart_label(index)))
-
-    def open(self, index):
-        return self._opens[self.chart_position(index)]
-
-    def intersection_indices(self, *indices):
-        r"""Read the stated chart labels, deduplicated and in the atlas order."""
-        labels = {self.chart_label(index) for index in indices}
-        if not labels:
-            raise ValueError("an affine-cover intersection requires at least one chart")
-        return tuple(sorted(labels, key=self.atlas().ranking_map()))
-
-    def intersection(self, *indices):
-        r"""Return ``D(prod_i f_i)``, the represented intersection of selected charts."""
-
-        key = self.intersection_indices(*indices)
-        selected = self._intersections.get(key)
-        if selected is None:
-            algebra = self.ambient_scheme().coordinate_algebra()
-            element = algebra.one()
-            for label in key:
-                element *= self.defining_element(label)
-            selected = self.ambient_scheme().distinguished_open(element)
-            self._intersections[key] = selected
-        return selected
-
-    def overlap(self, left_index, right_index):
-        return self.intersection(left_index, right_index)
-
-    @cached_method
-    def cech_site(self):
-        r"""Return the finite Čech site used by this cover's represented descent computation.
-
-        Its objects are the ambient affine, the charts, and the pairwise
-        intersections.  The order is reverse inclusion, hence its arrows are
-        precisely the restriction directions needed by the cover equalizer.
-        This finite site records the computation already performed by the
-        gluing datum; it does not claim to replace the full Zariski site.
-        """
-
-        labels = [()]
-        labels.extend((index,) for index in self.atlas())
-        labels.extend(combinations(tuple(self.atlas()), 2))
-        label_set = finite_ordered_set(tuple(labels))
-        return PosetCategory(
-            label_set,
-            le=lambda finer, coarser: set(coarser).issubset(set(finer)),
-        )
-
-    @cached_method
-    def cech_covering_family(self):
-        r"""The chart family as a covering family of :meth:`cech_site`."""
-
-        site = self.cech_site()
-        category = _DistinguishedCechCoveringFamilies(self)
-        target = site(())
-        members = finite_indexed_family(
-            self.atlas(),
-            lambda index: site.Mor(site((index,)), target).unique(),
-            name="Čech cover arrows",
-        )
-        overlaps = {}
-        for left_index, right_index in combinations(tuple(self.atlas()), 2):
-            pair = self.intersection_indices(left_index, right_index)
-            overlap = site(pair)
-            overlaps[left_index, right_index] = (
-                overlap,
-                site.Mor(overlap, site((left_index,))).unique(),
-                site.Mor(overlap, site((right_index,))).unique(),
-            )
-        return CoveringFamily(category, target, members, overlaps)
-
-    @cached_method
-    def cech_coverage(self) -> Coverage:
-        r"""Return the coverage presentation generated by this cover's Čech family."""
-
-        category = _DistinguishedCechCoveringFamilies(self)
-        return Coverage(
-            self.cech_site(),
-            category,
-            name=f"Čech coverage presentation of {self}",
-        )
-
-    def structure_sheaf_restriction(self, chart_index, other_index):
-        overlap = self.overlap(chart_index, other_index)
-        return self.ambient_scheme().structure_sheaf().restriction_map(
-            self.open(chart_index),
-            overlap,
-        )
-
-    def restrict_module(self, module, chart_index, *intersection_indices):
-        r"""Return ``M_i|_{U_I}`` by scalar extension along ``O(U_i) -> O(U_I)``."""
-
-        chart_index = self.chart_label(chart_index)
-        chart = self.open(chart_index)
-        if module.base_ring() is not chart.coordinate_algebra():
-            raise ValueError("a local module must be defined over the selected affine chart")
-        indices = self.intersection_indices(chart_index, *intersection_indices)
-        target = self.intersection(*indices)
-        if target is chart:
-            return module
-        key = (id(module), indices)
-        cached = self._restricted_modules.get(key)
-        if cached is not None:
-            cached_module, restricted = cached
-            if cached_module is module:
-                return restricted
-        ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
-        restricted = module.base_change(ring_map)
-        if restricted.base_ring() is not target.coordinate_algebra():
-            raise ArithmeticError("module base change did not land over the intersection section ring")
-        self._restricted_modules[key] = (module, restricted)
-        return restricted
-
-    def restrict_algebra(self, algebra, chart_index, *intersection_indices):
-        r"""Return ``A_i|_{U_I}`` by algebra scalar extension along ``O(U_i) -> O(U_I)``."""
-
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
-        chart_index = self.chart_label(chart_index)
-        chart = self.open(chart_index)
-        chart_ring = chart.coordinate_algebra()
-        if algebra not in Algebras(chart_ring).Associative().Unital():
-            raise ValueError("a local algebra must be defined over the selected affine chart")
-        indices = self.intersection_indices(chart_index, *intersection_indices)
-        target = self.intersection(*indices)
-        if target is chart:
-            return algebra
-        key = (id(algebra), indices)
-        cached = self._restricted_algebras.get(key)
-        if cached is not None:
-            cached_algebra, restricted = cached
-            if cached_algebra is algebra:
-                return restricted
-
-        ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
-        restricted = Algebras(chart_ring).Associative().Unital().scalar_extension(ring_map)(algebra)
-        target_ring = target.coordinate_algebra()
-        if restricted not in Algebras(target_ring).Associative().Unital():
-            raise ArithmeticError(
-                "algebra scalar extension did not land over the intersection section ring"
-            )
-        self._restricted_algebras[key] = (algebra, restricted)
-        # Forgetting algebra structure must not manufacture a second copy of
-        # the same scalar extension. Module descent therefore reuses this exact
-        # restricted algebra as its underlying module object.
-        self._restricted_modules[key] = (algebra, restricted)
-        return restricted
-
-    def glue_modules(self, local_modules, transitions):
-        r"""Return the descent datum and glued module sheaf on this affine cover."""
-
-        from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
-
-        return ModuleGluingDatum(self, local_modules, transitions)
-
-    def glue_algebras(self, local_algebras, transitions):
-        r"""Return finite algebra descent data on this affine cover."""
-
-        from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingDatum
-
-        return AlgebraGluingDatum(self, local_algebras, transitions)
-
-    def common_refinement(self, other):
-        r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
-
-        assert other.ambient_scheme() is self.ambient_scheme(), "covers of one scheme are refined together"
-        return CoverRefinement(self, other)
-
-    def _repr_(self):
-        return f"Distinguished affine cover of {self.ambient_scheme()} by {self.atlas().cardinality()} opens"
-
-
 class CoverRefinement(SageObject):
     r"""``{D(f_i g_j)}`` refining ``{D(f_i)}`` and ``{D(g_j)}`` on one affine scheme.
 
@@ -716,8 +703,7 @@ class CoverRefinement(SageObject):
             for left in first_cover.atlas()
             for right in second_cover.atlas()
         )
-        self._fine_cover = DistinguishedAffineCover(
-            first_cover.ambient_scheme(),
+        self._fine_cover = DistinguishedAffineCovers(first_cover.ambient_scheme())(
             tuple(
                 first_cover.defining_element(left) * second_cover.defining_element(right)
                 for left, right in self._index_pairs
@@ -1037,7 +1023,6 @@ __all__ = [
     "AlgebraSheaves",
     "AffineModuleSheaf",
     "CoverRefinement",
-    "DistinguishedAffineCover",
     "DistinguishedAffineCovers",
     "distinguished_affine_coverage",
     "LocallyRingedSpaces",

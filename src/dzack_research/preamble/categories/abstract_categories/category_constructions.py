@@ -8,6 +8,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.element import parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -15,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_hom,
     _category_homset,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.owned_category import _object_of
@@ -41,7 +43,7 @@ class OppositeMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, OppositeMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         return self.underlying_arrow() == other.underlying_arrow()
 
@@ -53,7 +55,7 @@ class OppositeMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, OppositeMorphism) or other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         return self.parent().opposite_category().Mor(
             other.domain(), self.codomain()
@@ -77,12 +79,13 @@ class OppositeHomset(CategoricalHomset):
         return self.base_category()
 
     def _element_constructor_(self, underlying_arrow):
-        if isinstance(underlying_arrow, OppositeMorphism):
-            if underlying_arrow.parent() is self:
-                return underlying_arrow
-            if underlying_arrow.domain() is not self.domain() or underlying_arrow.codomain() is not self.codomain():
-                raise ValueError("the opposite morphism has the wrong endpoints")
-            underlying_arrow = underlying_arrow.underlying_arrow()
+        match underlying_arrow:
+            case OppositeMorphism():
+                if underlying_arrow.parent() is self:
+                    return underlying_arrow
+                if underlying_arrow.domain() is not self.domain() or underlying_arrow.codomain() is not self.codomain():
+                    raise ValueError("the opposite morphism has the wrong endpoints")
+                underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
         if underlying_arrow not in _category_hom(
             base, self.codomain().underlying_object(), self.domain().underlying_object()
@@ -148,9 +151,6 @@ class _OppositeCategory(OwnedCategory):
 
     __call__ = object
 
-    def __contains__(self, candidate: Any) -> bool:
-        return candidate in Objects() and candidate.category() == self
-
     def Mor(self, domain: Parent, codomain: Parent) -> OppositeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("an opposite Hom requires two opposite objects")
@@ -194,7 +194,7 @@ class ProductMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, ProductMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         equalities = (self.first() == other.first(), self.second() == other.second())
         if any(answer is False for answer in equalities):
@@ -209,7 +209,7 @@ class ProductMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, ProductMorphism) or other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         return self.parent().product_category().Mor(
             other.domain(), self.codomain()
@@ -233,12 +233,13 @@ class ProductHomset(CategoricalHomset):
         return self.base_category()
 
     def _element_constructor_(self, first, second=None):
-        if isinstance(first, ProductMorphism) and second is None:
-            if first.parent() is self:
-                return first
-            if first.domain() is not self.domain() or first.codomain() is not self.codomain():
-                raise ValueError("the product morphism has the wrong endpoints")
-            first, second = first.first(), first.second()
+        match first:
+            case ProductMorphism() if second is None:
+                if first.parent() is self:
+                    return first
+                if first.domain() is not self.domain() or first.codomain() is not self.codomain():
+                    raise ValueError("the product morphism has the wrong endpoints")
+                first, second = first.first(), first.second()
         if second is None:
             first, second = first
         product = self.product_category()
@@ -377,9 +378,6 @@ class _ProductCategory(OwnedCategory):
         return _object_of(self, first=first, second=second)
 
     __call__ = pair
-
-    def __contains__(self, candidate: Any) -> bool:
-        return candidate in Objects() and candidate.category() == self
 
     def Mor(self, domain: Parent, codomain: Parent) -> ProductHomset:
         if domain not in self or codomain not in self:

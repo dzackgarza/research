@@ -11,6 +11,15 @@ This is intentionally distinct from the *underlying Hom-set parent*.  The
 latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
 ``R``-module -- while there remains exactly one categorical Hom object for the
 chosen category and endpoints.
+
+An arrow ``f: A -> B`` regarded as an object is an object of the arrow
+category ``Ar(C)``, built through that category's entry; ``Hom_C(A,B)`` read
+as a category is the fibre of ``(dom, cod): Ar(C) -> C x C`` at ``(A, B)``.
+In a 1-category its morphisms are squares whose two endpoint maps are
+identities: commutativity then says that their two arrows are equal.  It is
+therefore discrete, not the full arrow subcategory on these objects (which
+also has squares with nonidentity endpoint endomorphisms).  A Hom category
+reuses the arrow objects without inheriting all the squares between them.
 """
 
 from __future__ import annotations
@@ -26,9 +35,10 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.category_object import CategoryObject as SageCategoryObject
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.element import parent
 from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
     CategoryPacketMethods,
@@ -36,13 +46,15 @@ from dzack_research.preamble.categories.abstract_categories.hom_foundation impor
     _has_category_packet_surface,
     _underlying_set_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    OwnedCategoryMixin,
-)
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import (
+    construction_scope,
+    realize_owned_category,
+    refine,
+    run_construction_hooks,
+)
 
 
 def _category_hom(
@@ -77,7 +89,7 @@ def _arrow_is_inherited_from_subcategory(target, arrow: Morphism) -> bool:
     """
     parent = arrow.parent()
     return (
-        isinstance(parent, CategoricalHomset)
+        parent in HomCategories()
         and parent.domain_object() is target.domain_object()
         and parent.codomain_object() is target.codomain_object()
         and parent.base_category().is_subcategory(target.base_category())
@@ -102,11 +114,11 @@ def _category_homset(
     every map represented by that parent.
     """
     selected = _category_hom(category, domain, codomain)
-    return selected.arrow_set() if isinstance(selected, Category) else selected
-
-
-
-
+    match selected:
+        case Category():
+            return selected.arrow_set()
+        case _:
+            return selected
 
 
 def _declared_category_reaches(category: Category, target: Category) -> bool:
@@ -127,10 +139,7 @@ def _declared_category_reaches(category: Category, target: Category) -> bool:
         if identity in seen:
             continue
         seen.add(identity)
-        try:
-            pending.extend(current.super_categories())
-        except (AttributeError, TypeError, ValueError):
-            continue
+        pending.extend(current.super_categories())
     return False
 
 
@@ -164,47 +173,30 @@ def _packet_supercategories(category):
 
     These are *declared supercategories*.  Each supplies its own Hom family;
     an endpoint's default Hom does not choose that family.  In particular a
-    subobject's inherited Hom comes from the declared ambient category, not
-    from rediscovering the subobject category through its inclusion.
+    subobject's inherited Hom comes from the declared category of the base
+    object, not from rediscovering the subobject category through its
+    inclusion.
     """
     return tuple(
         supercategory
         for supercategory in category.super_categories()
-        if isinstance(supercategory, OwnedCategoryMixin) or _has_category_packet_surface(supercategory)
+        if _has_category_packet_surface(supercategory)
     )
 
 
-class HomArrowObject(Parent):
-    r"""An arrow regarded as an object of a fixed-endpoint Hom category."""
+def _precomposable(second: Morphism, first) -> bool:
+    r"""Whether ``first`` composes before ``second`` in ``second``'s Hom theory.
 
-    def __init__(self, arrow: Morphism) -> None:
-        self._arrow = arrow
-        # This is the represented arrow as an owned mathematical object.
-        # Higher Hom construction inherits the owned Objects category, so
-        # assigning only Sage's private Sets category loses that membership.
-        Parent.__init__(self, category=Objects())
-
-    def arrow(self) -> Morphism:
-        return self._arrow
-
-    underlying_arrow = arrow
-
-    def _repr_(self) -> str:
-        return f"Arrow object ({self.arrow()})"
-
-
-_ARROW_OBJECTS = {}
-
-
-def _arrow_object(arrow) -> HomArrowObject:
-    # Arrow identity, not a hash: an arbitrary arrow need not be hashable.
-    key = id(arrow)
-    cached = _ARROW_OBJECTS.get(key)
-    if cached is not None and cached.arrow() is arrow:
-        return cached
-    result = HomArrowObject(arrow)
-    _ARROW_OBJECTS[key] = result
-    return result
+    The right operand of ``*`` is arbitrary, so this is the admission of the
+    composition operator: ``first`` is an arrow of the same base category whose
+    codomain is ``second``'s domain.  The arrow's own Hom is asked.
+    """
+    match first:
+        case Morphism() if first.codomain() is second.domain():
+            base = second.parent().base_category()
+            return first in _category_hom(base, first.domain(), first.codomain())
+        case _:
+            return False
 
 
 class HomArrowIdentity(Morphism):
@@ -214,7 +206,7 @@ class HomArrowIdentity(Morphism):
         return value
 
     def __eq__(self, other: Any) -> bool:
-        return isinstance(other, HomArrowIdentity) and other.parent() is self.parent()
+        return parent(other) is self.parent()
 
     def __ne__(self, other: Any) -> bool:
         return not self == other
@@ -223,7 +215,9 @@ class HomArrowIdentity(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, HomArrowIdentity) or other.parent() is not self.parent():
+        # The discrete 2-Hom on one arrow object holds its identity only, so
+        # the composable arrows are exactly the elements of this parent.
+        if other not in self.parent():
             return NotImplemented
         return self.parent().identity()
 
@@ -289,12 +283,9 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             # callers never observe an un-enriched module Hom parent.
             refine(self, category)
 
-    def _already_parented_arrow(self, candidate) -> bool:
+    def _already_parented_arrow(self, candidate: Morphism) -> bool:
         r"""Whether ``candidate`` is already represented by this Hom theory."""
-        return isinstance(candidate, Morphism) and (
-            candidate.parent() is self
-            or _arrow_is_inherited_from_subcategory(self, candidate)
-        )
+        return candidate.parent() is self or _arrow_is_inherited_from_subcategory(self, candidate)
 
     def __call__(self, *args, **kwargs):
         r"""Construct an arrow, preserving one already represented here.
@@ -303,8 +294,9 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
         the weaker Hom must therefore preserve the arrow rather than
         reinterpret its object as generator images or presentation data.
         """
-        if len(args) == 1 and not kwargs and self._already_parented_arrow(args[0]):
-            return args[0]
+        match args:
+            case (Morphism() as arrow,) if not kwargs and self._already_parented_arrow(arrow):
+                return arrow
         return self._element_constructor_(*args, **kwargs)
 
     def hom_family(self) -> _HomCategoryOf:
@@ -385,37 +377,43 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
     underlying_homset = arrow_set
 
     def accepts(self, arrow: Morphism) -> bool:
-        if not (
-            isinstance(arrow, Morphism)
-            and arrow.domain() is self.domain_object()
-            and arrow.codomain() is self.codomain_object()
-        ):
-            return False
-        if self._already_parented_arrow(arrow):
-            return True
-        try:
-            self(arrow)
-        except (TypeError, ValueError, NotImplementedError):
-            return False
-        return True
+        r"""Whether ``arrow`` is an arrow of this Hom category.
 
-    def object(self, arrow: Morphism) -> Parent:
+        An arrow placed here, or in the Hom of a subcategory with the same
+        endpoints, is one.  Constructing a new arrow from its defining data
+        is a separate operation: constructor failure is not a membership
+        decision, and successful conversion does not place the input here.
+        """
+        if arrow.domain() is not self.domain_object() or arrow.codomain() is not self.codomain_object():
+            return False
+        return self._already_parented_arrow(arrow)
+
+    def object(self, arrow: Morphism):
+        r"""``arrow`` as an object of this category: the object of ``Ar(C)`` on it."""
         if not self.accepts(arrow):
             arrow = self(arrow)
-        return _arrow_object(arrow)
+        return self.base_category().ArrowCategory()(arrow)
 
-    def _hom_endpoint(self, obj: Parent | Category | Morphism) -> Parent:
+    def _hom_endpoint(self, obj: Parent | Category | Morphism):
         match obj:
-            case HomArrowObject():
-                return obj
             case Morphism():
                 return self.object(obj)
+            case _ if obj in self.base_category().ArrowCategory():
+                return obj
             case _:
-                raise TypeError("a fixed Hom endpoint must represent an arrow")
+                return self.object(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        arrow = candidate.arrow() if isinstance(candidate, HomArrowObject) else candidate
-        return self.accepts(arrow)
+        # The candidate is arbitrary.  An object of ``Ar(C)`` lies here when
+        # its arrow does; otherwise only a map can be an arrow, and whether it
+        # is one of these is this Hom's own construction protocol.
+        match candidate:
+            case Morphism():
+                return self.accepts(candidate)
+            case _ if candidate in self.base_category().ArrowCategory():
+                return self.accepts(candidate.arrow())
+            case _:
+                return False
 
     def super_categories(self):
         supers = []
@@ -435,8 +433,8 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
 
     def two_hom(
         self,
-        domain: HomArrowObject | Morphism,
-        codomain: HomArrowObject | Morphism,
+        domain: Parent | Morphism,
+        codomain: Parent | Morphism,
     ) -> CategoricalHomset:
         return self.HomCategory().Of(domain, codomain)
 
@@ -460,8 +458,8 @@ class HomArrowDiscreteHomset(CategoricalHomset):
     def __init__(
         self,
         family: _DiscreteTwoHomCategoryOf,
-        domain: HomArrowObject,
-        codomain: HomArrowObject,
+        domain: Parent,
+        codomain: Parent,
     ) -> None:
         CategoricalHomset.__init__(self, family, domain, codomain)
 
@@ -472,7 +470,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("distinct arrows have no represented 2-morphism")
         if value is not None:
-            if not isinstance(value, HomArrowIdentity) or value.parent() is not self:
+            if parent(value) is not self:
                 raise ValueError("the discrete 2-Hom contains only its identity")
             return value
         return self.element_class(self)
@@ -483,7 +481,11 @@ class HomArrowDiscreteHomset(CategoricalHomset):
 
 
 class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
-    r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints."""
+    r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
+
+    Its objects are the objects of ``Ar(C)`` lying over ``(A, B)``; it owns
+    no object class, and ``object(f)`` builds through ``Ar(C)``'s entry.
+    """
 
     @staticmethod
     def __classcall__(cls, family, domain, codomain):
@@ -508,10 +510,16 @@ class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
         # not Python implementation mixins.  In particular ``Iso_C(A,B)``
         # simultaneously lies over ``Hom_C``, ``Mono_C`` and ``Epi_C``; asking
         # Sage to synthesize one C3 class from those fixed categories creates
-        # artificial MRO cycles.  Keep the runtime method spine discrete while
-        # exposing the full mathematical supertree through ``super_categories``.
-        self._super_categories_for_classes = [SageObjects()]
+        # artificial MRO cycles.  Keep the runtime method spine at the owned
+        # root instead, which realizes the host ``Parent`` for the objects a
+        # fixed Hom category builds through its own entry (the functors of
+        # ``[A, B]``), while ``super_categories`` states the mathematics.
+        self._super_categories_for_classes = [Objects()]
         super().__init__()
+
+    def category(self) -> Category:
+        r"""A fixed Hom category is placed in ``HomCategories``, below ``Cat``."""
+        return HomCategories()
 
     def _make_named_class_key(self, name):
         return (self._family, id(self._domain_object), id(self._codomain_object))
@@ -580,53 +588,58 @@ class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
         public category Hom here would ask that same family to construct
         itself.  Restrictions instead inherit the actual Hom-set below.
         """
-        if isinstance(self.base_category(), OwnedCategoryMixin) or _has_category_packet_surface(self.base_category()):
+        if _has_category_packet_surface(self.base_category()):
             return _underlying_set_homset(self.domain_object(), self.codomain_object())
         return Hom(self.domain_object(), self.codomain_object(), self.base_category())
 
     underlying_homset = arrow_set
 
     def accepts(self, arrow: Morphism) -> bool:
-        if not (
-            isinstance(arrow, Morphism)
-            and arrow.domain() is self.domain_object()
-            and arrow.codomain() is self.codomain_object()
-        ):
+        r"""Whether ``arrow`` is an arrow of this Hom category.
+
+        An arrow of the selected Hom-set, or of the Hom of a subcategory with
+        the same endpoints, is one.  Inherited arrows retain their stronger
+        mathematical parent; the category graph supplies this inclusion,
+        not an attempted conversion through a possibly undecidable constructor.
+        """
+        if arrow.domain() is not self.domain_object() or arrow.codomain() is not self.codomain_object():
             return False
         homset = self.arrow_set()
-        if arrow.parent() is homset or _arrow_is_inherited_from_subcategory(self, arrow):
-            return True
-        # Structured subcategories may represent an arrow by a stronger
-        # morphism class while retaining the same underlying categorical map.
-        # The fixed Hom category therefore accepts a morphism exactly when the
-        # canonical Hom parent can adopt/validate it.
-        try:
-            homset(arrow)
-        except (TypeError, ValueError, NotImplementedError):
-            return False
-        return True
+        return arrow.parent() is homset or _arrow_is_inherited_from_subcategory(self, arrow)
 
-    def object(self, arrow: HomArrowObject | Morphism) -> HomArrowObject:
-        if isinstance(arrow, HomArrowObject):
-            arrow = arrow.arrow()
+    def object(self, arrow: Parent | Morphism):
+        r"""``arrow`` as an object of this category: the object of ``Ar(C)`` on it."""
+        arrows = self.base_category().ArrowCategory()
+        match arrow:
+            case Morphism():
+                pass
+            case _:
+                arrow = arrow.arrow()
         if not self.accepts(arrow):
             raise ValueError(f"{arrow} is not an arrow of {self}")
-        return _arrow_object(arrow)
+        return arrows(arrow)
 
     __call__ = object
 
-    def _hom_endpoint(self, obj: Parent | Category | Morphism) -> Parent:
+    def _hom_endpoint(self, obj: Parent | Category | Morphism):
         match obj:
-            case HomArrowObject():
-                return obj
             case Morphism():
                 return self.object(obj)
+            case _ if obj in self.base_category().ArrowCategory():
+                return obj
             case _:
-                raise TypeError("a fixed Hom endpoint must represent an arrow")
+                return self.object(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        arrow = candidate.arrow() if isinstance(candidate, HomArrowObject) else candidate
-        return self.accepts(arrow)
+        # The candidate is arbitrary: an object of ``Ar(C)`` lies here when it
+        # lies over these endpoints; a map when this Hom accepts it.
+        match candidate:
+            case Morphism():
+                return self.accepts(candidate)
+            case _ if candidate in self.base_category().ArrowCategory():
+                return self.accepts(candidate.arrow())
+            case _:
+                return False
 
     def objects(self) -> IndexedFamily:
         arrows = self.arrow_set()
@@ -638,17 +651,17 @@ class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
 
     def Mor(
         self,
-        domain: HomArrowObject | Morphism,
-        codomain: HomArrowObject | Morphism,
+        domain: Parent | Morphism,
+        codomain: Parent | Morphism,
     ) -> CategoricalHomset:
         return self.HomCategory().Of(domain, codomain)
 
     two_hom = Mor
 
-    def identity_2(self, arrow: HomArrowObject | Morphism) -> Morphism:
+    def identity_2(self, arrow: Parent | Morphism) -> Morphism:
         return self.Mor(arrow, arrow).identity()
 
-    def identity(self, arrow_object: HomArrowObject | Morphism) -> Morphism:
+    def identity(self, arrow_object: Parent | Morphism) -> Morphism:
         return self.Mor(arrow_object, arrow_object).identity()
 
     def super_categories(self):
@@ -717,13 +730,19 @@ class FixedRestrictedHomCategory(FixedHomCategory):
         return [base, *inherited]
 
 
-class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
+class RestrictedHomCategoryParent(FixedRestrictedHomCategory):
     r"""A restricted Hom category that also carries independent enrichment.
 
     Its elements may be structured witnesses (for example derivations) whose
     actual categorical arrows live in :meth:`arrow_set`.  Unlike
     :class:`CategoricalHomset`, this parent is therefore not itself a Homset
     and cannot become a second Homset for the same fixed endpoints.
+
+    The owned category base already makes it a parent; what this level adds
+    is the category its *elements* form (a set, a module, a group), recorded
+    and realized exactly as the owned root records a category on an object:
+    the category is written on the parent and its owned methods are realized,
+    with no second class rewrite.
     """
 
     @staticmethod
@@ -743,7 +762,10 @@ class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
             from dzack_research.preamble.categories.sets.set_categories import Sets
 
             category = Sets()
-        Parent.__init__(self, category=category)
+        with construction_scope(self) as reached:
+            SageCategoryObject._init_category_(self, category)
+            realize_owned_category(self)
+            run_construction_hooks(self, reached)
 
     def category(self) -> Category:
         r"""Return the independent enrichment carried by this parent.
@@ -752,9 +774,9 @@ class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
         methods describe which arrows its elements represent, while as a Sage
         parent its elements may independently form a set, module, group, or
         another category selected by ``category=``.  The fixed-Hom base is an
-        owned category object, whose inherited ``category()`` is therefore
-        ``Cat()``.  That answer would erase the enrichment explicitly stored by
-        :class:`Parent`.  Read the latter here.
+        owned category object, whose inherited ``category()`` names its
+        placement among Hom categories.  That answer would erase the
+        enrichment recorded on the parent.  Read the latter here.
         """
         return Parent.category(self)
 
@@ -770,21 +792,18 @@ class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
         """
         return self._element_constructor_(*args, **kwargs)
 
-    def _underlying_arrow(self, candidate):
-        if isinstance(candidate, HomArrowObject):
-            return candidate.arrow()
-        try:
-            if candidate.parent() is self:
-                return candidate.as_morphism()
-        except AttributeError:
-            pass
-        return candidate
-
     def __contains__(self, candidate: Any) -> bool:
-        return FixedRestrictedHomCategory.accepts(
-            self,
-            self._underlying_arrow(candidate),
-        )
+        # The candidate is arbitrary: an object of ``Ar(C)``, a structured
+        # element of this parent (read through its underlying arrow), or a map.
+        match candidate:
+            case _ if parent(candidate) is self:
+                return self.accepts(candidate.as_morphism())
+            case Morphism():
+                return self.accepts(candidate)
+            case _ if candidate in self.base_category().ArrowCategory():
+                return self.accepts(candidate.arrow())
+            case _:
+                return False
 
 
 class CategoricalIsomorphism(Morphism):
@@ -828,8 +847,13 @@ class CategoricalIsomorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, CategoricalIsomorphism) or self.parent() is not other.parent():
-            return False
+        # A represented isomorphism can be parented by an ordinary Hom-set of
+        # its base category, beside maps that are not isomorphisms.
+        match other:
+            case CategoricalIsomorphism() if parent(other) is self.parent():
+                pass
+            case _:
+                return False
         equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
         if any(answer is False for answer in equalities):
             return False
@@ -843,10 +867,13 @@ class CategoricalIsomorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, CategoricalIsomorphism):
-            return self.forward() * other
-        if other.codomain() is not self.domain():
+        # An isomorphism composed with an isomorphism into its domain is an
+        # isomorphism; composed with any other arrow it is that composite.
+        if not _precomposable(self, other):
             return NotImplemented
+        core = self.parent().homset_category().Core()
+        if other not in core.Mor(other.domain(), self.domain()):
+            return self.forward() * other
         forward = self.forward() * other.forward()
         inverse = other.inverse() * self.inverse()
         return CategoricalIsomorphism(
@@ -859,19 +886,18 @@ class CategoricalIsomorphism(Morphism):
 
 class FixedIsoCategory(FixedRestrictedHomCategory):
     def accepts(self, arrow: Morphism) -> bool:
-        if not isinstance(arrow, CategoricalIsomorphism):
-            return False
+        r"""An arrow of ``Iso_C(A,B)`` is an isomorphism of ``C`` from ``A`` to ``B``.
+
+        The core of ``C`` owns which arrows are represented isomorphisms, so
+        its Hom decides.
+        """
         if (
             arrow.domain() is not self.domain_object()
             or arrow.codomain() is not self.codomain_object()
         ):
             return False
-        packet = _category_packet(self.base_category())
-        return (
-            arrow.forward()
-            in packet.Homs().Of(self.domain_object(), self.codomain_object())
-            and arrow.inverse()
-            in packet.Homs().Of(self.codomain_object(), self.domain_object())
+        return arrow in self.base_category().Core().Mor(
+            self.domain_object(), self.codomain_object()
         )
 
     def super_categories(self):
@@ -948,23 +974,57 @@ class FixedAutCategory(FixedIsoCategory):
 
 
 class HomCategories(OwnedCategoryBase):
-    r"""The category of represented fixed-endpoint Hom categories."""
+    r"""The category of represented fixed-endpoint Hom categories.
+
+    Its objects are the categories ``Hom_C(A,B)``, each built by the ``Of``
+    entry of the Hom family of its base category ``C``.
+    """
 
     def super_categories(self):
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
         return [Cat()]
 
+    def an_object(self) -> Category:
+        r"""The Hom of the witness of the category of sets to itself."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        witness = Sets().an_object()
+        return Sets().Mor(witness, witness)
+
     def __contains__(self, candidate: Any) -> bool:
-        return isinstance(candidate, (FixedHomCategory, CategoricalHomset))
+        r"""Whether ``candidate`` is a fixed Hom category.
+
+        A fixed Hom category built over the owned category base records this
+        placement as its ``category()``.  A Hom realized on Sage's ``Homset``
+        has one ``category()`` slot, holding the enrichment its arrows form (a
+        set, a module), so its placement here is recorded where it was made:
+        by the family whose ``Of`` entry built it for its endpoints.
+        """
+        match candidate:
+            case CategoricalHomset():
+                return (
+                    candidate.hom_family().Of(
+                        candidate.domain_object(), candidate.codomain_object()
+                    )
+                    is candidate
+                )
+            case _:
+                return super().__contains__(candidate)
 
 
 FixedHomObject = CategoricalHomset | FixedHomCategory
 FixedHomClass = type[CategoricalHomset] | type[FixedHomCategory]
 
 
-class CategoryPacket(SageObject):
-    r"""The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` packet."""
+class CategoryPacket:
+    r"""The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` families of one category.
+
+    Not a mathematical object: the six families are the values of six
+    operations of ``C`` (``HomCategory()``, ``EndCategory()``, ...), and this
+    is the memo that holds them so that each is built once.  It is interned
+    by the identity of ``C`` in :func:`_category_packet`.
+    """
 
     def __init__(self, category: Category) -> None:
         self._category = category
@@ -1034,12 +1094,18 @@ class CategoryPacket(SageObject):
             for category in _packet_supercategories(self.category())
         )
 
-    def _repr_(self) -> str:
+    def __repr__(self) -> str:
         return f"Category packet of {self.category()}"
 
 
 def _declared_construction(category, declaration_name):
-    r"""Return the first packet-family declaration on the category MRO, if any."""
+    r"""Return the first packet-family declaration on the category MRO, if any.
+
+    This reads the ``_HomCategory`` / ``_EndCategory`` / ... declarations a
+    category class makes, the same way the owned root reads a category's
+    ``ParentMethods`` declaration: off the declaring class graph, never off
+    an instance.  It is the reader of that declaration protocol.
+    """
     declaring = type(category)
     if declaring.__name__.endswith("_with_category"):
         declaring = declaring.__base__
@@ -1098,8 +1164,9 @@ class _HomCategoryOf(OwnedCategoryBase):
     @staticmethod
     @cached_function(key=lambda cls, base_category: (cls, id(base_category)))
     def __classcall__(cls, base_category):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(base_category)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(base_category)
         # A category that declares its own Hom family has exactly one; naming
         # the generic family on it resolves to the declared one.
         declared = _declared_construction(base_category, cls._declaration_name)
@@ -1168,6 +1235,11 @@ class _HomCategoryOf(OwnedCategoryBase):
         self._objects[id(domain), id(codomain)] = value
         return value
 
+    def an_object(self) -> Category:
+        r"""The Hom of the base category's witness to itself."""
+        witness = self.base_category().an_object()
+        return self.Of(witness, witness)
+
     def super_categories(self):
         supers = [
             self.family_over(category)
@@ -1177,6 +1249,11 @@ class _HomCategoryOf(OwnedCategoryBase):
 
     def Of(self, domain: Parent, codomain: Parent) -> FixedHomObject:
         r"""Select the defining Hom object without losing inherited structure.
+
+        This is the constructor entry for the objects of this family, so the
+        one place the runtime class a fixed Hom is realized by is compared:
+        a property subcategory inherits the declaration of the category it
+        refines and reuses the parent that category built.
 
         Unverified specimens: a property category shares its defining Hom;
         a restricted category shares the underlying Hom-set, not its predicate::
@@ -1282,11 +1359,11 @@ class _HomCategoryOf(OwnedCategoryBase):
     Between = Of
 
     def __contains__(self, candidate: Any) -> bool:
-        try:
-            domain = candidate.domain_object()
-            codomain = candidate.codomain_object()
-        except AttributeError:
+        r"""A fixed Hom category of this family: the object built for its endpoints."""
+        if candidate not in HomCategories():
             return False
+        domain = candidate.domain_object()
+        codomain = candidate.codomain_object()
         if domain not in self.base_category() or codomain not in self.base_category():
             return False
         return self.Of(domain, codomain) is candidate
@@ -1381,6 +1458,9 @@ class _EndCategoryOf(_HomCategoryOf):
 
     def family_over(self, category: Category) -> _EndCategoryOf:
         return _category_packet(category).Ends()
+
+    def an_object(self) -> Category:
+        return self.Of(self.base_category().an_object())
 
     def Of(
         self,
@@ -1492,6 +1572,9 @@ class _AutCategoryOf(_IsoCategoryOf):
     def family_over(self, category: Category) -> _AutCategoryOf:
         return _category_packet(category).Auts()
 
+    def an_object(self) -> Category:
+        return self.Of(self.base_category().an_object())
+
     def super_categories(self):
         packet = _category_packet(self.base_category())
         inherited = [
@@ -1562,7 +1645,7 @@ __all__ = [
     "FixedEndCategory",
     "FixedHomCategory",
     "FixedIsoCategory",
-    "HomArrowObject",
+    "HomArrowIdentity",
     "HomCategories",
     "HomCategoryConstruction",
     "IsoCategoryConstruction",
