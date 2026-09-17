@@ -275,7 +275,11 @@ class UnitalAlgebraHomCategoryConstruction(HomCategoryConstruction):
 def _scalar_module(ring):
     r"""\(U_R(R)\): the ring as the module over itself, the domain of every unit map."""
     ring = _owned_ring(ring)
-    return Algebras(ring).underlying_module()(ring)
+    match ring.base_ring() is ring:
+        case True:
+            return ring
+        case False:
+            return OwnedRings().Mor(ring, ring).identity().as_algebra()
 
 
 def _unit_morphism_from_element(module, unit, ring):
@@ -2464,8 +2468,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             if generator_values is not None:
                 raise ValueError("an unframed algebra cannot carry framed generator values")
             self._preamble_algebra_generator_values = None
-            if self.is_commutative() is True:
-                refine(self, [Algebras(self).Associative().Unital().Commutative()])
             return
 
         selected_labels = self._preamble_algebra_generating_set
@@ -2508,8 +2510,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             value,
             name=f"Algebra generator values of {self}",
         )
-        if self.is_commutative() is True:
-            refine(self, [Algebras(self).Associative().Unital().Commutative()])
 
 
 @cached_function
@@ -2563,14 +2563,12 @@ def _algebra_structure_view(ring, structure_map):
     if structure_map.codomain() is not selected_ring:
         raise ValueError("an algebra-structure view requires a ring map into the selected ring")
     base = _own_ring(structure_map.domain())
-    view = _OwnedAlgebraParent(
+    return _OwnedAlgebraParent(
         _engine_ring(selected_ring),
         base,
         None,
         scalar_structure=lambda scalar: structure_map(base(scalar)),
     )
-    view._preamble_algebra_structure_ring = selected_ring
-    return view
 
 
 def _unit_from_multiplication(multiplication):

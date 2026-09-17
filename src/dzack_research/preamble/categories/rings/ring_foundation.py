@@ -1881,36 +1881,27 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
     class ParentMethods:
         def __init_extra__(self) -> None:
-            r"""Place this ring as an algebra: over ``ZZ`` always, over itself when commutative.
+            r"""Place the ring over the scalar base selected by its construction.
 
-            Every ring is a ``ZZ``-algebra through the unique morphism from the
-            initial ring, and a commutative ring is a commutative algebra over
-            itself, its centre being all of it.  Sage calls this hook from
-            ``Parent.__init__`` for every parent of this category, whatever
-            route constructed it, so the placement is decided here once and
-            no owned ring escapes it; commutativity is asked of the ring here
-            and nowhere else.
+            Another scalar map defines another algebra structure, obtained by
+            ``as_algebra`` on that map, not another placement of this object
+            (``CAT-16``, ``CON-16``).  In particular the regular self-algebra
+            and restriction to the integers do not overwrite a relative base.
             """
-            from dzack_research.preamble.categories.algebras.algebras import (
-                Algebras,
-            )
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-            # The integers are being constructed when this runs for them, so
-            # asking the adapter for them again would construct them again.
-            integers = self if _engine_ring(self) is SageZZ else _own_ring(SageZZ)
-            placements = [Algebras(integers).Associative().Unital()]
-            if self.is_commutative() is True:
-                placements.append(OwnedRings().Commutative())
-                # An engine-backed algebra view already carries a selected
-                # scalar base while its Parent is still being initialized.
-                # Building ``Alg_self`` here asks Sage to linearize the
-                # self/base scalar tower before that category is stable and
-                # can make an otherwise valid join fail C3.  The algebra owner
-                # completes this canonical self-algebra placement after its
-                # defining scalar map has been installed.
-                if not hasattr(self, "_preamble_algebra_generating_set"):
-                    placements.append(Algebras(self).Associative().Unital().Commutative())
-            refine(self, placements)
+            commutative = self.is_commutative() is True
+            match self.base():
+                case None:
+                    base = self if commutative else _own_ring(SageZZ)
+                case selected:
+                    base = _own_ring(selected)
+            placement = Algebras(base).Associative().Unital()
+            match commutative:
+                case True:
+                    refine(self, (OwnedRings().Commutative(), placement.Commutative()))
+                case False:
+                    refine(self, placement)
 
         def _fresh_free_module_on(self, labels, **options):
             r"""Return the free module on ``labels`` over this ring's own scalars.
