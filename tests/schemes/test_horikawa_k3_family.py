@@ -132,3 +132,33 @@ def test_branch_linear_system_and_double_cover_form_one_composite_construction()
     assert cover.domain() is member.scheme()
     assert cover.codomain() is family.base_surface()
     assert member.scheme().relative_dimension() == family.base_surface().relative_dimension()
+
+
+def test_cyclic_cover_base_change_uses_the_section_after_addition() -> None:
+    from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import CyclicCoverAlgebra
+
+    family = HorikawaK3Family()
+    power = family.branch_line_bundle()
+    local_branch = power.compatible_section(family.default_branch_section())
+    # Addition used to discard the hidden homogeneous-source attribute and
+    # make scalar change refuse this very same mathematical section.
+    branch = local_branch + local_branch.parent().zero()
+    cyclic = CyclicCoverAlgebra(family.cover_line_bundle(), branch, 2)
+    field = QuadraticField(2, "s")
+    extension = QQ.Mor(field)(field)
+    comparison = cyclic.base_change(extension)
+    changed = comparison.changed_cyclic_algebra()
+    assert comparison.cover_square_commutes()
+    assert comparison.projection().codomain() is cyclic.relative_spectrum().arrow().domain()
+    for index in cyclic.chart_index_set():
+        local_projection = comparison.local_projection(index)
+        pullback = local_projection.coordinate_algebra_morphism()
+        source_algebra = cyclic.local_algebra(index)
+        target_algebra = changed.local_algebra(index)
+        source_branch = source_algebra.algebra_structure_morphism()(
+            cyclic.local_branch_coefficient(index)
+        )
+        target_branch = target_algebra.algebra_structure_morphism()(
+            changed.local_branch_coefficient(index)
+        )
+        assert pullback(source_branch) == target_branch

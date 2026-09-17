@@ -4061,20 +4061,15 @@ class GlobalSectionModules(OwnedCategoryOverBaseRing):
     class ElementMethods(ModuleElement):
         r"""A global section, the family of its compatible local sections."""
 
-        def __init__(self, parent, components, *, global_source_section=None) -> None:
+        def __init__(self, parent, components) -> None:
             super().__init__(parent)
             self._components = components
-            self._global_source_section = global_source_section
 
         def components(self):
             return self._components
 
         def component(self, index):
             return self.components()[index]
-
-        def global_source_section(self):
-            r"""Return the selected global presentation of this compatible section, if any."""
-            return self._global_source_section
 
         def _add_(self, other):
             return self.parent()(
@@ -4117,7 +4112,7 @@ class GlobalSectionModules(OwnedCategoryOverBaseRing):
             r"""The module descent datum whose global sections this module is."""
             return self._gluing_datum
 
-        def _element_constructor_(self, value, *, global_source_section=None):
+        def _element_constructor_(self, value):
             if isinstance(value, self.element_class) and value.parent() is self:
                 return value
             index_set = self.gluing_datum().chart_index_set()
@@ -4136,12 +4131,7 @@ class GlobalSectionModules(OwnedCategoryOverBaseRing):
             return self.element_class(
                 self,
                 self.gluing_datum().compatible_local_sections(supplied),
-                global_source_section=global_source_section,
             )
-
-        def from_global_section_components(self, components, global_section):
-            r"""Construct compatible local data with its selected global presentation."""
-            return self._element_constructor_(components, global_source_section=global_section)
 
         def zero(self):
             datum = self.gluing_datum()

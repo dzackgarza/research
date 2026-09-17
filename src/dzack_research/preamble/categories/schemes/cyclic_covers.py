@@ -205,20 +205,9 @@ class CyclicCoverBaseChangeComparison(SageObject):
         branch_power = cyclic_algebra.branch_power()
         changed_line_bundle = line_bundle.base_change(ring_map)
         changed_branch_power = branch_power.base_change(ring_map)
-        global_branch = cyclic_algebra.branch_section().global_source_section()
-        if global_branch is None:
-            raise NotImplementedError(
-                "cyclic-cover scalar change currently requires a represented global branch section"
-            )
-        source_sections = branch_power.global_sections()
-        unit = source_sections.base_change_adjunction(ring_map).unit(source_sections)
-        extended_branch = unit(global_branch).underlying_element()
-        changed_global_branch = (
-            changed_branch_power.section_base_change_comparison().forward()(
-                extended_branch
-            )
+        changed_branch = changed_branch_power.pullback_compatible_section(
+            cyclic_algebra.branch_section()
         )
-        changed_branch = changed_branch_power.compatible_section(changed_global_branch)
         changed_cyclic = type(cyclic_algebra)(
             changed_line_bundle,
             changed_branch,
@@ -288,7 +277,6 @@ class CyclicCoverBaseChangeComparison(SageObject):
             )
         self._changed_line_bundle = changed_line_bundle
         self._changed_branch_power = changed_branch_power
-        self._changed_global_branch = changed_global_branch
         self._changed_cyclic = changed_cyclic
         self._base_projection = base_projection
         self._projection = projection
@@ -313,9 +301,6 @@ class CyclicCoverBaseChangeComparison(SageObject):
 
     def changed_branch_power(self):
         return self._changed_branch_power
-
-    def changed_global_branch(self):
-        return self._changed_global_branch
 
     def changed_cyclic_algebra(self):
         return self._changed_cyclic

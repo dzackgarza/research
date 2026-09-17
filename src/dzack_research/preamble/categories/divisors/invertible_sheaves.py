@@ -442,6 +442,46 @@ class _LineBundleBaseChangeImage:
     def projection(self, changed_bundle):
         return changed_bundle.scheme().left_projection()
 
+    def compatible_section(self, changed_bundle, section):
+        r"""Pull a compatible section back in the standard local trivializations.
+
+        The selected basis of each standard O(d) chart pulls back to the
+        selected basis of the corresponding changed chart.  Thus a section
+        a_i e_i pulls back to p_i^#(a_i) e_i'.  The transition equations are
+        preserved by these ring maps; the target descent constructor checks
+        them without retaining an unrelated homogeneous presentation.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        source = self.source_bundle()
+        section = source.compatible_sections()(section)
+        source_atlas = source.gluing_datum()
+        target_atlas = changed_bundle.gluing_datum()
+        projection = self.projection(changed_bundle)
+
+        def component(index):
+            source_index = source_atlas.normalize_chart_index(index)
+            target_index = target_atlas.normalize_chart_index(index)
+            chart_projection = source_atlas.chart(source_index).corestriction(
+                projection * target_atlas.chart_embedding(target_index)
+            )
+            pullback = chart_projection.coordinate_algebra_morphism()
+            source_module = source.local_module(source_index)
+            target_module = changed_bundle.local_module(target_index)
+            label = next(iter(source_module.module_generating_set()))
+            coefficient = source_module.framing_coefficients(
+                section.component(source_index)
+            ).get(label, source_module.base_ring().zero())
+            return target_module.scalar_multiple(
+                pullback(coefficient), _rank_one_generator(target_module)
+            )
+
+        return changed_bundle.compatible_sections()(
+            finite_indexed_family(target_atlas.chart_index_set(), component)
+        )
+
     def section_comparison(self, changed_bundle):
         return _section_base_change_comparison(
             self.source_bundle().global_sections(),
@@ -736,6 +776,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def section_base_change_comparison(self):
         return _section_base_change_comparison_of(self)
+
+    def pullback_compatible_section(self, section):
+        r"""Pull a section of the source bundle back along this base change."""
+        return _base_change_image(self).compatible_section(self, section)
 
     def _repr_(self):
         return f"O({self.degree()}) on {self.projective_space()}"
@@ -1128,10 +1172,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             module = module_sheaf.sections_on_chart(choice)
             generator = _rank_one_generator(module)
             components[choice] = module.scalar_multiple(local_coefficient, generator)
-        return self.compatible_sections().from_global_section_components(
-            components,
-            section,
-        )
+        return self.compatible_sections()(components)
 
     @cached_method
     def section_ring(self):
@@ -1157,6 +1198,10 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def section_base_change_comparison(self):
         return _section_base_change_comparison_of(self)
+
+    def pullback_compatible_section(self, section):
+        r"""Pull a section of the source bundle back along this base change."""
+        return _base_change_image(self).compatible_section(self, section)
 
     def _repr_(self):
         degrees = tuple(self.multidegree()[label] for label in self.multidegree().index_set())
