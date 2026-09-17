@@ -353,7 +353,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             if category is not None and not category.is_subcategory(Modules(self.base_ring())):
                 raise TypeError("this is not a module homset category")
-            if not hasattr(codomain, "module_generating_set"):
+            if codomain not in FramedModules(self.base_ring()):
                 raise TypeError("the parent-level module Hom constructor requires a framed target")
 
             return self.module_category().Mor(self, codomain)
