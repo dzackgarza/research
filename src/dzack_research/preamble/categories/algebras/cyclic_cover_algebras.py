@@ -300,9 +300,7 @@ class CyclicCoverAlgebra(SageObject):
 
     def global_sections(self) -> Parent:
         r"""``Gamma(X, A)``, the ``O(X)``-algebra of compatible local sections."""
-        from dzack_research.preamble.categories.schemes.gluing import GlobalSectionAlgebras
-
-        return GlobalSectionAlgebras(self.scheme().coordinate_algebra())(self.gluing_datum())
+        return self.gluing_datum().compatible_sections()
 
     sections = global_sections
 
