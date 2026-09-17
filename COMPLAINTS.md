@@ -144,24 +144,19 @@ Nothing else is assumed: unit, associativity and commutativity are axioms, and a
 One canonical constructor consumes \((A, \rho)\); every other route -- \((M, m)\), a group algebra, a centre, a quotient, a commutator Lie algebra, an engine-adopted ring, a free functor -- computes \(\rho\) from its own data and feeds it (CONTRIBUTING `CON-02`, `CON-06`; vault plan `PLAN-r-algebras-math-syntax-20260803`).
 
 **Observed evidence.**
-`Algebras(R)(M, m)` builds a second module and retains \(M\) with an identification map (`_ChosenAlgebraMultiplicationDatum`, `multiplication_source_module`, `from_multiplication_source`, `AlgebrasWithChosenMultiplication`; `algebras/algebras.py`), a parallel constructor with names that have no mathematical referent.
-`_own_algebra` and `AlgebraStructureConstruction` hold a structure map as a side attribute of an engine ring, only for unital associative algebras.
-`_OwnedAlgebraParent` and the engine free-algebra realization (`algebras/sparse_free_algebras.py`) are placed in `Modules(R)` by the `Algebras(R)` declaration without constructing a module; the realization hand-writes the module operations, and `FramedAlgebras.ParentMethods.cardinality` restates a set-level operation.
-The algebra Hom asserts a finite module framing to decide multiplicativity instead of asking the module Hom and recording `Unknown` as the hypothesis on non-finitary data.
-The same copy-and-identify shape remains in the lattice root, which stores the free module it is built on as `_module` (`_lattice.py`), and in seven algebra `*_source_module` accessors that name functor preimages by an implementation word.
-How it entered: the algebra copy arrived in the bulk commit `4b1786db` of 2026-09-05, which adopted other workers' in-flight edits unchanged, and was extended by `0f4d809c` and `41712e5f`, neither with a body; the form-module copy arrived in `351f8c38`, body empty.  The data-subcategory pattern (`XWithChosenY`) was applied to the defining datum of the category, which manufactured two kinds of algebra object and the membership routing between them.
-The private construction-datum classes (`_*Construction`, `_*Datum`; fifty-five in the tree) were not surveyed for the same shape; that survey is owed, and the count is not a verdict on any of them.
-Filed as `CON-16` in CONTRIBUTING; the algebra accessors are scheduled under `engine-algebras-through-the-structure-constructor` and the lattice root under `objects-through-categories-lattice-files` in [TODO.md](TODO.md).
+Ordinary native allocation still calls `_initialize_engine_algebra` or supplies `_engine_product` to the root. `_install_multiplication` sets the retained module to `self` and wraps the native binary product; this is not the required construction of that module followed by `Algebras(R)(M,m)`. The callers include `_OwnedRingParent`, `_OwnedAlgebraParent`, predicate subrings, exact real scalars, localizations and the sparse-free, power, cohomology and restricted-graded algebra engines. Supplying their missing multiplication fields does not remove this bypass. The sparse-free realization still hand-writes module operations, and `FramedAlgebras.ParentMethods.cardinality` restates a set operation. The free-algebra input accessors still require the generating-module versus underlying-module distinction specified by `engine-algebras-through-the-structure-constructor`.
 
-**Existing partial capability.**
-`Modules(R)` constructs framed and presented modules; `Algebras(R)` and its axioms exist; the history of `functors/algebra_modules.py` before `83c80ce4` records how words and monomials index the homogeneous pieces of a free algebra.
+The separate convolution route in `functions/lebesgue_graded.py` still allocates `_LebesgueAlgebraFromMultiplication` and `GradedTensorSquare` outside those owners. Its declared algebra on all \(\bigoplus_{s\in[0,1]}L^{1/s}(\mathbb R)\) does not have a total convolution product: \(1\in L^\infty(\mathbb R)\), but \((1*1)(x)=\int_{\mathbb R}1\,dt=+\infty\). The operation \(s\oplus t=s+t-1\) in `rings/unit_interval.py` is outside \([0,1]\) at \(s=t=0\), so that parent is not the declared monoid. Young's admissible exponent pairs must be represented as their actual domain, not silently extended by zero or reduced to one exponent. `real_functions.py` distinguishes integrable maps from their almost-everywhere classes; a convolution pairing on \(L^p\) must retain that distinction. Valid Gaussian and admissible-exponent computations must survive the owner repair.
+
+**Existing capability.**
+The root constructs algebras from a module and tensor multiplication, and the module owner supplies the unframed tensor quotient and binary classifier. Multiplication-preserving Homs retain `Unknown` for undecided equations instead of demanding a framing. Explicit central ring maps construct their scalar-action module before using that root entry; the pointwise Lebesgue algebra uses the shared graded-sum realization. The native allocation and convolution paths above have not been brought through those constructions.
 
 **Affected consumers.**
 Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
 
 **Coverage boundary.**
 Read from source; no session was run.
-Which engine-backed algebras answer `module_generating_set` today, and with what, was not determined.
+The named allocation paths and consumers were read from source; runtime behavior and the full terminal session remain unexecuted.
 Scheduled as `algebra-structure-morphism-constructor` and `engine-algebras-through-the-structure-constructor` in [TODO.md](TODO.md).
 
 ### Sheaf theory on non-affine schemes stops at the chart
@@ -175,7 +170,7 @@ the group \(\mathrm{CDiv}(X) = \Gamma(X, \mathcal{K}_X^{*}/\mathcal{O}_X^{*})\);
 finite affine atlases as covering families in the Zariski coverage of \(\mathbf{Sch}_R/X\);
 the fibered category of modules over varying rings, whose arrows are semilinear maps;
 the general projectivization functor, as distinct from the projective-space entry now used by linear systems.
-Underneath, `Modules(R)` has products, equalizers and tensor products only for framed or presented modules, so \(\Gamma(X, F)\), a limit of restricted chart modules, cannot be built at its owner.
+Underneath, general module products and equalizers are still missing for the section-limit construction. The unframed tensor quotient and classifier exist, but the algebra of global sections has not yet been constructed through them at `Algebras(R)`.
 
 **Dependency path.**
 Sheaves on \(\mathrm{Open}(X)\) with descent → sheaves of modules over \(\mathcal{O}_X\) → quasi-coherent and invertible sheaves, their morphisms and pullbacks → line bundles, Cartier divisors and linear systems.
