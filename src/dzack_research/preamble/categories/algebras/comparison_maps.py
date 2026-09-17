@@ -5,9 +5,6 @@ from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalHomset
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    PowerAlgebraElement,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -153,8 +150,7 @@ def _divided_to_symmetric(module):
     ring = module.base_ring()
 
     def evaluate(element):
-        if not isinstance(element, PowerAlgebraElement) or element.parent() is not source:
-            element = source(element)
+        element = source(element)
         result = target.zero()
         for degree, component in element.homogeneous_components().items():
             for label, coefficient in source.graded_piece(degree).framing_coefficients(component).items():

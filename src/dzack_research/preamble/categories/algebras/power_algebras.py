@@ -6,35 +6,21 @@ their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_function
+from sage.misc.unknown import Unknown
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    AlternatingAlgebras,
-    DividedPowerAlgebras,
-    FreeAlgebras,
-    GradedFreeAlgebras,
-)
-from dzack_research.preamble.categories.modules.graded_direct_sums import (
-    GradedDirectSumElement,
-    GradedDirectSumModule,
-)
+from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedRings,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring as _engine_ring,
-)
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _PowerAlgebraConstruction:
@@ -51,75 +37,18 @@ class _PowerAlgebraConstruction:
         return self._flavor
 
 
-class PowerAlgebraElement(GradedDirectSumElement):
-    r"""An element of a power algebra, using graded-direct-sum storage."""
+class _PowerAlgebra:
+    r"""The power construction on a graded module, without duplicate arithmetic."""
 
-    def _mul_(self, other):
-        return self.parent().multiply(self, other)
-
-
-class PowerAlgebra(GradedDirectSumModule):
-    r"""The graded algebra ``Lambda(M)`` or ``Gamma(M)``."""
-
-    Element = PowerAlgebraElement
-
-    def __init__(self, module, flavor) -> None:
-        if flavor not in {"alternating", "divided"}:
-            raise ValueError("power algebra flavor must be alternating or divided")
-        self._power_algebra_construction = _PowerAlgebraConstruction(module, flavor)
-        base = _owned_ring(module.base_ring())
-
-        match flavor:
-            case "alternating":
-                component_constructor = module.exterior_power
-            case "divided":
-                component_constructor = module.divided_power_module
-        degree_index_set = None
-        if flavor == "alternating":
-            generator_count = module.module_generating_set().cardinality()
-            if generator_count.is_finite():
-                degree_index_set = Sets.Δ[int(generator_count.finite_value())]
-
-        flavor_category = AlternatingAlgebras(base) if flavor == "alternating" else DividedPowerAlgebras(base)
-        categories = [flavor_category, FramedAlgebras(base)]
-        if module in FinitelyGeneratedFreeModules(base):
-            categories.extend([FreeAlgebras(base), GradedFreeAlgebras(base)])
-        self._preamble_algebra_generating_set = module.module_generating_set()
-
-        self._preamble_algebra_generator_values = indexed_family(
-            self._preamble_algebra_generating_set,
-            lambda label: self.from_component(1, module.module_generator(label)),
-            name="Power-algebra generator values",
-        )
-        GradedDirectSumModule.__init__(
-            self,
-            base,
-            lambda degree: component_constructor(int(degree)),
-            name=(f"Lambda({module})" if flavor == "alternating" else f"Gamma({module})"),
-            degree_index_set=degree_index_set,
-            extra_categories=tuple(categories),
-        )
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
-
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
-
-    def is_commutative(self) -> bool:
-        r"""Divided powers commute; an alternating algebra commutes on at most one generator or in characteristic two."""
-        if self.flavor() == "divided":
-            return True
-        generators = self._preamble_algebra_generating_set.cardinality()
-        if generators.is_finite() and int(generators.finite_value()) <= 1:
-            return True
-        return int(self.base_ring().characteristic()) == 2
+    def __init__(self, power_algebra_construction, **rest) -> None:
+        self._power_algebra_construction = power_algebra_construction
+        super().__init__(**rest)
 
     def power_algebra_construction(self):
         return self._power_algebra_construction
 
     def flavor(self):
         return self.power_algebra_construction().flavor()
-
-    def algebra_base_ring(self):
-        return self.base_ring()
 
     def free_source_module(self):
         return self.power_algebra_construction().source_module()
@@ -128,63 +57,47 @@ class PowerAlgebra(GradedDirectSumModule):
         return PowerAlgebraHomset
 
     def algebra_generating_set(self):
-        return self.free_source_module().module_generating_set()
-
-    def algebra_generator(self, label):
-        return self.from_component(1, self.free_source_module().module_generator(label))
-
-    def number_of_algebra_generators(self):
-        return self.algebra_generating_set().cardinality()
-
-    _from_component = GradedDirectSumModule.from_component
-    _from_components = GradedDirectSumModule.from_components
-
-    def __call__(self, value):
-        r"""Construct an element through the owned graded-algebra parser."""
-        return self._element_constructor_(value)
-
-    def _element_constructor_(self, value):
-        if isinstance(value, GradedDirectSumElement):
-            if value.parent() is self:
-                return value
-            raise TypeError("the algebra element belongs to a different power algebra")
-        if value in self.free_source_module():
-            return self.from_component(1, self.free_source_module()(value))
-        try:
-            scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
-            if isinstance(value, dict):
-                return GradedDirectSumModule._element_constructor_(self, value)
-            raise TypeError(f"{value!r} does not define an element of {self}") from None
-        piece = self.graded_piece(0)
-        return self.from_component(0, piece.scalar_multiple(scalar, piece.module_generator(0)))
-
-    def one(self):
-        return self(self.base_ring().one())
-
-    def multiply(self, left, right):
-        left = self(left)
-        right = self(right)
-        result = self.zero()
-        source_module = self.free_source_module()
         match self.flavor():
             case "alternating":
-                product = source_module.exterior_power_product
+                return self.free_source_module().module_generating_set()
             case "divided":
-                product = source_module.divided_power_product
-        for left_degree, left_component in left.homogeneous_components().items():
-            for right_degree, right_component in right.homogeneous_components().items():
-                target_degree = left_degree + right_degree
-                if target_degree not in self.degree_index_set():
-                    continue
-                component = product(
-                    left_degree,
-                    left_component,
-                    right_degree,
-                    right_component,
-                )
-                result += self.from_component(target_degree, component)
-        return result
+                # Degree-one elements alone need not generate Gamma over Z.
+                # A module generating family is also an algebra generating family.
+                return self.module_generating_set()
+
+    def algebra_generator(self, label):
+        source = self.free_source_module()
+        match label:
+            case _ if label in source.module_generating_set():
+                return self.from_component(1, source.module_generator(label))
+            case _:
+                return self.module_generator(self.algebra_generating_set()(label))
+
+    def _element_constructor_(self, value):
+        source = element_parent(value)
+        match value:
+            case _ if source is self:
+                return value
+            case _ if source is self.free_source_module():
+                return self.from_component(1, value)
+            case dict():
+                return super()._element_constructor_(value)
+            case _ if value in self.base_ring():
+                return self.scalar_multiple(self.base_ring()(value), self.one())
+            case _:
+                return super()._element_constructor_(value)
+
+    def is_commutative(self):
+        match self.flavor():
+            case "divided":
+                return True
+            case _:
+                size = self.free_source_module().module_generating_set().cardinality()
+                if (self.base_ring()(2) == self.base_ring().zero()) is True:
+                    return True
+                if size.is_finite() and int(size.finite_value()) <= 1:
+                    return True
+                return Unknown
 
     def divided_power(self, value, exponent):
         if self.flavor() != "divided":
@@ -216,18 +129,6 @@ class PowerAlgebra(GradedDirectSumModule):
         coefficients = self.graded_piece(0).framing_coefficients(component)
         return self.base_ring()(coefficients.get(0, self.base_ring().zero()))
 
-    @cached_method
-    def ring_center(self):
-        if self.flavor() == "divided":
-            return self
-        if self.is_commutative():
-            return self
-        return self.predicate_subring(
-            self.is_central,
-            "z commutes with every element",
-            OwnedRings().Commutative(),
-        )
-
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
         return f"{symbol}({self.free_source_module()})"
@@ -248,8 +149,8 @@ class PowerAlgebraMorphism(Morphism):
 
         def target_component(label):
             image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
-            if isinstance(image, PowerAlgebraElement):
-                if image.parent() is not self.codomain() or not image.is_homogeneous() or image.degree() != 1:
+            if element_parent(image) is self.codomain():
+                if not image.is_homogeneous() or image.degree() != 1:
                     raise ValueError("power-algebra generator images must lie in degree one")
                 return image.homogeneous_component(1)
             if image not in target_module:
@@ -272,7 +173,7 @@ class PowerAlgebraMorphism(Morphism):
                     mapped = degree_one_map.exterior_power(degree)(component)
                 case "divided":
                     mapped = degree_one_map.divided_power(degree)(component)
-            result += self.codomain()._from_component(degree, mapped)
+            result += self.codomain().from_component(degree, mapped)
         return result
 
     def __call__(self, element):
@@ -295,8 +196,8 @@ class PowerAlgebraHomset(CategoricalHomset):
     Element = PowerAlgebraMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        if not isinstance(domain, PowerAlgebra) or not isinstance(codomain, PowerAlgebra):
-            raise TypeError("a represented power-algebra Hom requires two power algebras")
+        category = hom_family.base_category()
+        assert domain in category and codomain in category, "power-algebra arrows use the stated category"
         if domain.flavor() != codomain.flavor():
             raise ValueError("power-algebra morphisms preserve the construction flavor")
         if domain.base_ring() is not codomain.base_ring():
@@ -316,18 +217,71 @@ class PowerAlgebraHomset(CategoricalHomset):
 
 
 
-@cached_function(key=lambda module, flavor: (id(module), flavor))
-def _power_algebra_of(module, flavor):
-    result = PowerAlgebra(module, flavor)
-    return result
+def PowerAlgebraElement(parent, components):
+    r"""Construct a power-algebra element from homogeneous components."""
+    return parent.from_components(components)
+
+
+def PowerAlgebra(module, flavor):
+    r"""The named power construction, through its category entry."""
+    from dzack_research.preamble.categories.algebras.free_algebras import AlternatingAlgebras, DividedPowerAlgebras
+
+    match flavor:
+        case "alternating":
+            return AlternatingAlgebras(module.base_ring())(module)
+        case "divided":
+            return DividedPowerAlgebras(module.base_ring())(module)
+        case _:
+            raise ValueError("power algebra flavor must be alternating or divided")
+
+
+@cached_function(key=lambda source, flavor: (id(source), flavor))
+def _power_algebra_of(source, flavor):
+    r"""The graded sum and product of the module's exterior or divided powers.
+
+    The degree owners supply the wedge/divided product, including their
+    relations; distributive extension is the shared graded-algebra classifier.
+    See Mathlib LinearAlgebra/ExteriorAlgebra/Basic and Algebra/DirectSum/Ring;
+    divided-power multiplication uses the identities in Stacks, Tag 07GL.
+    """
+    from dzack_research.preamble.categories.algebras.free_algebras import AlternatingAlgebras, DividedPowerAlgebras
+
+    ring = source.base_ring()
+    graded = GradedModules(ring)
+    match flavor:
+        case "alternating":
+            category = AlternatingAlgebras(ring)
+            power = source.exterior_power
+            product = source.exterior_power_product
+        case "divided":
+            category = DividedPowerAlgebras(ring)
+            power = source.divided_power_module
+            product = source.divided_power_product
+        case _:
+            raise ValueError("power algebra flavor must be alternating or divided")
+
+    def piece(degree):
+        match degree < 0:
+            case True:
+                return ring.free_module(0)
+            case False:
+                return power(degree)
+
+    module = graded(indexed_family(graded.grading_monoid(), piece), placements=(FramedModules(ring),))
+    multiplication = _graded_multiplication_from_components(module, product)
+    unit = module.from_component(0, module.graded_piece(0).module_generator(0))
+    return _algebra_on_module(
+        module, multiplication, placement=(category, FramedAlgebras(ring)), unit=unit,
+        construction_data={"power_algebra_construction": _PowerAlgebraConstruction(source, flavor)},
+    )
 
 
 def _alternating_algebra_of(module):
-    return _power_algebra_of(module, "alternating")
+    return PowerAlgebra(module, "alternating")
 
 
 def _divided_power_algebra_of(module):
-    return _power_algebra_of(module, "divided")
+    return PowerAlgebra(module, "divided")
 
 
 def _alternating_extension(module_morphism):

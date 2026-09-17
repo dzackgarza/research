@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -811,14 +812,11 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 return self.algebra_generator(label)
 
             piece = self.graded_piece(degree)
-            from dzack_research.preamble.categories.algebras.power_algebras import (
-                PowerAlgebra,
-            )
             from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
                 SparseFreeAlgebra,
             )
 
-            if isinstance(self, PowerAlgebra):
+            if self in AlternatingAlgebras(self.base_ring()) or self in DividedPowerAlgebras(self.base_ring()):
                 return self.from_component(degree, piece.module_generator(label))
             if isinstance(self, SparseFreeAlgebra):
                 return self.module_generator(self.basis_label(degree, label))
@@ -1245,23 +1243,19 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 
-    class ParentMethods:
-        def free_source_module(self):
-            construction = getattr(self, "_free_algebra_construction", None)
-            assert construction is not None, (
-                "an alternating free-algebra realization must retain its selected source module"
-            )
-            return construction.source_module()
+    def _call_(self, module):
+        from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
+        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        return _power_algebra_of(module, "alternating")
+
+    class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
             alternating = AlternatingAlgebras(self.base_ring())
             if category is None and codomain in alternating:
                 return alternating.Mor(self, codomain)
             return super().Mor(codomain, category=category)
 
-        def graded_piece(self, degree):
-
-            return self.free_source_module().exterior_power(degree)
 
 
 def _presentation_data(algebra):
@@ -1428,23 +1422,19 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     _HomCategory = PowerAlgebraHomCategoryConstruction
 
-    class ParentMethods:
-        def free_source_module(self):
-            construction = getattr(self, "_free_algebra_construction", None)
-            assert construction is not None, (
-                "a divided-power free-algebra realization must retain its selected source module"
-            )
-            return construction.source_module()
+    def _call_(self, module):
+        from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
+        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        return _power_algebra_of(module, "divided")
+
+    class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
             divided = DividedPowerAlgebras(self.base_ring())
             if category is None and codomain in divided:
                 return divided.Mor(self, codomain)
             return super().Mor(codomain, category=category)
 
-        def graded_piece(self, degree):
-
-            return self.free_source_module().divided_power_module(degree)
 
 
 def _multiply_in_target(target, factors):
