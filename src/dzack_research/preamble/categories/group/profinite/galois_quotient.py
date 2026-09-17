@@ -5,7 +5,7 @@ from typing import cast
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
@@ -102,7 +103,6 @@ class FiniteGaloisExtension(SageObject):
             raise ValueError(
                 "a represented finite extension must be separable over its base field"
             )
-        self._automorphisms = None
 
     def base_field(self):
         return self._base_field
@@ -122,31 +122,64 @@ class FiniteGaloisExtension(SageObject):
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
 
-    def automorphisms(self):
-        if self._automorphisms is None:
-            automorphisms = []
-            base_generators = self.base_field().field_generators()
-            for candidate in self.field().exact_embeddings(self.field()):
+    @cached_method
+    def _automorphisms_over_base(self):
+        r"""The exact ``K``-automorphisms of ``L``: the self-embeddings of ``L`` fixing ``K``."""
+        base_generators = self.base_field().field_generators()
+        return finite_ordered_set(
+            tuple(
+                candidate
+                for candidate in self.field().exact_embeddings(self.field())
                 if all(
                     candidate(self.base_embedding()(generator))
                     == self.base_embedding()(generator)
                     for generator in base_generators
-                ):
-                    automorphisms.append(candidate)
-            if len(automorphisms) != self.degree():
-                raise ValueError(
-                    f"{self.field()} is not represented as a finite Galois extension "
-                    f"of {self.base_field()}"
                 )
-            self._automorphisms = finite_ordered_set(tuple(automorphisms))
-        return self._automorphisms
+            )
+        )
+
+    def automorphisms(self):
+        r"""The elements of ``Gal(L/K)``, as exact field maps; ``L/K`` is Galois."""
+        assert self.is_galois(), (
+            f"{self.field()} is not represented as a finite Galois extension of {self.base_field()}"
+        )
+        return self._automorphisms_over_base()
 
     def is_galois(self) -> bool:
-        try:
-            self.automorphisms()
-        except ValueError:
-            return False
-        return True
+        r"""Whether ``L/K`` is Galois: it has ``[L:K]`` automorphisms over ``K``.
+
+        This is the finite-extension criterion in Stacks, Lemma 9.21.2.
+        """
+        return self._automorphisms_over_base().cardinality() == cardinal(self.degree())
+
+    def __eq__(self, other) -> bool:
+        r"""Equal when the defining data ``K -> L -> Kbar`` agree.
+
+        The fields and the closure are compared by identity and the two exact
+        embeddings by their values on field generators.
+        """
+        return (
+            isinstance(other, FiniteGaloisExtension)
+            and other.base_field() is self.base_field()
+            and other.field() is self.field()
+            and other.algebraic_closure() is self.algebraic_closure()
+            and other.base_embedding() == self.base_embedding()
+            and other.embedding() == self.embedding()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                id(self._base_field),
+                id(self._field),
+                id(self._closure),
+                self._base_embedding,
+                self._closure_embedding,
+            )
+        )
 
     def _repr_(self) -> str:
         return f"Finite Galois extension {self.field()} / {self.base_field()} in {self.algebraic_closure()}"

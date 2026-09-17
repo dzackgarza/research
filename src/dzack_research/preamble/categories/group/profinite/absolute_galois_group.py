@@ -437,8 +437,6 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         if embedding is None:
             embedding = self._field.first_exact_embedding(self._closure)
         self._embedding = _as_exact_embedding(self._field, self._closure, embedding)
-        self._extension_cache: dict[object, FiniteGaloisExtension] = {}
-        self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
         category = Cat().meet(
             (_absolute_galois_group_category(self._field), *tuple(extra_categories))
@@ -735,18 +733,22 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             closure_embedding,
         )
 
+    @cached_method(key=lambda group, degree: ZZ(degree))
     def finite_extension(self, degree):
-        r"""Return the canonical degree-``degree`` stage for a finite base field."""
-        if not self._is_finite_field():
-            raise TypeError(
-                "degree-indexed canonical stages are specific to finite fields"
-            )
+        r"""Return the canonical degree-``degree`` stage for a finite base field.
+
+        Over ``F_q`` the unique extension of degree ``d`` inside the chosen
+        closure is its subfield of order ``q^d``, so the degree is the whole
+        defining datum and one degree names one stage.
+
+        The cache key uses the same exact integer conversion as construction;
+        truncating with ``int`` would admit a nonintegral degree on a cache hit.
+        """
+        assert self._is_finite_field(), (
+            "degree-indexed canonical stages are specific to finite fields"
+        )
         degree = ZZ(degree)
-        if degree <= 0:
-            raise ValueError("an extension degree must be positive")
-        cached = self._extension_cache.get(degree)
-        if cached is not None:
-            return cached
+        assert degree > 0, "an extension degree must be positive"
         total_degree = ZZ(_engine_ring(self._field).degree()) * degree
         field_engine, embedding_engine = _engine_ring(self._closure).subfield(
             total_degree
@@ -755,18 +757,20 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         closure_embedding = _exact_field_morphism_from_engine(
             extension_field, self._closure, embedding_engine
         )
-        stage = self.extension_data(extension_field, embedding=closure_embedding)
-        self._extension_cache[degree] = stage
-        return stage
+        return self.extension_data(extension_field, embedding=closure_embedding)
 
     def finite_quotient(self, extension):
-        stage = self.extension_data(extension)
-        key = id(stage)
-        quotient = self._quotient_cache.get(key)
-        if quotient is None:
-            quotient = FiniteGaloisQuotient(stage)
-            self._quotient_cache[key] = quotient
-        return quotient
+        r"""Return ``Gal(L/K)`` for the finite stage ``L`` named by ``extension``.
+
+        ``extension`` is a stage or a field; both name the stage
+        :meth:`extension_data` selects, and the quotient is keyed on that
+        stage's defining data, so equal data give one quotient.
+        """
+        return self._finite_quotient_of_stage(self.extension_data(extension))
+
+    @cached_method
+    def _finite_quotient_of_stage(self, stage):
+        return FiniteGaloisQuotient(stage)
 
     def restriction_map(self, extension):
         return GaloisRestrictionMap(self, self.finite_quotient(extension))
