@@ -715,6 +715,7 @@ class QuotientRings(OwnedCategory):
             return f"{self.lift()} mod {self.parent().defining_ideal()}"
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
 
         def __init__(
             self,
@@ -729,14 +730,14 @@ class QuotientRings(OwnedCategory):
             )
             self._preamble_engine_ring = _engine_ring
             super().__init__(
-                base=source,
+                base_ring=source,
                 _engine_product=lambda left, right: QuotientRings.ElementMethods._mul_(left, right),
                 _engine_scalar_action=lambda scalar, element: QuotientRings.ElementMethods._mul_(self(scalar), self(element)),
                 _engine_unit=lambda algebra: QuotientRings.ParentMethods.one(algebra),
                 **rest,
             )
 
-            quotient_map = source.Mor(self)(
+            quotient_map = source.Mor(self, category=OwnedRings())(
                 lambda element: self(element),
             )
             self._quotient_construction.set_quotient_map(quotient_map)

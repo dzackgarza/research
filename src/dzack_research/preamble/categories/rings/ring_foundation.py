@@ -487,7 +487,7 @@ class PredicateSubrings(OwnedCategory):
             return self._zero
 
         def inclusion(self):
-            return self.Mor(self._ambient_ring)(
+            return self.Mor(self._ambient_ring, category=OwnedRings())(
                 lambda element: element,
             )
 
@@ -697,6 +697,8 @@ class LocalizationRings(OwnedCategory):
         return [OwnedRings().Commutative()]
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
+
         def inverted_submonoid_meets(self, ideal) -> bool:
             r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
 
@@ -748,7 +750,7 @@ class LocalizationRings(OwnedCategory):
             match category.is_subcategory(Algebras(self.algebra_base_ring()).Associative().Unital()):
                 case True:
                     super().__init__(
-                        base=source.base_ring(),
+                        base_ring=self.algebra_base_ring(),
                         _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
                         _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
                         _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
@@ -763,7 +765,7 @@ class LocalizationRings(OwnedCategory):
                         LocalizationRings.ParentMethods.one(self),
                         lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)))
 
-            localization_map = source.Mor(self)(
+            localization_map = source.Mor(self, category=OwnedRings())(
                 lambda element: self.fraction(element),
             )
             self._localization_construction.set_localization_map(localization_map)

@@ -780,13 +780,13 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             ring = self.algebra_base_ring()
             if ring is self:
-                return ring.Mor(ring).identity()
+                return ring.Mor(ring, category=OwnedRings()).identity()
             rho = self.scalar_action()
             match self:
                 case _ if self in Algebras(ring).Associative().Unital():
                     center = self.ring_center()
                     unit = self._underlying_additive_element(self.one())
-                    return ring.Mor(center)(
+                    return ring.Mor(center, category=OwnedRings())(
                         lambda scalar: center(self(rho(ring(scalar))(unit))),
                     )
                 case _:

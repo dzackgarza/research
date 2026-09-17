@@ -1422,7 +1422,7 @@ class Modules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
-            return ring.Mor(endomorphisms)(
+            return ring.Mor(endomorphisms, category=OwnedRings())(
                 lambda scalar: endomorphisms.elementwise(
                     lambda element: self._owned_scalar_multiple(scalar, element),
                 ),

@@ -76,3 +76,24 @@ def test_monic_quotient_supplies_its_basis_before_the_native_tensor_product() ->
     assert multiplication.domain() in FramedFreeModules(QQ).FinitelyGenerated()
     assert multiplication.domain().module_rank() == 4
     assert multiplication(generator, generator) == 2 * one
+
+
+def test_native_localization_and_quotient_thread_their_actual_scalar_bases():
+    from dzack_research.preamble.all import OwnedRings
+
+    polynomial = QQ.polynomial_ring("t")
+    t = polynomial.algebra_generator("t")
+    quotient = polynomial.quotient_ring(t**2)
+    localized = polynomial.localization(t)
+    assert quotient.base_ring() is polynomial
+    assert localized.base_ring() is QQ
+    quotient_map = quotient.quotient_map()
+    localization_map = localized.localization_map()
+    assert quotient_map.domain() is polynomial and quotient_map.codomain() is quotient
+    assert localization_map.domain() is polynomial and localization_map.codomain() is localized
+    assert quotient_map.parent().homset_category().is_subcategory(OwnedRings())
+    assert quotient.algebra_structure_morphism()(t) == quotient_map(t)
+    assert quotient.scalar_multiple(t, quotient.one()) == quotient(t)
+    assert quotient.multiplication()(quotient(t), quotient(t)) == quotient.zero()
+    assert localized.scalar_multiple(QQ(3), localized(t)) == localized(3 * t)
+    assert localized.multiplication()(localized(t), localized(t).inverse_of_unit()) == localized.one()
