@@ -1371,27 +1371,7 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
             data["unit"] = module(unit)
         case _:
             assert unit is None, "a unit is stated only with a unital placement"
-    match module:
-        case _ if module in ModulesWithChosenFinitePresentation(ring):
-            return module._same_presentation_module(
-                module.module_generating_set(),
-                _extra_categories=categories,
-                _extra_construction_data=data,
-            )
-        case _ if module in FramedFreeModules(ring):
-            return module._fresh_free_module_on(
-                module.module_generating_set(),
-                _extra_categories=categories,
-                _extra_construction_data=data,
-            )
-        case _:
-            return _object_of(
-                Cat().meet((GeneralModules(ring), *categories)),
-                base_ring=ring,
-                rho=module.scalar_action(),
-                verify=False,
-                **data,
-            )
+    return module._module_with_structure(categories, data)
 
 
 def _center_algebra(algebra, submodule):

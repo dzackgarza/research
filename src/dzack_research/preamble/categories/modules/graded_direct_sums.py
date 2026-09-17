@@ -2,7 +2,9 @@ r"""Finite-support direct sums of a represented family of graded modules."""
 
 from typing import Any
 
-from sage.structure.element import ModuleElement
+from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
+from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -14,26 +16,28 @@ from dzack_research.preamble.categories.modules.graded_modules import (
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
+    Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.owned_category import _object_of
 
 
 class GradedDirectSumElement(ModuleElement):
     r"""A finite family of homogeneous components."""
 
     def __init__(self, parent, components) -> None:
-        ModuleElement.__init__(self, parent)
+        super().__init__(parent)
         normalized = {}
         for degree, component in components.items():
             degree = parent.normalize_degree(degree)
             piece = parent.graded_piece(degree)
             if component.parent() is not piece:
                 component = piece(component)
-            if component != piece.zero():
+            if (component == piece.zero()) is not True:
                 normalized[degree] = component
         self._components = normalized
 
@@ -326,3 +330,110 @@ __all__ = [
     "GradedDirectSumElement",
     "GradedDirectSumModule",
 ]
+
+
+class _DirectSumOfModules:
+    r"""Finite-support realization of a direct sum of arbitrary modules.
+
+    The component elements and arithmetic are shared with the framed
+    realization; no basis is claimed for the pieces.  The coproduct map is
+    the finite sum of the component maps.  Further structure is constructed
+    from this family at its module owner.
+    """
+
+    def __init__(self, summand_family, **rest) -> None:
+        self._summand_family = summand_family
+        super().__init__(**rest)
+
+    def degree_index_set(self):
+        return self._summand_family.index_set()
+
+    def normalize_degree(self, degree):
+        return self.degree_index_set()(degree)
+
+    def graded_piece(self, degree):
+        piece = self._summand_family[self.normalize_degree(degree)]
+        assert piece in Modules(self.base_ring()), "every summand is a module over the common ring"
+        return piece
+
+    def from_components(self, components):
+        return self.element_class(self, components)
+
+    def from_component(self, degree, component):
+        return self.from_components({self.normalize_degree(degree): component})
+
+    from_graded_piece = from_component
+
+    def _element_constructor_(self, value):
+        source = element_parent(value)
+        if source is self:
+            return value
+        if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
+            return self.from_components(value.homogeneous_components())
+        if isinstance(value, dict):
+            return self.from_components(value)
+        raise TypeError("a direct-sum element is a finite family of homogeneous components")
+
+    def __call__(self, value):
+        return self._element_constructor_(value)
+
+    def zero(self):
+        return self.from_components({})
+
+    an_element = zero
+
+    def _owned_scalar_multiple(self, scalar, element):
+        scalar = self.base_ring()(scalar)
+        return self.from_components({
+            degree: self.graded_piece(degree).scalar_multiple(scalar, component)
+            for degree, component in self(element).homogeneous_components().items()
+        })
+
+    @cached_method
+    def injection(self, degree):
+        degree = self.normalize_degree(degree)
+        return Modules(self.base_ring()).Mor(self.graded_piece(degree), self).elementwise(
+            lambda element: self.from_component(degree, element), verify_linearity=False,
+        )
+
+    @cached_method
+    def projection(self, degree):
+        degree = self.normalize_degree(degree)
+        return Modules(self.base_ring()).Mor(self, self.graded_piece(degree)).elementwise(
+            lambda element: self(element).homogeneous_component(degree), verify_linearity=False,
+        )
+
+    def from_maps(self, codomain, maps):
+        r"""The unique linear map whose restrictions to the summands are ``maps``."""
+        assert maps.index_set() is self.degree_index_set(), "the maps use the summand index set"
+
+        def evaluate(element):
+            def image(degree, component):
+                morphism = maps[degree]
+                assert morphism.domain() is self.graded_piece(degree) and morphism.codomain() is codomain, (
+                    "a coproduct cocone has the stated summands and common codomain"
+                )
+                return morphism(component)
+
+            return sum((image(degree, component) for degree, component in self(element).homogeneous_components().items()), codomain.zero())
+
+        return Modules(self.base_ring()).Mor(self, codomain).elementwise(evaluate, verify_linearity=False)
+
+    def _module_with_structure(self, categories, construction_data):
+        return _direct_sum_of_modules(
+            self.base_ring(), self.grading_monoid(), self._summand_family,
+            extra_categories=categories, construction_data=construction_data,
+        )
+
+    def _repr_(self):
+        return f"Direct sum over {self.degree_index_set()}"
+
+
+def _direct_sum_of_modules(ring, grading_monoid, pieces, *, extra_categories=(), construction_data=None):
+    graded = GradedModules(ring, grading_monoid)
+    assert pieces.index_set() is grading_monoid, "the grading indexes the summands"
+    return _object_of(
+        Cat().meet((graded, *extra_categories)),
+        _engine=(graded, _DirectSumOfModules, GradedDirectSumElement),
+        base_ring=ring, summand_family=pieces, **(construction_data or {}),
+    )

@@ -250,6 +250,15 @@ class GradedModules(OwnedCategoryOverBaseRing):
         self._parity_key = parity_key
         super().__init__(base_ring)
 
+    def _call_(self, pieces, *, placements=(), **construction_data):
+        r"""The graded direct sum of the supplied family of R-modules."""
+        from dzack_research.preamble.categories.modules.graded_direct_sums import _direct_sum_of_modules
+
+        return _direct_sum_of_modules(
+            self.base_ring(), self.grading_monoid(), pieces,
+            extra_categories=placements, construction_data=construction_data,
+        )
+
     def grading_monoid(self) -> Parent:
         return self._grading_monoid
 

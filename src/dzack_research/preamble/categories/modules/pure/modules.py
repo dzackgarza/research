@@ -1316,6 +1316,34 @@ class Modules(OwnedCategoryOverBaseRing):
             )
             return element
 
+        def _module_with_structure(self, categories, construction_data):
+            r"""Construct further structure on this exact module's data.
+
+            The module owner, not the stronger algebra/form/action owner,
+            selects its realization.  A realization with additional intrinsic
+            data (for example a direct sum's pieces) supplies this operation.
+            """
+            match self:
+                case _ if self in ModulesWithChosenFinitePresentation(self.base_ring()):
+                    return self._same_presentation_module(
+                        self.module_generating_set(), _extra_categories=categories,
+                        _extra_construction_data=construction_data,
+                    )
+                case _ if _is_framed_free_module(self):
+                    return self._fresh_free_module_on(
+                        self.module_generating_set(), _extra_categories=categories,
+                        _extra_construction_data=construction_data,
+                    )
+                case _:
+                    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+                    from dzack_research.preamble.owned_category import _object_of
+
+                    return _object_of(
+                        Category.join((GeneralModules(self.base_ring()), *categories)),
+                        base_ring=self.base_ring(), rho=self.scalar_action(),
+                        verify=False, **construction_data,
+                    )
+
         def _built_on_the_same_data(self, source) -> bool:
             r"""Decide whether ``source`` and this module are built on the data of one module.
 
