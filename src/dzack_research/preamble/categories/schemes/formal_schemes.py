@@ -1,5 +1,6 @@
 r"""Adic formal spectra and their compatible infinitesimal thickenings."""
 
+from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 
@@ -43,11 +44,11 @@ class FormalSpectrum(SageObject):
     """
 
     def __init__(self, source_ring, ideal_of_definition) -> None:
-        if ideal_of_definition.ring() is not source_ring:
-            raise ValueError("an ideal of definition belongs to the formal source ring")
+        assert ideal_of_definition.ring() is source_ring, (
+            "an ideal of definition belongs to the formal source ring"
+        )
         self._source_ring = source_ring
         self._ideal = ideal_of_definition
-        self._completions = {}
 
     def source_ring(self):
         return self._source_ring
@@ -55,16 +56,13 @@ class FormalSpectrum(SageObject):
     def ideal_of_definition(self):
         return self._ideal
 
+    @cached_method(key=lambda self, precision=20: int(precision))
     def completion(self, precision=20):
-        precision = int(precision)
-        selected = self._completions.get(precision)
-        if selected is None:
-            selected = self.source_ring().adic_completion(
-                self.ideal_of_definition(),
-                precision=precision,
-            )
-            self._completions[precision] = selected
-        return selected
+        r"""The ``I``-adic completion ``A^`` realized at one computation precision."""
+        return self.source_ring().adic_completion(
+            self.ideal_of_definition(),
+            precision=int(precision),
+        )
 
     def completed_affine_scheme(self, precision=20):
         r"""Return ``Spec(A^)`` for one computational realization, not ``Spf(A,I)``."""
@@ -73,8 +71,7 @@ class FormalSpectrum(SageObject):
 
     def thickening_ring(self, exponent):
         exponent = int(exponent)
-        if exponent <= 0:
-            raise ValueError("an infinitesimal thickening exponent is positive")
+        assert exponent > 0, "an infinitesimal thickening exponent is positive"
         return self.source_ring().quotient_ring(
             self.ideal_of_definition().power(exponent)
         )
@@ -88,8 +85,9 @@ class FormalSpectrum(SageObject):
         r"""Return ``A/I^higher -> A/I^lower`` in the inverse system."""
         higher_exponent = int(higher_exponent)
         lower_exponent = int(lower_exponent)
-        if lower_exponent <= 0 or higher_exponent < lower_exponent:
-            raise ValueError("formal transition exponents satisfy higher >= lower > 0")
+        assert higher_exponent >= lower_exponent > 0, (
+            "formal transition exponents satisfy higher >= lower > 0"
+        )
         higher = self.thickening_ring(higher_exponent)
         lower = self.thickening_ring(lower_exponent)
         lower_projection = lower.quotient_map()
@@ -123,20 +121,28 @@ class FormalSpectrum(SageObject):
 
 
 class FormalAffineMorphism(SageObject):
-    r"""A continuous affine formal morphism given contravariantly on rings."""
+    r"""A continuous affine formal morphism ``Spf(A,I) -> Spf(B,J)``.
+
+    It is given contravariantly by a ring map ``phi: B -> A`` with
+    ``phi(J)`` contained in ``I``.  This sufficient continuity hypothesis
+    also gives maps at matching powers ``B/J^n -> A/I^n``.  General adic
+    continuity may instead require different powers and is not equivalent
+    to this chosen same-power presentation.
+    """
 
     def __init__(self, domain, codomain, coordinate_ring_morphism) -> None:
-        if coordinate_ring_morphism.domain() is not codomain.source_ring():
-            raise ValueError("a formal affine morphism has the wrong coordinate-ring source")
-        if coordinate_ring_morphism.codomain() is not domain.source_ring():
-            raise ValueError("a formal affine morphism has the wrong coordinate-ring target")
-        if any(
-            not domain.ideal_of_definition().contains_ambient_element(
+        assert coordinate_ring_morphism.domain() is codomain.source_ring(), (
+            "a formal affine morphism has the wrong coordinate-ring source"
+        )
+        assert coordinate_ring_morphism.codomain() is domain.source_ring(), (
+            "a formal affine morphism has the wrong coordinate-ring target"
+        )
+        assert all(
+            domain.ideal_of_definition().contains_ambient_element(
                 coordinate_ring_morphism(generator)
             )
             for generator in codomain.ideal_of_definition().ideal_generators()
-        ):
-            raise ValueError("the coordinate map is not continuous for the selected adic topologies")
+        ), "the same-power formal presentation requires phi(J) contained in I"
         self._domain = domain
         self._codomain = codomain
         self._ring_map = coordinate_ring_morphism
@@ -170,6 +176,8 @@ class FormalAffineMorphism(SageObject):
             self.coordinate_ring_morphism(),
             domain_completion,
         )
+
+
 __all__ = [
     "FormalAffineMorphism",
     "FormalCompletionComparison",
