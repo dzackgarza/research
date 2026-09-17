@@ -33,6 +33,9 @@ def test_two_scalar_maps_retain_their_actual_actions_and_original_base() -> None
     assert first(underlying(x)) == first(x)
     assert first.multiplication()(underlying(x), underlying(x)) == underlying(x**2)
     assert first.multiplication_morphism()(first(x), first(x)) == first(x**2)
+    assert first.multiplication().codomain() is underlying
+    assert first.multiplication().domain().tensor_factor(0) is underlying
+    assert first.multiplication().domain().tensor_factor(1) is underlying
 
 
 def test_relative_ring_self_algebra_does_not_replace_its_original_scalars() -> None:

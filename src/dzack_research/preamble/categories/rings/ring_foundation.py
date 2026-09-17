@@ -3071,7 +3071,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             case _:
                 return _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, base=None, category=None, _initialize_algebra=True) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
         r"""Construct over the scalar ring the level above declares.
 
         ``base`` is that ring.  A level sitting over a ring states its own base
@@ -3103,8 +3103,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-        if _initialize_algebra:
-            _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
 
     def _from_engine_element(self, value):
@@ -3324,7 +3323,9 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
     # The integers are placed as an order after their construction, in
     # ``_own_ring``: the category of orders is stated over ``Algebras(ZZ)``,
     # which needs the owned integers to exist.
-    if isinstance(engine, SageNumberFieldOrder):
+    if isinstance(engine, SageNumberFieldOrder) and (
+        scalar_base is None or _engine_ring(scalar_base) is SageZZ
+    ):
         return Category.join((joined, OwnedOrders()))
     return joined
 
