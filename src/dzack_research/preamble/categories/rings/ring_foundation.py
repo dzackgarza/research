@@ -458,6 +458,12 @@ class PredicateSubrings(OwnedCategory):
             return answer
 
         def _element_constructor_(self, element):
+            from sage.structure.element import parent as element_parent
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            source = element_parent(element)
+            if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
+                return source._element_of_unformed_module(element)
             try:
                 candidate = self._ambient_ring(element)
             except (TypeError, ValueError):
@@ -813,6 +819,12 @@ class LocalizationRings(OwnedCategory):
             return self.element_class(self, numerator, denominator)
 
         def _element_constructor_(self, value):
+            from sage.structure.element import parent as element_parent
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            source = element_parent(value)
+            if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
+                return source._element_of_unformed_module(value)
             if isinstance(value, self.category().ElementType) and value.parent() is self:
                 return value
             if isinstance(value, tuple) and len(value) == 2:
@@ -1291,13 +1303,7 @@ class _PredicateSubringParent(Parent):
         return self._element_constructor_(element)
 
     def _element_constructor_(self, element):
-        try:
-            candidate = self._ambient_ring(element)
-        except (TypeError, ValueError):
-            raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
-        if candidate not in self:
-            raise ValueError(f"{candidate} does not satisfy {self._description}")
-        return candidate
+        return PredicateSubrings.ParentMethods._element_constructor_(self, element)
 
     def _from_engine_element(self, element):
         r"""Cross one ambient-engine element into this predicate subring."""
@@ -3158,6 +3164,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         parent = getattr(value, "parent", lambda: None)()
         if parent is self:
             return value
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        if parent in Modules(self.base_ring()) and parent.unformed_module() is self:
+            return parent._element_of_unformed_module(value)
         if parent is not None:
             try:
                 if parent in OwnedRings():

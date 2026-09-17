@@ -488,6 +488,11 @@ class ExactRealField(UniqueRepresentation, Field):
     def _element_constructor_(self, value) -> ExactRealNumber:
         if isinstance(value, ExactRealNumber) and value.parent() is self:
             return value
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        source = parent(value)
+        if source in Modules(self) and source.unformed_module() is self:
+            return source._element_of_unformed_module(value)
         return self.element_class(self, _closed_exact_real_expression(value))
 
     def _from_engine_expression(self, value) -> ExactRealNumber:

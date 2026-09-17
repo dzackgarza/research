@@ -794,6 +794,8 @@ class _FunctionSpace:
         source = element_parent(value)
         if source is self:
             return value
+        if self.codomain() is RR and source in Modules(RR) and source.unformed_module() is self:
+            return source._element_of_unformed_module(value)
         if (
             _is_function_space(source)
             and source.domain() is self.domain()

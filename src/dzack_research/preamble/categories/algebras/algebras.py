@@ -715,6 +715,9 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def unformed_module(self):
             r"""The module ``M`` this algebra is built on: the ``M`` of ``Algebras(R)(M, m)``, or the algebra itself when it realizes its own module."""
+            native = self._native_module_presentation()
+            if native is not None:
+                return native.module()
             return self._preamble_unformed_module
 
         def _element_of_unformed_module(self, element):

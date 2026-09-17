@@ -742,6 +742,12 @@ class QuotientRings(OwnedCategory):
             self._quotient_construction.set_quotient_map(quotient_map)
 
         def _element_constructor_(self, value):
+            from sage.structure.element import parent as element_parent
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            source = element_parent(value)
+            if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
+                return source._element_of_unformed_module(value)
             if isinstance(value, self.category().ElementType) and value.parent() is self:
                 return value
             source = self.quotient_source()

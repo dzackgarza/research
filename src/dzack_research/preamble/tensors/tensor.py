@@ -1658,6 +1658,8 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
         match value:
             case _ if element_parent(value) is self:
                 return value
+            case _ if element_parent(value) in Modules(ring) and element_parent(value).unformed_module() is self:
+                return element_parent(value)._element_of_unformed_module(value)
             case _ if _is_coordinate_tensor(value, ring):
                 return self.include(value)
             case _ if value in ring:

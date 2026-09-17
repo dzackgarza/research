@@ -30,6 +30,8 @@ def test_a_second_native_module_product_does_not_replace_the_original_ring() -> 
     assert algebra is not QQ
     assert algebra.unformed_module() is QQ
     assert algebra(QQ(2)) * algebra(QQ(3)) == algebra.zero()
+    assert QQ(algebra(QQ(7))) == QQ(7)
+    assert QQ(algebra(QQ(2)) + algebra(QQ(3))) == QQ(5)
     assert QQ(2) * QQ(3) == QQ(6)
     assert QQ.multiplication()(QQ(2), QQ(3)) == QQ(6)
 
@@ -44,3 +46,15 @@ def test_relative_native_ring_keeps_its_selected_scalar_action() -> None:
     assert product.codomain() is ring
     assert product(x + ring.one(), x - ring.one()) == x * x - ring.one()
     assert ring.scalar_multiple(QQ(3), x) == x + x + x
+
+
+def test_alternate_product_on_real_scalars_preserves_both_element_readings() -> None:
+    tensor = Modules(RR).tensor_product((RR, RR))
+    product = tensor.from_bilinear_map(RR, lambda left, right: -(left * right))
+    algebra = Algebras(RR).Associative().Unital().Commutative()(RR, product, -RR.one())
+    element = algebra(RR(3))
+    assert algebra is not RR
+    assert RR(element) == RR(3)
+    assert algebra.one() * element == element
+    assert RR(element * element) == -RR(9)
+    assert RR(3) * RR(3) == RR(9)
