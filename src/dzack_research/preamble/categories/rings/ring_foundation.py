@@ -3477,7 +3477,28 @@ def _own_if_ring(result):
 
 @cached_function
 def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
-    return _OwnedRingParent(engine)
+    r"""Adopt the engine through the construction that supplies its module.
+
+    Polynomial and free associative engines present the free algebra on
+    their native variables over their coefficient ring.  They therefore
+    take the same monomial-module construction as the public free functor,
+    rather than a bare native ring later labelled as a free algebra.
+    """
+    from sage.algebras.free_algebra import FreeAlgebra_generic
+
+    match engine:
+        case PolynomialRing_generic() | MPolynomialRing_base():
+            flavor = "symmetric"
+        case FreeAlgebra_generic():
+            flavor = "tensor"
+        case _:
+            return _OwnedRingParent(engine)
+    from dzack_research.preamble.categories.algebras.free_algebras import _native_free_algebra
+
+    base = _own_ring(engine.base_ring())
+    return _native_free_algebra(
+        engine, base.free_module(tuple(engine.variable_names())), flavor,
+    )
 
 
 def _own_ring(ring):

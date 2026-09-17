@@ -2490,8 +2490,35 @@ def _refine_algebra(
     *categories,
     construction_data=(),
 ):
-    r"""Construct an owned algebra view with its selected categories present."""
+    r"""Construct an owned algebra view with its selected categories present.
+
+    Native representation boundary: a free polynomial/word realization
+    retains its exact generating module and monomial frame when a further
+    construction (for example a coproduct) adds its datum.  An unchanged
+    view is the existing object.  Other scalar structures retain their own
+    native algebra constructor, without assuming a monomial basis.
+    """
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        _NativeFreeAlgebraParent, _native_free_algebra,
+    )
+
     base = _owned_ring(base_ring)
+    match algebra:
+        case _NativeFreeAlgebraParent() if algebra.base_ring() is base:
+            selected_labels = algebra.algebra_generating_set() if labels is None else finite_ordered_set(labels)
+            generating = algebra.free_source_module()
+            match selected_labels == algebra.algebra_generating_set():
+                case True:
+                    if not construction_data and all(algebra in category for category in categories):
+                        return algebra
+                case False:
+                    generating = base.free_module(selected_labels)
+            return _native_free_algebra(
+                _engine_ring(algebra), generating, algebra._native_free_flavor,
+                categories=tuple(categories), construction_data=tuple(construction_data),
+            )
+        case _:
+            pass
     return _owned_algebra_view(
         _engine_ring(algebra),
         base,

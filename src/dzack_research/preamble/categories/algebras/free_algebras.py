@@ -85,7 +85,7 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
     module arithmetic, framing accessor, or alternative algebra entry.
     """
 
-    def __init__(self, engine, generating_module, flavor) -> None:
+    def __init__(self, engine, generating_module, flavor, *, categories=(), construction_data=()) -> None:
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
         from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
 
@@ -112,7 +112,8 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
         )
         super().__init__(
             engine, base, generating_module.module_generating_set(),
-            categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category),
+            categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
+            construction_data=construction_data,
         )
 
     def _native_basis_image(self, label):
@@ -175,10 +176,15 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
         return coefficients
 
 
-@cached_function(key=lambda engine, generating_module, flavor: (engine, id(generating_module), flavor))
-def _native_free_algebra(engine, generating_module, flavor):
+@cached_function(key=lambda engine, generating_module, flavor, categories=(), construction_data=(): (
+    engine, id(generating_module), flavor, categories, construction_data,
+))
+def _native_free_algebra(engine, generating_module, flavor, *, categories=(), construction_data=()):
     r"""The native realization of the free functor on this exact module."""
-    return _NativeFreeAlgebraParent(engine, generating_module, flavor)
+    return _NativeFreeAlgebraParent(
+        engine, generating_module, flavor,
+        categories=categories, construction_data=construction_data,
+    )
 
 
 def _finite_labels(labels):

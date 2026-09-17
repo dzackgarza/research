@@ -121,14 +121,6 @@ class EnumeratedSets(OwnedCategory):
             r"""Return increasing ``size``-element selections with repetition."""
             return self.fixed_size_selections(size, repetition=True)
 
-        def finite_words(self):
-            r"""All finite words in this alphabet, including the empty word."""
-            return _finite_words(self, commutative=False)
-
-        def finite_multisets(self):
-            r"""All finite multisets in this alphabet, including the empty multiset."""
-            return _finite_words(self, commutative=True)
-
 
 class FiniteOrdinalSets(OwnedCategory):
     r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
@@ -1075,6 +1067,14 @@ class Sets(OwnedCategory):
                         "neither as a finite set nor as a countably infinite set"
                     )
                     return aleph0
+
+        def finite_words(self):
+            r"""All finite words in this alphabet, including the empty word."""
+            return _finite_words(self, commutative=False)
+
+        def finite_multisets(self):
+            r"""All finite multisets in this alphabet, including the empty multiset."""
+            return _finite_words(self, commutative=True)
 
         def counting_ordinal(self):
             r"""Return the represented ordinal that counts this set when it is countable."""
@@ -2705,14 +2705,22 @@ class _FiniteWordSet:
         super().__init__(family=indexed_family(NN, degree_set), **rest)
 
     def cardinality(self):
-        return cardinal(1) if self._alphabet.cardinality() == 0 else aleph0
+        match self._alphabet.cardinality() == 0:
+            case True:
+                return cardinal(1)
+            case False:
+                return aleph0
 
 
 @cached_function
 def _finite_words(alphabet, *, commutative):
     r"""Construct the countable coproduct of the alphabet's finite powers."""
     assert alphabet in EnumeratedSets(), "the word enumeration uses an enumerated alphabet"
-    size_category = FiniteSets() if alphabet.cardinality() == 0 else CountablyInfiniteSets()
+    match alphabet.cardinality() == 0:
+        case True:
+            size_category = FiniteSets()
+        case False:
+            size_category = CountablyInfiniteSets()
     return _object_of(
         Category.join((CoproductsOfSets(), EnumeratedSets(), size_category)),
         _engine=(CoproductsOfSets(), _FiniteWordSet, None),

@@ -109,3 +109,32 @@ def test_native_variable_spelling_does_not_replace_the_chosen_generator_labels()
         assert algebra.free_source_module() is module
         assert algebra.algebra_generating_set() is module.module_generating_set()
         assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
+
+
+def test_raw_native_polynomials_reach_the_same_constructed_module():
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+    from sage.rings.rational_field import QQ as SageQQ
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.rings.commutative_algebra import _refine_commutative_algebra
+
+    algebra = _own_ring(PolynomialRing(SageQQ, "x"))
+    assert algebra is QQ.polynomial_ring("x")
+    assert algebra in FramedFreeModules(QQ)
+    assert _refine_commutative_algebra(algebra, QQ, ("x",)) is algebra
+    x = algebra.algebra_generator("x")
+    assert algebra.linear_combination(algebra.framing_coefficients(x**5 + algebra.one())) == x**5 + algebra.one()
+
+
+def test_polynomial_coproduct_retains_the_module_frame_and_both_inclusions():
+    left = QQ.polynomial_ring("x")
+    right = QQ.polynomial_ring("y")
+    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
+    x = coproduct.left_coproduct_map()(left.algebra_generator("x"))
+    y = coproduct.right_coproduct_map()(right.algebra_generator("y"))
+    element = x**2 * y + 3 * y
+
+    assert coproduct in FramedFreeModules(QQ)
+    assert coproduct.left_coproduct_map().domain() is left
+    assert coproduct.right_coproduct_map().domain() is right
+    assert coproduct.linear_combination(coproduct.framing_coefficients(element)) == element
+    assert coproduct.multiplication()(x**2, y) == x**2 * y
