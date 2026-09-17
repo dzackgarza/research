@@ -29,7 +29,6 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
     morphism = system.associated_morphism()
 
     assert system.line_bundle() is bundle
-    assert system.projective_linear_system_construction().line_bundle() is bundle
     assert system.selected_section_space().dimension() == 2
     assert system.selected_section_space() is system.section_embedding().domain()
     for old_name in (

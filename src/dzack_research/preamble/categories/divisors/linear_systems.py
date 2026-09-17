@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ProductProjectiveSpaces,
     ProjectiveSpaces,
     Schemes,
-    _refine_scheme,
+    _projective_space,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -34,61 +34,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class _CompleteLinearSystemConstruction:
-    r"""The represented scheme, divisor, and section space defining ``|D|``."""
-
-    def __init__(self, scheme, divisor, section_space) -> None:
-        self._scheme = scheme
-        self._divisor = divisor
-        self._section_space = section_space
-
-    def scheme(self):
-        return self._scheme
-
-    def divisor(self):
-        return self._divisor
-
-    def section_space(self):
-        return self._section_space
-
-
-class _ProjectiveLinearSystemConstruction:
-    r"""The selected section embedding defining one projective linear system."""
-
-    def __init__(self, line_bundle, section_embedding, base_locus) -> None:
-        self._line_bundle = line_bundle
-        self._section_embedding = section_embedding
-        self._base_locus = base_locus
-
-    def line_bundle(self):
-        return self._line_bundle
-
-    def selected_section_space(self):
-        return self._section_embedding.domain()
-
-    def section_embedding(self):
-        return self._section_embedding
-
-    def base_locus(self):
-        return self._base_locus
-
-
-class _ImposedMultiplicityConstruction:
-    r"""The jet-evaluation kernel defining an imposed-multiplicity system."""
-
-    def __init__(self, evaluation) -> None:
-        self._evaluation = evaluation
-
-    def ambient_section_space(self):
-        return self._evaluation.domain()
-
-    def constrained_section_space(self):
-        return self._evaluation.kernel()
-
-    def evaluation(self):
-        return self._evaluation
 
 
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
@@ -102,17 +47,20 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
-        def complete_linear_system_construction(self):
-            return self._complete_linear_system_construction
+        def __init__(self, linear_system_scheme, linear_system_divisor, section_space, **rest) -> None:
+            self._linear_system_scheme = linear_system_scheme
+            self._linear_system_divisor = linear_system_divisor
+            self._section_space = section_space
+            super().__init__(**rest)
 
         def linear_system_scheme(self):
-            return self.complete_linear_system_construction().scheme()
+            return self._linear_system_scheme
 
         def linear_system_divisor(self):
-            return self.complete_linear_system_construction().divisor()
+            return self._linear_system_divisor
 
         def section_space(self):
-            return self.complete_linear_system_construction().section_space()
+            return self._section_space
 
         def projective_dimension(self):
             return self.relative_dimension()
@@ -391,11 +339,14 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
-        def projective_linear_system_construction(self):
-            return self._projective_linear_system_construction
+        def __init__(self, line_bundle, section_embedding, base_locus, **rest) -> None:
+            self._line_bundle = line_bundle
+            self._section_embedding = section_embedding
+            self._base_locus = base_locus
+            super().__init__(**rest)
 
         def line_bundle(self):
-            return self.projective_linear_system_construction().line_bundle()
+            return self._line_bundle
 
         def ambient_section_space(self):
             return self.line_bundle().global_sections()
@@ -404,10 +355,10 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             return self.relative_dimension()
 
         def selected_section_space(self):
-            return self.projective_linear_system_construction().selected_section_space()
+            return self.section_embedding().domain()
 
         def section_embedding(self):
-            return self.projective_linear_system_construction().section_embedding()
+            return self._section_embedding
 
         def selected_sections(self):
             embedding = self.section_embedding()
@@ -427,7 +378,7 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
             )
 
         def base_locus(self):
-            return self.projective_linear_system_construction().base_locus()
+            return self._base_locus
 
         def is_basepoint_free(self) -> bool:
             return self.base_locus().is_empty()
@@ -542,17 +493,18 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring()).Projective()]
 
     class ParentMethods:
-        def imposed_multiplicity_construction(self):
-            return self._imposed_multiplicity_construction
+        def __init__(self, jet_evaluation, **rest) -> None:
+            self._jet_evaluation = jet_evaluation
+            super().__init__(**rest)
 
         def ambient_section_space(self):
-            return self.imposed_multiplicity_construction().ambient_section_space()
+            return self.imposed_jet_evaluation().domain()
 
         def constrained_section_space(self):
-            return self.imposed_multiplicity_construction().constrained_section_space()
+            return self.imposed_jet_evaluation().kernel()
 
         def imposed_jet_evaluation(self):
-            return self.imposed_multiplicity_construction().evaluation()
+            return self._jet_evaluation
 
         def imposed_vanishing_order(self):
             return self.imposed_jet_evaluation().codomain().jet_order()
@@ -878,13 +830,15 @@ def _projective_linear_system(line_bundle, sections):
         for section in sections
     )
     base_locus = scheme.closed_subscheme(polynomials)
-    system = ProjectiveSpaces(base)(len(sections) - 1)
-    system._projective_linear_system_construction = _ProjectiveLinearSystemConstruction(
-        line_bundle,
-        embedding,
-        base_locus,
+    return _projective_space(
+        base,
+        len(sections) - 1,
+        (),
+        (ProjectiveLinearSystems(base),),
+        line_bundle=line_bundle,
+        section_embedding=embedding,
+        base_locus=base_locus,
     )
-    return _refine_scheme(system, base, [ProjectiveLinearSystems(base)])
 
 
 def _centered_jet_basis(base, dimension, jet_order):
@@ -1043,14 +997,12 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
     dimension = int(evaluation.kernel().dimension())
     assert dimension != 0, "the imposed condition leaves no nonzero section to projectivize"
     base = line_bundle.projective_space().scheme_base_ring()
-    parameter_space = ProjectiveSpaces(base)(dimension - 1)
-    parameter_space._imposed_multiplicity_construction = _ImposedMultiplicityConstruction(
-        evaluation
-    )
-    return _refine_scheme(
-        parameter_space,
+    return _projective_space(
         base,
-        [ImposedMultiplicityLinearSystems(base)],
+        dimension - 1,
+        (),
+        (ImposedMultiplicityLinearSystems(base),),
+        jet_evaluation=evaluation,
     )
 
 
@@ -1087,13 +1039,15 @@ def _complete_linear_system(scheme, divisor, section_space):
     assert section_space.base_ring() is base, "the section space must be over the scheme base field"
     dimension = int(section_space.dimension())
     assert dimension != 0, "the empty linear system has no represented projective space"
-    system = ProjectiveSpaces(base)(dimension - 1)
-    system._complete_linear_system_construction = _CompleteLinearSystemConstruction(
-        scheme,
-        divisor,
-        section_space,
+    return _projective_space(
+        base,
+        dimension - 1,
+        (),
+        (CompleteLinearSystems(base),),
+        linear_system_scheme=scheme,
+        linear_system_divisor=divisor,
+        section_space=section_space,
     )
-    return _refine_scheme(system, base, [CompleteLinearSystems(base)])
 
 
 __all__ = [

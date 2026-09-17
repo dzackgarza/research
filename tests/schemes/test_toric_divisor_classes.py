@@ -232,7 +232,6 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
 
     assert system in CompleteLinearSystems(QQ)
     assert system.linear_system_scheme() is plane
-    assert system.complete_linear_system_construction().scheme() is plane
     assert system.linear_system_divisor() == line
     assert system.section_space() is sections
     assert "_preamble_linear_system_scheme" not in system.__dict__
