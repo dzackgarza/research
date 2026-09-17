@@ -3,7 +3,7 @@ r"""Cartier divisor groups."""
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.divisors.divisor_groups import (
-    _affine_line_over_integers,
+    _affine_line_over_rationals,
     _cokernel_in_category,
     _free_presentation,
 )
@@ -24,8 +24,8 @@ class CartierDivisorGroups(Category):
     """
 
     def an_object(self):
-        r"""Cartier divisors of \(\mathbb{A}^1_{\mathbb{Z}}\) framed by one divisor with no relation."""
-        return self(_affine_line_over_integers(), _free_presentation(finite_ordered_set(("D",))))
+        r"""Cartier divisors of \(\mathbb{A}^1_{\mathbb{Q}}\) framed by one divisor with no relation."""
+        return self(_affine_line_over_rationals(), _free_presentation(finite_ordered_set(("D",))))
 
     @classmethod
     def _repr_object_names(cls):

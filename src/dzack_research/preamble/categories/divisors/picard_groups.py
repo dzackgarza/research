@@ -4,7 +4,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.divisor_groups import (
-    _affine_line_over_integers,
+    _affine_line_over_rationals,
     _cokernel_in_category,
     _integers,
     _zero_presentation,
@@ -32,8 +32,8 @@ class PicardGroups(Category):
     """
 
     def an_object(self):
-        r"""The zero Picard group of \(\mathbb{A}^1_{\mathbb{Z}}\)."""
-        return self.trivial(_affine_line_over_integers())
+        r"""The zero Picard group of \(\mathbb{A}^1_{\mathbb{Q}}\)."""
+        return self.trivial(_affine_line_over_rationals())
 
     @classmethod
     def _repr_object_names(cls):

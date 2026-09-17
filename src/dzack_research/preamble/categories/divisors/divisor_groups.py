@@ -56,10 +56,12 @@ def _free_presentation(generators):
     return zero.module_category().Mor(zero, free)({})
 
 
-def _affine_line_over_integers():
-    r"""\(\mathbb{A}^1_{\mathbb{Z}} = \operatorname{Spec} \mathbb{Z}[x]\), the witness scheme of the divisor categories."""
-    integers = _integers()
-    return integers.polynomial_ring(("x",)).affine_spectrum(base_ring=integers)
+def _affine_line_over_rationals():
+    r"""\(\mathbb{A}^1_{\mathbb{Q}} = \operatorname{Spec} \mathbb{Q}[x]\), the witness scheme of the divisor categories."""
+    from sage.rings.rational_field import QQ as SageQQ
+
+    rationals = _own_ring(SageQQ)
+    return rationals.polynomial_ring(("x",)).affine_spectrum(base_ring=rationals)
 
 
 class DivisorGroups(Category):

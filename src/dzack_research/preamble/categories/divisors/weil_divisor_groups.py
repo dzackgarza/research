@@ -2,7 +2,7 @@ r"""Weil divisor groups."""
 
 from dzack_research.preamble.categories.divisors.divisor_groups import (
     DivisorGroups,
-    _affine_line_over_integers,
+    _affine_line_over_rationals,
     _integers,
 )
 from dzack_research.preamble.owned_category_bases import Category
@@ -20,8 +20,8 @@ class WeilDivisorGroups(Category):
     """
 
     def an_object(self):
-        r"""\(\operatorname{Div}(\mathbb{A}^1_{\mathbb{Z}})\), on the whole height-one locus."""
-        return _affine_line_over_integers().full_weil_divisor_group()
+        r"""\(\operatorname{Div}(\mathbb{A}^1_{\mathbb{Q}})\), on the whole height-one locus."""
+        return _affine_line_over_rationals().full_weil_divisor_group()
 
     @classmethod
     def _repr_object_names(cls):
