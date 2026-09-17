@@ -25,8 +25,8 @@ from dzack_research.preamble.categories.lattices import (
 )
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     ModulesOverGroupAlgebra,
-    _equip_action,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
@@ -223,7 +223,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         @cached_method
         def group_module(self):
-            return _equip_action(self, self.action())
+            return Modules(self.group_algebra())(self, self.action())
 
         def act(self, group_element, vector):
 
@@ -312,12 +312,12 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             return self.group_module().character()
 
 
-def _group_lattice(lattice, group_or_action, action=None):
-    r"""Equip ``lattice`` with a selected action preserving its form."""
+def _group_lattice(lattice, group, action):
+    r"""Equip ``lattice`` with a selected action of ``group`` preserving its form."""
 
     base_ring = lattice.base_ring()
     assert lattice in Lattices(base_ring).FinitelyGenerated()
-    source_group_module = _equip_action(lattice, group_or_action, action)
+    source_group_module = Modules(base_ring[group])(lattice, action)
     group = source_group_module.group()
 
     prototype = Lattices(base_ring)(

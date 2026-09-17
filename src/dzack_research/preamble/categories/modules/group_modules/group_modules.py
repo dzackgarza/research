@@ -678,7 +678,10 @@ class ModulesOverGroupAlgebra(Modules):
             def conjugation(group_element, endomorphism):
                 return self.action_of(group_element) * endomorphism * self.action_of(group_element.inverse())
 
-            return _equip_action(endomorphisms, self.group(), conjugation).module_invariants()
+            return Modules(endomorphisms.base_ring()[self.group()])(
+                endomorphisms,
+                conjugation,
+            ).module_invariants()
 
         def isotypic_characters(self):
             r"""The characters of the isotypic components present in this module.
@@ -730,7 +733,7 @@ class ModulesOverGroupAlgebra(Modules):
             def restricted_action(group_element, vector):
                 return inclusion.lift(self.action_of(group_element)(inclusion(vector)))
 
-            acted = _equip_action(submodule, self.group(), restricted_action)
+            acted = Modules(submodule.base_ring()[self.group()])(submodule, restricted_action)
             return acted.Mor(self)(
                 lambda label: self(inclusion(submodule.module_generator(label))),
                 lift=lambda element: acted(inclusion.lift(coefficient_module(element))),
@@ -1241,15 +1244,6 @@ def _equip_action(module, group_or_action, action=None):
         rho=scalar_action,
         unformed_module=module,
         source_action=action,
-    )
-
-
-def _trivial_action(module, group):
-    r"""Equip ``module`` with the trivial action of ``group``."""
-    return _equip_action(
-        module,
-        group,
-        lambda _group_element, vector: vector,
     )
 
 

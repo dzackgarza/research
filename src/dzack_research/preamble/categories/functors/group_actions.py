@@ -23,10 +23,8 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     _RestrictionOfScalarsFunctor,
     _ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    _trivial_action,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class GroupActionFunctor(Functor):
@@ -233,7 +231,11 @@ class _TrivialActionFunctor(_RestrictionOfScalarsFunctor):
         return self._group
 
     def _apply_object(self, module):
-        return _trivial_action(module, self.group())
+        r"""``M`` with the action ``G -> Aut_R(M)`` sending every group element to the identity."""
+        automorphisms = module.Aut()
+        identity = automorphisms.one()
+        trivial = Sets().Mor(self.group(), automorphisms)(lambda _group_element: identity)
+        return self.codomain()(module, trivial)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
