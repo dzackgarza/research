@@ -1,5 +1,7 @@
 """Dependency-light runtime foundation for owned Hom-set parents."""
 
+from __future__ import annotations
+
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
@@ -65,19 +67,30 @@ def _underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHom
     return result
 
 
-def _has_category_packet_surface(category) -> bool:
-    r"""Whether ``category`` is an object of ``Cat``, hence has the Hom packet.
+def _has_category_packet_surface(category: Category) -> bool:
+    r"""Whether ``category``'s Hom construction is the owned packet or Sage's ``Hom``.
 
-    The packet operations (``Mor``, ``End``, ``Aut``, ...) are what a category
-    can do as an object of ``Cat``; asking whether a category has them is
-    asking whether it lies in ``Cat``.  An owned category records ``Cat()``
-    as its category when it is built, and ``Cat.__contains__`` states how a
-    category Sage assembles from owned members is placed.  A Sage-native
-    category is the engine's and lies outside.
+    ``OWN-06`` adapter.  Every category is an object of ``Cat``; what differs
+    is the runtime that realizes its Homs.  The owned packet reaches a
+    category in exactly two ways, both fixed by the runtime root: an owned
+    category, and every join or axiom category Sage assembles from owned
+    members, carries ``Cat.ParentMethods`` through its ``subcategory_class``
+    (``CatConstructionsMixin`` in ``owned_category.py``); ``Cat`` itself and
+    the Hom categories realized on Sage's ``Homset`` carry
+    :class:`CategoryPacketMethods` as a declared base.  A category carrying
+    neither is Sage's own and keeps Sage's ``Hom`` ingress.  This reads which
+    of the two realizations is present and decides nothing else; it is not
+    membership in ``Cat``, which a Sage-native category also has
+    mathematically and a join of owned categories has without its placement
+    being recorded.
     """
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-    return category in Cat()
+    match category:
+        case CategoryPacketMethods() | Cat.ParentMethods():
+            return True
+        case _:
+            return False
 
 
 class CategoryPacketMethods:
@@ -87,7 +100,31 @@ class CategoryPacketMethods:
     carry it: an axiom category is built from those bases, states no morphisms
     of its own, and must still be askable for the Hom of the category it
     refines.
+
+    The packet assembles into two categories of its own: the arrow category
+    ``Ar(C) = [[1], C]``, whose objects are all the arrows the Hom families
+    classify, and the core, whose arrows are the isomorphisms the Iso family
+    classifies.  Both are stated here once, so a Hom category realized on
+    Sage's ``Homset`` reaches them by the same construction as every other
+    category; ``Cat.ParentMethods`` names these same functions.
     """
+
+    def ArrowCategory(self) -> Category:
+        r"""Return \(\mathrm{Ar}(C) = [[1], C]\), the functor category out of the walking arrow."""
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        return Cat().Mor(FiniteOrdinalCategory(2), self)
+
+    def Core(self) -> Category:
+        r"""Return the core of this category: its objects and its isomorphisms."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _CoreCategory,
+        )
+
+        return _CoreCategory(self)
 
     def _hom_endpoint(self, obj: Parent | Category) -> Parent | Category:
         r"""Represent an endpoint in this category's Hom construction.
