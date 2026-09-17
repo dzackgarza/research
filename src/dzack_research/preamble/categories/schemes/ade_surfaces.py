@@ -915,13 +915,13 @@ class AT21ADEDoubleCover(SageObject):
             base_pair.scheme(),
         )
 
-        local_closed = cover._preamble_local_closed_subschemes
+        cover_atlas = cover.gluing_datum()
         local_cover_maps = {}
         local_global_cover_maps = {}
         local_deck = {}
         base = base_pair.scheme().scheme_base_ring()
         for cone in ambient.gluing_datum().chart_indices():
-            local_cover = local_closed[cone]
+            local_cover = cover_atlas.chart(cone)
             target_cone = ambient_projection.chart_target(cone)
             to_target_chart = (
                 ambient_projection.chart_morphism(cone) * local_cover.inclusion()
@@ -978,14 +978,14 @@ class AT21ADEDoubleCover(SageObject):
         base_boundary = base_pair.scheme().torus_invariant_divisor_support_subscheme(
             base_pair.boundary_divisor()
         )
-        base_boundary_local = base_boundary._preamble_local_closed_subschemes
+        base_boundary_atlas = base_boundary.gluing_datum()
         pulled_boundary_local = {}
         for cone in cover.gluing_datum().chart_indices():
             target_cone = ambient_projection.chart_target(cone)
-            local_boundary = base_boundary_local[target_cone]
+            local_boundary = base_boundary_atlas.chart(target_cone)
             pullback = local_cover_maps[cone].coordinate_algebra_morphism()
             equations = tuple(pullback(equation) for equation in local_boundary.defining_equations())
-            pulled_boundary_local[cone] = local_closed[cone].closed_subscheme(equations)
+            pulled_boundary_local[cone] = cover_atlas.chart(cone).closed_subscheme(equations)
         pulled_boundary = cover.chartwise_closed_subscheme(
             pulled_boundary_local,
             name="Pulled-back AT21 boundary",
