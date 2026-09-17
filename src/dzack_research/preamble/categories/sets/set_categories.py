@@ -121,6 +121,14 @@ class EnumeratedSets(OwnedCategory):
             r"""Return increasing ``size``-element selections with repetition."""
             return self.fixed_size_selections(size, repetition=True)
 
+        def finite_words(self):
+            r"""All finite words in this alphabet, including the empty word."""
+            return _finite_words(self, commutative=False)
+
+        def finite_multisets(self):
+            r"""All finite multisets in this alphabet, including the empty multiset."""
+            return _finite_words(self, commutative=True)
+
 
 class FiniteOrdinalSets(OwnedCategory):
     r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
@@ -2673,6 +2681,43 @@ class CoproductsOfSets(OwnedCategory):
 
 
 DisjointUnionsOfSets = CoproductsOfSets
+
+
+class _FiniteWordSet:
+    r"""The length-graded word enumeration at the coproduct owner.
+
+    The summands are already constructed Cartesian powers, or fixed-size
+    multisets.  Their union is a singleton for the empty alphabet.  For a
+    nonempty countable alphabet it is countably infinite: each degree is
+    countable, and repetition of one letter injects N into the union.
+    This determines the cardinality without sampling an infinite family.
+    """
+
+    def __init__(self, alphabet, commutative, **rest) -> None:
+        self._alphabet = alphabet
+        match commutative:
+            case True:
+                degree_set = alphabet.multisets_of_size
+            case False:
+                def degree_set(degree):
+                    positions = finite_ordinal_set(int(degree))
+                    return Sets().product(indexed_family(positions, lambda _: alphabet))
+        super().__init__(family=indexed_family(NN, degree_set), **rest)
+
+    def cardinality(self):
+        return cardinal(1) if self._alphabet.cardinality() == 0 else aleph0
+
+
+@cached_function
+def _finite_words(alphabet, *, commutative):
+    r"""Construct the countable coproduct of the alphabet's finite powers."""
+    assert alphabet in EnumeratedSets(), "the word enumeration uses an enumerated alphabet"
+    size_category = FiniteSets() if alphabet.cardinality() == 0 else CountablyInfiniteSets()
+    return _object_of(
+        Category.join((CoproductsOfSets(), EnumeratedSets(), size_category)),
+        _engine=(CoproductsOfSets(), _FiniteWordSet, None),
+        alphabet=alphabet, commutative=commutative,
+    )
 
 
 def _finite_family_key(family: IndexedFamily) -> tuple[int, tuple[int, ...]]:

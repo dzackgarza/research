@@ -1,5 +1,6 @@
 """Free symmetric, tensor, alternating, and divided-power algebra categories."""
 
+from math import prod
 from typing import Any, cast
 
 from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
@@ -55,7 +56,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
 class _FreeAlgebraConstruction:
@@ -66,6 +67,118 @@ class _FreeAlgebraConstruction:
 
     def source_module(self):
         return self._source_module
+
+
+class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
+    r"""Native polynomial/word arithmetic on the canonical free module.
+
+    For a free module M, T(M) = direct_sum_d T^d(M) and
+    Sym(M) = direct_sum_d Sym^d(M) (Stacks, Tag 00DM).  The module
+    construction supplies these exact pieces.  The free module on the
+    disjoint union of their word bases supplies their summed framing.
+    Its free source is the basis of all words or monomials, not the
+    degree-one generating module M.  Native coefficient extraction is the
+    inverse of monomial evaluation in that basis.
+
+    This engine adapter supplies that correspondence before the common
+    native ring constructor classifies multiplication.  It introduces no
+    module arithmetic, framing accessor, or alternative algebra entry.
+    """
+
+    def __init__(self, engine, generating_module, flavor) -> None:
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+        from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
+
+        base = generating_module.base_ring()
+        assert generating_module in FramedFreeModules(base), (
+            "a native free algebra is presented on a free generating module"
+        )
+        self._free_algebra_construction = _FreeAlgebraConstruction(generating_module)
+        self._native_free_flavor = flavor
+        labels = generating_module.module_generating_set()
+        match flavor:
+            case "tensor":
+                basis = labels.finite_words()
+                algebra_category = TensorAlgebras(base)
+            case "symmetric":
+                basis = labels.finite_multisets()
+                algebra_category = SymmetricAlgebras(base)
+            case _:
+                raise ValueError("the native free algebra is tensor or symmetric")
+        self._native_module_basis = _NativeModuleBasis(
+            base.free_module(basis),
+            self._native_basis_image,
+            self._native_basis_coefficients,
+        )
+        super().__init__(
+            engine, base, generating_module.module_generating_set(),
+            categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category),
+        )
+
+    def _native_basis_image(self, label):
+        r"""Evaluate one canonical graded basis label in the native algebra."""
+        inner = label.summand_element()
+        labels = self._free_algebra_construction.source_module().module_generating_set()
+        ranking = labels.ranking_map()
+        match self._native_free_flavor:
+            case "tensor":
+                native = prod(
+                    (self._engine.gen(int(ranking(inner.component(position))))
+                     for position in inner.parent().index_set()),
+                    start=self._engine.one(),
+                )
+            case "symmetric":
+                native = prod(
+                    (self._engine.gen(int(ranking(item))) ** int(inner.multiplicity(item))
+                     for item in inner.support()),
+                    start=self._engine.one(),
+                )
+        return self._from_engine_element(native)
+
+    def _native_basis_coefficients(self, element):
+        r"""Decode only the finite native support into the canonical module basis.
+
+        Sage univariate polynomial keys are exponents, multivariate keys are
+        exponent tuples, and free-algebra keys are free-monoid words.  These
+        representation distinctions stay in this selected engine adapter.
+        """
+        generating = self._free_algebra_construction.source_module()
+        base = generating.base_ring()
+        labels = generating.module_generating_set()
+        module_labels = self._native_module_basis.source().module_generating_set()
+        coefficients = {}
+        for monomial, coefficient in self._engine_element(element).monomial_coefficients().items():
+            match self._native_free_flavor:
+                case "tensor":
+                    native_labels = dict(zip(self._engine.monoid().gens(), labels, strict=True))
+                    word = tuple(
+                        native_labels[generator]
+                        for generator, exponent in monomial
+                        for _ in range(int(exponent))
+                    )
+                    degree = len(word)
+                    inner = module_labels.cofactor(NN(degree))(
+                        lambda position, word=word: word[int(position)]
+                    )
+                case "symmetric":
+                    match self._engine:
+                        case PolynomialRing_generic():
+                            exponents = (int(monomial),)
+                        case _:
+                            exponents = tuple(int(exponent) for exponent in monomial)
+                    degree = sum(exponents)
+                    powers = dict(zip(labels, exponents, strict=True))
+                    inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
+            coefficients[module_labels(NN(degree), inner)] = base._from_engine_element(
+                _engine_ring(base)(coefficient)
+            )
+        return coefficients
+
+
+@cached_function(key=lambda engine, generating_module, flavor: (engine, id(generating_module), flavor))
+def _native_free_algebra(engine, generating_module, flavor):
+    r"""The native realization of the free functor on this exact module."""
+    return _NativeFreeAlgebraParent(engine, generating_module, flavor)
 
 
 def _finite_labels(labels):
@@ -92,16 +205,9 @@ def _variable_names(labels) -> tuple[str, ...]:
 
 def _polynomial_ring(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
-    result = _own_ring(_SagePolynomialRing(_engine_ring(base), *args, **kwargs))
-    labels = tuple(_engine_ring(result).variable_names())
-    algebra = _refine_algebra(
-        result,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
-    )
+    engine = _SagePolynomialRing(_engine_ring(base), *args, **kwargs)
+    labels = tuple(engine.variable_names())
+    algebra = _native_free_algebra(engine, base.free_module(labels), "symmetric")
     algebra._preamble_ring_display = f"{base}[{', '.join(labels)}]"
     algebra._preamble_ring_display_kind = "polynomial"
 
@@ -132,23 +238,13 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
         )
 
         return _sparse_symmetric_algebra_of(
-            base.free_module(algebra_generating_set)
+            base.free_module(algebra_generating_set) if source_module is None else source_module
         )
     labels = _finite_labels(algebra_generating_set)
-    algebra = base.polynomial_ring(_variable_names(labels))
-
-    return _refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
-        construction_data=(
-            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
-            if source_module is not None
-            else ()
-        ),
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _native_free_algebra(
+        _SagePolynomialRing(_engine_ring(base), _variable_names(labels)),
+        generating, "symmetric",
     )
 
 
@@ -163,24 +259,13 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
         )
 
         return _sparse_tensor_algebra_of(
-            base.free_module(algebra_generating_set)
+            base.free_module(algebra_generating_set) if source_module is None else source_module
         )
     labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
-    return _refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        TensorAlgebras(base),
-        construction_data=(
-            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
-            if source_module is not None
-            else ()
-        ),
-    )
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _native_free_algebra(algebra, generating, "tensor")
 
 
 def _relations_to_ideal(presentation_ring, relations):

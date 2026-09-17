@@ -3,16 +3,14 @@
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
-    _FreeAlgebraConstruction,
     _symmetric_algebra_on,
     _tensor_algebra_on,
+    _native_free_algebra,
     _finite_labels,
     _variable_names,
 )
@@ -23,6 +21,7 @@ from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -42,10 +41,13 @@ def _tensor_algebra_of(module):
         return _sparse_tensor_algebra_of(module)
 
     base = module.base_ring()
+    # The presenting tensor algebra is free on the source of M's framing;
+    # only its quotient by M's relations has M as its degree-one module.
+    generating = module if module in FramedFreeModules(base) else module.framing_source()
     presentation_ring = _tensor_algebra_on(
         base,
         module.module_generating_set(),
-        source_module=module,
+        source_module=generating,
     )
     return _tensor_algebra_from_module_presentation(presentation_ring, module)
 
@@ -73,20 +75,14 @@ def _symmetric_algebra_of(module):
     if len(labels) == 1:
         presentation_engine = base.polynomial_ring(1, names=_variable_names(labels))
 
-        presentation_ring = _refine_algebra(
-            presentation_engine,
-            base,
-            labels,
-            FreeAlgebras(base),
-            GradedFreeAlgebras(base),
-            SymmetricAlgebras(base),
-            construction_data=(("_free_algebra_construction", _FreeAlgebraConstruction(module)),),
+        presentation_ring = _native_free_algebra(
+            _engine_ring(presentation_engine), module.framing_source(), "symmetric",
         )
     else:
         presentation_ring = _symmetric_algebra_on(
             base,
             labels,
-            source_module=module,
+            source_module=module.framing_source(),
         )
 
 
