@@ -720,13 +720,19 @@ class CoverRefinement(SageObject):
     def fine_cover(self):
         return self._fine_cover
 
-    def geometric_cohomology_comparison(self, sheaf, degree):
-        r"""Return this refinement's comparison on affine sheaf cohomology."""
+    def geometric_cochain_map(self, sheaf):
+        r"""The actual cochain map of the selected affine cover refinement."""
         from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-            _AffineCoverRefinementCohomologyComparison,
+            _affine_cover_refinement_cochain_map,
         )
+        return _affine_cover_refinement_cochain_map(self, sheaf)
 
-        return _AffineCoverRefinementCohomologyComparison(self, sheaf, degree)
+    def geometric_cohomology_comparison(self, sheaf, degree):
+        r"""The cohomology image of this refinement's actual cochain map."""
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _affine_cover_refinement_cohomology_map,
+        )
+        return _affine_cover_refinement_cohomology_map(self, sheaf, degree)
 
     def index_map(self, which, fine_index):
         r"""``k |-> i(k)``: the coarse chart of cover ``which`` containing fine chart ``k``."""
