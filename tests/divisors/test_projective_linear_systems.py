@@ -39,6 +39,7 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
     ):
         assert old_name not in system.__dict__
     assert system.projective_dimension() == 1
+    assert system.variable_names() == ProjectiveSpaces(QQ)(1).variable_names()
     assert base_locus.inclusion().codomain() is plane
     assert not base_locus.is_empty()
     assert not system.is_basepoint_free()

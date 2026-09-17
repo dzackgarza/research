@@ -833,7 +833,7 @@ def _projective_linear_system(line_bundle, sections):
     return _projective_space(
         base,
         len(sections) - 1,
-        (),
+        None,
         (ProjectiveLinearSystems(base),),
         line_bundle=line_bundle,
         section_embedding=embedding,
@@ -1000,7 +1000,7 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
     return _projective_space(
         base,
         dimension - 1,
-        (),
+        None,
         (ImposedMultiplicityLinearSystems(base),),
         jet_evaluation=evaluation,
     )
@@ -1042,7 +1042,7 @@ def _complete_linear_system(scheme, divisor, section_space):
     return _projective_space(
         base,
         dimension - 1,
-        (),
+        None,
         (CompleteLinearSystems(base),),
         linear_system_scheme=scheme,
         linear_system_divisor=divisor,
