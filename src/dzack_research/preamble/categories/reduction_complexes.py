@@ -593,7 +593,7 @@ def _perfect_domain_traversal_from_records(lattice, records):
         tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"])
         for record in records
     )
-    cells = tuple(cones.from_rays(lattice, rays) for rays in raw_rays)
+    cells = tuple(cones.from_rays(lattice, tuple(lattice(row) for row in rays)) for rays in raw_rays)
     orthogonal_group = lattice.O()
     stabilizer_by_cell = {}
     for cell, rays, record in zip(cells, raw_rays, records, strict=True):
@@ -625,16 +625,13 @@ def _perfect_domain_traversal_from_records(lattice, records):
                 for row in adjacency_record["x"]["eBigMat"]
             )
             target_to_neighbor = orthogonal_group._from_backend_row_action(row_action)
-            neighbor_rays = tuple(
-                tuple(SageZZ(entry) for entry in target_to_neighbor(lattice(row)).to_tuple())
-                for row in target_rays
-            )
+            neighbor_rays = tuple(target_to_neighbor(lattice(row)) for row in target_rays)
             neighbor = cones.from_rays(lattice, neighbor_rays)
             incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])
             if len(incidence) != len(source_rays):
                 raise ArithmeticError("a perfect-domain facet incidence has the wrong length")
             face_rays = tuple(
-                ray for ray, selected in zip(source_rays, incidence, strict=True) if selected
+                lattice(ray) for ray, selected in zip(source_rays, incidence, strict=True) if selected
             )
             common_face = cones.from_rays(lattice, face_rays)
             adjacencies.append(
