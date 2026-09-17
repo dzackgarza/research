@@ -54,3 +54,20 @@ def test_undecided_predicate_membership_is_not_guessed() -> None:
     assert QQ.zero() in unresolved
     with pytest.raises(AssertionError, match="selected predicate"):
         QQ.one() in unresolved
+
+
+def test_predicate_subring_initializes_its_scalar_action_product_and_unit() -> None:
+    subring = QQ.predicate_subring(
+        lambda value: value.denominator() == 1,
+        "the denominator is one",
+    )
+    three = subring(3)
+    four = subring(4)
+
+    assert subring.base_ring() is subring
+    assert subring.unformed_module() is subring
+    assert subring.multiplication()(three, four) == subring(12)
+    assert subring.scalar_multiple(three, four) == subring(12)
+    assert subring.multiplication()(subring.one(), four) == four
+    assert subring.algebra_structure_morphism() is subring.Mor(subring).identity()
+    assert subring.inclusion()(subring.multiplication()(three, four)) == QQ(12)

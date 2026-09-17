@@ -1267,8 +1267,12 @@ class _PredicateSubringParent(Parent):
         self._preamble_is_commutative = category.is_subcategory(commutative_rings) or ambient_ring.is_commutative() is True
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
-        Parent.__init__(self, facade=ambient_ring, category=category)
+        base = self if self._preamble_is_commutative else _own_ring(SageZZ)
+        Parent.__init__(self, base=base, facade=ambient_ring, category=category)
         realize_owned_category(self)
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: self(left * right), self.one())
 
     def is_commutative(self):
         if self._preamble_is_commutative:
