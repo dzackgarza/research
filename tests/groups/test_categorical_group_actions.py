@@ -133,7 +133,7 @@ def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics(
     arrow = classifying.Mor(classifying.an_object(), classifying.an_object())(generator)
 
     assert representation in Modules(QQ[group])
-    assert representation.unacted_module() is line
+    assert representation.unformed_module() is line
     assert representation.action_functor().domain() is classifying
     assert representation.action_functor()(arrow) == representation.action_of(generator)
     assert transformation.naturality_square(arrow)[0] == transformation.naturality_square(arrow)[1]

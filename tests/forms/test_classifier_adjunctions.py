@@ -159,7 +159,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     assert classifier_invariants[0] == ZZ(expected_classifier_invariants)
 
     doubling = source.module_category().Mor(source, source)({0: 2 * source_generator})
-    module_map = free_source.equip_form_morphism() * doubling
+    module_map = adjunction.unit(source) * doubling
     transpose_inverse = adjunction.hom_set_isomorphism_inverse(
         module_map,
         free_source,

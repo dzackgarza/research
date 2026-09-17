@@ -424,7 +424,7 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
         group_algebra.algebra_structure_morphism()
     )
     restricted = forget_action(acted)
-    assert restricted is acted.scalar_restriction()
+    assert restricted is acted.unformed_module()
 
     doubled = acted.Mor(acted)(
         {

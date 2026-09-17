@@ -36,10 +36,12 @@ def test_multiplication_by_x_on_a_free_module_stays_injective_after_completion()
     completed = multiplication.adic_completion(ring.ideal(x), precision=6)
 
     assert completed.scalar_extension_of() is multiplication
-    assert completed.scalar_extension_functor().ring_map().codomain() is completed.domain().completion_ring()
-    assert completed.domain().completion_source_module() is free
-    assert completed.codomain().completion_source_module() is free
-    assert completed.domain().completion_ring() is completed.codomain().completion_ring()
+    extension = completed.scalar_extension_functor()
+    completion = completed.domain().base_ring()
+    assert extension.ring_map().codomain() is completion
+    assert extension(free) is completed.domain()
+    assert completed.domain() is completed.codomain()
+    assert free.base_change_to_completion(completion) is completed.domain()
     assert completed.is_injective()
     assert completed.kernel().is_zero()
 
@@ -49,7 +51,7 @@ def test_completed_free_exact_sequence_has_residue_field_cokernel() -> None:
     x = ring.algebra_generator("x")
     free = _free_rank_one(ring)
     completed = _multiplication(free, x).adic_completion(ring.ideal(x), precision=6)
-    completion = completed.domain().completion_ring()
+    completion = completed.domain().base_ring()
     cokernel = completed.cokernel()
 
     assert not cokernel.is_zero()
@@ -79,14 +81,15 @@ def test_multivariable_free_completion_uses_the_same_module_projection() -> None
     free = _free_rank_one(ring)
     completed = free.adic_completion(ring.ideal(x, y), precision=5)
 
-    projection = completed.adic_module_projection(3)
-    target = completed.adic_module_truncation(3)
+    completion = completed.base_ring()
+    projection = free.adic_module_projection(completion, 3)
+    target = free.adic_module_truncation(completion, 3)
     assert projection.domain() is completed
     assert projection.codomain().module_over_extension() is target
 
-    transition = completed.adic_module_transition_map(4, 2)
-    assert transition.domain() is completed.adic_module_truncation(4)
-    assert transition.codomain().module_over_extension() is completed.adic_module_truncation(2)
+    transition = free.adic_module_transition_map(completion, 4, 2)
+    assert transition.domain() is free.adic_module_truncation(completion, 4)
+    assert transition.codomain().module_over_extension() is free.adic_module_truncation(completion, 2)
 
 
 def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> None:
@@ -97,9 +100,10 @@ def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> 
     mixed = Modules(ring).biproduct((free, torsion))
     completed = mixed.adic_completion(ring.ideal(x), precision=5)
 
-    assert completed.completion_source_module() is mixed
+    completion = completed.base_ring()
+    assert mixed.base_change_to_completion(completion) is completed
     assert completed.number_of_module_generators() == mixed.number_of_module_generators()
-    assert completed.adic_module_truncation(2).number_of_module_generators() == mixed.number_of_module_generators()
+    assert mixed.adic_module_truncation(completion, 2).number_of_module_generators() == mixed.number_of_module_generators()
 
 
 def test_completion_unit_and_projection_form_the_expected_finite_stage_triangle() -> None:
@@ -107,14 +111,15 @@ def test_completion_unit_and_projection_form_the_expected_finite_stage_triangle(
     x = ring.algebra_generator("x")
     module = _cyclic_torsion_module(ring, x**4)
     completed = module.adic_completion(ring.ideal(x), precision=6)
-    unit = completed.completion_unit()
-    projection = completed.adic_module_projection(3)
-    finite = completed.adic_module_truncation(3)
+    completion = completed.base_ring()
+    unit = module.completion_unit(completion)
+    projection = module.adic_module_projection(completion, 3)
+    finite = module.adic_module_truncation(completion, 3)
     finite_projection = finite.base_ring().quotient_map()
 
     label = module.module_generating_set()[0]
     generator = module.module_generator(label)
-    projected = projection(unit(generator)).underlying_element()
+    projected = projection(unit(generator).underlying_element()).underlying_element()
     direct = finite.module_generator(finite.module_generating_set()[0])
 
     assert projected == direct

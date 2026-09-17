@@ -23,7 +23,7 @@ def _underlying_images(source, morphism):
     """
     target = morphism.codomain()
     return tuple(
-        target.forget_form_morphism()(morphism(source.module_generator(label)))
+        target.unformed_module()(morphism(source.module_generator(label)))
         for label in source.module_generating_set()
     )
 

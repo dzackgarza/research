@@ -515,66 +515,6 @@ class ModulesOverGroupAlgebra(Modules):
             r"""The element of this ``R[G]``-module on the data of an element of the module the action was stated on."""
             return self(element)
 
-        # The selected R-framing belongs to the module the action was stated
-        # on.  These accessors expose that retained presentation without
-        # asserting that it is an R[G]-basis.
-
-        def module_generating_set(self):
-            r"""Return the retained coefficient-module framing labels.
-
-            This is the selected ``R``-framing transported with the group
-            action, not a claim that these labels form an ``R[G]``-basis.
-            """
-            if self._is_the_regular_module():
-                return super().module_generating_set()
-            return self.unformed_module().module_generating_set()
-
-        def module_generator(self, label):
-            r"""Transport one retained coefficient-module generator into this action."""
-            if self._is_the_regular_module():
-                return super().module_generator(label)
-            return self(self.unformed_module().module_generator(label))
-
-        @cached_method
-        def module_generators(self):
-            r"""Return the finite family obtained from the retained coefficient framing."""
-            return finite_indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                name="Coefficient-module generators",
-            )
-
-        def linear_combination(self, coefficients):
-            if self._is_the_regular_module():
-                return super().linear_combination(coefficients)
-            return self(self.unformed_module().linear_combination(coefficients))
-
-        def _selected_module_coefficients(self, element):
-            if self._is_the_regular_module():
-                return super()._selected_module_coefficients(element)
-            module = self.unformed_module()
-            return module.framing_coefficients(module(element))
-
-        def _selected_presentation_rows(self):
-            if self._is_the_regular_module():
-                return super()._selected_presentation_rows()
-            return self.unformed_module()._selected_presentation_rows()
-
-        def coefficient_module_rank(self):
-            return self.unformed_module().module_rank()
-
-        def module_rank(self):
-            r"""Return the rank of the retained coefficient-module presentation.
-
-            This is the representation rank over ``R``.  It is not a claim
-            that the module is free of this rank over ``R[G]``.
-            """
-            return self.coefficient_module_rank()
-
-        def invariant_factors(self):
-            r"""Invariant factors of the retained coefficient module."""
-            return self.unformed_module().invariant_factors()
-
         def Mor(self, codomain, category=None):
             r"""``Mor_{R[G]}(M,N)``, the equivariant maps.
 
@@ -1139,6 +1079,77 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
 
 
+class _CoefficientModuleEngine:
+    r"""The coefficient presentation of a linearized action.
+
+    Private realization selected only by the group-module entry.  A lattice
+    carrying an action already has its free-module realization and must not
+    inherit conversions through a second coefficient-module presentation.
+    The group-module category owns the action; this engine reads coordinates
+    from the exact coefficient module on which that action was stated.
+    """
+
+    # The selected R-framing belongs to the module the action was stated
+    # on.  These accessors expose that retained presentation without
+    # asserting that it is an R[G]-basis.
+
+    def module_generating_set(self):
+        r"""Return the retained coefficient-module framing labels.
+
+        This is the selected ``R``-framing transported with the group
+        action, not a claim that these labels form an ``R[G]``-basis.
+        """
+        if self._is_the_regular_module():
+            return super().module_generating_set()
+        return self.unformed_module().module_generating_set()
+
+    def module_generator(self, label):
+        r"""Transport one retained coefficient-module generator into this action."""
+        if self._is_the_regular_module():
+            return super().module_generator(label)
+        return self(self.unformed_module().module_generator(label))
+
+    @cached_method
+    def module_generators(self):
+        r"""Return the finite family obtained from the retained coefficient framing."""
+        return finite_indexed_family(
+            self.module_generating_set(),
+            self.module_generator,
+            name="Coefficient-module generators",
+        )
+
+    def linear_combination(self, coefficients):
+        if self._is_the_regular_module():
+            return super().linear_combination(coefficients)
+        return self(self.unformed_module().linear_combination(coefficients))
+
+    def _selected_module_coefficients(self, element):
+        if self._is_the_regular_module():
+            return super()._selected_module_coefficients(element)
+        module = self.unformed_module()
+        return module.framing_coefficients(module(element))
+
+    def _selected_presentation_rows(self):
+        if self._is_the_regular_module():
+            return super()._selected_presentation_rows()
+        return self.unformed_module()._selected_presentation_rows()
+
+    def coefficient_module_rank(self):
+        return self.unformed_module().module_rank()
+
+    def module_rank(self):
+        r"""Return the rank of the retained coefficient-module presentation.
+
+        This is the representation rank over ``R``.  It is not a claim
+        that the module is free of this rank over ``R[G]``.
+        """
+        return self.coefficient_module_rank()
+
+    def invariant_factors(self):
+        r"""Invariant factors of the retained coefficient module."""
+        return self.unformed_module().invariant_factors()
+
+
 def _equip_action(module, group_or_action, action=None):
     r"""Linearize a left ``G``-action to an actual ``R[G]``-module.
 
@@ -1232,6 +1243,7 @@ def _equip_action(module, group_or_action, action=None):
     )
     return _object_of(
         GeneralModules(group_algebra),
+        _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
         rho=scalar_action,
         unformed_module=module,

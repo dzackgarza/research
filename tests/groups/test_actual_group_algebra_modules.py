@@ -42,8 +42,7 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     assert module.base_ring() is group_algebra
     assert module.group_algebra() is group_algebra
     assert module.coefficient_ring() is QQ
-    assert module.scalar_restriction() is line
-    assert module.unacted_module() is line
+    assert module.unformed_module() is line
 
     scalar_action = module.scalar_action()
     assert scalar_action.domain() is group_algebra
@@ -53,10 +52,8 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     group_scalar = group_algebra.module_generator(generator)
     assert module.scalar_multiple(group_scalar, vector) == module.act(generator, vector)
 
-    forget = module.forget_action_morphism()
-    equip = module.equip_action_morphism()
-    assert forget(vector) == line.module_generator(label)
-    assert equip(forget(vector)) == vector
+    assert line(vector) == line.module_generator(label)
+    assert module(line(vector)) == vector
     assert module.module_rank() == line.module_rank()
 
 
@@ -68,13 +65,13 @@ def test_regular_representation_linearizes_left_multiplication_on_the_exact_carr
     left, right = tuple(group.group_generators())[:2]
 
     assert regular in Modules(group_algebra)
-    assert regular.scalar_restriction() is carrier
+    assert regular.unformed_module() is carrier
     assert regular.module_rank() == carrier.module_rank() == 6
     assert regular.action_of(left)(carrier.module_generator(right)) == (
         carrier.module_generator(left * right)
     )
-    equipped_right = regular.equip_action_morphism()(carrier.module_generator(right))
-    assert regular.act(left, equipped_right) == regular.equip_action_morphism()(
+    equipped_right = regular(carrier.module_generator(right))
+    assert regular.act(left, equipped_right) == regular(
         carrier.module_generator(left * right)
     )
 
@@ -82,11 +79,8 @@ def test_regular_representation_linearizes_left_multiplication_on_the_exact_carr
 def test_group_module_retains_its_owned_set_carrier() -> None:
     _group, _group_algebra, line, _generator, module = _sign_module(QQ)
     label = line.module_generating_set()[0]
-    equip = module.equip_action_morphism()
-
     assert module in Sets()
-    assert equip.parent() is Sets().Mor(line, module)
-    equipped = equip(line.module_generator(label))
+    equipped = module(line.module_generator(label))
     assert equipped.parent() is module
     assert line(equipped) == line.module_generator(label)
 
@@ -146,7 +140,7 @@ def test_exact_additive_scalar_action_is_retained_as_the_defining_morphism() -> 
 
     assert module.scalar_action() is rho
     assert module.base_ring() is group_algebra
-    assert module.scalar_restriction() is line
+    assert module.unformed_module() is line
 
 
 def test_selected_integral_presentation_belongs_to_the_scalar_restriction() -> None:
@@ -159,7 +153,7 @@ def test_selected_integral_presentation_belongs_to_the_scalar_restriction() -> N
     )
 
     assert module.base_ring() is group_algebra
-    assert module.scalar_restriction() is cyclic
+    assert module.unformed_module() is cyclic
     assert module.invariant_factors() == cyclic.invariant_factors()
     assert module.module_rank() == cyclic.module_rank()
     assert module.module_invariants() is cyclic

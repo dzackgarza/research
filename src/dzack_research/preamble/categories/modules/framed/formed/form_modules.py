@@ -958,9 +958,9 @@ class FormModules(OwnedCategoryOverBaseRing):
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
-        def __init__(self, source_form, unformed_module, **rest) -> None:
+        def __init__(self, source_form, **rest) -> None:
+            r"""The form determines its module; the two are not independent data."""
             self._preamble_form = source_form
-            self._preamble_unformed_module = unformed_module
             super().__init__(**rest)
 
         def form(self):
@@ -985,7 +985,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def unformed_module(self):
             r"""Return the module the form was stated on: the datum this module is built on."""
-            return self._preamble_unformed_module
+            return self.form().module()
 
         def _element_of_unformed_module(self, element):
             r"""The element of :meth:`unformed_module` with the coefficients ``element`` has here.
@@ -2204,10 +2204,7 @@ def _form_module(
         categories.append(QuadraticFormModules(base_ring))
     categories.extend(tuple(_extra_categories))
     construction_data = dict(_extra_construction_data or {})
-    construction_data.update({
-        "source_form": form,
-        "unformed_module": module,
-    })
+    construction_data["source_form"] = form
     common = {
         "_subobject_ambient": _subobject_ambient,
         "_subobject_generator_images": _subobject_generator_images,
@@ -2285,5 +2282,4 @@ def _quadratic_form(module, value_module, datum):
         else module.quadratic_map(value_module, datum)
     )
     return FormModules(module.base_ring())(form)
-
 

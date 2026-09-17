@@ -143,6 +143,28 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
+        _derived_construction_parameters = ("unformed_module", "source_action")
+
+        def __init__(self, source_group_module, source_form, **rest) -> None:
+            r"""Thread the same lattice through its form and its linearized action.
+
+            The action was linearized on the lattice on which the form is
+            stated.  The group-module level receives that exact module and
+            action; the form level receives the form, which determines its
+            module.  Neither level consumes or overwrites the other's datum.
+            """
+            module = source_group_module.unformed_module()
+            assert source_form.module() is module, (
+                "a group lattice's action and form are stated on one lattice"
+            )
+            self._preamble_source_group_module = source_group_module
+            super().__init__(
+                source_form=source_form,
+                unformed_module=module,
+                source_action=source_group_module.action(),
+                **rest,
+            )
+
         def source_group_module(self):
             r"""The ``R[G]``-module built on the lattice this action was stated on."""
             return self._preamble_source_group_module
