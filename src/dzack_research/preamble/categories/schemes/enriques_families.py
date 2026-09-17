@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.gluing import SemilinearAlgebraMorphism
 from dzack_research.preamble.categories.schemes.k3_families import (
-    HorikawaK3DoubleCover,
     HorikawaK3Family,
 )
 from dzack_research.preamble.categories.schemes.schemes import _affine_spec_morphism
@@ -54,8 +53,9 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
     r"""A chosen equivariant marking of the quotient and K3 integral ``H^2`` data."""
 
     def __init__(self, enriques_surface) -> None:
-        if not enriques_surface.is_enriques():
-            raise ValueError("the Enriques cohomology marking requires the proved quotient hypotheses")
+        assert enriques_surface.is_enriques(), (
+            "the Enriques cohomology marking requires the proved quotient hypotheses"
+        )
         k3_lattice = NamedLattices.LK3
         involution = Involutions.I_En
         extension = involution.primitive_extension()
@@ -64,8 +64,9 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
         invariant_inclusion = invariant.inclusion()
         quotient_labels = tuple(quotient_free.module_generating_set())
         invariant_labels = tuple(invariant.module_generating_set())
-        if len(quotient_labels) != len(invariant_labels):
-            raise ArithmeticError("the Enriques free cohomology and K3 invariant lattice have different ranks")
+        assert len(quotient_labels) == len(invariant_labels), (
+            "the Enriques free cohomology and K3 invariant lattice have different ranks"
+        )
         pullback = quotient_free.module_category().Mor(quotient_free, k3_lattice)(
             {
                 quotient_label: invariant_inclusion(
@@ -74,12 +75,15 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
                 for position, quotient_label in enumerate(quotient_labels)
             }
         )
-        for left in quotient_free.module_generators():
-            for right in quotient_free.module_generators():
-                if pullback(left).b(pullback(right)) != 2 * left.b(right):
-                    raise ArithmeticError("the marked Enriques pullback does not scale the intersection form by two")
-        if any(involution(pullback(generator)) != pullback(generator) for generator in quotient_free.module_generators()):
-            raise ArithmeticError("the marked quotient pullback does not land in the invariant K3 lattice")
+        assert all(
+            pullback(left).b(pullback(right)) == 2 * left.b(right)
+            for left in quotient_free.module_generators()
+            for right in quotient_free.module_generators()
+        ), "the marked Enriques pullback does not scale the intersection form by two"
+        assert all(
+            involution(pullback(generator)) == pullback(generator)
+            for generator in quotient_free.module_generators()
+        ), "the marked quotient pullback does not land in the invariant K3 lattice"
         torsion = _cyclic_two_module()
         torsion_pullback = torsion.module_category().Mor(torsion, k3_lattice)(
             {
@@ -160,23 +164,18 @@ class HorikawaEnriquesSurface(SageObject):
     def __init__(self, k3_member=None) -> None:
         if k3_member is None:
             k3_member = HorikawaK3Family().member()
-        if not isinstance(k3_member, HorikawaK3DoubleCover):
-            raise TypeError("an Enriques quotient here starts from a represented Horikawa K3 member")
-        if not k3_member.is_k3():
-            raise ValueError("the quotient source has not satisfied the K3 double-cover hypotheses")
-        if int(k3_member.base_ring().characteristic()) == 2:
-            raise NotImplementedError("the fixed-free involution quotient requires characteristic not two")
-        if not k3_member.enriques_lift_is_fixed_point_free():
-            raise ValueError("the selected K3 involution is not fixed-point-free")
+        assert k3_member.is_k3(), "the quotient source has not satisfied the K3 double-cover hypotheses"
+        assert int(k3_member.base_ring().characteristic()) != 2, (
+            "the fixed-free involution quotient requires characteristic not two"
+        )
+        assert k3_member.enriques_lift_is_fixed_point_free(), "the selected K3 involution is not fixed-point-free"
         group = k3_member.family().acting_group()
         quotient_data = k3_member.scheme().c2_chartwise_invariant_quotient(
             group,
             k3_member.enriques_lift().local_automorphisms(),
         )
-        if quotient_data.source_scheme() is not k3_member.scheme():
-            raise ArithmeticError("the Enriques quotient did not retain the actual K3 source")
-        if not quotient_data.action_is_free():
-            raise ArithmeticError("the descended K3 action is not free on its affine cover")
+        assert quotient_data.source_scheme() is k3_member.scheme(), "the Enriques quotient did not retain the actual K3 source"
+        assert quotient_data.action_is_free(), "the descended K3 action is not free on its affine cover"
         self._k3_member = k3_member
         self._group = group
         self._quotient_data = quotient_data
@@ -287,8 +286,7 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
             lambda index: local_quotient_projections[index],
             name="Local projections of a scalar-changed Enriques quotient",
         )
-        if not self.quotient_square_commutes():
-            raise ArithmeticError("the scalar-changed Enriques quotient square does not commute")
+        assert self.quotient_square_commutes(), "the scalar-changed Enriques quotient square does not commute"
 
     def source(self):
         return self._source
