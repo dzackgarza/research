@@ -92,11 +92,7 @@ class ClassGroups(Category):
             for this cokernel; a class group built by the projective bundle
             formula is a biproduct and has none.
             """
-            principal_divisors = self.cokernel_morphism()
-            assert principal_divisors is not None, (
-                "this class group was not built as the cokernel of a principal-divisor morphism"
-            )
-            return principal_divisors
+            return self.cokernel_morphism()
 
 
 __all__ = ["ClassGroups"]

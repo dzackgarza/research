@@ -179,11 +179,7 @@ class ChowGroups(OwnedCategoryOverBaseRing):
             This is the defining morphism the presented-module level retains
             for this cokernel.
             """
-            rational_equivalence = self.cokernel_morphism()
-            assert rational_equivalence is not None, (
-                "this Chow group was not built as the cokernel of a rational-equivalence morphism"
-            )
-            return rational_equivalence
+            return self.cokernel_morphism()
 
 
 class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
