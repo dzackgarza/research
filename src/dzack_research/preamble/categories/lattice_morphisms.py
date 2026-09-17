@@ -46,9 +46,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import (
-    finite_indexed_family,
-)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import realize_owned_category
@@ -365,68 +362,7 @@ class LatticeEmbedding(LatticeMorphism):
         """
         from dzack_research.preamble.categories.lattices import IsotropicReductions
 
-        source = self.domain()
-        target = self.codomain()
-        ring = target.base_ring()
-        assert source.is_totally_isotropic(), (
-            "an isotropic reduction is taken along a totally isotropic sublattice"
-        )
-
-        perpendicular = self.orthogonal_complement()
-        perpendicular_inclusion = perpendicular.inclusion()
-        into_perpendicular = source.Mono(perpendicular)(lambda label: perpendicular_inclusion.lift(
-                self(source.module_generator(label))
-            ))
-        assert into_perpendicular.is_primitive(), (
-            "the isotropic quotient is not free over the base ring; the selected "
-            "isotropic sublattice is not primitive in its orthogonal complement"
-        )
-        quotient = into_perpendicular.cokernel()
-        normalization = quotient.invariant_factor_form()
-        quotient_module_generators = quotient.smith_form_module_generators()
-        rank = int(quotient_module_generators.cardinality())
-        labels = Sets.Δ[rank - 1]
-
-        def lift(position):
-            quotient_generator = quotient_module_generators[int(position)]
-            coefficients = quotient_generator.parent().framing_coefficients(
-                quotient_generator
-            )
-            return perpendicular.linear_combination(coefficients)
-
-        lifts = finite_indexed_family(
-            labels,
-            lift,
-            name="Isotropic-reduction lifts",
-        )
-
-        lattice_category = target.lattice_category()
-        if rank == 0:
-            prototype = lattice_category(0)
-        else:
-            gram = tensor(
-                ring,
-                (),
-                (rank, rank),
-                (
-                    perpendicular.b(lifts[i], lifts[j])
-                    for i in range(rank)
-                    for j in range(rank)
-                ),
-            )
-            prototype = lattice_category(gram, module_generators=labels)
-
-        return lattice_category._specialize_existing_lattice(
-            prototype,
-            extra_categories=(IsotropicReductions(ring),),
-            construction_data=(
-                ("isotropic_embedding", self),
-                ("orthogonal_complement", perpendicular),
-                ("isotropic_inclusion", into_perpendicular),
-                ("reduction_lifts", lifts),
-                ("reduction_normalization", normalization),
-            ),
-        )
+        return IsotropicReductions(self.codomain().base_ring())(self)
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
