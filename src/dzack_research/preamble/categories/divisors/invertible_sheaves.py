@@ -1128,10 +1128,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             module = module_sheaf.sections_on_chart(choice)
             generator = _rank_one_generator(module)
             components[choice] = module.scalar_multiple(local_coefficient, generator)
-        return self.compatible_sections().from_global_section_components(
-            components,
-            section,
-        )
+        return self.compatible_sections()(lambda choice: components[choice])
 
     @cached_method
     def section_ring(self):
