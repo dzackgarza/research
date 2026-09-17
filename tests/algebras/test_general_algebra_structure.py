@@ -292,3 +292,31 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     another = Algebras(QQ).Mor(algebra, algebra)(another_linear)
     assert (identity == another) is Unknown
     assert (identity != another) is Unknown
+
+
+def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None:
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    module = GeneralModules(QQ).from_operations(
+        Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
+        negation=lambda x: -x, scalar_action=lambda r, x: r * x,
+        verify=False,
+    )
+    tensor = Modules(QQ).tensor_product((module, module))
+    product = tensor.from_bilinear_map(
+        module, lambda x, y: module(x.underlying_element() * y.underlying_element()),
+    )
+    commutative = Algebras(QQ).Associative().Unital().Commutative()(
+        module, product, module(QQ.one()),
+    )
+    bracket = tensor.from_bilinear_map(module, lambda x, y: module.zero())
+    lie = Algebras(QQ).Lie()(module, bracket)
+
+    assert commutative.unformed_module() is module
+    assert lie.unformed_module() is module
+    assert commutative.one() * commutative(module(QQ(3))) == commutative(module(QQ(3)))
+    assert lie(module(QQ(3))) * lie(module(QQ(4))) == lie.zero()
+    assert lie not in Algebras(QQ).Unital()
+    assert commutative.multiplication() is product
+    assert lie.multiplication() is bracket

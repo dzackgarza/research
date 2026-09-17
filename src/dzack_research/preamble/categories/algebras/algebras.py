@@ -218,7 +218,12 @@ class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
 
     def __init__(self, parent, underlying_morphism) -> None:
         super().__init__(parent, underlying_morphism)
-        assert self(self.domain().one()) == self.codomain().one(), "the stated linear map does not preserve the unit"
+        self._preserves_unit = self(self.domain().one()) == self.codomain().one()
+        assert self._preserves_unit is not False, "the stated linear map does not preserve the unit"
+
+    def preserves_unit(self):
+        r"""The decision of the unit equation, or ``Unknown`` for its stated hypothesis."""
+        return self._preserves_unit
 
 
 class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
@@ -539,13 +544,15 @@ def _two_sided_unit(multiplication, unit):
     return lambda x: _all_identity_decisions((product(unit, x) == x, product(x, unit) == x))
 
 
-def _assert_decided(held, statement, module):
-    r"""An axiom entry places an algebra only on an identity it decided to hold."""
+def _assert_not_refuted(held, statement, module):
+    r"""Reject a disproved law; otherwise construct under the stated law.
+
+    An axiom constructor states its identities as hypotheses on the supplied
+    multiplication.  Finitary data can decide them; an undecided computation
+    does not imply that the algebra has no such structure (``CON-16``).
+    """
     assert held is not False, f"{statement} fails for the stated multiplication on {module}"
-    assert held is True, (
-        f"{statement} of the stated multiplication on {module} is undecided: "
-        "the module states no finite framing on which to decide it"
-    )
+
 
 
 # ---------------------------------------------------------------------------
@@ -1085,7 +1092,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The associative algebra on ``(M, m)``: ``(xy)z = x(yz)`` decided on module generators of ``M``."""
-            _assert_decided(
+            _assert_not_refuted(
                 _decide_on_module_generators(module, _associativity(multiplication), 3),
                 "associativity",
                 module,
@@ -1134,12 +1141,12 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             def _call_(self, module, multiplication, unit):
                 r"""The associative unital algebra on ``(M, m)`` with unit ``1 in M``, both identities decided on module generators."""
-                _assert_decided(
+                _assert_not_refuted(
                     _decide_on_module_generators(module, _associativity(multiplication), 3),
                     "associativity",
                     module,
                 )
-                _assert_decided(
+                _assert_not_refuted(
                     _decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1),
                     "the two unit equations",
                     module,
@@ -1168,7 +1175,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         (_decide_on_module_generators(module, _commutativity(multiplication), 2), "commutativity"),
                         (_decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1), "the two unit equations"),
                     ):
-                        _assert_decided(held, statement, module)
+                        _assert_not_refuted(held, statement, module)
                     return _algebra_on_module(module, multiplication, placement=(self,), unit=module(unit))
 
     class Lie(CategoryWithAxiom):
@@ -1192,12 +1199,12 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The Lie algebra on ``(M, m)``, ``m`` its bracket: alternation and the Jacobi identity decided on module generators."""
-            _assert_decided(
+            _assert_not_refuted(
                 _decide_on_module_generators(module, _alternation(multiplication), 2),
                 "alternation",
                 module,
             )
-            _assert_decided(
+            _assert_not_refuted(
                 _decide_on_module_generators(module, _jacobi_identity(multiplication), 3),
                 "the Jacobi identity",
                 module,
@@ -1226,7 +1233,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication, unit):
             r"""The unital algebra on ``(M, m)`` with unit ``1 in M``, the unit equations decided on module generators."""
-            _assert_decided(
+            _assert_not_refuted(
                 _decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1),
                 "the two unit equations",
                 module,
@@ -1301,7 +1308,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The commutative algebra on ``(M, m)``: ``xy = yx`` decided on module generators of ``M``."""
-            _assert_decided(
+            _assert_not_refuted(
                 _decide_on_module_generators(module, _commutativity(multiplication), 2),
                 "commutativity",
                 module,

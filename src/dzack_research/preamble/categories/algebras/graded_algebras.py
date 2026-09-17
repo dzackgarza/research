@@ -13,7 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     _algebra_on_module,
-    _assert_decided,
+    _assert_not_refuted,
     _associativity,
     _decide_on_module_generators,
     _two_sided_unit,
@@ -479,12 +479,12 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             f"{module} is not a module graded by {self.grading_monoid()}"
         )
         unit = _unit_from_multiplication(multiplication)
-        _assert_decided(
+        _assert_not_refuted(
             _decide_on_module_generators(module, _associativity(multiplication), 3),
             "associativity",
             module,
         )
-        _assert_decided(
+        _assert_not_refuted(
             _decide_on_module_generators(module, _two_sided_unit(multiplication, unit), 1),
             "the two unit equations",
             module,
