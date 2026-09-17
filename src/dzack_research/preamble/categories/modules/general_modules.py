@@ -14,7 +14,7 @@ import logging
 import operator
 
 from sage.misc.cachefunc import cached_method
-from sage.structure.element import ModuleElement
+from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
@@ -215,6 +215,11 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             converted by the underlying set, which rejects what it does not
             contain.
             """
+            source = element_parent(value)
+            if source is self:
+                return value
+            if source in Modules(self.base_ring()) and source.unformed_module() is self:
+                return source._element_of_unformed_module(value)
             if isinstance(value, self.category().ElementType):
                 if value.parent() is self:
                     return value

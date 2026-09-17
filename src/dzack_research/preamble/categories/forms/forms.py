@@ -260,11 +260,16 @@ class _CallableFormMethods:
         return self.parent().codomain()
 
     def classifying_morphism(self):
-        r"""Return the unique linear map ``Gamma^2(M) -> W`` classifying this quadratic map."""
-        if self.parent().kind() != "quadratic":
-            raise TypeError("a classifying morphism here belongs to a quadratic map")
-        square = self.module().divided_square()
-        return square.from_quadratic(self, self.codomain())
+        r"""The linear map out of the tensor product or divided square."""
+        match self.parent().kind():
+            case "bilinear":
+                tensor_product = self.left_module().module_category().tensor_product(
+                    (self.left_module(), self.right_module())
+                )
+                return tensor_product.from_bilinear_map(self.codomain(), self)
+            case "quadratic":
+                square = self.module().divided_square()
+                return square.from_quadratic(self, self.codomain())
 
     def __call__(self, *arguments):
         if self.parent().kind() == "quadratic":

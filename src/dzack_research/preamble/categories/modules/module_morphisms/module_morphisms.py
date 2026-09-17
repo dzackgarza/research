@@ -477,7 +477,17 @@ class ModuleMorphism(Morphism):
         domain = self.domain()
         if domain._selected_presentation_rows() is None:
             return Unknown
-        equal = all(self(domain.module_generator(label)) == other(domain.module_generator(label)) for label in domain.module_generating_set())
+        comparisons = tuple(
+            self(domain.module_generator(label)) == other(domain.module_generator(label))
+            for label in domain.module_generating_set()
+        )
+        match (any(answer is False for answer in comparisons), all(answer is True for answer in comparisons)):
+            case (True, _):
+                equal = False
+            case (_, True):
+                equal = True
+            case _:
+                equal = Unknown
         return equal if op == op_EQ else (Unknown if equal is Unknown else not equal)
 
     def __rmul__(self, actor):

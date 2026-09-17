@@ -257,3 +257,35 @@ def test_native_ring_root_data_and_self_structure_are_initialized():
     assert QQ.multiplication()(QQ(2), QQ(3)) == QQ(6)
     assert QQ.algebra_structure_morphism() is QQ.Mor(QQ).identity()
     assert QQ.Mor(QQ).identity().as_algebra() is QQ
+
+
+def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equality() -> None:
+    from sage.misc.unknown import Unknown
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    module = GeneralModules(QQ).from_operations(
+        Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
+        negation=lambda x: -x, scalar_action=lambda r, x: r * x,
+        verify=False,
+    )
+    bilinear = module.bilinear_forms(module)(
+        lambda x, y: module(x.underlying_element() * y.underlying_element())
+    )
+    multiplication = bilinear.classifying_morphism()
+    algebra = Algebras(QQ)(module, multiplication)
+    three, four = algebra(module(QQ(3))), algebra(module(QQ(4)))
+
+    assert algebra.unformed_module() is module
+    assert module(three * four) == module(QQ(12))
+    classifier = algebra.multiplication_morphism()
+    assert classifier(classifier.domain().pure_tensor(three, four)) == three * four
+    linear = algebra.module_category().Mor(algebra, algebra).elementwise(
+        lambda x: x, verify_linearity=False,
+    )
+    identity = Algebras(QQ).Mor(algebra, algebra)(linear)
+    assert identity(three) == three
+    assert identity.is_multiplicative() is Unknown
+    another = Algebras(QQ).Mor(algebra, algebra)(linear)
+    assert (identity == another) is Unknown
+    assert (identity != another) is Unknown

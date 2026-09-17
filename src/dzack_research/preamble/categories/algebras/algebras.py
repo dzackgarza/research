@@ -167,8 +167,9 @@ class MultiplicativeAlgebraMorphism(Morphism):
             case _:
                 return False
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def __ne__(self, other):
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
 
     __hash__ = None
 
@@ -747,33 +748,19 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def multiplication_morphism(self):
-            r"""The multiplication read on this algebra, ``A (x)_R A -> A``.
+            r"""The linear classifier ``A tensor_R A -> A`` of the product.
 
-            Elements of this algebra and of ``M`` pass by coercion, so on two
-            module generators ``a, b`` of ``A`` the map is
-            ``A(m(M(a) (x) M(b)))``, and bilinearity determines the rest.  The
-            module layer represents maps out of ``A (x)_R A`` on module
-            generators, so this reads the framing of ``A``.
+            The module tensor owner supplies the universal map for both
+            framed and unframed modules.  Transport of the product from the
+            retained module is bilinear because the element crossings preserve
+            that module's addition and scalar action.
             """
             ring = self.algebra_base_ring()
-            assert self in FramedModules(ring), (
-                f"the multiplication of {self} is read on A (x) A through a module framing of A, and {self} states none"
-            )
             module = self.unformed_module()
             product = _product_on(self.multiplication())
             tensor = _algebra_tensor_square_functor(ring)(self)
-            return tensor.from_bilinear(
-                BilinearMap(
-                    self,
-                    self,
-                    self,
-                    lambda left, right: self(
-                        product(
-                            module(self.module_generator(left)),
-                            module(self.module_generator(right)),
-                        )
-                    ),
-                )
+            return tensor.from_bilinear_map(
+                self, lambda left, right: self(product(module(left), module(right))),
             )
 
         @cached_method
