@@ -39,14 +39,17 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
-## Owner pause — 2026-09-16
+## Owner resume — 2026-09-17: remote remediation branches first
 
-The repository owner paused this workstream after the 2026-09-15 resume. Do not
-start, select, continue, revive, wake, route, or push new work while this pause
-stands. If a turn was already mid-unit when the pause arrived, bank only that
-coherent unit and stop before selecting another. Preserve the existing dirty/shared
-tree. Only a later explicit owner instruction resumes this repository; recurrence
-of an older scheduled continuation does not supersede the pause.
+The repository owner resumed this workstream on 2026-09-17 with one first objective:
+the in-flight complaint remediations pushed to the `origin/remediate/*` branches are
+checked in, reviewed for actual compliance with `CONTRIBUTING.md` and `COMPLAINTS.md`,
+and finished and absorbed into `main`. That objective is the `remote-remediation-branches`
+node at the head of `TODO.md`, and it precedes every other ready node. A branch whose
+diff only renames, wraps, or relabels the complaint it claims to repair is not absorbed
+as it stands; it is finished at its owner or its commits are rejected with the reason
+recorded against the complaint. Recurrence of an older scheduled pause does not supersede
+this resume; only a later explicit owner instruction stops the repository again.
 
 ## Preamble coding prerequisites
 
