@@ -281,15 +281,11 @@ The phase rule therefore applies again while `architecture-remediation` is open:
 
 This keeps the two roles distinct: source-level architecture remediation is driven by the observed construction contract, while terminal execution decides whether the repaired public mathematics actually works.  Do not use a previously green terminal run to waive a newly observed source defect, and do not use an architectural audit finding as if it were already a runtime failure.
 
-### The sage-categories pin is unresolvable, and the cause is in that repository
+### The sage-categories pin is published
 
-`pyproject.toml` pins `sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203`. That revision exists locally and is an ancestor of the producer's active `codex/functorial-core-kernel` branch, but it is not on any published `origin/*` ref.
-Reverified 2026-09-14: local `main` and `origin/main` are both `10e14a53`; the active producer branch is `5660e01a`, **1577 commits ahead of `origin/main`**, and no remote branch contains the required `66efc15b` revision.
-So the resolution failure `terminal-execution` recorded is not a defect in this repository and cannot be repaired from here by choosing another local producer revision; the required producer history has not been published to the GitHub route this dependency declares.
+`pyproject.toml` pins `sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203`. The producer has since published the required history: rechecked 2026-09-17, `66efc15b` is an ancestor of `sage-categories` `origin/main`, so the GitHub dependency route now resolves this source revision.
 
-Do not work around it by switching to a filesystem path dependency.
-That hides a publication gap that affects every consumer, and the declared route between these projects is GitHub.
-Treat the pin as blocked, record it that way against the affected items in the observed failure set, and carry on with the 36 collection errors, which are this repository's own and are repairable here.
+The earlier unpublished-pin failure is therefore stale and is not a current blocker. Do not replace the declared GitHub dependency with a filesystem path. Terminal execution still waits on this repository's own `architecture-remediation` and `research-sage-runtime` nodes below; any fresh dependency failure must be established from current terminal evidence rather than inherited from the resolved publication gap.
 
 - [ ] **`terminal-session`**. **Needs:** `architecture-remediation`, `research-sage-runtime`. Verify the required session/rendered examples and final contribution contracts after mathematical integration and complaint-driven architecture convergence.
   **Goal:** Exercise the repaired preamble as a coherent live Sage mathematical session: import the public category/lattice language, regenerate its derived views, inspect research examples, and run final QC.
