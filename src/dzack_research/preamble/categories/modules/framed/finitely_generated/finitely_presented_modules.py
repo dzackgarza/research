@@ -1831,22 +1831,6 @@ class _PresentedModule(_GeneralPresentedModule):
         return self._from_coordinates(coordinates)
 
 
-class _PresentedModuleObjects(OwnedCategoryOverBaseRing):
-    r"""The private quotient realization of a selected presentation."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "represented quotient modules with selected finite presentation"
-
-    def super_categories(self):
-        return [_SelectedFinitePresentationModules(self.base_ring())]
-
-    ElementMethods = _GeneralPresentedElement
-
-    class ParentMethods(_PresentedModule):
-        pass
-
-
 def _new_presented_module(
     *,
     free_module,
@@ -1867,7 +1851,7 @@ def _new_presented_module(
     extra_construction_data=None,
 ):
     r"""Build a represented quotient through the category constructor chain."""
-    categories = [_PresentedModuleObjects(base_ring)]
+    categories = [_SelectedFinitePresentationModules(base_ring)]
     if base_ring in OwnedFields():
         categories.append(VectorSpaces(base_ring))
     data = {
@@ -1895,7 +1879,15 @@ def _new_presented_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return _object_of(Cat().meet(tuple(categories)), **data)
+    return _object_of(
+        Cat().meet(tuple(categories)),
+        _engine=(
+            _SelectedFinitePresentationModules(base_ring),
+            _PresentedModule,
+            _GeneralPresentedElement,
+        ),
+        **data,
+    )
 
 
 def _resolution_over_degrees(module, terms, differentials, augmentation, zero):

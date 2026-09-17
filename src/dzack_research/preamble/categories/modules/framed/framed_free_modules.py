@@ -60,7 +60,7 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
 
-    categories = [_SparseFramedFreeModules(ring)]
+    categories = [FramedFreeModules(ring)]
     if ring in OwnedFields():
         categories.append(VectorSpaces(ring))
     try:
@@ -656,22 +656,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return self._fresh_free_module_on(self.module_generating_set())
 
 
-class _SparseFramedFreeModules(OwnedCategoryOverBaseRing):
-    r"""The private sparse-coordinate realization of a framed free module."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "sparse represented framed free modules"
-
-    def super_categories(self):
-        return [FramedFreeModules(self.base_ring())]
-
-    ElementMethods = _SparseFreeModuleElement
-
-    class ParentMethods(_SparseFreeModuleParent):
-        pass
-
-
 def _new_sparse_free_module(
     ring,
     labels,
@@ -706,7 +690,11 @@ def _new_sparse_free_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return _object_of(Cat().meet(tuple(categories)), **data)
+    return _object_of(
+        Cat().meet(tuple(categories)),
+        _engine=(FramedFreeModules(ring), _SparseFreeModuleParent, _SparseFreeModuleElement),
+        **data,
+    )
 
 
 

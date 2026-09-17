@@ -68,6 +68,7 @@ from inspect import Parameter, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
+from sage.misc.cachefunc import cached_function
 from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.inherit_comparison import InheritComparisonMetaclass
@@ -866,7 +867,71 @@ def _hom_construction_contract(
     return _construction_contract_from_type(hom, type(hom))
 
 
-def _object_of(category: Category, **data: ConstructionData) -> Parent:
+@cached_function
+def _implementation_with_engine(implementation: type, owner: type, engine: type) -> type:
+    r"""Insert a private engine immediately before its owner's implementation.
+
+    This is the same native implementation-class mechanism as
+    ``OwnedCategoryMixin._make_named_class``, not a category declaration.
+    The bases ``(implementation, (engine, owner))`` force every stronger
+    provider already preceding ``owner`` to remain before the engine, while
+    the engine precedes the owner's defaults.  In particular an algebra's
+    multiplication cannot be shadowed by its sparse-module realization.
+
+    Types, not category parameters or object identities, index the cache:
+    parameterized categories may share an implementation type.  Defining
+    data are passed to the resulting object, never stored on this type.
+    """
+    assert issubclass(implementation, owner), (
+        "an object engine realizes a declared owner in the selected category"
+    )
+    match implementation is owner:
+        case True:
+            bases = (engine, owner)
+        case False:
+            bases = (implementation, _implementation_with_engine(owner, owner, engine))
+    return _abc_metaclass_for(bases)(
+        f"{implementation.__name__}[{engine.__name__}]",
+        bases,
+        {
+            "_reduction": (_implementation_with_engine, (implementation, owner, engine)),
+            "_doccls": (engine,),
+            "__doc__": engine.__doc__,
+            "__module__": engine.__module__,
+        },
+    )
+
+
+@cached_function
+def _engine_object_type(object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine):
+    r"""The native parent/element realization, without a second category node."""
+    realized = _implementation_with_engine(object_type, owner_object_type, object_engine)
+    elements = _implementation_with_engine(element_type, owner_element_type, element_engine)
+    return type(realized)(
+        f"{realized.__name__}.ObjectType",
+        (realized,),
+        {
+            # Sage Parent.element_class consumes Element; the owned public
+            # type protocol exposes the identical complete implementation.
+            "Element": elements,
+            "ElementType": elements,
+            "_reduction": (
+                _engine_object_type,
+                (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
+            ),
+            "_doccls": (object_engine,),
+            "__doc__": object_engine.__doc__,
+            "__module__": object_engine.__module__,
+        },
+    )
+
+
+def _object_of(
+    category: Category,
+    *,
+    _engine: tuple[Category, type, type] | None = None,
+    **data: ConstructionData,
+) -> Parent:
     r"""The object of ``category`` built from the data its levels declare.
 
     The instantiable class is ``category.parent_class``; this is the one line
@@ -885,8 +950,21 @@ def _object_of(category: Category, **data: ConstructionData) -> Parent:
     homset does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
-    _construction_contract(category).validate(data)
-    return category.ObjectType(category=category, **data)
+    match _engine:
+        case None:
+            implementation = category.ObjectType
+        case (owner, object_engine, element_engine):
+            assert category.is_subcategory(owner), (
+                "the object's mathematical category contains the engine's owner"
+            )
+            implementation = _engine_object_type(
+                category.ObjectType, owner.ObjectType, object_engine,
+                category.ElementType, owner.ElementType, element_engine,
+            )
+    _construction_contract_from_type(
+        category, implementation, owned_object_chain=True
+    ).validate(data)
+    return implementation(category=category, **data)
 
 
 def _cat() -> Category:
