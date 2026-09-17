@@ -903,10 +903,7 @@ class SubobjectMorphism(Morphism):
         ):
             raise ValueError("the subobject factor is not a morphism of the base category")
         if verify:
-            left = self.codomain().inclusion() * factor_morphism
-            right = self.domain().inclusion()
-            if (left == right) is not True:
-                raise ValueError("the supplied factor does not establish the subobject triangle")
+            parent._slice_homset()(factor_morphism)
         self._factor_morphism = factor_morphism
 
     def factor_morphism(self) -> Morphism:
@@ -957,8 +954,17 @@ class SubobjectHomset(CategoricalHomset):
     def subobject_category(self) -> SubobjectCategory:
         return self.base_category()
 
+    @cached_method
+    def _slice_homset(self):
+        r"""The slice Hom whose fixed-edge square is this subobject Hom's triangle."""
+        category = self.subobject_category()
+        return category.slice_category().Mor(
+            category.as_slice_object(self.domain()),
+            category.as_slice_object(self.codomain()),
+        )
+
     def _canonical_factor(self):
-        return self.domain().inclusion().factor_through(self.codomain().inclusion())
+        return self._slice_homset().canonical_morphism().left()
 
     def has_morphism(self) -> bool:
         try:
@@ -985,11 +991,7 @@ class SubobjectHomset(CategoricalHomset):
     def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        source = _subobject_source(self.domain())
-        base = self.subobject_category().base_category()
-        return SubobjectMorphism(
-            self, _category_homset(base, source, source).identity(), verify=False
-        )
+        return SubobjectMorphism(self, self._slice_homset().identity().left(), verify=False)
 
 
 class SubobjectHomCategoryConstruction(HomCategoryConstruction):
@@ -1069,6 +1071,7 @@ class SubobjectCategory(OwnedCategoryBase):
         r"""Return the monomorphism subcategory of the arrow category of ``C``."""
         return self.base_category().MonomorphismArrowCategory()
 
+    @cached_method(key=lambda self, subobject: id(subobject))
     def as_slice_object(self, subobject: Parent) -> Parent:
         if subobject not in self:
             raise TypeError("the object is not a represented subobject of the fixed base")

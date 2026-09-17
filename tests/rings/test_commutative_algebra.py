@@ -170,6 +170,10 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
     assert slice_object.arrow() is powers_of_two.inclusion()
     assert slice_object in subobjects.slice_category()
     assert slice_object in subobjects.monomorphism_category()
+    subobject_hom = subobjects.Mor(powers_of_two, powers_of_two)
+    slice_hom = subobjects.slice_category().Mor(slice_object, slice_object)
+    assert subobject_hom.identity().factor_morphism() == slice_hom.identity().left()
+    assert subobject_hom.canonical_morphism().factor_morphism() == slice_hom.canonical_morphism().left()
 
     localization = ZZ.localization(powers_of_two)
     assert localization.localization_submonoid() is powers_of_two
