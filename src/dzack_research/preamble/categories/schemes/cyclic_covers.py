@@ -196,6 +196,7 @@ class CyclicCoverBaseChangeComparison(SageObject):
         source_atlas = line_bundle.gluing_datum()
         changed_atlas = changed_line_bundle.gluing_datum()
         base_projection = changed_line_bundle.base_change_projection()
+        morphisms = base_projection.parent().homset_category()
         local_projections = {}
         local_maps_to_cover = {}
         for source_index in cyclic_algebra.chart_index_set():
@@ -232,12 +233,15 @@ class CyclicCoverBaseChangeComparison(SageObject):
                 return result
 
             algebra_map = source_local.Mor(changed_local)(image)
-            local_projection = _affine_spec_morphism(algebra_map)
+            local_projection = morphisms.Mor(
+                changed_cover.gluing_datum().chart(changed_index),
+                source_cover.gluing_datum().chart(source_index),
+            )(algebra_map)
             local_projections[source_index] = local_projection
             local_maps_to_cover[source_index] = (
-                source_cover.chart_embedding(source_index) * local_projection
+                source_cover.gluing_datum().chart_embedding(source_index) * local_projection
             )
-        projection = changed_cover.Mor(source_cover)(local_maps_to_cover)
+        projection = morphisms.Mor(changed_cover, source_cover)(local_maps_to_cover)
         if any(
             source_relative.arrow().local_map(source_index)
             * local_projections[source_index]
