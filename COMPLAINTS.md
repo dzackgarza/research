@@ -118,6 +118,16 @@ a private component encoding, not a new mathematical structure (CAT-28).
 Its engine now constructs through `Modules(R)`.  The function-space engines
 likewise use the shared entry, including the algebra root's native product
 and unit data and the formed module's actual form datum.
+The final set hunks also reject `FiniteFilteredOrderedSets`, the removal
+of an enumeration's established finite/infinite placement, and narrowing
+`OwnedSetMorphism.image()` to finite sources.  The accepted filter/image
+engines and their off-image membership rules are already in `9326211b0`.
+The selection differences from `25f8154a3` are regressions: reimplementing
+`heapq.merge`, truncating integer ingress before cache lookup, accepting
+negative multiplicities, querying source cardinality for the empty
+selection, and dropping the common-source wedge guard.  They are not
+reapplied.  Natural-number ingress keeps the owned exact index protocol,
+not a dependency on the higher ring constructor.
 The coordinate parser retains bounded reading when rejecting extra rows or
 entries; eliminating `StopIteration` handling does not authorize consuming
 an infinite malformed input.  `ask` retains exact boolean admission rather
