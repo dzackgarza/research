@@ -150,6 +150,26 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
             return None
 
+        def _smith_representative(self, element):
+            r"""Read the selected reduced representative in the same quotient.
+
+            Protected presented-module computation used by quotient-word
+            normalization at the module and algebra-presentation adapters.
+            The supplied and returned elements belong to this exact module;
+            only its own Smith engine chooses the coordinate representative.
+            """
+            smith = self._smith_engine()
+            assert smith is not None, "Smith representatives require the selected PID quotient engine"
+            coordinates = smith.coordinate_vector(self._to_smith_engine_element(element), reduce=False)
+            ring = _engine_ring(self.base_ring())
+            reduced = tuple(
+                coordinate if invariant == 0 else ring.ideal(invariant).reduce(coordinate)
+                for coordinate, invariant in zip(coordinates, smith.invariants(), strict=True)
+            )
+            if not reduced:
+                return self.zero()
+            return self._from_smith_engine_element(smith.linear_combination_of_smith_form_gens(reduced))
+
         # The selected presentation ``F_1 -> F_0``, its relation rows in the
         # framing of ``F_0``, and the morphism this module is the cokernel of
         # when it was constructed as one: this level's datum.

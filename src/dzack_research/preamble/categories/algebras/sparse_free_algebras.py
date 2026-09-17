@@ -17,9 +17,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     _AlgebraHomsetCommonMethods,
 )
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-    _canonical_smith_representative,
-)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
@@ -501,7 +498,7 @@ class SparseFreeAlgebra(Parent):
             element = component.linear_combination(component_coefficients)
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
-                element = _canonical_smith_representative(component, element)
+                element = component._smith_representative(element)
             for component_label, coefficient in component.framing_coefficients(element).items():
                 basis_label = self._basis_label_from_component(key, component_label)
                 normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(coefficient)

@@ -27,39 +27,6 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def _canonical_smith_representative(module, element):
-    r"""Choose the Smith-coordinate representative used by quotient reduction.
-
-    The module itself remains the mathematical quotient.  This function only
-    chooses a deterministic computation representative of one element, using
-    the invariant-factor quotients already computed by the live finitely
-    presented module implementation.
-    """
-
-    smith_engine = module._smith_engine()
-    if smith_engine is None:
-        raise NotImplementedError(
-            "a canonical representative is currently chosen from a PID Smith engine"
-        )
-    coordinates = tuple(
-        smith_engine.coordinate_vector(
-            module._to_smith_engine_element(element),
-            reduce=False,
-        )
-    )
-    invariants = tuple(smith_engine.invariants())
-    engine = _engine_ring(module.base_ring())
-    reduced = [
-        coordinate
-        if invariant == 0
-        else engine.ideal(invariant).reduce(coordinate)
-        for coordinate, invariant in zip(coordinates, invariants, strict=True)
-    ]
-    if not reduced:
-        return module.zero()
-    return module._from_smith_engine_element(
-        smith_engine.linear_combination_of_smith_form_gens(reduced)
-    )
 
 
 class _LinearPresentationTensorIdeal(Ideal_nc):
@@ -140,10 +107,7 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
                 ),
                 tensor_power.zero(),
             )
-            representative = _canonical_smith_representative(
-                tensor_power,
-                tensor_element,
-            )
+            representative = tensor_power._smith_representative(tensor_element)
             for tensor_label, coefficient in tensor_power.framing_coefficients(representative).items():
                 result += _engine_element(
                     tensor_power.base_ring(), coefficient
