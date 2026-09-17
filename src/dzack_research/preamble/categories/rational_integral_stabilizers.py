@@ -164,10 +164,6 @@ class IntegralStructureAction(SageObject):
                     lattice_inclusion,
                 ).lattice_stabilizer()
 
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            RestrictedScalarsModules,
-        )
-
         lattice = lattice_inclusion.domain()
         space = lattice_inclusion.codomain()
         ring = lattice.base_ring()
@@ -397,10 +393,6 @@ def _full_orthogonal_integral_transporter(
     assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
         "the maintained OSCAR integral-isometry transporter is represented for ZZ-lattices"
     )
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        RestrictedScalarsModules,
-    )
-
     if space not in RestrictedScalarsModules(ring):
         raise TypeError("the two lattices must lie in a restriction of a rational quadratic space")
     ambient = space.module_over_extension()
