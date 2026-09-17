@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules, Modules, ModuleSubobjects
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets as OwnedSets
+from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets as OwnedSets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -70,9 +70,17 @@ class _WordPresentation:
         )
         self._source_module = source_module
         self._flavor = flavor
-        self._degree_basis_cache = {}
         self._component_cache = {}
-        self._labels = OwnedSets().coproduct(indexed_family(NN, self.degree_basis))
+        alphabet = source_module.module_generating_set()
+        match alphabet:
+            case _ if alphabet in EnumeratedSets():
+                match flavor:
+                    case "tensor":
+                        self._labels = alphabet.finite_words()
+                    case "symmetric":
+                        self._labels = alphabet.finite_multisets()
+            case _:
+                self._labels = OwnedSets().coproduct(indexed_family(NN, self._degree_set))
         self._cover = self.base_ring().free_module(self._labels)
 
     def source_module(self):
@@ -94,19 +102,21 @@ class _WordPresentation:
         return _has_component_presentation(self.source_module())
 
     def degree_basis(self, degree):
+        r"""The exact degree summand of the selected word cover's label set."""
         degree = int(degree)
         if degree < 0:
             raise ValueError("a graded degree is nonnegative")
-        cached = self._degree_basis_cache.get(degree)
-        if cached is not None:
-            return cached
-        if self.flavor() == "tensor":
-            indices = OwnedSets.Δ[degree - 1]
-            basis = OwnedSets().product(indexed_family(indices, lambda _position: self.source_module().module_generating_set()))
-        else:
-            basis = self.source_module().module_generating_set().multisets_of_size(degree)
-        self._degree_basis_cache[degree] = basis
-        return basis
+        return self.module_generating_set().cofactor(NN(degree))
+
+    def _degree_set(self, degree):
+        r"""The finite-power set when no enumeration of the alphabet is given."""
+        alphabet = self.source_module().module_generating_set()
+        match self.flavor():
+            case "tensor":
+                indices = OwnedSets.Δ[int(degree) - 1]
+                return OwnedSets().product(indexed_family(indices, lambda _: alphabet))
+            case "symmetric":
+                return alphabet.multisets_of_size(degree)
 
     def basis_label(self, degree, degree_label):
         degree = int(degree)

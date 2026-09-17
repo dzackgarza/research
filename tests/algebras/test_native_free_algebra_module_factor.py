@@ -138,3 +138,28 @@ def test_polynomial_coproduct_retains_the_module_frame_and_both_inclusions():
     assert coproduct.right_coproduct_map().domain() is right
     assert coproduct.linear_combination(coproduct.framing_coefficients(element)) == element
     assert coproduct.multiplication()(x**2, y) == x**2 * y
+
+
+def test_free_forgetful_counits_evaluate_the_full_polynomial_module():
+    algebra = QQ.polynomial_ring("x")
+    x = algebra.algebra_generator("x")
+    for adjunction in (
+        Modules(QQ).tensor_algebra_adjunction(),
+        Modules(QQ).symmetric_algebra_adjunction(),
+    ):
+        unit = adjunction.unit(algebra)
+        counit = adjunction.counit(algebra)
+        formal = counit.domain()
+        assert formal.free_source_module() is algebra
+        assert unit.codomain() is formal
+        assert counit.codomain() is algebra
+        assert counit(unit(x**3 + 2 * x + algebra.one())) == x**3 + 2 * x + algebra.one()
+
+        # The generator labelled by 1 in U(A) is not the unit of F(U(A)).
+        # Evaluation sends both to 1; identifying them at construction would
+        # not give the free algebra on the underlying module.
+        constant_label, = algebra.framing_coefficients(algebra.one())
+        constant_generator = formal.algebra_generator(constant_label)
+        assert constant_generator != formal.one()
+        assert counit(constant_generator) == algebra.one()
+        assert counit(formal.one()) == algebra.one()
