@@ -451,6 +451,10 @@ class ExactRealField(UniqueRepresentation, Field):
             category=Cat().meet((OwnedFields(), UncountableSets())),
         )
         realize_owned_category(self)
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+
 
     def _repr_(self) -> str:
         return "Real Field"
