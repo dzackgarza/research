@@ -8,10 +8,10 @@ from typing import TypeVar
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
-from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.element import parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
@@ -68,12 +68,14 @@ class DiscreteMorphism(Morphism):
             raise ValueError("a discrete category has no arrow between distinct objects")
 
     def __mul__(self, other):
-        if not isinstance(other, DiscreteMorphism) or other.parent() is not self.parent():
+        # A discrete Hom on one object holds its identity only, so the
+        # composable arrows are exactly the elements of this parent.
+        if parent(other) is not self.parent():
             return NotImplemented
         return self.parent().identity()
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, DiscreteMorphism) and other.parent() is self.parent()
+        return parent(other) is self.parent()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -106,7 +108,7 @@ class DiscreteHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("there is no arrow between distinct discrete objects")
         if value is not None:
-            if not isinstance(value, DiscreteMorphism) or value.parent() is not self:
+            if parent(value) is not self:
                 raise ValueError("a discrete Hom contains only its identity")
             return value
         return DiscreteMorphism(self)
@@ -150,8 +152,9 @@ class DiscreteCategory(OwnedCategory):
     @staticmethod
     @cached_function(key=lambda cls, object_set: (cls, id(object_set)))
     def __classcall__(cls, object_set: Parent):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(object_set)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(object_set)
         return typecall(cls, object_set)
 
     def an_object(self) -> Parent:
@@ -190,6 +193,10 @@ class DiscreteCategory(OwnedCategory):
     def object_set(self) -> Parent:
         return self._object_set
 
+    def category(self) -> Category:
+        r"""A discrete category is placed among the discrete categories when it is built."""
+        return DiscreteCategories()
+
     def super_categories(self):
         return [Objects()]
 
@@ -197,13 +204,6 @@ class DiscreteCategory(OwnedCategory):
         return self._objects(value)
 
     __call__ = object
-
-    def __contains__(self, candidate) -> bool:
-        category = getattr(candidate, "category", lambda: None)()
-        return (
-            isinstance(category, DiscreteCategory)
-            and category.object_set() is self.object_set()
-        )
 
     def objects(self) -> IndexedFamily:
         return self._objects
@@ -234,10 +234,18 @@ class DiscreteCategories(OwnedCategory):
         return [Cat()]
 
     def __contains__(self, candidate) -> bool:
+        r"""Placement, read through ``Cat``'s Hom endpoint when it is handed one.
 
-        if isinstance(candidate, CategoryObject):
-            candidate = candidate.represented_category()
-        return isinstance(candidate, DiscreteCategory)
+        A discrete category records this category as its placement.  The
+        morphisms of this category are ``Cat``'s, whose endpoints are the
+        represented endpoints ``Cat.object`` builds, so an endpoint lies here
+        when the category it represents does.
+        """
+        match candidate:
+            case CategoryObject():
+                return candidate.represented_category() in self
+            case _:
+                return super().__contains__(candidate)
 
 
 class _DiscreteFunctor(Functor):
@@ -249,11 +257,15 @@ class _DiscreteFunctor(Functor):
         codomain: DiscreteCategory,
         object_map: Morphism | Callable[[SourcePointT], TargetPointT],
     ) -> None:
-        if not isinstance(object_map, Morphism):
-            object_map = Sets().Mor(domain.object_set(), codomain.object_set())(object_map)
-        if object_map.domain() is not domain.object_set() or object_map.codomain() is not codomain.object_set():
-            raise ValueError("the object map has the wrong discrete-category endpoints")
-        self._object_map = object_map
+        match object_map:
+            case Morphism() if (
+                object_map.domain() is not domain.object_set()
+                or object_map.codomain() is not codomain.object_set()
+            ):
+                raise ValueError("the object map has the wrong discrete-category endpoints")
+        # The set Hom between the object sets builds a map from a rule and
+        # keeps a map it already represents.
+        self._object_map = Sets().Mor(domain.object_set(), codomain.object_set())(object_map)
         super().__init__(domain, codomain)
 
     def object_map(self) -> Morphism:
@@ -273,9 +285,9 @@ class ObjectSetFunctor(Functor):
         super().__init__(DiscreteCategories(), Sets())
 
     def _apply_object(self, category: Parent) -> Parent:
-
-        if isinstance(category, CategoryObject):
-            category = category.represented_category()
+        match category:
+            case CategoryObject():
+                category = category.represented_category()
         return category.object_set()
 
     def _apply_morphism(self, functor: Map) -> Map:

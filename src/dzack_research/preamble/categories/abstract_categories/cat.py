@@ -14,7 +14,7 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
-from sage.structure.element import Element
+from sage.structure.element import Element, parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -87,7 +87,7 @@ class CategoryFunctorMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, CategoryFunctorMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         left, right = self.functor().factors(), other.functor().factors()
         # Reassociation and insertion/removal of identity functors do not
@@ -105,9 +105,11 @@ class CategoryFunctorMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, CategoryFunctorMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
-
+        match other:
+            case CategoryFunctorMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         return self.parent().category_of_categories().arrow(
             _CompositeFunctor(other.functor(), self.functor())
         )
@@ -155,10 +157,11 @@ class CategoryFunctorHomset(CategoricalHomset):
         return candidate in self.functor_category()
 
     def _element_constructor_(self, functor):
-        if isinstance(functor, CategoryFunctorMorphism):
-            if functor.parent() is self:
-                return functor
-            functor = functor.functor()
+        match functor:
+            case CategoryFunctorMorphism():
+                if functor.parent() is self:
+                    return functor
+                functor = functor.functor()
         return CategoryFunctorMorphism(self, functor)
 
     @cached_method
@@ -1012,7 +1015,7 @@ class NaturalTransformationMorphism(Morphism):
         return self.transformation().naturality_square(morphism)
 
     def __eq__(self, other: Any) -> bool | UnknownClass:
-        if not isinstance(other, NaturalTransformationMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         if self.transformation() is other.transformation():
             return True
@@ -1028,8 +1031,11 @@ class NaturalTransformationMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, NaturalTransformationMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        match other:
+            case NaturalTransformationMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         if self.domain() is self.codomain() and self is self.parent().identity():
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
@@ -1070,14 +1076,18 @@ class NaturalTransformationHomset(CategoricalHomset):
         return self.codomain().functor()
 
     def _element_constructor_(self, transformation):
-        if isinstance(transformation, NaturalTransformationMorphism):
-            if transformation.parent() is self:
-                return transformation
-            transformation = transformation.transformation()
-        if callable(transformation) and not isinstance(transformation, NaturalTransformation):
-            transformation = NaturalTransformation(
-                self.domain().functor(), self.codomain().functor(), transformation
-            )
+        r"""A natural transformation between these two functors, given as one or by its components."""
+        match transformation:
+            case NaturalTransformationMorphism():
+                if transformation.parent() is self:
+                    return transformation
+                transformation = transformation.transformation()
+            case NaturalTransformation():
+                pass
+            case _:
+                transformation = NaturalTransformation(
+                    self.domain().functor(), self.codomain().functor(), transformation
+                )
         return NaturalTransformationMorphism(self, transformation)
 
     @cached_method

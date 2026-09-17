@@ -99,10 +99,11 @@ __all__ = [
 
 
 def __getattr__(name):
-    try:
-        module_name, attribute = _EXPORTS[name]
-    except KeyError as error:
-        raise AttributeError(name) from error
+    # Python's module attribute protocol: a name this package does not
+    # export is an AttributeError.
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module_name, attribute = _EXPORTS[name]
     value = getattr(_import_module(module_name), attribute)
     globals()[name] = value
     return value

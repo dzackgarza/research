@@ -11,6 +11,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
@@ -39,8 +40,9 @@ class _DiagramCategory(_FunctorCategory):
     @staticmethod
     @cached_function(key=lambda cls, index_category, target_category: (cls, id(index_category), id(target_category)))
     def __classcall__(cls, index_category: Category, target_category: Category):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(index_category, target_category)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(index_category, target_category)
         return typecall(cls, index_category, target_category)
 
     def __init__(self, index_category: Category, target_category: Category) -> None:
@@ -79,12 +81,14 @@ class PosetMorphism(Morphism):
         Morphism.__init__(self, parent)
 
     def __mul__(self, other):
-        if not isinstance(other, PosetMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
-        return self.parent().poset_category().Mor(other.domain(), self.codomain()).unique()
+        match other:
+            case PosetMorphism() if other.codomain() is self.domain():
+                return self.parent().poset_category().Mor(other.domain(), self.codomain()).unique()
+            case _:
+                return NotImplemented
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, PosetMorphism) and other.parent() is self.parent()
+        return parent(other) is self.parent()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -178,9 +182,6 @@ class PosetCategory(OwnedCategory):
     def __call__(self, value):
         return self._objects(self._ordered_set(value))
 
-    def __contains__(self, candidate) -> bool:
-        return getattr(candidate, "category", lambda: None)() is self
-
     def le(self, left, right) -> bool:
         left = self._ordered_set(left)
         right = self._ordered_set(right)
@@ -219,12 +220,14 @@ class FiniteOrdinalMorphism(Morphism):
         Morphism.__init__(self, parent)
 
     def __mul__(self, other):
-        if not isinstance(other, FiniteOrdinalMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
-        return self.parent().ordinal_category().Mor(other.domain(), self.codomain()).unique()
+        match other:
+            case FiniteOrdinalMorphism() if other.codomain() is self.domain():
+                return self.parent().ordinal_category().Mor(other.domain(), self.codomain()).unique()
+            case _:
+                return NotImplemented
 
     def __eq__(self, other) -> bool:
-        return isinstance(other, FiniteOrdinalMorphism) and other.parent() is self.parent()
+        return parent(other) is self.parent()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -271,8 +274,9 @@ class FiniteOrdinalCategory(OwnedCategory):
     @staticmethod
     @cached_function(key=lambda cls, size: (cls, int(size)))
     def __classcall__(cls, size):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(size)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(size)
         return typecall(cls, size)
 
     class ParentMethods:
@@ -309,9 +313,6 @@ class FiniteOrdinalCategory(OwnedCategory):
 
     def __call__(self, position):
         return self._objects(self._object_set(position))
-
-    def __contains__(self, candidate) -> bool:
-        return getattr(candidate, "category", lambda: None)() is self
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -396,8 +397,11 @@ class ParallelPairMorphism(Morphism):
         return self.domain() is self.codomain()
 
     def __mul__(self, other):
-        if not isinstance(other, ParallelPairMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        match other:
+            case ParallelPairMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         if self.is_identity():
             return other
         if other.is_identity():
@@ -405,11 +409,7 @@ class ParallelPairMorphism(Morphism):
         raise ValueError("the walking parallel pair has no composite of two nonidentity arrows")
 
     def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, ParallelPairMorphism)
-            and other.parent() is self.parent()
-            and other.name() == self.name()
-        )
+        return parent(other) is self.parent() and other.name() == self.name()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -500,9 +500,6 @@ class ParallelPairCategory(OwnedCategory):
 
     def __call__(self, position):
         return self._objects[int(position)]
-
-    def __contains__(self, candidate) -> bool:
-        return getattr(candidate, "category", lambda: None)() is self
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -727,7 +724,7 @@ class ConeMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, ConeMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         return self.apex_map() == other.apex_map()
 
@@ -739,8 +736,11 @@ class ConeMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, ConeMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        match other:
+            case ConeMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         # Each leg satisfies r_i g = q_i and q_i f = p_i, hence r_i(gf)=p_i.
         parent = self.parent().cone_category().Mor(other.domain(), self.codomain())
         return ConeMorphism(
@@ -773,7 +773,7 @@ class CoconeMorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, CoconeMorphism) or other.parent() is not self.parent():
+        if parent(other) is not self.parent():
             return False
         return self.apex_map() == other.apex_map()
 
@@ -785,8 +785,11 @@ class CoconeMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, CoconeMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        match other:
+            case CoconeMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         # Dually, g q_i = r_i and f p_i = q_i imply (gf)p_i = r_i.
         parent = self.parent().cocone_category().Mor(other.domain(), self.codomain())
         return CoconeMorphism(
@@ -811,12 +814,13 @@ class ConeHomset(CategoricalHomset):
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
-        if isinstance(apex_map, ConeMorphism):
-            if apex_map.parent() is self:
-                return apex_map
-            if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                raise ValueError("the cone morphism has the wrong endpoints")
-            apex_map = apex_map.apex_map()
+        match apex_map:
+            case ConeMorphism():
+                if apex_map.parent() is self:
+                    return apex_map
+                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
+                    raise ValueError("the cone morphism has the wrong endpoints")
+                apex_map = apex_map.apex_map()
         return ConeMorphism(self, apex_map)
 
     def identity(self) -> ConeMorphism:
@@ -847,12 +851,13 @@ class CoconeHomset(CategoricalHomset):
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
-        if isinstance(apex_map, CoconeMorphism):
-            if apex_map.parent() is self:
-                return apex_map
-            if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                raise ValueError("the cocone morphism has the wrong endpoints")
-            apex_map = apex_map.apex_map()
+        match apex_map:
+            case CoconeMorphism():
+                if apex_map.parent() is self:
+                    return apex_map
+                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
+                    raise ValueError("the cocone morphism has the wrong endpoints")
+                apex_map = apex_map.apex_map()
         return CoconeMorphism(self, apex_map)
 
     def identity(self) -> CoconeMorphism:
@@ -979,13 +984,6 @@ class _ConeCategory(OwnedCategory):
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate: Any) -> bool:
-        category = getattr(candidate, "category", lambda: None)()
-        return (
-            isinstance(category, _ConeCategory)
-            and category.diagram() is self.diagram()
-        )
-
     def cone(
         self,
         apex: Parent,
@@ -1063,13 +1061,6 @@ class _CoconeCategory(OwnedCategory):
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate: Any) -> bool:
-        category = getattr(candidate, "category", lambda: None)()
-        return (
-            isinstance(category, _CoconeCategory)
-            and category.diagram() is self.diagram()
-        )
-
     def cocone(
         self,
         apex: Parent,
@@ -1104,7 +1095,7 @@ class _SpanCategory(_ConeCategory):
     """
 
     def super_categories(self):
-        return [(self.diagram()).Cones()]
+        return [_ConeCategory(self.diagram())]
 
     class ParentMethods:
         def target_category(self) -> Category:
@@ -1129,14 +1120,14 @@ class _ProductConeCategory(_ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
     def super_categories(self):
-        return [(self.diagram()).Cones()]
+        return [_ConeCategory(self.diagram())]
 
 
 class _CoproductCoconeCategory(_CoconeCategory):
     r"""Selected coproduct cocones under one finite discrete diagram."""
 
     def super_categories(self):
-        return [(self.diagram()).Cocones()]
+        return [_CoconeCategory(self.diagram())]
 
 
 class _LimitsOfCategory(OwnedCategoryBase):
@@ -1429,8 +1420,9 @@ def _factor_family(factors, *, name="Selected factors"):
     family on the canonical labels ``Sets.Δ[n-1]``, and this is the one
     boundary at which that normalization happens.
     """
-    if isinstance(factors, IndexedFamily):
-        return factors
+    match factors:
+        case IndexedFamily():
+            return factors
     values = tuple(factors)
     labels = Sets.Δ[len(values) - 1]
     return indexed_family(
@@ -1484,10 +1476,17 @@ class BiproductCategory(OwnedCategoryBase):
         return [OwnedObjects()]
 
     def __contains__(self, candidate: Any) -> bool:
-        try:
-            return candidate.biproduct_factors() == self.factors()
-        except (AttributeError, TypeError, ValueError):
-            return False
+        r"""Whether ``candidate`` is a biproduct of exactly these factors.
+
+        Nothing is built in this category; the objects that have a selected
+        biproduct decomposition record it on themselves (lattices do), so the
+        recorded factors are read and compared.
+        """
+        match getattr(candidate, "biproduct_factors", None):
+            case None:
+                return False
+            case recorded:
+                return recorded() == self.factors()
 
 
 DirectSumCategory = BiproductCategory
@@ -1510,10 +1509,12 @@ class TensorProductCategory(OwnedCategoryBase):
         return [OwnedObjects()]
 
     def __contains__(self, candidate: Any) -> bool:
-        try:
-            return candidate.tensor_factors() == self.tensor_factors()
-        except (AttributeError, TypeError, ValueError):
-            return False
+        r"""Whether ``candidate`` is a tensor product of exactly these factors, as it records them."""
+        match getattr(candidate, "tensor_factors", None):
+            case None:
+                return False
+            case recorded:
+                return recorded() == self.tensor_factors()
 
 
 def _discrete_diagram(factors, target_category=None):

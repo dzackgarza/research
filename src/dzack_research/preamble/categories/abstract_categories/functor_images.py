@@ -24,20 +24,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category import _object_of
 
 
-class _FunctorImagePresentation:
-    r"""The selected source object together with its exact functor image."""
-
-    def __init__(self, preimage, underlying_image) -> None:
-        self._preimage = preimage
-        self._underlying_image = underlying_image
-
-    def preimage(self):
-        return self._preimage
-
-    def underlying_image(self):
-        return self._underlying_image
-
-
 class FunctorImageMorphism(Morphism):
     r"""A codomain arrow read between two chosen functor presentations."""
 
@@ -49,8 +35,11 @@ class FunctorImageMorphism(Morphism):
         return self._underlying_arrow
 
     def __mul__(self, other):
-        if not isinstance(other, FunctorImageMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        match other:
+            case FunctorImageMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
         category = self.parent().image_category()
         return category.Mor(other.domain(), self.codomain())(
             self.underlying_arrow() * other.underlying_arrow()
@@ -76,10 +65,11 @@ class FunctorImageHomset(CategoricalHomset):
         return self._underlying_homset()
 
     def _element_constructor_(self, arrow):
-        if isinstance(arrow, FunctorImageMorphism):
-            if arrow.parent() is self:
-                return arrow
-            arrow = arrow.underlying_arrow()
+        match arrow:
+            case FunctorImageMorphism():
+                if arrow.parent() is self:
+                    return arrow
+                arrow = arrow.underlying_arrow()
         if arrow not in self._underlying_homset():
             raise ValueError("the arrow is not a morphism between the underlying functor images")
         return FunctorImageMorphism(self, arrow)
@@ -114,24 +104,27 @@ class ImageOfFunctor(OwnedCategory):
     @staticmethod
     @cached_function(key=lambda cls, functor: (cls, id(functor)))
     def __classcall__(cls, functor):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(functor)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(functor)
         return typecall(cls, functor)
 
     class ParentMethods:
-        def __init__(self, presentation, **rest) -> None:
-            self._presentation = presentation
+        r"""``F(X)`` presented by its chosen preimage ``X``.
+
+        The preimage is the defining datum; the image is ``F`` applied to it,
+        which ``F`` computes once and returns as the same object each time.
+        """
+
+        def __init__(self, preimage, **rest) -> None:
+            self._preimage = preimage
             super().__init__(**rest)
 
-        def presentation(self):
-            r"""Return the selected source/image datum defining this presented object."""
-            return self._presentation
-
         def preimage(self):
-            return self.presentation().preimage()
+            return self._preimage
 
         def underlying_image(self):
-            return self.presentation().underlying_image()
+            return self.constructing_functor()(self.preimage())
 
         def constructing_functor(self):
             return self.category().functor()
@@ -141,7 +134,6 @@ class ImageOfFunctor(OwnedCategory):
 
     def __init__(self, functor) -> None:
         self._functor = functor
-        self._presentations = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -156,23 +148,17 @@ class ImageOfFunctor(OwnedCategory):
     def an_object(self):
         return self.object(self.functor().domain().an_object())
 
+    @cached_method(key=lambda self, preimage: id(preimage))
     def object(self, preimage):
+        r"""``F(X)`` presented by ``X``: this category's one entry, one object per preimage."""
         if preimage not in self.functor().domain():
             raise TypeError("a presented image starts from an object of the functor domain")
-        key = id(preimage)
-        recorded = self._presentations.get(key)
-        if recorded is not None and recorded[0] is preimage:
-            return recorded[1]
-        image = self.functor()(preimage)
-        presentation = _FunctorImagePresentation(preimage, image)
-        presented = _object_of(self, presentation=presentation)
-        self._presentations[key] = (preimage, presented)
-        return presented
+        # The image is computed here, so a preimage the functor does not send
+        # anywhere is refused at construction rather than when first read.
+        self.functor()(preimage)
+        return _object_of(self, preimage=preimage)
 
     __call__ = object
-
-    def __contains__(self, candidate) -> bool:
-        return getattr(candidate, "category", lambda: None)() is self
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:

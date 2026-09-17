@@ -228,10 +228,12 @@ def _precomposable(second: Morphism, first) -> bool:
     composition operator: ``first`` is an arrow of the same base category whose
     codomain is ``second``'s domain.  The arrow's own Hom is asked.
     """
-    if not isinstance(first, Morphism) or first.codomain() is not second.domain():
-        return False
-    base = second.parent().base_category()
-    return first in _category_hom(base, first.domain(), first.codomain())
+    match first:
+        case Morphism() if first.codomain() is second.domain():
+            base = second.parent().base_category()
+            return first in _category_hom(base, first.domain(), first.codomain())
+        case _:
+            return False
 
 
 class HomArrowIdentity(Morphism):
@@ -241,7 +243,7 @@ class HomArrowIdentity(Morphism):
         return value
 
     def __eq__(self, other: Any) -> bool:
-        return isinstance(other, HomArrowIdentity) and other.parent() is self.parent()
+        return parent(other) is self.parent()
 
     def __ne__(self, other: Any) -> bool:
         return not self == other
@@ -329,8 +331,9 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
         the weaker Hom must therefore preserve the arrow rather than
         reinterpret its object as generator images or presentation data.
         """
-        if len(args) == 1 and not kwargs and isinstance(args[0], Morphism) and self._already_parented_arrow(args[0]):
-            return args[0]
+        match args:
+            case (Morphism() as arrow,) if not kwargs and self._already_parented_arrow(arrow):
+                return arrow
         return self._element_constructor_(*args, **kwargs)
 
     def hom_family(self) -> _HomCategoryOf:
@@ -502,7 +505,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("distinct arrows have no represented 2-morphism")
         if value is not None:
-            if not isinstance(value, HomArrowIdentity) or value.parent() is not self:
+            if parent(value) is not self:
                 raise ValueError("the discrete 2-Hom contains only its identity")
             return value
         return self.element_class(self)
@@ -877,8 +880,13 @@ class CategoricalIsomorphism(Morphism):
     def __eq__(self, other: Any) -> bool | UnknownClass:
         if self is other:
             return True
-        if not isinstance(other, CategoricalIsomorphism) or self.parent() is not other.parent():
-            return False
+        # A represented isomorphism can be parented by an ordinary Hom-set of
+        # its base category, beside maps that are not isomorphisms.
+        match other:
+            case CategoricalIsomorphism() if parent(other) is self.parent():
+                pass
+            case _:
+                return False
         equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
         if any(answer is False for answer in equalities):
             return False
