@@ -4179,9 +4179,6 @@ class GlobalSectionModules(OwnedCategoryOverBaseRing):
             r"""Construct compatible local data with its selected global presentation."""
             return self._element_constructor_(components, global_source_section=global_section)
 
-        def __contains__(self, value) -> bool:
-            return isinstance(value, self.element_class) and value.parent() is self
-
         def zero(self):
             datum = self.gluing_datum()
             return self(
