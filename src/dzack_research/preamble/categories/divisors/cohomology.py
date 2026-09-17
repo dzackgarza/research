@@ -7,26 +7,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
 
-class _LineBundleCohomologyConstruction:
-    r"""The selected geometric datum defining one represented cohomology space."""
-
-    def __init__(self, scheme, divisor, degree) -> None:
-        self._scheme = scheme
-        self._divisor = divisor
-        self._degree = degree
-
-    def scheme(self):
-        return self._scheme
-
-    def divisor(self):
-        return self._divisor
-
-    def degree(self):
-        return self._degree
-
-
 class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
-    r"""Vector spaces represented as ``H^i(X,L)`` for one selected line bundle."""
+    r"""Vector spaces represented as \(H^i(X, \mathcal{O}_X(D))\) for one divisor.
+
+    An object is a finite free module over the base field together with the
+    scheme \(X\), the divisor \(D\) and the degree \(i\) it represents.  The
+    free-module level consumes the framing; this level adds \(X\), \(D\) and
+    \(i\).
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -36,38 +24,48 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     def _call_(self, scheme, divisor, degree, dimension):
-        r"""Construct one represented ``H^degree(scheme, O(divisor))``."""
+        r"""The represented \(H^{\mathrm{degree}}(X, \mathcal{O}_X(D))\) of the stated dimension."""
         degree = int(degree)
         dimension = int(dimension)
-        if degree < 0:
-            raise ValueError("cohomological degree is nonnegative")
-        if dimension < 0:
-            raise ValueError("a cohomology dimension is nonnegative")
-        if scheme.scheme_base_ring() is not self.base_ring():
-            raise ValueError("line-bundle cohomology is placed over this category's base ring")
+        assert degree >= 0, "cohomological degree is nonnegative"
+        assert dimension >= 0, "a cohomology dimension is nonnegative"
+        assert scheme.scheme_base_ring() is self.base_ring(), (
+            "line-bundle cohomology is placed over this category's base ring"
+        )
         return self.base_ring()._fresh_free_module_on(
             finite_ordinal_set(dimension),
             _extra_categories=(self,),
-            _extra_construction_data=(
-                (
-                    "_line_bundle_cohomology_construction",
-                    _LineBundleCohomologyConstruction(scheme, divisor, degree),
-                ),
-            ),
+            _extra_construction_data={
+                "cohomology_scheme": scheme,
+                "cohomology_divisor": divisor,
+                "cohomological_degree": degree,
+            },
         )
 
     class ParentMethods:
-        def line_bundle_cohomology_construction(self):
-            return self._line_bundle_cohomology_construction
+        def __init__(
+            self,
+            cohomology_scheme,
+            cohomology_divisor,
+            cohomological_degree,
+            **rest,
+        ) -> None:
+            self._cohomology_scheme = cohomology_scheme
+            self._cohomology_divisor = cohomology_divisor
+            self._cohomological_degree = int(cohomological_degree)
+            super().__init__(**rest)
 
         def cohomology_scheme(self):
-            return self.line_bundle_cohomology_construction().scheme()
+            r"""The scheme \(X\) of \(H^i(X, \mathcal{O}_X(D))\)."""
+            return self._cohomology_scheme
 
         def cohomology_divisor(self):
-            return self.line_bundle_cohomology_construction().divisor()
+            r"""The divisor \(D\) of \(H^i(X, \mathcal{O}_X(D))\)."""
+            return self._cohomology_divisor
 
         def cohomological_degree(self):
-            return self.line_bundle_cohomology_construction().degree()
+            r"""The degree \(i\) of \(H^i(X, \mathcal{O}_X(D))\)."""
+            return self._cohomological_degree
 
 
 __all__ = ["LineBundleCohomologySpaces"]
