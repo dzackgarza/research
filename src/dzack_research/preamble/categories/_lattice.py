@@ -306,6 +306,7 @@ class Lattice(Parent, IndexedGenerators):
         sage_lattice,
         names=None,
         *,
+        unformed_module,
         extra_categories=(),
         construction_data=(),
         subobject_ambient=None,
@@ -315,6 +316,7 @@ class Lattice(Parent, IndexedGenerators):
         subobject_verify_linearity=True,
     ) -> None:
         self._module = module
+        self._preamble_unformed_module = unformed_module
         self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
@@ -533,6 +535,7 @@ def _lattice_parent(
         category,
         sage_lattice,
         names,
+        unformed_module=module,
         extra_categories=extra_categories,
         construction_data=construction_data,
     )
@@ -1192,6 +1195,7 @@ def _tensor_product_lattice(factors):
         gram,
         category,
         None,
+        unformed_module=module,
         extra_categories=(TensorProductModules(ring),),
         construction_data=(("tensor_factors", factors),),
     )

@@ -670,6 +670,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         *,
         extra_categories=(),
         construction_data=(),
+        unformed_module=None,
         subobject_source=None,
         subobject_ambient=None,
         subobject_generator_images=None,
@@ -686,9 +687,15 @@ class Lattices(OwnedCategoryOverBaseRing):
         subobject placement, isotropic-reduction datum, root framing or group
         action.  Callers supply only owned mathematical data; concrete
         ``Lattice`` storage stays inside this owner.
+
+        ``unformed_module`` is the module the specialization is built on:
+        the lattice itself when the added structure is stated on it, as for
+        a group action, and otherwise the module ``lattice`` is built on.
         """
         if lattice.base_ring() is not self.base_ring():
             raise ValueError("a lattice specialization must stay over its base ring")
+        if unformed_module is None:
+            unformed_module = lattice.unformed_module()
         retained = lattice if subobject_source is None else subobject_source
         if subobject_ambient is None:
             subobject_ambient = retained.__dict__.get("_preamble_subobject_ambient")
@@ -711,6 +718,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             lattice.gram_tensor(),
             self,
             lattice._sage_lattice,
+            unformed_module=unformed_module,
             extra_categories=tuple(extra_categories),
             construction_data=tuple(construction_data),
             subobject_ambient=subobject_ambient,
@@ -1103,8 +1111,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.base_ring()
 
         def unformed_module(self):
-            r"""Return the free module this lattice is built on: the datum its form was stated on."""
-            return self._module
+            r"""Return the module this lattice is built on, recorded at its construction.
+
+            For a lattice given by its form it is the free module the form was
+            stated on; for a lattice with an action stated on a lattice ``L``,
+            it is ``L``.
+            """
+            return self._preamble_unformed_module
 
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())

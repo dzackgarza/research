@@ -172,10 +172,6 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         def is_trivial_action(self) -> bool:
             return self.source_group_module().is_trivial_action()
 
-        def unformed_module(self):
-            r"""The lattice this action was stated on, as ``Modules(R[G])`` answers it."""
-            return self.source_group_module().unformed_module()
-
         def _element_of_unformed_module(self, element):
             r"""The element of the lattice the action was stated on, with the same coefficients.
 
@@ -320,20 +316,16 @@ def _group_lattice(lattice, group, action):
     source_group_module = Modules(base_ring[group])(lattice, action)
     group = source_group_module.group()
 
-    prototype = Lattices(base_ring)(
-        lattice.gram_tensor(),
-        module_generators=lattice.module_generating_set(),
-    )
     extra_categories = [Lattices(base_ring[group])]
     construction_data = [("source_group_module", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
         construction_data.append(("cartan_type", lattice.cartan_type()))
     result = Lattices(base_ring)._specialize_existing_lattice(
-        prototype,
+        lattice,
         extra_categories=tuple(extra_categories),
         construction_data=tuple(construction_data),
-        subobject_source=lattice,
+        unformed_module=lattice,
     )
     assert group.is_finitely_generated() is True
     for group_generator in group.group_generators():
