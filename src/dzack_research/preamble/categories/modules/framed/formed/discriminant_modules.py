@@ -965,12 +965,17 @@ def _descended_quadratic_gram(dual_lattice, labels, bilinear_values, quadratic_v
 
 
 def _discriminant_module(lattice):
-    r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported."""
+    r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported.
+
+    With a form, the discriminant module is ``FormModules(R)`` applied to the
+    form descended to ``A_L = coker(L -> L^#)``: built on the data of ``A_L``,
+    which it retains as ``unformed_module()``.
+    """
     assert lattice.module_rank().is_finite() and lattice.is_nondegenerate()
 
-    prototype = lattice.correlation_morphism().cokernel()
+    quotient = lattice.correlation_morphism().cokernel()
     dual_lattice = lattice.dual_lattice()
-    labels = prototype.module_generating_set()
+    labels = quotient.module_generating_set()
     ring = lattice.base_ring()
     categories = [DiscriminantModules(ring)]
     construction_data = {
@@ -981,36 +986,35 @@ def _discriminant_module(lattice):
     # The general quotient-value abstraction is present, but the active native
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
-    if _engine_ring(ring) is SageZZ:
-        bilinear_values = FractionFieldQuotients(ring)(1)
-        construction_data["bilinear_value_module"] = bilinear_values
-        categories.append(DiscriminantBilinearModules(ring))
-        # The form level introduces the form and the module it was defined
-        # on, and this is the level that has both: the classes are those of
-        # the selected dual basis, so the descended form is read off ``L^#``
-        # before the quotient carrying it exists.  ``q`` is the selected form
-        # when the lattice is even, because it determines ``b`` and ``b`` does
-        # not determine it.
-        if lattice.is_even():
-            quadratic_values = FractionFieldQuotients(ring)(2)
-            construction_data["quadratic_value_module"] = quadratic_values
-            categories.append(DiscriminantQuadraticModules(ring))
-            construction_data["source_form"] = prototype.quadratic_forms(
-                quadratic_values
-            )(
-                _descended_quadratic_gram(
-                    dual_lattice, labels, bilinear_values, quadratic_values
-                )
+    if _engine_ring(ring) is not SageZZ:
+        return _presented_module_from_morphism(
+            quotient.presentation(),
+            _extra_categories=tuple(categories),
+            _extra_construction_data=construction_data,
+        )
+
+    bilinear_values = FractionFieldQuotients(ring)(1)
+    construction_data["bilinear_value_module"] = bilinear_values
+    categories.append(DiscriminantBilinearModules(ring))
+    # The classes are those of the selected dual basis, so the descended form
+    # is read off ``L^#`` on the generators of ``A_L``.  ``q`` is the selected
+    # form when the lattice is even, because it determines ``b`` and ``b``
+    # does not determine it.
+    if lattice.is_even():
+        quadratic_values = FractionFieldQuotients(ring)(2)
+        construction_data["quadratic_value_module"] = quadratic_values
+        categories.append(DiscriminantQuadraticModules(ring))
+        form = quotient.quadratic_forms(quadratic_values)(
+            _descended_quadratic_gram(
+                dual_lattice, labels, bilinear_values, quadratic_values
             )
-        else:
-            construction_data["source_form"] = prototype.bilinear_forms(
-                bilinear_values
-            )(
-                _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
-            )
-        construction_data["unformed_module"] = prototype
-    return _presented_module_from_morphism(
-        prototype.presentation(),
+        )
+    else:
+        form = quotient.bilinear_forms(bilinear_values)(
+            _descended_bilinear_gram(dual_lattice, labels, bilinear_values)
+        )
+    return FormModules(ring)(
+        form,
         _extra_categories=tuple(categories),
         _extra_construction_data=construction_data,
     )
