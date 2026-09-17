@@ -15,7 +15,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    CategoricalIsomorphism,
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
@@ -110,6 +109,12 @@ def _family_on_finite_ordered_set(index_set, values, *, name, noun):
         lambda index: entries[int(index_set.ranking_map()(index))],
         name=name,
     )
+
+
+def _scheme_core_hom(isomorphism):
+    r"""``Core(Sch_R)(U, V)``, the isomorphisms of ``R``-schemes an overlap transition ``U -> V`` lies in."""
+    domain = isomorphism.domain()
+    return Schemes(domain.scheme_base_ring()).Core().Mor(domain, isomorphism.codomain())
 
 
 def _algebra_homset(source, target):
@@ -484,7 +489,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
 
 
 def _install_glued_scheme_structure(datum, scheme) -> None:
-    r"""Install the owned chart/open/Hom structure on one verified glued carrier."""
+    r"""Install the owned chart/open/Hom structure on one verified glued scheme."""
 
     datum._scheme = scheme
     scheme._preamble_scheme_homset_class = _GluedSchemeMorCategory
@@ -612,12 +617,10 @@ class _TwoChartSchemeGluingDatum(SageObject):
         base = schemes.base_ring()
         if left_chart not in Schemes(base).Affine() or right_chart not in Schemes(base).Affine():
             raise TypeError("the represented two-chart gluing currently requires affine charts")
-        if not isinstance(transition, CategoricalIsomorphism):
-            raise TypeError("scheme gluing requires a represented overlap isomorphism")
+        if transition not in _scheme_core_hom(transition):
+            raise TypeError("scheme gluing requires an isomorphism of schemes between the two overlaps")
         forward = transition.forward()
         inverse = transition.inverse()
-        if not isinstance(forward, SchemeMorphism) or not isinstance(inverse, SchemeMorphism):
-            raise TypeError("the overlap transition must be an isomorphism of schemes")
         left_overlap = forward.domain()
         right_overlap = forward.codomain()
         if left_overlap not in OpenImmersions(left_chart):
@@ -722,7 +725,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
 
 
 class _OwnedFiniteGluedScheme(SageScheme):
-    r"""The owned carrier of a verified finite affine gluing datum."""
+    r"""The scheme glued from a verified finite affine gluing datum."""
 
     def __init__(self, gluing_datum) -> None:
         self._preamble_gluing_datum = gluing_datum
@@ -908,14 +911,10 @@ class _FiniteSchemeGluingDatum(SageObject):
     def _verify_pairwise_transitions(self) -> None:
         for source_index, target_index in self.transition_index_set():
             transition = self.transitions()[source_index, target_index]
-            if not isinstance(transition, CategoricalIsomorphism):
-                raise TypeError("scheme gluing requires represented overlap isomorphisms")
+            if transition not in _scheme_core_hom(transition):
+                raise TypeError("each finite-atlas transition is an isomorphism of schemes between its two overlaps")
             forward = transition.forward()
             inverse = transition.inverse()
-            if not isinstance(forward, SchemeMorphism) or not isinstance(
-                inverse, SchemeMorphism
-            ):
-                raise TypeError("each finite-atlas transition must be an isomorphism of schemes")
             source_overlap = forward.domain()
             target_overlap = forward.codomain()
             source_chart = self.chart(source_index)
@@ -1084,7 +1083,7 @@ class FiniteAffineAtlasPresentation(SageObject):
     r"""A verified finite affine atlas presenting an already selected scheme.
 
     The transition/cocycle data are owned by an ordinary finite scheme gluing;
-    this wrapper retains a second, already selected carrier and the actual open
+    this wrapper retains a second, already selected scheme and the actual open
     chart embeddings into it.  Thus constructions such as line-bundle descent
     can use the common finite-atlas mathematics without replacing ``P^n`` by a
     separately glued copy.
@@ -1191,10 +1190,6 @@ class FiniteAffineAtlasPresentation(SageObject):
         return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
 
 
-def _is_finite_affine_atlas_datum(datum) -> bool:
-    return isinstance(datum, (_FiniteSchemeGluingDatum, FiniteAffineAtlasPresentation))
-
-
 class FiniteAtlasRefinement(SageObject):
     r"""A represented refinement of one finite affine atlas by another.
 
@@ -1204,16 +1199,13 @@ class FiniteAtlasRefinement(SageObject):
     they glue to a comparison morphism from the scheme presented by the fine
     atlas to the scheme presented by the coarse atlas.
 
-    The two glued scheme carriers need not be literally identical objects.
-    The comparison morphism is retained explicitly; a consumer that knows the
-    refinement is an isomorphism may also construct and retain its inverse.
+    The two schemes the atlases present need not be literally identical
+    objects.  The comparison morphism is retained explicitly; a consumer that
+    knows the refinement is an isomorphism may also construct and retain its
+    inverse.
     """
 
     def __init__(self, coarse_datum, fine_datum, index_map, chart_maps) -> None:
-        if not _is_finite_affine_atlas_datum(coarse_datum):
-            raise TypeError("the coarse atlas of a finite refinement is a represented finite affine atlas")
-        if not _is_finite_affine_atlas_datum(fine_datum):
-            raise TypeError("the fine atlas of a finite refinement is a represented finite affine atlas")
         if coarse_datum.base_ring() is not fine_datum.base_ring():
             raise ValueError("a finite-atlas refinement keeps the scheme base ring")
         self._coarse_datum = coarse_datum
@@ -1239,12 +1231,12 @@ class FiniteAtlasRefinement(SageObject):
         for fine_index in fine_indices:
             chart_map = self._chart_maps[fine_index]
             coarse_index = self._index_map[fine_index]
-            if not isinstance(chart_map, SchemeMorphism):
-                raise TypeError("a finite-atlas refinement chart map is a scheme morphism")
-            if chart_map.domain() is not fine_datum.chart(fine_index):
-                raise ValueError("a refinement chart map has the wrong fine-chart domain")
-            if chart_map.codomain() is not coarse_datum.chart(coarse_index):
-                raise ValueError("a refinement chart map has the wrong coarse-chart codomain")
+            fine_chart = fine_datum.chart(fine_index)
+            coarse_chart = coarse_datum.chart(coarse_index)
+            if chart_map not in Schemes(fine_datum.base_ring()).Mor(fine_chart, coarse_chart):
+                raise TypeError(
+                    "a finite-atlas refinement chart map is a scheme morphism from its fine chart to its coarse chart"
+                )
         self._verify_overlap_compatibility()
         self._comparison_morphism = fine_datum.scheme().Mor(coarse_datum.scheme())(
             finite_indexed_family(
@@ -1428,8 +1420,6 @@ class FiniteAtlasRefinement(SageObject):
             FiniteAtlasInvertibleSheaf,
         )
 
-        if not isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-            raise TypeError("finite-atlas refinement pulls back a finite-atlas invertible sheaf")
         if line_bundle.gluing_datum() is not self.coarse_datum():
             raise ValueError("the line bundle belongs to this refinement's coarse atlas")
         fine = self.fine_datum()
@@ -1618,8 +1608,6 @@ class SemilinearModuleMorphism(SageObject):
         return self.linearization()(self._extended_element(element))
 
     def __mul__(self, other):
-        if not isinstance(other, SemilinearModuleMorphism):
-            return NotImplemented
         if other.target() is not self.source():
             return NotImplemented
         scalar_map = self.scalar_map() * other.scalar_map()
@@ -1790,8 +1778,6 @@ class SemilinearAlgebraMorphism(SageObject):
         )
 
     def __mul__(self, other):
-        if not isinstance(other, SemilinearAlgebraMorphism):
-            return NotImplemented
         if other.target() is not self.source():
             return NotImplemented
         scalar_map = self.scalar_map() * other.scalar_map()
@@ -1854,7 +1840,7 @@ class FiniteAtlasAlgebraTransition(SageObject):
     r"""One semilinear algebra-descent isomorphism across two affine overlaps."""
 
     def __init__(self, scheme_transition, source_algebra, target_algebra, pullback, inverse_pullback) -> None:
-        if not isinstance(scheme_transition, CategoricalIsomorphism):
+        if scheme_transition not in _scheme_core_hom(scheme_transition):
             raise TypeError("an algebra overlap transition lies over a represented scheme isomorphism")
         self._scheme_transition = scheme_transition
         self._source_algebra = source_algebra
@@ -1913,7 +1899,7 @@ class FiniteAtlasModuleTransition(SageObject):
         pullback,
         inverse_pullback,
     ) -> None:
-        if not isinstance(scheme_transition, CategoricalIsomorphism):
+        if scheme_transition not in _scheme_core_hom(scheme_transition):
             raise TypeError("a module overlap transition lies over a represented scheme isomorphism")
         self._scheme_transition = scheme_transition
         self._source_module = source_module
@@ -1967,8 +1953,6 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     """
 
     def __init__(self, gluing_datum, local_modules, transitions) -> None:
-        if not _is_finite_affine_atlas_datum(gluing_datum):
-            raise TypeError("finite-atlas module descent requires a represented finite affine atlas")
         self._gluing_datum = gluing_datum
         indices = gluing_datum.chart_index_set()
         self._local_modules = _family_on_finite_ordered_set(
@@ -2052,17 +2036,13 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     def _transition_images(self, source_index, target_index):
         datum = self.gluing_datum()
         pair = datum._ordered_pair(source_index, target_index)
-        supplied = self._transition_data[pair]
-        if not isinstance(supplied, (tuple, list)) or len(supplied) != 2:
-            raise TypeError(
-                "finite-atlas module transition data are (pullback images, inverse-pullback images)"
-            )
+        pullback_images, inverse_images = self._transition_data[pair]
         if pair == (
             datum.normalize_chart_index(source_index),
             datum.normalize_chart_index(target_index),
         ):
-            return supplied[0], supplied[1]
-        return supplied[1], supplied[0]
+            return pullback_images, inverse_images
+        return inverse_images, pullback_images
 
     @staticmethod
     def _images_from_coordinates(domain, codomain, specification):
@@ -2084,16 +2064,16 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         images = {}
         for label in domain.module_generating_set():
             value = supplied[label]
-            if isinstance(value, Mapping):
+            if value in codomain:
+                images[label] = codomain(value)
+            else:
                 images[label] = codomain.linear_combination(
                     {
                         target_label: codomain.base_ring()(coefficient)
-                        for target_label, coefficient in value.items()
+                        for target_label, coefficient in dict(value).items()
                         if codomain.base_ring()(coefficient) != codomain.base_ring().zero()
                     }
                 )
-            else:
-                images[label] = codomain(value)
         return images
 
     def transition(self, source_index, target_index):
@@ -2260,7 +2240,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     @cached_method
     def sheaf(self):
         r"""Return the quasi-coherent module sheaf represented by this descent datum."""
-        return FiniteAtlasGluedModuleSheaf(self)
+        return QuasiCoherentSheavesWithChosenDescentDatum(self.scheme())(self)
 
     def chart_index_set(self):
         return self.gluing_datum().chart_index_set()
@@ -2308,8 +2288,6 @@ class FiniteAtlasModuleGluingDatum(SageObject):
 
     def tensor_product(self, other):
         r"""Return the descent datum for the chartwise tensor product with ``other``."""
-        if not isinstance(other, FiniteAtlasModuleGluingDatum):
-            raise TypeError("finite-atlas tensor products require two module descent data")
         if other.gluing_datum() is not self.gluing_datum():
             raise ValueError("finite-atlas tensor products require one underlying atlas")
         datum = self.gluing_datum()
@@ -2365,10 +2343,6 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
     """
 
     def __init__(self, source, target, local_maps) -> None:
-        if not isinstance(source, FiniteAtlasModuleGluingDatum) or not isinstance(
-            target, FiniteAtlasModuleGluingDatum
-        ):
-            raise TypeError("finite-atlas module morphisms connect finite-atlas descent data")
         if source.gluing_datum() is not target.gluing_datum():
             raise ValueError("finite-atlas module morphisms require one underlying affine atlas")
         self._source = source
@@ -2406,8 +2380,6 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
         return self.local_maps()[index]
 
     def __mul__(self, other):
-        if not isinstance(other, FiniteAtlasModuleGluingMorphism):
-            return NotImplemented
         if other.target() is not self.source():
             return NotImplemented
         return other.source().morphism_to(
@@ -2594,8 +2566,6 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
     r"""Algebra descent on a finite affine atlas with distinct overlap rings."""
 
     def __init__(self, gluing_datum, local_algebras, transitions) -> None:
-        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
-            raise TypeError("finite-atlas algebra descent requires a represented finite scheme gluing")
         self._gluing_datum = gluing_datum
         indices = gluing_datum.chart_index_set()
         self._local_algebras = _family_on_finite_ordered_set(
@@ -2679,12 +2649,10 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
     def _transition_images(self, source_index, target_index):
         datum = self.gluing_datum()
         pair = datum._ordered_pair(source_index, target_index)
-        supplied = self._transition_data[pair]
-        if not isinstance(supplied, (tuple, list)) or len(supplied) != 2:
-            raise TypeError("finite-atlas algebra transition data are (pullback images, inverse-pullback images)")
+        pullback_images, inverse_images = self._transition_data[pair]
         if pair == (datum.normalize_chart_index(source_index), datum.normalize_chart_index(target_index)):
-            return supplied[0], supplied[1]
-        return supplied[1], supplied[0]
+            return pullback_images, inverse_images
+        return inverse_images, pullback_images
 
     @staticmethod
     def _images(domain, codomain, specification):
@@ -2828,10 +2796,6 @@ class FiniteAtlasAlgebraGluingMorphism(SageObject):
     r"""A morphism of finite-atlas algebra descent data."""
 
     def __init__(self, source, target, local_maps) -> None:
-        if not isinstance(source, FiniteAtlasAlgebraGluingDatum) or not isinstance(
-            target, FiniteAtlasAlgebraGluingDatum
-        ):
-            raise TypeError("finite-atlas algebra morphisms connect finite-atlas descent data")
         if source.gluing_datum() is not target.gluing_datum():
             raise ValueError("finite-atlas algebra morphisms require one underlying affine atlas")
         self._source = source
@@ -4358,72 +4322,110 @@ class GlobalSectionAlgebras(OwnedCategoryOverBaseRing):
             return f"Compatible local algebra sections of {self.algebra_gluing_datum()}"
 
 
-class FiniteAtlasGluedModuleSheaf(Parent):
-    r"""The quasi-coherent module sheaf represented on a finite affine atlas.
+class QuasiCoherentSheavesWithChosenDescentDatum(OwnedParameterizedCategory):
+    r"""Quasi-coherent sheaves on ``X`` with a chosen descent datum on a finite affine atlas.
 
-    Unlike :class:`GluedModuleSheaf`, this owner allows the two presentations
-    of an overlap to have distinct coordinate rings.  All restrictions and
-    transitions are therefore read from the retained semilinear atlas datum.
+    An object is a quasi-coherent ``O_X``-module ``F`` together with the
+    module descent datum ``(M_i, phi_ij)`` presenting it on a finite affine
+    atlas ``{U_i}`` of ``X``: ``F(U_i) = M_i``, and ``phi_ij`` identifies the
+    two presentations of each overlap, which may have distinct coordinate
+    rings.  The descent datum is a choice beyond the sheaf; forgetting it
+    lands in ``QuasiCoherentSheaves(X)``.
+
+    ``QuasiCoherentSheavesWithChosenDescentDatum(X)(F)`` is the one entry, and
+    every restriction and transition is read from the retained datum.
     """
 
-    def __init__(self, gluing_datum) -> None:
-        if not isinstance(gluing_datum, FiniteAtlasModuleGluingDatum):
-            raise TypeError("a finite-atlas module sheaf requires finite-atlas descent data")
-        self._gluing_datum = gluing_datum
-        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
+    def scheme(self):
+        return self.base()
 
-    def gluing_datum(self):
-        return self._gluing_datum
+    ringed_space = scheme
 
-    def atlas_datum(self):
-        return self.gluing_datum().gluing_datum()
+    def super_categories(self):
+        return [QuasiCoherentSheaves(self.scheme())]
 
-    def ringed_space(self):
-        return self.gluing_datum().scheme()
+    def an_object(self):
+        r"""``O_X`` presented by rank-one free chart modules on the atlas ``X`` was glued from."""
+        atlas = self.scheme().gluing_datum()
 
-    scheme = ringed_space
+        def identity(label, _domain, codomain):
+            return codomain.module_generator(label)
 
-    def sections_on_chart(self, index):
-        return self.gluing_datum().local_module(index)
+        return FiniteAtlasModuleGluingDatum(
+            atlas,
+            {
+                index: atlas.chart(index).coordinate_algebra().free_module(1)
+                for index in atlas.chart_indices()
+            },
+            {pair: (identity, identity) for pair in atlas.transition_index_set()},
+        ).sheaf()
 
-    def sections_on_intersection(self, chart_index, other_index):
-        return self.gluing_datum().pair_module(chart_index, other_index)
+    def object(self, module_gluing_datum):
+        r"""The quasi-coherent sheaf presented by ``module_gluing_datum``."""
+        if module_gluing_datum.scheme() is not self.scheme():
+            raise ValueError("the descent datum presents a sheaf on a different scheme")
+        return _object_of(self, module_gluing_datum=module_gluing_datum)
 
-    def transition(self, source_index, target_index):
-        return self.gluing_datum().transition(source_index, target_index)
+    __call__ = object
 
-    def global_sections(self):
-        return self.gluing_datum().compatible_sections()
+    def _repr_object_names(self):
+        return f"quasi-coherent sheaves on {self.scheme()} with a chosen finite-atlas descent datum"
 
-    sections = global_sections
+    class ParentMethods:
+        def __init__(self, module_gluing_datum, **rest) -> None:
+            self._module_gluing_datum = module_gluing_datum
+            super().__init__(**rest)
 
-    def stalk_on_chart(self, chart_index, point):
-        r"""Return the stalk of this sheaf at a point of the selected chart."""
-        chart_index = self.atlas_datum().normalize_chart_index(chart_index)
-        chart = self.atlas_datum().chart(chart_index)
-        if point.parent() is not chart.underlying_space():
-            raise ValueError("the stalk point belongs to the selected affine chart")
-        return self.sections_on_chart(chart_index).localize_at_prime(point.ideal())
+        def gluing_datum(self):
+            r"""The module descent datum presenting this sheaf."""
+            return self._module_gluing_datum
 
-    def tensor_product(self, other):
-        r"""Return ``self tensor O_X other`` by chartwise tensor descent."""
-        if not isinstance(other, FiniteAtlasGluedModuleSheaf):
-            raise TypeError("finite-atlas sheaf tensor products require two module sheaves")
-        return self.gluing_datum().tensor_product(other.gluing_datum()).sheaf()
+        def atlas_datum(self):
+            return self.gluing_datum().gluing_datum()
 
-    def morphism_to(self, other, local_maps):
-        r"""Return the sheaf morphism represented by compatible chart maps."""
-        if not isinstance(other, FiniteAtlasGluedModuleSheaf):
-            raise TypeError("finite-atlas sheaf morphisms require two module sheaves")
-        return self.gluing_datum().morphism_to(other.gluing_datum(), local_maps)
+        def ringed_space(self):
+            return self.category().scheme()
 
-    def pullback_to_refinement(self, refinement):
-        r"""Return this sheaf on the selected finer affine atlas."""
-        return refinement.pullback_module_datum(self.gluing_datum()).sheaf()
+        scheme = ringed_space
 
-    def _repr_(self):
-        return f"Finite-atlas module sheaf on {self.scheme()}"
+        def sections_on_chart(self, index):
+            return self.gluing_datum().local_module(index)
 
+        def sections_on_intersection(self, chart_index, other_index):
+            return self.gluing_datum().pair_module(chart_index, other_index)
+
+        def transition(self, source_index, target_index):
+            return self.gluing_datum().transition(source_index, target_index)
+
+        def global_sections(self):
+            return self.gluing_datum().compatible_sections()
+
+        def stalk_on_chart(self, chart_index, point):
+            r"""Return the stalk of this sheaf at a point of the selected chart."""
+            chart_index = self.atlas_datum().normalize_chart_index(chart_index)
+            chart = self.atlas_datum().chart(chart_index)
+            if point.parent() is not chart.underlying_space():
+                raise ValueError("the stalk point belongs to the selected affine chart")
+            return self.sections_on_chart(chart_index).localize_at_prime(point.ideal())
+
+        def tensor_product(self, other):
+            r"""Return ``self tensor O_X other`` by chartwise tensor descent."""
+            if other not in self.category():
+                raise TypeError("a finite-atlas tensor product is taken with a sheaf presented on the same scheme")
+            return self.gluing_datum().tensor_product(other.gluing_datum()).sheaf()
+
+        def morphism_to(self, other, local_maps):
+            r"""Return the sheaf morphism represented by compatible chart maps."""
+            if other not in self.category():
+                raise TypeError("a finite-atlas sheaf morphism ends at a sheaf presented on the same scheme")
+            return self.gluing_datum().morphism_to(other.gluing_datum(), local_maps)
+
+        def pullback_to_refinement(self, refinement):
+            r"""Return this sheaf on the selected finer affine atlas."""
+            return refinement.pullback_module_datum(self.gluing_datum()).sheaf()
+
+        def _repr_(self):
+            return f"Finite-atlas module sheaf on {self.scheme()}"
 
 
 class FiniteAtlasInverseImageModuleSheaf(Parent):
@@ -4436,10 +4438,6 @@ class FiniteAtlasInverseImageModuleSheaf(Parent):
     """
 
     def __init__(self, refinement, source_sheaf, pullback_functor) -> None:
-        if not isinstance(refinement, FiniteAtlasRefinement):
-            raise TypeError("finite-atlas inverse image requires a represented refinement")
-        if not isinstance(source_sheaf, FiniteAtlasGluedModuleSheaf):
-            raise TypeError("finite-atlas inverse image requires a represented module sheaf")
         if source_sheaf.atlas_datum() is not refinement.coarse_datum():
             raise ValueError("the inverse-image sheaf belongs to the refinement's coarse atlas")
         self._refinement = refinement
@@ -4481,10 +4479,6 @@ class FiniteAtlasInverseImageModuleMorphism(SageObject):
     r"""Inverse image of one finite-atlas module-sheaf morphism."""
 
     def __init__(self, source, target, source_morphism) -> None:
-        if not isinstance(source, FiniteAtlasInverseImageModuleSheaf) or not isinstance(
-            target, FiniteAtlasInverseImageModuleSheaf
-        ):
-            raise TypeError("inverse-image module morphisms connect inverse-image sheaves")
         if source.refinement() is not target.refinement():
             raise ValueError("inverse-image module morphisms use one represented refinement")
         if source_morphism.source().sheaf() is not source.source_sheaf():
@@ -4514,8 +4508,6 @@ class FiniteAtlasInverseImageModuleMorphism(SageObject):
         )
 
     def __mul__(self, other):
-        if not isinstance(other, FiniteAtlasInverseImageModuleMorphism):
-            return NotImplemented
         if other.target() is not self.source():
             return NotImplemented
         return FiniteAtlasInverseImageModuleMorphism(
@@ -4529,11 +4521,7 @@ class _FiniteAtlasModulePullbackFunctor(SageObject):
     r"""Module pullback along one represented finite-atlas refinement ``f:X->Y``."""
 
     def __init__(self, refinement) -> None:
-        if not isinstance(refinement, FiniteAtlasRefinement):
-            raise TypeError("finite-atlas module pullback requires a represented refinement")
         self._refinement = refinement
-        self._datum_images = []
-        self._inverse_images = []
 
     def refinement(self):
         return self._refinement
@@ -4541,36 +4529,25 @@ class _FiniteAtlasModulePullbackFunctor(SageObject):
     def scheme_morphism(self):
         return self.refinement().comparison_morphism()
 
-    def inverse_image(self, sheaf):
-        if not isinstance(sheaf, FiniteAtlasGluedModuleSheaf):
-            raise TypeError("finite-atlas inverse image acts on represented module sheaves")
-        if sheaf.atlas_datum() is not self.refinement().coarse_datum():
-            raise ValueError("the sheaf belongs to the wrong coarse atlas")
-        for cached_sheaf, cached in self._inverse_images:
-            if cached_sheaf is sheaf:
-                return cached
-        result = FiniteAtlasInverseImageModuleSheaf(self.refinement(), sheaf, self)
-        self._inverse_images.append((sheaf, result))
-        return result
+    def _coarse_sheaves(self):
+        return QuasiCoherentSheavesWithChosenDescentDatum(self.refinement().coarse_scheme())
 
+    @cached_method
+    def inverse_image(self, sheaf):
+        if sheaf not in self._coarse_sheaves() or sheaf.atlas_datum() is not self.refinement().coarse_datum():
+            raise ValueError("finite-atlas inverse image acts on sheaves presented on the refinement's coarse atlas")
+        return FiniteAtlasInverseImageModuleSheaf(self.refinement(), sheaf, self)
+
+    @cached_method
     def _datum_image(self, datum):
-        for source, target in self._datum_images:
-            if source is datum:
-                return target
-        target = self.refinement().pullback_module_datum(datum)
-        self._datum_images.append((datum, target))
-        return target
+        return self.refinement().pullback_module_datum(datum)
 
     def on_object(self, sheaf):
-        if not isinstance(sheaf, FiniteAtlasGluedModuleSheaf):
-            raise TypeError("finite-atlas module pullback acts on represented module sheaves")
-        if sheaf.atlas_datum() is not self.refinement().coarse_datum():
-            raise ValueError("the sheaf belongs to the wrong coarse atlas")
+        if sheaf not in self._coarse_sheaves() or sheaf.atlas_datum() is not self.refinement().coarse_datum():
+            raise ValueError("finite-atlas module pullback acts on sheaves presented on the refinement's coarse atlas")
         return self._datum_image(sheaf.gluing_datum()).sheaf()
 
     def on_morphism(self, morphism):
-        if not isinstance(morphism, FiniteAtlasModuleGluingMorphism):
-            raise TypeError("finite-atlas module pullback acts on represented sheaf morphisms")
         if morphism.source().gluing_datum() is not self.refinement().coarse_datum():
             raise ValueError("the sheaf morphism belongs to the wrong coarse atlas")
         source = self._datum_image(morphism.source())
@@ -4623,12 +4600,6 @@ def _line_bundle_transition_images(line_bundle, source_index, target_index):
 
 def _finite_atlas_line_bundle_module_sheaf(line_bundle):
     r"""Return the rank-one module sheaf underlying a finite-atlas line bundle."""
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        FiniteAtlasInvertibleSheaf,
-    )
-
-    if not isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-        raise TypeError("the selected line bundle is not finite-atlas descent data")
     datum = line_bundle.gluing_datum()
     local_modules = {
         index: line_bundle.local_module(index)
@@ -4796,7 +4767,6 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
         }
     )
     _install_scheme_subobject_construction(glued, inclusion)
-    glued._preamble_local_closed_subschemes = local_closed
     return _refine_scheme(
         glued,
         base,
@@ -4873,11 +4843,6 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
         }
     )
     _install_scheme_subobject_construction(fixed_glued, inclusion)
-    fixed_glued._preamble_local_fixed_subschemes = finite_indexed_family(
-        indices,
-        lambda index: local_fixed[index],
-        name="Affine charts of the glued fixed subscheme",
-    )
     return _refine_scheme(
         fixed_glued,
         base,
@@ -4900,7 +4865,7 @@ __all__ = [
     "FiniteAtlasRefinement",
     "FiniteAtlasModuleGluingDatum",
     "FiniteAtlasModuleGluingMorphism",
-    "FiniteAtlasGluedModuleSheaf",
+    "QuasiCoherentSheavesWithChosenDescentDatum",
     "FiniteAtlasModuleTransition",
     "GlobalSectionAlgebras",
     "GlobalSectionModules",
