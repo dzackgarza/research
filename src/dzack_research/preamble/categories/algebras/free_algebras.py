@@ -59,7 +59,78 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
-class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
+class _NativeMonomialEvaluation:
+    r"""Native word evaluation shared by free algebras and their linear quotients."""
+
+    def _native_word_representative(self, element):
+        return self._engine_element(element)
+
+    def _native_word_generator(self, position):
+        return self._engine.gen(position)
+
+    def _native_basis_image(self, label):
+        r"""Evaluate one canonical graded framing label in the native algebra."""
+        inner = label.summand_element()
+        labels = self._generating_module.module_generating_set()
+        ranking = labels.ranking_map()
+        match self._native_free_flavor:
+            case "tensor":
+                native = prod(
+                    (self._native_word_generator(int(ranking(inner.component(position))))
+                     for position in inner.parent().index_set()),
+                    start=self._engine.one(),
+                )
+            case "symmetric":
+                native = prod(
+                    (self._native_word_generator(int(ranking(item))) ** int(inner.multiplicity(item))
+                     for item in inner.support()),
+                    start=self._engine.one(),
+                )
+        return self._from_engine_element(native)
+
+    def _native_basis_coefficients(self, element):
+        r"""Decode finite native support in the selected word-module frame.
+
+        Univariate polynomial keys are exponents, multivariate keys are
+        exponent tuples, and free-algebra keys are free-monoid words.  A
+        linear quotient supplies its lift into that native free algebra.
+        """
+        generating = self._generating_module
+        base = generating.base_ring()
+        labels = generating.module_generating_set()
+        module_labels = self._native_module_basis.source().module_generating_set()
+        representative = self._native_word_representative(element)
+        engine = representative.parent()
+        coefficients = {}
+        for monomial, coefficient in representative.monomial_coefficients().items():
+            match self._native_free_flavor:
+                case "tensor":
+                    native_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
+                    word = tuple(
+                        native_labels[generator]
+                        for generator, exponent in monomial
+                        for _ in range(int(exponent))
+                    )
+                    degree = len(word)
+                    inner = module_labels.cofactor(NN(degree))(
+                        lambda position, word=word: word[int(position)]
+                    )
+                case "symmetric":
+                    match engine:
+                        case PolynomialRing_generic():
+                            exponents = (int(monomial),)
+                        case _:
+                            exponents = tuple(int(exponent) for exponent in monomial)
+                    degree = sum(exponents)
+                    powers = dict(zip(labels, exponents, strict=True))
+                    inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
+            coefficients[module_labels(NN(degree), inner)] = base._from_engine_element(
+                _engine_ring(base)(coefficient)
+            )
+        return coefficients
+
+
+class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
     r"""Native polynomial/word arithmetic on the canonical free module.
 
     For a free module M, T(M) = direct_sum_d T^d(M) and
@@ -105,66 +176,6 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
             categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
             construction_data=construction_data,
         )
-
-    def _native_basis_image(self, label):
-        r"""Evaluate one canonical graded basis label in the native algebra."""
-        inner = label.summand_element()
-        labels = self._generating_module.module_generating_set()
-        ranking = labels.ranking_map()
-        match self._native_free_flavor:
-            case "tensor":
-                native = prod(
-                    (self._engine.gen(int(ranking(inner.component(position))))
-                     for position in inner.parent().index_set()),
-                    start=self._engine.one(),
-                )
-            case "symmetric":
-                native = prod(
-                    (self._engine.gen(int(ranking(item))) ** int(inner.multiplicity(item))
-                     for item in inner.support()),
-                    start=self._engine.one(),
-                )
-        return self._from_engine_element(native)
-
-    def _native_basis_coefficients(self, element):
-        r"""Decode only the finite native support into the canonical module basis.
-
-        Sage univariate polynomial keys are exponents, multivariate keys are
-        exponent tuples, and free-algebra keys are free-monoid words.  These
-        representation distinctions stay in this selected engine adapter.
-        """
-        generating = self._generating_module
-        base = generating.base_ring()
-        labels = generating.module_generating_set()
-        module_labels = self._native_module_basis.source().module_generating_set()
-        coefficients = {}
-        for monomial, coefficient in self._engine_element(element).monomial_coefficients().items():
-            match self._native_free_flavor:
-                case "tensor":
-                    native_labels = dict(zip(self._engine.monoid().gens(), labels, strict=True))
-                    word = tuple(
-                        native_labels[generator]
-                        for generator, exponent in monomial
-                        for _ in range(int(exponent))
-                    )
-                    degree = len(word)
-                    inner = module_labels.cofactor(NN(degree))(
-                        lambda position, word=word: word[int(position)]
-                    )
-                case "symmetric":
-                    match self._engine:
-                        case PolynomialRing_generic():
-                            exponents = (int(monomial),)
-                        case _:
-                            exponents = tuple(int(exponent) for exponent in monomial)
-                    degree = sum(exponents)
-                    powers = dict(zip(labels, exponents, strict=True))
-                    inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
-            coefficients[module_labels(NN(degree), inner)] = base._from_engine_element(
-                _engine_ring(base)(coefficient)
-            )
-        return coefficients
-
 
 @cached_function(key=lambda engine, generating_module, flavor, categories=(), construction_data=(): (
     engine, id(generating_module), flavor, categories, construction_data,
@@ -411,9 +422,12 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         placement = [
             FinitelyPresentedAlgebras(base),
             AlgebrasWithChosenFinitePresentation(base),
-            Algebras(base).Associative().Unital().Commutative(),
+            Algebras(base).Associative().Unital(),
             *tuple(extra_categories),
         ]
+        match commutative_backend:
+            case True:
+                placement.append(Algebras(base).Commutative())
         if finite_free_degree is not None:
             from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
 
@@ -472,6 +486,59 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             )
 
 
+
+
+class _NativeLinearRelationAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraParent):
+    r"""A native tensor/symmetric quotient on its actual module of words.
+
+    If M = F/N, maps from T(F)/(N) to any associative algebra are exactly
+    linear maps from F that vanish on N, hence maps from M.  Thus its
+    degree-d module is M tensor ... tensor M.  The same argument with
+    commutative targets gives Sym^d(M).  The word-module owner constructs
+    these quotients; native multiplication only realizes that same module.
+    """
+
+    def __init__(self, engine, base, labels, presentation_ring, relations,
+                 presentation_ideal, *, generating_module, **options):
+        from dzack_research.preamble.categories.modules.native_modules import _NativeModuleFrame
+        from dzack_research.preamble.categories.modules.word_modules import _module_on_word_quotient
+
+        self._generating_module = generating_module
+        match presentation_ring:
+            case _ if presentation_ring in TensorAlgebras(base):
+                self._native_free_flavor = "tensor"
+            case _:
+                assert presentation_ring in SymmetricAlgebras(base), (
+                    "a linear-relation free algebra is tensor or symmetric"
+                )
+                self._native_free_flavor = "symmetric"
+        # Fix the native images before any lower constructor can evaluate a
+        # word. Flattened coefficient variables are not algebra generators.
+        match options.get("generator_values"), options.get("presentation_flattening"):
+            case (None, None):
+                self._native_word_generators = tuple(engine.gen(i) for i in range(int(labels.cardinality())))
+            case (None, flattening):
+                free_engine = _engine_ring(presentation_ring)
+                self._native_word_generators = tuple(
+                    engine(flattening(free_engine.gen(i))) for i in range(int(labels.cardinality()))
+                )
+            case (values, _):
+                self._native_word_generators = tuple(values)
+        word_module = _module_on_word_quotient(generating_module, self._native_free_flavor)
+        self._native_module_basis = _NativeModuleFrame(
+            word_module, self._native_basis_image, self._native_basis_coefficients,
+        )
+        super().__init__(
+            engine, base, labels, presentation_ring, relations, presentation_ideal,
+            generating_module=generating_module, **options,
+        )
+
+    def _native_word_generator(self, position):
+        return self._native_word_generators[position]
+
+    def _native_word_representative(self, element):
+        presentation = self.presentation_ring()
+        return _engine_element(presentation, self.lift_to_presentation(self(element)))
 
 
 def _presented_algebra_on_engine(
@@ -795,7 +862,12 @@ def _finitely_presented_algebra_from_data(
         if degree > 0:
             finite_free_degree = degree
 
-    return _PresentedAlgebraParent(
+    match _generating_module, finite_free_degree:
+        case (None, _) | (_, int()):
+            constructor = _PresentedAlgebraParent
+        case _:
+            constructor = _NativeLinearRelationAlgebra
+    return constructor(
         quotient_engine,
         base,
         labels,

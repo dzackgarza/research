@@ -18,7 +18,9 @@ from dzack_research.preamble.categories.modules.general_modules import GeneralMo
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules, Modules, ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules, Modules, ModuleSubobjects, ModulesWithChosenFinitePresentation,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets as OwnedSets
 from dzack_research.preamble.owned_category import _object_of
@@ -65,8 +67,12 @@ class _WordPresentation:
 
     def __init__(self, source_module, flavor):
         assert flavor in ("tensor", "symmetric"), "the word presentation is tensor or symmetric"
-        assert _has_component_presentation(source_module) or source_module in FramedFreeModules(source_module.base_ring()), (
-            "relationful words require the source's selected finite module components"
+        assert (
+            _has_component_presentation(source_module)
+            or source_module in FramedFreeModules(source_module.base_ring())
+            or source_module in ModulesWithChosenFinitePresentation(source_module.base_ring())
+        ), (
+            "relationful words use the source's finite presentation or selected finite module components"
         )
         self._source_module = source_module
         self._flavor = flavor
@@ -100,6 +106,70 @@ class _WordPresentation:
 
     def _source_has_component_protocol(self):
         return _has_component_presentation(self.source_module())
+
+    def _source_has_relations(self):
+        r"""Whether the chosen source framing needs its finite relation quotient."""
+        source = self.source_module()
+        return (
+            source not in FramedFreeModules(self.base_ring())
+            and source in ModulesWithChosenFinitePresentation(self.base_ring())
+        )
+
+    def _homogeneous_module(self, degree):
+        r"""The canonical tensor or symmetric power, with its module relations."""
+        source = self.source_module()
+        match self.flavor():
+            case "tensor":
+                return source.tensor_power(int(degree))
+            case "symmetric":
+                return source.symmetric_power(int(degree))
+
+    def _homogeneous_label(self, label):
+        r"""Read a flat word label in the canonical module power's framing."""
+        from dzack_research.preamble.categories.modules.tensor_products import _nested_tensor_label
+
+        label = self.module_generating_set()(label)
+        degree = int(label.summand_index())
+        word = label.summand_element()
+        match degree:
+            case 0:
+                return next(iter(self._homogeneous_module(0).module_generating_set()))
+            case _:
+                match self.flavor():
+                    case "tensor":
+                        return _nested_tensor_label(
+                            self.source_module(),
+                            tuple(word.component(index) for index in word.parent().index_set()),
+                        )
+                    case "symmetric":
+                        match degree:
+                            case 1:
+                                return next(iter(word.support()))
+                            case _:
+                                return self._homogeneous_module(degree).module_generating_set().from_multiplicities(
+                                    {item: word.multiplicity(item) for item in word.support()}
+                                )
+
+    def _label_from_homogeneous(self, degree, label):
+        r"""Read the canonical power's framing label in the flat word cover."""
+        from dzack_research.preamble.categories.modules.tensor_products import _flatten_tensor_label
+
+        degree = int(degree)
+        labels = self.degree_basis(degree)
+        match self.flavor():
+            case "tensor":
+                word = _flatten_tensor_label(label, degree)
+                inner = labels(lambda index: word[int(index)])
+            case "symmetric":
+                match degree:
+                    case 0:
+                        multiplicities = {}
+                    case 1:
+                        multiplicities = {label: 1}
+                    case _:
+                        multiplicities = {item: label.multiplicity(item) for item in label.support()}
+                inner = labels.from_multiplicities(multiplicities)
+        return self.basis_label(degree, inner)
 
     def degree_basis(self, degree):
         r"""The exact degree summand of the selected word cover's label set."""
@@ -237,27 +307,27 @@ class _WordPresentation:
             coefficient = ring(coefficient)
             if not coefficient:
                 continue
-            key = self._monomial_component_key(basis_label)
-            component_label = self._component_generator_label(basis_label)
+            key = self.component_key(basis_label)
+            component_label = self.component_label(basis_label)
             component_coefficients = grouped.setdefault(key, {})
             component_coefficients[component_label] = component_coefficients.get(component_label, ring.zero()) + coefficient
 
         normalized = {}
         for key, component_coefficients in grouped.items():
-            component = self._component_module(key)
+            component = self.component_module(key)
             element = component.linear_combination(component_coefficients)
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
                 element = component._smith_representative(element)
             for component_label, coefficient in component.framing_coefficients(element).items():
-                basis_label = self._basis_label_from_component(key, component_label)
+                basis_label = self.label_from_component(key, component_label)
                 normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(coefficient)
         return {label: coefficient for label, coefficient in normalized.items() if coefficient}
 
 
     def normalize(self, representative):
         representative = self.cover()(representative)
-        match self._source_has_component_protocol():
+        match self._source_has_component_protocol() or self._source_has_relations():
             case False:
                 return representative
             case True:
@@ -269,29 +339,45 @@ class _WordPresentation:
             case True:
                 return self._monomial_component_key(label)
             case False:
-                return self.module_generating_set()(label)
+                match self._source_has_relations():
+                    case True:
+                        return self.module_generating_set()(label).summand_index()
+                    case False:
+                        return self.module_generating_set()(label)
 
     def component_module(self, key):
         match self._source_has_component_protocol():
             case True:
                 return self._component_module(key)
             case False:
-                return self.base_ring().regular_module()
+                match self._source_has_relations():
+                    case True:
+                        return self._homogeneous_module(key)
+                    case False:
+                        return self.base_ring().regular_module()
 
     def component_label(self, label):
         match self._source_has_component_protocol():
             case True:
                 return self._component_generator_label(label)
             case False:
-                return 0
+                match self._source_has_relations():
+                    case True:
+                        return self._homogeneous_label(label)
+                    case False:
+                        return 0
 
     def label_from_component(self, key, label):
         match self._source_has_component_protocol():
             case True:
                 return self._basis_label_from_component(key, label)
             case False:
-                assert label == 0, "the free component has its rank-one generator"
-                return self.module_generating_set()(key)
+                match self._source_has_relations():
+                    case True:
+                        return self._label_from_homogeneous(key, label)
+                    case False:
+                        assert label == 0, "the free component has its rank-one generator"
+                        return self.module_generating_set()(key)
 
 
 class _WordClass:

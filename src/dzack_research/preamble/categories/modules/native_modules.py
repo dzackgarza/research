@@ -17,16 +17,19 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.refine import refine
 
 
-class _NativeModuleBasis:
-    r"""A native realization's chosen free source, images and inverse coordinates.
+class _NativeModuleFrame:
+    r"""A native realization of an actual framed module, with inverse coordinates.
 
-    This is input at the module construction boundary, not a second module.
-    The source is already constructed and its image/coordinate correspondence
-    is supplied by the chosen native presentation. Values are normalized by
-    that free module, so its actual scalar ring remains authoritative.
+    The model is already constructed, with its free framing source and any
+    relations.  Images of its generators and inverse coordinates identify
+    it with the native realization.  Normalization is the model's, so a
+    word quotient is not mistaken for the free module on its monomials.
     """
 
     def __init__(self, source, images, coordinates):
+        assert source in FramedModules(source.base_ring()), (
+            "a native frame is evaluated from an actual framed module"
+        )
         self._source = source
         self._images = images
         self._coordinates = coordinates
@@ -40,6 +43,16 @@ class _NativeModuleBasis:
     def coefficients(self, element):
         source = self.source()
         return source.framing_coefficients(source.linear_combination(self._coordinates(element)))
+
+
+class _NativeModuleBasis(_NativeModuleFrame):
+    r"""The free case of the native frame, on an actual chosen basis."""
+
+    def __init__(self, source, images, coordinates):
+        assert source in FramedFreeModules(source.base_ring()), (
+            "a native basis is evaluated from an actual framed free module"
+        )
+        super().__init__(source, images, coordinates)
 
 
 class _RingModulePresentation:
@@ -98,11 +111,15 @@ class _RingModulePresentation:
             assert source.base_ring() is self.base_ring(), "the basis uses the native action's exact scalars"
             labels = source.module_generating_set()
             refine(module, FramedModules(self.base_ring()))
-            FramedModules.ParentMethods._install_framing(module, labels, self._basis.image, source)
-            placement = FramedFreeModules(self.base_ring())
-            if labels.cardinality().is_finite():
-                placement = placement.FinitelyGenerated()
-            refine(module, placement)
+            FramedModules.ParentMethods._install_framing(
+                module, labels, self._basis.image, source.framing_source()
+            )
+            match source:
+                case _ if source in FramedFreeModules(self.base_ring()):
+                    placement = FramedFreeModules(self.base_ring())
+                    if labels.cardinality().is_finite():
+                        placement = placement.FinitelyGenerated()
+                    refine(module, placement)
         return module
 
     def basis(self):

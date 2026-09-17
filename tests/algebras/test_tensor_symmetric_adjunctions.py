@@ -139,9 +139,16 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
         algebra = constructor(module)
         x = algebra.algebra_generator("x")
         y = algebra.algebra_generator("y")
+        assert algebra.generating_module() is module
+        assert algebra.unformed_module() is algebra
+        assert algebra.graded_piece(1) is module
+        assert algebra.framing_source() is not module
         assert 2 * x + 4 * y == algebra.zero()
         assert (2 * x + 4 * y) * x == algebra.zero()
         assert y * (2 * x + 4 * y) == algebra.zero()
+        assert algebra.framing_coefficients((2 * x + 4 * y) * x) == {}
+        element = x * x + y * x
+        assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
         for relation in algebra.relations():
             assert algebra.algebra_presentation_morphism()(relation) == algebra.zero()
 
