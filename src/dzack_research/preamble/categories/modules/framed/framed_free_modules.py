@@ -99,6 +99,10 @@ class _SparseFreeModuleElement(ModuleElement):
                     "coordinate iteration requires a finite ordered module framing"
                 )
 
+    def is_canonical_free_generator(self) -> bool:
+        r"""Whether this is one of the chosen basis vectors, with coefficient one."""
+        return len(self._coefficients) == 1 and next(iter(self._coefficients.values())) == self.parent().base_ring().one()
+
     def underlying_set_element(self):
         r"""Recover ``s`` when this is the canonical free generator ``[s]``.
 
@@ -106,16 +110,11 @@ class _SparseFreeModuleElement(ModuleElement):
         general linear combination has no distinguished underlying element of
         ``S`` and therefore refuses rather than selecting one support label.
         """
-        if len(self._coefficients) != 1:
+        if not self.is_canonical_free_generator():
             raise ValueError(
                 "only a canonical free generator has one underlying framing element"
             )
-        label, coefficient = next(iter(self._coefficients.items()))
-        if coefficient != self.parent().base_ring().one():
-            raise ValueError(
-                "only a canonical free generator has one underlying framing element"
-            )
-        return label
+        return next(iter(self._coefficients))
 
     def _add_(self, other):
         ring = self.parent().base_ring()
@@ -224,12 +223,28 @@ class _SparseFreeModuleParent:
     @cached_method
     def module_generators(self):
         r"""Return the image of the sparse free-basis unit as an owned set."""
-        return Sets().image_set(
-            self.module_generator_morphism(),
-            self.module_generating_set(),
-            is_injective=True,
-            inverse=lambda generator: self(generator).underlying_set_element(),
-        )
+        def index_of(generator):
+            match generator:
+                case _ if generator not in self:
+                    return None
+                case _ if self(generator).is_canonical_free_generator():
+                    return self(generator).underlying_set_element()
+                case _:
+                    return None
+
+        # The unit S -> U(R^(S)) is injective over a nonzero ring.  Over the
+        # zero ring it is constant, and no inverse may be asserted.
+        match self.base_ring().one() == self.base_ring().zero():
+            case True:
+                return Sets().image_set(
+                    self.module_generator_morphism(), self.module_generating_set()
+                )
+            case False:
+                return Sets().image_set(
+                    self.module_generator_morphism(),
+                    self.module_generating_set(),
+                    inverse=index_of,
+                )
 
     def __call__(self, value):
         r"""Construct a free-module element through the owned coordinate syntax."""

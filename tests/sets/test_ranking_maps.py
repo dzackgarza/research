@@ -10,7 +10,6 @@ rather than some bijection that happens to round-trip.
 import pytest
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteFilteredOrderedSets,
     FiniteOrderedSets,
     OrderedEnumeratedSets,
     finite_ordered_set,
@@ -144,7 +143,7 @@ def test_ordered_collection_notation_routes_through_category_constructors() -> N
         lambda index: ("u", "v", "w")[int(index)],
         index_of=lambda value: {"u": indices[0], "v": indices[1], "w": indices[2]}[value],
     )
-    filtered = FiniteFilteredOrderedSets()(
+    filtered = Sets().condition_set(
         declared,
         lambda value: value != "b",
     )
@@ -164,10 +163,9 @@ def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -
     source = finite_ordered_set((0, 1, 2, 3))
     even = source.filtered(lambda value: value % 2 == 0, name="even")
     zero = even.filtered(lambda value: value == 0, name="zero")
-    direct = FiniteFilteredOrderedSets()(
+    direct = Sets().condition_set(
         even,
         lambda value: value == 2,
-        name="two",
     )
 
     assert zero is not even

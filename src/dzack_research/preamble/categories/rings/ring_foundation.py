@@ -37,6 +37,7 @@ from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -2768,9 +2769,6 @@ class _OwnedRingElement(RingElement):
     def __int__(self):
         return int(self._backend())
 
-    def __index__(self):
-        return int(self._backend())
-
     def __float__(self):
         return float(self._backend())
 
@@ -3020,6 +3018,19 @@ class _OwnedRingElement(RingElement):
         return _own_ring(polynomial.parent())._from_engine_element(polynomial)
 
 
+class _OwnedIntegerElement(_OwnedRingElement):
+    r"""An integer engine value implementing Python's exact index protocol.
+
+    ``__index__`` is not a truncating conversion from an arbitrary ring.
+    The private ring engine selects this element realization only for ZZ;
+    sets and other consumers then use the native protocol without importing
+    the ring constructor or inspecting its engine.
+    """
+
+    def __index__(self) -> int:
+        return int(self)
+
+
 class _OwnedRingParent(UniqueRepresentation, Parent):
     r"""An owned ring parent with one private computational realization.
 
@@ -3030,7 +3041,20 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     _preamble_owned_ring_parent = True
 
-    Element = _OwnedRingElement
+    @lazy_attribute
+    def Element(self):
+        r"""The engine-specific element realization consumed by Sage Parent.
+
+        ``sage/structure/parent.pyx:Parent.element_class`` reads ``self.Element``
+        and combines it with the category's element methods.  This native
+        representation boundary supplies exact indexing only for integers;
+        it does not change the mathematical category of either ring.
+        """
+        match self._engine:
+            case _ if self._engine is SageZZ:
+                return _OwnedIntegerElement
+            case _:
+                return _OwnedRingElement
 
     def __init__(self, engine: Ring, *, base=None, category=None) -> None:
         r"""Construct over the scalar ring the level above declares.
