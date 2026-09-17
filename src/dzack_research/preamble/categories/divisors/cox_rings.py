@@ -13,18 +13,13 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 
 
-class _CoxRingConstruction:
-    r"""The represented toric scheme defining one Cox ring."""
-
-    def __init__(self, scheme) -> None:
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-
 class CoxRings(OwnedParameterizedCategory):
-    r"""Cox rings graded by the represented divisor class group of one toric scheme."""
+    r"""Cox rings graded by the represented divisor class group of one toric scheme.
+
+    An object is \(k[x_\rho \mid \rho \in \Sigma(1)]\) graded by
+    \(\deg x_\rho = [D_\rho] \in \operatorname{Cl}(X)\).  The polynomial algebra
+    level consumes the presentation; this level adds the toric scheme \(X\).
+    """
 
     @staticmethod
     def __classcall__(cls, scheme):
@@ -55,11 +50,13 @@ class CoxRings(OwnedParameterizedCategory):
         return f"Cox rings of {self.scheme()}"
 
     class ParentMethods:
-        def cox_ring_construction(self):
-            return self._cox_ring_construction
+        def __init__(self, cox_scheme, **rest) -> None:
+            self._cox_scheme = cox_scheme
+            super().__init__(**rest)
 
         def cox_scheme(self):
-            return self.cox_ring_construction().scheme()
+            r"""The toric scheme whose Cox ring this is."""
+            return self._cox_scheme
 
         def cox_rays(self):
             rays = self.cox_scheme().fan().cones(1)
@@ -81,8 +78,7 @@ class CoxRings(OwnedParameterizedCategory):
         def homogeneous_degree(self, element):
             r"""Return the class-group degree of a nonzero homogeneous Cox polynomial."""
             element = self(element)
-            if element == self.zero():
-                raise ValueError("zero has no selected homogeneous Cox degree")
+            assert element != self.zero(), "zero has no selected homogeneous Cox degree"
             backend = _engine_element(self, element)
             degrees = []
             labels = tuple(self.algebra_generating_set())
@@ -99,11 +95,10 @@ class CoxRings(OwnedParameterizedCategory):
                             generator_degree,
                         )
                 degrees.append(degree)
-            if not degrees:
-                raise ValueError("zero has no selected homogeneous Cox degree")
             selected = degrees[0]
-            if any(degree != selected for degree in degrees[1:]):
-                raise ValueError("the Cox-ring element is not homogeneous")
+            assert all(degree == selected for degree in degrees[1:]), (
+                "the Cox-ring element is not homogeneous"
+            )
             return selected
 
 
@@ -112,13 +107,11 @@ def _cox_ring(scheme):
     rays = scheme.fan().cones(1)
     names = tuple(f"x{position}" for position in range(int(rays.cardinality())))
     presentation = scheme.scheme_base_ring().polynomial_ring(names)
-    ring = (presentation).quotient_by_relations((),
+    return presentation.quotient_by_relations(
+        (),
         _extra_categories=(CoxRings(scheme),),
-        _extra_construction_data=(
-            ("_cox_ring_construction", _CoxRingConstruction(scheme)),
-        ),
+        _extra_construction_data=(("cox_scheme", scheme),),
     )
-    return ring
 
 
 __all__ = ["CoxRings"]

@@ -1,54 +1,55 @@
-"""Cartier divisor groups."""
+r"""Cartier divisor groups."""
 
-from dzack_research.preamble.categories.divisors.divisor_groups import _divisor_role_specimen, _module_in_role
+from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories.divisors.divisor_groups import (
+    _affine_line_over_rationals,
+    _cokernel_in_category,
+    _free_presentation,
+)
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category_bases import Category
 
 
-class _CartierDivisorConstruction:
-    r"""The selected scheme defining one represented Cartier-divisor role."""
-
-    def __init__(self, scheme) -> None:
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-
 class CartierDivisorGroups(Category):
+    r"""Cartier divisor groups of a scheme, with a chosen presentation.
+
+    An object is \(\operatorname{coker}(\rho)\) for a morphism
+    \(\rho\colon F \to G\) of framed abelian groups presenting Cartier divisors
+    of one scheme \(X\), framed by the generators of \(G\).  The presentation
+    \(\rho\) is consumed by the presented-module level; this level adds \(X\).
+    A group free on chosen Cartier divisors is presented by \(\rho = 0\).
+    """
+
     def an_object(self):
-        return _divisor_role_specimen(self)
+        r"""Cartier divisors of \(\mathbb{A}^1_{\mathbb{Q}}\) framed by one divisor with no relation."""
+        return self.free(_affine_line_over_rationals(), finite_ordered_set(("D",)))
 
     @classmethod
     def _repr_object_names(cls):
         return "Cartier divisor groups"
 
     def super_categories(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
         return [FramedModules(_own_ring(SageZZ))]
 
-    def _call_(self, module, scheme=None):
-        if module not in self.super_categories()[0]:
-            raise TypeError("a Cartier divisor group must carry a specified framing")
-        return _module_in_role(
-            module,
-            self,
-            "a Cartier divisor group requires a represented framed-module presentation",
-            construction_data=(
-                None
-                if scheme is None
-                else {"_cartier_divisor_construction": _CartierDivisorConstruction(scheme)}
-            ),
-        )
+    def _call_(self, scheme, presentation):
+        r"""\(\operatorname{coker}(\rho)\) for the presentation ``presentation`` of Cartier divisors of ``scheme``."""
+        return _cokernel_in_category(presentation, self, divisor_scheme=scheme)
+
+    def free(self, scheme, generators):
+        r"""The free abelian group on the set ``generators`` of Cartier divisors of ``scheme``, presented by \(0 \to \mathbb{Z}^{(S)}\)."""
+        return self(scheme, _free_presentation(generators))
 
     class ParentMethods:
-        def cartier_divisor_construction(self):
-            construction = getattr(self, "_cartier_divisor_construction", None)
-            if construction is None:
-                raise TypeError("this Cartier-divisor role has no selected scheme")
-            return construction
+        def __init__(self, divisor_scheme, **rest) -> None:
+            self._divisor_scheme = divisor_scheme
+            super().__init__(**rest)
 
         def divisor_scheme(self):
-            return self.cartier_divisor_construction().scheme()
+            r"""The scheme whose Cartier divisors this group presents."""
+            return self._divisor_scheme
+
+
+__all__ = ["CartierDivisorGroups"]

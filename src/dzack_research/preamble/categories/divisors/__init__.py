@@ -2,8 +2,7 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCodimensionOneChowComparison'),
- 'AlgebraicCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'AlgebraicCycleGroups'),
+_EXPORTS = {'AlgebraicCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'AlgebraicCycleGroups'),
  'CartierDivisorGroups': ('dzack_research.preamble.categories.divisors.cartier_divisor_groups',
                           'CartierDivisorGroups'),
  'ClassGroups': ('dzack_research.preamble.categories.divisors.class_groups', 'ClassGroups'),
@@ -18,8 +17,6 @@ _EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.cate
  'DivisorGroups': ('dzack_research.preamble.categories.divisors.divisor_groups', 'DivisorGroups'),
  'FormalDivisorGroups': ('dzack_research.preamble.categories.divisors.divisor_groups',
                          'FormalDivisorGroups'),
- 'DivisorClassComparison': ('dzack_research.preamble.categories.divisors.general_divisors',
-                           'DivisorClassComparison'),
  'FiniteAtlasCartierDivisor': ('dzack_research.preamble.categories.divisors.general_divisors',
                               'FiniteAtlasCartierDivisor'),
  'FiniteAtlasInvertibleSheaf': ('dzack_research.preamble.categories.divisors.invertible_sheaves',
@@ -37,13 +34,11 @@ _EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.cate
                              'ProjectiveLinearSystems'),
  'ProjectiveJetSpaces': ('dzack_research.preamble.categories.divisors.linear_systems',
                         'ProjectiveJetSpaces'),
- 'SerreIntersectionData': ('dzack_research.preamble.categories.divisors.chow_groups', 'SerreIntersectionData'),
  'SectionRings': ('dzack_research.preamble.categories.divisors.section_rings', 'SectionRings'),
  'WeilDivisorGroups': ('dzack_research.preamble.categories.divisors.weil_divisor_groups',
                        'WeilDivisorGroups')}
 
 __all__ = [
-    'AffineCodimensionOneChowComparison',
     'AlgebraicCycleGroups',
     'CartierDivisorGroups',
     'ChowGroups',
@@ -51,7 +46,6 @@ __all__ = [
     'CompleteLinearSystems',
     'CoxRings',
     'DivisorGroups',
-    'DivisorClassComparison',
     'FiniteAtlasCartierDivisor',
     'FiniteAtlasInvertibleSheaf',
     'FormalDivisorGroups',
@@ -64,7 +58,6 @@ __all__ = [
     'ProductProjectiveSubschemeLineBundle',
     'ProjectiveSubschemeLineBundle',
     'ProjectiveLinearSystems',
-    'SerreIntersectionData',
     'SectionRings',
     'TorusInvariantCycleGroups',
     'WeilDivisorGroups',

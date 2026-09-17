@@ -17,45 +17,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import NN
 
 
-class _SectionRingConstruction:
-    r"""The selected geometric source defining one section ring."""
-
-    def divisor(self):
-        raise ValueError("this section ring was selected from a line bundle, not a divisor")
-
-    def line_bundle(self):
-        raise ValueError("this section ring was selected from a divisor, not a line bundle")
-
-
-class _LineBundleSectionRingConstruction(_SectionRingConstruction):
-    r"""A section ring selected from one projective line bundle."""
-
-    def __init__(self, line_bundle) -> None:
-        self._line_bundle = line_bundle
-
-    def section_scheme(self):
-        return self.line_bundle().scheme()
-
-    def line_bundle(self):
-        return self._line_bundle
-
-
-class _ToricDivisorSectionRingConstruction(_SectionRingConstruction):
-    r"""A section ring selected from one divisor on one toric scheme."""
-
-    def __init__(self, scheme, divisor) -> None:
-        self._scheme = scheme
-        self._divisor = divisor
-
-    def section_scheme(self):
-        return self._scheme
-
-    def divisor(self):
-        return self._divisor
-
-
 class SectionRings(OwnedCategoryOverBaseRing):
-    r"""Nonnegatively graded section algebras over the stated coefficient ring."""
+    r"""Section rings \(R(X, L) = \bigoplus_{n \ge 0} H^0(X, L^{\otimes n})\).
+
+    An object is a nonnegatively graded algebra presented as an affine
+    semigroup algebra.  The algebra levels consume the presentation; this
+    level adds the scheme \(X\) and the line bundle \(L\) the ring is stated
+    on, given either as \(L\) itself or as a Cartier divisor \(D\) with
+    \(L = \mathcal{O}_X(D)\).
+    """
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring(), NN)]
@@ -65,24 +35,46 @@ class SectionRings(OwnedCategoryOverBaseRing):
         return "section rings"
 
     def _call_(self, source, divisor=None):
-        r"""Construct the selected section algebra from a divisor or line bundle."""
-        if divisor is None:
-            return _line_bundle_section_ring(self, source)
-        return _toric_divisor_section_ring(self, source, divisor)
+        r"""\(R(X, L)\) for a line bundle ``source``, or \(R(X, \mathcal{O}_X(D))\) for a scheme ``source`` and a divisor."""
+        match divisor:
+            case None:
+                return _line_bundle_section_ring(self, source)
+            case _:
+                return _toric_divisor_section_ring(self, source, divisor)
 
     class ParentMethods:
-        def section_ring_construction(self):
-            r"""Return the selected geometric datum defining this section ring."""
-            return self._section_ring_construction
+        def __init__(
+            self,
+            section_scheme,
+            section_line_bundle=None,
+            section_divisor=None,
+            **rest,
+        ) -> None:
+            assert (section_line_bundle is None) != (section_divisor is None), (
+                "a section ring is stated on one line bundle or on one divisor"
+            )
+            self._section_scheme = section_scheme
+            self._section_line_bundle = section_line_bundle
+            self._section_divisor = section_divisor
+            super().__init__(**rest)
 
         def section_scheme(self):
-            return self.section_ring_construction().section_scheme()
+            r"""The scheme \(X\) whose sections form this ring."""
+            return self._section_scheme
 
         def section_divisor(self):
-            return self.section_ring_construction().divisor()
+            r"""The divisor \(D\) with \(L = \mathcal{O}_X(D)\), when the ring was stated on a divisor."""
+            assert self._section_divisor is not None, (
+                "this section ring was stated on a line bundle, not a divisor"
+            )
+            return self._section_divisor
 
         def section_line_bundle(self):
-            return self.section_ring_construction().line_bundle()
+            r"""The line bundle \(L\), when the ring was stated on a line bundle."""
+            assert self._section_line_bundle is not None, (
+                "this section ring was stated on a divisor, not a line bundle"
+            )
+            return self._section_line_bundle
 
         @cached_method
         def section_semigroup_generators(self):
@@ -96,8 +88,7 @@ class SectionRings(OwnedCategoryOverBaseRing):
         def homogeneous_degree(self, element):
             r"""Return the nonnegative degree of one homogeneous section-ring element."""
             element = self(element)
-            if element == self.zero():
-                raise ValueError("zero has no selected homogeneous section-ring degree")
+            assert element != self.zero(), "zero has no selected homogeneous section-ring degree"
             presentation = self.presentation_ring()
             representative = self.lift_to_presentation(element)
             backend = _engine_element(presentation, representative)
@@ -110,29 +101,25 @@ class SectionRings(OwnedCategoryOverBaseRing):
                 for position, exponent in enumerate(exponents):
                     degree += int(exponent) * int(self.generator_degree(labels[position]))
                 degrees.append(degree)
-            if not degrees:
-                raise ValueError("zero has no selected homogeneous section-ring degree")
             selected = degrees[0]
-            if any(degree != selected for degree in degrees[1:]):
-                raise ValueError("the section-ring element is not homogeneous")
+            assert all(degree == selected for degree in degrees[1:]), (
+                "the section-ring element is not homogeneous"
+            )
             return NN(selected)
 
         @cached_method
         def graded_piece(self, degree):
-            r"""Return the actual section module in nonnegative degree ``n``."""
+            r"""The section module \(H^0(X, L^{\otimes n})\) in nonnegative degree ``n``."""
             degree = NN(degree)
-            construction = self.section_ring_construction()
-            match construction:
-                case _LineBundleSectionRingConstruction():
-                    return construction.line_bundle().tensor_power(int(degree)).global_sections()
-                case _ToricDivisorSectionRingConstruction():
-                    divisor = construction.divisor()
+            match self._section_line_bundle:
+                case None:
+                    divisor = self.section_divisor()
                     integers = divisor.parent().base_ring()
-                    return construction.section_scheme().divisor_section_space(
+                    return self.section_scheme().divisor_section_space(
                         integers(int(degree)) * divisor
                     )
-                case _:
-                    raise TypeError("unknown section-ring construction datum")
+                case bundle:
+                    return bundle.tensor_power(int(degree)).global_sections()
 
         def section_multiplication(self, left_degree, right_degree):
             r"""Multiply sections in two graded pieces of a projective line-bundle ring."""
@@ -211,40 +198,40 @@ class SectionRings(OwnedCategoryOverBaseRing):
 
         def homogeneous_component_element(self, degree, section):
             r"""Return one homogeneous section as the corresponding section-ring element."""
-            inclusion = self.homogeneous_component_map(degree)
-            module = inclusion.codomain()
-            value = inclusion(section)
-            realize = getattr(module, "realize", None)
-            return self(realize(value) if callable(realize) else value)
+            return self(self.homogeneous_component_map(degree)(section))
 
 
 def _section_exponent_data(section_space):
-    selected = getattr(section_space, "section_space_construction", None)
-    if not callable(selected):
-        raise NotImplementedError(
-            "this section module has no selected polynomial-section presentation"
-        )
-    construction = selected()
-    labels = tuple(section_space.module_generating_set())
-    if callable(getattr(section_space, "multidegree", None)):
-        return {
-            monomial: tuple(
-                int(value)
-                for block in construction.exponents_of(monomial)
-                for value in block
-            )
-            for monomial in labels
-        }
-    if callable(getattr(section_space, "homogeneous_degree", None)):
-        return {
-            monomial: tuple(
-                int(value) for value in construction.exponents_of(monomial)
-            )
-            for monomial in labels
-        }
-    raise NotImplementedError(
-        "this section module is not a represented polynomial section space"
+    r"""The flat exponent vector of each framing monomial of a polynomial section space."""
+    from dzack_research.preamble.categories.divisors.linear_systems import (
+        HomogeneousPolynomialSectionSpaces,
+        MultihomogeneousPolynomialSectionSpaces,
     )
+
+    ring = section_space.base_ring()
+    labels = tuple(section_space.module_generating_set())
+    match section_space:
+        case _ if section_space in MultihomogeneousPolynomialSectionSpaces(ring):
+            return {
+                monomial: tuple(
+                    int(value)
+                    for block in section_space.monomial_exponents(monomial)
+                    for value in block
+                )
+                for monomial in labels
+            }
+        case _ if section_space in HomogeneousPolynomialSectionSpaces(ring):
+            return {
+                monomial: tuple(
+                    int(value) for value in section_space.monomial_exponents(monomial)
+                )
+                for monomial in labels
+            }
+        case _:
+            assert False, (
+                "exponent data is read from a homogeneous or multihomogeneous polynomial "
+                "section space; this section module is neither"
+            )
 
 
 def _split_block(exponents, part_total, count):
@@ -258,11 +245,9 @@ def _split_block(exponents, part_total, count):
             part.append(take)
             remaining[position] -= take
             need -= take
-        if need != 0:
-            raise ArithmeticError("a homogeneous exponent block has the wrong total degree")
+        assert need == 0, "a homogeneous exponent block has the wrong total degree"
         parts.append(tuple(part))
-    if any(remaining):
-        raise ArithmeticError("homogeneous exponent splitting left a nonzero remainder")
+    assert not any(remaining), "homogeneous exponent splitting left a nonzero remainder"
     return tuple(parts)
 
 
@@ -279,21 +264,21 @@ def _split_section_exponents(exponents, base_degree, block_widths, count):
     base_degree = tuple(int(value) for value in base_degree)
     block_widths = tuple(int(value) for value in block_widths)
     count = int(count)
-    if len(base_degree) != len(block_widths):
-        raise ValueError("section exponent blocks and multidegree have different lengths")
-    if len(exponents) != sum(block_widths):
-        raise ValueError("section exponent vector has the wrong number of coordinates")
+    assert len(base_degree) == len(block_widths), (
+        "section exponent blocks and multidegree have different lengths"
+    )
+    assert len(exponents) == sum(block_widths), (
+        "section exponent vector has the wrong number of coordinates"
+    )
     if count == 0:
-        if any(exponents):
-            raise ArithmeticError("degree-zero section exponents must vanish")
+        assert not any(exponents), "degree-zero section exponents must vanish"
         return ()
 
     split_blocks = []
     offset = 0
     for degree, width in zip(base_degree, block_widths, strict=True):
         block = exponents[offset : offset + width]
-        if sum(block) != count * degree:
-            raise ArithmeticError("a section exponent block has the wrong total degree")
+        assert sum(block) == count * degree, "a section exponent block has the wrong total degree"
         split_blocks.append(_split_block(block, degree, count))
         offset += width
 
@@ -308,56 +293,67 @@ def _split_section_exponents(exponents, base_degree, block_widths, count):
 
 
 def _line_bundle_section_data(bundle):
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        ProductProjectiveLineBundle,
-        ProjectiveSpaceLineBundle,
+    r"""The degree and the coordinate width of each projective factor of ``bundle``.
+
+    Both are read off the degree-one section space of the bundle, which is a
+    homogeneous polynomial space on a projective space or a multihomogeneous
+    one on a product of projective spaces.
+    """
+    from dzack_research.preamble.categories.divisors.linear_systems import (
+        HomogeneousPolynomialSectionSpaces,
+        MultihomogeneousPolynomialSectionSpaces,
     )
 
-    if isinstance(bundle, ProjectiveSpaceLineBundle):
-        degree = (_own_ring(SageZZ)(bundle.degree()),)
-        widths = (int(bundle.projective_space().relative_dimension()) + 1,)
-        return degree, widths
-    if isinstance(bundle, ProductProjectiveLineBundle):
-        product = bundle.projective_product()
-        factors = product.factors()
-        labels = tuple(factors.index_set())
-        degree = tuple(bundle.multidegree()[label] for label in labels)
-        widths = tuple(
-            int(factors[label].relative_dimension()) + 1
-            for label in labels
-        )
-        return degree, widths
-    raise TypeError(
-        "the represented line-bundle section-ring construction supports standard projective and multiprojective O(d) bundles"
-    )
+    integers = _own_ring(SageZZ)
+    sections = bundle.global_sections()
+    ring = sections.base_ring()
+    match sections:
+        case _ if sections in HomogeneousPolynomialSectionSpaces(ring):
+            width = int(sections.homogeneous_coordinate_ring().algebra_generating_set().cardinality())
+            return (integers(sections.homogeneous_degree()),), (width,)
+        case _ if sections in MultihomogeneousPolynomialSectionSpaces(ring):
+            multidegree = sections.multidegree()
+            labels = tuple(multidegree.index_set())
+            degrees = tuple(multidegree[label] for label in labels)
+            widths = tuple(
+                stop - start
+                for start, stop in (
+                    sections.coordinate_block(position) for position in range(len(labels))
+                )
+            )
+            return degrees, widths
+        case _:
+            assert False, (
+                "the represented line-bundle section ring is stated on projective and "
+                "multiprojective O(d), whose sections are polynomial section spaces"
+            )
 
 
 def _line_bundle_section_ring(category, bundle):
     r"""Construct the Veronese/Segre-Veronese section algebra of ``bundle``."""
-    if bundle.scheme().scheme_base_ring() is not category.base_ring():
-        raise ValueError("a line-bundle section ring stays over the bundle's scalar base")
-    base_degree, block_widths = _line_bundle_section_data(bundle)
-    if any(degree < 0 for degree in base_degree):
-        raise NotImplementedError(
-            "the represented projective section-ring presentation requires a nonnegative line-bundle multidegree"
-        )
+    assert bundle.scheme().scheme_base_ring() is category.base_ring(), (
+        "a line-bundle section ring stays over the bundle's scalar base"
+    )
+    base_degree, _block_widths = _line_bundle_section_data(bundle)
+    assert all(degree >= 0 for degree in base_degree), (
+        "the represented projective section-ring presentation requires a nonnegative "
+        "line-bundle multidegree"
+    )
     degree_one = bundle.global_sections()
     exponent_data = _section_exponent_data(degree_one)
-    basis_labels = tuple(degree_one.module_generating_set())
-    generator_exponents = tuple(exponent_data[label] for label in basis_labels)
     semigroup_generators = tuple(
-        (*exponents, 1)
-        for exponents in generator_exponents
+        (*exponent_data[label], 1)
+        for label in degree_one.module_generating_set()
     )
-    if not semigroup_generators:
-        raise ArithmeticError("a nonnegative projective O(d) must have a degree-one section")
+    assert semigroup_generators, "a nonnegative projective O(d) must have a degree-one section"
     names = tuple(f"s{position}" for position in range(len(semigroup_generators)))
     return AffineSemigroupAlgebras(category.base_ring())(
         semigroup_generators,
         names=names,
         extra_categories=(category,),
         extra_construction_data=(
-            ("_section_ring_construction", _LineBundleSectionRingConstruction(bundle)),
+            ("section_scheme", bundle.scheme()),
+            ("section_line_bundle", bundle),
         ),
     )
 
@@ -367,16 +363,17 @@ def _toric_divisor_section_ring(category, scheme, divisor):
     from sage.geometry.cone import Cone as _SageCone
 
     from dzack_research.preamble.categories.schemes.toric.fans import _engine_vector
-    if scheme.scheme_base_ring() is not category.base_ring():
-        raise ValueError("a divisor section ring stays over the scheme's scalar base")
-    if not scheme.fan().is_complete():
-        raise ValueError("the supported toric section-ring construction requires a complete fan")
-    if not scheme.is_cartier(divisor):
-        raise ValueError("a divisor section ring requires a Cartier divisor")
-    if not scheme.is_basepoint_free(divisor):
-        raise ValueError(
-            "the supported cone-over-polytope section-ring construction requires a basepoint-free divisor"
-        )
+
+    assert scheme.scheme_base_ring() is category.base_ring(), (
+        "a divisor section ring stays over the scheme's scalar base"
+    )
+    assert scheme.fan().is_complete(), (
+        "the supported toric section-ring construction requires a complete fan"
+    )
+    assert scheme.is_cartier(divisor), "a divisor section ring requires a Cartier divisor"
+    assert scheme.is_basepoint_free(divisor), (
+        "the supported cone-over-polytope section-ring construction requires a basepoint-free divisor"
+    )
 
     polytope = scheme.divisor_polytope(divisor)
     lattice = polytope.ambient_lattice()
@@ -393,7 +390,8 @@ def _toric_divisor_section_ring(category, scheme, divisor):
         names=tuple(f"s{position}" for position in range(len(hilbert_basis))),
         extra_categories=(category, OwnedIntegralDomains()),
         extra_construction_data=(
-            ("_section_ring_construction", _ToricDivisorSectionRingConstruction(scheme, divisor)),
+            ("section_scheme", scheme),
+            ("section_divisor", divisor),
         ),
     )
 

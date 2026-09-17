@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlasPresentation,
-    ModuleGluingDatum,
+    ModuleGluingData,
     _FiniteSchemeGluingDatum,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -46,8 +46,9 @@ class InvertibleSheaf(Parent):
     r"""A line bundle represented by rank-one free descent on one affine cover."""
 
     def __init__(self, gluing_datum) -> None:
-        if not isinstance(gluing_datum, ModuleGluingDatum):
-            raise TypeError("an invertible sheaf requires represented module descent data")
+        assert gluing_datum in ModuleGluingData(gluing_datum.cover()), (
+            "an invertible sheaf requires module descent data on its distinguished affine cover"
+        )
         self._gluing_datum = gluing_datum
         self._transition_units = {}
         for module in gluing_datum.local_modules():
@@ -56,8 +57,9 @@ class InvertibleSheaf(Parent):
                 raise TypeError(
                     "an invertible sheaf requires a rank-one finite free module on every chart"
                 )
-        for left in range(len(gluing_datum.local_modules())):
-            for right in range(left + 1, len(gluing_datum.local_modules())):
+        chart_count = int(gluing_datum.local_modules().cardinality())
+        for left in range(chart_count):
+            for right in range(left + 1, chart_count):
                 self._transition_units[left, right] = self._extract_transition_unit(
                     left,
                     right,
@@ -416,13 +418,15 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
 
 
-class _LineBundleBaseChangeDatum:
-    r"""The selected source and scalar map defining one line-bundle base change.
+class _LineBundleBaseChangeImage:
+    r"""The chosen preimage of a line bundle under scalar base change along a ring map.
 
-    The changed bundle owns this datum from construction time.  Its projection
-    and section comparison are consequences of that defining datum together
-    with the changed bundle itself, so they are derived rather than attached
-    later as provenance.
+    For \(f\colon R \to S\) and a bundle \(L\) on \(X\), the base-changed
+    bundle \(f^* L\) on \(X_S\) retains \(L\) and \(f\).  Two later operations
+    read this preimage: ``base_change_source_bundle`` and
+    ``section_base_change_comparison``, the isomorphism
+    \(H^0(X, L) \otimes_R S \cong H^0(X_S, f^* L)\) of polynomial section spaces.
+    The changed bundle owns it from construction time.
     """
 
     def __init__(self, source_bundle, ring_map) -> None:
@@ -439,36 +443,32 @@ class _LineBundleBaseChangeDatum:
         return changed_bundle.scheme().left_projection()
 
     def section_comparison(self, changed_bundle):
-        source_sections = self.source_bundle().global_sections()
-        target_sections = changed_bundle.global_sections()
         return _section_base_change_comparison(
-            source_sections,
-            target_sections,
+            self.source_bundle().global_sections(),
+            changed_bundle.global_sections(),
             self.ring_map(),
         )
 
 
 def _section_base_change_comparison(source_sections, target_sections, ring_map):
-    r"""Compare scalar extension of two selected polynomial-section presentations."""
+    r"""Compare scalar extension of two polynomial section spaces monomial by monomial."""
     changed_source = source_sections.base_change(ring_map)
-    source_construction = source_sections.section_space_construction()
-    target_construction = target_sections.section_space_construction()
     source_by_exponents = {
-        source_construction.exponents_of(label): label
+        source_sections.monomial_exponents(label): label
         for label in source_sections.module_generating_set()
     }
     target_by_exponents = {
-        target_construction.exponents_of(label): label
+        target_sections.monomial_exponents(label): label
         for label in target_sections.module_generating_set()
     }
     forward = changed_source.module_category().Mor(changed_source, target_sections)(
         lambda label: target_sections.module_generator(
-            target_by_exponents[source_construction.exponents_of(label)]
+            target_by_exponents[source_sections.monomial_exponents(label)]
         )
     )
     inverse = target_sections.module_category().Mor(target_sections, changed_source)(
         lambda label: changed_source.module_generator(
-            source_by_exponents[target_construction.exponents_of(label)]
+            source_by_exponents[target_sections.monomial_exponents(label)]
         )
     )
     return changed_source.module_category().Core().Mor(changed_source, target_sections)(
@@ -476,28 +476,22 @@ def _section_base_change_comparison(source_sections, target_sections, ring_map):
     )
 
 
-def _base_change_datum(bundle):
-    datum = bundle._base_change_datum
-    if datum is None:
-        raise ValueError("this line bundle was not selected as a scalar base change")
-    return datum
+def _base_change_image(bundle):
+    image = bundle._base_change_image
+    assert image is not None, "this line bundle was not constructed as a scalar base change"
+    return image
 
 
 def _base_change_source_bundle(bundle):
-    return _base_change_datum(bundle).source_bundle()
+    return _base_change_image(bundle).source_bundle()
 
 
 def _base_change_projection(bundle):
-    return _base_change_datum(bundle).projection(bundle)
+    return _base_change_image(bundle).projection(bundle)
 
 
 def _section_base_change_comparison_of(bundle):
-    try:
-        return _base_change_datum(bundle).section_comparison(bundle)
-    except NotImplementedError:
-        raise NotImplementedError(
-            "this line-bundle base change has no represented global-section comparison"
-        ) from None
+    return _base_change_image(bundle).section_comparison(bundle)
 
 
 class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
@@ -508,7 +502,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     product therefore adds degrees and duality negates them.
     """
 
-    def __init__(self, projective_space, degree, *, base_change_datum=None) -> None:
+    def __init__(self, projective_space, degree, *, base_change_image=None) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _homogeneous_polynomial_section_space,
         )
@@ -521,7 +515,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             raise TypeError("O(d) is constructed here on a represented projective space")
         self._projective_space = projective_space
         self._degree = _own_ring(SageZZ)(degree)
-        self._base_change_datum = base_change_datum
+        self._base_change_image = base_change_image
         atlas = projective_space.standard_affine_atlas()
         units = {}
         for source_index, target_index in atlas.transition_index_set():
@@ -689,55 +683,6 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             identity, identity
         )
 
-    def compatible_section(self, section):
-        r"""Dehomogenize one global section on the standard affine atlas.
-
-        On the chart where homogeneous coordinate ``x_{i,j_i}`` of each
-        factor is nonzero, ``O(d_i)`` is trivialized by ``x_{i,j_i}^{d_i}``.
-        Dividing a multihomogeneous monomial by those selected powers therefore
-        replaces every selected coordinate by ``1`` and every other coordinate
-        by the corresponding affine ratio.  The finite-atlas equalizer checks
-        that these chart coefficients glue through the line-bundle transitions.
-        """
-        sections = self.global_sections()
-        section = sections(section)
-        coefficients = sections.framing_coefficients(section)
-        section_construction = sections.section_space_construction()
-        atlas = self.gluing_datum()
-        product = self.projective_product()
-        factors = product.factors()
-        factor_labels = tuple(factors.index_set())
-        positions = {label: position for position, label in enumerate(factor_labels)}
-        module_sheaf = self.module_sheaf()
-        components = {}
-        for choice in atlas.chart_indices():
-            chart = atlas.chart(choice)
-            chart_ring = chart.coordinate_algebra()
-            scalar_map = chart_ring.algebra_structure_morphism()
-            local_coefficient = chart_ring.zero()
-            for monomial, coefficient in coefficients.items():
-                term = scalar_map(coefficient)
-                blocks = section_construction.exponents_of(monomial)
-                for label, block in zip(factor_labels, blocks, strict=True):
-                    position = positions[label]
-                    selected = choice[position]
-                    factor = factors[label]
-                    projection = chart.projection(label).coordinate_algebra_morphism()
-                    for coordinate, exponent in enumerate(block):
-                        if not exponent or coordinate == selected:
-                            continue
-                        term *= projection(
-                            factor._standard_chart_coordinate(selected, coordinate)
-                        ) ** int(exponent)
-                local_coefficient += term
-            module = module_sheaf.sections_on_chart(choice)
-            generator = _rank_one_generator(module)
-            components[choice] = module.scalar_multiple(local_coefficient, generator)
-        return self.compatible_sections().from_global_section_components(
-            components,
-            section,
-        )
-
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 
@@ -752,11 +697,8 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         left = self.global_sections()
         right = other.global_sections()
         target = target_bundle.global_sections()
-        left_construction = left.section_space_construction()
-        right_construction = right.section_space_construction()
-        target_construction = target.section_space_construction()
         target_by_exponents = {
-            target_construction.exponents_of(monomial): monomial
+            target.monomial_exponents(monomial): monomial
             for monomial in target.module_generating_set()
         }
 
@@ -764,8 +706,8 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             exponents = tuple(
                 left_power + right_power
                 for left_power, right_power in zip(
-                    left_construction.exponents_of(left_monomial),
-                    right_construction.exponents_of(right_monomial),
+                    left.monomial_exponents(left_monomial),
+                    right.monomial_exponents(right_monomial),
                     strict=True,
                 )
             )
@@ -780,12 +722,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
-        changed_space = self.projective_space().base_change(ring_map)
-        datum = _LineBundleBaseChangeDatum(self, ring_map)
         return type(self)(
-            changed_space,
+            self.projective_space().base_change(ring_map),
             self.degree(),
-            base_change_datum=datum,
+            base_change_image=_LineBundleBaseChangeImage(self, ring_map),
         )
 
     def base_change_source_bundle(self):
@@ -940,7 +880,7 @@ def _projective_o(projective_space, degree):
 class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
 
-    def __init__(self, projective_product, degrees, *, base_change_datum=None) -> None:
+    def __init__(self, projective_product, degrees, *, base_change_image=None) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _multihomogeneous_polynomial_section_space,
         )
@@ -969,7 +909,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             if len(degree_values) != len(factor_labels):
                 raise ValueError("a line-bundle multidegree has one degree per projective factor")
         self._projective_product = projective_product
-        self._base_change_datum = base_change_datum
+        self._base_change_image = base_change_image
         self._multidegree = finite_indexed_family(
             factor_indices,
             lambda label: degree_values[
@@ -1129,11 +1069,8 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         left = self.global_sections()
         right = other.global_sections()
         target = target_bundle.global_sections()
-        left_construction = left.section_space_construction()
-        right_construction = right.section_space_construction()
-        target_construction = target.section_space_construction()
         target_by_exponents = {
-            target_construction.exponents_of(monomial): monomial
+            target.monomial_exponents(monomial): monomial
             for monomial in target.module_generating_set()
         }
 
@@ -1141,14 +1078,60 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             exponents = tuple(
                 tuple(a + b for a, b in zip(left_block, right_block, strict=True))
                 for left_block, right_block in zip(
-                    left_construction.exponents_of(left_monomial),
-                    right_construction.exponents_of(right_monomial),
+                    left.monomial_exponents(left_monomial),
+                    right.monomial_exponents(right_monomial),
                     strict=True,
                 )
             )
             return target.module_generator(target_by_exponents[exponents])
 
         return BilinearMap(left, right, target, product)
+
+    def compatible_section(self, section):
+        r"""Dehomogenize one global section on the standard affine atlas.
+
+        On the chart where homogeneous coordinate ``x_{i,j_i}`` of each
+        factor is nonzero, ``O(d_i)`` is trivialized by ``x_{i,j_i}^{d_i}``.
+        Dividing a multihomogeneous monomial by those selected powers therefore
+        replaces every selected coordinate by ``1`` and every other coordinate
+        by the corresponding affine ratio.  The finite-atlas equalizer checks
+        that these chart coefficients glue through the line-bundle transitions.
+        """
+        sections = self.global_sections()
+        section = sections(section)
+        coefficients = sections.framing_coefficients(section)
+        atlas = self.gluing_datum()
+        factors = self.projective_product().factors()
+        factor_labels = tuple(factors.index_set())
+        positions = {label: position for position, label in enumerate(factor_labels)}
+        module_sheaf = self.module_sheaf()
+        components = {}
+        for choice in atlas.chart_indices():
+            chart = atlas.chart(choice)
+            chart_ring = chart.coordinate_algebra()
+            scalar_map = chart_ring.algebra_structure_morphism()
+            local_coefficient = chart_ring.zero()
+            for monomial, coefficient in coefficients.items():
+                term = scalar_map(coefficient)
+                blocks = sections.monomial_exponents(monomial)
+                for label, block in zip(factor_labels, blocks, strict=True):
+                    selected = choice[positions[label]]
+                    factor = factors[label]
+                    projection = chart.projection(label).coordinate_algebra_morphism()
+                    for coordinate, exponent in enumerate(block):
+                        if not exponent or coordinate == selected:
+                            continue
+                        term *= projection(
+                            factor._standard_chart_coordinate(selected, coordinate)
+                        ) ** int(exponent)
+                local_coefficient += term
+            module = module_sheaf.sections_on_chart(choice)
+            generator = _rank_one_generator(module)
+            components[choice] = module.scalar_multiple(local_coefficient, generator)
+        return self.compatible_sections().from_global_section_components(
+            components,
+            section,
+        )
 
     @cached_method
     def section_ring(self):
@@ -1157,15 +1140,13 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
-        changed_product = self.projective_product().base_change(ring_map)
-        datum = _LineBundleBaseChangeDatum(self, ring_map)
         return type(self)(
-            changed_product,
+            self.projective_product().base_change(ring_map),
             tuple(
                 self.multidegree()[label]
                 for label in self.multidegree().index_set()
             ),
-            base_change_datum=datum,
+            base_change_image=_LineBundleBaseChangeImage(self, ring_map),
         )
 
     def base_change_source_bundle(self):

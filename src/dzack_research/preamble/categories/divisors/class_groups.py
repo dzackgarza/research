@@ -1,54 +1,98 @@
-"""Weil divisor class groups."""
+r"""Weil divisor class groups."""
 
-from dzack_research.preamble.categories.divisors.divisor_groups import _divisor_role_specimen, _module_in_role
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories.divisors.divisor_groups import (
+    _affine_line_over_rationals,
+    _cokernel_in_category,
+    _free_presentation,
+    _integers,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    Modules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category_bases import Category
 
 
-class _ClassGroupConstruction:
-    r"""The selected scheme defining one represented Weil divisor class group."""
-
-    def __init__(self, scheme) -> None:
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-
 class ClassGroups(Category):
+    r"""Weil divisor class groups \(\operatorname{Cl}(X)\) with a chosen presentation.
+
+    An object is a framed abelian group presenting the divisor class group of
+    one scheme \(X\).  Its underlying group is built by a module construction:
+    \(\operatorname{coker}(\rho)\) of a principal-divisor morphism
+    \(\rho\colon P \to \operatorname{Div}\) (the entry), or the biproduct
+    \(\operatorname{Cl}(S) \oplus \mathbb{Z}[H]\) of the projective bundle
+    formula.  This level adds \(X\).
+    """
+
     def an_object(self):
-        return _divisor_role_specimen(self)
+        r"""The zero class group of \(\mathbb{A}^1_{\mathbb{Q}}\)."""
+        return self.trivial(_affine_line_over_rationals())
 
     @classmethod
     def _repr_object_names(cls):
         return "class groups"
 
     def super_categories(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
         return [FramedModules(_own_ring(SageZZ))]
 
-    def _call_(self, module, scheme=None):
-        if module not in self.super_categories()[0]:
-            raise TypeError("a class group must carry its quotient framing")
-        return _module_in_role(
-            module,
-            self,
-            "a class group requires a represented framed-module presentation",
-            construction_data=(
-                None
-                if scheme is None
-                else {"_class_group_construction": _ClassGroupConstruction(scheme)}
-            ),
+    def _call_(self, scheme, principal_divisors):
+        r"""\(\operatorname{Div}/\operatorname{im}(\rho)\) for the principal-divisor morphism ``principal_divisors`` \(\rho\)."""
+        return _cokernel_in_category(principal_divisors, self, class_group_scheme=scheme)
+
+    def free(self, scheme, generators):
+        r"""The free abelian group on the set ``generators`` of divisor classes of ``scheme``, presented by \(0 \to \mathbb{Z}^{(S)}\).
+
+        This is an explicit construction for a scheme whose class group is
+        already known to be free on these classes; it does not assert or
+        decide that theorem.
+        """
+        return self(scheme, _free_presentation(generators))
+
+    def trivial(self, scheme):
+        r"""The zero class group of ``scheme``, the free group on no classes."""
+        return self.free(scheme, finite_ordered_set(()))
+
+    def projective_bundle(self, projective_space, base_class_group):
+        r"""\(\operatorname{Cl}(\mathbb{P}^n_S) = \operatorname{Cl}(S) \oplus \mathbb{Z}[H]\).
+
+        The base class group is required input, so a nontrivial base
+        contribution is never replaced by zero.  The result is the biproduct
+        itself, placed here with ``projective_space`` as its scheme; its
+        injections are the pullback of base classes and the hyperplane class.
+        """
+        assert base_class_group in self, "the projective bundle formula starts from a class group"
+        assert base_class_group.class_group_scheme() is projective_space.base_scheme(), (
+            "the supplied class group is not attached to the projective base"
+        )
+        integers = _integers()
+        hyperplane = integers.free_module(finite_ordered_set(("H",)))
+        return Modules(integers).biproduct(
+            (base_class_group, hyperplane),
+            extra_categories=(self,),
+            extra_construction_data={"class_group_scheme": projective_space},
         )
 
     class ParentMethods:
-        def class_group_construction(self):
-            construction = getattr(self, "_class_group_construction", None)
-            if construction is None:
-                raise TypeError("this class-group role has no selected scheme")
-            return construction
+        def __init__(self, class_group_scheme, **rest) -> None:
+            self._class_group_scheme = class_group_scheme
+            super().__init__(**rest)
 
         def class_group_scheme(self):
-            return self.class_group_construction().scheme()
+            r"""The scheme whose divisor classes this group presents."""
+            return self._class_group_scheme
+
+        def principal_to_weil_morphism(self):
+            r"""The principal-divisor morphism \(\rho_W\colon P \to \operatorname{Div}\) with \(\operatorname{Cl}(X) = \operatorname{coker}\rho_W\).
+
+            This is the defining morphism the presented-module level retains
+            for this cokernel; a class group built by the projective bundle
+            formula is a biproduct and has none.
+            """
+            return self.cokernel_morphism()
+
+
+__all__ = ["ClassGroups"]

@@ -30,101 +30,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
-    IndexedFamily,
     finite_indexed_family,
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class _HomogeneousSectionSpaceConstruction:
-    r"""The selected homogeneous-coordinate presentation of one section space."""
-
-    def __init__(self, scheme, degree, coordinate_ring, monomial_exponents) -> None:
-        self._scheme = scheme
-        self._degree = degree
-        self._coordinate_ring = coordinate_ring
-        self._monomial_exponents = dict(monomial_exponents)
-
-    def scheme(self):
-        return self._scheme
-
-    def degree(self):
-        return self._degree
-
-    def coordinate_ring(self):
-        return self._coordinate_ring
-
-    def exponents_of(self, monomial):
-        return self._monomial_exponents[monomial]
-
-
-class _MultihomogeneousSectionSpaceConstruction(_HomogeneousSectionSpaceConstruction):
-    r"""The selected multiprojective coordinate presentation of one section space."""
-
-    def __init__(
-        self,
-        scheme,
-        degree,
-        coordinate_ring,
-        monomial_exponents,
-        coordinate_blocks,
-    ) -> None:
-        super().__init__(scheme, degree, coordinate_ring, monomial_exponents)
-        self._coordinate_blocks = coordinate_blocks
-
-    def coordinate_block(self, position):
-        return self._coordinate_blocks[position]
-
-
-class _ProjectiveJetConstruction:
-    r"""The selected local construction defining one projective jet space."""
-
-    def __init__(
-        self,
-        line_bundle,
-        order,
-        point,
-        affine_chart,
-        spectrum_point,
-        local_quotient,
-    ) -> None:
-        self._line_bundle = line_bundle
-        self._order = order
-        self._point = point
-        self._affine_chart = affine_chart
-        self._spectrum_point = spectrum_point
-        self._local_quotient = local_quotient
-
-    def projective_space(self):
-        return self._line_bundle.projective_space()
-
-    def line_bundle(self):
-        return self._line_bundle
-
-    def order(self):
-        return self._order
-
-    def point(self):
-        return self._point
-
-    def affine_chart(self):
-        return self._affine_chart
-
-    def spectrum_point(self):
-        return self._spectrum_point
-
-    def stalk(self):
-        return self._local_quotient.quotient_source()
-
-    def maximal_ideal(self):
-        return self.stalk().maximal_ideal()
-
-    def local_quotient(self):
-        return self._local_quotient
-
-    def residue_field(self):
-        return self._spectrum_point.residue_field()
 
 
 class _CompleteLinearSystemConstruction:
@@ -216,7 +125,13 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
 
 
 class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
-    r"""Finite homogeneous-polynomial section spaces on represented projective schemes."""
+    r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n, \mathcal{O}(d))\).
+
+    An object is the free module on the degree-\(d\) monomials of a homogeneous
+    coordinate algebra of a projective scheme \(X\).  The free-module level
+    consumes the monomials; this level adds \(X\), the degree \(d\), the
+    coordinate algebra, and the exponent vector of each monomial.
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -226,32 +141,35 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, _section_space_construction, **rest) -> None:
-            if not isinstance(
-                _section_space_construction,
-                _HomogeneousSectionSpaceConstruction,
-            ) or isinstance(
-                _section_space_construction,
-                _MultihomogeneousSectionSpaceConstruction,
-            ):
-                raise TypeError(
-                    "a homogeneous section space requires homogeneous construction data"
-                )
-            self._section_space_construction = _section_space_construction
+        def __init__(
+            self,
+            section_scheme,
+            homogeneous_degree,
+            homogeneous_coordinate_ring,
+            monomial_exponents,
+            **rest,
+        ) -> None:
+            self._section_scheme = section_scheme
+            self._homogeneous_degree = homogeneous_degree
+            self._homogeneous_coordinate_ring = homogeneous_coordinate_ring
+            self._monomial_exponents = dict(monomial_exponents)
             super().__init__(**rest)
 
-        def section_space_construction(self):
-            r"""Return the selected coordinate presentation defining this section space."""
-            return self._section_space_construction
-
         def section_scheme(self):
-            return self.section_space_construction().scheme()
+            r"""The projective scheme whose sections these are."""
+            return self._section_scheme
 
         def homogeneous_degree(self):
-            return self.section_space_construction().degree()
+            r"""The degree \(d\) of the homogeneous polynomials."""
+            return self._homogeneous_degree
 
         def homogeneous_coordinate_ring(self):
-            return self.section_space_construction().coordinate_ring()
+            r"""The homogeneous coordinate algebra whose monomials frame this space."""
+            return self._homogeneous_coordinate_ring
+
+        def monomial_exponents(self, monomial):
+            r"""The exponent vector of the framing monomial ``monomial``."""
+            return self._monomial_exponents[monomial]
 
         def homogeneous_polynomial(self, section):
             r"""Return the homogeneous polynomial represented by ``section``."""
@@ -276,20 +194,23 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             base = self.base_ring()
             engine_base = _engine_ring(base)
             by_exponents = {
-                tuple(exponents): monomial
+                tuple(self.monomial_exponents(monomial)): monomial
                 for monomial in self.module_generating_set()
-                for exponents in (
-                    self.section_space_construction().exponents_of(monomial),
-                )
             }
+            # The engine keys a univariate polynomial by its degree and a
+            # multivariate one by its exponent tuple; the number of homogeneous
+            # coordinates selects which representation the coordinate algebra has.
+            univariate = int(ring.algebra_generating_set().cardinality()) == 1
             coefficients = {}
             for exponent, coefficient in engine(backend).monomial_coefficients().items():
-                try:
-                    powers = tuple(int(value) for value in exponent)
-                except TypeError:
-                    powers = (int(exponent),)
-                if powers not in by_exponents:
-                    raise ValueError("the polynomial is not homogeneous of this section-space degree")
+                powers = (
+                    (int(exponent),)
+                    if univariate
+                    else tuple(int(value) for value in exponent)
+                )
+                assert powers in by_exponents, (
+                    "the polynomial is not homogeneous of this section-space degree"
+                )
                 coefficients[by_exponents[powers]] = base._from_engine_element(
                     engine_base(coefficient)
                 )
@@ -304,23 +225,22 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             ``pi_i^* O(d) = O(0,...,d,...,0)``.
             """
             source_scheme = self.section_scheme()
-            if morphism.codomain() is not source_scheme:
-                raise ValueError("section pullback requires a morphism into the section scheme")
+            assert morphism.codomain() is source_scheme, (
+                "section pullback requires a morphism into the section scheme"
+            )
             pulled_bundle = source_scheme.O(self.homogeneous_degree()).pullback(morphism)
             target = pulled_bundle.global_sections()
             product = morphism.domain()
             label = product.projection_label(morphism)
             labels = tuple(product.factors().index_set())
             label = product.factors().index_set()(label)
-            source_construction = self.section_space_construction()
-            target_construction = target.section_space_construction()
             target_by_exponents = {
-                tuple(tuple(block) for block in target_construction.exponents_of(monomial)): monomial
+                tuple(tuple(block) for block in target.monomial_exponents(monomial)): monomial
                 for monomial in target.module_generating_set()
             }
 
             def target_exponents(monomial):
-                selected = tuple(source_construction.exponents_of(monomial))
+                selected = tuple(self.monomial_exponents(monomial))
                 blocks = []
                 for factor_label in labels:
                     factor = product.factors()[factor_label]
@@ -347,15 +267,18 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             contravariant pullback on sections.
             """
             scheme = self.section_scheme()
-            if morphism.domain() is not scheme or morphism.codomain() is not scheme:
-                raise ValueError("section pullback here requires a projective automorphism of the section scheme")
+            assert morphism.domain() is scheme and morphism.codomain() is scheme, (
+                "section pullback here requires a projective automorphism of the section scheme"
+            )
             coordinates = tuple(morphism.homogeneous_coordinates())
             ring = self.homogeneous_coordinate_ring()
             labels = tuple(ring.algebra_generating_set())
-            if len(coordinates) != len(labels):
-                raise ValueError("a projective automorphism needs one homogeneous coordinate per variable")
-            if any(getattr(coordinate, "parent", lambda: None)() is not ring for coordinate in coordinates):
-                raise ValueError("projective automorphism coordinates must lie in the section homogeneous-coordinate ring")
+            assert len(coordinates) == len(labels), (
+                "a projective automorphism needs one homogeneous coordinate per variable"
+            )
+            assert all(coordinate.parent() is ring for coordinate in coordinates), (
+                "projective automorphism coordinates must lie in the section homogeneous-coordinate ring"
+            )
             substitution = ring.Mor(ring)(
                 {label: coordinate for label, coordinate in zip(labels, coordinates, strict=True)}
             )
@@ -370,7 +293,14 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
 
 class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
-    r"""Finite multihomogeneous section spaces on products of projective spaces."""
+    r"""Multihomogeneous section spaces \(H^0(\prod_i \mathbb{P}^{n_i}, \mathcal{O}(d_1, \dots, d_r))\).
+
+    An object is the free module on the monomials of multidegree
+    \((d_1, \dots, d_r)\) of the coordinate algebra of a product of projective
+    spaces.  The free-module level consumes the monomials; this level adds the
+    product, the multidegree, the coordinate algebra, the exponent blocks of
+    each monomial, and the variable block of each factor.
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -380,29 +310,41 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, _section_space_construction, **rest) -> None:
-            if not isinstance(
-                _section_space_construction,
-                _MultihomogeneousSectionSpaceConstruction,
-            ):
-                raise TypeError(
-                    "a multihomogeneous section space requires multiprojective construction data"
-                )
-            self._section_space_construction = _section_space_construction
+        def __init__(
+            self,
+            section_scheme,
+            multidegree,
+            homogeneous_coordinate_ring,
+            monomial_exponents,
+            coordinate_blocks,
+            **rest,
+        ) -> None:
+            self._section_scheme = section_scheme
+            self._multidegree = multidegree
+            self._homogeneous_coordinate_ring = homogeneous_coordinate_ring
+            self._monomial_exponents = dict(monomial_exponents)
+            self._coordinate_blocks = coordinate_blocks
             super().__init__(**rest)
 
-        def section_space_construction(self):
-            r"""Return the selected coordinate presentation defining this section space."""
-            return self._section_space_construction
-
         def section_scheme(self):
-            return self.section_space_construction().scheme()
+            r"""The product of projective spaces whose sections these are."""
+            return self._section_scheme
 
         def multidegree(self):
-            return self.section_space_construction().degree()
+            r"""The multidegree, indexed by the factors of the product."""
+            return self._multidegree
 
         def homogeneous_coordinate_ring(self):
-            return self.section_space_construction().coordinate_ring()
+            r"""The multihomogeneous coordinate algebra whose monomials frame this space."""
+            return self._homogeneous_coordinate_ring
+
+        def monomial_exponents(self, monomial):
+            r"""The exponent blocks, one per factor, of the framing monomial ``monomial``."""
+            return self._monomial_exponents[monomial]
+
+        def coordinate_block(self, position):
+            r"""The variable range ``(start, stop)`` of the factor at ``position``."""
+            return self._coordinate_blocks[position]
 
         @cached_method
         def factor_coordinate_embedding(self, factor_label):
@@ -424,13 +366,12 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             factor = factors[factor_label]
             source = factor.O(1).global_sections().homogeneous_coordinate_ring()
             target = self.homogeneous_coordinate_ring()
-            start, stop = self.section_space_construction().coordinate_block(position)
+            start, stop = self.coordinate_block(position)
             source_labels = tuple(source.algebra_generating_set())
             target_labels = tuple(target.algebra_generating_set())
-            if stop - start != len(source_labels):
-                raise ArithmeticError(
-                    "the retained multiprojective coordinate block has the wrong width"
-                )
+            assert stop - start == len(source_labels), (
+                "the retained multiprojective coordinate block has the wrong width"
+            )
             return source.Mor(target)(
                 {
                     source_label: target.algebra_generator(target_labels[start + offset])
@@ -509,7 +450,15 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
-    r"""Finite local jet realizations ``O(d)_p / m_p^r O(d)_p`` on projective space."""
+    r"""Finite local jet realizations ``O(d)_p / m_p^r O(d)_p`` on projective space.
+
+    An object is the free module on the centered monomials of total degree
+    below \(r\) in an affine chart containing \(p\), realizing
+    \(\mathcal{O}(d)_p / \mathfrak{m}_p^r \mathcal{O}(d)_p\).  The free-module
+    level consumes the monomials; this level adds the line bundle, the order
+    \(r\), the point, the chart, the point of the chart's spectrum, and the
+    local quotient \(\mathcal{O}_{\mathbb{P},p}/\mathfrak{m}_p^r\).
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -519,48 +468,57 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, _projective_jet_construction, **rest) -> None:
-            if not isinstance(_projective_jet_construction, _ProjectiveJetConstruction):
-                raise TypeError("a projective jet space requires selected local construction data")
-            self._projective_jet_construction = _projective_jet_construction
+        def __init__(
+            self,
+            jet_line_bundle,
+            jet_order,
+            jet_point,
+            jet_affine_chart,
+            jet_spectrum_point,
+            jet_local_quotient,
+            **rest,
+        ) -> None:
+            self._jet_line_bundle = jet_line_bundle
+            self._jet_order = jet_order
+            self._jet_point = jet_point
+            self._jet_affine_chart = jet_affine_chart
+            self._jet_spectrum_point = jet_spectrum_point
+            self._jet_local_quotient = jet_local_quotient
             super().__init__(**rest)
 
-        def projective_jet_construction(self):
-            r"""Return the selected local datum defining this jet realization."""
-            return self._projective_jet_construction
+        def jet_line_bundle(self):
+            return self._jet_line_bundle
 
         def jet_projective_space(self):
-            return self.projective_jet_construction().projective_space()
-
-        def jet_line_bundle(self):
-            return self.projective_jet_construction().line_bundle()
+            return self.jet_line_bundle().projective_space()
 
         def jet_homogeneous_degree(self):
             return self.jet_line_bundle().degree()
 
         def jet_order(self):
-            return self.projective_jet_construction().order()
+            return self._jet_order
 
         def jet_point(self):
-            return self.projective_jet_construction().point()
+            return self._jet_point
 
         def jet_affine_chart(self):
-            return self.projective_jet_construction().affine_chart()
+            return self._jet_affine_chart
 
         def jet_spectrum_point(self):
-            return self.projective_jet_construction().spectrum_point()
-
-        def jet_stalk(self):
-            return self.projective_jet_construction().stalk()
-
-        def jet_maximal_ideal(self):
-            return self.projective_jet_construction().maximal_ideal()
+            return self._jet_spectrum_point
 
         def jet_local_quotient(self):
-            return self.projective_jet_construction().local_quotient()
+            return self._jet_local_quotient
+
+        def jet_stalk(self):
+            r"""The local ring \(\mathcal{O}_{\mathbb{P},p}\) the jet quotient is taken of."""
+            return self.jet_local_quotient().quotient_source()
+
+        def jet_maximal_ideal(self):
+            return self.jet_stalk().maximal_ideal()
 
         def jet_residue_field(self):
-            return self.projective_jet_construction().residue_field()
+            return self.jet_spectrum_point().residue_field()
 
         def jet_coordinate_index(self):
             coordinates = tuple(self.jet_point().point_coordinates())
@@ -569,8 +527,7 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
                 for index, coordinate in enumerate(coordinates)
                 if coordinate != self.base_ring().zero()
             )
-            if len(nonzero) != 1:
-                raise ValueError("this jet condition was not selected at a coordinate point")
+            assert len(nonzero) == 1, "this jet condition was not selected at a coordinate point"
             return nonzero[0]
 
 
@@ -622,16 +579,14 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     """
     base = projective_scheme.scheme_base_ring()
     degree = int(degree)
-    if degree < 0:
-        raise ValueError("a homogeneous polynomial degree is nonnegative")
+    assert degree >= 0, "a homogeneous polynomial degree is nonnegative"
     width = int(projective_scheme.relative_dimension()) + 1
     names = (
         tuple(f"x{index}" for index in range(width))
         if coordinate_names is None
         else tuple(coordinate_names)
     )
-    if len(names) != width:
-        raise ValueError("projective homogeneous coordinates have dimension plus one names")
+    assert len(names) == width, "projective homogeneous coordinates have dimension plus one names"
     ring = base.polynomial_ring(names)
     labels = tuple(ring.algebra_generating_set())
     monomials = []
@@ -643,49 +598,40 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
                 monomial *= ring.algebra_generator(labels[position]) ** exponent
         monomials.append(monomial)
         exponent_data[monomial] = exponents
-    space = base._fresh_free_module_on(
+    return base._fresh_free_module_on(
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(HomogeneousPolynomialSectionSpaces(base),),
-        _extra_construction_data=(
-            (
-                "_section_space_construction",
-                _HomogeneousSectionSpaceConstruction(
-                    projective_scheme,
-                    degree,
-                    ring,
-                    exponent_data,
-                ),
-            ),
-        ),
+        _extra_construction_data={
+            "section_scheme": projective_scheme,
+            "homogeneous_degree": degree,
+            "homogeneous_coordinate_ring": ring,
+            "monomial_exponents": exponent_data,
+        },
     )
-    return space
 
 
 def _multihomogeneous_polynomial_section_space(projective_product, degrees):
-    r"""Return ``H^0(prod P^{n_i}, O(d_i))`` for nonnegative multidegree.
+    r"""Return ``H^0(prod P^{n_i}, O(d_i))`` for a nonnegative multidegree.
 
-    Basis labels are the actual multihomogeneous monomials in one owned
-    polynomial coordinate algebra.  The degree is retained on the exact factor
-    index set, so repeated isomorphic factors keep distinct roles.
+    ``degrees`` is the multidegree as a family indexed by the product's own
+    factor index set.  Basis labels are the actual multihomogeneous monomials
+    in one owned polynomial coordinate algebra, so repeated isomorphic factors
+    keep distinct roles.
     """
     base = projective_product.scheme_base_ring()
-    if projective_product not in ProductProjectiveSpaces(base):
-        raise TypeError("a multihomogeneous section space requires a product of projective spaces")
+    assert projective_product in ProductProjectiveSpaces(base), (
+        "a multihomogeneous section space requires a product of projective spaces"
+    )
     factors = projective_product.factors()
     factor_indices = factors.index_set()
     factor_labels = tuple(factor_indices)
-    if isinstance(degrees, IndexedFamily):
-        if degrees.index_set() is not factor_indices:
-            raise ValueError("a multidegree is indexed by the product's exact factor index set")
-        degree_values = tuple(
-            _own_ring(SageZZ)(degrees[label]) for label in factor_labels
-        )
-    else:
-        degree_values = tuple(_own_ring(SageZZ)(value) for value in degrees)
-        if len(degree_values) != len(factor_labels):
-            raise ValueError("a multidegree has one degree for every projective factor")
-    if any(degree < 0 for degree in degree_values):
-        raise ValueError("multihomogeneous polynomial degrees are nonnegative")
+    assert degrees.index_set() is factor_indices, (
+        "a multidegree is indexed by the product's exact factor index set"
+    )
+    degree_values = tuple(_own_ring(SageZZ)(degrees[label]) for label in factor_labels)
+    assert all(degree >= 0 for degree in degree_values), (
+        "multihomogeneous polynomial degrees are nonnegative"
+    )
     multidegree = finite_indexed_family(
         factor_indices,
         lambda label: degree_values[
@@ -732,18 +678,13 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
     return base._fresh_free_module_on(
         finite_ordered_set(tuple(monomials)),
         _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
-        _extra_construction_data=(
-            (
-                "_section_space_construction",
-                _MultihomogeneousSectionSpaceConstruction(
-                    projective_product,
-                    multidegree,
-                    ring,
-                    exponent_data,
-                    tuple(block_offsets),
-                ),
-            ),
-        ),
+        _extra_construction_data={
+            "section_scheme": projective_product,
+            "multidegree": multidegree,
+            "homogeneous_coordinate_ring": ring,
+            "monomial_exponents": exponent_data,
+            "coordinate_blocks": tuple(block_offsets),
+        },
     )
 
 
@@ -757,10 +698,10 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
     degree = int(degree)
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
-    if dimension < 1:
-        raise ValueError("a coordinate hyperplane requires positive projective dimension")
-    if coordinate_index < 0 or coordinate_index > dimension:
-        raise ValueError("the coordinate index is outside the projective coordinate range")
+    assert dimension >= 1, "a coordinate hyperplane requires positive projective dimension"
+    assert 0 <= coordinate_index <= dimension, (
+        "the coordinate index is outside the projective coordinate range"
+    )
     source_names = tuple(f"x{index}" for index in range(dimension + 1))
     source = _homogeneous_polynomial_section_space(
         projective_space,
@@ -777,27 +718,24 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
         degree,
         coordinate_names=target_names,
     )
-    source_construction = source.section_space_construction()
-    target_construction = target.section_space_construction()
     target_by_exponents = {
-        tuple(target_construction.exponents_of(monomial)): monomial
+        tuple(target.monomial_exponents(monomial)): monomial
         for monomial in target.module_generating_set()
     }
 
     def image(monomial):
-        exponents = source_construction.exponents_of(monomial)
+        exponents = source.monomial_exponents(monomial)
         if exponents[coordinate_index]:
             return target.zero()
         restricted = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
         return target.module_generator(target_by_exponents[restricted])
 
-    restriction = source.module_category().Mor(source, target)(
+    return source.module_category().Mor(source, target)(
         {
             monomial: image(monomial)
             for monomial in source.module_generating_set()
         }
     )
-    return restriction
 
 
 class ProjectiveSectionRestrictionMap(ModuleMorphism):
@@ -854,19 +792,23 @@ def _projective_section_restriction(
     module image construction corestricts to the true restriction image.
     """
     scheme = line_bundle.projective_space()
-    if closed_subscheme.inclusion().codomain() is not scheme:
-        raise ValueError("a section restriction is taken to a closed subscheme of its projective space")
+    assert closed_subscheme.inclusion().codomain() is scheme, (
+        "a section restriction is taken to a closed subscheme of its projective space"
+    )
     base = scheme.scheme_base_ring()
-    if base not in OwnedFields():
-        raise TypeError("the represented projective restriction-image computation requires a field base")
+    assert base in OwnedFields(), (
+        "the represented projective restriction-image computation requires a field base"
+    )
     complete = line_bundle.global_sections()
     source = complete if source is None else source
     if source is complete:
         into_complete = complete.module_category().Mor(complete, complete).identity()
-    elif into_complete is None:
-        raise ValueError("a selected section source requires its embedding into the complete section space")
-    if into_complete.domain() is not source or into_complete.codomain() is not complete:
-        raise ValueError("the selected section embedding has the wrong endpoints")
+    assert into_complete is not None, (
+        "a selected section source requires its embedding into the complete section space"
+    )
+    assert into_complete.domain() is source and into_complete.codomain() is complete, (
+        "the selected section embedding has the wrong endpoints"
+    )
 
     coordinate_ring = complete.homogeneous_coordinate_ring()
     equations = closed_subscheme.homogeneous_defining_equations(coordinate_ring)
@@ -919,8 +861,7 @@ def _projective_linear_system(line_bundle, sections):
     ambient = line_bundle.global_sections()
     base = scheme.scheme_base_ring()
     sections = tuple(ambient(section) for section in sections)
-    if not sections:
-        raise ValueError("a projective linear system requires a nonzero section subspace")
+    assert sections, "a projective linear system requires a nonzero section subspace"
     labels = Sets.Δ[len(sections) - 1]
     selected = base._fresh_free_module_on(labels)
     images = {
@@ -928,8 +869,9 @@ def _projective_linear_system(line_bundle, sections):
         for label in labels
     }
     selected_map = selected.module_category().Mor(selected, ambient)(images)
-    if int(selected_map.kernel().dimension()) != 0:
-        raise ValueError("the supplied sections must be a basis of their selected subspace")
+    assert int(selected_map.kernel().dimension()) == 0, (
+        "the supplied sections must be a basis of their selected subspace"
+    )
     embedding = selected.Mono(ambient)(images)
     polynomials = tuple(
         ambient.homogeneous_polynomial(section)
@@ -974,26 +916,29 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     """
     projective_space = line_bundle.projective_space()
     base = projective_space.scheme_base_ring()
-    if base not in OwnedFields():
-        raise TypeError("the represented projective point-jet realization requires a field base")
-    if point.codomain() is not projective_space:
-        raise ValueError("a projective jet is evaluated at a point of its line bundle's scheme")
-    if point.domain() is not projective_space.base_scheme():
-        raise NotImplementedError("the represented projective jet currently requires a rational point")
+    assert base in OwnedFields(), (
+        "the represented projective point-jet realization requires a field base"
+    )
+    assert point.codomain() is projective_space, (
+        "a projective jet is evaluated at a point of its line bundle's scheme"
+    )
+    assert point.domain() is projective_space.base_scheme(), (
+        "the represented projective jet is computed at a rational point, a section of "
+        "the structure morphism; a point over a residue field extension is outside it"
+    )
     jet_order = int(jet_order)
-    if jet_order < 1:
-        raise ValueError("a jet order is positive")
+    assert jet_order >= 1, "a jet order is positive"
 
     coordinates = tuple(point.point_coordinates())
     dimension = int(projective_space.relative_dimension())
-    if len(coordinates) != dimension + 1:
-        raise ValueError("a projective point has dimension plus one homogeneous coordinates")
+    assert len(coordinates) == dimension + 1, (
+        "a projective point has dimension plus one homogeneous coordinates"
+    )
     pivot = next(
         (index for index, coordinate in enumerate(coordinates) if coordinate != base.zero()),
         None,
     )
-    if pivot is None:
-        raise ValueError("projective point coordinates cannot all vanish")
+    assert pivot is not None, "projective point coordinates cannot all vanish"
     pivot_inverse = coordinates[pivot].inverse_of_unit()
     affine_values = tuple(
         coordinates[index] * pivot_inverse
@@ -1029,25 +974,19 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     target = base._fresh_free_module_on(
         finite_ordered_set(local_monomials),
         _extra_categories=(ProjectiveJetSpaces(base),),
-        _extra_construction_data=(
-            (
-                "_projective_jet_construction",
-                _ProjectiveJetConstruction(
-                    line_bundle,
-                    _own_ring(SageZZ)(jet_order),
-                    point,
-                    chart,
-                    spectrum_point,
-                    local_quotient,
-                ),
-            ),
-        ),
+        _extra_construction_data={
+            "jet_line_bundle": line_bundle,
+            "jet_order": _own_ring(SageZZ)(jet_order),
+            "jet_point": point,
+            "jet_affine_chart": chart,
+            "jet_spectrum_point": spectrum_point,
+            "jet_local_quotient": local_quotient,
+        },
     )
-    source_construction = source.section_space_construction()
     nonpivot = tuple(index for index in range(dimension + 1) if index != pivot)
 
     def image(monomial):
-        homogeneous_exponents = source_construction.exponents_of(monomial)
+        homogeneous_exponents = source.monomial_exponents(monomial)
         local_powers = tuple(homogeneous_exponents[index] for index in nonpivot)
         coefficients = {}
         choices = tuple(
@@ -1071,42 +1010,38 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
                 coefficients[local_by_exponents[tuple(centered_exponents)]] = coefficient
         return target.linear_combination(coefficients)
 
-    evaluation = source.module_category().Mor(source, target)(
+    return source.module_category().Mor(source, target)(
         {
             monomial: image(monomial)
             for monomial in source.module_generating_set()
         }
     )
-    return evaluation
 
 
 def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index, jet_order):
     r"""Coordinate-point realization of the projective point-jet evaluation."""
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
-    if coordinate_index < 0 or coordinate_index > dimension:
-        raise ValueError("the coordinate index is outside the projective coordinate range")
+    assert 0 <= coordinate_index <= dimension, (
+        "the coordinate index is outside the projective coordinate range"
+    )
     base = projective_space.scheme_base_ring()
     coordinates = tuple(
         base.one() if index == coordinate_index else base.zero()
         for index in range(dimension + 1)
     )
-    point = projective_space.point_morphism(coordinates)
-    evaluation = _projective_point_jet_evaluation(
+    return _projective_point_jet_evaluation(
         projective_space.O(degree),
-        point,
+        projective_space.point_morphism(coordinates),
         jet_order,
     )
-    return evaluation
 
 
 def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_order):
     r"""Projectivize sections vanishing to order at least ``r`` at ``point``."""
     evaluation = _projective_point_jet_evaluation(line_bundle, point, vanishing_order)
-    constrained = evaluation.kernel()
-    dimension = int(constrained.dimension())
-    if dimension == 0:
-        raise ValueError("the imposed condition leaves no nonzero section to projectivize")
+    dimension = int(evaluation.kernel().dimension())
+    assert dimension != 0, "the imposed condition leaves no nonzero section to projectivize"
     base = line_bundle.projective_space().scheme_base_ring()
     parameter_space = ProjectiveSpaces(base)(dimension - 1)
     parameter_space._imposed_multiplicity_construction = _ImposedMultiplicityConstruction(
@@ -1123,8 +1058,9 @@ def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coo
     r"""Coordinate-point realization of the imposed-multiplicity linear system."""
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
-    if coordinate_index < 0 or coordinate_index > dimension:
-        raise ValueError("the coordinate index is outside the projective coordinate range")
+    assert 0 <= coordinate_index <= dimension, (
+        "the coordinate index is outside the projective coordinate range"
+    )
     base = projective_space.scheme_base_ring()
     point = projective_space.point_morphism(
         tuple(
@@ -1132,12 +1068,11 @@ def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coo
             for index in range(dimension + 1)
         )
     )
-    result = _imposed_point_multiplicity_linear_system(
+    return _imposed_point_multiplicity_linear_system(
         projective_space.O(degree),
         point,
         vanishing_order,
     )
-    return result
 
 
 def _complete_linear_system(scheme, divisor, section_space):
@@ -1148,13 +1083,10 @@ def _complete_linear_system(scheme, divisor, section_space):
     ``P^(r-1)``; the empty section space has no projectivization and is refused.
     """
     base = scheme.scheme_base_ring()
-    if scheme not in Schemes(base):
-        raise TypeError("a complete linear system requires a represented scheme")
-    if section_space.base_ring() is not base:
-        raise ValueError("the section space must be over the scheme base field")
+    assert scheme in Schemes(base), "a complete linear system requires a represented scheme"
+    assert section_space.base_ring() is base, "the section space must be over the scheme base field"
     dimension = int(section_space.dimension())
-    if dimension == 0:
-        raise ValueError("the empty linear system has no represented projective space")
+    assert dimension != 0, "the empty linear system has no represented projective space"
     system = ProjectiveSpaces(base)(dimension - 1)
     system._complete_linear_system_construction = _CompleteLinearSystemConstruction(
         scheme,
