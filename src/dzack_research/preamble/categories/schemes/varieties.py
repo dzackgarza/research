@@ -7,6 +7,8 @@ conjunction of the stated hypotheses, each of which the scheme already
 answers, so nothing is placed and no property is asserted twice.
 """
 
+from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -151,6 +153,13 @@ class Curves(_DimensionSubcategoryOfVarieties):
                 )
 
     class ParentMethods:
+        def __init__(self, normalization_curve=None, normalization_coordinates=None,
+                     local_delta_contributions=None, **rest) -> None:
+            self._normalization_curve = normalization_curve
+            self._normalization_coordinates = normalization_coordinates
+            self._local_delta_contributions = local_delta_contributions
+            super().__init__(**rest)
+
         def arithmetic_genus(self):
             r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
 
@@ -169,45 +178,52 @@ class Curves(_DimensionSubcategoryOfVarieties):
             polynomial = defining_ideal._engine_ideal().hilbert_polynomial()
             return int(1 - polynomial(0))
 
+        @cached_method
         def normalization_data(self):
-            data = getattr(self, "_preamble_curve_normalization_data", None)
-            if data is None:
-                raise ValueError("this projective curve has no selected normalization map")
-            return data
+            r"""The retained normalization and its local defects (Stacks, Tag 035E)."""
+            from dzack_research.preamble.categories.schemes.curve_genus import ProjectiveCurveNormalizationData
 
+            return ProjectiveCurveNormalizationData(
+                self, self.normalization_morphism(), tuple(self.local_delta_contributions()),
+            )
+
+        @cached_method
         def normalization_morphism(self):
-            return self.normalization_data().normalization_morphism()
+            r"""Corestrict the chosen normalization coordinates to this curve."""
+            return self.corestriction(
+                self.normalization_curve().projective_morphism_from_coordinates(
+                    self.inclusion().codomain(), tuple(self._normalization_coordinates),
+                )
+            )
 
         def normalization_curve(self):
-            return self.normalization_data().normalization_curve()
+            assert self._normalization_curve is not None, (
+                "this curve requires a selected normalization presentation"
+            )
+            return self._normalization_curve
 
         def local_delta_contributions(self):
-            return self.normalization_data().local_contributions()
+            assert self._local_delta_contributions is not None, (
+                "the selected genus comparison requires its local delta contributions"
+            )
+            return self._local_delta_contributions
 
         def genus_comparison(self):
             return self.normalization_data().genus_comparison()
 
         def geometric_genus(self):
-            r"""Return geometric genus from a selected normalization, or smoothness.
-
-            A smooth projective integral curve has no normalization defect, so
-            its geometric and arithmetic genera agree.  For singular curves
-            they need not agree; this method deliberately refuses to route
-            those curves through Sage's unchecked generic ``genus()``.  Their
-            geometric genus must instead come from an explicitly represented
-            normalization/geometric-integrality construction.
-            """
-            base = self.scheme_base_ring()
-            assert self in Schemes(base).Projective(), (
-                "geometric genus here requires a represented projective curve"
+            r"""The genus of the normalization, or the arithmetic genus when smooth."""
+            assert self in Schemes(self.scheme_base_ring()).Projective(), (
+                "geometric genus here requires a projective curve"
             )
-            normalization = getattr(self, "_preamble_curve_normalization_data", None)
-            if normalization is not None:
-                return normalization.geometric_genus()
-            assert self in Schemes(base).Smooth(), (
-                "geometric genus of a singular curve requires selected normalization data, not the arithmetic genus"
-            )
-            return self.arithmetic_genus()
+            match self._normalization_curve:
+                case None:
+                    assert self.is_smooth(), (
+                        "the geometric genus of a singular curve requires its normalization"
+                    )
+                    return self.arithmetic_genus()
+                case _:
+                    return self.normalization_data().geometric_genus()
 
         def genus(self):
             r"""Return geometric genus, never arithmetic genus by convention."""

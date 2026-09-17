@@ -26,7 +26,9 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -44,8 +46,9 @@ class CurveLocalDeltaContribution(SageObject):
     r"""One closed singular point with its local delta and residue degree."""
 
     def __init__(self, singularity, point, *, projective_support=None) -> None:
-        if point.parent().ring() is not singularity.polynomial_ring():
-            raise ValueError("a curve delta contribution uses a point of its local plane")
+        assert point.parent().ring() is singularity.polynomial_ring(), (
+            "a curve delta contribution uses a point of its local plane"
+        )
         self._singularity = singularity
         self._point = point
         self._projective_support = projective_support
@@ -83,10 +86,9 @@ class _CurveGenusComparison(SageObject):
 
     def __init__(self, normalization_data) -> None:
         self._normalization_data = normalization_data
-        if self.arithmetic_genus() != self.geometric_genus() + self.total_delta_contribution():
-            raise ArithmeticError(
-                "the selected local delta contributions do not exhaust the normalization genus defect"
-            )
+        assert self.arithmetic_genus() == self.geometric_genus() + self.total_delta_contribution(), (
+            "the selected local delta contributions do not exhaust the normalization genus defect"
+        )
 
     def normalization_data(self):
         return self._normalization_data
@@ -118,26 +120,23 @@ class ProjectiveCurveNormalizationData(SageObject):
         local_contributions,
     ) -> None:
         base = curve.scheme_base_ring()
-        if curve not in Curves(base) or curve not in Schemes(base).Projective():
-            raise TypeError("curve normalization data require a projective integral curve")
-        if normalization_morphism.codomain() is not curve:
-            raise ValueError("the normalization morphism must land in the selected curve")
+        assert curve in Curves(base) and curve in Schemes(base).Projective(), (
+            "curve normalization data require a projective integral curve"
+        )
+        assert normalization_morphism.codomain() is curve, (
+            "the normalization morphism must land in the selected curve"
+        )
         normalization = normalization_morphism.domain()
-        if normalization not in Curves(base) or normalization not in Schemes(base).Projective():
-            raise TypeError("the represented normalization must itself be a projective curve")
         contributions = tuple(local_contributions)
-        if not contributions:
-            raise ValueError("a singular curve normalization records its nonzero local defects")
-        if normalization not in ProjectiveSpaces(base) or int(normalization.relative_dimension()) != 1:
-            raise NotImplementedError(
-                "the selected genus comparison currently certifies geometric integrality through an actual P^1 normalization"
-            )
+        assert contributions, "a singular curve normalization records its nonzero local defects"
+        assert normalization in ProjectiveSpaces(base) and int(normalization.relative_dimension()) == 1, (
+            "geometric integrality is certified here only through a normalization by the projective line P^1"
+        )
         self._curve = curve
         self._normalization_morphism = normalization_morphism
         self._local_contributions = contributions
         self._geometrically_integral = True
         self._connected_normalization = True
-        curve._preamble_curve_normalization_data = self
         self.genus_comparison()
 
     def curve(self):
@@ -179,20 +178,19 @@ class ProjectiveCurveNormalizationData(SageObject):
 
 
 
-def _projective_quintic_normalization(curve, coordinate_formula):
-    r"""Corestrict one basepoint-free degree-five map ``P1 -> P2`` to ``curve``."""
-    base = curve.scheme_base_ring()
+def _quintic_with_chosen_normalization(equation, plane, coordinate_formula, local_delta_contributions):
+    r"""The plane quintic ``V(equation)`` constructed with the normalization ``[s:t] |-> formula(s, t)``."""
+    base = plane.scheme_base_ring()
     normalization = ProjectiveSpaces(base)(1, names=("s", "t"))
     ring = normalization.O(5).global_sections().homogeneous_coordinate_ring()
-    s = ring.algebra_generator("s")
-    t = ring.algebra_generator("t")
-    ambient = curve.inclusion().codomain()
-    coordinates = coordinate_formula(s, t)
-    ambient_map = normalization.projective_morphism_from_coordinates(
-        ambient,
-        coordinates,
+    coordinates = coordinate_formula(ring.algebra_generator("s"), ring.algebra_generator("t"))
+    return Curves(base).from_equation(
+        equation,
+        plane,
+        normalization_curve=normalization,
+        normalization_coordinates=finite_family(tuple(coordinates), name="Homogeneous coordinates of the normalization"),
+        local_delta_contributions=finite_family(tuple(local_delta_contributions), name="Local delta contributions"),
     )
-    return curve.corestriction(ambient_map)
 
 
 def _origin_contribution(equation, *, projective_support):
@@ -218,18 +216,6 @@ def rational_quintic_with_two_nodes_normalization():
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
     Z = ring.algebra_generator("Z")
-    curve = Curves(_RATIONALS).from_equation(
-        Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2,
-        plane,
-    )
-    normalization = _projective_quintic_normalization(
-        curve,
-        lambda s, t: (
-            s**2 * t**3,
-            s * (s**2 - t**2) * (s**2 - 4 * t**2),
-            t**5,
-        ),
-    )
 
     local = _RATIONALS.polynomial_ring(("u", "v"))
     u, v = tuple(local.algebra_generators())
@@ -245,11 +231,17 @@ def rational_quintic_with_two_nodes_normalization():
         v**3 - u * (u - v) ** 2 * (u - 4 * v) ** 2,
         projective_support=(0, 1, 0),
     )
-    return ProjectiveCurveNormalizationData(
-        curve,
-        normalization,
+    curve = _quintic_with_chosen_normalization(
+        Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2,
+        plane,
+        lambda s, t: (
+            s**2 * t**3,
+            s * (s**2 - t**2) * (s**2 - 4 * t**2),
+            t**5,
+        ),
         (first, second, infinity),
     )
+    return curve.normalization_data()
 
 
 def rational_quintic_with_nonrational_node_normalization():
@@ -268,18 +260,6 @@ def rational_quintic_with_nonrational_node_normalization():
     X = ring.algebra_generator("X")
     Y = ring.algebra_generator("Y")
     Z = ring.algebra_generator("Z")
-    curve = Curves(_RATIONALS).from_equation(
-        Y**2 * Z**3 - X * (X**2 + Z**2) ** 2,
-        plane,
-    )
-    normalization = _projective_quintic_normalization(
-        curve,
-        lambda s, t: (
-            s**2 * t**3,
-            s * (s**4 + t**4),
-            t**5,
-        ),
-    )
 
     affine = _RATIONALS.polynomial_ring(("x", "y"))
     x, y = tuple(affine.algebra_generators())
@@ -300,11 +280,17 @@ def rational_quintic_with_nonrational_node_normalization():
         z_inf**3 - x_inf * (x_inf**2 + z_inf**2) ** 2,
         projective_support=(0, 1, 0),
     )
-    return ProjectiveCurveNormalizationData(
-        curve,
-        normalization,
+    curve = _quintic_with_chosen_normalization(
+        Y**2 * Z**3 - X * (X**2 + Z**2) ** 2,
+        plane,
+        lambda s, t: (
+            s**2 * t**3,
+            s * (s**4 + t**4),
+            t**5,
+        ),
         (nonrational, infinity),
     )
+    return curve.normalization_data()
 
 
 __all__ = [
