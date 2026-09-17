@@ -13,6 +13,7 @@ from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, _FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -592,29 +593,104 @@ class RestrictedDiagram(Functor):
     def _apply_morphism(self, morphism):
         return self.original_diagram()(self.indexing_functor()(morphism))
 
-def SelectedLimitConstruction(diagram, universal_cone, factorizer):
-    r"""The limit of ``diagram`` on the cone ``universal_cone``, with ``factorizer`` as its universal property.
 
-    It is the object of :class:`_LimitCones` built on that cone's apex and
-    legs; ``factorizer`` sends a cone over ``diagram`` to the apex map
-    through which it factors.
+class SelectedLimitConstruction(SageObject):
+    r"""A selected universal cone over one represented diagram.
+
+    The cone is an object of ``Cones(D)`` built by that category's entry;
+    this record retains it with the rule factoring every cone through it.
     """
-    if universal_cone.diagram() is not diagram:
-        raise ValueError("a selected limit retains a cone over its own diagram")
-    return _LimitCones(diagram).limit(
-        universal_cone.apex(), universal_cone.transformation(), factorizer
-    )
+
+    def __init__(self, diagram, universal_cone, factorizer) -> None:
+        if universal_cone.diagram() is not diagram:
+            raise ValueError("a selected limit retains a cone over its own diagram")
+        self._diagram = diagram
+        self._universal_cone = universal_cone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cone(self):
+        return self._universal_cone
+
+    def object(self):
+        return self.cone().apex()
+
+    apex = object
+
+    def structure_morphism(self, index):
+        return self.cone().structure_morphism(index)
+
+    def factor(self, cone):
+        if cone.diagram() is not self.diagram():
+            raise ValueError("the cone to factor must lie over this construction's diagram")
+        apex_map = self._factorizer(cone)
+        return _ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected limits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this limit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target limit's diagram")
+        induced_cone = _ConeCategory(target_construction.diagram()).cone(
+            self.object(),
+            lambda index: (
+                transformation.component(index) * self.structure_morphism(index)
+            ),
+        )
+        return target_construction.factor(induced_cone).apex_map()
 
 
-def SelectedColimitConstruction(diagram, universal_cocone, factorizer):
-    r"""The colimit of ``diagram`` on the cocone ``universal_cocone``, with ``factorizer`` as its universal property."""
-    if universal_cocone.diagram() is not diagram:
-        raise ValueError("a selected colimit retains a cocone under its own diagram")
-    return _ColimitCocones(diagram).colimit(
-        universal_cocone.apex(), universal_cocone.transformation(), factorizer
-    )
+class SelectedColimitConstruction(SageObject):
+    r"""A selected universal cocone under one represented diagram.
 
+    The cocone is an object of ``Cocones(D)`` built by that category's entry;
+    this record retains it with the rule factoring it through every cocone.
+    """
 
+    def __init__(self, diagram, universal_cocone, factorizer) -> None:
+        if universal_cocone.diagram() is not diagram:
+            raise ValueError("a selected colimit retains a cocone under its own diagram")
+        self._diagram = diagram
+        self._universal_cocone = universal_cocone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cocone(self):
+        return self._universal_cocone
+
+    def object(self):
+        return self.cocone().apex()
+
+    apex = object
+
+    def costructure_morphism(self, index):
+        return self.cocone().costructure_morphism(index)
+
+    def factor(self, cocone):
+        if cocone.diagram() is not self.diagram():
+            raise ValueError("the cocone to factor must lie under this construction's diagram")
+        apex_map = self._factorizer(cocone)
+        return _CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected colimits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this colimit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target colimit's diagram")
+        induced_cocone = _CoconeCategory(self.diagram()).cocone(
+            target_construction.object(),
+            lambda index: (
+                target_construction.costructure_morphism(index)
+                * transformation.component(index)
+            ),
+        )
+        return self.factor(induced_cocone).apex_map()
 
 
 def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
@@ -1057,102 +1133,6 @@ class _CoproductCoconeCategory(_CoconeCategory):
 
     def super_categories(self):
         return [_CoconeCategory(self.diagram())]
-
-
-class _LimitCones(_ConeCategory):
-    r"""Limits of one diagram ``D``: cones over ``D`` with a chosen universal factorization.
-
-    A limit of ``D`` is a terminal object of ``Cones(D)``.  Being terminal is
-    a property of a cone; the rule sending every cone to the apex map through
-    which it factors is the chosen datum an object here adds to its cone.
-    """
-
-    def super_categories(self):
-        return [_ConeCategory(self.diagram())]
-
-    class ParentMethods:
-        def __init__(self, factorizer, **rest) -> None:
-            self._factorizer = factorizer
-            super().__init__(**rest)
-
-        def cone(self):
-            r"""The universal cone, which this limit is."""
-            return self
-
-        def object(self):
-            r"""The limit object: the apex of the universal cone."""
-            return self.apex()
-
-        def factor(self, cone: Parent) -> ConeMorphism:
-            r"""The morphism of cones from ``cone`` to this universal cone."""
-            if cone.diagram() is not self.diagram():
-                raise ValueError("the cone to factor must lie over this construction's diagram")
-            apex_map = self._factorizer(cone)
-            return _ConeCategory(self.diagram()).Mor(cone, self)(apex_map)
-
-        def induced_map(self, transformation, target_construction) -> Morphism:
-            r"""Return the map on selected limits induced by ``D -> E``."""
-            if transformation.source() is not self.diagram():
-                raise ValueError("the natural transformation must start at this limit's diagram")
-            if transformation.target() is not target_construction.diagram():
-                raise ValueError("the natural transformation must end at the target limit's diagram")
-            induced_cone = _ConeCategory(target_construction.diagram()).cone(
-                self.object(),
-                lambda index: (
-                    transformation.component(index) * self.structure_morphism(index)
-                ),
-            )
-            return target_construction.factor(induced_cone).apex_map()
-
-    def limit(self, apex: Parent, transformation: NaturalTransformation, factorizer):
-        r"""The limit on the cone with this apex and legs: this category's one entry."""
-        return _object_of(self, apex=apex, transformation=transformation, factorizer=factorizer)
-
-
-class _ColimitCocones(_CoconeCategory):
-    r"""Colimits of one diagram ``D``: cocones under ``D`` with a chosen universal factorization."""
-
-    def super_categories(self):
-        return [_CoconeCategory(self.diagram())]
-
-    class ParentMethods:
-        def __init__(self, factorizer, **rest) -> None:
-            self._factorizer = factorizer
-            super().__init__(**rest)
-
-        def cocone(self):
-            r"""The universal cocone, which this colimit is."""
-            return self
-
-        def object(self):
-            r"""The colimit object: the apex of the universal cocone."""
-            return self.apex()
-
-        def factor(self, cocone: Parent) -> CoconeMorphism:
-            r"""The morphism of cocones from this universal cocone to ``cocone``."""
-            if cocone.diagram() is not self.diagram():
-                raise ValueError("the cocone to factor must lie under this construction's diagram")
-            apex_map = self._factorizer(cocone)
-            return _CoconeCategory(self.diagram()).Mor(self, cocone)(apex_map)
-
-        def induced_map(self, transformation, target_construction) -> Morphism:
-            r"""Return the map on selected colimits induced by ``D -> E``."""
-            if transformation.source() is not self.diagram():
-                raise ValueError("the natural transformation must start at this colimit's diagram")
-            if transformation.target() is not target_construction.diagram():
-                raise ValueError("the natural transformation must end at the target colimit's diagram")
-            induced_cocone = _CoconeCategory(self.diagram()).cocone(
-                target_construction.object(),
-                lambda index: (
-                    target_construction.costructure_morphism(index)
-                    * transformation.component(index)
-                ),
-            )
-            return self.factor(induced_cocone).apex_map()
-
-    def colimit(self, apex: Parent, transformation: NaturalTransformation, factorizer):
-        r"""The colimit on the cocone with this apex and legs: this category's one entry."""
-        return _object_of(self, apex=apex, transformation=transformation, factorizer=factorizer)
 
 
 class _LimitsOfCategory(OwnedCategoryBase):
