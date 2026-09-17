@@ -94,17 +94,34 @@ def _regularity(k):
 
 
 def _integrability(p):
-    r"""Normalize an exponent \(p\in(0,\infty]\): an integer when \(p\) is one."""
-    if p is Infinity or p == Infinity:
+    r"""Normalize the positive extended-real exponent supplied at map ingress.
+
+    The symbolic field is the private expression realization of the owned
+    exact real. Rational exponents retain their integer/rational spelling;
+    irrational exponents are not replaced by rational approximations.
+    """
+    from dzack_research.preamble.logic import ask
+
+    if p is Infinity:
         return Infinity
-    rationals = _own_ring(QQ)
-    integers = _own_ring(ZZ)
-    p = rationals(p)
-    if p <= rationals.zero():
-        raise ValueError("L^p and ell^p are defined for p > 0")
-    if p in integers:
-        return integers(p)
-    return p
+    real = RR(p)
+    match ask(real > RR.zero()):
+        case True:
+            expression = real.expression()
+            if expression in QQ:
+                rational = _own_ring(QQ)._from_engine_element(QQ(expression))
+                integers = _own_ring(ZZ)
+                return integers(rational) if rational in integers else rational
+            return real
+        case False:
+            raise ValueError("L^p and ell^p are defined for p > 0")
+        case _:
+            raise TypeError("positivity of the supplied exact exponent is undecided")
+
+
+def _exponent_key(exponent):
+    r"""Private expression key for a normalized, possibly irrational exponent."""
+    return ("infinity",) if exponent is Infinity else ("finite", RR(exponent).expression())
 
 
 def _l2_real_polynomial(expression, variable):
@@ -1163,7 +1180,7 @@ class _SquareIntegrableFormedSpace(_LebesgueSpace):
     r"""\(\mathcal L^2(\mathbb R)\) with \(b(f,g)=\int_{\mathbb R}fg\): the formed module on the vector space \(\mathcal L^2\)."""
 
 
-@cached_function
+@cached_function(key=_exponent_key)
 def _lebesgue_space(exponent):
     r"""Build \(L^p(\mathbb R)\); for \(p=2\), the formed module on the vector space \(L^2\).
 
@@ -1245,7 +1262,7 @@ class _SquareSummableFormedSpace(_SequenceSpace):
     r"""\(\ell^2(\mathbb R)\) with \(b(a,c)=\sum_n a_n c_n\): the formed module on the vector space \(\ell^2\)."""
 
 
-@cached_function
+@cached_function(key=_exponent_key)
 def _sequence_space(exponent):
     r"""Build \(\ell^p(\mathbb R)\); for \(p=2\), the formed module on the vector space \(\ell^2\).
 

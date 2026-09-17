@@ -37,3 +37,15 @@ def test_quotient_keeps_a_nonzero_function_and_does_not_sample_callable_equality
     assert (quotient(left) == quotient(right)) is Unknown
     assert (quotient(left) != quotient(right)) is Unknown
     assert quotient(left) == quotient(left)
+
+
+def test_real_exponents_are_not_restricted_to_rationals() -> None:
+    from sage.all import sqrt
+
+    exponent = RR(sqrt(2))
+    maps = Lp(exponent)
+    quotient = maps.quotient_by_null_functions()
+    assert maps.integrability_exponent() == exponent
+    assert quotient.integrability_exponent() == exponent
+    assert Lp(RR(sqrt(2))) is maps
+    assert quotient.quotient_projection()(maps.zero()) == quotient.zero()
