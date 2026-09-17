@@ -1075,11 +1075,11 @@ class _LimitCones(_ConeCategory):
             self._factorizer = factorizer
             super().__init__(**rest)
 
-        def cone(self) -> Parent:
+        def cone(self):
             r"""The universal cone, which this limit is."""
             return self
 
-        def object(self) -> Parent:
+        def object(self):
             r"""The limit object: the apex of the universal cone."""
             return self.apex()
 
@@ -1104,7 +1104,7 @@ class _LimitCones(_ConeCategory):
             )
             return target_construction.factor(induced_cone).apex_map()
 
-    def limit(self, apex: Parent, transformation: NaturalTransformation, factorizer) -> Parent:
+    def limit(self, apex: Parent, transformation: NaturalTransformation, factorizer):
         r"""The limit on the cone with this apex and legs: this category's one entry."""
         return _object_of(self, apex=apex, transformation=transformation, factorizer=factorizer)
 
@@ -1120,11 +1120,11 @@ class _ColimitCocones(_CoconeCategory):
             self._factorizer = factorizer
             super().__init__(**rest)
 
-        def cocone(self) -> Parent:
+        def cocone(self):
             r"""The universal cocone, which this colimit is."""
             return self
 
-        def object(self) -> Parent:
+        def object(self):
             r"""The colimit object: the apex of the universal cocone."""
             return self.apex()
 
@@ -1150,7 +1150,7 @@ class _ColimitCocones(_CoconeCategory):
             )
             return self.factor(induced_cocone).apex_map()
 
-    def colimit(self, apex: Parent, transformation: NaturalTransformation, factorizer) -> Parent:
+    def colimit(self, apex: Parent, transformation: NaturalTransformation, factorizer):
         r"""The colimit on the cocone with this apex and legs: this category's one entry."""
         return _object_of(self, apex=apex, transformation=transformation, factorizer=factorizer)
 

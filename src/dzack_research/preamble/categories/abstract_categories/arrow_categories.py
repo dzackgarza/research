@@ -259,10 +259,10 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
             walking_arrow = self.functor().domain()
             return self.functor()(walking_arrow.Mor(walking_arrow(0), walking_arrow(1)).unique())
 
-        def source_object(self) -> Parent:
+        def source_object(self):
             return self.functor()(self.functor().domain()(0))
 
-        def target_object(self) -> Parent:
+        def target_object(self):
             return self.functor()(self.functor().domain()(1))
 
         def arrow_category(self) -> Category:
@@ -271,7 +271,7 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
         def _repr_(self) -> str:
             return f"Arrow object ({self.source_object()} -> {self.target_object()})"
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         r"""The identity of an object of ``C``, as an arrow."""
         base = self.codomain_category()
         witness = base.an_object()
@@ -286,7 +286,7 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
             and arrow in _category_hom(base, arrow.domain(), arrow.codomain())
         )
 
-    def object(self, value: Functor | CategoryFunctorMorphism | Morphism) -> Parent:
+    def object(self, value: Functor | CategoryFunctorMorphism | Morphism):
         r"""The object of ``[[1], C]`` on a functor out of the walking arrow, or on an arrow of ``C``.
 
         The functor is the defining datum.  An arrow ``f`` of ``C`` determines
@@ -349,7 +349,7 @@ class _SubcategoryOfArrows(OwnedCategory):
             and arrow in _category_hom(base, arrow.domain(), arrow.codomain())
         )
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         r"""The identity of an object of ``C``, as an arrow."""
         base = self.base_category()
         witness = base.an_object()
@@ -363,7 +363,7 @@ class _SubcategoryOfArrows(OwnedCategory):
     __call__ = object
 
     @cached_method(key=lambda self, functor: id(functor))
-    def _object_on(self, functor: Functor) -> Parent:
+    def _object_on(self, functor: Functor):
         return _object_of(self, functor=functor)
 
     def __contains__(self, candidate: Any) -> bool:
@@ -506,7 +506,7 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
         r"""An algebra structure on its target: an arrow ``T(X) -> X``."""
         return super().admits_arrow(arrow) and arrow.domain() is self.endofunctor()(arrow.codomain())
 
-    def algebra(self, underlying_object: Parent, structure: Morphism) -> Parent:
+    def algebra(self, underlying_object: Parent, structure: Morphism):
         r"""Return ``(X, structure : T(X) -> X)`` for the object ``X`` of ``C``.
 
         Both the supplied object and the supplied structure arrow are kept
@@ -522,7 +522,7 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
             raise ValueError("the structure morphism must end at its exact supplied object")
         return self.object(structure)
 
-    def underlying_object(self, algebra: Parent) -> Parent:
+    def underlying_object(self, algebra: Parent):
         if algebra not in self:
             raise TypeError("the object is not an algebra of this endofunctor")
         return algebra.target_object()
@@ -661,7 +661,7 @@ class SliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
@@ -749,7 +749,7 @@ class CosliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(

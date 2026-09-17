@@ -242,7 +242,7 @@ def _finite_family(values, *, name: str) -> IndexedFamily:
     )
 
 
-def _covering_family(category: Category, target: Parent, members, overlaps) -> Parent:
+def _covering_family(category: Category, target: Parent, members, overlaps):
     r"""The covering family of ``target`` by ``members`` in ``category``, a category of covering families.
 
     ``members`` are the cover arrows ``U_i -> U``; ``overlaps`` maps each pair
@@ -341,7 +341,7 @@ class CoveringFamilies(OwnedCategory):
     def super_categories(self):
         return [Objects()]
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         target = self.site_category().an_object()
         identity = _category_homset(self.site_category(), target, target).identity()
         return self.family(target, (identity,), {})
@@ -365,7 +365,7 @@ class CoveringFamilies(OwnedCategory):
             r"""The coverage this family was built in: the category of covering families selecting it."""
             return self.category()
 
-        def target(self) -> Parent:
+        def target(self):
             return self._covered_object
 
         covered_object = target
@@ -376,13 +376,13 @@ class CoveringFamilies(OwnedCategory):
         def member(self, index) -> Morphism:
             return self.members()[index]
 
-        def index_set(self) -> Parent:
+        def index_set(self):
             return self.members().index_set()
 
-        def pair_index_set(self) -> Parent:
+        def pair_index_set(self):
             return self.overlaps().index_set()
 
-        def overlap(self, left_index, right_index) -> Parent:
+        def overlap(self, left_index, right_index):
             r"""The overlap span ``U_i <- U_ij -> U_j`` of two members, in either order."""
             ranking = self.index_set().ranking_map()
             pair = (
@@ -401,7 +401,7 @@ class CoveringFamilies(OwnedCategory):
             return f"Covering family of {self.target()}"
 
     class SubcategoryMethods:
-        def family(self, target: Parent, members, overlaps) -> Parent:
+        def family(self, target: Parent, members, overlaps):
             r"""The covering family of ``target`` by ``members`` with the stated pairwise overlaps.
 
             The entry of every category of covering families: the family is
@@ -421,7 +421,7 @@ class CoveringFamilies(OwnedCategory):
         return f"Covering families in {self.site_category()}"
 
 
-def CoveringFamily(category: Category, target: Parent, members, overlaps) -> Parent:
+def CoveringFamily(category: Category, target: Parent, members, overlaps):
     r"""The covering family of ``target`` by ``members`` in ``category``: ``category.family(...)``."""
     return category.family(target, members, overlaps)
 
@@ -448,14 +448,14 @@ class TrivialCoveringFamilies(OwnedCategoryBase):
         return [CoveringFamilies(self.site_category())]
 
     @cached_method(key=lambda self, target: id(target))
-    def family(self, target: Parent) -> Parent:
+    def family(self, target: Parent):
         r"""The singleton identity cover of ``target``, one for each target."""
         if target not in self.site_category():
             raise TypeError("a trivial cover target must be an object of the site")
         identity = _category_homset(self.site_category(), target, target).identity()
         return _covering_family(self, target, (identity,), {})
 
-    def an_object(self) -> Parent:
+    def an_object(self):
         return self.family(self.site_category().an_object())
 
     def _repr_(self) -> str:
@@ -600,7 +600,7 @@ class DescentEqualizer(SageObject):
     def presheaf(self) -> Functor:
         return self._presheaf
 
-    def covering_family(self) -> Parent:
+    def covering_family(self):
         return self._covering_family
 
     cover = covering_family
@@ -745,7 +745,7 @@ class DescentEqualizerComparison(SageObject):
     def descent_equalizer(self) -> DescentEqualizer:
         return self._equalizer
 
-    def covering_family(self) -> Parent:
+    def covering_family(self):
         return self.descent_equalizer().covering_family()
 
     def presheaf(self) -> Functor:
@@ -995,7 +995,7 @@ class Sheaves(OwnedCategoryBase):
         def _repr_(self) -> str:
             return f"Sheaf object ({self.functor()})"
 
-    def object(self, presheaf, descent_data: DescentData) -> Parent:
+    def object(self, presheaf, descent_data: DescentData):
         r"""The sheaf on ``presheaf`` with ``descent_data``: this category's one entry."""
         functor = _presheaf_functor(presheaf)
         if functor.domain() != self.site_category().opposite():
@@ -1009,7 +1009,7 @@ class Sheaves(OwnedCategoryBase):
         return self._object_on(functor, descent_data)
 
     @cached_method(key=lambda self, functor, descent_data: (id(functor), id(descent_data)))
-    def _object_on(self, functor: Functor, descent_data: DescentData) -> Parent:
+    def _object_on(self, functor: Functor, descent_data: DescentData):
         return _object_of(self, functor=functor, descent_data=descent_data)
 
     __call__ = object
