@@ -2,7 +2,7 @@ r"""Finite-support direct sums of a represented family of graded modules."""
 
 from typing import Any
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.parent import Parent
@@ -436,14 +436,79 @@ class _DirectSumOfModules:
         return f"Direct sum over {self.degree_index_set()}"
 
 
+@cached_function(key=lambda ring, pieces: (id(ring), id(pieces)))
+def _direct_sum_framing_source(ring, pieces):
+    r"""The one chosen free source of the summed framings of this family."""
+    labels = Sets().coproduct(pieces.map(lambda piece: piece.module_generating_set()))
+    return ring.free_module(labels)
+
+
+class _FramedDirectSumOfModules(_DirectSumOfModules):
+    r"""The direct sum of chosen epimorphisms from free modules.
+
+    If F(S_i) -> M_i are the framings, F(disjoint_union S_i) -> direct_sum M_i
+    sends the generator (i,s) to the i-th inclusion of its image in M_i.
+    Every finite-support element lifts term by term, so this is an epimorphism;
+    no independence of the images is assumed.
+    """
+
+    def __init__(self, summand_family, **rest) -> None:
+        super().__init__(summand_family=summand_family, **rest)
+        source = _direct_sum_framing_source(self.base_ring(), summand_family)
+        self._install_framing(
+            source.module_generating_set(),
+            lambda label: self.from_component(
+                label.summand_index(),
+                self.graded_piece(label.summand_index()).module_generator(label.summand_element()),
+            ),
+            source,
+        )
+
+    def _element_constructor_(self, value):
+        match value:
+            case dict():
+                return self.linear_combination(value)
+            case _:
+                return super()._element_constructor_(value)
+
+    def _module_with_structure(self, categories, construction_data):
+        return super()._module_with_structure(
+            (FramedModules(self.base_ring()), *categories), construction_data,
+        )
+
+    def _direct_sum_realization(self):
+        return _FramedDirectSumOfModules, GradedDirectSumElement
+
+    def module_component_key(self, label):
+        return self.module_generating_set()(label).summand_index()
+
+    def module_component(self, degree):
+        return self.graded_piece(degree)
+
+    def module_component_generator_label(self, label):
+        return self.module_generating_set()(label).summand_element()
+
+    def module_label_from_component(self, degree, component_label):
+        return self.module_generating_set()(self.normalize_degree(degree), component_label)
+
+
 def _direct_sum_of_modules(
     ring, grading_monoid, pieces, *, extra_categories=(), construction_data=None,
-    _realization=(_DirectSumOfModules, GradedDirectSumElement),
+    _realization=None,
 ):
     graded = GradedModules(ring, grading_monoid)
     assert pieces.index_set() is grading_monoid, "the grading indexes the summands"
+    category = Cat().meet((graded, *extra_categories))
+    match _realization:
+        case None:
+            match category.is_subcategory(FramedModules(ring)):
+                case True:
+                    realization = (_FramedDirectSumOfModules, GradedDirectSumElement)
+                case False:
+                    realization = (_DirectSumOfModules, GradedDirectSumElement)
+        case realization:
+            pass
     return _object_of(
-        Cat().meet((graded, *extra_categories)),
-        _engine=(graded, *_realization),
+        category, _engine=(graded, *realization),
         base_ring=ring, summand_family=pieces, **(construction_data or {}),
     )

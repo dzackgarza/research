@@ -43,3 +43,27 @@ def test_direct_sum_does_not_turn_unknown_component_equality_into_inequality() -
     assert (element == graded.zero()) is Unknown
     assert (element != graded.zero()) is Unknown
     assert element + (-element) == graded.zero()
+
+
+def test_framed_direct_sum_keeps_its_epimorphism_when_equipped_with_a_product() -> None:
+    from dzack_research.preamble.all import FramedModules
+
+    free = ZZ.free_module(("e",))
+    piece = Modules(ZZ).Mor(free, free)({"e": ZZ(2) * free.module_generator("e")}).cokernel()
+    pieces = indexed_family(ZZ, lambda degree: piece)
+    module = GradedModules(ZZ)(pieces, placements=(FramedModules(ZZ),))
+    label = module.module_label_from_component(ZZ(-1), piece.module_generating_set()[0])
+    element = module.module_generator(label)
+    tensor = Modules(ZZ).tensor_product((module, module))
+    product = tensor.from_bilinear_map(module, lambda left, right: module.zero())
+    algebra = Algebras(ZZ)(module, product)
+
+    assert module.framing_morphism().domain() is module.framing_source()
+    assert module.framing_morphism().codomain() is module
+    assert module.framing_morphism()(module.framing_source().module_generator(label)) == element
+    assert element != module.zero()
+    assert element + element == module.zero()
+    assert algebra.framing_morphism().codomain() is algebra
+    assert algebra.module_generating_set() is module.module_generating_set()
+    assert module(algebra(element)) == element
+    assert algebra(element) * algebra(element) == algebra.zero()
