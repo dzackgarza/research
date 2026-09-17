@@ -25,10 +25,6 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     StabilizerSubgroups,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (
-    PrimitiveIsotropicSublatticeLocus,
-    PrimitiveIsotropicSublatticeOrbitDecomposition,
-    PrimitiveIsotropicVectorLocus,
-    PrimitiveIsotropicVectorOrbitDecomposition,
     _isotropic_equivalence_witness,
     _isotropic_orbit_representatives,
     _isotropic_stabilizer_generators,
@@ -1820,15 +1816,10 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         The first supported infinite locus is the primitive isotropic vector
         locus.  It uses the exact rank-one isotropic backend and returns a
         structured finite list of orbits, each retaining its representative,
-        stabilizer and transporter operation.
+        stabilizer and transporter operation.  The locus states which orbit
+        decomposition it has.
         """
-        if isinstance(locus, PrimitiveIsotropicVectorLocus):
-            return PrimitiveIsotropicVectorOrbitDecomposition(self, locus)
-        if isinstance(locus, PrimitiveIsotropicSublatticeLocus):
-            return PrimitiveIsotropicSublatticeOrbitDecomposition(self, locus)
-        raise NotImplementedError(
-            "orbit_decomposition currently owns primitive isotropic vector and sublattice loci; other loci require their exact orbit owner"
-        )
+        return locus.orbit_decomposition(self)
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):
 
