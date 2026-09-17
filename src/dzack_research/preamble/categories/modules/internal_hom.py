@@ -1,7 +1,13 @@
-r"""Internal Hom modules for the exact finitely presented module backend."""
+r"""Internal Hom modules for the exact finitely presented module backend.
 
-from sage.misc.cachefunc import cached_function, cached_method
-from sage.structure.sage_object import SageObject
+``Hom_R(M, N)`` for ``M`` with a chosen finite presentation ``F_1 -> F_0 ->
+M -> 0`` is the kernel of the evaluation ``N^{gens(M)} -> N^{rels(M)}`` of
+relations on generator assignments.  Its endpoints determine it, so the
+presented model is computed from the Hom module itself and nothing about its
+construction is recorded beside it.
+"""
+
+from sage.misc.cachefunc import cached_function
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -10,8 +16,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_matrix,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    Modules,
-    InternalHomModules,
     Modules,
     _represented_finite_presentation,
     _tensor_pair,
@@ -22,41 +26,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
-
-
-class InternalHomConstruction(SageObject):
-    r"""The fixed represented construction of ``Hom_R(M,N)`` from its endpoints.
-
-    The endpoints determine the mathematical internal Hom immediately.  A finite
-    presentation, when supported, is a realization of this retained construction;
-    asking for it later does not select a new model or change the Hom parent.
-    """
-
-    def __init__(self, source, target, base_ring) -> None:
-        self._source = source
-        self._target = target
-        self._base_ring = _owned_ring(base_ring)
-
-    def source_module(self):
-        return self._source
-
-    def target_module(self):
-        return self._target
-
-    def base_ring(self):
-        return self._base_ring
-
-    @cached_method(key=lambda self, homset: id(homset))
-    def model_data(self, homset):
-        if homset.domain() is not self.source_module() or homset.codomain() is not self.target_module():
-            raise ValueError("this internal-Hom construction belongs to different endpoints")
-        return _internal_hom_model_data(homset)
-
-    def _repr_(self) -> str:
-        return (
-            f"Internal Hom construction Hom_{self.base_ring()}("
-            f"{self.source_module()}, {self.target_module()})"
-        )
 
 def _native_fgp_morphism(morphism):
     r"""Cross one owned module map to Sage's exact FGP kernel engine.
@@ -91,13 +60,9 @@ def _internal_hom_model_data(homset):
     source = homset.domain()
     target = homset.codomain()
     ring = _owned_ring(source.base_ring())
-    if (
-        not _represented_finite_presentation(source)
-        or not _represented_finite_presentation(target)
-    ):
-        raise NotImplementedError(
-            "this Hom module has no endpoint-determined finite presentation"
-        )
+    assert _represented_finite_presentation(source) and _represented_finite_presentation(target), (
+        "the presented model of Hom_R(M, N) is computed from chosen finite presentations of M and N"
+    )
 
     source_labels = source.module_generating_set()
     target.module_generating_set()
@@ -174,8 +139,9 @@ def _internal_hom_model_data(homset):
         construction = model.module_subobject_construction()
         ambient = construction.ambient_module()
         images = construction.generator_images()
-        if ambient is None or images is None:
-            raise AssertionError("an internal-Hom kernel must retain its subobject inclusion data")
+        assert ambient is not None and images is not None, (
+            "an internal-Hom kernel must retain its subobject inclusion data"
+        )
         lift = construction.selected_lift()
         inclusion = ModuleEmbedding(
             _auxiliary_linear_module_homset(model, ambient),
@@ -234,6 +200,5 @@ def _internal_hom_morphism(
 
 
 __all__ = [
-    "InternalHomConstruction",
-    "InternalHomModules",
+    "_internal_hom_model_data",
 ]

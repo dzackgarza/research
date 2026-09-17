@@ -544,18 +544,10 @@ class ModulesOverGroupAlgebra(Modules):
                 name="Coefficient-module generators",
             )
 
-        def linear_combination(self, coefficients, factor_on_left=True):
+        def linear_combination(self, coefficients):
             if self._is_the_regular_module():
-                return super().linear_combination(
-                    coefficients,
-                    factor_on_left=factor_on_left,
-                )
-            return self(
-                self.unformed_module().linear_combination(
-                    coefficients,
-                    factor_on_left=factor_on_left,
-                )
-            )
+                return super().linear_combination(coefficients)
+            return self(self.unformed_module().linear_combination(coefficients))
 
         def _selected_module_coefficients(self, element):
             if self._is_the_regular_module():

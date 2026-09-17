@@ -13,9 +13,6 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.base_change import _base_change_codomain
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presented_module_from_morphism,
-)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
 )
@@ -63,11 +60,10 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     categories = [FramedFreeModules(ring)]
     if ring in OwnedFields():
         categories.append(VectorSpaces(ring))
-    try:
-        finite = module_generating_set.cardinality().is_finite()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        finite = False
-    if finite:
+    assert module_generating_set in Sets(), (
+        "a free module is constructed on an owned set of labels"
+    )
+    if module_generating_set.cardinality().is_finite():
         categories.append(FramedFreeModules(ring).FinitelyGenerated())
     return categories
 
@@ -141,25 +137,23 @@ class _SparseFreeModuleElement(ModuleElement):
         return self.parent().scalar_multiple(scalar, self)
 
     def __mul__(self, other):
-        if (
-            isinstance(other, _SparseFreeModuleElement)
-            and other.parent() is self.parent()
-            and hasattr(self.parent(), "multiplication_morphism")
-        ):
-            return self._mul_(other)
-        try:
-            return self.parent().scalar_multiple(other, self)
-        except (TypeError, ValueError):
-            return NotImplemented
+        r"""Multiply in the algebra this free module underlies, else scale on the right."""
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        module = self.parent()
+        ring = module.base_ring()
+        match other:
+            case _ if element_parent(other) is module and module in Algebras(ring):
+                return self._mul_(other)
+            case _ if other in ring:
+                return module.scalar_multiple(other, self)
+            case _:
+                return NotImplemented
 
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, _SparseFreeModuleElement)
-            and other.parent() is self.parent()
-            and other._coefficients == self._coefficients
-        )
+        equal = other._coefficients == self._coefficients
         return equal if op == op_EQ else not equal
 
     def __hash__(self):
@@ -191,30 +185,26 @@ class _SparseFreeModuleParent:
         **rest,
     ) -> None:
         ring = _owned_ring(base_ring)
-        labels = module_generating_set
-        self._preamble_free_module_constructor = lambda new_labels, **options: ring._fresh_free_module_on(
-            new_labels,
-            **options,
-        )
+        # The free module ``F_R(S)`` is constructed on the set ``S``: that set
+        # is this level's datum, and the framing it declares is the identity
+        # of ``F_R(S)`` read on its basis.
+        self._module_generating_set = module_generating_set
         super().__init__(
             base_ring=ring,
-            module_generating_set=labels,
+            module_generating_set=module_generating_set,
             module_generator_function=self._basis_element,
             framing_source=self,
             **rest,
         )
 
     def _basis_element(self, label):
-        labels = self._preamble_module_generating_set
-        if label not in labels:
-            raise ValueError(f"{label!r} is not a module-generator label")
+        labels = self._module_generating_set
+        assert label in labels, f"{label!r} is not a module-generator label"
         return self.element_class(self, {labels(label): self.base_ring().one()})
 
     def module_generating_set(self):
-        r"""Return the labels of this private sparse identity framing."""
-        labels = self.__dict__.get("_preamble_module_generating_set")
-        assert labels is not None, f"{self} declares no module generating set"
-        return labels
+        r"""Return the set ``S`` this free module ``F_R(S)`` is constructed on."""
+        return self._module_generating_set
 
     def module_generator(self, label):
         r"""Return the sparse basis element selected by this identity framing."""
@@ -251,100 +241,76 @@ class _SparseFreeModuleParent:
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
-        if isinstance(value, _SparseFreeModuleElement) and value.parent() is self:
-            return value
-        match element_parent(value):
-            case Parent() as source if source is not self and self._built_on_the_same_data(source):
-                return self._element_on_the_same_data(source, value)
-        if isinstance(value, dict):
-            labels = self.module_generating_set()
-            ring = self.base_ring()
-            coefficients = {}
-            for label, coefficient in value.items():
-                if label not in labels:
-                    raise ValueError(f"{label!r} is not a module-generator label")
-                selected_label = labels(label) if callable(labels) else label
-                coefficient = ring(coefficient)
-                coefficients[selected_label] = (
-                    coefficients.get(selected_label, ring.zero()) + coefficient
-                )
-            return self.element_class(self, coefficients)
         labels = self.module_generating_set()
-        if isinstance(value, (tuple, list)):
-            if labels not in EnumeratedSets():
-                raise TypeError(
-                    "coordinate sequence syntax requires an ordered enumerated framing"
-                )
-            cardinality = labels.cardinality()
-            if not cardinality.is_finite():
-                raise TypeError(
-                    "coordinate sequence syntax requires a finite framing; "
-                    "use label-keyed finite support for an infinite free module"
-                )
-            if len(value) != int(cardinality.finite_value()):
-                raise ValueError("coordinate tuple has the wrong length")
-            coefficients = {
-                labels[position]: coefficient
-                for position, coefficient in enumerate(value)
-                if coefficient != 0
-            }
-            return self.element_class(self, coefficients)
-
-        # Sequence inputs are coordinate syntax, never candidate scalars.  Only
-        # after the structured ingress cases have been exhausted may an
-        # arbitrary-rank free module ask whether the input is the additive zero
-        # of its base ring.
-        try:
-            scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
-            scalar = None
-        if scalar is not None and scalar == self.base_ring().zero():
-            return self.zero()
-
-        if labels.cardinality().is_finite() and int(labels.cardinality().finite_value()) == 1:
-            try:
-                scalar = self.base_ring()(value)
-            except (TypeError, ValueError):
-                pass
-            else:
-                return self.element_class(
-                    self,
-                    {labels[0]: scalar} if scalar != self.base_ring().zero() else {},
-                )
-        if value in labels:
-            # A label is its basis element: the unit ``S -> F(S)`` of the
-            # free-forgetful adjunction, as in Sage's
-            # ``CombinatorialFreeModule._element_constructor_``.
-            return self._basis_element(value)
-        raise TypeError(f"{value!r} does not describe an element of {self}")
+        ring = self.base_ring()
+        source = element_parent(value)
+        match value:
+            case _ if source is self:
+                return value
+            case _ if isinstance(source, Parent) and self._built_on_the_same_data(source):
+                return self._element_on_the_same_data(source, value)
+            case dict():
+                coefficients = {}
+                for label, coefficient in value.items():
+                    if label not in labels:
+                        raise ValueError(f"{label!r} is not a module-generator label")
+                    selected_label = labels(label)
+                    coefficient = ring(coefficient)
+                    coefficients[selected_label] = (
+                        coefficients.get(selected_label, ring.zero()) + coefficient
+                    )
+                return self.element_class(self, coefficients)
+            case tuple() | list():
+                if labels not in EnumeratedSets():
+                    raise TypeError(
+                        "coordinate sequence syntax requires an ordered enumerated framing"
+                    )
+                cardinality = labels.cardinality()
+                if not cardinality.is_finite():
+                    raise TypeError(
+                        "coordinate sequence syntax requires a finite framing; "
+                        "use label-keyed finite support for an infinite free module"
+                    )
+                if len(value) != int(cardinality.finite_value()):
+                    raise ValueError("coordinate tuple has the wrong length")
+                coefficients = {
+                    labels[position]: coefficient
+                    for position, coefficient in enumerate(value)
+                    if coefficient != 0
+                }
+                return self.element_class(self, coefficients)
+            # Sequence inputs are coordinate syntax, never candidate scalars.
+            # Only after the structured ingress cases may a free module ask
+            # whether the input is a scalar of its base ring.
+            case _ if value in ring and ring(value) == ring.zero():
+                return self.zero()
+            case _ if value in ring and labels.cardinality() == cardinal(1):
+                return self.element_class(self, {labels[0]: ring(value)})
+            case _ if value in labels:
+                # A label is its basis element: the unit ``S -> F(S)`` of the
+                # free-forgetful adjunction, as in Sage's
+                # ``CombinatorialFreeModule._element_constructor_``.
+                return self._basis_element(value)
+            case _:
+                raise TypeError(f"{value!r} does not describe an element of {self}")
 
     def zero(self):
         return self.element_class(self, {})
 
     def an_element(self):
-        try:
-            label = next(iter(self.module_generating_set()))
-        except StopIteration:
+        labels = self.module_generating_set()
+        if labels.cardinality() == cardinal(0):
             return self.zero()
-        return self._basis_element(label)
+        return self._basis_element(labels.an_element())
 
     def _raw_scalar_multiple(self, scalar, element):
-        scalar = self.base_ring()(scalar)
-        element = self._element_constructor_(element)
         ring = self.base_ring()
-
-        def product(coefficient):
-            try:
-                return ring._from_engine_element(
-                    _engine_element(ring, scalar) * _engine_element(ring, coefficient)
-                )
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return scalar * coefficient
-
+        scalar = ring(scalar)
+        element = self._element_constructor_(element)
         return self.element_class(
             self,
             {
-                label: product(coefficient)
+                label: scalar * coefficient
                 for label, coefficient in element._coefficients.items()
             },
         )
@@ -375,17 +341,19 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def _fresh_free_module_on(self, labels, **options):
-            constructor = self.__dict__.get("_preamble_free_module_constructor")
-            if constructor is None:
-                raise NotImplementedError(
-                    "this free module has no selected fresh-parent constructor"
-                )
-            return constructor(labels, **options)
+            r"""Return a new free module on ``labels`` over this module's ring.
+
+            Protected contract of framed free modules: constructions that build
+            sibling free modules (covers, relation modules, matrix units) ask
+            the free module they start from, so the new module is over the same
+            ring.
+            """
+            return _fresh_free_module_on(self.base_ring(), labels, **options)
 
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
-            return _presented_module_from_morphism(morphism, _cokernel_morphism=morphism)
+            return ModulesWithChosenFinitePresentation(self.base_ring())(morphism)
 
         def _represented_annihilator_ideal(self):
             r"""Return the kernel ideal of the scalar action on a free module."""
@@ -397,7 +365,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             if category is not None and not category.is_subcategory(Modules(self.base_ring())):
                 raise TypeError("this is not a module homset category")
-            if not hasattr(codomain, "module_generating_set"):
+            if codomain not in FramedModules(self.base_ring()):
                 raise TypeError("the parent-level module Hom constructor requires a framed target")
 
             return self.module_category().Mor(self, codomain)
@@ -417,12 +385,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             """
 
             return _module_subobject_spanning(self, self.module_generators())
-
-        def base_ring(self):
-            selected = self.__dict__.get("_preamble_base_ring")
-            if selected is not None:
-                return selected
-            return _owned_ring(self.base())
 
         def diagonal_gram(self, exceptions, default=1):
             r"""Return the diagonal type-``(0,2)`` tensor in this selected basis."""
@@ -532,12 +494,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
-            def _fresh_free_module_on(self, labels, **options):
-                constructor = self.__dict__.get("_preamble_free_module_constructor")
-                if constructor is None:
-                    raise NotImplementedError("this finite free module has no selected free-module constructor")
-                return constructor(labels, **options)
-
             def _represented_vector_space_dimension(self):
                 return self.module_rank()
 
@@ -713,18 +669,15 @@ def _element_from_row(module, row):
 def _known_finite_generator_family(module_generating_set):
     r"""Normalize one explicitly finite spanning family without guessing finiteness."""
 
-    if isinstance(module_generating_set, (tuple, list, range)):
-        return finite_ordered_set(module_generating_set)
-    try:
-        size = module_generating_set.cardinality()
-        finite = size.is_finite()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        finite = False
-    if not finite:
-        raise TypeError(
-            "subobject generators must be a known finite owned set/family or explicit finite literal"
-        )
-    return module_generating_set
+    match module_generating_set:
+        case tuple() | list() | range():
+            return finite_ordered_set(module_generating_set)
+        case _:
+            assert (
+                module_generating_set in Sets()
+                and module_generating_set.cardinality().is_finite()
+            ), "subobject generators are a finite owned set or an explicit finite family"
+            return module_generating_set
 
 
 def _finite_support_labels(module, elements):
@@ -747,14 +700,12 @@ def _span_basis_elements(module, module_generating_set):
     r"""Return the canonical span basis using only the finite union of supports."""
 
     ring = module.base_ring()
-    if ring not in PrincipalIdealDomains():
-        raise NotImplementedError(
-            "the active finite submodule basis engine currently requires a principal ideal domain"
-        )
-    if module not in FramedFreeModules(ring):
-        raise NotImplementedError(
-            "the active submodule basis engine requires a framed free ambient module"
-        )
+    assert ring in PrincipalIdealDomains(), (
+        "the represented finite submodule basis is computed over a principal ideal domain"
+    )
+    assert module in FramedFreeModules(ring), (
+        "the represented submodule basis is computed in a framed free ambient module"
+    )
 
     generators = _known_finite_generator_family(module_generating_set)
     if int(generators.cardinality()) == 1:
@@ -861,10 +812,9 @@ def _module_subobject_constructor_data(module, basis):
     r"""Return labels, generator images, and lift data for a finite span."""
 
     ring = module.base_ring()
-    if module not in FramedFreeModules(ring):
-        raise NotImplementedError(
-            "the active submodule basis engine constructs subobjects of framed free modules"
-        )
+    assert module in FramedFreeModules(ring), (
+        "the represented submodule basis constructs subobjects of framed free modules"
+    )
     labels = Sets.Δ[int(basis.cardinality()) - 1]
 
     def embedded(label):
@@ -890,14 +840,13 @@ def _module_subobject_constructor_data(module, basis):
         coordinate_matrix = None
 
     def lift_from_finite_support(source, element):
+        r"""The preimage of ``element`` in the span, or ``None`` when ``element`` is outside it."""
         element = element if element.parent() is module else module(element)
         coefficients = module.framing_coefficients(element)
         if any(label not in support_labels for label in coefficients):
-            raise ValueError("the element has support outside this subobject")
+            return None
         if source_rank == 0:
-            if coefficients:
-                raise ValueError("the nonzero element is not in the zero subobject")
-            return source.zero()
+            return None if coefficients else source.zero()
         solution = _solve_left_integrally(
             coordinate_matrix,
             (
@@ -906,6 +855,8 @@ def _module_subobject_constructor_data(module, basis):
             ),
             ring,
         )
+        if solution is None:
+            return None
         return source.linear_combination(
             {
                 labels[i]: coefficient
@@ -920,16 +871,27 @@ def _module_subobject_constructor_data(module, basis):
 
 
 def _module_generating_set(labels):
+    r"""Read the labels a free module is constructed on.
+
+    A rank ``n`` names the ordinal ``{0, ..., n-1}``; an explicit finite
+    family of labels names the ordered set of them; an owned set is its own
+    label set.
+    """
     integers = _own_ring(SageZZ)
-    parent = getattr(labels, "parent", lambda: None)()
-    if isinstance(labels, (int, Integer)) or parent is integers:
-        rank = int(_engine_numeral(SageZZ, labels))
-        if rank < 0:
-            raise ValueError("the rank of a free module is nonnegative")
-        return Sets.Δ[rank - 1]
-    if isinstance(labels, (tuple, list, range)):
-        return finite_ordered_set(labels)
-    return labels
+    match labels:
+        case int() | Integer():
+            rank = int(labels)
+        case _ if element_parent(labels) is integers:
+            rank = int(labels)
+        case tuple() | list() | range():
+            return finite_ordered_set(labels)
+        case _:
+            assert labels in Sets(), (
+                "a free module is constructed on a rank or an owned set of labels"
+            )
+            return labels
+    assert rank >= 0, "the rank of a free module is nonnegative"
+    return Sets.Δ[rank - 1]
 
 
 @cached_function
@@ -941,19 +903,11 @@ def _owned_free_module_on(ring, module_generating_set):
 def _matrix_space(base_ring, nrows, ncols=None):
     r"""Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``."""
     ring = _owned_ring(base_ring)
-    from sage.rings.integer_ring import ZZ as SageZZ
-
     integers = _own_ring(SageZZ)
 
     def dimension(value):
-        if isinstance(value, int):
-            result = value
-        elif value in integers:
-            result = int(value)
-        else:
-            raise TypeError("a matrix dimension is a nonnegative preamble integer")
-        if result < 0:
-            raise ValueError("matrix dimensions are nonnegative")
+        result = int(integers(value))
+        assert result >= 0, "matrix dimensions are nonnegative"
         return result
 
     nrows = dimension(nrows)
@@ -961,6 +915,8 @@ def _matrix_space(base_ring, nrows, ncols=None):
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
     return _refine_matrix_hom(source.module_category().Mor(source, target))
+
+
 def _fresh_free_module_on(
     base_ring,
     module_generating_set,

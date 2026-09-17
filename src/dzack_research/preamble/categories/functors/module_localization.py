@@ -9,10 +9,6 @@ from dzack_research.preamble.categories.modules.localizations import (
     LocalizedModules,
     _localized_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-    ModuleLocalizationMorphismConstruction,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     ModuleSubobjects,
@@ -23,10 +19,11 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     r"""The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``."""
 
     def __init__(self, localization_ring) -> None:
-        if not hasattr(localization_ring, "localization_source") or not hasattr(
-            localization_ring, "localization_map"
-        ):
-            raise TypeError("module localization requires a represented ring localization")
+        from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings
+
+        assert localization_ring in LocalizationRings(), (
+            "module localization is induced by a ring localization"
+        )
         self._localization_ring = localization_ring
         super().__init__(localization_ring.localization_map())
 
@@ -49,13 +46,20 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         ):
             source_inclusion = module.inclusion()
             localized_ambient = self(source_inclusion.codomain())
-            subobject_data = {
-                "subobject_ambient": localized_ambient,
-                "subobject_generator_images": lambda label: localized_ambient.fraction(
-                    source_inclusion(module.module_generator(label))
-                ),
-                "subobject_verify_linearity": False,
-            }
+            def inclusion(localized_subobject):
+                hom = localized_subobject.Mono(localized_ambient)
+                return hom.element_class(
+                    hom,
+                    lambda element: localized_ambient.fraction(
+                        source_inclusion(element.numerator()), element.denominator(),
+                    ),
+                    elementwise=True,
+                    verify_linearity=False,
+                    scalar_extension_of=source_inclusion,
+                    scalar_extension_functor=self,
+                )
+
+            subobject_data = {"subobject_inclusion_factory": inclusion}
         return _localized_module(
             module,
             self.localization_ring(),
@@ -66,76 +70,58 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-
         if source in ModuleSubobjects(source.base_ring()):
-            if (
-                morphism is morphism.domain().inclusion()
-                and source.inclusion().codomain() is target
-            ):
-                embedded = source.inclusion()
-                return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
+            if morphism is morphism.domain().inclusion():
+                inclusion = source.inclusion()
+                assert inclusion.codomain() is target
+                assert inclusion.scalar_extension_of() is morphism
+                return inclusion
 
-        if source in LocalizedModules(source.base_ring()):
-            if target in LocalizedModules(target.base_ring()):
-                def on_fraction(fraction):
-                    return target.fraction(
-                        morphism(fraction.numerator()),
-                        fraction.denominator(),
-                        _trusted_denominator=True,
-                    )
-            else:
-                target_unit = self.unit(morphism.codomain(), localized=target)
+        match source:
+            case _ if source in LocalizedModules(source.base_ring()):
+                match target:
+                    case _ if target in LocalizedModules(target.base_ring()):
+                        def action(fraction):
+                            return target.fraction(
+                                morphism(fraction.numerator()), fraction.denominator(),
+                            )
+                    case _:
+                        target_unit = self.unit(morphism.codomain(), localized=target)
 
-                def on_fraction(fraction):
-                    represented = target_unit(morphism(fraction.numerator()))
-                    target_element = represented.underlying_element()
-                    denominator = self.localization_ring().localization_map()(
-                        fraction.denominator()
-                    )
-                    return target.scalar_multiple(denominator.inverse_of_unit(), target_element)
-
-            image = source.module_category().Mor(source, target).elementwise(
-                on_fraction,
-                verify_linearity=False,
-            )
-        elif target in LocalizedModules(target.base_ring()):
-
-            if source not in FramedModules(source.base_ring()):
-                raise NotImplementedError(
-                    "this mixed scalar-extension morphism has neither a fraction source nor a represented source framing"
+                        def action(fraction):
+                            numerator = target_unit(morphism(fraction.numerator())).underlying_element()
+                            denominator = self.localization_ring().localization_map()(fraction.denominator())
+                            return target.scalar_multiple(denominator.inverse_of_unit(), numerator)
+                elementwise = True
+            case _ if target in LocalizedModules(target.base_ring()):
+                assert source in FramedModules(source.base_ring()), (
+                    "the mixed localization image uses its selected source framing"
                 )
-            image = source.module_category().Mor(source, target)(
-                {
-                    label: target.fraction(
-                        morphism(
-                            morphism.domain().module_generator(label)
-                        )
-                    )
-                    for label in source.module_generating_set()
-                }
-            )
-        else:
-            image = super()._apply_morphism(morphism)
 
-        if not isinstance(morphism, ModuleEmbedding):
-            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(image)
+                def action(label):
+                    return target.fraction(morphism(morphism.domain().module_generator(label)))
 
+                elementwise = False
+            case _:
+                return super()._apply_morphism(morphism)
 
-        if source in FramedModules(source.base_ring()):
-            embedded = source.Mono(target)(
-                {
-                    label: image(source.module_generator(label))
-                    for label in source.module_generating_set()
-                }
-            )
-            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
-        embedded = ModuleEmbedding(
-            source.module_category().Mor(source, target),
-            lambda element: image(element),
-            elementwise=True,
+        # Flatness preserves a selected monomorphism.  Read its mathematical
+        # Hom placement, not its concrete morphism implementation.
+        source_hom = morphism.parent().homset_category()
+        monomorphisms = morphism.domain().module_category().Mono()
+        match source_hom.is_subcategory(monomorphisms):
+            case True:
+                hom = source.Mono(target)
+            case False:
+                hom = source.module_category().Mor(source, target)
+        return hom.element_class(
+            hom,
+            action,
+            elementwise=elementwise,
             verify_linearity=False,
+            scalar_extension_of=morphism,
+            scalar_extension_functor=self,
         )
-        return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""

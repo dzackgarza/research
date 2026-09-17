@@ -346,19 +346,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 name="Quotient module generator values",
             )
 
-            def module_coordinates(element):
-                backend = quotient_engine(self._engine_element(self(element)))
-                coordinates = (
-                    backend
-                    if finite_free_coordinates is None
-                    else finite_free_coordinates(backend)
-                )
-                return (
-                    base._from_engine_element(coefficient)
-                    for coefficient in coordinates
-                )
-
-            self._preamble_module_coordinate_function = module_coordinates
+            self._finite_free_coordinates = finite_free_coordinates
             placement.append(FinitelyGeneratedFreeModules(base))
 
         selected_generator_values = generator_values
@@ -395,6 +383,26 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
                 _commutative_algebra_pushout_backend(left_map, right_map)
             )
+
+
+    def _selected_module_coefficients(self, element):
+        r"""Read coordinates in the selected finite-free algebra basis.
+
+        The algebra engine owns its coefficient conversion, rather than
+        attaching a coordinate callback for the lower module layer to find.
+        """
+        backend = self._engine_element(self(element))
+        coordinates = (
+            backend
+            if self._finite_free_coordinates is None
+            else self._finite_free_coordinates(backend)
+        )
+        base = self.base_ring()
+        return {
+            label: base._from_engine_element(coefficient)
+            for label, coefficient in zip(self.module_generating_set(), coordinates, strict=True)
+            if coefficient != 0
+        }
 
 
 def _presented_algebra_on_engine(

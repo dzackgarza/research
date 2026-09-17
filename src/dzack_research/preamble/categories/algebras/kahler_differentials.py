@@ -1,13 +1,12 @@
 r"""Kähler differentials of represented commutative algebras."""
 
+from sage.categories.category import Category
+
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     _commutative_presentation_data,
-)
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
@@ -328,11 +327,10 @@ def _construct_kahler_differentials(algebra):
             conormal_module.module_generating_set(),
         )
         relation_map = relation_module.module_category().Mor(relation_module, ambient_differentials)(conormal_morphism.module_generator_images().value)
-        omega = _presented_module_from_morphism(
+        omega = ModulesWithChosenFinitePresentation(algebra)(
             relation_map,
-            _cokernel_morphism=relation_map,
-            _extra_categories=(KahlerDifferentialModules(algebra),),
-            _extra_construction_data={
+            category=Category.join((KahlerDifferentialModules(algebra),)),
+            **{
                 "kahler_construction": _KahlerDifferentialConstruction(
                     algebra,
                     conormal_module=conormal_module,

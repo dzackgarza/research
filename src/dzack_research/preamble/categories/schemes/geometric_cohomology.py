@@ -1,5 +1,7 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.groups.free_group import FreeGroup
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -952,17 +954,16 @@ def _free_integral_topology_group(
 
 def _zmod2_integral_topology_group(scheme, degree, realization):
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presented_module_from_morphism,
-    )
+        )
 
     integers = _own_ring(SageZZ)
     source = integers.free_module(1)
     target = integers.free_module(1)
     presentation = source.module_category().Mor(source, target)({0: integers(2) * target.module_generator(0)})
-    return _presented_module_from_morphism(
+    return ModulesWithChosenFinitePresentation(integers)(
         presentation,
-        _extra_categories=(IntegralSingularCohomologyGroups(integers),),
-        _extra_construction_data=_integral_topology_construction_data(scheme, degree, realization),
+        category=Category.join((IntegralSingularCohomologyGroups(integers),)),
+        **_integral_topology_construction_data(scheme, degree, realization),
     )
 
 

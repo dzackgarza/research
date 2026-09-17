@@ -39,7 +39,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presentation_matrix,
-    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     CokernelTorsionFormModules,
@@ -2221,7 +2220,21 @@ def _form_module(
     if is_free:
         return base_ring._fresh_free_module_on(labels, **common)
     if is_presented:
-        return _presented_module_from_morphism(module.presentation(), **common)
+        from sage.categories.category import Category
+        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+
+        if _subobject_ambient is not None or _subobject_inclusion_factory is not None:
+            categories.append(ModuleSubobjects(base_ring))
+            construction_data.update(
+                subobject_ambient=_subobject_ambient,
+                subobject_generator_images=_subobject_generator_images,
+                subobject_lift=_subobject_lift,
+                subobject_inclusion_factory=_subobject_inclusion_factory,
+                subobject_verify_linearity=_subobject_verify_linearity,
+            )
+        return ModulesWithChosenFinitePresentation(base_ring)(
+            module.presentation(), category=Category.join(categories), **construction_data
+        )
     raise TypeError(
         "the active formed-module constructor requires a framed free or chosen finitely presented module"
     )

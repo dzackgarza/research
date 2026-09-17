@@ -1,5 +1,8 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
+from sage.categories.category import Category
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -7,9 +10,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
-)
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -642,11 +642,10 @@ def _cohomology(complex_, degree):
     cycles = complex_.cycles(degree)
     boundaries = complex_.boundaries(degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
-    result = _presented_module_from_morphism(
+    result = ModulesWithChosenFinitePresentation(ring)(
         boundary_in_cycles,
-        _cokernel_morphism=boundary_in_cycles,
-        _extra_categories=(CohomologyModules(ring),),
-        _extra_construction_data={
+        category=Category.join((CohomologyModules(ring),)),
+        **{
             "cohomology_complex": complex_,
             "cohomology_degree": degree,
             "cohomology_current_module": cycles.inclusion().codomain(),

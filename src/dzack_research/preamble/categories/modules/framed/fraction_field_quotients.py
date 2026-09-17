@@ -5,6 +5,9 @@ The owned quotient is a parent built through the owned module chain; Sage's
 shape of the owned ring views.
 """
 
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
@@ -18,9 +21,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presented_module_from_morphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
@@ -154,9 +154,8 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 module_generator_function=self._divisibility_chain_generator,
                 **rest,
             )
-            self._preamble_module_coefficient_function = self._framing_coefficients
 
-        def _framing_coefficients(self, element):
+        def _selected_module_coefficients(self, element):
             r"""Return finite support in the chosen factorial divisibility framing."""
             element = self(element)
             if element == self.zero():
@@ -298,13 +297,12 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             generator = field._from_engine_element(
                 SageQQ(generator_numerator) / SageQQ(denominator)
             )
+            # ``g`` divides every lift and the modulus, so ``n/g`` is integral.
             order_in_field = self.modulus() / generator
-            try:
-                order = self.base_ring()(order_in_field)
-            except (TypeError, ValueError) as error:
-                raise ArithmeticError(
-                    "the generated fractional subgroup does not divide the selected modulus"
-                ) from error
+            assert int(order_in_field.denominator()) == 1, (
+                "the generated fractional subgroup divides the selected modulus"
+            )
+            order = self.base_ring()(order_in_field)
             cyclic = _torsion_module_presented_by_matrix(
                 ((order,),),
                 base_ring=self.base_ring(),
@@ -313,24 +311,23 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             image = self(generator)
 
             def lift_from_ambient(subobject, element):
+                # ``[x]`` lies in ``gZ/nZ`` exactly when the lift ``x`` lies in
+                # ``gZ + nZ = gZ``, that is when ``x/g`` is integral.
                 element = self(element)
                 quotient = self.lift(element) / generator
-                try:
-                    coefficient = self.base_ring()(quotient)
-                except (TypeError, ValueError) as error:
-                    raise ValueError(
-                        "the selected class does not lie in this cyclic submodule"
-                    ) from error
+                if int(quotient.denominator()) != 1:
+                    return None
                 return subobject.scalar_multiple(
-                    coefficient,
+                    self.base_ring()(quotient),
                     subobject.module_generator(label),
                 )
 
-            subobject = _presented_module_from_morphism(
+            subobject = ModulesWithChosenFinitePresentation(self.base_ring())(
                 cyclic.presentation(),
-                _subobject_ambient=self,
-                _subobject_generator_images=lambda _label: image,
-                _subobject_lift=lift_from_ambient,
+                category=ModuleSubobjects(self.base_ring()),
+                subobject_ambient=self,
+                subobject_generator_images=lambda _label: image,
+                subobject_lift=lift_from_ambient,
             )
             return _refine_finitely_presented_torsion_module(subobject)
 

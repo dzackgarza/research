@@ -327,7 +327,6 @@ from dzack_research.preamble.categories.modules import (
     ProjectiveModules,
     QuadraticFormModules,
     RestrictedScalarsModules,
-    RestrictedScalarsModuleView,
     SymmetricBilinearFormModules,
     TensorProductModules,
     TorsionBilinearFormModules,

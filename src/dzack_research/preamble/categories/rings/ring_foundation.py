@@ -683,6 +683,30 @@ class LocalizationRings(OwnedCategory):
         return [OwnedRings().Commutative()]
 
     class ParentMethods:
+        def inverted_submonoid_meets(self, ideal) -> bool:
+            r"""Decide ``I intersect S != empty`` for this localization ``S^-1 R``.
+
+            For a prime complement this means a generator of I lies outside
+            the prime.  For the nonzero elements of a domain it means I is
+            nonzero.  For finitely generated S, putting f equal to the product
+            of its generators gives I intersect S nonempty exactly when
+            ``1 in I : f^infinity``: every monomial in these generators divides
+            a sufficiently large power of f, and f itself belongs to S.
+            """
+            from sage.misc.misc_c import prod
+            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
+
+            ring = self.localization_source()
+            match self:
+                case _ if self in PrimeLocalizations():
+                    prime = self.localized_prime()
+                    return any(not prime.contains_ambient_element(g) for g in ideal.ideal_generators())
+                case _ if self.is_fraction_field_localization():
+                    return ideal != ring.ideal(ring.zero())
+                case _:
+                    element = prod(self.inverted_elements(), ring.one())
+                    return ideal.ideal_saturation(ring.ideal(element)).contains_ambient_element(ring.one())
+
         def __init__(
             self,
             source,
@@ -3585,3 +3609,19 @@ def CommutativeRings():
 
 
 OwnedCommutativeRings = CommutativeRings
+
+
+def _enumerated_ring_elements(ring):
+    r"""Finite scalar enumeration at the native ring boundary, or ``None``.
+
+    The finite-linearity callers use owned values.  Only this ring adapter
+    accesses the computation ring's iterator and converts its outputs.
+    """
+    from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+    match ring:
+        case _ if ring in FiniteSets():
+            engine = _engine_ring(ring)
+            return tuple(ring._from_engine_element(engine(value)) for value in engine)
+        case _:
+            return None

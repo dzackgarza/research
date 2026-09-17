@@ -1,5 +1,8 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
+from sage.categories.category import Category
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
@@ -8,7 +11,6 @@ from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_bas
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.localizations import (
     _localized_module,
 )
@@ -868,12 +870,12 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
             _extra_categories=(CommutativeIdeals(target),),
             _extra_construction_data=construction_data,
         )
-    return _presented_module_from_morphism(
+    return ModulesWithChosenFinitePresentation(target)(
         presentation(),
-        _subobject_ambient=ambient_module,
-        _subobject_generator_images=generator_images,
-        _extra_categories=(CommutativeIdeals(target),),
-        _extra_construction_data=construction_data,
+        subobject_ambient=ambient_module,
+        subobject_generator_images=generator_images,
+        category=Category.join((CommutativeIdeals(target),)),
+        **construction_data,
     )
 
 
@@ -947,15 +949,15 @@ def _commutative_ideal(source, generators):
         }
     )
     ambient_module = source.regular_module()
-    ideal = _presented_module_from_morphism(
+    ideal = ModulesWithChosenFinitePresentation(source)(
         presentation,
-        _subobject_ambient=ambient_module,
-        _subobject_generator_images={
+        subobject_ambient=ambient_module,
+        subobject_generator_images={
             label: ambient_module((_owned_engine_value(source, selected[position]),))
             for position, label in enumerate(labels)
         },
-        _extra_categories=(CommutativeIdeals(source),),
-        _extra_construction_data={
+        category=Category.join((CommutativeIdeals(source),)),
+        **{
             "engine_ideal": backend,
             "ideal_generators": tuple(
                 _owned_engine_value(source, generator)

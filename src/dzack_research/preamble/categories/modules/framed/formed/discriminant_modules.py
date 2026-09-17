@@ -1,9 +1,12 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from sage.categories.category import Category
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
     TorsionBilinearFormModules,
@@ -64,7 +67,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion(), ModuleSubobjects(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
@@ -853,23 +856,23 @@ def _discriminant_subgroup(ambient, generators):
                 prototype.module_generating_set(), ambient_generators, strict=True
             )
         }
-        source = _presented_module_from_morphism(
+        source = ModulesWithChosenFinitePresentation(ring)(
             prototype.presentation(),
-            _subobject_ambient=ambient,
-            _subobject_generator_images=images,
-            _extra_categories=categories,
-            _extra_construction_data=construction_data,
+            subobject_ambient=ambient,
+            subobject_generator_images=images,
+            category=Category.join(categories),
+            **construction_data,
         )
     else:
         # The zero finite module is presented by the identity on one generator.
 
         free = ambient.base_ring().free_module(finite_ordered_set((0,)))
-        source = _presented_module_from_morphism(
+        source = ModulesWithChosenFinitePresentation(ambient.base_ring())(
             free.module_category().Mor(free, free).identity(),
-            _subobject_ambient=ambient,
-            _subobject_generator_images={0: ambient.zero()},
-            _extra_categories=categories,
-            _extra_construction_data=construction_data,
+            subobject_ambient=ambient,
+            subobject_generator_images={0: ambient.zero()},
+            category=Category.join(categories),
+            **construction_data,
         )
     return source
 
@@ -987,10 +990,10 @@ def _discriminant_module(lattice):
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
     if _engine_ring(ring) is not SageZZ:
-        return _presented_module_from_morphism(
+        return ModulesWithChosenFinitePresentation(ring)(
             quotient.presentation(),
-            _extra_categories=tuple(categories),
-            _extra_construction_data=construction_data,
+            category=Category.join(tuple(categories)),
+            **construction_data,
         )
 
     bilinear_values = FractionFieldQuotients(ring)(1)

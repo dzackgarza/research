@@ -10,11 +10,13 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.matrix.constructor import matrix as engine_matrix
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
@@ -52,6 +54,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedOrders,
     OwnedRings,
     PrincipalIdealDomains,
@@ -78,7 +81,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import refine
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -615,25 +618,29 @@ class Modules(OwnedCategoryOverBaseRing):
 
             # A stricter module category may still contain this particular
             # coequalizer even though cokernels do not stay in that category
-            # in general.  Over a PID the presented quotient can certify that
-            # it is finite free and supplies the actual trivialization.  Use
-            # that isomorphic free representative when it lies in ``self`` so
-            # the selected colimit is genuinely an object of its stated target
+            # in general.  Over a PID a torsion-free presented quotient is
+            # finite free and supplies the actual trivialization.  Use that
+            # isomorphic free representative when it lies in ``self`` so the
+            # selected colimit is genuinely an object of its stated target
             # category, rather than a merely isomorphic presented module.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _SelectedFinitePresentationModules,
+            )
+
+            ring = left_morphism.domain().base_ring()
             coequalizer = raw_coequalizer
             projection = raw_projection
             coequalizer_transport = None
-            if raw_coequalizer not in self:
-                trivialization = getattr(raw_coequalizer, "finite_free_trivialization", None)
-                if callable(trivialization):
-                    try:
-                        candidate_transport = trivialization()
-                    except (NotImplementedError, ValueError):
-                        candidate_transport = None
-                    if (
-                        candidate_transport is not None
-                        and candidate_transport.codomain() in self
-                    ):
+            match raw_coequalizer:
+                case _ if raw_coequalizer in self:
+                    pass
+                case _ if (
+                    raw_coequalizer in _SelectedFinitePresentationModules(ring)
+                    and ring in PrincipalIdealDomains()
+                    and raw_coequalizer.is_torsion_free()
+                ):
+                    candidate_transport = raw_coequalizer.finite_free_trivialization()
+                    if candidate_transport.codomain() in self:
                         coequalizer_transport = candidate_transport
                         coequalizer = candidate_transport.codomain()
                         projection = candidate_transport.forward() * raw_projection
@@ -668,8 +675,9 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_equalizer_family(self, morphisms):
             r"""Realize a finite wide equalizer through kernels/intersections."""
             size = morphisms.cardinality()
-            if not size.is_finite():
-                raise NotImplementedError("the represented module wide-equalizer backend requires a finite arrow family")
+            assert size.is_finite(), (
+                "the represented module wide equalizer is taken over a finite arrow family"
+            )
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide equalizer family must be nonempty")
@@ -682,8 +690,9 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_coequalizer_family(self, morphisms):
             r"""Realize a finite wide coequalizer through images/sums/cokernels."""
             size = morphisms.cardinality()
-            if not size.is_finite():
-                raise NotImplementedError("the represented module wide-coequalizer backend requires a finite arrow family")
+            assert size.is_finite(), (
+                "the represented module wide coequalizer is taken over a finite arrow family"
+            )
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide coequalizer family must be nonempty")
@@ -749,15 +758,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 placement.append(AdditiveEndomorphismRings(center))
             return Category.join(tuple(placement))
         placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
-        free = FinitelyGeneratedFreeModules(ring)
-        matrix = (
-            domain in free
-            and codomain in free
-            and callable(getattr(domain, "_preamble_free_module_constructor", None))
-            and callable(getattr(codomain, "_preamble_free_module_constructor", None))
-            and callable(getattr(domain, "module_generating_set", None))
-            and callable(getattr(codomain, "module_generating_set", None))
-        )
+        matrix = _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)
         if matrix:
             placement.append(MatrixSpaces(ring))
             if domain is codomain:
@@ -796,13 +797,16 @@ class Modules(OwnedCategoryOverBaseRing):
             same owned ring parent multiply in that ring.  Only an element of
             the module's scalar ring acts through ``R -> End_R(M)``.
             """
-            scalar_parent = getattr(scalar, "parent", lambda: None)()
-            if scalar_parent is self.parent():
-                if self.parent() in OwnedRings():
+            match scalar:
+                case _ if element_parent(scalar) is self.parent() and self.parent() in OwnedRings():
                     return scalar._mul_(self)
-            return self.parent().scalar_multiple(scalar, self)
+                case _:
+                    return self.parent().scalar_multiple(scalar, self)
 
     class ParentMethods:
+        # The ring acting on this module: the datum this level introduces.
+        _preamble_base_ring = None
+
         def __init__(self, base_ring, **rest) -> None:
             ring = _owned_ring(base_ring)
             self._preamble_base_ring = ring
@@ -1121,10 +1125,17 @@ class Modules(OwnedCategoryOverBaseRing):
             return ModuleHomset
 
         def base_ring(self):
-            selected = self.__dict__.get("_preamble_base_ring")
-            if selected is not None:
-                return selected
-            return _owned_ring(self.base())
+            r"""Return the ring acting on this module.
+
+            A module constructed through this level stores its ring; a parent
+            refined into ``Modules(R)`` without running this level reads the
+            ring it was built over.
+            """
+            match self._preamble_base_ring:
+                case None:
+                    return _owned_ring(self.base())
+                case ring:
+                    return ring
 
         def is_module(self) -> bool:
             return True
@@ -1142,31 +1153,32 @@ class Modules(OwnedCategoryOverBaseRing):
             return Unknown
 
         def is_flat(self) -> bool:
-            r"""Decide flatness in the represented field/PID regimes.
+            r"""Decide flatness in the field and PID regimes.
 
             Every module over a field is flat.  Over a PID, flatness is
-            equivalent to torsion-freeness (Stacks Project, Tag 0AUW), so a
-            module type that already represents ``is_torsion_free`` supplies
-            an exact flatness decision without a second flatness algorithm.
+            equivalent to torsion-freeness (Stacks Project, Tag 0AUW), so the
+            torsion-freeness decision of the module decides it.
             """
 
             ring = self.base_ring()
-            if bool(_engine_ring(ring).is_field()):
-                return True
-            if ring not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "flatness is currently decided from torsion-freeness over a represented PID"
-                )
-            torsion_free = getattr(self, "is_torsion_free", None)
-            if torsion_free is None:
-                raise NotImplementedError(
-                    "this PID-module has no represented torsion-freeness decision"
-                )
-            return bool(torsion_free())
+            match ring:
+                case _ if ring in OwnedFields():
+                    return True
+                case _ if ring in PrincipalIdealDomains():
+                    return bool(self.is_torsion_free())
+                case _:
+                    raise AssertionError(
+                        f"flatness is decided over a field or a principal ideal domain, and {ring} is neither"
+                    )
 
+        @abstract_method
         def base_change(self, ring_map):
-            _ = ring_map
-            raise NotImplementedError(f"base change of {self} has no represented module construction")
+            r"""Return ``S tensor_R M`` along ``ring_map : R -> S``.
+
+            Every module has a scalar extension; each representation of modules
+            constructs it on its own data.
+            """
+            ...
 
         def vector_space(self):
             r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map."""
@@ -1213,8 +1225,18 @@ class Modules(OwnedCategoryOverBaseRing):
             return None
 
         def _selected_module_coefficients(self, element):
-            _ = element
-            return None
+            r"""Read the coordinates of ``element`` in the selected framing.
+
+            Protected contract of ``Modules(R)``: the one caller is
+            :meth:`framing_coefficients`, and a level whose elements are not
+            stored as their own finite support in the framing -- a localized
+            module, a quotient, a restriction of scalars -- implements it for
+            the representation it constructs.  It takes an element of this
+            module and returns the finite-support coefficients, keyed by the
+            labels of ``module_generating_set()``.  The default reads an
+            element that stores its own finite support.
+            """
+            return dict(element.monomial_coefficients())
 
         def framing_coefficients(self, element):
             r"""Return the finite-support coefficients in this module's selected framing.
@@ -1224,72 +1246,27 @@ class Modules(OwnedCategoryOverBaseRing):
             have a different concrete Sage parent without changing which module
             supplies their selected coefficients.
             """
-            coefficient_function = self.__dict__.get("_preamble_module_coefficient_function")
-            if coefficient_function is not None:
-                return {
-                    label: self.base_ring()(coefficient)
-                    for label, coefficient in coefficient_function(element).items()
-                    if coefficient != 0
-                }
-
-            coordinate_function = self.__dict__.get("_preamble_module_coordinate_function")
-            if coordinate_function is not None:
-                labels = self.module_generating_set()
-                coordinates = iter(coordinate_function(element))
-                result = {}
-                for label in labels:
-                    try:
-                        coefficient = next(coordinates)
-                    except StopIteration as error:
-                        raise ValueError(
-                            "the selected module-coordinate function returned too few coordinates"
-                        ) from error
-                    coefficient = self.base_ring()(coefficient)
-                    if coefficient != 0:
-                        result[label] = coefficient
-                try:
-                    next(coordinates)
-                except StopIteration:
-                    return result
-                raise ValueError(
-                    "the selected module-coordinate function returned too many coordinates"
-                )
-
-            selected = self._selected_module_coefficients(element)
-            if selected is not None:
-                return selected
-
-            if self in OwnedOrders():
-                from sage.rings.integer_ring import ZZ as SageZZ
-
-                labels = self.module_generating_set()
-                engine = _engine_ring(self)
-                backend_element = _engine_element(self, element)
-                coordinates = iter(
-                    (SageZZ(backend_element),)
-                    if engine is SageZZ
-                    else engine.coordinates(backend_element)
-                )
-                result = {}
-                base = self.base_ring()
-                base_engine = _engine_ring(base)
-                for label in labels:
-                    try:
-                        coefficient = next(coordinates)
-                    except StopIteration as error:
-                        raise ValueError(
-                            "the order coordinate backend returned too few coordinates"
-                        ) from error
-                    if coefficient != 0:
-                        result[label] = base._from_engine_element(base_engine(coefficient))
-                try:
-                    next(coordinates)
-                except StopIteration:
-                    return result
-                raise ValueError("the order coordinate backend returned too many coordinates")
-
-            # An element that stores its own finite support in the selected framing.
-            return dict(element.monomial_coefficients())
+            match self:
+                case _ if self in OwnedOrders():
+                    # The selected integral basis of an order: the engine
+                    # reads coordinates in that basis, one per framing label.
+                    labels = self.module_generating_set()
+                    engine = _engine_ring(self)
+                    backend_element = _engine_element(self, element)
+                    coordinates = (
+                        (SageZZ(backend_element),)
+                        if engine is SageZZ
+                        else tuple(engine.coordinates(backend_element))
+                    )
+                    base = self.base_ring()
+                    base_engine = _engine_ring(base)
+                    return {
+                        label: base._from_engine_element(base_engine(coefficient))
+                        for label, coefficient in zip(labels, coordinates, strict=True)
+                        if coefficient != 0
+                    }
+                case _:
+                    return self._selected_module_coefficients(element)
 
         def _represented_kernel_of_morphism(self, morphism):
             _ = morphism
@@ -1414,10 +1391,10 @@ class Modules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _ring_morphism_defining_module_action(self):
-            r"""Return ``rho_M : R -> End_Ab(U(M))`` from the defining presentation."""
-            selected = self.__dict__.get("_preamble_scalar_action_morphism")
-            if selected is not None:
-                return selected
+            r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
+
+            A module whose datum is ``rho`` itself states it at its own level.
+            """
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
@@ -1560,9 +1537,9 @@ class Modules(OwnedCategoryOverBaseRing):
                 localized = self.localize_at_prime(point)
                 fiber = localized.base_change(point.local_ring().residue_map())
                 residue = point.residue_field()
-                if fiber not in VectorSpaces(residue):
-                    raise TypeError("base change to a residue field must construct a vector space")
-                fiber._preamble_fiber_localization = localized
+                assert fiber in VectorSpaces(residue), (
+                    "base change to a residue field constructs a vector space"
+                )
                 return fiber
 
             def fiber_dimension(self, point):
@@ -1688,11 +1665,11 @@ class Modules(OwnedCategoryOverBaseRing):
                 """
                 if self.is_projective():
                     return 0
-                if self.base_ring() in PrincipalIdealDomains():
-                    return 1
-                raise NotImplementedError(
-                    "projective dimension beyond the projective/PID regimes requires a represented finite resolution bound"
+                assert self.base_ring() in PrincipalIdealDomains(), (
+                    "projective dimension beyond the projective and PID regimes "
+                    "requires a represented finite resolution bound"
                 )
+                return 1
 
         class Torsion(CategoryWithAxiom):
             r"""Finitely presented torsion modules over a PID."""
@@ -1946,6 +1923,20 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def base_ring(self):
+            r"""The ring acting pointwise on ``Hom_R(M, N)``: ``R`` when commutative, else its centre.
+
+            ``(r f)(m) = r f(m)`` is ``R``-linear in ``m`` exactly when ``r``
+            commutes with the scalars, so a noncommutative ring acts through
+            its centre.
+            """
+            ring = self.domain().base_ring()
+            match ring:
+                case _ if ring in OwnedRings().Commutative():
+                    return ring
+                case _:
+                    return ring.ring_center()
+
         def source_module(self):
             return self.domain()
 
@@ -1993,13 +1984,81 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
         return [LinearHomModules(self.base_ring())]
 
     class ParentMethods:
+        def _smith_engine(self):
+            r"""Read the native FGP workspace of the endpoint-determined model."""
+            return self.internal_hom_model()._smith_engine()
+
+        def _to_smith_engine_element(self, morphism):
+            model = self.internal_hom_model()
+            return model._to_smith_engine_element(self._internal_model_from_morphism(morphism))
+
+        def _from_smith_engine_element(self, element):
+            model = self.internal_hom_model()
+            return self._morphism_from_internal_model(model._from_smith_engine_element(element))
+
+        def internal_hom_model(self):
+            r"""The presented module ``ker(N^{gens(M)} -> N^{rels(M)})`` modelling ``Hom_R(M, N)``.
+
+            A map out of ``M = coker(F_1 -> F_0)`` is an assignment of an
+            element of ``N`` to each generator of ``M`` killing every relation,
+            so ``Hom_R(M, N)`` is the kernel of the evaluation of relations on
+            generator assignments; its endpoints determine it.
+            """
+            from dzack_research.preamble.categories.modules.internal_hom import (
+                _internal_hom_model_data,
+            )
+
+            model, _inclusion, _relations, _presentation = _internal_hom_model_data(self)
+            return model
+
         def inclusion_into_generator_maps(self):
             r"""The inclusion of the presented model of ``Hom(M, N)`` into ``N^{gens(M)}``."""
-            inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
-            if inclusion is not None:
-                return inclusion
-            _model, inclusion, _relations, _presentation = self._internal_hom_model_data()
+            from dzack_research.preamble.categories.modules.internal_hom import (
+                _internal_hom_model_data,
+            )
+
+            _model, inclusion, _relations, _presentation = _internal_hom_model_data(self)
             return inclusion
+
+        def _morphism_from_internal_model(self, model_element):
+            r"""Read an element of :meth:`internal_hom_model` as the linear map it assigns."""
+            assignment_space = self.inclusion_into_generator_maps().codomain()
+            assignment = self.inclusion_into_generator_maps()(model_element)
+            coefficients = assignment_space.framing_coefficients(assignment)
+            assignment_labels = assignment_space.module_generating_set()
+            return self(
+                {
+                    source_label: self.codomain().linear_combination(
+                        {
+                            target_label: coefficients[pair]
+                            for target_label in self.codomain().module_generating_set()
+                            if (pair := assignment_labels(lambda index: source_label if int(index) == 0 else target_label)) in coefficients
+                        }
+                    )
+                    for source_label in self.domain().module_generating_set()
+                }
+            )
+
+        def _internal_model_from_morphism(self, morphism):
+            r"""Read a linear map as the element of :meth:`internal_hom_model` assigning its generator images."""
+            model = self.internal_hom_model()
+            power = self.inclusion_into_generator_maps().codomain()
+            power_labels = power.module_generating_set()
+            coefficients = {}
+            for source_label in self.domain().module_generating_set():
+                image = morphism(self.domain().module_generator(source_label))
+                for target_label, coefficient in self.codomain().framing_coefficients(image).items():
+                    coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
+            assignment = power.linear_combination(coefficients)
+            inclusion = self.inclusion_into_generator_maps()
+            if inclusion.has_selected_lift():
+                return inclusion.lift(assignment)
+            return model(assignment)
+
+        def _selected_module_coefficients(self, morphism):
+            r"""Coordinates of a linear map in the framing of the presented model."""
+            model = self.internal_hom_model()
+            return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
 
 
 class ModuleSubobjectConstruction:
@@ -2212,6 +2271,38 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "modules with a chosen finite presentation"
+
+    def _call_(self, morphism, category=None, **construction_data):
+        r"""Construct ``coker(rho)`` for ``rho: A -> B`` into a module with a chosen finite presentation.
+
+        A presentation ``F_1 -> F_0`` is the case ``B = F_0`` free.  The
+        chosen presentation of the cokernel is the presentation of ``B`` with
+        the images of the module generators of ``A`` added as relations, and
+        the cokernel retains ``rho`` as the morphism it is the cokernel of.
+        ``category`` joins a structured category to the cokernel; the levels
+        of that category read their data from ``construction_data``.
+        """
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _presented_module_from_morphism,
+        )
+
+        ring = self.base_ring()
+        assert morphism.domain() in FramedModules(ring), (
+            "the finite cokernel presentation uses a selected source framing"
+        )
+        assert morphism.domain().module_generating_set().cardinality().is_finite(), (
+            "adjoining the image of a framing gives finitely many relations only for a finite framing"
+        )
+        assert morphism.codomain() in ModulesWithChosenFinitePresentation(ring), (
+            f"a cokernel with a chosen finite presentation is taken of a morphism into "
+            f"a module over {ring} with a chosen finite presentation"
+        )
+        return _presented_module_from_morphism(
+            morphism,
+            _cokernel_morphism=morphism,
+            _extra_categories=() if category is None else (category,),
+            _extra_construction_data=construction_data or None,
+        )
 
     def super_categories(self):
         return [
@@ -2621,6 +2712,9 @@ class FramedModules(OwnedCategoryOverBaseRing):
         return Modules(self.base_ring()).ArrowCategory()
 
     class ParentMethods:
+        # The selected framing epimorphism ``F_R(S) -> M``, this level's datum.
+        _framing_morphism = None
+
         def __init__(
             self,
             module_generating_set=None,
@@ -2628,32 +2722,54 @@ class FramedModules(OwnedCategoryOverBaseRing):
             framing_source=None,
             **rest,
         ) -> None:
-            r"""Install one selected framing as defining construction data.
+            r"""Construct the framed module on its selected framing.
 
-            The source free module and the epimorphism from it are retained here;
-            accessors below project from that one arrow and never reconstruct an
-            isomorphic source from labels.  A specialization whose framing is
-            derived outside this constructor installs the same actual arrow at
-            its owning construction boundary.
+            The datum is the epimorphism ``F_R(S) -> M`` from the free module
+            on ``module_generating_set``, sending the generator at ``s`` to
+            ``module_generator_function(s)``.  The source free module and the
+            epimorphism are retained here; accessors below project from that
+            one arrow and never reconstruct an isomorphic source from labels.
             """
-            self._preamble_module_generating_set = module_generating_set
-            self._preamble_module_generator_function = module_generator_function
-            self._preamble_framing_morphism = None
             super().__init__(**rest)
-            if module_generating_set is not None and module_generator_function is not None:
-                source = framing_source
-                if source is None:
-                    source = self.base_ring().free_module(module_generating_set)
-                if source.module_generating_set() != module_generating_set:
-                    raise ValueError(
-                        "the selected framing source does not have the requested generator set"
-                    )
-                self._preamble_framing_morphism = _framing_morphism(
-                    source,
-                    self,
+            if module_generating_set is not None:
+                self._install_framing(
+                    module_generating_set,
                     module_generator_function,
+                    framing_source,
                 )
-                self._preamble_module_generating_set = source.module_generating_set()
+
+        def _install_framing(
+            self,
+            module_generating_set,
+            module_generator_function,
+            framing_source=None,
+        ) -> None:
+            r"""Establish the framing epimorphism of this module.
+
+            Protected contract of ``FramedModules(R)``.  Its callers are this
+            level's constructor and a construction whose framing is computed
+            from the datum it introduces -- the localization of a framed
+            module carries the source framing to fractions, a restriction of
+            scalars frames by products of framings -- when that construction
+            is placed beside ``FramedModules(R)`` in a join rather than below
+            it, so that this level's constructor may run before the datum the
+            framing is computed from exists.  It is called once, before the
+            constructed object is returned, with the framing labels, the
+            images of the free generators, and optionally the free module on
+            those labels; it stores the framing epimorphism.
+            """
+            assert self._framing_morphism is None, f"{self} already has a framing"
+            source = framing_source
+            if source is None:
+                source = self.base_ring().free_module(module_generating_set)
+            assert source.module_generating_set() == module_generating_set, (
+                "the selected framing source does not have the requested generator set"
+            )
+            self._framing_morphism = _framing_morphism(
+                source,
+                self,
+                module_generator_function,
+            )
 
         def module_generating_set(self):
             return self.framing_source().module_generating_set()
@@ -2696,8 +2812,8 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         def framing_morphism(self):
             r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""
-            morphism = self.__dict__.get("_preamble_framing_morphism")
-            assert morphism is not None, f"{self} has no installed framing morphism"
+            morphism = self._framing_morphism
+            assert morphism is not None, f"{self} was constructed without its framing"
             return morphism
 
         @cached_method
@@ -2706,12 +2822,12 @@ class FramedModules(OwnedCategoryOverBaseRing):
             category = FramedModules(self.base_ring()).framing_category()
             return category(self.framing_morphism())
 
-        def linear_combination(self, coefficients, factor_on_left=True):
-            if not isinstance(coefficients, dict):
-                return super().linear_combination(
-                    coefficients,
-                    factor_on_left=factor_on_left,
-                )
+        def linear_combination(self, coefficients):
+            r"""Return ``sum_s c_s m_s`` for finitely supported coefficients ``s |-> c_s``.
+
+            The coefficients are a finitely supported function on the framing
+            labels, given as a mapping from labels to scalars.
+            """
             return sum(
                 (
                     self.scalar_multiple(
@@ -2724,10 +2840,10 @@ class FramedModules(OwnedCategoryOverBaseRing):
             )
 
         def inject_variables(self, scope=None, verbose=True):
-            if not isinstance(scope, dict):
-                raise TypeError("scope is required when injecting module generators")
-            if not self.module_generating_set().cardinality().is_finite():
-                raise NotImplementedError("inject_variables requires a finite module framing")
+            assert scope is not None, "module generators are injected into a stated scope"
+            assert self.module_generating_set().cardinality().is_finite(), (
+                "injecting module generators as variables requires a finite framing"
+            )
             names = tuple(self.variable_names())
             generators = tuple(self.module_generators())
             if len(names) != len(generators):
@@ -2741,7 +2857,14 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
 
 class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
-    r"""Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``."""
+    r"""Modules ``Res_f(M)``: an ``S``-module ``M`` read over ``R`` along ``f: R -> S``.
+
+    The datum is the pair ``(M, f)``.  The underlying additive group is that
+    of ``M`` and ``r`` acts as ``f(r)``.  When ``S`` is finite free over ``R``
+    on ``(s_i)`` and ``M`` is finitely framed over ``S`` on ``(m_j)``, the
+    products ``s_i m_j`` frame ``Res_f(M)``, and a chosen finite presentation
+    of ``M`` induces one of ``Res_f(M)``.
+    """
 
     def an_object(self):
         r"""``Res_{id}(R^2)``: a free module along the identity of ``R``."""
@@ -2760,14 +2883,83 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Modules(self.base_ring())]
 
+    def _call_(self, module, ring_map):
+        r"""Construct ``Res_f(M)`` for an ``S``-module ``M`` along ``f: R -> S``."""
+        assert _owned_ring(ring_map.domain()) is self.base_ring(), (
+            f"restriction of scalars to {self.base_ring()} is along a ring morphism out of it"
+        )
+        return _restricted_scalars_view(module, ring_map)
+
+    class ElementMethods(ModuleElement):
+        r"""An element of ``Res_f(M)``, which is an element of ``M`` read over ``R``."""
+
+        def __init__(self, parent, underlying_element) -> None:
+            ModuleElement.__init__(self, parent)
+            self._underlying_element = underlying_element
+
+        def underlying_element(self):
+            r"""Return this element read in ``M``."""
+            return self._underlying_element
+
+        def _add_(self, other):
+            return self.parent().element_class(
+                self.parent(),
+                self._underlying_element + other._underlying_element,
+            )
+
+        def _neg_(self):
+            return self.parent().element_class(self.parent(), -self._underlying_element)
+
+        def _lmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _richcmp_(self, other, op):
+            return richcmp(
+                self._underlying_element,
+                other._underlying_element,
+                op,
+            )
+
+        def _repr_(self):
+            return repr(self._underlying_element)
+
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
+
+        def __init__(self, module_over_extension, ring_map, **rest) -> None:
+            self._module_over_extension = module_over_extension
+            self._ring_map = ring_map
+            ring = _owned_ring(ring_map.domain())
+            super().__init__(base_ring=ring, **rest)
+            match self:
+                case _ if self in FramedModules(ring):
+                    # The products ``s_i m_j`` frame ``Res_f(M)``; a chosen
+                    # presentation of it is written on the free module over
+                    # those products, which is then the framing source.
+                    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                        _SelectedFinitePresentationModules,
+                    )
+
+                    match self:
+                        case _ if self in _SelectedFinitePresentationModules(ring):
+                            source = self.presentation().codomain()
+                        case _:
+                            source = ring._fresh_free_module_on(
+                                _restricted_scalar_framing_labels(module_over_extension)
+                            )
+                    self._install_framing(
+                        source.module_generating_set(),
+                        self._restricted_scalar_generator,
+                        source,
+                    )
+
         def ring_map(self):
             r"""Return the selected scalar map ``R -> S``."""
-            return self._preamble_ring_map
+            return self._ring_map
 
         def module_over_extension(self):
             r"""Return the original ``S``-module before restriction of scalars."""
-            return self._preamble_extension_module
+            return self._module_over_extension
 
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
@@ -2793,296 +2985,122 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
                 self.scalar_action()(self.base_ring()(scalar))(underlying)
             )
 
+        def _element_constructor_(self, value):
+            if isinstance(value, self.element_class) and value.parent() is self:
+                return value
+            if isinstance(value, RestrictedScalarsModules.ElementMethods):
+                value = value.underlying_element()
+            return self.wrap(self.module_over_extension()(value))
 
-class RestrictedScalarsModuleView(Parent):
-    r"""A distinct parent for the same additive group with a restricted scalar action."""
+        def wrap(self, underlying_element):
+            r"""Read an element of ``M`` as the same element of ``Res_f(M)``."""
+            return self.element_class(self, self.module_over_extension()(underlying_element))
 
-    class Element(ModuleElement):
-        def __init__(self, parent, underlying_element) -> None:
-            ModuleElement.__init__(self, parent)
-            self._underlying_element = underlying_element
+        def _coerce_map_from_(self, source):
+            # Restriction of scalars is a change of structure, not a coercion of
+            # mathematical objects.  ``wrap`` reads an element of ``M`` here
+            # explicitly when the same additive-group element is meant.
+            if source is self.module_over_extension():
+                return None
+            return super()._coerce_map_from_(source)
 
-        def underlying_element(self):
-            return self._underlying_element
+        def __contains__(self, value) -> bool:
+            if isinstance(value, self.element_class) and value.parent() is self:
+                return True
+            return value in self.module_over_extension()
 
-        def _add_(self, other):
-            return self.parent().element_class(
-                self.parent(),
-                self._underlying_element + other._underlying_element,
+        def _restricted_scalar_generator(self, label):
+            r"""Return ``s_i m_j`` for the framing label ``(i, j)``."""
+            labels = self.module_generating_set()
+            assert label in labels, f"{label!r} is not a restricted-scalar module-generator label"
+            label = labels(label)
+            extension_module = self.module_over_extension()
+            scalar = self.extension_ring().module_generator(label.component(0))
+            module_generator = extension_module.module_generator(label.component(1))
+            return self.element_class(
+                self,
+                extension_module.scalar_multiple(scalar, module_generator),
             )
 
-        def _neg_(self):
-            return self.parent().element_class(self.parent(), -self._underlying_element)
-
-        def _lmul_(self, scalar):
-            return self.parent().scalar_multiple(scalar, self)
-
-        def _richcmp_(self, other, op):
-            return richcmp(
-                self._underlying_element,
-                other._underlying_element,
-                op,
+        def _selected_module_coefficients(self, element):
+            r"""``m = sum_j t_j m_j`` and ``t_j = sum_i c_ij s_i`` give ``m = sum_ij c_ij s_i m_j``."""
+            element = self(element)
+            extension_coefficients = self.module_over_extension().framing_coefficients(
+                element.underlying_element()
             )
+            framing = self.module_generating_set()
+            return {
+                framing((scalar_label, module_label)): self.base_ring()(coefficient)
+                for module_label, scalar in extension_coefficients.items()
+                for scalar_label, coefficient in self.extension_ring().framing_coefficients(scalar).items()
+            }
+
+        def zero(self):
+            return self.element_class(self, self.module_over_extension().zero())
+
+        def an_element(self):
+            return self.element_class(self, self.module_over_extension().an_element())
 
         def _repr_(self):
-            return repr(self._underlying_element)
+            return f"{self.module_over_extension()} restricted to {self.base_ring()} along {self.ring_map()}"
 
-    def __init__(
-        self,
-        module,
-        ring_map,
-        *,
-        subobject_ambient=None,
-        subobject_generator_images=None,
-        subobject_lift=None,
-        subobject_inclusion_factory=None,
-        subobject_verify_linearity=True,
-    ) -> None:
-        self._preamble_extension_module = module
-        self._preamble_ring_map = ring_map
-        base_ring = _owned_ring(ring_map.domain())
-        extension_ring = _owned_ring(module.base_ring())
-        self._preamble_module_generating_set = None
 
-        categories = [RestrictedScalarsModules(base_ring)]
-
-        selected_finite_module_framing = module in FramedModules(extension_ring) and module in Modules(extension_ring).FinitelyGenerated()
-        if selected_finite_module_framing and extension_ring in FinitelyGeneratedFreeModules(base_ring):
-            scalar_labels = extension_ring.module_generating_set()
-            module_labels = module.module_generating_set()
-            if scalar_labels.cardinality().is_finite() and module_labels.cardinality().is_finite():
-                self._preamble_module_generating_set = Sets().product(
-                    indexed_family(
-                        Sets.Δ[1],
-                        lambda index: scalar_labels if int(index) == 0 else module_labels,
-                    )
-                )
-                categories.append(FramedModules(base_ring))
-                if extension_ring in Modules(base_ring).FinitelyGenerated() and module in Modules(extension_ring).FinitelyGenerated():
-                    categories.append(Modules(base_ring).FinitelyGenerated())
-                if extension_ring in FinitelyGeneratedFreeModules(base_ring):
-                    if module in ModulesWithChosenFinitePresentation(extension_ring):
-                        categories.append(ModulesWithChosenFinitePresentation(base_ring))
-                    elif module in Modules(extension_ring).FinitelyPresented():
-                        categories.append(Modules(base_ring).FinitelyPresented())
-                    if module in FinitelyGeneratedFreeModules(extension_ring):
-                        categories.append(FinitelyGeneratedFreeModules(base_ring))
-
-        subobject_data = subobject_inclusion_factory is not None or (subobject_ambient is not None and subobject_generator_images is not None)
-        if subobject_data:
-            self._module_subobject_construction = ModuleSubobjectConstruction(
-                ambient=subobject_ambient,
-                generator_images=subobject_generator_images,
-                lift=subobject_lift,
-                inclusion_factory=subobject_inclusion_factory,
-                verify_linearity=subobject_verify_linearity,
-            )
-            categories.append(ModuleSubobjects(base_ring))
-
-        self._preamble_base_ring = base_ring
-        if self._preamble_module_generating_set is not None:
-            self._preamble_module_generator_function = self._restricted_scalar_generator
-        Parent.__init__(
-            self,
-            base=base_ring,
-            category=Category.join(tuple(categories)),
+def _restricted_scalar_framing_labels(module):
+    r"""Return the framing labels ``I x J`` of ``Res_f(M)`` for ``S`` framed on ``I``, ``M`` on ``J``."""
+    extension_ring = _owned_ring(module.base_ring())
+    scalar_labels = extension_ring.module_generating_set()
+    module_labels = module.module_generating_set()
+    return Sets().product(
+        indexed_family(
+            Sets.Δ[1],
+            lambda index: scalar_labels if int(index) == 0 else module_labels,
         )
-        realize_owned_category(self)
-        if self._preamble_module_generating_set is not None:
-            framing_source = base_ring._fresh_free_module_on(
-                self._preamble_module_generating_set,
-            )
-            self._preamble_framing_morphism = _framing_morphism(
-                framing_source,
-                self,
-                self._preamble_module_generator_function,
-            )
+    )
 
 
-    def __call__(self, value):
-        r"""Construct through the owned restriction-of-scalars element parser."""
-        return self._element_constructor_(value)
+def _restricted_scalar_presentation(module, ring_map, labels):
+    r"""Return the finite presentation of ``Res_f(M)`` induced by one of ``M``.
 
-    def _element_constructor_(self, value):
-        if isinstance(value, self.element_class) and value.parent() is self:
-            return value
-        if isinstance(value, RestrictedScalarsModuleView.Element):
-            value = value.underlying_element()
-        return self.wrap(self._preamble_extension_module(value))
+    Suppose ``S`` is finite free over ``R`` on ``(s_i)`` and ``M`` is
+    presented over ``S`` on ``(m_j)`` with relation rows ``(a_j)``.  The
+    restricted module is generated over ``R`` by ``s_i m_j``.  For every
+    selected relation and every ``s_i`` we expand ``s_i a_j`` in the
+    selected ``R``-basis of ``S``.  These are exactly the restriction of
+    the original ``S``-relation submodule to ``R``.
+    """
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _presentation_from_relation_rows,
+    )
 
-    def wrap(self, underlying_element):
-        r"""Read an element of the extension module in this restricted module."""
-        extension_module = self._preamble_extension_module
-        underlying_element = extension_module(underlying_element)
-        return self.element_class(self, underlying_element)
-
-    def _coerce_map_from_(self, source):
-        # Restriction of scalars is a change of structure, not a coercion of
-        # mathematical objects.  Call ``wrap`` explicitly when the same
-        # underlying additive-group element is to be read in this parent.
-        if source is self._preamble_extension_module:
-            return None
-        return super()._coerce_map_from_(source)
-
-    def __contains__(self, value) -> bool:
-        if isinstance(value, self.element_class) and value.parent() is self:
-            return True
-        try:
-            return value in self._preamble_extension_module
-        except (TypeError, ValueError):
-            return False
-
-    def _restricted_scalar_generator(self, label):
-        r"""Construct one selected restricted-scalar framing image."""
-        labels = self._preamble_module_generating_set
-        if labels is None or label not in labels:
-            raise ValueError(f"{label!r} is not a restricted-scalar module-generator label")
-        label = labels(label)
-        scalar_label = label.component(0)
-        module_label = label.component(1)
-        extension_ring = _owned_ring(self._preamble_extension_module.base_ring())
-        scalar = extension_ring.module_generator(scalar_label)
-        module_generator = self._preamble_extension_module.module_generator(module_label)
-        underlying = self._preamble_extension_module.scalar_multiple(
-            scalar,
-            module_generator,
-        )
-        return self.element_class(self, underlying)
-
-    def _selected_module_coefficients(self, element):
-
-        element = self(element)
-        extension_module = self.module_over_extension()
-        extension_coefficients = extension_module.framing_coefficients(element.underlying_element())
-        coefficients = {}
-        framing = self.module_generating_set()
-        for module_label, scalar in extension_coefficients.items():
-            for scalar_label, coefficient in self.extension_ring().framing_coefficients(scalar).items():
-                label = framing((scalar_label, module_label))
-                coefficients[label] = self.base_ring()(coefficient)
-        return coefficients
-
-    @cached_method
-    def presentation(self):
-        r"""Return the finite presentation induced by restriction of scalars."""
-        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
-            raise TypeError("this scalar restriction has no selected finite presentation")
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _presentation_from_relation_rows,
-        )
-        rows = self._selected_presentation_rows()
-        labels = self.module_generating_set()
-        relations = self.base_ring().matrix_space(len(rows), int(labels.cardinality())).from_rows(rows)
-        return _presentation_from_relation_rows(
-            self.base_ring(),
-            labels,
-            Sets.Δ[len(rows) - 1],
-            relations,
-        )
-
-    def _represented_kernel_of_morphism(self, morphism):
-        if self not in (morphism.domain(), morphism.codomain()):
-            return NotImplemented
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _selected_presentation_kernel,
-        )
-
-        return _selected_presentation_kernel(morphism)
-
-    def _represented_cokernel_of_morphism(self, morphism):
-        if morphism.codomain() is not self:
-            return NotImplemented
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _presented_module_from_morphism,
-        )
-
-        return _presented_module_from_morphism(morphism, _cokernel_morphism=morphism)
-
-    @cached_method
-    def _selected_presentation_model(self):
-        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
-            raise NotImplementedError(
-                "this scalar restriction has no selected finite-presentation model"
-            )
-        return self.presentation().cokernel()
-
-    def is_zero(self):
-        return self._selected_presentation_model().is_zero()
-
-    def whole_subobject(self):
-        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
-            raise NotImplementedError(
-                "this scalar restriction has no selected finite-presentation subobject backend"
-            )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _SelectedFinitePresentationModules,
-        )
-
-        return _SelectedFinitePresentationModules.ParentMethods.whole_subobject(self)
-
-    def subobject_on(self, module_generators):
-        r"""Return the selected-presentation subobject after scalar restriction."""
-        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
-            raise NotImplementedError(
-                "this scalar restriction has no selected finite-presentation subobject backend"
-            )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _SelectedFinitePresentationModules,
-        )
-
-        return _SelectedFinitePresentationModules.ParentMethods.subobject_on(
-            self, module_generators
-        )
-
-    submodule = subobject_on
-
-    def _selected_presentation_rows(self):
-        r"""Return the induced finite-presentation rows over the smaller ring.
-
-        Suppose ``S`` is finite free over ``R`` on ``(s_i)`` and ``M`` is
-        presented over ``S`` on ``(m_j)`` with relation rows ``(a_j)``.  The
-        restricted module is generated over ``R`` by ``s_i m_j``.  For every
-        selected relation and every ``s_i`` we expand ``s_i a_j`` in the
-        selected ``R``-basis of ``S``.  These are exactly the restriction of
-        the original ``S``-relation submodule to ``R``.
-        """
-        if self._preamble_module_generating_set is None:
-            raise NotImplementedError("this scalar restriction has no selected finite presentation")
-
-        extension_ring = self.extension_ring()
-        extension_module = self.module_over_extension()
-        scalar_labels = extension_ring.module_generating_set()
-        module_labels = extension_module.module_generating_set()
-        restricted_labels = self.module_generating_set()
-        ring = self.base_ring()
-        width = int(restricted_labels.cardinality())
-        relation_rows = []
-        relation_source = extension_module._selected_presentation_rows()
-        if relation_source is None:
-            relation_source = ()
-        for relation in relation_source:
-            for scalar_label in scalar_labels:
-                scalar_generator = extension_ring.module_generator(scalar_label)
-                row = [ring.zero()] * width
-                for module_label, coefficient in zip(module_labels, relation, strict=True):
-                    if not coefficient:
-                        continue
-                    product = extension_ring(scalar_generator * extension_ring(coefficient))
-                    for output_scalar_label, output_coefficient in extension_ring.framing_coefficients(product).items():
-                        column = restricted_labels.ranking_map()(restricted_labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
-                        row[column] += ring(output_coefficient)
-                if any(row):
-                    relation_rows.append(row)
-        return tuple(tuple(row) for row in relation_rows)
-
-    def zero(self):
-        return self.element_class(self, self._preamble_extension_module.zero())
-
-    def an_element(self):
-        return self.element_class(self, self._preamble_extension_module.an_element())
-
-    def _repr_(self):
-        return f"{self._preamble_extension_module} restricted to {self.base_ring()} along {self._preamble_ring_map}"
+    ring = _owned_ring(ring_map.domain())
+    extension_ring = _owned_ring(module.base_ring())
+    scalar_labels = extension_ring.module_generating_set()
+    module_labels = module.module_generating_set()
+    width = int(labels.cardinality())
+    relation_rows = []
+    source_rows = module._selected_presentation_rows()
+    assert source_rows is not None, f"{module} has a chosen finite presentation and states its relations"
+    for relation in source_rows:
+        for scalar_label in scalar_labels:
+            scalar_generator = extension_ring.module_generator(scalar_label)
+            row = [ring.zero()] * width
+            for module_label, coefficient in zip(module_labels, relation, strict=True):
+                if not coefficient:
+                    continue
+                product = extension_ring(scalar_generator * extension_ring(coefficient))
+                for output_scalar_label, output_coefficient in extension_ring.framing_coefficients(product).items():
+                    column = labels.ranking_map()(labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
+                    row[column] += ring(output_coefficient)
+            if any(row):
+                relation_rows.append(tuple(row))
+    relations = ring.matrix_space(len(relation_rows), width).from_rows(tuple(relation_rows))
+    presentation = _presentation_from_relation_rows(
+        ring,
+        labels,
+        Sets.Δ[len(relation_rows) - 1],
+        relations,
+    )
+    return relations, presentation
 
 
 def _restricted_scalars_view(
@@ -3095,18 +3113,57 @@ def _restricted_scalars_view(
     _subobject_inclusion_factory=None,
     _subobject_verify_linearity=True,
 ):
-    r"""Return ``Res_R^S(module)`` along the specified morphism ``R -> S``."""
-    if _engine_ring(ring_map.codomain()) is not _engine_ring(module.base_ring()):
-        raise ValueError(f"restriction of scalars for {module} requires a map into {module.base_ring()}, got codomain {ring_map.codomain()}")
-    return RestrictedScalarsModuleView(
-        module,
-        ring_map,
-        subobject_ambient=_subobject_ambient,
-        subobject_generator_images=_subobject_generator_images,
-        subobject_lift=_subobject_lift,
-        subobject_inclusion_factory=_subobject_inclusion_factory,
-        subobject_verify_linearity=_subobject_verify_linearity,
+    r"""Return ``Res_f(M)`` along ``f: R -> S``, placed by what ``M`` and ``S`` already are.
+
+    ``Res_f(M)`` is framed, finitely generated and finitely presented over
+    ``R`` when ``S`` is finite free over ``R`` and ``M`` is so over ``S``; a
+    selected inclusion places it among the subobjects.
+    """
+    assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
+        f"restriction of scalars for {module} requires a map into {module.base_ring()}, "
+        f"got codomain {ring_map.codomain()}"
     )
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _SelectedFinitePresentationModules,
+    )
+
+    base_ring = _owned_ring(ring_map.domain())
+    extension_ring = _owned_ring(module.base_ring())
+    placement = [RestrictedScalarsModules(base_ring)]
+    data = {"module_over_extension": module, "ring_map": ring_map}
+
+    framed_over_finite_free_scalars = (
+        module in FramedModules(extension_ring)
+        and module in Modules(extension_ring).FinitelyGenerated()
+        and extension_ring in FinitelyGeneratedFreeModules(base_ring)
+    )
+    match module:
+        case _ if framed_over_finite_free_scalars and module in ModulesWithChosenFinitePresentation(extension_ring):
+            relations, presentation = _restricted_scalar_presentation(
+                module,
+                ring_map,
+                _restricted_scalar_framing_labels(module),
+            )
+            placement.append(_SelectedFinitePresentationModules(base_ring))
+            data.update(relation_matrix=relations, presentation=presentation)
+        case _ if framed_over_finite_free_scalars:
+            placement.extend((FramedModules(base_ring), Modules(base_ring).FinitelyGenerated()))
+
+    if _subobject_inclusion_factory is not None or (
+        _subobject_ambient is not None and _subobject_generator_images is not None
+    ):
+        placement.append(ModuleSubobjects(base_ring))
+        data.update(
+            subobject_ambient=_subobject_ambient,
+            subobject_generator_images=_subobject_generator_images,
+            subobject_lift=_subobject_lift,
+            subobject_inclusion_factory=_subobject_inclusion_factory,
+            subobject_verify_linearity=_subobject_verify_linearity,
+        )
+
+    from dzack_research.preamble.owned_category import _object_of
+
+    return _object_of(Category.join(tuple(placement)), **data)
 
 
 def _tensor_label_set(factors):
@@ -3343,12 +3400,6 @@ def _represented_framed_free(module) -> bool:
     return module in FramedFreeModules(module.base_ring())
 
 
-@cached_function(key=lambda left, right: (id(left), id(right)))
-def _module_tensor_product(left, right):
-    r"""Return the represented categorical tensor product ``left tensor right``."""
-    ring = _owned_ring(left.base_ring())
-    if _owned_ring(right.base_ring()) != ring:
-        raise ValueError("a tensor product requires one common base ring")
 @cached_function(key=lambda factors: (factors.index_set(), tuple(map(id, factors))))
 def _module_tensor_product(factors):
     r"""Return $\bigotimes_{i \in I} M_i$ over the family's own index set."""
@@ -3712,6 +3763,10 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             label = self.module_generating_set()((row_label, column_label))
             return self.module_generator(label)
 
+        def _selected_module_coefficients(self, morphism):
+            r"""The entries of a linear map, keyed by the matrix units ``(t, s)``."""
+            return _matrix_coefficients(self, morphism)
+
         def from_rows(self, rows):
             r"""Construct the matrix morphism with the stated row entries."""
             rows = tuple(tuple(row) for row in rows)
@@ -3779,55 +3834,33 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _matrix_column_coefficients(self, column_label):
-
-            columns = self.parent().column_index_set()
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
-            generator_image = self.__dict__.get("_generator_image")
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
+            generator_image = self._generator_image
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
             return self.codomain().framing_coefficients(image)
 
         def matrix_entry(self, row_label, column_label):
-            rows = self.parent().row_index_set()
-            columns = self.parent().column_index_set()
-            try:
-                row_label = rows(row_label)
-            except (TypeError, ValueError):
-                row_label = rows[int(row_label)]
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
+            row_label = _matrix_index(self.parent().row_index_set(), row_label)
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
             return self._matrix_column_coefficients(column_label).get(
                 row_label,
                 self.parent().base_ring().zero(),
             )
 
         def __getitem__(self, index):
-            if not isinstance(index, tuple) or len(index) != 2:
-                raise IndexError("a matrix entry is indexed by (row, column)")
+            r"""The entry at ``(row, column)``."""
             row, column = index
             return self.matrix_entry(row, column)
 
         def row(self, row_label):
-            rows = self.parent().row_index_set()
-            try:
-                row_label = rows(row_label)
-            except (TypeError, ValueError):
-                row_label = rows[int(row_label)]
+            row_label = _matrix_index(self.parent().row_index_set(), row_label)
             dual = self.domain().dual_module()
             return dual.linear_combination(
                 {column_label: self.matrix_entry(row_label, column_label) for column_label in self.parent().column_index_set() if self.matrix_entry(row_label, column_label)}
             )
 
         def column(self, column_label):
-            columns = self.parent().column_index_set()
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
             return self(self.domain().module_generator(column_label))
 
         def rows(self):
@@ -4118,6 +4151,11 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             )
 
 
+def _matrix_index(index_set, key):
+    r"""Read a row or column key as a label of ``index_set``, or as the position of a label."""
+    return index_set(key) if key in index_set else index_set[operator.index(key)]
+
+
 def _engine_matrix(morphism):
     r"""Privately materialize one matrix-Hom element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
@@ -4158,21 +4196,29 @@ def _matrix_coefficients(homset, morphism):
 def _refine_matrix_hom(homset):
     r"""Return the already-constructed matrix Hom for finite free endpoints."""
     ring = homset.base_ring()
-    free = FinitelyGeneratedFreeModules(ring)
     domain = homset.domain()
     codomain = homset.codomain()
-    if domain not in free or codomain not in free:
+    if not (_coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)):
         return homset
-    if (
-        not callable(getattr(domain, "_preamble_free_module_constructor", None))
-        or not callable(getattr(codomain, "_preamble_free_module_constructor", None))
-        or not callable(getattr(domain, "module_generating_set", None))
-        or not callable(getattr(codomain, "module_generating_set", None))
-    ):
-        return homset
-    if homset not in MatrixSpaces(ring):
-        raise TypeError("a finite-free module Hom must be constructed as a matrix Hom")
+    assert homset in MatrixSpaces(ring), "a Hom between coordinate framed free modules is constructed as a matrix Hom"
     return homset
+
+
+def _coordinate_framed_free_module(module, ring) -> bool:
+    r"""Whether the selected framing is a finite basis, independently of its engine.
+
+    Freeness of the underlying module does not say that an arbitrary chosen
+    generating family is a basis.  ``FramedFreeModules`` supplies that stronger
+    datum; finite cardinality supplies the finite matrix calculation.
+    """
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+
+    return (
+        module in FramedFreeModules(ring)
+        and module.module_generating_set().cardinality().is_finite()
+    )
 
 
 def _torsion_module_presented_by_matrix(
@@ -4181,23 +4227,15 @@ def _torsion_module_presented_by_matrix(
     r"""Return the torsion module presented by relation rows ``relations``."""
 
     ring = _own_ring(SageZZ) if base_ring is None else base_ring
-    try:
-        relation_parent = relations.parent()
-    except AttributeError:
-        relation_parent = None
-    represented_matrix = (
-        relation_parent is not None and relation_parent in MatrixSpaces(ring)
-    )
-    if represented_matrix:
-        width = relations.parent().ncols()
-        relation_count = relations.parent().nrows()
-    else:
-        rows = tuple(tuple(row) for row in relations)
-        relation_count = len(rows)
-        width = 0 if not rows else len(rows[0])
-
-        relations = ring.matrix_space(relation_count, width).from_rows(rows)
-        represented_matrix = True
+    match relations:
+        case _ if element_parent(relations) in MatrixSpaces(ring):
+            width = relations.parent().ncols()
+            relation_count = relations.parent().nrows()
+        case _:
+            rows = tuple(tuple(row) for row in relations)
+            relation_count = len(rows)
+            width = 0 if not rows else len(rows[0])
+            relations = ring.matrix_space(relation_count, width).from_rows(rows)
     labels = (
         finite_ordered_set(range(width))
         if module_generating_set is None
@@ -4244,4 +4282,3 @@ def _refine_finitely_presented_torsion_module(module):
             "the supplied finite presentation does not present a torsion module"
         )
     return refine(module, Modules(ring).FinitelyPresented().Torsion())
-

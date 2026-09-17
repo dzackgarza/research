@@ -6,6 +6,8 @@ category level stores only the datum it adds and threads the rest to the module
 levels through ``super().__init__``.
 """
 
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -31,14 +33,12 @@ def _cokernel_in_category(presentation, category, **data):
     The levels of ``category`` consume ``data`` in their constructors.
     """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presented_module_from_morphism,
-    )
+        )
 
-    return _presented_module_from_morphism(
+    return ModulesWithChosenFinitePresentation(presentation.codomain().base_ring())(
         presentation,
-        _cokernel_morphism=presentation,
-        _extra_categories=(category,),
-        _extra_construction_data=data,
+        category=Category.join((category,)),
+        **data,
     )
 
 

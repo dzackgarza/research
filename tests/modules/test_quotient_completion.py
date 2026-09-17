@@ -80,8 +80,8 @@ def test_module_cokernel_completion_is_an_explicit_isomorphism() -> None:
         ring.ideal(x),
         precision=6,
     )
-    left = comparison.completed_cokernel()
-    right = comparison.cokernel_after_completion()
+    left = comparison.domain()
+    right = comparison.codomain()
 
     assert comparison.forward().domain() is left
     assert comparison.forward().codomain() is right

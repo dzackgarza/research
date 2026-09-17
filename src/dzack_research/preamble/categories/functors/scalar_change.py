@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FramedModules,
     Modules,
-    RestrictedScalarsModuleView,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
@@ -43,16 +42,9 @@ class _ScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, module):
-        if isinstance(module, RestrictedScalarsModuleView):
-            if (
-                _engine_ring(module.ring_map().domain()) is _engine_ring(self._source_ring)
-                and _engine_ring(module.ring_map().codomain()) is _engine_ring(self._target_ring)
-                and module in FramedModules(self._source_ring)
-            ):
-                image = self._target_ring._fresh_free_module_on(
-                    module.module_generating_set()
-                )
-                return image
+        # Restriction of scalars does not erase relations.  In particular
+        # S tensor_R Res_f(M) cannot be replaced by a free module merely
+        # because a generating family of Res_f(M) was selected.
         return module.base_change(self.ring_map())
 
     def _apply_morphism(self, morphism):
@@ -71,26 +63,13 @@ class _ScalarExtensionFunctor(Functor):
                 }
             )
 
-        changed = source.module_category().Mor(source, target)(image)
-
-        from dzack_research.preamble.categories.rings.commutative_algebra import (
-            AdicCompletions,
+        hom = source.module_category().Mor(source, target)
+        return hom.element_class(
+            hom,
+            image,
+            scalar_extension_of=morphism,
+            scalar_extension_functor=self,
         )
-
-        if (
-            self._target_ring in AdicCompletions()
-            and self._target_ring.completion_map() is self.ring_map()
-        ):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                ModuleCompletionMorphismConstruction,
-            )
-
-            construction = ModuleCompletionMorphismConstruction(
-                morphism,
-                self._target_ring,
-            )
-            return construction.image_of(changed)
-        return changed
 
     def _repr_(self):
         return f"Scalar extension along {self.ring_map()}"

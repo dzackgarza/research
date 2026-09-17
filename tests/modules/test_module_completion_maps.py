@@ -35,9 +35,8 @@ def test_multiplication_by_x_on_a_free_module_stays_injective_after_completion()
     assert multiplication.is_injective()
     completed = multiplication.adic_completion(ring.ideal(x), precision=6)
 
-    construction = completed.completion_construction()
-    assert construction.source_morphism() is multiplication
-    assert construction.completion() is completed.domain().completion_ring()
+    assert completed.scalar_extension_of() is multiplication
+    assert completed.scalar_extension_functor().ring_map().codomain() is completed.domain().completion_ring()
     assert completed.domain().completion_source_module() is free
     assert completed.codomain().completion_source_module() is free
     assert completed.domain().completion_ring() is completed.codomain().completion_ring()
