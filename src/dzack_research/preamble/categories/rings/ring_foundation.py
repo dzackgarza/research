@@ -718,12 +718,6 @@ class LocalizationRings(OwnedCategory):
                 else self.localization_source().base_ring()
             )
 
-        def _ring_morphism_defining_algebra_structure(self):
-            algebra_source = self._localization_construction.algebra_source()
-            if algebra_source is None:
-                return self.localization_map()
-            return self.localization_map() * algebra_source.algebra_structure_morphism()
-
         def _selected_engine_ring(self):
             r"""Return the private realization that computes in this localization.
 
@@ -2097,21 +2091,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 f"centrality in a noncommutative foundational ring requires selected higher algebra structure on {self}"
             )
             return True
-
-        @cached_method
-        def _ring_morphism_defining_algebra_structure(self):
-            r"""Return the canonical ring map \(R\to Z(R)\) when it is the identity."""
-            if self not in OwnedRings().Commutative():
-                raise TypeError(f"{self} is noncommutative, so the identity does not land in its center")
-            center = self.ring_center()
-            return self.Mor(center)(lambda scalar: scalar)
-
-        def algebra_structure_morphism(self):
-            r"""The structure morphism of this ring as an algebra over itself.
-
-            For a commutative ring this is the identity \(R\to R\).
-            """
-            return self._ring_morphism_defining_algebra_structure()
 
         @cached_method
         def ring_center(self):

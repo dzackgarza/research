@@ -35,8 +35,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlgebrasWithChosenMultiplication,
-    AssociativeAlgebrasWithChosenMultiplication,
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -179,7 +177,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             r"""The pairing \(B=\varepsilon\circ m\colon A\otimes_{\mathbb R}A\to\mathbb R\)."""
             ring = self.base_ring()
             match self:
-                case _ if self in AssociativeAlgebrasWithChosenMultiplication(ring):
+                case _ if self in Algebras(ring).Associative():
                     multiplication = self.multiplication_morphism()
                     return _compose_morphisms(self.integral_form(), multiplication)
                 case _:
@@ -475,7 +473,6 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             case True:
                 categories.extend(
                     [
-                        AlgebrasWithChosenMultiplication(ring),
                         GradedAlgebras(ring, monoid),
                         Algebras(ring).Associative().Unital().Commutative(),
                     ]
@@ -483,7 +480,6 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             case False:
                 categories.extend(
                     [
-                        AssociativeAlgebrasWithChosenMultiplication(ring),
                         Algebras(ring).Associative(),
                     ]
                 )

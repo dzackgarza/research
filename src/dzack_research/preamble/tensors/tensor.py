@@ -1775,13 +1775,6 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
                 result += self.include(product)
         return result
 
-    def _ring_morphism_defining_algebra_structure(self):
-
-
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
-
     def _repr_(self) -> str:
         return f"Mixed tensor algebra T({self.module()}) tensor T({self.module()}^*)"
 

@@ -12,13 +12,16 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    _algebra_on_module,
+    _assert_decided,
+    _associativity,
+    _decide_on_module_generators,
+    _two_sided_unit,
     _unit_from_multiplication,
-    _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
     GradedModules,
     _concentrated_graded_module,
-    _grading_identity,
     _require_grading_monoid,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
@@ -31,12 +34,40 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
 # the Koszul sign rule in which every odd-degree element squares to zero.
 if "Alternating" not in all_axioms:
     all_axioms.add("Alternating")
+
+
+def _rank_one_unit_algebra(category):
+    r"""``R e`` with ``e e = e``, concentrated in the identity degree of the grading of ``category``.
+
+    Through the one construction: a rank-one module whose generator squares to
+    itself is a commutative associative unital algebra with unit ``e``, and a
+    module concentrated in the identity degree is graded by it, so the sign
+    rule and the odd-square condition hold vacuously.  That is the placement
+    ``category`` states.
+    """
+    ring = category.base_ring()
+    module = _concentrated_graded_module(ring, category.grading_monoid())
+    label = module.module_generating_set()[0]
+    generator = module.module_generator(label)
+    multiplication = Modules(ring).tensor_product((module, module)).from_bilinear(
+        BilinearMap(
+            module,
+            module,
+            module,
+            {(label, label): generator},
+        )
+    )
+    return _algebra_on_module(
+        module,
+        multiplication,
+        placement=(category, Algebras(ring).Commutative()),
+        unit=generator,
+    )
 
 
 def _homogeneous_degree(element):
@@ -174,29 +205,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""A rank-one unital algebra concentrated in the identity degree."""
-        ring = self.base_ring()
-        monoid = self.grading_monoid()
-        module = _concentrated_graded_module(ring, monoid)
-        labels = module.module_generating_set()
-        label = labels[0]
-        generator = module.module_generator(label)
-        multiplication = Modules(ring).tensor_product((module, module)).from_bilinear(
-            BilinearMap(
-                module,
-                module,
-                module,
-                {(label, label): generator},
-            )
-        )
-        unit = _unit_morphism_from_element(module, generator, ring)
-        algebra = Algebras(ring).Associative().Unital()(
-            module,
-            multiplication,
-            unit,
-        )
-        algebra._preamble_concentrated_degree = _grading_identity(monoid)
-        refine(algebra, self)
-        return algebra
+        return _rank_one_unit_algebra(self)
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
@@ -257,10 +266,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
         def an_object(self):
             r"""The identity-degree rank-one algebra, where the sign rule is vacuous."""
-            algebra = self._base_category.an_object()
-            refine(algebra, Algebras(self.base_ring()).Commutative())
-            refine(algebra, self)
-            return algebra
+            return _rank_one_unit_algebra(self)
 
         class SubcategoryMethods:
             def Alternating(self):
@@ -285,9 +291,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             def an_object(self):
                 r"""The identity-degree rank-one algebra, where odd-square conditions are vacuous."""
-                algebra = self._base_category.an_object()
-                refine(algebra, self)
-                return algebra
+                return _rank_one_unit_algebra(self)
 
     class ParentMethods:
         def restrict_scalars(self, ring_map):
@@ -462,25 +466,30 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = GradedAlgebraHomCategoryConstruction
 
     def _call_(self, multiplication):
+        r"""The graded algebra on the graded module ``M`` with multiplication ``m``.
+
+        The unit is recovered from ``m``, and associativity and the unit
+        equations are decided on module generators of ``M``.  That ``m``
+        sends ``M_p (x) M_q`` into ``M_{pq}`` is the hypothesis this entry
+        takes with ``m``: the module layer represents no homogeneous degree on
+        which to decide it.
+        """
         module = multiplication.codomain()
-        graded = GradedModules(self.base_ring(), self.grading_monoid())
-        if module not in graded:
-            raise TypeError(
-                f"{module} is not a module graded by {self.grading_monoid()}"
-            )
+        assert module in GradedModules(self.base_ring(), self.grading_monoid()), (
+            f"{module} is not a module graded by {self.grading_monoid()}"
+        )
         unit = _unit_from_multiplication(multiplication)
-        eta = _unit_morphism_from_element(
+        _assert_decided(
+            _decide_on_module_generators(module, _associativity(multiplication), 3),
+            "associativity",
             module,
-            unit,
-            self.base_ring(),
         )
-        algebra = Algebras(self.base_ring()).Associative().Unital()(
+        _assert_decided(
+            _decide_on_module_generators(module, _two_sided_unit(multiplication, unit), 1),
+            "the two unit equations",
             module,
-            multiplication,
-            eta,
         )
-        refine(algebra, self)
-        return algebra
+        return _algebra_on_module(module, multiplication, placement=(self,), unit=unit)
 
 
 __all__ = [

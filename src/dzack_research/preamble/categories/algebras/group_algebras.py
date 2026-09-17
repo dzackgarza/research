@@ -15,8 +15,9 @@ from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlgebrasWithChosenMultiplication,
     UnitalMultiplicativeAlgebraMorphism,
+    _algebra_on_module,
+    _center_algebra,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import (
     AugmentedAlgebras,
@@ -34,6 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
     OwnedIntegralDomains,
+    OwnedRings,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -45,10 +47,10 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras of the form \(R[G]\), interned on their group.
 
     A data subcategory of \(R\)-algebras: an object is \(R[G]\) together with
-    the group \(G\) framing it.  The multiplication is the chosen morphism
-    \(R[G]\otimes_R R[G]\to R[G]\) extending the group law, and the augmentation
-    is determined by the datum, so this refines both chosen-multiplication
-    algebras and augmented algebras.
+    the group \(G\) framing it.  It is the algebra on the free module
+    \(F_R(G)\) whose multiplication \(F_R(G)\otimes_R F_R(G)\to F_R(G)\)
+    extends the group law, and the augmentation is determined by \(G\), so it
+    is an augmented algebra.
     """
 
     def an_object(self):
@@ -60,8 +62,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
         return "group algebras"
 
     def super_categories(self):
-        ring = self.base_ring()
-        return [AlgebrasWithChosenMultiplication(ring), AugmentedAlgebras(ring)]
+        return [AugmentedAlgebras(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, group, **rest) -> None:
@@ -77,13 +78,15 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def center(self):
-            r"""The centre \(Z(R[G])\), free on the conjugacy-class sums.
+            r"""The centre \(Z(R[G])\), the algebra on the span of the conjugacy-class sums.
 
             An element \(\sum a_g g\) is central exactly when \(a\) is a class
             function, so the class sums \(\sum_{h\in C} h\) over the conjugacy
             classes \(C\) of \(G\) form an \(R\)-basis of \(Z(R[G])\) (Isaacs,
             *Character Theory of Finite Groups*, Theorem 2.4).  Each class is
-            the conjugation orbit of its representative.
+            the conjugation orbit of its representative.  That basis replaces
+            the equalizers the general centre intersects; the algebra on it is
+            built the same way.
             """
             group = self.group()
             assert group in FiniteGroups(), (
@@ -101,7 +104,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                     for representative in group.conjugacy_classes_representatives()
                 ]
             )
-            return self.subobject_on(class_sums)
+            return _center_algebra(self, self.subobject_on(class_sums))
 
         @cached_method
         def group_inclusion(self):
@@ -173,17 +176,22 @@ def _group_algebra(base_ring, group):
             lambda left, right: module.module_generator(left * right),
         )
     )
-    # The group law decides the multiplication: R[G] is commutative exactly
-    # when R and G are, and the identity of G is the unit.  Both are stated as
-    # construction data, so no finite enumeration of G is involved and the
-    # ring level can ask for commutativity while the object is being built.
-    return module.algebra_from_multiplication(
+    # The group law decides the placement (Lam, A First Course in
+    # Noncommutative Rings, §1): the multiplication extending an associative
+    # law with identity e is associative with unit e, and R[G] is commutative
+    # when R and G are.  Those theorems are the placement; the group answers
+    # whether it is abelian, so no enumeration of R[G] decides it.
+    commutative = (
+        (Algebras(ring).Commutative(),)
+        if ring in OwnedRings().Commutative() and group.is_abelian() is True
+        else ()
+    )
+    return _algebra_on_module(
+        module,
         multiplication,
-        base_ring=ring,
+        placement=(GroupAlgebras(ring), *commutative),
         unit=module.module_generator(group.one()),
-        commutative=bool(ring.is_commutative() and group.is_abelian()),
-        extra_categories=(GroupAlgebras(ring),),
-        extra_construction_data={"group": group},
+        construction_data={"group": group},
     )
 
 
@@ -216,11 +224,7 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
             source=source_multiplication.domain(),
             target=target_multiplication.domain(),
         )
-
-        source_identity = source.module_generator(source.group().one())
-        target_identity = target.module_generator(target.group().one())
-        if linear(source_identity) != target_identity:
-            raise ValueError("the induced group-algebra map does not preserve the unit")
+        self._preserves_multiplication = True
 
 
 class _GroupAlgebraFunctor(Functor):
