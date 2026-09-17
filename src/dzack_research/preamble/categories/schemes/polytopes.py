@@ -90,8 +90,9 @@ class RegularPolytopes(OwnedCategory):
             for row in range(rank)
         )
         diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
-        if not diagram.is_elliptic():
-            raise ValueError("this Schlaefli symbol does not define a finite spherical regular polytope")
+        assert diagram.is_elliptic(), (
+            "this Schlaefli symbol does not define a finite spherical regular polytope"
+        )
         return _object_of(
             self,
             schlafli_bonds=finite_ordered_set(bonds),
@@ -100,18 +101,18 @@ class RegularPolytopes(OwnedCategory):
 
     class ParentMethods:
         def __init__(self, schlafli_bonds, symmetry_coxeter_diagram, **rest) -> None:
-            self._preamble_schlafli_bonds = schlafli_bonds
-            self._preamble_symmetry_coxeter_diagram = symmetry_coxeter_diagram
+            self._schlafli_bonds = schlafli_bonds
+            self._symmetry_coxeter_diagram = symmetry_coxeter_diagram
             super().__init__(**rest)
 
         def schlafli_symbol(self):
-            return self._preamble_schlafli_bonds
+            return self._schlafli_bonds
 
         def dimension(self):
             return _own_ring(SageZZ)(self.schlafli_symbol().cardinality() + 1)
 
         def symmetry_coxeter_diagram(self):
-            return self._preamble_symmetry_coxeter_diagram
+            return self._symmetry_coxeter_diagram
 
         def symmetry_group(self):
             return self.symmetry_coxeter_diagram().coxeter_group()
@@ -190,50 +191,16 @@ class ConvexPolytopes(OwnedCategory):
             return self._with_axiom("Polygon")
 
     class ParentMethods:
-        def __init__(
-            self,
-            vertices=None,
-            lattice=None,
-            engine_polyhedron=None,
-            **rest,
-        ) -> None:
-            integers = _own_ring(SageZZ)
-            rationals = _own_ring(SageQQ)
+        def __init__(self, engine_polyhedron, ambient_lattice, **rest) -> None:
+            r"""A polytope is its exact polyhedron in the coordinates of ``ZZ^n``.
 
-            # A polytope is fixed by its vertices, by an owned polytope being
-            # re-placed, or by an exact polyhedron the private computation
-            # layer produced (from a face, a dilation, or a halfspace
-            # description).  The third route is named rather than recognized.
-            if engine_polyhedron is not None:
-                polyhedron = engine_polyhedron
-            elif vertices in ConvexPolytopes():
-                polyhedron = vertices._engine_polyhedron()
-                if lattice is None:
-                    lattice = vertices.ambient_lattice()
-            else:
-                owned_vertices = tuple(
-                    tuple(_owned_rational(coordinate) for coordinate in vertex)
-                    for vertex in vertices
-                )
-                engine_vertices = [
-                    tuple(_engine_element(rationals, coordinate) for coordinate in vertex)
-                    for vertex in owned_vertices
-                ]
-                polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
-
-            ambient_dimension = int(polyhedron.ambient_dim())
-            if lattice is None:
-                lattice = integers.free_module(ambient_dimension)
-            assert lattice.base_ring() is integers, (
-                "the ambient lattice of a rational polytope is an owned ZZ-module"
-            )
-            assert int(lattice.module_rank()) == ambient_dimension, (
-                "the ambient lattice rank must equal the coordinate dimension"
-            )
-
-            self._polyhedron = polyhedron
-            self._ambient_lattice = lattice
-
+            The polyhedron is the private computation object that
+            :func:`_convex_polytope` produced from the caller's vertices, from
+            an owned polytope, from a face, a dilation or a halfspace
+            description; the coordinate lattice is the owned ``ZZ^n``.
+            """
+            self._polyhedron = engine_polyhedron
+            self._ambient_lattice = ambient_lattice
             super().__init__(**rest)
 
         def _engine_polyhedron(self):
@@ -248,8 +215,9 @@ class ConvexPolytopes(OwnedCategory):
             asks Sage's existing ``Graphics3d`` Three.js serializer for a
             self-contained local HTML representation at the view boundary.
             """
-            if int(self._engine_polyhedron().ambient_dim()) != 3:
-                raise ValueError("a Three.js polytope view currently requires ambient dimension three")
+            assert int(self._engine_polyhedron().ambient_dim()) == 3, (
+                "a Three.js polytope view requires ambient dimension three"
+            )
             graphic = self._engine_polyhedron().plot()
             rich = graphic._rich_repr_threejs(online=False)
             return rich.html.get_str()
@@ -284,7 +252,6 @@ class ConvexPolytopes(OwnedCategory):
 
         def vertices(self):
             if self.is_lattice_polytope():
-                integers = _own_ring(SageZZ)
                 return finite_ordered_set(
                     tuple(
                         self.ambient_lattice()(
@@ -380,11 +347,7 @@ class ConvexPolytopes(OwnedCategory):
             return True
 
         def _vertices_are_integral(self) -> bool:
-            return all(
-                coordinate in SageZZ
-                for vertex in self._engine_polyhedron().vertices()
-                for coordinate in vertex
-            )
+            return _engine_vertices_are_integral(self._engine_polyhedron())
 
         def is_lattice_polytope(self) -> bool:
             return self._vertices_are_integral()
@@ -400,7 +363,6 @@ class ConvexPolytopes(OwnedCategory):
             )
 
         def integral_points(self):
-            integers = _own_ring(SageZZ)
 
             engine_points = finite_ordered_set(
                 tuple(self._engine_polyhedron().integral_points())
@@ -557,9 +519,6 @@ class ConvexPolytopes(OwnedCategory):
             r"""Construct the lattice polytope on the selected integral vertices."""
             return _polytope_in(self, vertices, lattice)
 
-        def __contains__(self, candidate) -> bool:
-            return candidate in ConvexPolytopes() and candidate.is_lattice_polytope()
-
         @cached_method
         def reflexive_polytopes(self, dimension):
             r"""The reflexive polytopes of the stated dimension, up to lattice equivalence.
@@ -605,12 +564,6 @@ class ConvexPolytopes(OwnedCategory):
                 r"""Construct the two-dimensional lattice polytope on ``vertices``."""
                 return _polytope_in(self, vertices, lattice)
 
-            def __contains__(self, candidate) -> bool:
-                return (
-                    candidate in ConvexPolytopes().Integral()
-                    and candidate in ConvexPolytopes().Polygon()
-                )
-
     class Polygon(CategoryWithAxiom):
         r"""Convex polytopes of affine dimension two."""
 
@@ -627,9 +580,6 @@ class ConvexPolytopes(OwnedCategory):
         def _call_(self, vertices, lattice=None):
             r"""Construct the two-dimensional convex polytope on ``vertices``."""
             return _polytope_in(self, vertices, lattice)
-
-        def __contains__(self, candidate) -> bool:
-            return candidate in ConvexPolytopes() and int(candidate.dimension()) == 2
 
         class ParentMethods:
             def _repr_svg_(self):
@@ -712,34 +662,66 @@ def _polytope_in(category, vertices, lattice):
     return polytope
 
 
+def _engine_vertices_are_integral(engine_polyhedron) -> bool:
+    r"""Whether every vertex of the exact polyhedron is a lattice point."""
+    return all(
+        coordinate in SageZZ
+        for vertex in engine_polyhedron.vertices()
+        for coordinate in vertex
+    )
+
+
 def _convex_polytope(
     vertices=None,
     lattice=None,
     engine_polyhedron=None,
 ):
-    r"""Return the polytope its category generates, placed by what it is.
+    r"""The polytope on its data, constructed once in the category it lies in.
 
-    Integrality of the vertices and affine dimension two are the two axioms
-    the finer categories state, so the construction decides them once and
-    the object is placed accordingly.
+    A polytope is fixed by its vertices, by an owned polytope passed again, or
+    by an exact polyhedron the private computation layer produced (from a
+    face, a dilation, or a halfspace description); the third route is named
+    rather than recognized.  Integrality of the vertices and affine dimension
+    two are the two axioms the finer categories state, so they are decided on
+    the polyhedron and the object is constructed in the category they select.
     """
-    probe = _object_of(
-        ConvexPolytopes(),
-        vertices=vertices,
-        lattice=lattice,
-        engine_polyhedron=engine_polyhedron,
+    integers = _own_ring(SageZZ)
+    rationals = _own_ring(SageQQ)
+    if engine_polyhedron is not None:
+        polyhedron = engine_polyhedron
+    elif vertices in ConvexPolytopes():
+        polyhedron = vertices._engine_polyhedron()
+        if lattice is None:
+            lattice = vertices.ambient_lattice()
+    else:
+        engine_vertices = [
+            tuple(
+                _engine_element(rationals, _owned_rational(coordinate))
+                for coordinate in vertex
+            )
+            for vertex in vertices
+        ]
+        polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
+
+    ambient_dimension = int(polyhedron.ambient_dim())
+    if lattice is None:
+        lattice = integers.free_module(ambient_dimension)
+    assert lattice.base_ring() is integers, (
+        "the ambient lattice of a rational polytope is an owned ZZ-module"
     )
+    assert int(lattice.module_rank()) == ambient_dimension, (
+        "the ambient lattice rank must equal the coordinate dimension"
+    )
+
     placement = ConvexPolytopes()
-    if probe.is_lattice_polytope():
+    if _engine_vertices_are_integral(polyhedron):
         placement = placement.Integral()
-    if int(probe.dimension()) == 2:
+    if int(polyhedron.dim()) == 2:
         placement = placement.Polygon()
-    if placement is ConvexPolytopes():
-        return probe
     return _object_of(
         placement,
-        vertices=probe,
-        lattice=probe.ambient_lattice(),
+        engine_polyhedron=polyhedron,
+        ambient_lattice=lattice,
     )
 
 
