@@ -142,8 +142,6 @@ _EXPORTS = {
      'ToricFundamentalGroups'),
     'ToricWeightCohomologyComplexes': ('dzack_research.preamble.categories.schemes.geometric_cohomology',
      'ToricWeightCohomologyComplexes'),
-    'RelativeAffineFamily': ('dzack_research.preamble.categories.schemes.families',
-     'RelativeAffineFamily'),
     'HorikawaEnriquesSurface': ('dzack_research.preamble.categories.schemes.enriques_families', 'HorikawaEnriquesSurface'),
     'AT21ToricADEPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ToricADEPair'),
     'AT21ADEDoubleCover': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ADEDoubleCover'),
@@ -238,7 +236,6 @@ __all__ = [
     'ToricIntegralSingularCohomologyGroups',
     'ToricFundamentalGroups',
     'ToricWeightCohomologyComplexes',
-    'RelativeAffineFamily',
     'Varieties',
     'FiniteGluedInvariantQuotient',
 ]

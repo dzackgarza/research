@@ -397,7 +397,6 @@ from dzack_research.preamble.categories.schemes import (
     QuasiCoherentSheaves,
     RationalPolyhedralFans,
     RegularPolytopes,
-    RelativeAffineFamily,
     RelativeCyclicCoverLift,
     ResolutionIntegralCohomologyGroups,
     RingedSpaces,

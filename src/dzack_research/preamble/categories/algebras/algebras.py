@@ -801,10 +801,10 @@ class Algebras(OwnedCategoryOverBaseRing):
         def affine_equation_family(self, relative_variables, equations):
             r"""Return the relative affine family defined over this parameter algebra."""
             from dzack_research.preamble.categories.schemes.families import (
-                RelativeAffineFamily,
+                _relative_affine_family,
             )
 
-            return RelativeAffineFamily(self, relative_variables, equations)
+            return _relative_affine_family(self, relative_variables, equations)
 
         def restrict_scalars(self, ring_map):
             r"""Return this algebra with scalars restricted along ``ring_map``."""
