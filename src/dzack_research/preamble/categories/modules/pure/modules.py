@@ -2305,13 +2305,13 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def adic_module_transition_map(self, higher_exponent, lower_exponent):
-            r"""Return ``M/I^higher M -> Res(M/I^lower M)``."""
+        def adic_module_transition_map(self, completion, higher_exponent, lower_exponent):
+            r"""Return ``M/I^higher M -> Res(M/I^lower M)`` for one selected completion."""
             higher_exponent = int(higher_exponent)
             lower_exponent = int(lower_exponent)
-            higher = self.adic_module_truncation(higher_exponent)
-            lower = self.adic_module_truncation(lower_exponent)
-            ring_map = self.completion_ring().adic_transition_map(
+            higher = self.adic_module_truncation(completion, higher_exponent)
+            lower = self.adic_module_truncation(completion, lower_exponent)
+            ring_map = completion.adic_transition_map(
                 higher_exponent,
                 lower_exponent,
             )
