@@ -1423,7 +1423,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def algebra_base_ring(self):
-            return self._preamble_base_ring
+            r"""``R`` for ``End_R(F)``: the base ring of the Hom module this algebra is."""
+            return self.base_ring()
 
         def is_commutative(self) -> bool:
             r"""``M_n(R)`` commutes exactly when ``n <= 1``.
