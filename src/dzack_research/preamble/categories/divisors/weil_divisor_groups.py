@@ -2,31 +2,33 @@
 
 from dzack_research.preamble.categories.divisors.divisor_groups import (
     DivisorGroups,
-    _divisor_role_specimen,
+    _integers,
     _module_in_role,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.schemes.schemes import Schemes
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.owned_category_bases import Category
 
 
-class _WeilDivisorConstruction:
-    r"""The selected scheme defining one represented Weil-divisor role."""
-
-    def __init__(self, scheme) -> None:
-        self._scheme = scheme
-
-    def scheme(self):
-        return self._scheme
-
-
-class _AffineNormalWeilDivisorConstruction(_WeilDivisorConstruction):
-    r"""The full Weil-divisor group of a represented normal affine scheme."""
-
-
 class WeilDivisorGroups(Category):
+    r"""Weil divisor groups \(\operatorname{Div}(X)\) framed by chosen prime divisors.
+
+    An object is the free \(\mathbb{Z}\)-module on a chosen set of prime
+    divisors of one scheme \(X\), its datum.  The framing is the whole
+    height-one locus of \(X\) when the object was built on it
+    (``Schemes.full_weil_divisor_group``), and a chosen finite family of
+    prime divisors otherwise; every operation below is stated from the
+    scheme and asks the framing for the prime divisors it names.
+    """
+
     def an_object(self):
-        return _divisor_role_specimen(self)
+        r"""The divisor group of the base scheme's affine line, framed by one prime divisor."""
+        integers = _integers()
+        return self(
+            integers.free_module(finite_ordered_set(("D",))),
+            scheme=Schemes(integers).an_object(),
+        )
 
     @classmethod
     def _repr_object_names(cls):
@@ -35,51 +37,41 @@ class WeilDivisorGroups(Category):
     def super_categories(self):
         return [DivisorGroups()]
 
-    def _call_(self, module, scheme=None):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        if module not in FramedFreeModules(_own_ring(SageZZ)):
-            raise TypeError("Weil divisors are free on specified codimension-one subvarieties")
-        return _module_in_role(
-            module,
-            self,
-            "a Weil divisor group requires a represented free-module presentation",
-            construction_data=(
-                None
-                if scheme is None
-                else {"_weil_divisor_construction": _WeilDivisorConstruction(scheme)}
-            ),
+    def _call_(self, module, scheme):
+        assert module in FramedFreeModules(_integers()), (
+            "Weil divisors are free on specified codimension-one subvarieties"
         )
+        return _module_in_role(module, self, divisor_scheme=scheme)
 
     class ParentMethods:
-        def weil_divisor_construction(self):
-            r"""Return the selected geometric datum defining this Weil-divisor role."""
-            construction = getattr(self, "_weil_divisor_construction", None)
-            if construction is None:
-                raise TypeError("this Weil-divisor role has no selected scheme")
-            return construction
+        def __init__(self, divisor_scheme, **rest) -> None:
+            self._divisor_scheme = divisor_scheme
+            super().__init__(**rest)
 
         def divisor_scheme(self):
-            return self.weil_divisor_construction().scheme()
+            r"""The scheme whose Weil divisors this group presents."""
+            return self._divisor_scheme
 
         def prime_divisor_locus(self):
-            construction = self.weil_divisor_construction()
-            if not isinstance(construction, _AffineNormalWeilDivisorConstruction):
-                raise TypeError("this Weil-divisor role has no represented full prime-divisor locus")
-            return self.module_generating_set()
+            r"""The height-one points of the affine scheme, the prime divisors of \(X\)."""
+            return self.affine_divisor_coordinate_ring().spectrum().condition_set(
+                lambda point: point.height() == 1
+            )
 
         def affine_divisor_coordinate_ring(self):
-            construction = self.weil_divisor_construction()
-            if not isinstance(construction, _AffineNormalWeilDivisorConstruction):
-                raise TypeError("this Weil-divisor role is not an affine-normal divisor group")
-            return construction.scheme().coordinate_algebra()
+            scheme = self.divisor_scheme()
+            assert scheme in Schemes(scheme.scheme_base_ring()).Affine(), (
+                "the prime divisors of a Weil divisor group are read off an affine "
+                "coordinate ring; this group's scheme is not affine"
+            )
+            return scheme.coordinate_algebra()
 
         def prime_divisor(self, point):
             spectrum = self.affine_divisor_coordinate_ring().spectrum()
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
-            if point not in self.prime_divisor_locus():
-                raise ValueError("a Weil prime divisor is a height-one point")
+            point = spectrum(point)
+            assert point in self.prime_divisor_locus(), (
+                "a Weil prime divisor is a height-one point"
+            )
             return self.module_generator(point)
 
         def prime_is_cartier_at(self, prime, point) -> bool:
@@ -98,12 +90,11 @@ class WeilDivisorGroups(Category):
             principal divisor.
             """
             spectrum = self.affine_divisor_coordinate_ring().spectrum()
-            if getattr(prime, "parent", lambda: None)() is not spectrum:
-                prime = spectrum(prime)
-            if prime not in self.prime_divisor_locus():
-                raise ValueError("the Cartier test requires a height-one prime divisor")
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
+            prime = spectrum(prime)
+            assert prime in self.prime_divisor_locus(), (
+                "the Cartier test requires a height-one prime divisor"
+            )
+            point = spectrum(point)
             prime_ideal = prime.ideal()
             point_ideal = point.ideal()
             if any(generator not in point_ideal for generator in prime_ideal.ideal_generators()):
@@ -112,8 +103,7 @@ class WeilDivisorGroups(Category):
 
         def multiplicity(self, divisor, point):
             spectrum = self.affine_divisor_coordinate_ring().spectrum()
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
+            point = spectrum(point)
             return self.framing_coefficients(divisor).get(point, self.base_ring().zero())
 
         def principal_divisor(self, rational_function):

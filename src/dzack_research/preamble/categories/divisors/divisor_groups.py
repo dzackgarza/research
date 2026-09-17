@@ -1,11 +1,12 @@
 """Divisor groups as framed free modules."""
 
-from collections.abc import Mapping
-
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    ModulesWithChosenFinitePresentation,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -14,56 +15,71 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.owned_category_bases import Category
 
 
-def _module_in_role(module, category, message, *, construction_data=None):
-    r"""Return a fresh represented module born in the stated divisor role."""
-    constructor = getattr(module, "_same_presentation_module", None)
-    if constructor is None:
-        raise NotImplementedError(message)
-    return constructor(
+def _integers():
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    return _own_ring(SageZZ)
+
+
+def _module_in_role(module, category, **construction_data):
+    r"""The object of ``category`` built on the presentation of ``module``.
+
+    The role's object is constructed on the presentation ``module`` carries,
+    through the module constructor that built ``module``; the levels
+    ``category`` adds consume ``construction_data`` in their cooperative
+    constructors.  The result is framed by ``module.module_generating_set()``,
+    so :func:`_framing_identity` relates the two.
+    """
+    ring = module.base_ring()
+    assert (
+        module in FramedFreeModules(ring).FinitelyGenerated()
+        or module in ModulesWithChosenFinitePresentation(ring)
+    ), (
+        f"{category} is stated on a module with a finitely framed free or a chosen "
+        f"finite presentation, which {module} does not carry"
+    )
+    return module._same_presentation_module(
         module.module_generating_set(),
         _extra_categories=(category,),
         _extra_construction_data=construction_data,
     )
 
 
-def _divisor_role_specimen(category):
-    r"""Return a one-generator owned free abelian group in ``category``."""
-    from sage.rings.integer_ring import ZZ as SageZZ
+def _framing_identity(source, role):
+    r"""The isomorphism ``source -> role`` sending each framing generator to its namesake.
 
-    integers = _own_ring(SageZZ)
-    module = integers._fresh_free_module_on(finite_ordered_set(("D",)))
-    return _module_in_role(
-        module,
-        category,
-        "a divisor-role specimen requires a represented free-module presentation",
+    ``role`` was built on the presentation of ``source`` by
+    :func:`_module_in_role`, so the two share one framing and this is the
+    identity in those coordinates.
+    """
+    return source.module_category().Mor(source, role)(
+        {label: role.module_generator(label) for label in source.module_generating_set()}
     )
 
 
 class DivisorGroups(Category):
-    r"""Free abelian groups on specified prime divisors."""
+    r"""Free abelian groups on specified prime divisors.
+
+    An object is the free \(\mathbb{Z}\)-module on a chosen set of prime
+    divisors, framed by that set.
+    """
 
     def an_object(self):
-        return _divisor_role_specimen(self)
+        r"""The free abelian group on one prime divisor."""
+        return self(_integers().free_module(finite_ordered_set(("D",))))
 
     @classmethod
     def _repr_object_names(cls):
         return "divisor groups"
 
     def super_categories(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        return [FramedFreeModules(_own_ring(SageZZ))]
+        return [FramedFreeModules(_integers())]
 
     def _call_(self, module):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        if module not in FramedFreeModules(_own_ring(SageZZ)):
-            raise TypeError("a divisor group is a free abelian group on specified prime divisors")
-        return _module_in_role(
-            module,
-            self,
-            "a divisor group requires a represented free-module presentation",
+        assert module in FramedFreeModules(_integers()), (
+            "a divisor group is a free abelian group on specified prime divisors"
         )
+        return _module_in_role(module, self)
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
@@ -82,29 +98,18 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         )
 
     def from_terms(self, terms):
-        r"""Return the formal linear combination of the stated prime divisors."""
+        r"""The formal divisor \(\sum_P a_P\,P\) of the finitely supported ``terms``.
+
+        ``terms`` is the finitely supported coefficient function
+        \(P \mapsto a_P\), given as a mapping from prime divisors to
+        coefficients.
+        """
         ring = self.base_ring()
-        terms = (
-            tuple((coefficient, prime_divisor) for prime_divisor, coefficient in terms.items())
-            if isinstance(terms, Mapping)
-            else tuple(terms)
-        )
-        prime_divisors = finite_ordered_set(
-            tuple(prime_divisor for _, prime_divisor in terms)
-        )
+        prime_divisors = finite_ordered_set(tuple(terms))
         group = self(tuple(prime_divisors))
-        coefficients = {
-            prime_divisor: sum(
-                (
-                    ring(coefficient)
-                    for coefficient, component in terms
-                    if component == prime_divisor
-                ),
-                ring.zero(),
-            )
-            for prime_divisor in prime_divisors
-        }
-        return group.linear_combination(coefficients)
+        return group.linear_combination(
+            {prime_divisor: ring(terms[prime_divisor]) for prime_divisor in prime_divisors}
+        )
 
     @classmethod
     def _repr_object_names(cls):

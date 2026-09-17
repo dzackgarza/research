@@ -16,15 +16,12 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
-from dzack_research.preamble.categories.divisors.picard_groups import (
-    PicardGroups,
-    _ProjectivePicardConstruction,
+from dzack_research.preamble.categories.divisors.divisor_groups import _framing_identity
+from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    InvertibleSheavesOfCartierDivisors,
 )
-from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
-    WeilDivisorGroups,
-    _AffineNormalWeilDivisorConstruction,
-)
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
@@ -50,20 +47,19 @@ def _affine_normal_weil_divisor_group(scheme):
     infinite; elements remain finite-support sparse sums.
     """
     ring = scheme.coordinate_algebra()
-    if ring not in OwnedIntegralDomains():
-        raise TypeError("Weil divisors in this construction require an integral affine scheme")
-    if ring not in OwnedNoetherianRings():
-        raise TypeError("Weil divisors in this construction require a Noetherian coordinate ring")
-    if not ring.is_normal():
-        raise TypeError("Weil divisors in this construction require a normal coordinate ring")
+    assert ring in OwnedIntegralDomains(), (
+        "Weil divisors in this construction require an integral affine scheme"
+    )
+    assert ring in OwnedNoetherianRings(), (
+        "Weil divisors in this construction require a Noetherian coordinate ring"
+    )
+    assert ring.is_normal(), "Weil divisors in this construction require a normal coordinate ring"
     spectrum = ring.spectrum()
     prime_locus = spectrum.condition_set(lambda point: point.height() == 1)
     return _integers()._fresh_free_module_on(
         prime_locus,
         _extra_categories=(WeilDivisorGroups(),),
-        _extra_construction_data={
-            "_weil_divisor_construction": _AffineNormalWeilDivisorConstruction(scheme),
-        },
+        _extra_construction_data={"divisor_scheme": scheme},
     )
 
 
@@ -73,12 +69,9 @@ def _effective_principal_coefficients(group, function):
     if function.is_zero():
         raise ValueError("the divisor of the zero rational function is not a Weil divisor")
     ideal = ring.ideal(function)
+    # The unit ideal has no primary components, so a unit contributes no
+    # prime; the loop below is then empty and no separate unit test is needed.
     engine_ideal = _engine_ideal(ring, ideal)
-    try:
-        if bool(engine_ideal.is_one()):
-            return {}
-    except (AttributeError, TypeError):
-        pass
     coefficients = {}
     for primary in engine_ideal.primary_decomposition():
         radical = primary.radical()
@@ -131,14 +124,14 @@ class FiniteAtlasCartierDivisor(SageObject):
     def __init__(self, gluing_datum, local_equations) -> None:
         self._gluing_datum = gluing_datum
         supplied = dict(local_equations)
-        if set(supplied) != set(gluing_datum.chart_indices()):
-            raise ValueError("a Cartier datum requires one local equation on every atlas chart")
+        assert set(supplied) == set(gluing_datum.chart_indices()), (
+            "a Cartier datum requires one local equation on every atlas chart"
+        )
         self._local_equations = {}
         for index in gluing_datum.chart_indices():
             ring = gluing_datum.chart(index).coordinate_algebra()
             equation = ring.fraction_field()(supplied[index])
-            if equation.is_zero():
-                raise ValueError("a Cartier local equation is a nonzero rational function")
+            assert not equation.is_zero(), "a Cartier local equation is a nonzero rational function"
             self._local_equations[index] = equation
         self._transition_units = {
             pair: self._compute_transition_unit(*pair)
@@ -175,14 +168,11 @@ class FiniteAtlasCartierDivisor(SageObject):
             source_equation.denominator() * target_on_source.numerator(),
         )
         overlap_ring = datum.overlap(source_index, target_index).coordinate_algebra()
-        try:
-            unit = overlap_ring(ratio)
-        except (TypeError, ValueError) as error:
-            raise ValueError(
-                "Cartier local equations must have a regular transition ratio on every overlap"
-            ) from error
-        if not unit.is_unit():
-            raise ValueError("Cartier local equations must differ by a unit on every overlap")
+        # Regularity of the ratio on the overlap is decided by the overlap
+        # ring's own conversion from its fraction field, which refuses a
+        # non-regular fraction.
+        unit = overlap_ring(ratio)
+        assert unit.is_unit(), "Cartier local equations must differ by a unit on every overlap"
         return unit
 
     def transition_unit(self, source_index, target_index):
@@ -201,10 +191,11 @@ class FiniteAtlasCartierDivisor(SageObject):
         return reverse.coordinate_algebra_morphism()(unit.inverse_of_unit())
 
     def associated_invertible_sheaf(self):
-        return FiniteAtlasInvertibleSheaf(
+        r"""\(\mathcal{O}_X(D)\), trivialized on the atlas by the local equations."""
+        return InvertibleSheavesOfCartierDivisors(self.scheme())(
+            self,
             self.gluing_datum(),
             self._transition_units,
-            associated_divisor=self,
         )
 
     line_bundle = associated_invertible_sheaf
@@ -223,14 +214,16 @@ class DivisorClassTheory(SageObject):
     """
 
     def __init__(self, scheme, picard_group, class_group, picard_to_class) -> None:
-        if picard_group.picard_scheme() is not scheme:
-            raise ValueError("the Picard group belongs to a different scheme")
-        if class_group.class_group_scheme() is not scheme:
-            raise ValueError("the Weil class group belongs to a different scheme")
-        if picard_to_class.domain() is not picard_group:
-            raise ValueError("the Picard-to-class comparison has the wrong domain")
-        if picard_to_class.codomain() is not class_group:
-            raise ValueError("the Picard-to-class comparison has the wrong codomain")
+        assert picard_group.picard_scheme() is scheme, "the Picard group belongs to a different scheme"
+        assert class_group.class_group_scheme() is scheme, (
+            "the Weil class group belongs to a different scheme"
+        )
+        assert picard_to_class.domain() is picard_group, (
+            "the Picard-to-class comparison has the wrong domain"
+        )
+        assert picard_to_class.codomain() is class_group, (
+            "the Picard-to-class comparison has the wrong codomain"
+        )
         self._scheme = scheme
         self._picard_group = picard_group
         self._class_group = class_group
@@ -271,68 +264,41 @@ def _projective_space_divisor_class_theory(
     its comparison map prevents this construction from silently replacing a
     nontrivial base contribution by zero.
     """
-    if base_picard_to_class.domain() is not base_picard_group:
-        raise ValueError("the base Picard-to-class morphism has the wrong domain")
-    if base_picard_to_class.codomain() is not base_class_group:
-        raise ValueError("the base Picard-to-class morphism has the wrong codomain")
+    assert base_picard_to_class.domain() is base_picard_group, (
+        "the base Picard-to-class morphism has the wrong domain"
+    )
+    assert base_picard_to_class.codomain() is base_class_group, (
+        "the base Picard-to-class morphism has the wrong codomain"
+    )
     base_scheme = projective_space.base_scheme()
-    if base_picard_group.picard_scheme() is not base_scheme:
-        raise ValueError("the supplied Picard group is not attached to the projective base")
-    if base_class_group.class_group_scheme() is not base_scheme:
-        raise ValueError("the supplied class group is not attached to the projective base")
+    assert base_class_group.class_group_scheme() is base_scheme, (
+        "the supplied class group is not attached to the projective base"
+    )
 
     integers = _integers()
-    picard_hyperplane = integers._fresh_free_module_on(
-        finite_ordered_set(("O(1)",)),
+    picard = PicardGroups().projective_bundle(projective_space, base_picard_group)
+    picard_hyperplane = picard.projective_hyperplane_factor()
+    class_hyperplane = integers.free_module(finite_ordered_set(("H",)))
+    classes = Modules(integers).biproduct(
+        (base_class_group, class_hyperplane),
+        extra_categories=(ClassGroups(),),
+        extra_construction_data={"class_group_scheme": projective_space},
     )
-    class_hyperplane = integers._fresh_free_module_on(
-        finite_ordered_set(("H",)),
-    )
-    modules = Modules(integers)
-    picard_biproduct = modules.biproduct((base_picard_group, picard_hyperplane))
-    class_biproduct = modules.biproduct((base_class_group, class_hyperplane))
-    picard = PicardGroups()(
-        picard_biproduct,
-        scheme=projective_space,
-        construction=_ProjectivePicardConstruction(
-            projective_space,
-            base_picard_group,
-            picard_hyperplane,
-            picard_biproduct,
-        ),
-    )
-    classes = ClassGroups()(class_biproduct, scheme=projective_space)
     picard_hyperplane_label = picard_hyperplane.module_generating_set()[0]
     class_hyperplane_label = class_hyperplane.module_generating_set()[0]
     hyperplane_map = picard_hyperplane.module_category().Mor(picard_hyperplane, class_hyperplane)(
         {picard_hyperplane_label: class_hyperplane.module_generator(class_hyperplane_label)}
     )
-    raw_comparison = base_picard_to_class.biproduct_map(
+    comparison = base_picard_to_class.biproduct_map(
         hyperplane_map,
-        source=picard_biproduct,
-        target=class_biproduct,
+        source=picard,
+        target=classes,
     )
-    forget_picard_role = picard.module_category().Mor(picard, picard_biproduct)(
-        {
-            label: picard_biproduct.module_generator(label)
-            for label in picard.module_generating_set()
-        }
-    )
-    equip_class_role = class_biproduct.module_category().Mor(class_biproduct, classes)(
-        {
-            label: classes.module_generator(label)
-            for label in class_biproduct.module_generating_set()
-        }
-    )
-    comparison = equip_class_role * raw_comparison * forget_picard_role
     theory = DivisorClassTheory(projective_space, picard, classes, comparison)
-    weil_hyperplane = equip_class_role(
-        class_biproduct.right_inclusion()(
-            class_hyperplane.module_generator(class_hyperplane_label)
-        )
+    weil_hyperplane = classes.injection(1)(class_hyperplane.module_generator(class_hyperplane_label))
+    assert comparison(picard.hyperplane_class()) == weil_hyperplane, (
+        "the hyperplane class did not map to the Weil hyperplane class"
     )
-    if comparison(picard.hyperplane_class()) != weil_hyperplane:
-        raise ArithmeticError("the hyperplane class did not map to the Weil hyperplane class")
     return theory
 
 
@@ -342,21 +308,7 @@ def _projective_space_picard_group(projective_space, base_picard_group):
     The base Picard group is required input.  In particular this construction
     never replaces it by zero merely because the total space is projective.
     """
-    integers = _integers()
-    if base_picard_group.base_ring() is not integers:
-        raise TypeError("a Picard group is an abelian group over ZZ")
-    hyperplane = integers._fresh_free_module_on(finite_ordered_set(("O(1)",)))
-    decomposition = Modules(integers).biproduct((base_picard_group, hyperplane))
-    return PicardGroups()(
-        decomposition,
-        scheme=projective_space,
-        construction=_ProjectivePicardConstruction(
-            projective_space,
-            base_picard_group,
-            hyperplane,
-            decomposition,
-        ),
-    )
+    return PicardGroups().projective_bundle(projective_space, base_picard_group)
 
 
 class DivisorClassComparison(SageObject):
