@@ -13,15 +13,18 @@ without being restated at this level.
 import logging
 import operator
 
+from sage.misc.cachefunc import cached_method
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    _enumerated_ring_elements,
+)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
-    _engine_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -66,11 +69,13 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            try:
-                scalar = self.parent().base_ring()(actor)
-            except (TypeError, ValueError):
-                return None
-            return self.parent().scalar_multiple(scalar, self)
+            _ = self_on_left
+            parent = self.parent()
+            match actor:
+                case _ if actor in parent.base_ring():
+                    return parent.scalar_multiple(actor, self)
+                case _:
+                    return None
 
         def _richcmp_(self, other, op):
             if other.parent() is not self.parent():
@@ -157,13 +162,13 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             assert callable(addition) and callable(negation), (
                 "the additive structure of the underlying group is given by its operations"
             )
-            self._preamble_underlying_set = Set(underlying_set)
-            self._preamble_addition = addition
-            self._preamble_negation = negation
-            assert zero in self._preamble_underlying_set, "the additive zero belongs to the underlying set"
-            self._preamble_zero_value = zero
-            self._preamble_scalar_action_morphism = rho
-            self._preamble_raw_scalar_action = scalar_action
+            self._underlying_set = Set(underlying_set)
+            self._addition = addition
+            self._negation = negation
+            assert zero in self._underlying_set, "the additive zero belongs to the underlying set"
+            self._zero_value = zero
+            self._rho = rho
+            self._elementwise_scalar_action = scalar_action
             super().__init__(base_ring=ring, **rest)
 
             if verify:
@@ -171,11 +176,23 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
         def underlying_set(self):
             r"""Return the set this module is built on."""
-            return self._preamble_underlying_set
+            return self._underlying_set
+
+        @cached_method
+        def _ring_morphism_defining_module_action(self):
+            r"""Return the stated ``rho : R -> End(A)``, or the one the elementwise action defines."""
+            match self._rho:
+                case None:
+                    return super()._ring_morphism_defining_module_action()
+                case rho:
+                    return rho
 
         def underlying_additive_group(self):
-            action = self._preamble_scalar_action_morphism
-            return self if action is None else action.codomain().domain()
+            match self._rho:
+                case None:
+                    return self
+                case rho:
+                    return rho.codomain().domain()
 
         def _underlying_additive_element(self, element):
             if self.underlying_additive_group() is self:
@@ -193,32 +210,23 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def is_finite(self):
             return self.cardinality().is_finite()
 
-        def _normalize_underlying_value(self, value):
-            r"""Read foreign data as a value of the underlying set.
+        def _element_constructor_(self, value):
+            r"""Read foreign data as an element of the underlying set.
 
-            Reached only from ``_element_constructor_``, the one boundary that
-            admits data this parent did not build.
+            A value of the underlying set is taken as it is; any other value is
+            converted by the underlying set, which rejects what it does not
+            contain.
             """
             if isinstance(value, self.category().ElementType):
+                if value.parent() is self:
+                    return value
                 value = value.underlying_element()
             underlying = self.underlying_set()
-            if value in underlying:
-                return value
-            try:
-                normalized = underlying(value)
-            except (TypeError, ValueError) as error:
-                raise AssertionError(
-                    f"{value!r} is not in the set this module is built on"
-                ) from error
+            normalized = value if value in underlying else underlying(value)
             assert normalized in underlying, (
                 f"{normalized!r} is not in the set this module is built on"
             )
-            return normalized
-
-        def _element_constructor_(self, value):
-            if isinstance(value, self.category().ElementType) and value.parent() is self:
-                return value
-            return self.element_class(self, self._normalize_underlying_value(value))
+            return self.element_class(self, normalized)
 
         def __call__(self, value):
             r"""Construct an element without Sage coercion discovery.
@@ -238,22 +246,22 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return (self(value) for value in self.underlying_set())
 
         def zero(self):
-            return self(self._preamble_zero_value)
+            return self(self._zero_value)
 
         def _add_elements(self, left, right):
             return self(
-                self._preamble_addition(
+                self._addition(
                     self(left).underlying_element(),
                     self(right).underlying_element(),
                 )
             )
 
         def _negate_element(self, element):
-            return self(self._preamble_negation(self(element).underlying_element()))
+            return self(self._negation(self(element).underlying_element()))
 
         def _owned_scalar_multiple(self, scalar, element):
             return self(
-                self._preamble_raw_scalar_action(
+                self._elementwise_scalar_action(
                     self.base_ring()(scalar),
                     self(element).underlying_element(),
                 )
@@ -261,10 +269,10 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""
-            assert self._preamble_scalar_action_morphism is not None, (
+            assert self._rho is not None, (
                 "this module was given by a binary scalar action, not by a morphism"
             )
-            return self._preamble_scalar_action_morphism
+            return self._rho
 
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel by exhaustive finite enumeration.
@@ -276,7 +284,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 "the annihilator of this general module needs a finite underlying set "
                 "or a stronger algebra backend"
             )
-            scalars = _enumerated_scalars(self.base_ring())
+            scalars = _enumerated_ring_elements(self.base_ring())
             assert scalars is not None, (
                 "the annihilator of this general module needs an enumerable finite scalar ring"
             )
@@ -330,7 +338,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                             "the selected addition is not associative"
                         )
 
-            scalars = _enumerated_scalars(self.base_ring())
+            scalars = _enumerated_ring_elements(self.base_ring())
             if scalars is None:
                 _LOGGER.debug(
                     "Additive group laws for the finite set %s were exhaustively checked, but "
@@ -368,17 +376,6 @@ class GeneralModules(OwnedCategoryOverBaseRing):
 
         def _repr_(self):
             return f"Module over {self.base_ring()} on {self.underlying_set()}"
-
-
-def _enumerated_scalars(ring):
-    r"""Return the elements of a finite enumerable ring, or ``None``."""
-    engine = _engine_ring(ring)
-    try:
-        if not bool(engine.is_finite()):
-            return None
-        return tuple(ring._from_engine_element(engine(scalar)) for scalar in engine)
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return None
 
 
 __all__ = [

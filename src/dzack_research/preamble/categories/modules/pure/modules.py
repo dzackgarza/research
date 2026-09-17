@@ -1379,10 +1379,10 @@ class Modules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _ring_morphism_defining_module_action(self):
-            r"""Return ``rho_M : R -> End_Ab(U(M))`` from the defining presentation."""
-            selected = self.__dict__.get("_preamble_scalar_action_morphism")
-            if selected is not None:
-                return selected
+            r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
+
+            A module whose datum is ``rho`` itself states it at its own level.
+            """
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 

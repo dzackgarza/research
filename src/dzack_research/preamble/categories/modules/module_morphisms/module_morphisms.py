@@ -229,14 +229,19 @@ def _solve_left_integrally(system, target, ring):
 
 
 def _enumerated_ring_elements(ring):
-    r"""Return every element of a finite enumerable ring, or ``None``."""
-    engine = _engine_ring(ring)
-    try:
-        if not bool(engine.is_finite()):
+    r"""Return every element of a finite ring, or ``None`` for a ring not placed among finite sets.
+
+    The finite ring's computation ring enumerates it; the elements are raised
+    through the ring before they are returned.
+    """
+    from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+    match ring:
+        case _ if ring in FiniteSets():
+            engine = _engine_ring(ring)
+            return tuple(ring._from_engine_element(engine(scalar)) for scalar in engine)
+        case _:
             return None
-        return tuple(ring._from_engine_element(engine(scalar)) for scalar in engine)
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return None
 
 
 def _scalar_linearity_generating_scalars(ring):
