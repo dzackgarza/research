@@ -154,9 +154,8 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 module_generator_function=self._divisibility_chain_generator,
                 **rest,
             )
-            self._preamble_module_coefficient_function = self._framing_coefficients
 
-        def _framing_coefficients(self, element):
+        def _selected_module_coefficients(self, element):
             r"""Return finite support in the chosen factorial divisibility framing."""
             element = self(element)
             if element == self.zero():
@@ -298,13 +297,12 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             generator = field._from_engine_element(
                 SageQQ(generator_numerator) / SageQQ(denominator)
             )
+            # ``g`` divides every lift and the modulus, so ``n/g`` is integral.
             order_in_field = self.modulus() / generator
-            try:
-                order = self.base_ring()(order_in_field)
-            except (TypeError, ValueError) as error:
-                raise ArithmeticError(
-                    "the generated fractional subgroup does not divide the selected modulus"
-                ) from error
+            assert int(order_in_field.denominator()) == 1, (
+                "the generated fractional subgroup divides the selected modulus"
+            )
+            order = self.base_ring()(order_in_field)
             cyclic = _torsion_module_presented_by_matrix(
                 ((order,),),
                 base_ring=self.base_ring(),
@@ -313,16 +311,14 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             image = self(generator)
 
             def lift_from_ambient(subobject, element):
+                # ``[x]`` lies in ``gZ/nZ`` exactly when the lift ``x`` lies in
+                # ``gZ + nZ = gZ``, that is when ``x/g`` is integral.
                 element = self(element)
                 quotient = self.lift(element) / generator
-                try:
-                    coefficient = self.base_ring()(quotient)
-                except (TypeError, ValueError) as error:
-                    raise ValueError(
-                        "the selected class does not lie in this cyclic submodule"
-                    ) from error
+                if int(quotient.denominator()) != 1:
+                    raise ValueError("the selected class does not lie in this cyclic submodule")
                 return subobject.scalar_multiple(
-                    coefficient,
+                    self.base_ring()(quotient),
                     subobject.module_generator(label),
                 )
 

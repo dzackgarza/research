@@ -1434,13 +1434,13 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected lift of this class to the cokernel cover."""
             formed = self.parent()
             unformed = formed.unformed_module()
-            coordinates = unformed._framing_coordinates(unformed(self))
+            coordinates = unformed.framing_coefficients(unformed(self))
             cover = formed.cover()
             return cover.linear_combination(
                 {
                     label: coordinates[label]
                     for label in cover.module_generating_set()
-                    if coordinates[label] != cover.base_ring().zero()
+                    if label in coordinates
                 }
             )
 

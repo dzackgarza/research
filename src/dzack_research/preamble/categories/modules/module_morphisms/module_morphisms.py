@@ -6,7 +6,6 @@ from itertools import product
 
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
@@ -1056,8 +1055,7 @@ class ModuleMorphism(Morphism):
         target_cover = target_presentation.codomain()
 
         def lift_target(element):
-            coordinates = target._framing_coordinates(element)
-            return target_cover.linear_combination({label: coordinates[label] for label in target.module_generating_set() if coordinates[label]})
+            return target_cover.linear_combination(target.framing_coefficients(element))
 
         cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
         relation_source = source_presentation.domain()
@@ -1575,18 +1573,6 @@ class ModuleEmbeddingHomset(CategoricalHomset):
         return f"Emb({self.domain()}, {self.codomain()})"
 
 
-def _model_smith_engine(homset):
-    r"""The Smith engine of the presented model of ``homset``, when the model has one."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _SelectedFinitePresentationModules,
-    )
-
-    model = homset.internal_hom_model()
-    if model not in _SelectedFinitePresentationModules(model.base_ring()):
-        return None
-    return model._smith_engine()
-
-
 def _initialize_module_hom_parent(
     parent,
     hom_family,
@@ -1613,35 +1599,19 @@ def _initialize_module_hom_parent(
         codomain,
         full_internal_hom=full_internal_hom,
     )
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _SelectedFinitePresentationModules,
+    )
     from dzack_research.preamble.categories.modules.pure.modules import (
         MatrixSpaces,
-        _matrix_coefficients,
         _matrix_unit,
-        _represented_finite_presentation,
     )
 
     if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-        labels = codomain.module_generating_set().product_with(domain.module_generating_set())
-        parent._preamble_module_generating_set = labels
-        parent._preamble_module_generator_function = lambda label: _matrix_unit(parent, label)
-        parent._preamble_module_coefficient_function = lambda morphism: _matrix_coefficients(
-            parent,
-            morphism,
-        )
         # A matrix space is a finitely generated free module, so Hom objects
         # between matrix spaces are matrix spaces too: it supplies the fresh
         # free-module constructor that placement asks a free module for.
         parent._preamble_free_module_constructor = ring._fresh_free_module_on
-    elif ring in OwnedRings().Commutative() and full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
-        # Hom(M, N) between presented modules is presented by its
-        # endpoint-determined model (see ``internal_hom``); the presented-module
-        # protocol reads these hooks, each of which reaches the model lazily.
-        parent._preamble_module_generator_function = lambda label: parent._morphism_from_internal_model(parent.internal_hom_model().module_generator(label))
-        parent._preamble_module_coordinate_function = lambda morphism: tuple(
-            parent.internal_hom_model()._framing_coordinates(parent._internal_model_from_morphism(parent(morphism)))
-        )
-        parent._preamble_module_from_coordinates_function = lambda coordinates: parent._morphism_from_internal_model(parent.internal_hom_model()._from_coordinates(coordinates))
-        parent._preamble_pid_engine_factory = lambda: _model_smith_engine(parent)
     CategoricalHomset.__init__(
         parent,
         hom_family,
@@ -1650,37 +1620,33 @@ def _initialize_module_hom_parent(
         category=placement,
     )
 
-    if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-        framing_source = ring._fresh_free_module_on(labels)
-        parent._preamble_framing_morphism = _framing_morphism(
-            framing_source,
-            parent,
-            parent._preamble_module_generator_function,
-        )
-
-    if ring in OwnedRings().Commutative() and full_internal_hom:
-        from dzack_research.preamble.categories.modules.internal_hom import (
-            InternalHomConstruction,
-        )
-
-        construction = InternalHomConstruction(domain, codomain, ring)
-        parent._preamble_internal_hom_construction = construction
-        if (
-            not placement.is_subcategory(MatrixSpaces(ring))
-            and _represented_finite_presentation(domain)
-            and _represented_finite_presentation(codomain)
-        ):
-            model, inclusion, relation_matrix, presentation = construction.model_data(parent)
-            parent._preamble_internal_hom_model = model
-            parent._preamble_internal_hom_inclusion = inclusion
-            parent._preamble_module_generating_set = model.module_generating_set()
-            parent._preamble_relation_matrix = relation_matrix
-            parent._preamble_presentation = presentation
-            parent._preamble_framing_morphism = _framing_morphism(
-                model.framing_source(),
-                parent,
-                parent._preamble_module_generator_function,
+    # The Hom parent is refined into its placement rather than constructed
+    # through it, so the framing and presentation that placement states are
+    # established here, before the parent is returned, from the endpoints that
+    # determine them.
+    match placement:
+        case _ if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
+            # ``Hom_R(F_R(S), F_R(T))`` is free on the matrix units ``T x S``.
+            labels = codomain.module_generating_set().product_with(domain.module_generating_set())
+            parent._install_framing(
+                labels,
+                lambda label: _matrix_unit(parent, label),
+                ring._fresh_free_module_on(labels),
             )
+        case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
+            # ``Hom_R(M, N)`` between presented modules is presented by the
+            # model its endpoints determine (see ``internal_hom``).
+            from dzack_research.preamble.categories.modules.internal_hom import (
+                _internal_hom_model_data,
+            )
+
+            model, _inclusion, relation_matrix, presentation = _internal_hom_model_data(parent)
+            parent._install_framing(
+                model.module_generating_set(),
+                lambda label: parent._morphism_from_internal_model(model.module_generator(label)),
+                model.framing_source(),
+            )
+            parent._install_presentation(relation_matrix, presentation)
 
 
 class _ModuleHomsetCommonMethods:
@@ -1716,23 +1682,28 @@ class _ModuleHomsetCommonMethods:
         if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
             scalar = base_ring(images)
             return self.scalar_multiple(scalar, self.identity())
-        model = self.__dict__.get("_preamble_internal_hom_model")
-        if model is not None and images in model:
-            return self._morphism_from_internal_model(model(images))
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
+        )
+
+        if self in _SelectedFinitePresentationModules(base_ring) and images in self.internal_hom_model():
+            return self._morphism_from_internal_model(self.internal_hom_model()(images))
         return self.element_class(self, images)
 
     def base_ring(self):
         return self._preamble_base_ring
 
-    def is_projective(self) -> bool:
-        r"""Return whether this represented Hom has a selected finite-free model.
+    def is_projective(self):
+        r"""Answer ``Unknown`` for a Hom module with neither a matrix nor a presented model.
 
-        Matrix Hom objects install their free-module constructor before category
-        refinement, so projectivity is a theorem of the retained representation
-        rather than a category label used to certify itself.  General internal
-        Homs without that model make no projectivity claim here.
+        A matrix space is free on its matrix units and a Hom between modules
+        with chosen finite presentations is decided from its presented model;
+        both answer through their placement.  The Hom modules reaching this
+        method have neither, and projectivity is not decided for them.
         """
-        return callable(self.__dict__.get("_preamble_free_module_constructor"))
+        from sage.misc.unknown import Unknown
+
+        return Unknown
 
     def scalar_multiple(self, scalar, morphism):
         return self._owned_scalar_multiple(scalar, morphism)
@@ -1846,24 +1817,6 @@ def _auxiliary_linear_module_homset(domain, codomain):
 class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = ModuleMorphism
 
-    # The presented-module protocol reads the chosen presentation as data.  A
-    # matrix space stores it at construction; any other Hom between presented
-    # modules is presented by its endpoint-determined model, reached here on
-    # first use.
-    @lazy_attribute
-    def _preamble_module_generating_set(self):
-        return self.internal_hom_model().module_generating_set()
-
-    @lazy_attribute
-    def _preamble_relation_matrix(self):
-        _model, _inclusion, relation_matrix, _presentation = self._internal_hom_model_data()
-        return relation_matrix
-
-    @lazy_attribute
-    def _preamble_presentation(self):
-        _model, _inclusion, _relation_matrix, presentation = self._internal_hom_model_data()
-        return presentation
-
     def __init__(self, hom_family, domain, codomain) -> None:
         _initialize_module_hom_parent(
             self,
@@ -1877,136 +1830,23 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
 
-    def internal_hom_construction(self):
-        r"""Return the endpoint-determined construction fixed when this Hom parent was created."""
-        construction = self.__dict__.get("_preamble_internal_hom_construction")
-        assert construction is not None, f"{self} has no internal-Hom construction datum"
-        return construction
-
-    def _internal_hom_model_data(self):
-        return self.internal_hom_construction().model_data(self)
-
-    def module_generating_set(self):
-        selected = self.__dict__.get("_preamble_module_generating_set")
-        if selected is not None:
-            return selected
-        model, _inclusion, _relations, _presentation = self._internal_hom_model_data()
-        return model.module_generating_set()
-
-    def module_generator(self, label):
-        generator_function = self.__dict__.get("_preamble_module_generator_function")
-        if generator_function is not None:
-            labels = self.module_generating_set()
-            if label not in labels:
-                raise ValueError(f"{label!r} is not a module-generator label")
-            return generator_function(labels(label))
-        model = self.internal_hom_model()
-        if label not in model.module_generating_set():
-            raise ValueError(f"{label!r} is not an internal-Hom generator label")
-        return self._morphism_from_internal_model(model.module_generator(label))
-
     def presentation_matrix(self):
-        stored = self.__dict__.get("_preamble_relation_matrix")
-        if stored is not None:
-            return stored
-        _model, _inclusion, relation_matrix, _presentation = self._internal_hom_model_data()
+        r"""Return the relation rows of the presented model of this Hom module."""
+        from dzack_research.preamble.categories.modules.internal_hom import (
+            _internal_hom_model_data,
+        )
+
+        _model, _inclusion, relation_matrix, _presentation = _internal_hom_model_data(self)
         return relation_matrix
 
     def presentation(self):
-        stored = self.__dict__.get("_preamble_presentation")
-        if stored is not None:
-            return stored
-        _model, _inclusion, _relation_matrix, presentation = self._internal_hom_model_data()
+        r"""Return the presentation of the presented model of this Hom module."""
+        from dzack_research.preamble.categories.modules.internal_hom import (
+            _internal_hom_model_data,
+        )
+
+        _model, _inclusion, _relation_matrix, presentation = _internal_hom_model_data(self)
         return presentation
-
-    def _selected_presentation_rows(self):
-        stored = self.__dict__.get("_preamble_relation_matrix")
-        if stored is not None:
-            return tuple(stored.rows())
-        if "_preamble_free_module_constructor" in self.__dict__:
-            # A matrix space is free: no relations.
-            return ()
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            _represented_finite_presentation,
-        )
-
-        if (
-            self.__dict__.get("_preamble_internal_hom_construction") is None
-            or not _represented_finite_presentation(self.domain())
-            or not _represented_finite_presentation(self.codomain())
-        ):
-            return None
-        return tuple(self.presentation_matrix().rows())
-
-    def _selected_module_coefficients(self, morphism):
-        coefficient_function = self.__dict__.get("_preamble_module_coefficient_function")
-        if coefficient_function is not None:
-            return coefficient_function(morphism)
-        model = self.__dict__.get("_preamble_internal_hom_model")
-        if model is None:
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                _represented_finite_presentation,
-            )
-
-            if (
-                self.__dict__.get("_preamble_internal_hom_construction") is None
-                or not _represented_finite_presentation(self.domain())
-                or not _represented_finite_presentation(self.codomain())
-            ):
-                return None
-            model = self.internal_hom_model()
-        return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
-
-    def internal_hom_model(self):
-        model = self.__dict__.get("_preamble_internal_hom_model")
-        if model is not None:
-            return model
-        model, inclusion, relation_matrix, presentation = self._internal_hom_model_data()
-        self._preamble_internal_hom_model = model
-        self._preamble_internal_hom_inclusion = inclusion
-        self._preamble_relation_matrix = relation_matrix
-        self._preamble_presentation = presentation
-        return model
-
-    def inclusion_into_generator_maps(self):
-        inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
-        if inclusion is not None:
-            return inclusion
-        self.internal_hom_model()
-        return self._preamble_internal_hom_inclusion
-
-    def _morphism_from_internal_model(self, model_element):
-        assignment_space = self.inclusion_into_generator_maps().codomain()
-        assignment = self.inclusion_into_generator_maps()(model_element)
-        coefficients = assignment_space.framing_coefficients(assignment)
-        assignment_labels = assignment_space.module_generating_set()
-        return self(
-            {
-                source_label: self.codomain().linear_combination(
-                    {
-                        target_label: coefficients[pair]
-                        for target_label in self.codomain().module_generating_set()
-                        if (pair := assignment_labels(lambda index: source_label if int(index) == 0 else target_label)) in coefficients
-                    }
-                )
-                for source_label in self.domain().module_generating_set()
-            }
-        )
-
-    def _internal_model_from_morphism(self, morphism):
-        model = self.internal_hom_model()
-        power = self.inclusion_into_generator_maps().codomain()
-        power_labels = power.module_generating_set()
-        coefficients = {}
-        for source_label in self.domain().module_generating_set():
-            image = morphism(self.domain().module_generator(source_label))
-            for target_label, coefficient in self.codomain().framing_coefficients(image).items():
-                coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
-        assignment = power.linear_combination(coefficients)
-        inclusion = self.inclusion_into_generator_maps()
-        if inclusion.has_selected_lift():
-            return inclusion.lift(assignment)
-        return model(assignment)
 
     def linear_combination(self, coefficients):
         result = self.zero()

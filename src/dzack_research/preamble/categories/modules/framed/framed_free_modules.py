@@ -192,30 +192,30 @@ class _SparseFreeModuleParent:
         **rest,
     ) -> None:
         ring = _owned_ring(base_ring)
-        labels = module_generating_set
+        # The free module ``F_R(S)`` is constructed on the set ``S``: that set
+        # is this level's datum, and the framing it declares is the identity
+        # of ``F_R(S)`` read on its basis.
+        self._module_generating_set = module_generating_set
         self._preamble_free_module_constructor = lambda new_labels, **options: ring._fresh_free_module_on(
             new_labels,
             **options,
         )
         super().__init__(
             base_ring=ring,
-            module_generating_set=labels,
+            module_generating_set=module_generating_set,
             module_generator_function=self._basis_element,
             framing_source=self,
             **rest,
         )
 
     def _basis_element(self, label):
-        labels = self._preamble_module_generating_set
-        if label not in labels:
-            raise ValueError(f"{label!r} is not a module-generator label")
+        labels = self._module_generating_set
+        assert label in labels, f"{label!r} is not a module-generator label"
         return self.element_class(self, {labels(label): self.base_ring().one()})
 
     def module_generating_set(self):
-        r"""Return the labels of this private sparse identity framing."""
-        labels = self.__dict__.get("_preamble_module_generating_set")
-        assert labels is not None, f"{self} declares no module generating set"
-        return labels
+        r"""Return the set ``S`` this free module ``F_R(S)`` is constructed on."""
+        return self._module_generating_set
 
     def module_generator(self, label):
         r"""Return the sparse basis element selected by this identity framing."""

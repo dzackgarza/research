@@ -106,24 +106,6 @@ def _matrix_space_like(module, nrows, ncols):
     return source.module_category().Mor(source, target)
 
 
-class _SelectedModulePresentationConstruction:
-    r"""The chosen relation map, matrix view, and optional cokernel witness of a presented module."""
-
-    def __init__(self, relation_matrix, presentation, cokernel_morphism=None) -> None:
-        self._relation_matrix = relation_matrix
-        self._presentation = presentation
-        self._cokernel_morphism = cokernel_morphism
-
-    def relation_matrix(self):
-        return self._relation_matrix
-
-    def presentation(self):
-        return self._presentation
-
-    def cokernel_morphism(self):
-        return self._cokernel_morphism
-
-
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 
@@ -135,6 +117,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         return [ModulesWithChosenFinitePresentation(self.base_ring())]
 
     class ParentMethods:
+        # The selected presentation ``F_1 -> F_0``, its relation rows in the
+        # framing of ``F_0``, and the morphism this module is the cokernel of
+        # when it was constructed as one: this level's datum.
+        _presentation = None
+        _relation_matrix = None
+        _cokernel_morphism = None
+
         def __init__(
             self,
             relation_matrix,
@@ -142,12 +131,28 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             cokernel_morphism=None,
             **rest,
         ) -> None:
-            self._selected_module_presentation = _SelectedModulePresentationConstruction(
-                relation_matrix,
-                presentation,
-                cokernel_morphism,
-            )
+            # The framing level constructs the Hom out of the presentation's
+            # target, and that Hom reads this presentation, so it is
+            # established before the levels below run.
+            self._install_presentation(relation_matrix, presentation, cokernel_morphism)
             super().__init__(**rest)
+
+        def _install_presentation(self, relation_matrix, presentation, cokernel_morphism=None) -> None:
+            r"""Establish the selected finite presentation of this module.
+
+            Protected contract of this level.  Its callers are this level's
+            constructor and the construction of ``Hom_R(M, N)`` between
+            modules with chosen finite presentations, which is refined into
+            this category rather than constructed through it and is presented
+            by the model its endpoints determine.  It is called once, before
+            the object is returned, with the relation rows as a matrix
+            morphism, the presentation morphism ``F_1 -> F_0``, and the
+            morphism this module is the cokernel of when there is one.
+            """
+            assert self._presentation is None, f"{self} already has a presentation"
+            self._relation_matrix = relation_matrix
+            self._presentation = presentation
+            self._cokernel_morphism = cokernel_morphism
 
         def base_ring(self):
             return self._preamble_base_ring
@@ -267,7 +272,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
             ``kernel_morphism()``.
             """
-            morphism = self._selected_module_presentation.cokernel_morphism()
+            morphism = self._cokernel_morphism
             assert morphism is not None, (
                 f"{self} was not constructed as the cokernel of a morphism"
             )
@@ -410,18 +415,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            return self._selected_module_presentation.presentation()
+            return self._presentation
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
-            return self._selected_module_presentation.relation_matrix()
+            return self._relation_matrix
 
         def _selected_presentation_rows(self):
             return _matrix_coordinate_rows(self.presentation_matrix())
-
-        def _selected_module_coefficients(self, element):
-            coordinates = self._framing_coordinates(element)
-            return {label: self.base_ring()(coordinates[label]) for label in self.module_generating_set() if coordinates[label] != 0}
 
         def _represented_kernel_of_morphism(self, morphism):
             if self not in (morphism.domain(), morphism.codomain()):
@@ -817,59 +818,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 not point.ideal().contains_ambient_element(generator)
                 for generator in annihilator.ideal_generators()
             )
-
-        def _from_coordinates(self, coordinates):
-            r"""Return the element with these coordinates in the chosen framing.
-
-            Protected contract: the internal Hom model installed by
-            ``module_morphisms`` reads its elements back through this name.
-            """
-            custom = self.__dict__.get("_preamble_module_from_coordinates_function")
-            if custom is not None:
-                return custom(coordinates)
-            return self.linear_combination(dict(zip(self.module_generating_set(), coordinates, strict=True)))
-
-        def _smith_engine(self):
-            r"""Sage's FGP module over the engine ring, or ``None``.
-
-            This is the only accessor of the Smith engine.  Protected contract:
-            the discriminant-module, internal-Hom and algebra-presentation
-            modules cross here for Smith-form data and convert every result
-            back to an owned object before returning it.
-            """
-            engine = self.__dict__.get("_preamble_pid_engine")
-            if engine is None:
-                # An internal Hom is presented by its endpoint-determined
-                # model, whose Smith engine is built on first use.
-                factory = self.__dict__.get("_preamble_pid_engine_factory")
-                if factory is not None:
-                    engine = self._preamble_pid_engine = factory()
-            return engine
-
-        def _framing_coordinates(self, element):
-            r"""Coordinates of ``element`` as an indexed family on the chosen framing.
-
-            Protected contract: ``framing_coefficients`` reads the coordinates
-            of an element of a presented module here.
-            """
-            custom = self.__dict__.get("_preamble_module_coordinate_function")
-            if custom is not None:
-                ring = self.base_ring()
-                labels = self.module_generating_set()
-                coordinates = tuple(custom(element))
-                owned = tuple(
-                    coordinate if getattr(coordinate, "parent", lambda: None)() is ring else ring._from_engine_element(_engine_ring(ring)(coordinate))
-                    for coordinate in coordinates
-                )
-                if len(owned) != int(labels.cardinality()):
-                    raise ValueError("the selected coordinate function has the wrong finite length")
-
-                return indexed_family(
-                    labels,
-                    lambda label: owned[int(labels.ranking_map()(label))],
-                    name=f"Framing coordinates of {element}",
-                )
-            return self._cover_coordinates(element)
 
         @cached_method
         def _selected_presentation_smith_backend(self):
@@ -1333,11 +1281,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return generator
 
         def _repr_(self):
-            if self._smith_engine() is None:
-                return f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()}"
-            return (
-                f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()} with invariant factors {self.invariant_factors()}"
-            )
+            described = f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()}"
+            match self.base_ring():
+                case ring if ring is _own_ring(SageZZ):
+                    # Over the integers the invariant factors classify the module.
+                    return f"{described} with invariant factors {self.invariant_factors()}"
+                case _:
+                    return described
 
         def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Transport the selected finite presentation along ``R -> S``."""
@@ -1600,6 +1550,25 @@ class _GeneralPresentedModule:
             name="Cover coordinates",
         )
 
+    def _selected_module_coefficients(self, element):
+        r"""Return the coefficients of the selected cover representative of ``element``."""
+        coordinates = self._cover_coordinates(element)
+        zero = self.base_ring().zero()
+        return {
+            label: coordinates[label]
+            for label in self.module_generating_set()
+            if coordinates[label] != zero
+        }
+
+    def _from_coordinates(self, coordinates):
+        r"""Return the class of the cover element with these framing coordinates.
+
+        ``coordinates`` are listed in the order of the finite framing.
+        """
+        return self.linear_combination(
+            dict(zip(self.module_generating_set(), coordinates, strict=True))
+        )
+
     def _lifted_relation_backend(self):
         r"""Return an exact presentation-ring submodule for quotient-algebra scalars.
 
@@ -1802,7 +1771,7 @@ class _PresentedModule(_GeneralPresentedModule):
         cokernel_morphism=None,
         **rest,
     ) -> None:
-        self._preamble_pid_engine = engine
+        self._pid_engine = engine
         super().__init__(
             free_module,
             relation_submodule,
@@ -1814,17 +1783,28 @@ class _PresentedModule(_GeneralPresentedModule):
             **rest,
         )
 
+    def _smith_engine(self):
+        r"""Sage's FGP module over the engine ring, or ``None``.
+
+        This is the only accessor of the Smith engine.  Protected contract of
+        the presented-module realization: the discriminant-module,
+        internal-Hom and algebra-presentation adapters cross here for
+        Smith-form data and convert every result back to an owned object
+        before returning it.
+        """
+        return self._pid_engine
+
     def _to_smith_engine_element(self, element):
         r"""Cross an owned quotient element into the private FGP workspace."""
         owned = self(element)
         coordinates = self._cover_coordinates(owned)
-        backend = self._preamble_pid_engine
+        backend = self._pid_engine
         labels = self.module_generating_set()
         return backend(backend.V()(tuple(_engine_element(self.base_ring(), coordinates[label]) for label in labels)))
 
     def _from_smith_engine_element(self, element):
         r"""Cross one private FGP element back to an owned quotient element."""
-        backend = self._preamble_pid_engine
+        backend = self._pid_engine
         lift = backend(element).lift()
         ring = self.base_ring()
         coordinates = tuple(ring._from_engine_element(coefficient) for coefficient in tuple(lift))
