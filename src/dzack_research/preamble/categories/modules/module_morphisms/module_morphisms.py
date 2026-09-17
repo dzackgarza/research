@@ -470,6 +470,11 @@ class ModuleMorphism(Morphism):
         """
         parent = self.parent()
         summand = parent(other)
+        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+
+        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
+        if left is not None and right is not None:
+            return parent._scalar_identity(left + right)
         return parent.elementwise(
             lambda element: self(element) + summand(element),
             verify_linearity=False,
@@ -477,6 +482,11 @@ class ModuleMorphism(Morphism):
 
     def __neg__(self):
         parent = self.parent()
+        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+
+        scalar = _scalar_identity_coefficient(self)
+        if scalar is not None:
+            return parent._scalar_identity(-scalar)
         return parent.elementwise(
             lambda element: -self(element),
             verify_linearity=False,
@@ -502,6 +512,11 @@ class ModuleMorphism(Morphism):
             return op == op_EQ
         from sage.misc.unknown import Unknown
 
+        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+
+        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        if left is not None and right is not None and (left == right) is True:
+            return op == op_EQ
         elements = _finite_generating_elements(self.domain())
         if elements is None:
             return Unknown
@@ -1297,6 +1312,8 @@ class ModuleMorphism(Morphism):
             case _ if not _precomposable(self, other):
                 return NotImplemented
             case _:
+                if other.parent() is self.parent() and self.domain() is self.codomain():
+                    return self.parent()._compose_endomorphisms(self, other)
                 source = other.domain()
                 target = self.codomain()
                 # The identity is a two-sided unit.  That is a theorem, so the
@@ -1617,7 +1634,7 @@ def _initialize_module_hom_parent(
         # recursively allocate another copy before it can be cached.
         _algebra_from_native_ring(
             parent,
-            lambda left, right: parent.elementwise(lambda element: left(right(element)), verify_linearity=False),
+            parent._compose_endomorphisms,
             _ModuleHomsetCommonMethods.identity(parent),
             lambda scalar, arrow: _ModuleHomsetCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
         )
@@ -1689,11 +1706,24 @@ class _ModuleHomsetCommonMethods:
     def scalar_multiple(self, scalar, morphism):
         return self._owned_scalar_multiple(scalar, morphism)
 
+    def _apply_pointwise_scalar(self, scalar, element):
+        return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
+
+    def _scalar_identity(self, scalar):
+        from dzack_research.preamble.categories.group.additive_homsets import _ScalarIdentityEvaluation
+
+        return self.elementwise(_ScalarIdentityEvaluation(self, scalar), verify_linearity=False)
+
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action defining this Hom's scalar enrichment."""
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)
+        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+
+        coefficient = _scalar_identity_coefficient(morphism)
+        if coefficient is not None:
+            return self._scalar_identity(scalar * coefficient)
         return self.elementwise(
             lambda element: self.codomain().scalar_multiple(
                 scalar,
@@ -1740,6 +1770,8 @@ class _ModuleHomsetCommonMethods:
         return self(morphism)
 
     def zero(self):
+        if self.domain() is self.codomain():
+            return self._scalar_identity(self.base_ring().zero())
         return self.elementwise(
             lambda _element: self.codomain().zero(),
             verify_linearity=False,
@@ -1755,10 +1787,7 @@ class _ModuleHomsetCommonMethods:
         """
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
-        return self.elementwise(
-            lambda element: element,
-            verify_linearity=False,
-        )
+        return self._scalar_identity(self.base_ring().one())
 
     def one(self):
         r"""Return the multiplicative unit when this is an endomorphism ring."""

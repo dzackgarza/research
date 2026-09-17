@@ -38,3 +38,19 @@ def test_additive_endomorphisms_of_rationals_keep_integer_not_rational_scalars()
     assert (first == second) is Unknown
     assert (first != second) is Unknown
     assert endomorphisms.scalar_multiple(ZZ(3), first)(QQ(5)) == QQ(30)
+
+
+def test_scalar_images_land_in_the_actual_endomorphism_centre_without_sampling():
+    endomorphisms = AdditiveGroups().AdditiveCommutative().End(QQ)
+    structure = endomorphisms.algebra_structure_morphism()
+    centre = structure.codomain()
+    assert structure.domain() is ZZ
+    assert centre is endomorphisms.ring_center()
+    two, three = structure(ZZ(2)), structure(ZZ(3))
+    assert two.parent() is centre and three.parent() is centre
+    assert centre.inclusion()(two)(QQ(5)) == QQ(10)
+    assert two * three == structure(ZZ(6))
+    assert two + three == structure(ZZ(5))
+    assert -two == structure(ZZ(-2))
+    assert endomorphisms.is_central(centre.inclusion()(two)) is True
+    assert structure(ZZ.one()) == centre.one()

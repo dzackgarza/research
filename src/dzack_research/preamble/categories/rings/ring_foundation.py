@@ -487,9 +487,7 @@ class PredicateSubrings(OwnedCategory):
             return self._zero
 
         def inclusion(self):
-            return self.Mor(self._ambient_ring, category=OwnedRings())(
-                lambda element: element,
-            )
+            return self.Mor(self._ambient_ring, category=OwnedRings())(self._element_in_larger_ring)
 
         def _repr_(self):
             return f"{{z in {self._ambient_ring} : {self._description}}}"
@@ -1335,6 +1333,14 @@ class _PredicateSubringParent(Parent):
         if (candidate == self._ambient_ring.one()) is True:
             return self._one
         return self(candidate)
+
+    def _element_in_larger_ring(self, element):
+        r"""Raise this subring's stored computation in its exact larger ring."""
+        native = self._engine_element(element)
+        larger = self._ambient_ring
+        if _engine_ring(larger) is larger:
+            return larger(native)
+        return larger._from_engine_element(native)
 
     def _engine_element(self, element):
         return self(element)._backend()

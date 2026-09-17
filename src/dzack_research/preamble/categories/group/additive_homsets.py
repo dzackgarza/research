@@ -24,6 +24,43 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
+class _ScalarIdentityEvaluation:
+    r"""Native evaluation of the scalar endomorphism r.id, from its actual r.
+
+    This callable is the defining computation, not an annotation on another
+    map. The parent supplies its already constructed pointwise scalar action.
+    Arithmetic of two such maps is arithmetic of the supplied scalars, even
+    when arbitrary endomorphism equality cannot be decided.
+    """
+
+    def __init__(self, parent, scalar):
+        assert parent.domain() is parent.codomain(), "a scalar identity is an endomorphism"
+        self._parent = parent
+        self.scalar = parent.base_ring()(scalar)
+
+    def __call__(self, element):
+        return self._parent._apply_pointwise_scalar(self.scalar, element)
+
+
+def _scalar_identity_coefficient(morphism):
+    r"""Read only the actual scalar-evaluation realization of an owned map.
+
+    Private shared additive/linear map adapter. Its callers are native map
+    arithmetic and endomorphism centrality. It inspects the selected callable
+    at those two declared engines, never infers a scalar by sampling a map.
+    """
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
+    match morphism:
+        case AdditiveMorphism():
+            evaluation = morphism._function
+        case ModuleMorphism():
+            evaluation = morphism._element_function
+        case _:
+            return None
+    return evaluation.scalar if isinstance(evaluation, _ScalarIdentityEvaluation) else None
+
+
 class AdditiveHomGroups(OwnedCategory):
     r"""Additively enriched Hom groups with pointwise operations."""
 
@@ -32,6 +69,8 @@ class AdditiveHomGroups(OwnedCategory):
 
     class ParentMethods:
         def zero(self):
+            if self.domain() is self.codomain():
+                return self._scalar_identity(self.base_ring().zero())
             return self.elementwise(lambda element: self.codomain().zero())
 
     class ElementMethods:
@@ -73,6 +112,25 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         return [AdditiveHomGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def _compose_endomorphisms(self, left, right):
+            left_scalar, right_scalar = _scalar_identity_coefficient(left), _scalar_identity_coefficient(right)
+            if left_scalar is not None and right_scalar is not None:
+                return self._scalar_identity(left_scalar * right_scalar)
+            return self.elementwise(lambda element: left(right(element)))
+
+        def is_central(self, morphism):
+            r"""Scalar endomorphisms commute with all linear endomorphisms.
+
+            h(rx)=r h(x) proves the assertion without enumerating h. For
+            additive endomorphisms the scalars are integers and the same
+            equation follows by repeated addition. Other cases are undecided.
+            See Mathlib Algebra/Module/LinearMap/End, Module.toModuleEnd.
+            """
+            morphism = self(morphism)
+            if _scalar_identity_coefficient(morphism) is not None:
+                return True
+            return Unknown
+
         def scalar_multiple(self, scalar, morphism):
             return self._owned_scalar_multiple(scalar, morphism)
 
@@ -86,6 +144,9 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             scalar = self.base_ring()(scalar)
+            coefficient = _scalar_identity_coefficient(morphism)
+            if coefficient is not None:
+                return self._scalar_identity(scalar * coefficient)
             if self.base_ring() is _own_ring(SageZZ):
                 action = IntegerMulAction(SageZZ, self.codomain(), m=self.codomain().zero())
                 return self.elementwise(lambda element: action(int(scalar), morphism(element)))
@@ -95,7 +156,7 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
 
         @cached_method
         def identity(self):
-            return self.elementwise(lambda element: element)
+            return self._scalar_identity(self.base_ring().one())
 
         def one(self):
             return self.identity()
@@ -124,12 +185,21 @@ class AdditiveMorphism(Morphism):
 
     def _add_(self, other):
         r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Hom."""
+        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        if left is not None and right is not None:
+            return self.parent()._scalar_identity(left + right)
         return self.parent().elementwise(
             lambda element: self(element) + other(element)
         )
 
     def _neg_(self):
+        scalar = _scalar_identity_coefficient(self)
+        if scalar is not None:
+            return self.parent()._scalar_identity(-scalar)
         return self.parent().elementwise(lambda element: -self(element))
+
+    def __neg__(self):
+        return self._neg_()
 
     def __rmul__(self, scalar):
         return self.parent()._owned_scalar_multiple(scalar, self)
@@ -161,6 +231,8 @@ class AdditiveMorphism(Morphism):
             self.parent().homset_category()
         ):
             return NotImplemented
+        if right.parent() is self.parent() and self.domain() is self.codomain():
+            return self.parent()._compose_endomorphisms(self, right)
         hom = self.parent().hom_family().Of(right.domain(), self.codomain())
         return hom.elementwise(lambda element: self(right(element)))
 
@@ -174,6 +246,9 @@ class AdditiveMorphism(Morphism):
 
         if element_parent(other) is not self.parent():
             return op == op_NE
+        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+        if left is not None and right is not None and (left == right) is True:
+            return op == op_EQ
         domain = self.domain()
         if domain.is_finite() is not True or domain not in EnumeratedSets():
             return Unknown
@@ -204,7 +279,7 @@ class AdditiveHomset(CategoricalHomset):
             from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
             _algebra_from_native_ring(
-                self, lambda left, right: self.elementwise(lambda element: left(right(element))),
+                self, self._compose_endomorphisms,
                 self.identity(), lambda scalar, arrow: AdditiveHomset._owned_scalar_multiple(self, scalar, arrow),
             )
 
@@ -226,7 +301,16 @@ class AdditiveHomset(CategoricalHomset):
         assert callable(function), "an additive morphism requires its element map"
         return self.element_class(self, function)
 
+    def _apply_pointwise_scalar(self, scalar, element):
+        return self._integer_action(int(self._preamble_base_ring(scalar)), element)
+
+    def _scalar_identity(self, scalar):
+        return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
+
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the canonical integer action through Sage's additive action."""
+        coefficient = _scalar_identity_coefficient(morphism)
+        if coefficient is not None:
+            return self._scalar_identity(self._preamble_base_ring(scalar) * coefficient)
         integer = int(self._preamble_base_ring(scalar))
         return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))
