@@ -56,10 +56,9 @@ class HorikawaK3Family(SageObject):
 
     def __init__(self, base_ring=None) -> None:
         base = _own_ring(SageQQ) if base_ring is None else _own_ring(base_ring)
-        if int(base.characteristic()) != 0:
-            raise NotImplementedError(
-                "the represented Horikawa eigenspace family currently uses characteristic zero"
-            )
+        assert int(base.characteristic()) == 0, (
+            "the represented Horikawa eigenspace family requires a base of characteristic zero"
+        )
         labels = finite_ordered_set(("left", "right"))
         line = ProjectiveSpaces(base)(1, names=("x0", "x1"))
         factors = finite_indexed_family(
@@ -147,8 +146,7 @@ class HorikawaK3Family(SageObject):
         nontrivial = tuple(
             self.branch_isotypic_decomposition().nontrivial_components()
         )
-        if len(nontrivial) != 1:
-            raise ArithmeticError("a C2 representation has one nontrivial character")
+        assert len(nontrivial) == 1, "a C2 representation has one nontrivial character"
         return nontrivial[0]
 
     @cached_method
@@ -172,8 +170,9 @@ class HorikawaK3Family(SageObject):
             }
         )
         trivial = lambda _element: self.base_ring().one()
-        if not self.branch_linearization().is_eigensection(section, trivial):
-            raise ArithmeticError("the selected Horikawa branch is not invariant")
+        assert self.branch_linearization().is_eigensection(section, trivial), (
+            "the selected Horikawa branch is not invariant"
+        )
         return section
 
     def member(self, branch_section=None):
@@ -183,8 +182,9 @@ class HorikawaK3Family(SageObject):
             else self.branch_section_space()(branch_section)
         )
         trivial = lambda _element: self.base_ring().one()
-        if not self.branch_linearization().is_eigensection(section, trivial):
-            raise ValueError("a Horikawa double cover in this family requires a tau-invariant branch section")
+        assert self.branch_linearization().is_eigensection(section, trivial), (
+            "a Horikawa double cover in this family requires a tau-invariant branch section"
+        )
         return HorikawaK3DoubleCover(self, section)
 
     def _repr_(self) -> str:
@@ -319,8 +319,9 @@ class HorikawaK3DoubleCover(SageObject):
         expected = local.base_ring().algebra_structure_morphism()(
             -self.base_ring().one()
         )
-        if coefficients.get(z_label, local.base_ring().zero()) != expected:
-            raise ArithmeticError("the represented deck map does not negate the cover coordinate")
+        assert coefficients.get(z_label, local.base_ring().zero()) == expected, (
+            "the represented deck map does not negate the cover coordinate"
+        )
         return -self.base_ring().one()
 
     def fixed_subschemes(self):
