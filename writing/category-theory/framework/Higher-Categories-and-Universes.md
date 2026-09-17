@@ -5,7 +5,7 @@
 
 Work in an external cartesian closed $(\infty,\infty)$-category $\mathcal K$ with pullbacks and terminal object $*$.
 Fix a monoidal closed $(\infty,\infty)$-category $\mathcal U$ internal to $\mathcal K$, and use its canonical self-enrichment.
-Fix a universe fibration
+Fix a universe fibration 
 $$
 p_{\mathcal U}\colon\widetilde{\mathcal U}\longrightarrow\mathcal U.
 $$
