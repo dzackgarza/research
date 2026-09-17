@@ -508,7 +508,7 @@ def _order_coordinate_vector(base_ring, value):
 
 def _integer_to_order_map(order):
     r"""Return the structural ring morphism ``ZZ -> order``."""
-    structure_map = order._ring_morphism_defining_algebra_structure()
+    structure_map = order.algebra_structure_morphism()
     assert _engine_ring(structure_map.domain()) is SageZZ
     assert structure_map.codomain() is order
     return structure_map

@@ -9,7 +9,6 @@ from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
-    OwnedAlgebras,
 )
 
 
@@ -27,12 +26,15 @@ def test_archived_owned_algebra_retains_the_scalar_structure_map() -> None:
     over_integers = integers_to_rationals.as_algebra()
     over_rationals = rationals_identity.as_algebra()
 
-    assert over_integers in OwnedAlgebras(ZZ)
-    assert over_rationals in OwnedAlgebras(QQ)
+    assert over_integers.multiplication() is not None
+    assert over_rationals.multiplication() is not None
     assert over_integers in Algebras(ZZ).Associative().Unital()
     assert over_rationals in Algebras(QQ).Associative().Unital()
-    assert over_integers._ring_morphism_defining_algebra_structure() is integers_to_rationals
-    assert over_rationals._ring_morphism_defining_algebra_structure() is rationals_identity
+    structure = over_integers.algebra_structure_morphism()
+    assert structure is over_integers.algebra_structure_morphism()
+    assert structure.domain() is ZZ
+    assert structure(ZZ(3)) == over_integers(QQ(3))
+    assert over_rationals.algebra_structure_morphism() is over_rationals.Mor(over_rationals).identity()
     assert over_integers.base_ring() is ZZ
     assert over_rationals.base_ring() is QQ
 

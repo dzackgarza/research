@@ -728,7 +728,22 @@ class LocalizationRings(OwnedCategory):
                 fraction_field_realization=fraction_field_realization,
             )
             self._preamble_engine_ring = _engine_ring
-            super().__init__(base=source.base_ring(), **rest)
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            category = rest["category"]
+            match category.is_subcategory(Algebras(self.algebra_base_ring()).Associative().Unital()):
+                case True:
+                    super().__init__(
+                        base=source.base_ring(),
+                        _engine_product=lambda left, right: left * right,
+                        _engine_unit=lambda algebra: algebra.one(),
+                        **rest,
+                    )
+                case False:
+                    super().__init__(base=source.base_ring(), **rest)
+                    from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+                    _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
             localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
@@ -742,12 +757,6 @@ class LocalizationRings(OwnedCategory):
                 if algebra_source is not None
                 else self.localization_source().base_ring()
             )
-
-        def _ring_morphism_defining_algebra_structure(self):
-            algebra_source = self._localization_construction.algebra_source()
-            if algebra_source is None:
-                return self.localization_map()
-            return self.localization_map() * algebra_source.algebra_structure_morphism()
 
         def _selected_engine_ring(self):
             r"""Return the private realization that computes in this localization.
@@ -2124,21 +2133,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return True
 
         @cached_method
-        def _ring_morphism_defining_algebra_structure(self):
-            r"""Return the canonical ring map \(R\to Z(R)\) when it is the identity."""
-            if self not in OwnedRings().Commutative():
-                raise TypeError(f"{self} is noncommutative, so the identity does not land in its center")
-            center = self.ring_center()
-            return self.Mor(center)(lambda scalar: scalar)
-
-        def algebra_structure_morphism(self):
-            r"""The structure morphism of this ring as an algebra over itself.
-
-            For a commutative ring this is the identity \(R\to R\).
-            """
-            return self._ring_morphism_defining_algebra_structure()
-
-        @cached_method
         def ring_center(self):
             r"""Return the centre ``Z(R)`` as a predicate-defined subring."""
             if self in OwnedRings().Commutative():
@@ -2695,13 +2689,15 @@ class _OwnedRingElement(RingElement):
         return parent._from_engine_element(self._backend() * other._backend())
 
     def _lmul_(self, scalar):
-        r"""Apply the selected scalar action when this ring is read as a module."""
+        r"""``r * a`` for ``r`` in the ring this ring is presented over: the engine's own action.
+
+        The engine presents this ring over its base, so ``r`` enters through
+        the engine's map from its base and multiplies ``a`` there.  The algebra
+        root derives ``algebra_structure_morphism`` from this action as
+        ``r |-> rho(r)(1)``, so the action is never read back from it.
+        """
         parent = self.parent()
-        base = parent.base_ring()
-        scalar = base(scalar)
-        if base is parent:
-            return parent(scalar) * self
-        return parent(parent.algebra_structure_morphism()(scalar)) * self
+        return parent(parent.base_ring()(scalar)) * self
 
     def __mul__(self, other):
         r"""``r x`` for a scalar of this ring and an element over it.
@@ -3110,6 +3106,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             placement = Category.join((placement, category))
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+
 
     def _from_engine_element(self, value):
         if getattr(value, "parent", lambda: None)() is not self._engine:

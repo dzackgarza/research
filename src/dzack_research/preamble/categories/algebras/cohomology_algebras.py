@@ -14,12 +14,12 @@ both commutative and noncommutative source DGAs.
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
+from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.algebras.algebras import AlgebraStructureConstruction
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
 )
@@ -99,7 +99,6 @@ class _CohomologyAlgebra(GradedDirectSumModule):
 
     def __init__(self, dga) -> None:
         self._cohomology_construction = _CohomologyAlgebraConstruction(dga)
-        self._algebra_structure_construction = AlgebraStructureConstruction(dga.base_ring())
         extra_categories = [CohomologyAlgebras(dga.base_ring())]
         if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative():
             extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative())
@@ -112,12 +111,27 @@ class _CohomologyAlgebra(GradedDirectSumModule):
             name=f"H^*({dga})",
             extra_categories=tuple(extra_categories),
         )
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
     def source_dga(self):
         return self._cohomology_construction.source_dga()
 
     def algebra_base_ring(self):
         return self.base_ring()
+
+    def is_commutative(self):
+        r"""``True`` when the source DGA commutes, since the product of classes is induced from it; otherwise ``Unknown``.
+
+        This realization is not built through ``Algebras(R)(M, m)``, so the
+        root's decision on the multiplication datum does not apply to it.
+        """
+        match self.source_dga().is_commutative():
+            case True:
+                return True
+            case _:
+                return Unknown
 
     def multiply(self, left, right):
         left = self(left)
@@ -160,11 +174,6 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         except (TypeError, ValueError):
             raise TypeError(f"{value!r} does not define a cohomology-algebra element") from None
         return self.scalar_multiple(scalar, self.one())
-
-    def algebra_structure_morphism(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
 
 
 class CohomologyAlgebraMorphism(Morphism):

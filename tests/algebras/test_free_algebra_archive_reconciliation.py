@@ -176,7 +176,7 @@ def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None
         QQ.free_module(labels).exterior_algebra(),
         QQ.free_module(labels).divided_power_algebra(),
     ):
-        structure = algebra._ring_morphism_defining_algebra_structure()
+        structure = algebra.algebra_structure_morphism()
         x = algebra.algebra_generator("x")
 
         assert structure.domain() is QQ

@@ -259,6 +259,10 @@ class SparseFreeAlgebra(Parent):
             category=Category.join(tuple(categories)),
         )
 
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, self.multiply, self.one())
+
     def flavor(self):
         return self._flavor
 
@@ -596,13 +600,6 @@ class SparseFreeAlgebra(Parent):
                 label = self._multiply_labels(left_label, right_label)
                 result[label] = result.get(label, self.base_ring().zero()) + left_coefficient * right_coefficient
         return self._from_dict(result)
-
-    def _ring_morphism_defining_algebra_structure(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
-
-    algebra_structure_morphism = _ring_morphism_defining_algebra_structure
 
     def ring_center(self):
         assert self.flavor() == "symmetric", (

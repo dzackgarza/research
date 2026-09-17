@@ -66,7 +66,6 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     GradedTensorProductModules = session["GradedTensorProductModules"]
     LebesgueGradedModules = session["LebesgueGradedModules"]
     NonNegativeReals = session["NonNegativeReals"]
-    AlgebrasWithChosenMultiplication = session["AlgebrasWithChosenMultiplication"]
 
     algebra = GradedLebesgueAlgebra
     module = GradedLebesgueModule(NonNegativeReals)
@@ -92,7 +91,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert algebra in GradedAlgebras(RR, NonNegativeReals)
     assert algebra in Algebras(RR)
     assert algebra in Algebras(RR).Associative().Unital().Commutative()
-    assert algebra in AlgebrasWithChosenMultiplication(RR)
+    assert algebra.unformed_module() is module
     assert algebra in Algebras(RR).Associative()
     assert algebra in LebesgueGradedModules(RR)
     assert algebra.is_graded()
@@ -145,9 +144,6 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     GradedTensorProductModules = session["GradedTensorProductModules"]
     LebesgueGradedModules = session["LebesgueGradedModules"]
     UnitInterval = session["UnitInterval"]
-    AssociativeAlgebrasWithChosenMultiplication = session[
-        "AssociativeAlgebrasWithChosenMultiplication"
-    ]
 
     algebra = LebesgueConvolutionAlgebra
     maps = C(Infinity, RR)
@@ -162,7 +158,7 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
 
     assert algebra is not GradedLebesgueModule(UnitInterval)
     assert algebra in Algebras(RR).Associative()
-    assert algebra in AssociativeAlgebrasWithChosenMultiplication(RR)
+    assert algebra.unformed_module() is GradedLebesgueModule(UnitInterval)
     assert algebra in LebesgueGradedModules(RR)
     assert algebra in Algebras(RR)
     assert algebra not in GradedAlgebras(RR, UnitInterval)

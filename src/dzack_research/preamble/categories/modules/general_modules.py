@@ -258,12 +258,13 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return self(self._negation(self(element).underlying_element()))
 
         def _owned_scalar_multiple(self, scalar, element):
-            return self(
-                self._elementwise_scalar_action(
-                    self.base_ring()(scalar),
-                    self(element).underlying_element(),
-                )
-            )
+            scalar = self.base_ring()(scalar)
+            value = self(element).underlying_element()
+            match self._rho:
+                case None:
+                    return self(self._elementwise_scalar_action(scalar, value))
+                case rho:
+                    return self(rho(scalar)(value))
 
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""

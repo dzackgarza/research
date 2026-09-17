@@ -162,7 +162,7 @@ def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
         },
     )
 
-    algebra = module.algebra_from_multiplication(multiplication)
+    algebra = Algebras(ZZ).Associative().Unital()(module, multiplication, one)
     unit = algebra.module_generator(0)
     generator = algebra.module_generator(1)
     eta = algebra.algebra_structure_morphism()

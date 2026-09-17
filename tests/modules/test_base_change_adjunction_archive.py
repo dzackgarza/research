@@ -34,7 +34,7 @@ def _gaussian_extension():
     x = next(iter(polynomials.algebra_generators()))
     scalars = (polynomials).quotient_by_relations([x**2 + 1])
     i = scalars(x)
-    structure_map = scalars._ring_morphism_defining_algebra_structure()
+    structure_map = scalars.algebra_structure_morphism()
     return scalars, i, structure_map
 
 

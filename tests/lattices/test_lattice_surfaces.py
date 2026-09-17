@@ -313,7 +313,7 @@ def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_
     assert half_order in ProjectiveModules(order)
 
     underlying_integer_module = half_order.restrict_scalars(
-        order._ring_morphism_defining_algebra_structure()
+        order.algebra_structure_morphism()
     )
     assert underlying_integer_module in RestrictedScalarsModules(ZZ)
     assert underlying_integer_module in FramedModules(ZZ)

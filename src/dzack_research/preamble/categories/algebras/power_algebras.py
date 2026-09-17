@@ -11,10 +11,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
-from dzack_research.preamble.categories.algebras.algebras import (
-    AlgebraStructureConstruction,
-    FramedAlgebras,
-)
+from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
@@ -71,7 +68,6 @@ class PowerAlgebra(GradedDirectSumModule):
             raise ValueError("power algebra flavor must be alternating or divided")
         self._power_algebra_construction = _PowerAlgebraConstruction(module, flavor)
         base = _owned_ring(module.base_ring())
-        self._algebra_structure_construction = AlgebraStructureConstruction(base)
 
         match flavor:
             case "alternating":
@@ -103,6 +99,9 @@ class PowerAlgebra(GradedDirectSumModule):
             degree_index_set=degree_index_set,
             extra_categories=tuple(categories),
         )
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
     def is_commutative(self) -> bool:
         r"""Divided powers commute; an alternating algebra commutes on at most one generator or in characteristic two."""
@@ -216,13 +215,6 @@ class PowerAlgebra(GradedDirectSumModule):
         component = value.homogeneous_component(0)
         coefficients = self.graded_piece(0).framing_coefficients(component)
         return self.base_ring()(coefficients.get(0, self.base_ring().zero()))
-
-    def _ring_morphism_defining_algebra_structure(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
-
-    algebra_structure_morphism = _ring_morphism_defining_algebra_structure
 
     @cached_method
     def ring_center(self):

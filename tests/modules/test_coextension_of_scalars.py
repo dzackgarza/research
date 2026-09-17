@@ -16,7 +16,7 @@ def _gaussian_rationals():
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
     scalars = (polynomials).quotient_by_relations([x**2 + 1])
-    return scalars, scalars(x), scalars._ring_morphism_defining_algebra_structure()
+    return scalars, scalars(x), scalars.algebra_structure_morphism()
 
 
 def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> None:

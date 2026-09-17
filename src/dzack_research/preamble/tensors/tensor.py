@@ -1708,6 +1708,9 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
             grading_monoid=bigrades,
             extra_categories=(GradedAlgebras(self._base_ring, bigrades),),
         )
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
     def module(self):
         return self._module
@@ -1774,13 +1777,6 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
                 product = left_component.tensor_product(right_component)
                 result += self.include(product)
         return result
-
-    def _ring_morphism_defining_algebra_structure(self):
-
-
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
 
     def _repr_(self) -> str:
         return f"Mixed tensor algebra T({self.module()}) tensor T({self.module()}^*)"

@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.abstract_categories.products import (
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
-    OwnedAlgebras,
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
     _refine_algebra,
@@ -729,7 +728,12 @@ class QuotientRings(OwnedCategory):
                 defining_ideal,
             )
             self._preamble_engine_ring = _engine_ring
-            super().__init__(base=source, **rest)
+            super().__init__(
+                base=source,
+                _engine_product=lambda left, right: left * right,
+                _engine_unit=lambda algebra: algebra.one(),
+                **rest,
+            )
 
             quotient_map = source.Mor(self)(
                 lambda element: self(element),
@@ -875,9 +879,6 @@ class QuotientRings(OwnedCategory):
 
         def algebra_base_ring(self):
             return self.quotient_source()
-
-        def _ring_morphism_defining_algebra_structure(self):
-            return self.quotient_map()
 
         def quotient_source(self):
             return self._quotient_construction.source()
@@ -2760,7 +2761,7 @@ def _finite_generated_localization(source, submonoid):
     algebra_categories = []
     if algebra_source is not None:
         algebra_base = algebra_source.base_ring()
-        algebra_categories = [Algebras(algebra_base).Associative().Unital(), OwnedAlgebras(algebra_base)]
+        algebra_categories = [Algebras(algebra_base).Associative().Unital()]
         if algebra_source in Algebras(algebra_base).Associative().Unital().Commutative():
             algebra_categories.append(Algebras(algebra_base).Associative().Unital().Commutative())
     return _object_of(
@@ -3109,7 +3110,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         else None
     )
     if algebra_source is not None:
-        placements.extend((Algebras(base).Associative().Unital(), OwnedAlgebras(base)))
+        placements.append(Algebras(base).Associative().Unital())
         if source in Algebras(base).Associative().Unital().Commutative():
             placements.append(Algebras(base).Associative().Unital().Commutative())
     return _object_of(

@@ -144,7 +144,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
 def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfies_all_laws() -> None:
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
-    structure_map = order._ring_morphism_defining_algebra_structure()
+    structure_map = order.algebra_structure_morphism()
     adjunction = Modules(structure_map.domain()).base_change_adjunction(structure_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
@@ -421,7 +421,7 @@ def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() 
     assert not group_modules.is_subcategory(Modules(ZZ))
 
     forget_action = group_modules.restriction_of_scalars(
-        group_algebra._ring_morphism_defining_algebra_structure()
+        group_algebra.algebra_structure_morphism()
     )
     restricted = forget_action(acted)
     assert restricted is acted.scalar_restriction()
@@ -455,7 +455,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     group, acted = _swap_group_module()
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
-    ring_map = order._ring_morphism_defining_algebra_structure()
+    ring_map = order.algebra_structure_morphism()
     adjunction = Modules(ring_map.domain()[group]).coefficient_base_change_adjunction(ring_map)
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
@@ -535,7 +535,7 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
 
     field = QuadraticField(2, "a")
     order = field.ring_of_integers()
-    structure_map = order._ring_morphism_defining_algebra_structure()
+    structure_map = order.algebra_structure_morphism()
     extension = Modules(structure_map.domain()).base_change_adjunction(
         structure_map
     ).left_adjoint()

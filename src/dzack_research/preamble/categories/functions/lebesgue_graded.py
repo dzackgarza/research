@@ -20,7 +20,7 @@ unit piece \(A\to L^\infty=A_u\).
 
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.element import ModuleElement
 from sage.structure.element import parent as element_parent
@@ -35,8 +35,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlgebrasWithChosenMultiplication,
-    AssociativeAlgebrasWithChosenMultiplication,
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -179,7 +177,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             r"""The pairing \(B=\varepsilon\circ m\colon A\otimes_{\mathbb R}A\to\mathbb R\)."""
             ring = self.base_ring()
             match self:
-                case _ if self in AssociativeAlgebrasWithChosenMultiplication(ring):
+                case _ if self in Algebras(ring).Associative():
                     multiplication = self.multiplication_morphism()
                     return _compose_morphisms(self.integral_form(), multiplication)
                 case _:
@@ -475,7 +473,6 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             case True:
                 categories.extend(
                     [
-                        AlgebrasWithChosenMultiplication(ring),
                         GradedAlgebras(ring, monoid),
                         Algebras(ring).Associative().Unital().Commutative(),
                     ]
@@ -483,7 +480,6 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             case False:
                 categories.extend(
                     [
-                        AssociativeAlgebrasWithChosenMultiplication(ring),
                         Algebras(ring).Associative(),
                     ]
                 )
@@ -492,20 +488,24 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             base=_engine_ring(ring),
             category=Cat().meet(tuple(categories)),
         )
-        self._preamble_multiplication_morphism = _transport_multiplication(
-            multiplication,
-            self,
-        )
+        self._preamble_unformed_module = module
+        self._preamble_multiplication = multiplication
         if unital:
             unit_degree = monoid.monoidal_unit()
             self._preamble_algebra_unit = self._from_components(
                 {unit_degree: self.graded_piece(unit_degree).one()}
             )
-            self._preamble_algebra_unit_morphism = _unit_morphism_from_element(
-                self,
-                self._preamble_algebra_unit,
-                ring,
-            )
+
+
+    def _element_of_unformed_module(self, element):
+        return self.unformed_module()._from_components(self(element).homogeneous_components())
+
+    def _element_from_unformed_module(self, element):
+        return self._from_components(self.unformed_module()(element).homogeneous_components())
+
+    @cached_method
+    def multiplication_morphism(self):
+        return _transport_multiplication(self.multiplication(), self)
 
     def _repr_(self) -> str:
         ring = self._preamble_algebra_base_ring

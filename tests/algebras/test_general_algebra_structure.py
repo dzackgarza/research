@@ -138,9 +138,9 @@ def test_general_algebra_node_builds_one_module_per_product() -> None:
     assert split not in algebras.Associative().Unital()
     assert forget(dual) is dual
     assert dual.underlying_module() is dual
-    assert dual.multiplication_source_module() is module
-    assert dual.source_multiplication() is dual_numbers
-    assert split.source_multiplication() is split_idempotent
+    assert dual.unformed_module() is module
+    assert dual.multiplication() is dual_numbers
+    assert split.multiplication() is split_idempotent
 
     one = dual.module_generator("1")
     x = dual.module_generator("x")
@@ -149,8 +149,8 @@ def test_general_algebra_node_builds_one_module_per_product() -> None:
     assert one * x == x
     y = split.module_generator("x")
     assert y * y == y
-    assert dual.from_multiplication_source()(module.module_generator("x")) == x
-    assert dual.to_multiplication_source()(x) == module.module_generator("x")
+    assert dual(module.module_generator("x")) == x
+    assert module(x) == module.module_generator("x")
     multiplication = dual.multiplication_morphism()
     assert multiplication.codomain() is dual
     assert multiplication(multiplication.domain().pure_tensor(x, x)) == dual.zero()
@@ -169,7 +169,7 @@ def test_general_algebra_node_builds_one_module_per_product() -> None:
     )
 
     renaming = split.module_category().Mor(split, dual)({"1": one, "x": x})
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError, match="preserve the multiplication"):
         algebras.Mor(split, dual)(renaming)
 
 
@@ -200,7 +200,7 @@ def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
     assert (a * a) * a == a
     assert a * (a * a) == algebra.zero()
     assert algebra.underlying_module() is algebra
-    assert algebra.source_multiplication() is multiplication
+    assert algebra.multiplication() is multiplication
     assert algebra not in Algebras(QQ).Associative().Unital()
 
 
@@ -222,7 +222,7 @@ def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
     scalar_module = Algebras(QQ).underlying_module()(QQ)
     assert scalar_module is QQ
     eta = _unit_morphism_from_element(module, one, QQ)
-    unital = Algebras(QQ).Unital()(module, dual_numbers, eta)
+    unital = Algebras(QQ).Unital()(module, dual_numbers, one)
 
     assert unital.underlying_module() is unital
     assert unital.unit_morphism().codomain() is unital
@@ -240,5 +240,20 @@ def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
         {"1": general.zero(), "x": general.zero()}
     )
     assert Algebras(QQ).Mor(general, general)(general_zero).underlying_morphism() is general_zero
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError, match="preserve the unit"):
         Algebras(QQ).Unital().Mor(unital, unital)(zero)
+
+
+def test_tensor_cube_is_not_accepted_as_binary_multiplication():
+    module = QQ.free_module(1)
+    cube = Modules(QQ).tensor_product((module, module, module))
+    ternary = cube.Mor(module)(lambda label: module.module_generator(0))
+    with pytest.raises(AssertionError, match="tensor square"):
+        Algebras(QQ)(module, ternary)
+
+
+def test_native_ring_root_data_and_self_structure_are_initialized():
+    assert QQ.unformed_module() is QQ
+    assert QQ.multiplication()(QQ(2), QQ(3)) == QQ(6)
+    assert QQ.algebra_structure_morphism() is QQ.Mor(QQ).identity()
+    assert QQ.Mor(QQ).identity().as_algebra() is QQ

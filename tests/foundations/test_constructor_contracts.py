@@ -33,13 +33,15 @@ def test_algebra_constructor_contract_separates_multiplication_from_module_data(
     integers = _own_ring(SageZZ)
     contract = _construction_contract(Algebras(integers))
 
-    required = contract.required_names()
-    assert "multiplication_source_module" in required
-    assert "source_multiplication" in required
-    assert "algebra_base_ring" in required
-    assert "algebra_is_commutative" in required
-    assert "base_ring" in required
-    assert "source_algebra_unit" in contract.optional_names()
+    assert contract.named("unformed_module")
+    assert contract.named("multiplication")
+    assert contract.named("_engine_product")
+    assert "base_ring" in contract.required_names()
+    assert not contract.named("multiplication_source_module")
+    assert not contract.named("source_multiplication")
+    unit_contract = _construction_contract(Algebras(integers).Unital())
+    assert unit_contract.named("unit")
+    assert unit_contract.named("_engine_unit")
 
 
 def test_constructor_contract_retains_the_open_cooperative_boundary() -> None:

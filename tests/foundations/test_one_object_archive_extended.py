@@ -43,7 +43,7 @@ def test_equal_finite_enumerations_name_one_owned_ordered_set() -> None:
 def test_free_algebra_structure_map_uses_the_exact_owned_base_ring() -> None:
     integers = _own_ring(SageZZ)
     algebra = integers.free_module(Sets.Δ[1]).symmetric_algebra()
-    structure = algebra._ring_morphism_defining_algebra_structure()
+    structure = algebra.algebra_structure_morphism()
 
     assert algebra.base_ring() is integers
     assert structure.domain() is integers

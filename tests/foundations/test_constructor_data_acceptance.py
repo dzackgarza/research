@@ -39,10 +39,10 @@ def test_two_multiplications_on_one_supplied_module_remain_distinct_structures()
     idempotent_algebra = Algebras(QQ)(module, idempotent_square)
 
     assert dual_numbers is not idempotent_algebra
-    assert dual_numbers.multiplication_source_module() is module
-    assert idempotent_algebra.multiplication_source_module() is module
-    assert dual_numbers.source_multiplication() is zero_square
-    assert idempotent_algebra.source_multiplication() is idempotent_square
+    assert dual_numbers.unformed_module() is module
+    assert idempotent_algebra.unformed_module() is module
+    assert dual_numbers.multiplication() is zero_square
+    assert idempotent_algebra.multiplication() is idempotent_square
 
     dual_x = dual_numbers.module_generator("x")
     idempotent_x = idempotent_algebra.module_generator("x")

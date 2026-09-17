@@ -5,10 +5,7 @@ import operator
 from sage.categories.action import Action
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import (
-    AlgebraStructureConstruction,
-    FramedAlgebras,
-)
+from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -73,7 +70,6 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         self._ring_map = ring_map
         self._degree_zero_algebra = extension_algebra.base_ring()
         base = _owned_ring(ring_map.domain())
-        self._algebra_structure_construction = AlgebraStructureConstruction(base)
         self._restricted_pieces = {}
 
         def piece(degree):
@@ -137,6 +133,9 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             from_realization=from_realization,
             extra_categories=tuple(categories),
         )
+        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+
+        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
         for actor_on_left in (True, False):
             self.degree_zero_algebra().register_action(
                 _DegreeZeroAlgebraMultiplication(
@@ -227,11 +226,6 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         if label not in labels:
             raise ValueError(f"{label!r} is not an algebra-generator label")
         return self._preamble_algebra_generator_values[label]
-
-    def algebra_structure_morphism(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self.from_degree_zero(self.degree_zero_algebra()(self.ring_map()(scalar))),
-        )
 
     def from_degree_zero(self, element):
         return self.from_realization(self.extension_algebra()(element))

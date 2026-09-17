@@ -27,13 +27,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         ModuleMorphism,
     )
-    from dzack_research.preamble.categories.schemes.gluing import (
-        AlgebraGluingDatum,
-        CompatibleLocalAlgebraSections,
-        CompatibleLocalSectionElement,
-        GluedAlgebraSheaf,
-        ModuleGluingDatum,
-    )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         DistinguishedAffineCovers,
     )
@@ -90,7 +83,7 @@ class CyclicCoverAlgebra(SageObject):
     def __init__(
         self,
         line_bundle: InvertibleSheaf,
-        branch_section: CompatibleLocalSectionElement,
+        branch_section: Element,
         degree: Integer,
     ) -> None:
         if not isinstance(line_bundle, InvertibleSheaf):
@@ -170,7 +163,7 @@ class CyclicCoverAlgebra(SageObject):
     def branch_power(self) -> InvertibleSheaf:
         return self._branch_power
 
-    def branch_section(self) -> CompatibleLocalSectionElement:
+    def branch_section(self) -> Element:
         return self._branch_section
 
     def degree(self) -> Integer:
@@ -259,7 +252,7 @@ class CyclicCoverAlgebra(SageObject):
         )
         return algebras.Core().Mor(source, target)(forward, inverse)
 
-    def _build_algebra_gluing_datum(self) -> AlgebraGluingDatum:
+    def _build_algebra_gluing_datum(self) -> Parent:
         charts = self.chart_index_set()
         if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
             from dzack_research.preamble.categories.schemes.gluing import (
@@ -284,27 +277,29 @@ class CyclicCoverAlgebra(SageObject):
                 transitions,
             )
 
+        from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingData
+
         transitions = {
-            (int(left), int(right)): self._transition(left, right)
+            (left, right): self._transition(left, right)
             for left in charts
             for right in charts
             if left < right
         }
-        return self.cover().glue_algebras(
-            tuple(self.local_algebra(index) for index in charts),
-            transitions,
-        )
+        return AlgebraGluingData(self.cover())(self.local_algebras(), transitions)
 
-    def gluing_datum(self) -> AlgebraGluingDatum:
+    def gluing_datum(self) -> Parent:
+        r"""The algebra descent datum ``(B_i, phi_ij)`` on the cover."""
         return self._gluing_datum
 
-    def sheaf(self) -> GluedAlgebraSheaf:
+    def sheaf(self) -> Parent:
+        r"""The sheaf of ``O_X``-algebras glued from the descent datum."""
         return self.gluing_datum().sheaf()
 
-    def underlying_module_datum(self) -> ModuleGluingDatum:
+    def underlying_module_datum(self) -> Parent:
         return self.gluing_datum().underlying_module_datum()
 
-    def global_sections(self) -> CompatibleLocalAlgebraSections:
+    def global_sections(self) -> Parent:
+        r"""``Gamma(X, A)``, the ``O(X)``-algebra of compatible local sections."""
         return self.gluing_datum().compatible_sections()
 
     sections = global_sections

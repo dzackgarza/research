@@ -954,33 +954,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return _divided_to_symmetric(self)
 
-        def algebra_from_multiplication(
-            self,
-            multiplication,
-            base_ring=None,
-            unital=True,
-            *,
-            extra_categories=(),
-            extra_construction_data=None,
-            unit=None,
-            commutative=None,
-        ):
-            r"""Equip this module with the represented multiplication ``A tensor A -> A``."""
-            from dzack_research.preamble.categories.algebras.algebras import (
-                _algebra_from_multiplication,
-            )
-
-            return _algebra_from_multiplication(
-                self,
-                multiplication,
-                base_ring=base_ring,
-                unital=unital,
-                extra_categories=extra_categories,
-                extra_construction_data=extra_construction_data,
-                unit=unit,
-                commutative=commutative,
-            )
-
         def connections(self):
             r"""Return the space of algebraic connections on this module."""
             from dzack_research.preamble.categories.modules.connections import (
