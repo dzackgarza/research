@@ -271,7 +271,7 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
             local_projection = _affine_spec_morphism(quotient_ring_map)
             local_quotient_projections[index] = local_projection
             local_maps_to_source_quotient[index] = (
-                source_quotient.quotient_scheme().chart_embedding(index)
+                source_quotient.quotient_scheme().gluing_datum().chart_embedding(index)
                 * local_projection
             )
         quotient_projection = changed_quotient.quotient_scheme().Mor(

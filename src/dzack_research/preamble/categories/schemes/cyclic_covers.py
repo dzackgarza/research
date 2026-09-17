@@ -179,7 +179,7 @@ def _relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     local_maps = {}
     for index in _relative_cover_chart_indices(cyclic_algebra):
         local_automorphism = cyclic_algebra.local_deck_transformation(index, root)
-        local_maps[index] = glued.chart_embedding(index) * local_automorphism
+        local_maps[index] = glued.gluing_datum().chart_embedding(index) * local_automorphism
     automorphism = glued.Mor(glued)(local_maps)
     if any(
         relative.arrow().local_map(index)

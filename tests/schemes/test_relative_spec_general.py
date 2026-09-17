@@ -31,12 +31,12 @@ def test_noncyclic_polynomial_algebra_descent_has_one_general_relative_spectrum(
     assert relative.arrow().codomain() is scheme
     assert datum.sheaf().relative_spectrum() is relative
     for index in cover.atlas():
-        assert glued.chart(index).coordinate_algebra() is datum.local_algebra(index)
+        assert glued.gluing_datum().chart(index).coordinate_algebra() is datum.local_algebra(index)
         algebra_map = datum.local_algebra(index).algebra_structure_morphism()
         expected = cover.open(index).inclusion() * Algebras(
             algebra_map.domain().base_ring()
         ).Associative().Unital().Commutative().spectrum()(algebra_map)
-        assert relative.arrow() * glued.chart_embedding(index) == expected
+        assert relative.arrow() * glued.gluing_datum().chart_embedding(index) == expected
 
 
 def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -> None:
