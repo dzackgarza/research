@@ -3071,7 +3071,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             case _:
                 return _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None, _initialize_algebra=True) -> None:
         r"""Construct over the scalar ring the level above declares.
 
         ``base`` is that ring.  A level sitting over a ring states its own base
@@ -3103,7 +3103,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        if _initialize_algebra:
+            _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
 
 
     def _from_engine_element(self, value):

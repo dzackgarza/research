@@ -22,7 +22,17 @@ def test_two_scalar_maps_retain_their_actual_actions_and_original_base() -> None
     assert shifted.scalar_multiple(t, shifted.one()) == shifted(x + polynomials.one())
     assert first.algebra_structure_morphism()(t) == first(x)
     assert shifted.algebra_structure_morphism()(t) == shifted(x + polynomials.one())
-    assert first.multiplication()(first(x), first(x)) == first(x**2)
+    underlying = first.unformed_module()
+    shifted_underlying = shifted.unformed_module()
+    assert underlying is not first
+    assert underlying.base_ring() is parameter
+    assert underlying.underlying_set() is polynomials
+    assert underlying.scalar_multiple(t, underlying(polynomials.one())) == underlying(x)
+    assert shifted_underlying.scalar_multiple(t, shifted_underlying(polynomials.one())) == shifted_underlying(x + polynomials.one())
+    assert underlying(first(x)) == underlying(x)
+    assert first(underlying(x)) == first(x)
+    assert first.multiplication()(underlying(x), underlying(x)) == underlying(x**2)
+    assert first.multiplication_morphism()(first(x), first(x)) == first(x**2)
 
 
 def test_relative_ring_self_algebra_does_not_replace_its_original_scalars() -> None:

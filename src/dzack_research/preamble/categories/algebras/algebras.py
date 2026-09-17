@@ -235,7 +235,7 @@ class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
 
 
-def _initialize_engine_algebra(algebra, multiplication, unit):
+def _initialize_engine_algebra(algebra, multiplication, unit, *, unformed_module=None):
     r"""Initialize the root datum at the native ring/algebra allocation boundary.
 
     Unlike a call through category membership, this also works for the
@@ -244,7 +244,7 @@ def _initialize_engine_algebra(algebra, multiplication, unit):
     are supplied by the engine constructor; no category is inferred and no
     previously constructed object's datum may be replaced.
     """
-    Algebras.ParentMethods._install_multiplication(algebra, multiplication)
+    Algebras.ParentMethods._install_multiplication(algebra, multiplication, unformed_module=unformed_module)
     assert "_preamble_algebra_unit" not in vars(algebra), "the native algebra unit is initialized once"
     algebra._preamble_algebra_unit = unit
 
@@ -697,8 +697,12 @@ class Algebras(OwnedCategoryOverBaseRing):
                     super().__init__(**rest)
                     self._install_multiplication(product)
 
-        def _install_multiplication(self, multiplication) -> None:
-            r"""Establish ``(M, m)`` on an algebra that is itself the module ``M``.
+        def _install_multiplication(self, multiplication, *, unformed_module=None) -> None:
+            r"""Establish ``(M, m)`` from native multiplication and the constructed module.
+
+            ``unformed_module`` is supplied when an explicit scalar map has
+            constructed a different underlying module.  The self-referential
+            native bootstrap omits it until that route is migrated.
 
             Protected contract of ``Algebras(R)`` (``OWN-05``), the root half of
             the installation contract; its dispatcher is
@@ -723,16 +727,25 @@ class Algebras(OwnedCategoryOverBaseRing):
             level's own storage to refuse a second installation.
             """
             assert "_preamble_multiplication" not in vars(self), f"{self} already has its multiplication"
-            self._preamble_unformed_module = self
+            module = self if unformed_module is None else unformed_module
+            self._preamble_unformed_module = module
             from dzack_research.preamble.categories.forms.forms import _callable_form_space
 
-            # Do not construct the module tensor square while its coefficient
-            # ring is being born.  The form is the actual native bilinear rule;
-            # multiplication_morphism classifies it through the tensor owner
-            # when that universal map is requested.
+            # The native ring bootstrap is self-referential.  An explicit
+            # change of scalar structure instead supplies its constructed
+            # module; the same native product is read on that module's data.
+            match module is self:
+                case True:
+                    product = multiplication
+                case False:
+                    def product(left, right):
+                        return self._element_of_unformed_module(multiplication(
+                            self._element_from_unformed_module(left),
+                            self._element_from_unformed_module(right),
+                        ))
             self._preamble_multiplication = _callable_form_space(
-                self, self, self, "bilinear"
-            )(multiplication)
+                module, module, module, "bilinear"
+            )(product)
 
         def unformed_module(self):
             r"""The module ``M`` this algebra is built on: the ``M`` of ``Algebras(R)(M, m)``, or the algebra itself when it realizes its own module."""
@@ -2425,6 +2438,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         *,
         categories=(),
         construction_data=(),
+        unformed_module=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -2435,6 +2449,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         its scalars.
         """
         base = _owned_ring(base_ring)
+        assert unformed_module is None or labels is None, (
+            "an explicit scalar-action module is supplied without a second native algebra framing"
+        )
         for name, value in construction_data:
             setattr(self, name, value)
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
@@ -2450,11 +2467,17 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             engine,
             base=base,
             category=Cat().meet(tuple(placement)),
+            _initialize_algebra=unformed_module is None,
         )
         if labels is None:
             if generator_values is not None:
                 raise ValueError("an unframed algebra cannot carry framed generator values")
             self._preamble_algebra_generator_values = None
+            if unformed_module is not None:
+                _initialize_engine_algebra(
+                    self, lambda left, right: left * right, self.one(),
+                    unformed_module=unformed_module,
+                )
             return
 
         selected_labels = self._preamble_algebra_generating_set
@@ -2497,6 +2520,31 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             value,
             name=f"Algebra generator values of {self}",
         )
+
+    def _element_constructor_(self, value):
+        source = element_parent(value)
+        if source is not None and source is not self and source is getattr(self, "_preamble_unformed_module", None):
+            return self._element_from_unformed_module(value)
+        return super()._element_constructor_(value)
+
+    def _element_of_unformed_module(self, element):
+        module = self.unformed_module()
+        match module is self:
+            case True:
+                return self(element)
+            case False:
+                # The scalar-action module was constructed on the original
+                # ring.  Normalize there before entering its module so that
+                # the ordinary same-data ingress cannot recurse through us.
+                return module(module.underlying_set()(self(element)))
+
+    def _element_from_unformed_module(self, element):
+        module = self.unformed_module()
+        match module is self:
+            case True:
+                return self(element)
+            case False:
+                return self(module(element).underlying_element())
 
 
 @cached_function
@@ -2550,11 +2598,27 @@ def _algebra_structure_view(ring, structure_map):
     if structure_map.codomain() is not selected_ring:
         raise ValueError("an algebra-structure view requires a ring map into the selected ring")
     base = _own_ring(structure_map.domain())
+    assert base in OwnedRings().Commutative(), "an R-algebra here has commutative scalars"
+    center = selected_ring.ring_center()
+
+    def scalar_action(scalar, element):
+        central_scalar = center(structure_map(base(scalar)))
+        return selected_ring(central_scalar) * selected_ring(element)
+
+    module = GeneralModules(base).from_operations(
+        selected_ring,
+        addition=lambda left, right: left + right,
+        zero=selected_ring.zero(),
+        negation=lambda element: -element,
+        scalar_action=scalar_action,
+        verify=False,
+    )
     return _OwnedAlgebraParent(
         _engine_ring(selected_ring),
         base,
         None,
-        scalar_structure=lambda scalar: structure_map(base(scalar)),
+        scalar_structure=lambda scalar: scalar_action(scalar, selected_ring.one()),
+        unformed_module=module,
     )
 
 
@@ -2622,8 +2686,7 @@ def _own_algebra(structure_map):
         if base in OwnedRings().Commutative():
             placement = placement.Commutative()
         return refine(base, placement)
-    engine = _engine_ring(structure_map.codomain())
-    return _OwnedAlgebraParent(engine, base, None, scalar_structure=structure_map)
+    return _algebra_structure_view(structure_map.codomain(), structure_map)
 
 
 def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_images):
