@@ -372,7 +372,6 @@ class _ProjectiveLineBundleLinearization(SageObject):
         sections = source.unformed_module()
         evaluation = self.line_bundle().jet_evaluation(point, 1)
         fiber = evaluation.codomain()
-        base = fiber.base_ring()
         group_algebra = source.group_algebra()
         target = Modules(group_algebra)(
             fiber,
@@ -496,7 +495,6 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
                 lambda section: sections.scalar_multiple(scalar_twist, section),
                 verify_linearity=False,
             )
-        section_construction = sections.section_space_construction()
         factor_labels = tuple(self.projective_product().factors().index_set())
         weights = self.coordinate_weights()
         images = {}
@@ -504,7 +502,7 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
             weight = base.one()
             for factor_label, block in zip(
                 factor_labels,
-                section_construction.exponents_of(monomial),
+                sections.monomial_exponents(monomial),
                 strict=True,
             ):
                 factor_weights = weights[factor_label]

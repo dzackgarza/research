@@ -259,12 +259,24 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=extra_construction_data,
             )
 
+        def cokernel_morphism(self):
+            r"""Return the morphism ``rho: F -> G`` of which this module is the cokernel.
+
+            A module constructed as ``coker(rho)`` retains ``rho`` as its
+            datum; the quotient map ``G -> coker(rho)`` is
+            :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
+            ``kernel_morphism()``.
+            """
+            morphism = self._selected_module_presentation.cokernel_morphism()
+            assert morphism is not None, (
+                f"{self} was not constructed as the cokernel of a morphism"
+            )
+            return morphism
+
         @cached_method
         def cokernel_projection(self):
             r"""Return the canonical quotient map when this object is a selected cokernel."""
-            morphism = self._selected_module_presentation.cokernel_morphism()
-            if morphism is None:
-                raise ValueError("this finitely presented module was not constructed as a cokernel")
+            morphism = self.cokernel_morphism()
             source = morphism.codomain()
             return source.module_category().Mor(source, self)(
                 {label: self.module_generator(label) for label in source.module_generating_set()}
