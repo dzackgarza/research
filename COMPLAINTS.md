@@ -172,9 +172,9 @@ the category \(\mathbf{Mod}(\mathcal{O}_X)\) with inverse image \(f^{-1}\) and p
 the Hom of quasi-coherent sheaves on a cover;
 the invertible (locally free of rank one) axiom;
 the group \(\mathrm{CDiv}(X) = \Gamma(X, \mathcal{K}_X^{*}/\mathcal{O}_X^{*})\);
-finite affine atlases as covering families in the Zariski coverage of \(\mathbf{Sch}_R/X\), and a scheme glued from a finite affine gluing datum;
+finite affine atlases as covering families in the Zariski coverage of \(\mathbf{Sch}_R/X\);
 the fibered category of modules over varying rings, whose arrows are semilinear maps;
-the projectivization \(\mathbb{P}\colon \mathbf{Vect}_K \to \mathbf{Sch}_K\).
+the general projectivization functor, as distinct from the projective-space entry now used by linear systems.
 Underneath, `Modules(R)` has products, equalizers and tensor products only for framed or presented modules, so \(\Gamma(X, F)\), a limit of restricted chart modules, cannot be built at its owner.
 
 **Dependency path.**
@@ -183,8 +183,8 @@ Gluing needs finite atlases, the glued-scheme entry, semilinear transitions and 
 
 **Observed evidence.**
 Read from source at `d83d43c2` (gluing) and `cf26db85` (divisors), after both subtrees were rebuilt through their categories as far as these foundations allow.
-`schemes/gluing.py` keeps the glued scheme as a Sage scheme subclass with three side attributes, 16 `SageObject`s (atlases, refinements, finite-atlas descent data, semilinear maps, transitions, inverse images), and builds \(\Gamma(X, F)\) in two local categories, `GlobalSectionModules(R)` and `GlobalSectionAlgebras(R)`, as an equalizer on underlying sets.
-`divisors/invertible_sheaves.py` keeps five hand-assembled line-bundle classes; `divisors/general_divisors.py:116` keeps `FiniteAtlasCartierDivisor` as a `SageObject`; `divisors/linear_systems.py` installs three argument packages as side attributes on projective spaces adopted by `_refine_scheme`.
+The glued scheme and its Hom now use `Schemes(R)` through a private realization (`6faa74327`, `755c1250b`). The remaining atlas, refinement, finite-atlas descent, semilinear and inverse-image records still need their owners; `GlobalSectionModules(R)` and `GlobalSectionAlgebras(R)` still locally construct \(\Gamma(X,F)\).
+`divisors/invertible_sheaves.py` keeps five hand-assembled line-bundle classes; `divisors/general_divisors.py:116` keeps `FiniteAtlasCartierDivisor` as a `SageObject`; the linear systems now use the shared projective-space entry with construction-time data (`39062eadb`, `31cfd1ea4`), while the invertible-sheaf and Cartier-divisor owners remain unfinished.
 
 **Existing partial capability.**
 `Sheaves(coverage, D)` with `DescentEqualizer`, `DescentData` and the entry `Sheaves.object`; `ModuleGluingData(cover)` and `AlgebraGluingData(cover)`; `QuasiCoherentSheaves(X)` with the affine equivalence; `FiberedFormedModuleMorphism` as a precedent for a fibered construction.
@@ -195,7 +195,19 @@ Glued schemes and their sheaves; line bundles on projective space and its subsch
 **Coverage boundary.**
 Read from source; no session was run.
 Whether Sage or Singular supplies any of these constructions for the specimens in question was not surveyed.
-Scheduled in [TODO.md](TODO.md) as `sheaves-of-modules-over-a-sheaf-of-rings`, `quasi-coherent-sheaf-morphisms-on-non-affine-schemes`, `invertible-sheaf-axiom`, `cartier-divisors-as-sections`, `finite-affine-atlases`, `glued-scheme-entry`, `modules-over-varying-rings`, `projectivization-functor`, `limits-of-modules-created-by-underlying-sets` and `tensor-products-of-unframed-modules`.
+Scheduled in [TODO.md](TODO.md) as `sheaves-of-modules-over-a-sheaf-of-rings`, `quasi-coherent-sheaf-morphisms-on-non-affine-schemes`, `invertible-sheaf-axiom`, `cartier-divisors-as-sections`, `finite-affine-atlases`, `modules-over-varying-rings`, `limits-of-modules-created-by-underlying-sets` and `tensor-products-of-unframed-modules`.
+
+### Schemes and gluing branch review: rejected regressions
+
+The source of `origin/remediate/scheme-gluing` at `f54a1c14b` and `origin/remediate/schemes` at `2cf3d4a2e` was compared with the current owners, consumers and the construction/placement complaints above. The compliant scheme, gluing, scalar-change, relative-Spec, toric, family, subobject, cohomology and curve changes were rebased in separate `[unverified]` source commits. The following changes are rejected, not exemptions from the original obligations.
+
+**Global sections and finite-atlas sheaves.** `5082ce117` replaces the existing algebra of sections by `assert False`. `5856584aa` restores it by directly calling `Parent.__init__` instead of `Algebras(R)(M,m)`. Its module replacement removes the descent interpretation from section parents without migrating cyclic-cover admission: `CyclicCoverAlgebra` reads that interpretation to identify and compare the actual power of the line bundle. Changing arithmetic to `GeneralModules` while leaving that consumer undefined is a regression, not a completed owner integration. `f54a1c14b` similarly directly initializes a parent in `QuasiCoherentSheaves(X)` instead of constructing the sheaf. Preserve the existing section/descent capabilities while completing their genuine module, algebra and sheaf owners.
+
+**Zariski sheaves, covers and affine sheaf functors.** In `f098e06d7`, `_ZariskiPresheaf` claims the big `Sch/X` domain but asserts every input affine; `_AssociatedModulePresheaf` uses localization on arbitrary affine arrows, including quotient maps. Its descent inverse only admits singleton identity covers and returns an identity on the global value, not the general equalizer comparison. `_placed_sheaf` finishes with `refine` after allocation. In `97fd35ccd`, the functors and adjunction declared between quasi-coherent-sheaf categories return module arrows rather than arrows between their sheaf endpoints. The `912bdc333` covering rewrite still uses public records and breaks custom labels: `_labelled_family` numbers a sequence by integers even when its given index set has noninteger chart labels. These do not discharge the coverage, sheaf-Hom or constructor obligations.
+
+**Geometric categories and imports.** `0ff16d9ca` replaces AT21 realization classes by `ToricADESurfaces` and `ADEDoubleCovers` without the required definition of their morphisms or CAT-22 owner search. Double-cover morphisms require compatibility with the covering map and involution, not merely a `LogPairs` declaration. The actual chart migration is absorbed in `9a5c5c263`; log-pair/involution ownership remains required. The replacement of analytic local-system parents by bare records in `2d50d31dc` does not build their sheaf owner; its endpoint hypotheses and Legendre construction changes are integrated separately. `c473c540b` has a cold-import cycle: `divisors.invertible_sheaves` imports `schemes.gluing` before defining `InvertibleSheaf`; the proposed schemes initializer imports `k3_families`, which imports `algebras.cyclic_cover_algebras`, which imports that not-yet-defined class. The eager-import goal remains, but that order is not a solution. The final `2cf3d4a2e` checkpoint adds `TopologicalSpaces` with an abstract `open_sets` but no topology constructor or continuous-map Hom: a stub, not the missing owner.
+
+**Preserved and repaired behavior.** Restriction of base cannot be a placement refinement without the new structural morphism; cross-base arrows now use the locally ringed-space Hom without mutating endpoints. Complete-intersection admission uses successive ideal quotients, not final height: `(tx,ty,1-t)` has the height of three generators but is not that regular sequence. Cyclic scalar change retains compatible branch-section pullback rather than requiring a remembered homogeneous source. Supplied glued quotient sources retain their exact chart set and transition checks, dropped by the checkpoint. The normalization datum enters through `Curves`, not an extra `CurvesWithChosenNormalization` category. These repairs are source-banked, with the complete terminal execution obligation still open.
 
 ## Workflow Papercuts
 
