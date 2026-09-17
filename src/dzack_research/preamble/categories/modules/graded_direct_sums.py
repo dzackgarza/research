@@ -427,7 +427,7 @@ class _DirectSumOfModules:
 
     def _module_with_structure(self, categories, construction_data):
         return _direct_sum_of_modules(
-            self.base_ring(), self.grading_monoid(), self._summand_family,
+            self.base_ring(), self.grading_index_set(), self._summand_family,
             extra_categories=categories, construction_data=construction_data,
             _realization=self._direct_sum_realization(),
         )

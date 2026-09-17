@@ -576,14 +576,14 @@ class _LebesgueDirectSum(_DirectSumOfModules):
         if source is self:
             return value
         if _is_lebesgue_space(source):
-            degree = self.grading_monoid()(_holder_degree(source).as_extended_real())
+            degree = self.grading_index_set()(_holder_degree(source).as_extended_real())
             return self.from_component(degree, value)
         if self in Algebras(self.base_ring()).Unital() and value in self.base_ring():
             return self.from_component(self.grading_monoid().monoidal_unit(), Lp(Infinity)(value))
         return super()._element_constructor_(value)
 
     def _repr_(self):
-        return f"Lebesgue direct sum over {self.grading_monoid()}"
+        return f"Lebesgue direct sum over {self.grading_index_set()}"
 
     def _latex_(self):
         return r"\bigoplus_s \mathcal{L}^{1/s}(\mathbb{R})"

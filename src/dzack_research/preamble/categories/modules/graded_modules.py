@@ -156,8 +156,8 @@ def _selected_homogeneous_degree(element):
 class GradedModuleMorphism(ModuleMorphism):
     r"""A degree-zero morphism of graded modules."""
 
-    def __init__(self, parent, images, *, elementwise=False) -> None:
-        ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
+    def __init__(self, parent, images, *, elementwise=False, verify_linearity=True) -> None:
+        ModuleMorphism.__init__(self, parent, images, elementwise=elementwise, verify_linearity=verify_linearity)
         self._check_selected_degrees()
 
     def _check_selected_degrees(self) -> None:
@@ -165,7 +165,10 @@ class GradedModuleMorphism(ModuleMorphism):
         domain = self.domain()
         if domain not in FramedModules(domain.base_ring()):
             return
-        for label in domain.module_generating_set():
+        labels = domain.module_generating_set()
+        if not labels.cardinality().is_finite():
+            return
+        for label in labels:
             source = domain.module_generator(label)
             source_degree = _represented_homogeneous_degree_or_none(source)
             if source_degree is None:
@@ -185,8 +188,8 @@ class GradedModuleMorphism(ModuleMorphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         domain = other.domain()
-        monoid = _require_grading_monoid(domain.grading_monoid())
-        return GradedModules(domain.base_ring(), monoid).Mor(
+        indices = domain.grading_index_set()
+        return GradedModules(domain.base_ring(), indices).Mor(
             domain, self.codomain()
         ).elementwise(lambda element: self(other(element)))
 
@@ -195,13 +198,9 @@ class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = GradedModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        source_monoid = _require_grading_monoid(domain.grading_monoid())
-        target_monoid = _require_grading_monoid(codomain.grading_monoid())
-        packet_monoid = hom_family.base_category().grading_monoid()
-        if source_monoid != target_monoid:
-            raise ValueError("graded-module morphisms require one grading monoid")
-        if source_monoid != packet_monoid:
-            raise ValueError("the graded-module Hom packet has the wrong grading monoid")
+        indices = domain.grading_index_set()
+        assert indices is codomain.grading_index_set(), "graded-module arrows use the same indexing set"
+        assert indices is hom_family.base_category().grading_index_set(), "the graded-module arrow category uses those indices"
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
 
 
@@ -212,21 +211,24 @@ class GradedModuleHomCategoryConstruction(HomCategoryConstruction):
 
 
 class GradedModules(OwnedCategoryOverBaseRing):
-    r"""Modules graded by a monoid.
+    r"""Modules with a direct-sum decomposition indexed by a set.
 
-    Let \(M\) be a monoid and \(R\) a ring. An \(M\)-graded \(R\)-module is
-    an \(R\)-module \(N\) together with a direct-sum decomposition
-    \(N = \bigoplus_{m \in M} N_m\). This is the nLab graded module over an
-    ungraded ring (an \(M\)-graded object of \(\mathbf{Mod}_R\)).
-
-    The default monoid is \(\mathbb{Z}\) (additive), which is Sage's graded
-    module axiom. An \(M\)-graded algebra is an \(M\)-graded module whose
-    product sends \(N_m \times N_{m'}\) into \(N_{mm'}\).
+    Mathlib CategoryTheory/GradedObject defines I-graded objects for any type I,
+    with componentwise arrows and a total coproduct.  Multiplying degrees
+    requires a monoid; shifts and parity require their additional data.
+    The default indexing set is the additive group of integers.
     """
 
     def an_object(self):
-        r"""The rank-one module concentrated in the identity degree."""
-        return _concentrated_graded_module(self.base_ring(), self.grading_monoid())
+        indices = self.grading_index_set()
+        match indices:
+            case _ if indices in Monoids() or indices in AdditiveMonoids():
+                return _concentrated_graded_module(self.base_ring(), indices)
+            case _:
+                from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+                zero = self.base_ring().free_module(0)
+                return self(indexed_family(indices, lambda _: zero))
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
@@ -236,7 +238,8 @@ class GradedModules(OwnedCategoryOverBaseRing):
         identity) and stated explicitly for any other monoid; see
         :func:`_grading_parity`.
         """
-        monoid = _require_grading_monoid(grading_monoid)
+        monoid = _normalize_grading_monoid(grading_monoid)
+        assert monoid in Sets(), "a grading is indexed by an owned set"
         selected_parity = _grading_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls,
@@ -246,7 +249,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         )
 
     def __init__(self, base_ring, grading_monoid: Parent, parity_key) -> None:
-        self._grading_monoid = grading_monoid
+        self._grading_index_set = grading_monoid
         self._parity_key = parity_key
         super().__init__(base_ring)
 
@@ -255,23 +258,26 @@ class GradedModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.graded_direct_sums import _direct_sum_of_modules
 
         return _direct_sum_of_modules(
-            self.base_ring(), self.grading_monoid(), pieces,
+            self.base_ring(), self.grading_index_set(), pieces,
             extra_categories=placements, construction_data=construction_data,
         )
 
+    def grading_index_set(self) -> Parent:
+        return self._grading_index_set
+
     def grading_monoid(self) -> Parent:
-        return self._grading_monoid
+        return _require_grading_monoid(self.grading_index_set())
 
     def parity_homomorphism(self):
         r"""Return the stated parity ``M -> ZZ/2`` of the grading."""
         assert self._parity_key is not None, (
-            f"{self.grading_monoid()} is a grading monoid with no canonical parity "
+            f"{self.grading_index_set()} is an indexing set with no canonical parity "
             f"homomorphism to {Zmod(2)}; state the parity with the grading"
         )
         return self._parity_key.morphism()
 
     def _repr_object_names(self) -> str:
-        monoid = self.grading_monoid()
+        monoid = self.grading_index_set()
         if monoid is _own_ring(SageZZ):
             names = "graded modules"
         else:
@@ -279,7 +285,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):
-        return (super()._make_named_class_key(name), self.grading_monoid(), self._parity_key)
+        return (super()._make_named_class_key(name), self.grading_index_set(), self._parity_key)
 
     def super_categories(self):
 
@@ -292,14 +298,16 @@ class GradedModules(OwnedCategoryOverBaseRing):
         def is_graded(self) -> bool:
             return True
 
-        def grading_monoid(self):
-            for cat in self.category().all_super_categories(proper=False):
+        def grading_index_set(self):
+            for category in self.category().all_super_categories(proper=False):
                 try:
-                    monoid = cat.grading_monoid()
+                    return category.grading_index_set()
                 except AttributeError:
                     continue
-                return monoid
-            raise TypeError(f"{self} is not in a graded module category")
+            raise TypeError(f"{self} has no selected grading index set")
+
+        def grading_monoid(self):
+            return _require_grading_monoid(self.grading_index_set())
 
         def parity_homomorphism(self):
             r"""Return the parity ``M -> ZZ/2`` stated with this module's grading."""
@@ -315,8 +323,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             r"""The monoid product of two degrees.
 
             Additive monoids use \(+\); otherwise the monoid operation is
-            multiplication, so a monoid whose identity is not \(0\) (Young's
-            \(s\oplus t=s+t-1\), identity \(1\)) is encoded as a Sage monoid.
+            multiplication.  A set grading alone supplies no such operation.
             """
             monoid = self.grading_monoid()
             left = monoid(left)
