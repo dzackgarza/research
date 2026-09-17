@@ -998,6 +998,13 @@ class ModuleMorphism(Morphism):
         ``f`` does not factor.  The source map need not itself be a
         monomorphism; uniqueness comes from ``j``.
         """
+        factor = self.factor_through_or_none(target_embedding)
+        if factor is None:
+            raise ValueError("the morphism image is not contained in the target subobject")
+        return factor
+
+    def factor_through_or_none(self, target_embedding):
+        r"""Return the unique represented factor, or None when containment fails."""
         assert target_embedding.codomain() is self.codomain(), (
             "module factorization through a subobject requires one common codomain"
         )
@@ -1014,7 +1021,7 @@ class ModuleMorphism(Morphism):
                     for label, image in generator_images.items()
                 }
                 if any(preimage is None for preimage in preimages.values()):
-                    raise ValueError("the morphism image is not contained in the target subobject")
+                    return None
             case _:
                 preimages = {
                     label: target_embedding.preimage(image)

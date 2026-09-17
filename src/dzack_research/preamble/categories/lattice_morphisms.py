@@ -311,6 +311,13 @@ class LatticeEmbedding(LatticeMorphism):
 
     def factor_through(self, target_embedding):
         r"""Factor this lattice embedding through a module embedding when possible."""
+        factor = self.factor_through_or_none(target_embedding)
+        if factor is None:
+            raise ValueError("the first subobject is not contained in the second")
+        return factor
+
+    def factor_through_or_none(self, target_embedding):
+        r"""Return the module factor through target_embedding, or None."""
         if target_embedding.codomain() is not self.codomain():
             raise ValueError("subobject factorization requires one common codomain")
         source = self.domain()
@@ -319,7 +326,7 @@ class LatticeEmbedding(LatticeMorphism):
         for label in source.module_generating_set():
             image = self(source.module_generator(label))
             if not target_embedding.is_in_image(image):
-                raise ValueError("the first subobject is not contained in the second")
+                return None
             images[label] = target_embedding.lift(image)
         return source.module_category().Mor(source, target)(images)
 

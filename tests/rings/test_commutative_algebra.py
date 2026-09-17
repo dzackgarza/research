@@ -186,6 +186,21 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
     assert ZZ(5) not in prime_complement
 
 
+def test_module_subobject_order_is_decided_without_failed_factorization() -> None:
+    modules = Modules(ZZ)
+    subobjects = modules.Subobjects(ZZ)
+    evens = ZZ.ideal(2)
+    multiples_of_four = ZZ.ideal(4)
+    multiples_of_three = ZZ.ideal(3)
+
+    assert subobjects.Mor(multiples_of_four, evens).has_morphism()
+    assert not subobjects.Mor(evens, multiples_of_four).has_morphism()
+    assert not subobjects.Mor(evens, multiples_of_three).has_morphism()
+    factor = multiples_of_four.inclusion().factor_through_or_none(evens.inclusion())
+    assert factor is not None
+    assert evens.inclusion() * factor == multiples_of_four.inclusion()
+
+
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
     affine_line = AffineSpaces(QQ)(1, names=("x",))
     spectrum = affine_line.underlying_space()

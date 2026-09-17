@@ -17,6 +17,12 @@ class SubmonoidInclusion(MonoidMorphism):
         return True
 
     def factor_through(self, target_inclusion):
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError("the source submonoid is not contained in the target")
+        return factor
+
+    def factor_through_or_none(self, target_inclusion):
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("submonoid factorization requires one ambient monoid")
         if target_inclusion is self:
@@ -25,7 +31,7 @@ class SubmonoidInclusion(MonoidMorphism):
         target = target_inclusion.domain()
         generators = tuple(source.monoid_generators())
         if not all(generator in target for generator in generators):
-            raise ValueError("the source submonoid is not contained in the target")
+            return None
         return Monoids().Mor(source, target)(
             lambda element: target(element)
         )

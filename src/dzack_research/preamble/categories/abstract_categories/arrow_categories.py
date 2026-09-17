@@ -964,14 +964,20 @@ class SubobjectHomset(CategoricalHomset):
         )
 
     def _canonical_factor(self):
-        return self._slice_homset().canonical_morphism().left()
+        factor = self.domain().inclusion().factor_through_or_none(
+            self.codomain().inclusion()
+        )
+        if factor is None:
+            raise ValueError("the first subobject is not contained in the second")
+        return factor
 
     def has_morphism(self) -> bool:
-        try:
-            self._canonical_factor()
-        except (TypeError, ValueError):
-            return False
-        return True
+        return (
+            self.domain().inclusion().factor_through_or_none(
+                self.codomain().inclusion()
+            )
+            is not None
+        )
 
     def canonical_morphism(self) -> SubobjectMorphism:
         return SubobjectMorphism(self, self._canonical_factor(), verify=False)

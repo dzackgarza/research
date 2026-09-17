@@ -1428,10 +1428,17 @@ class SetInclusion(OwnedSetMorphism):
 
     def factor_through(self, target_inclusion: SetInclusion) -> SetMorphism:
         r"""Return the canonical map of subset objects when this subset is contained."""
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError("the first subset is not contained in the second")
+        return factor
+
+    def factor_through_or_none(self, target_inclusion: SetInclusion):
+        r"""Return the canonical subset factor, or None when containment fails."""
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("subset factorization requires one common base set")
         if not self <= target_inclusion:
-            raise ValueError("the first subset is not contained in the second")
+            return None
         return Sets().Mor(self.domain(), target_inclusion.domain())(lambda member: target_inclusion.domain()(self(member)))
 
     def underlying_set(self) -> Parent:
