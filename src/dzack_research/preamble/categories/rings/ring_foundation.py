@@ -2649,13 +2649,15 @@ class _OwnedRingElement(RingElement):
         return parent._from_engine_element(self._backend() * other._backend())
 
     def _lmul_(self, scalar):
-        r"""Apply the selected scalar action when this ring is read as a module."""
+        r"""``r * a`` for ``r`` in the ring this ring is presented over: the engine's own action.
+
+        The engine presents this ring over its base, so ``r`` enters through
+        the engine's map from its base and multiplies ``a`` there.  The algebra
+        root derives ``algebra_structure_morphism`` from this action as
+        ``r |-> rho(r)(1)``, so the action is never read back from it.
+        """
         parent = self.parent()
-        base = parent.base_ring()
-        scalar = base(scalar)
-        if base is parent:
-            return parent(scalar) * self
-        return parent(parent.algebra_structure_morphism()(scalar)) * self
+        return parent(parent.base_ring()(scalar)) * self
 
     def __mul__(self, other):
         r"""``r x`` for a scalar of this ring and an element over it.
