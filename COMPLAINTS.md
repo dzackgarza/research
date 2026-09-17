@@ -107,6 +107,12 @@ unhashable-label path already covers those inputs.  This is not remediation
 of complaints 10 or 15.  It also rejects `finite_family` discarding a supplied
 family's retained index set, and the restriction of the degree-zero DGA
 functor to `DeRhamAlgebras`: neither follows from the mathematical domain.
+Cardinal comparison Homs no longer turn an undecided inequality into an
+empty Hom: the previous zero-cardinality expectations at `continuum` versus
+`aleph(1)` contradicted the test's own no-continuum-hypothesis requirement.
+The ordinal product also retains iterative traversal of ordinary factors
+rather than adding one recursive call per factor.  Symbolic function
+prefixes stay in the private engine, not in a category-level definition.
 The coordinate parser retains bounded reading when rejecting extra rows or
 entries; eliminating `StopIteration` handling does not authorize consuming
 an infinite malformed input.  `ask` retains exact boolean admission rather

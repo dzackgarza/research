@@ -1,7 +1,16 @@
-r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy."""
+r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy.
+
+A cardinal is an object of :class:`Cardinalities` whose defining datum is a
+term of cardinal arithmetic, and an ordinal is an element of the ordinal
+semiring whose defining datum is a term of ordinal arithmetic.  Each term form
+answers the structural questions about itself -- whether it is finite, how it
+is displayed, which law of exponentiation or comparison applies to it -- so
+an operation asks the datum and never inspects which form it has.
+"""
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -11,10 +20,12 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.semirings import Semirings
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.infinity import AnInfinity, Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -30,40 +41,229 @@ from dzack_research.preamble.owned_category import _object_of
 IndexT = TypeVar("IndexT")
 
 
+class _CardinalExpression(ABC):
+    r"""A term of cardinal arithmetic, the defining datum of a cardinal.
+
+    The forms are a finite cardinal ``n``, an aleph ``aleph_alpha``, a power
+    ``kappa^lambda`` with infinite exponent, a finite supremum of terms that
+    are not otherwise compared, and an indexed sum or product over an infinite
+    index set.  The last two are not normal forms: they are not evaluated to
+    any of the others, so neither their finiteness nor their order is decided
+    here.
+
+    The defaults below are the answers of the forms that do not override
+    them.
+    """
+
+    @abstractmethod
+    def display(self) -> str:
+        r"""The notation of this term."""
+        ...
+
+    @abstractmethod
+    def sort_key(self) -> tuple[int, str]:
+        r"""The key ordering terms by form, then by notation."""
+        ...
+
+    def is_normal_form(self) -> bool:
+        r"""Whether this term has a known finite-or-infinite classification."""
+        return True
+
+    def is_finite(self) -> bool:
+        return False
+
+    def is_aleph(self) -> bool:
+        return False
+
+    def is_countably_infinite(self) -> bool:
+        return False
+
+    def is_continuum(self) -> bool:
+        return False
+
+    def supremum_terms(self, cardinal_number: Cardinal) -> tuple[Cardinal, ...]:
+        r"""The terms whose supremum ``cardinal_number`` is: itself alone."""
+        return (cardinal_number,)
+
+    def power_with_this_exponent(
+        self,
+        base: Cardinal,
+        exponent: Cardinal,
+    ) -> Cardinal:
+        r"""``base^exponent`` for this term as the infinite exponent: the base decides."""
+        return base.expression().power_with_this_base(base, exponent)
+
+    def power_with_this_base(
+        self,
+        base: Cardinal,
+        exponent: Cardinal,
+    ) -> Cardinal:
+        r"""``base^exponent`` for this term as the base: no law reduces it."""
+        return _cardinal_with_expression(_PowerCardinal(base, exponent))
+
+    def bounds_above(self, cardinal_number: Cardinal) -> bool:
+        r"""Whether a law of this term's form shows ``cardinal_number <= self``: none does."""
+        return False
+
+    def strictly_bounds_above(self, cardinal_number: Cardinal) -> bool:
+        r"""Whether a law of this term's form shows ``cardinal_number < self``: none does."""
+        return False
+
+    def is_componentwise_below(self, power: _PowerCardinal) -> bool:
+        r"""Whether this term is a power below ``power`` in base and exponent: it is not a power."""
+        return False
+
+
 @dataclass(frozen=True)
-class _FiniteCardinal:
+class _FiniteCardinal(_CardinalExpression):
     value: int
 
+    def display(self) -> str:
+        return repr(self.value)
+
+    def sort_key(self) -> tuple[int, str]:
+        return (0, str(self.value))
+
+    def is_finite(self) -> bool:
+        return True
+
 
 @dataclass(frozen=True)
-class _AlephCardinal:
+class _AlephCardinal(_CardinalExpression):
     index: Ordinal
 
+    def display(self) -> str:
+        return f"ℵ_{self.index}"
+
+    def sort_key(self) -> tuple[int, str]:
+        return (1, str(self.index))
+
+    def is_aleph(self) -> bool:
+        return True
+
+    def is_countably_infinite(self) -> bool:
+        return self.index == 0
+
 
 @dataclass(frozen=True)
-class _PowerCardinal:
+class _PowerCardinal(_CardinalExpression):
+    r"""``base^exponent`` with an infinite exponent and a base of at least two."""
+
     base: Cardinal
     exponent: Cardinal
 
+    def display(self) -> str:
+        return f"({self.base})^({self.exponent})"
+
+    def sort_key(self) -> tuple[int, str]:
+        return (2, self.display())
+
+    def is_continuum(self) -> bool:
+        return self.base == 2 and self.exponent.is_countably_infinite()
+
+    def power_with_this_base(
+        self,
+        base: Cardinal,
+        exponent: Cardinal,
+    ) -> Cardinal:
+        r"""``(kappa^lambda)^mu = kappa^(lambda mu)``."""
+        cardinalities = Cardinalities()
+        return cardinalities.power(
+            self.base,
+            cardinalities.product(self.exponent, exponent),
+        )
+
+    def bounds_above(self, cardinal_number: Cardinal) -> bool:
+        r"""Decide ``cardinal_number <= kappa^lambda`` by the laws of exponentiation.
+
+        ``nu <= kappa`` gives ``nu <= kappa^lambda`` since ``lambda >= 1``;
+        ``2 <= kappa`` and ``nu <= lambda`` give ``nu < 2^lambda <= kappa^lambda``;
+        a power ``rho^sigma`` with ``rho <= kappa`` and ``sigma <= lambda`` is
+        below ``kappa^lambda`` by monotonicity.
+        """
+        cardinalities = Cardinalities()
+        if cardinalities.le(cardinal_number, self.base):
+            return True
+        if cardinalities.le(2, self.base) and cardinalities.le(cardinal_number, self.exponent):
+            return True
+        return cardinal_number.expression().is_componentwise_below(self)
+
+    def strictly_bounds_above(self, cardinal_number: Cardinal) -> bool:
+        r"""Decide ``cardinal_number < kappa^lambda`` by Cantor's theorem: ``nu <= lambda < 2^lambda <= kappa^lambda``."""
+        cardinalities = Cardinalities()
+        return cardinalities.le(2, self.base) and cardinalities.le(cardinal_number, self.exponent)
+
+    def is_componentwise_below(self, power: _PowerCardinal) -> bool:
+        cardinalities = Cardinalities()
+        return cardinalities.le(self.base, power.base) and cardinalities.le(self.exponent, power.exponent)
+
 
 @dataclass(frozen=True)
-class _SupremumCardinal:
+class _SupremumCardinal(_CardinalExpression):
+    r"""The supremum of finitely many pairwise undecided terms, none a supremum."""
+
     terms: tuple[Cardinal, ...]
 
+    def display(self) -> str:
+        return "sup(" + ", ".join(map(str, self.terms)) + ")"
+
+    def sort_key(self) -> tuple[int, str]:
+        return (3, self.display())
+
+    def supremum_terms(self, cardinal_number: Cardinal) -> tuple[Cardinal, ...]:
+        return self.terms
+
+    def power_with_this_exponent(
+        self,
+        base: Cardinal,
+        exponent: Cardinal,
+    ) -> Cardinal:
+        r"""``kappa^(max_i lambda_i) = max_i kappa^(lambda_i)`` for finitely many ``lambda_i``."""
+        cardinalities = Cardinalities()
+        return cardinalities.supremum(*(cardinalities.power(base, term) for term in self.terms))
+
+    def power_with_this_base(
+        self,
+        base: Cardinal,
+        exponent: Cardinal,
+    ) -> Cardinal:
+        r"""``(max_i kappa_i)^lambda = max_i kappa_i^lambda`` for finitely many ``kappa_i``."""
+        cardinalities = Cardinalities()
+        return cardinalities.supremum(*(cardinalities.power(term, exponent) for term in self.terms))
+
 
 @dataclass(frozen=True)
-class _IndexedSumCardinal:
+class _IndexedSumCardinal(_CardinalExpression):
+    r"""``sum_{i in I} kappa_i`` over an infinite index set, not evaluated."""
+
     index_set: Parent
     summands: Callable
 
+    def display(self) -> str:
+        return f"sum_{{i in {self.index_set}}} kappa_i"
+
+    def sort_key(self) -> tuple[int, str]:
+        return (4, self.display())
+
+    def is_normal_form(self) -> bool:
+        return False
+
 
 @dataclass(frozen=True)
-class _IndexedProductCardinal:
+class _IndexedProductCardinal(_CardinalExpression):
+    r"""``prod_{i in I} kappa_i`` over an infinite index set, not evaluated."""
+
     index_set: Parent
     factors: Callable
 
+    def display(self) -> str:
+        return f"prod_{{i in {self.index_set}}} kappa_i"
 
-_CardinalExpression = _FiniteCardinal | _AlephCardinal | _PowerCardinal | _SupremumCardinal | _IndexedSumCardinal | _IndexedProductCardinal
+    def sort_key(self) -> tuple[int, str]:
+        return (4, self.display())
+
+    def is_normal_form(self) -> bool:
+        return False
 
 
 class CardinalComparison(Enum):
@@ -83,6 +283,12 @@ class CardinalityMorphism(Morphism):
         return self.domain() is self.codomain()
 
     def __mul__(self, other):
+        r"""Compose ``self ∘ other``.
+
+        The right operand is arbitrary, which is Python's binary-operator
+        protocol: like ``__eq__``, this decides about anything and answers
+        ``NotImplemented`` for what is not a composable order arrow.
+        """
         if not isinstance(other, CardinalityMorphism) or other.codomain() is not self.domain():
             return NotImplemented
         return Cardinalities().Mor(other.domain(), self.codomain()).unique_morphism()
@@ -102,13 +308,33 @@ class CardinalityHomset(CategoricalHomset):
     ) -> None:
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
-    def cardinality(self) -> Cardinalities.ObjectType:
-        return cardinal(1 if Cardinalities().le(self.domain(), self.codomain()) else 0)
+    def is_empty(self):
+        r"""The cardinal-order Hom is empty exactly when its source exceeds its target.
+
+        The comparison owner proves some inequalities and leaves others
+        undecided.  Failure to prove an inequality is not its negation.
+        """
+        cardinals = Cardinalities()
+        match (cardinals.le(self.domain(), self.codomain()), cardinals.lt(self.codomain(), self.domain())):
+            case (True, _):
+                return False
+            case (_, True):
+                return True
+            case _:
+                return Unknown
+
+    def cardinality(self) -> Cardinal:
+        r"""Zero or one when the cardinal comparison decides the Hom's emptiness."""
+        empty = self.is_empty()
+        assert empty is not Unknown, "this cardinal comparison does not decide the Hom cardinality"
+        return cardinal(0 if empty else 1)
 
     @cached_method
     def unique_morphism(self) -> CardinalityMorphism:
-        if not Cardinalities().le(self.domain(), self.codomain()):
+        empty = self.is_empty()
+        if empty is True:
             raise ValueError(f"there is no cardinality morphism {self.domain()} -> {self.codomain()}")
+        assert empty is False, "this cardinal comparison does not decide the existence of the arrow"
         return self.element_class(self)
 
     def _element_constructor_(self, morphism=None):
@@ -130,7 +356,7 @@ class CardinalityHomCategoryConstruction(HomCategoryConstruction):
 class Cardinalities(OwnedCategory):
     r"""The thin category associated to the represented cardinal order."""
 
-    def an_object(self) -> Cardinalities.ObjectType:
+    def an_object(self) -> Cardinal:
         r"""The cardinal three."""
         return cardinal(3)
 
@@ -142,10 +368,28 @@ class Cardinalities(OwnedCategory):
     def _repr_(self) -> str:
         return "Card: cardinalities with a unique morphism kappa -> lambda exactly when kappa <= lambda"
 
+    def _call_(self, value: SupportsInt | AnInfinity) -> Cardinal:
+        r"""Construct the cardinal a literal names.
+
+        The literal ingress of this category's one construction, reached
+        through ``Cardinalities()(value)`` once ``value`` is not already a
+        cardinal: Sage's ``Infinity`` names ``aleph_0``, and an exact
+        nonnegative integer names the finite cardinal.  Anything else is
+        refused by the construction, not caught.
+        """
+        if value is Infinity:
+            return aleph(0)
+        integer = int(value)
+        if value != integer:
+            raise TypeError("a finite cardinal is specified by an exact integer")
+        if integer < 0:
+            raise ValueError(f"a cardinal is nonnegative; found {integer}")
+        return _cardinal_with_expression(_FiniteCardinal(integer))
+
     def Mor(
         self,
-        domain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        codomain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        domain: Cardinal | SupportsInt | AnInfinity,
+        codomain: Cardinal | SupportsInt | AnInfinity,
     ) -> CardinalityHomset:
         return CardinalityHomCategoryConstruction(self).Of(cardinal(domain), cardinal(codomain))
 
@@ -157,34 +401,19 @@ class Cardinalities(OwnedCategory):
         def expression(self) -> _CardinalExpression:
             return self._expression
 
-        def cardinality(self) -> Cardinalities.ObjectType:
+        def cardinality(self) -> Cardinal:
+            r"""``|kappa| = kappa``.
+
+            Under the von Neumann assignment a cardinal is the initial ordinal
+            of its size, a set whose cardinality is that cardinal.
+            """
             return self
 
         def sort_key(self) -> tuple[int, str]:
-            expression = self.expression()
-            if isinstance(expression, _FiniteCardinal):
-                return (0, str(expression.value))
-            if isinstance(expression, _AlephCardinal):
-                return (1, str(expression.index))
-            if isinstance(expression, _PowerCardinal):
-                return (2, repr(self))
-            if isinstance(expression, _SupremumCardinal):
-                return (3, repr(self))
-            return (4, repr(self))
+            return self.expression().sort_key()
 
         def _repr_(self) -> str:
-            expression = self.expression()
-            if isinstance(expression, _FiniteCardinal):
-                return repr(expression.value)
-            if isinstance(expression, _AlephCardinal):
-                return f"ℵ_{expression.index}"
-            if isinstance(expression, _PowerCardinal):
-                return f"({expression.base})^({expression.exponent})"
-            if isinstance(expression, _SupremumCardinal):
-                return "sup(" + ", ".join(map(str, expression.terms)) + ")"
-            if isinstance(expression, _IndexedSumCardinal):
-                return f"sum_{{i in {expression.index_set}}} kappa_i"
-            return f"prod_{{i in {expression.index_set}}} kappa_i"
+            return self.expression().display()
 
         def __hash__(self) -> int:
             if self.is_finite():
@@ -194,10 +423,16 @@ class Cardinalities(OwnedCategory):
             return hash(self.expression())
 
         def __eq__(self, other) -> bool:
-            try:
-                return self.expression() == cardinal(other).expression()
-            except (TypeError, ValueError):
-                return False
+            r"""Equality of the defining terms, with a literal read as the cardinal it names."""
+            match other:
+                case _ if other in Cardinalities():
+                    return self.expression() == other.expression()
+                case _ if other is Infinity:
+                    return self.expression() == Cardinalities()(other).expression()
+                case _ if isinstance(other, SupportsInt) and other in ZZ and int(other) >= 0:
+                    return self.expression() == Cardinalities()(other).expression()
+                case _:
+                    return False
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -232,63 +467,58 @@ class Cardinalities(OwnedCategory):
 
         def is_finite(self) -> bool:
             expression = self.expression()
-            assert not isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)), (
+            assert expression.is_normal_form(), (
                 "finiteness is not selected for an arbitrary indexed cardinal family"
             )
-            return isinstance(expression, _FiniteCardinal)
+            return expression.is_finite()
 
         def is_infinite(self) -> bool:
             return not self.is_finite()
 
         def is_aleph(self) -> bool:
-            return isinstance(self.expression(), _AlephCardinal)
+            return self.expression().is_aleph()
 
         def is_continuum(self) -> bool:
-            expression = self.expression()
-            return bool(isinstance(expression, _PowerCardinal) and expression.base == 2 and expression.exponent.is_countably_infinite())
+            return self.expression().is_continuum()
 
         def is_countable(self) -> bool:
             return self.is_finite() or self.is_countably_infinite()
 
         def is_uncountable(self) -> bool:
+            r"""Whether ``kappa > aleph_0``.
+
+            A countable cardinal is not; an aleph beyond ``aleph_0`` and a
+            power ``kappa^lambda`` with infinite exponent are; a supremum is
+            when one of its terms is.
+            """
             expression = self.expression()
-            assert not isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)), (
+            assert expression.is_normal_form(), (
                 "countability is not selected for an arbitrary indexed cardinal family"
             )
-            if self.is_finite() or self.is_countably_infinite():
+            if self.is_countable():
                 return False
-            if isinstance(expression, _SupremumCardinal):
-                return any(term.is_uncountable() for term in expression.terms)
-            return True
+            return any(not term.is_countable() for term in expression.supremum_terms(self))
 
         def is_countably_infinite(self) -> bool:
-            expression = self.expression()
-            return isinstance(expression, _AlephCardinal) and expression.index == 0
+            return self.expression().is_countably_infinite()
 
         def is_uncountably_infinite(self) -> bool:
             return self.is_infinite() and self.is_uncountable()
 
         def aleph_index(self) -> Ordinal:
-            expression = self.expression()
-            if not isinstance(expression, _AlephCardinal):
-                raise ValueError(f"{self} is not an aleph cardinal")
-            return expression.index
+            assert self.is_aleph(), f"{self} is not an aleph cardinal, so it has no aleph index"
+            return self.expression().index
 
         def initial_ordinal(self) -> Ordinal:
             return omega(self.aleph_index())
 
         def _finite_int(self) -> int:
-            expression = self.expression()
-            if not isinstance(expression, _FiniteCardinal):
-                raise ValueError(f"{self} is not a finite cardinal")
-            return expression.value
+            assert self.is_finite(), f"{self} is not a finite cardinal"
+            return self.expression().value
 
         def finite_value(self) -> int:
             r"""Return the ordinary nonnegative integer representing this finite cardinal."""
-            expression = self.expression()
-            if not isinstance(expression, _FiniteCardinal):
-                raise ValueError(f"{self} is not a finite cardinal")
-            return expression.value
+            return self._finite_int()
 
         def __int__(self) -> int:
             if not self.is_finite():
@@ -301,9 +531,7 @@ class Cardinalities(OwnedCategory):
         def _integer_(self, ring=None):
             if not self.is_finite():
                 raise TypeError(f"cannot convert infinite cardinal {self} to an integer")
-            from sage.rings.integer_ring import ZZ as SageZZ
-
-            return SageZZ(self._finite_int())
+            return ZZ(self._finite_int())
 
         def _rational_(self):
             if not self.is_finite():
@@ -314,23 +542,23 @@ class Cardinalities(OwnedCategory):
 
         def Mor(
             self,
-            codomain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+            codomain: Cardinal | SupportsInt | AnInfinity,
             category: Category | None = None,
         ) -> CardinalityHomset:
             if category is not None and category is not Cardinalities():
                 raise TypeError("a cardinal morphism lies in Cardinalities")
             return Cardinalities().Mor(self, codomain)
 
-    def zero(self) -> Cardinalities.ObjectType:
+    def zero(self) -> Cardinal:
         return cardinal(0)
 
-    def one(self) -> Cardinalities.ObjectType:
+    def one(self) -> Cardinal:
         return cardinal(1)
 
     def sum(
         self,
-        *summands: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-    ) -> Cardinalities.ObjectType:
+        *summands: Cardinal | SupportsInt | AnInfinity,
+    ) -> Cardinal:
         result = self.zero()
         for summand in map(cardinal, summands):
             if result.is_finite() and summand.is_finite():
@@ -343,8 +571,8 @@ class Cardinalities(OwnedCategory):
 
     def product(
         self,
-        *factors: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-    ) -> Cardinalities.ObjectType:
+        *factors: Cardinal | SupportsInt | AnInfinity,
+    ) -> Cardinal:
         result = self.one()
         for factor in map(cardinal, factors):
             if result == 0 or factor == 0:
@@ -360,8 +588,8 @@ class Cardinalities(OwnedCategory):
     def indexed_sum(
         self,
         index_set: Parent,
-        summands: Callable[[IndexT], Cardinalities.ObjectType | SupportsInt | AnInfinity],
-    ) -> Cardinalities.ObjectType:
+        summands: Callable[[IndexT], Cardinal | SupportsInt | AnInfinity],
+    ) -> Cardinal:
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.sum(*(summands(index) for index in index_set))
@@ -370,8 +598,8 @@ class Cardinalities(OwnedCategory):
     def indexed_product(
         self,
         index_set: Parent,
-        factors: Callable[[IndexT], Cardinalities.ObjectType | SupportsInt | AnInfinity],
-    ) -> Cardinalities.ObjectType:
+        factors: Callable[[IndexT], Cardinal | SupportsInt | AnInfinity],
+    ) -> Cardinal:
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.product(*(factors(index) for index in index_set))
@@ -379,9 +607,17 @@ class Cardinalities(OwnedCategory):
 
     def power(
         self,
-        base: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        exponent: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-    ) -> Cardinalities.ObjectType:
+        base: Cardinal | SupportsInt | AnInfinity,
+        exponent: Cardinal | SupportsInt | AnInfinity,
+    ) -> Cardinal:
+        r"""``kappa^lambda``.
+
+        With a finite exponent the power is computed or equals the infinite
+        base.  With an infinite exponent ``lambda``, a base ``kappa`` with
+        ``2 <= kappa <= lambda`` gives ``kappa^lambda = 2^lambda``, and the
+        remaining reductions belong to the forms of the exponent and the base:
+        a supremum distributes, and a power multiplies exponents.
+        """
         cardinal_base = cardinal(base)
         cardinal_exponent = cardinal(exponent)
         if cardinal_exponent == 0:
@@ -396,18 +632,7 @@ class Cardinalities(OwnedCategory):
             return cardinal_base
         if cardinal_base.is_finite() or self.le(cardinal_base, cardinal_exponent):
             cardinal_base = cardinal(2)
-        exponent_expression = cardinal_exponent.expression()
-        if isinstance(exponent_expression, _SupremumCardinal):
-            return self.supremum(*(self.power(cardinal_base, term) for term in exponent_expression.terms))
-        base_expression = cardinal_base.expression()
-        if isinstance(base_expression, _SupremumCardinal):
-            return self.supremum(*(self.power(term, cardinal_exponent) for term in base_expression.terms))
-        if isinstance(base_expression, _PowerCardinal):
-            return self.power(
-                base_expression.base,
-                self.product(base_expression.exponent, cardinal_exponent),
-            )
-        return _cardinal_with_expression(_PowerCardinal(cardinal_base, cardinal_exponent))
+        return cardinal_exponent.expression().power_with_this_exponent(cardinal_base, cardinal_exponent)
 
     def sum_morphism(
         self,
@@ -447,18 +672,16 @@ class Cardinalities(OwnedCategory):
 
     def supremum(
         self,
-        *cardinal_numbers: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-    ) -> Cardinalities.ObjectType:
-        terms: list[Cardinalities.ParentMethods] = []
-        for cardinal_number in map(cardinal, cardinal_numbers):
-            expression = cardinal_number.expression()
-            if isinstance(expression, _SupremumCardinal):
-                terms.extend(expression.terms)
-            else:
-                terms.append(cardinal_number)
-        if not terms:
-            raise ValueError("a finite supremum needs at least one cardinal")
-        maximal_terms: list[Cardinalities.ParentMethods] = []
+        *cardinal_numbers: Cardinal | SupportsInt | AnInfinity,
+    ) -> Cardinal:
+        r"""The supremum of finitely many cardinals: the maximal terms, or their undecided supremum."""
+        terms: list[Cardinal] = [
+            term
+            for cardinal_number in map(cardinal, cardinal_numbers)
+            for term in cardinal_number.expression().supremum_terms(cardinal_number)
+        ]
+        assert terms, "a finite supremum needs at least one cardinal"
+        maximal_terms: list[Cardinal] = []
         for candidate in sorted(set(terms), key=lambda term: term.sort_key()):
             if any(self.le(candidate, term) for term in maximal_terms):
                 continue
@@ -471,25 +694,34 @@ class Cardinalities(OwnedCategory):
 
     def le(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
+        r"""Prove ``source <= target`` by the represented laws; ``False`` means no proof was found.
+
+        A supremum is below ``target`` when each of its terms is, and
+        ``source`` is below a supremum when it is below one of its terms.
+        """
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
             return True
-        left_expression = left.expression()
-        right_expression = right.expression()
-        if isinstance(left_expression, _SupremumCardinal):
-            return all(self.le(term, right) for term in left_expression.terms)
-        if isinstance(right_expression, _SupremumCardinal):
-            return any(self.le(left, term) for term in right_expression.terms)
-        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
+        return all(
+            any(
+                self._le_terms(left_term, right_term)
+                for right_term in right.expression().supremum_terms(right)
+            )
+            for left_term in left.expression().supremum_terms(left)
+        )
+
+    def _le_terms(self, left: Cardinal, right: Cardinal) -> bool:
+        r"""Decide ``left <= right`` for two cardinals, neither a supremum."""
+        if left == right:
+            return True
+        if not (left.expression().is_normal_form() and right.expression().is_normal_form()):
             return False
         if left.is_finite():
-            if right.is_finite():
-                return left._finite_int() <= right._finite_int()
-            return True
+            return not right.is_finite() or left._finite_int() <= right._finite_int()
         if right.is_finite():
             return False
         if left.is_aleph() and right.is_aleph():
@@ -498,64 +730,60 @@ class Cardinalities(OwnedCategory):
             return True
         if left.is_aleph() and left.aleph_index() == 1 and right.is_uncountable():
             return True
-        if isinstance(right_expression, _PowerCardinal):
-            if self.le(left, right_expression.base):
-                return True
-            if self.le(cardinal(2), right_expression.base) and self.le(left, right_expression.exponent):
-                return True
-            if isinstance(left_expression, _PowerCardinal):
-                return self.le(left_expression.base, right_expression.base) and self.le(left_expression.exponent, right_expression.exponent)
-        return False
+        return right.expression().bounds_above(left)
 
     def lt(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
+        r"""Prove ``source < target`` by the represented laws; ``False`` means no proof was found."""
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
             return False
-        left_expression = left.expression()
-        right_expression = right.expression()
-        if isinstance(left_expression, _SupremumCardinal):
-            return all(self.lt(term, right) for term in left_expression.terms)
-        if isinstance(right_expression, _SupremumCardinal):
-            return any(self.lt(left, term) for term in right_expression.terms)
-        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
+        return all(
+            any(
+                self._lt_terms(left_term, right_term)
+                for right_term in right.expression().supremum_terms(right)
+            )
+            for left_term in left.expression().supremum_terms(left)
+        )
+
+    def _lt_terms(self, left: Cardinal, right: Cardinal) -> bool:
+        r"""Decide ``left < right`` for two cardinals, neither a supremum."""
+        if left == right:
+            return False
+        if not (left.expression().is_normal_form() and right.expression().is_normal_form()):
             return False
         if left.is_finite():
-            if right.is_finite():
-                return left._finite_int() < right._finite_int()
-            return True
+            return not right.is_finite() or left._finite_int() < right._finite_int()
         if right.is_finite():
             return False
         if left.is_aleph() and right.is_aleph():
             return left.aleph_index() < right.aleph_index()
         if left.is_countably_infinite() and right.is_uncountable():
             return True
-        if isinstance(right_expression, _PowerCardinal):
-            return self.le(cardinal(2), right_expression.base) and self.le(left, right_expression.exponent)
-        return False
+        return right.expression().strictly_bounds_above(left)
 
     def ge(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
         return self.le(target, source)
 
     def gt(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
         return self.lt(target, source)
 
     def compare(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> CardinalComparison:
         left = cardinal(source)
         right = cardinal(target)
@@ -573,8 +801,8 @@ class Cardinalities(OwnedCategory):
 
     def are_incomparable(
         self,
-        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        source: Cardinal | SupportsInt | AnInfinity,
+        target: Cardinal | SupportsInt | AnInfinity,
     ) -> bool:
         return not self.le(source, target) and not self.le(target, source)
 
@@ -582,45 +810,146 @@ class Cardinalities(OwnedCategory):
 Cardinal = Cardinalities().ObjectType
 
 
+class _OrdinalExpression(ABC):
+    r"""A term of ordinal arithmetic, the defining datum of an ordinal.
+
+    The forms are a finite ordinal, an initial ordinal ``omega_alpha``, the
+    natural (Hessenberg) sum and product of several terms, and the ordinal sum,
+    product and power of two.  The defaults below are the answers of the forms
+    that do not override them.
+    """
+
+    @abstractmethod
+    def display(self) -> str:
+        r"""The notation of this term."""
+        ...
+
+    @abstractmethod
+    def denoted_cardinality(self) -> Cardinal:
+        r"""``|alpha|`` for the ordinal this term denotes."""
+        ...
+
+    def is_finite(self) -> bool:
+        return False
+
+    def is_initial(self) -> bool:
+        return False
+
+    def natural_sum_terms(self, ordinal_number: Ordinal) -> tuple[Ordinal, ...]:
+        r"""The terms whose natural sum ``ordinal_number`` is: itself alone."""
+        return (ordinal_number,)
+
+    def natural_product_factors(self, ordinal_number: Ordinal) -> tuple[Ordinal, ...]:
+        r"""The factors whose natural product ``ordinal_number`` is: itself alone."""
+        return (ordinal_number,)
+
+
+
 @dataclass(frozen=True)
-class _FiniteOrdinal:
+class _FiniteOrdinal(_OrdinalExpression):
     value: Integer
 
+    def display(self) -> str:
+        return repr(self.value)
+
+    def denoted_cardinality(self) -> Cardinal:
+        return cardinal(self.value)
+
+    def is_finite(self) -> bool:
+        return True
+
 
 @dataclass(frozen=True)
-class _InitialOrdinal:
+class _InitialOrdinal(_OrdinalExpression):
     index: Ordinal
 
+    def display(self) -> str:
+        return f"ω_{self.index}"
+
+    def denoted_cardinality(self) -> Cardinal:
+        r"""``|omega_alpha| = aleph_alpha``."""
+        return aleph(self.index)
+
+    def is_initial(self) -> bool:
+        return True
+
 
 @dataclass(frozen=True)
-class _NaturalSum:
+class _NaturalSum(_OrdinalExpression):
     terms: tuple[Ordinal, ...]
 
+    def display(self) -> str:
+        return " # ".join(map(repr, self.terms))
+
+    def denoted_cardinality(self) -> Cardinal:
+        return Cardinalities().sum(*(term.cardinality() for term in self.terms))
+
+    def natural_sum_terms(self, ordinal_number: Ordinal) -> tuple[Ordinal, ...]:
+        return self.terms
+
+
 
 @dataclass(frozen=True)
-class _NaturalProduct:
+class _NaturalProduct(_OrdinalExpression):
     factors: tuple[Ordinal, ...]
 
+    def display(self) -> str:
+        return " ⊗ ".join(map(repr, self.factors))
+
+    def denoted_cardinality(self) -> Cardinal:
+        return Cardinalities().product(*(factor.cardinality() for factor in self.factors))
+
+    def natural_product_factors(self, ordinal_number: Ordinal) -> tuple[Ordinal, ...]:
+        return self.factors
+
 
 @dataclass(frozen=True)
-class _OrdinalSum:
+class _OrdinalSum(_OrdinalExpression):
     left: Ordinal
     right: Ordinal
 
+    def display(self) -> str:
+        return f"({self.left} +o {self.right})"
+
+    def denoted_cardinality(self) -> Cardinal:
+        r"""``|alpha + beta| = |alpha| + |beta|``."""
+        return Cardinalities().sum(self.left.cardinality(), self.right.cardinality())
+
 
 @dataclass(frozen=True)
-class _OrdinalProduct:
+class _OrdinalProduct(_OrdinalExpression):
     left: Ordinal
     right: Ordinal
 
+    def display(self) -> str:
+        return f"({self.left} *o {self.right})"
+
+    def denoted_cardinality(self) -> Cardinal:
+        r"""``|alpha beta| = |alpha| |beta|``."""
+        return Cardinalities().product(self.left.cardinality(), self.right.cardinality())
+
 
 @dataclass(frozen=True)
-class _OrdinalPower:
+class _OrdinalPower(_OrdinalExpression):
+    r"""``base^exponent`` with ``base >= 2``, ``exponent >= 1``, one of them infinite."""
+
     base: Ordinal
     exponent: Ordinal
 
+    def display(self) -> str:
+        return f"({self.base} ^o {self.exponent})"
 
-_OrdinalExpression = _FiniteOrdinal | _InitialOrdinal | _NaturalSum | _NaturalProduct | _OrdinalSum | _OrdinalProduct | _OrdinalPower
+    def denoted_cardinality(self) -> Cardinal:
+        r"""``|alpha^beta| = max(|alpha|, |beta|)`` for ``alpha >= 2``, ``beta >= 1``, one infinite.
+
+        Ordinal exponentiation is continuous in the exponent, so
+        ``alpha^beta = sup_{gamma < beta} alpha^gamma`` at a limit ``beta``,
+        and induction on ``beta`` bounds ``|alpha^beta|`` by
+        ``max(|alpha|, |beta|)``; ``alpha^beta >= alpha`` and
+        ``alpha^beta >= beta`` give the other inequality.  It is not the
+        cardinal power: ``2^omega = omega`` is countable.
+        """
+        return Cardinalities().supremum(self.base.cardinality(), self.exponent.cardinality())
 
 
 class OrdinalSemiringMorphism(Morphism):
@@ -635,7 +964,6 @@ class OrdinalSemiringMorphism(Morphism):
         if not callable(function):
             raise TypeError("an ordinal-semiring morphism requires an exact map")
         self._function = function
-        self._preamble_is_identity = False
 
     def _call_(self, element):
         return self.codomain()(self._function(self.domain()(element)))
@@ -644,6 +972,12 @@ class OrdinalSemiringMorphism(Morphism):
         return self._call_(element)
 
     def __mul__(self, other):
+        r"""Compose ``self ∘ other``.
+
+        The right operand is arbitrary, which is Python's binary-operator
+        protocol: like ``__eq__``, this decides about anything and answers
+        ``NotImplemented`` for what is not a composable semiring morphism.
+        """
         if not isinstance(other, OrdinalSemiringMorphism) or other.codomain() is not self.domain():
             return NotImplemented
         if self.is_identity():
@@ -653,7 +987,8 @@ class OrdinalSemiringMorphism(Morphism):
         return OrdinalSemirings().Mor(other.domain(), self.codomain())(lambda element: self(other(element)))
 
     def is_identity(self) -> bool:
-        return self._preamble_is_identity
+        r"""Whether this is the identity arrow its endomorphism Hom-set interns."""
+        return self.domain() is self.codomain() and self is self.parent().identity()
 
 
 class OrdinalSemiringHomset(CategoricalHomset):
@@ -680,12 +1015,12 @@ class OrdinalSemiringHomset(CategoricalHomset):
 
         return self.element_class(self, function)
 
+    @cached_method
     def identity(self) -> OrdinalSemiringMorphism:
+        r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        identity = self(lambda element: element)
-        identity._preamble_is_identity = True
-        return identity
+        return self(lambda element: element)
 
 
 class OrdinalSemiringHomCategoryConstruction(HomCategoryConstruction):
@@ -710,11 +1045,10 @@ class OrdinalSemirings(OwnedCategory):
             return hash(self.expression())
 
         def __eq__(self, other) -> bool:
-            try:
-                other_ordinal = self.parent()(other)
-            except (TypeError, ValueError):
+            r"""Equality of the defining terms, with a literal read as the ordinal it names."""
+            if other not in self.parent():
                 return False
-            return self.expression() == other_ordinal.expression()
+            return self.expression() == self.parent()(other).expression()
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -747,10 +1081,8 @@ class OrdinalSemirings(OwnedCategory):
 
         def ordinal_sum(self, other: Ordinal | SupportsInt) -> Ordinal:
             right = self.parent()(other)
-            left_expression = self.expression()
-            right_expression = right.expression()
-            if isinstance(left_expression, _FiniteOrdinal) and isinstance(right_expression, _FiniteOrdinal):
-                return self.parent()(left_expression.value + right_expression.value)
+            if self.expression().is_finite() and right.expression().is_finite():
+                return self.parent()(self.expression().value + right.expression().value)
             if right == 0:
                 return self
             if self == 0:
@@ -759,10 +1091,8 @@ class OrdinalSemirings(OwnedCategory):
 
         def ordinal_product(self, other: Ordinal | SupportsInt) -> Ordinal:
             right = self.parent()(other)
-            left_expression = self.expression()
-            right_expression = right.expression()
-            if isinstance(left_expression, _FiniteOrdinal) and isinstance(right_expression, _FiniteOrdinal):
-                return self.parent()(left_expression.value * right_expression.value)
+            if self.expression().is_finite() and right.expression().is_finite():
+                return self.parent()(self.expression().value * right.expression().value)
             if self == 0 or right == 0:
                 return self.parent().zero()
             if right == 1:
@@ -773,10 +1103,8 @@ class OrdinalSemirings(OwnedCategory):
 
         def ordinal_power(self, exponent: Ordinal | SupportsInt) -> Ordinal:
             power = self.parent()(exponent)
-            base_expression = self.expression()
-            exponent_expression = power.expression()
-            if isinstance(base_expression, _FiniteOrdinal) and isinstance(exponent_expression, _FiniteOrdinal):
-                return self.parent()(base_expression.value**exponent_expression.value)
+            if self.expression().is_finite() and power.expression().is_finite():
+                return self.parent()(self.expression().value ** power.expression().value)
             if power == 0:
                 return self.parent().one()
             if self == 0:
@@ -786,43 +1114,18 @@ class OrdinalSemirings(OwnedCategory):
             return self.parent().from_expression(_OrdinalPower(self, power))
 
         def is_initial(self) -> bool:
-            return isinstance(self.expression(), _InitialOrdinal)
+            return self.expression().is_initial()
 
         def initial_index(self) -> Ordinal:
-            expression = self.expression()
-            if not isinstance(expression, _InitialOrdinal):
-                raise ValueError(f"{self} is not an initial ordinal")
-            return expression.index
+            assert self.is_initial(), f"{self} is not an initial ordinal, so it has no initial index"
+            return self.expression().index
 
-        def cardinality(self) -> Cardinalities.ObjectType:
-            expression = self.expression()
-            if isinstance(expression, _FiniteOrdinal):
-                return cardinal(expression.value)
-            if isinstance(expression, _InitialOrdinal):
-                return aleph(expression.index)
-            if isinstance(expression, (_NaturalSum, _OrdinalSum)):
-                terms = expression.terms if isinstance(expression, _NaturalSum) else (expression.left, expression.right)
-                return Cardinalities().sum(*(term.cardinality() for term in terms))
-            if isinstance(expression, (_NaturalProduct, _OrdinalProduct)):
-                factors = expression.factors if isinstance(expression, _NaturalProduct) else (expression.left, expression.right)
-                return Cardinalities().product(*(factor.cardinality() for factor in factors))
-            return Cardinalities().power(expression.base.cardinality(), expression.exponent.cardinality())
+        def cardinality(self) -> Cardinal:
+            r"""``|alpha|``, the cardinality of the von Neumann ordinal ``alpha``."""
+            return self.expression().denoted_cardinality()
 
         def _repr_(self) -> str:
-            expression = self.expression()
-            if isinstance(expression, _FiniteOrdinal):
-                return repr(expression.value)
-            if isinstance(expression, _InitialOrdinal):
-                return f"ω_{expression.index}"
-            if isinstance(expression, _NaturalSum):
-                return " # ".join(map(repr, expression.terms))
-            if isinstance(expression, _NaturalProduct):
-                return " ⊗ ".join(map(repr, expression.factors))
-            if isinstance(expression, _OrdinalSum):
-                return f"({expression.left} +o {expression.right})"
-            if isinstance(expression, _OrdinalProduct):
-                return f"({expression.left} *o {expression.right})"
-            return f"({expression.base} ^o {expression.exponent})"
+            return self.expression().display()
 
     def an_object(self) -> OrdinalSemiring:
         r"""The semiring of ordinals."""
@@ -862,15 +1165,24 @@ class OrdinalSemirings(OwnedCategory):
         def from_expression(self, expression: _OrdinalExpression) -> Ordinal:
             return self.element_class(self, expression)
 
+        def __contains__(self, value) -> bool:
+            r"""Whether ``value`` names an ordinal: an ordinal of this semiring, a finite cardinal, or an exact nonnegative integer."""
+            match value:
+                case _ if element_parent(value) is self:
+                    return True
+                case _ if value in Cardinalities():
+                    return value.is_finite()
+                case _ if isinstance(value, SupportsInt) and value in ZZ:
+                    return int(value) >= 0
+                case _:
+                    return False
+
         def _element_constructor_(self, value):
-            if isinstance(value, self.category().ElementType):
-                if value.parent() is self:
-                    return value
-                raise TypeError("an ordinal belongs to the canonical ordinal semiring")
-            integer = ZZ(value)
-            if integer < 0:
-                raise ValueError(f"an ordinal is nonnegative; found {integer}")
-            return self.from_expression(_FiniteOrdinal(integer))
+            if element_parent(value) is self:
+                return value
+            if value not in self:
+                raise ValueError(f"{value!r} names no ordinal: an ordinal is an ordinal of this semiring or a nonnegative integer")
+            return self.from_expression(_FiniteOrdinal(ZZ(int(value))))
 
         def zero(self) -> Ordinal:
             return self(0)
@@ -886,12 +1198,10 @@ class OrdinalSemirings(OwnedCategory):
             finite_part = ZZ.zero()
             for summand in map(self, summands):
                 expression = summand.expression()
-                if isinstance(expression, _FiniteOrdinal):
+                if expression.is_finite():
                     finite_part += expression.value
-                elif isinstance(expression, _NaturalSum):
-                    terms.extend(expression.terms)
                 else:
-                    terms.append(summand)
+                    terms.extend(expression.natural_sum_terms(summand))
             if finite_part:
                 terms.append(self(finite_part))
             if not terms:
@@ -902,25 +1212,31 @@ class OrdinalSemirings(OwnedCategory):
             return self.from_expression(_NaturalSum(tuple(terms)))
 
         def natural_product(self, *factors) -> Ordinal:
-            ordinal_factors = tuple(map(self, factors))
-            for index, factor in enumerate(ordinal_factors):
-                expression = factor.expression()
-                if isinstance(expression, _NaturalSum):
-                    preceding = ordinal_factors[:index]
-                    following = ordinal_factors[index + 1 :]
-                    return self.natural_sum(*(self.natural_product(*preceding, term, *following) for term in expression.terms))
+            r"""Distribute over a natural sum, otherwise multiply the factors directly."""
+            normalized = tuple(map(self, factors))
+            for position, factor in enumerate(normalized):
+                terms = factor.expression().natural_sum_terms(factor)
+                match terms:
+                    case (term,) if term is factor:
+                        continue
+                    case _:
+                        return self.natural_sum(*(
+                            self.natural_product(*normalized[:position], term, *normalized[position + 1:])
+                            for term in terms
+                        ))
+            return self._natural_product_without_sums(normalized)
+
+        def _natural_product_without_sums(self, factors: tuple[Ordinal, ...]) -> Ordinal:
             normalized: list[Ordinal] = []
             finite_part = ZZ.one()
-            for factor in ordinal_factors:
+            for factor in factors:
                 expression = factor.expression()
-                if isinstance(expression, _FiniteOrdinal):
+                if expression.is_finite():
                     if expression.value == 0:
                         return self.zero()
                     finite_part *= expression.value
-                elif isinstance(expression, _NaturalProduct):
-                    normalized.extend(expression.factors)
                 else:
-                    normalized.append(factor)
+                    normalized.extend(expression.natural_product_factors(factor))
             if finite_part != 1 or not normalized:
                 normalized.append(self(finite_part))
             normalized.sort(key=repr)
@@ -937,16 +1253,12 @@ class OrdinalSemirings(OwnedCategory):
             target = self(right)
             if source == target:
                 return True
-            source_expression = source.expression()
-            target_expression = target.expression()
-            if isinstance(source_expression, _FiniteOrdinal):
-                if isinstance(target_expression, _FiniteOrdinal):
-                    return source_expression.value <= target_expression.value
-                return True
-            if isinstance(target_expression, _FiniteOrdinal):
+            if source.expression().is_finite():
+                return not target.expression().is_finite() or source.expression().value <= target.expression().value
+            if target.expression().is_finite():
                 return False
-            if isinstance(source_expression, _InitialOrdinal) and isinstance(target_expression, _InitialOrdinal):
-                return self.proves_le(source_expression.index, target_expression.index)
+            if source.is_initial() and target.is_initial():
+                return self.proves_le(source.initial_index(), target.initial_index())
             return False
 
         def Mor(
@@ -980,32 +1292,18 @@ omega0 = omega(0)
 
 
 @cached_function
-def _cardinal_with_expression(expression) -> Cardinalities.ObjectType:
+def _cardinal_with_expression(expression: _CardinalExpression) -> Cardinal:
     return _object_of(Cardinalities(), expression=expression)
 
 
 def cardinal(
-    value: Cardinalities.ObjectType | SupportsInt | AnInfinity,
-) -> Cardinalities.ObjectType:
-    if value in Cardinalities():
-        return value
-    if value is Infinity:
-        return aleph(0)
-    if isinstance(value, int):
-        integer = value
-    else:
-        try:
-            integer = int(value)
-        except (TypeError, ValueError, OverflowError) as error:
-            raise TypeError("a finite cardinal is specified by an exact integer") from error
-        if value != integer:
-            raise TypeError("a finite cardinal is specified by an exact integer")
-    if integer < 0:
-        raise ValueError(f"a cardinal is nonnegative; found {integer}")
-    return _cardinal_with_expression(_FiniteCardinal(integer))
+    value: Cardinal | SupportsInt | AnInfinity,
+) -> Cardinal:
+    r"""Notation for ``Cardinalities()(value)``: ``value`` itself when it is a cardinal."""
+    return Cardinalities()(value)
 
 
-def aleph(index: Ordinal | SupportsInt) -> Cardinalities.ObjectType:
+def aleph(index: Ordinal | SupportsInt) -> Cardinal:
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 

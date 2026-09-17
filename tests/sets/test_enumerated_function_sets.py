@@ -105,3 +105,16 @@ def test_a_lattice_may_be_free_on_hermite_polynomials() -> None:
     assert lattice.module_generator(H0) * lattice.module_generator(H2) == 0
     assert lattice.module_generator(H0) * lattice.module_generator(H0) == 1
     assert repr(lattice.module_generator(H0)) == "H_0"
+
+
+def test_symbolic_enumeration_keeps_the_private_engine_and_public_constructor() -> None:
+    for constructor in (FourierCharacters, HermitePolynomials, LaurentMonomials, SincTranslates):
+        functions = constructor()
+        assert functions is constructor()
+        assert functions in FunctionEnumeratedSets()
+        assert functions in CountablyInfiniteSets()
+        for position in range(8):
+            symbol = functions[position]
+            assert functions(symbol) == symbol
+            assert functions.ranking_map()(symbol) == position
+        assert SR.var("unrelated_symbol") not in functions
