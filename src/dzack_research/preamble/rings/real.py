@@ -324,6 +324,28 @@ class ExactRealNumber(FieldElement):
     def _mul_(self, other):
         return self.parent()(self._expression * other._expression)
 
+    def __mul__(self, other):
+        r"""Use the exact scalar engine, or the action on an owned module.
+
+        The coefficient product cannot call the algebra tensor classifier
+        whose own linear evaluation uses these coefficients.
+        """
+        ring = self.parent()
+        source = parent(other)
+        if source is ring:
+            return ExactRealNumber._mul_(self, other)
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        if source in Modules(ring):
+            return source.scalar_multiple(self, other)
+        try:
+            return ExactRealNumber._mul_(self, ring(other))
+        except (TypeError, ValueError):
+            return NotImplemented
+
+    def __rmul__(self, other):
+        return ExactRealNumber.__mul__(self, other)
+
     def _div_(self, other):
         nonzero = self.parent().relation(other, self.parent().zero(), operator.ne)
 
@@ -453,7 +475,7 @@ class ExactRealField(UniqueRepresentation, Field):
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        _initialize_engine_algebra(self, lambda left, right: left * right, ExactRealField.one(self))
 
 
     def _repr_(self) -> str:

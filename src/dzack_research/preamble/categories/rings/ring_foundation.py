@@ -736,14 +736,14 @@ class LocalizationRings(OwnedCategory):
                     super().__init__(
                         base=source.base_ring(),
                         _engine_product=lambda left, right: left * right,
-                        _engine_unit=lambda algebra: algebra.one(),
+                        _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
                         **rest,
                     )
                 case False:
                     super().__init__(base=source.base_ring(), **rest)
                     from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-                    _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+                    _initialize_engine_algebra(self, lambda left, right: left * right, LocalizationRings.ParentMethods.one(self))
 
             localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
@@ -1272,7 +1272,7 @@ class _PredicateSubringParent(Parent):
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-        _initialize_engine_algebra(self, lambda left, right: self(left * right), self.one())
+        _initialize_engine_algebra(self, lambda left, right: self(left * right), self._one)
 
     def is_commutative(self):
         if self._preamble_is_commutative:
@@ -2722,14 +2722,14 @@ class _OwnedRingElement(RingElement):
             other = self.parent()(other)
         except (TypeError, ValueError):
             return NotImplemented
-        return self._mul_(other)
+        return _OwnedRingElement._mul_(self, other)
 
     def __rmul__(self, other):
         try:
             other = self.parent()(other)
         except (TypeError, ValueError):
             return NotImplemented
-        return self._mul_(other)
+        return _OwnedRingElement._mul_(other, self)
 
     def _neg_(self):
         return self.parent()._from_engine_element(-self._backend())
@@ -3103,7 +3103,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        _initialize_engine_algebra(self, lambda left, right: left * right, self._from_engine_element(engine.one()))
 
 
     def _from_engine_element(self, value):
