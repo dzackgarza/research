@@ -103,18 +103,20 @@ class GradedDirectSumElement(ModuleElement):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, GradedDirectSumElement)
-            and other.parent() is self.parent()
+        if element_parent(other) is not self.parent():
+            return op == op_NE
+        decisions = tuple(
+            self.homogeneous_component(degree) == other.homogeneous_component(degree)
+            for degree in set(self._components) | set(other._components)
         )
-        if equal:
-            degrees = set(self._components) | set(other._components)
-            equal = all(
-                self.homogeneous_component(degree)
-                == other.homogeneous_component(degree)
-                for degree in degrees
-            )
-        return equal if op == op_EQ else not equal
+        match (any(value is False for value in decisions), all(value is True for value in decisions)):
+            case (True, _):
+                equal = False
+            case (_, True):
+                equal = True
+            case _:
+                equal = Unknown
+        return equal if op == op_EQ or equal is Unknown else not equal
 
     def _repr_(self):
         if not self._components:
