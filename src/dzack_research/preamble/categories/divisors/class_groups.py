@@ -85,5 +85,18 @@ class ClassGroups(Category):
             r"""The scheme whose divisor classes this group presents."""
             return self._class_group_scheme
 
+        def principal_to_weil_morphism(self):
+            r"""The principal-divisor morphism \(\rho_W\colon P \to \operatorname{Div}\) with \(\operatorname{Cl}(X) = \operatorname{coker}\rho_W\).
+
+            This is the defining morphism the presented-module level retains
+            for this cokernel; a class group built by the projective bundle
+            formula is a biproduct and has none.
+            """
+            principal_divisors = self.cokernel_morphism()
+            assert principal_divisors is not None, (
+                "this class group was not built as the cokernel of a principal-divisor morphism"
+            )
+            return principal_divisors
+
 
 __all__ = ["ClassGroups"]

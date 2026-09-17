@@ -99,24 +99,21 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     def class_to_chow_isomorphism(
         self,
         class_group,
-        principal_to_weil,
         weil_presentation_into_full_weil,
     ):
         r"""The isomorphism \(\operatorname{Cl}(X) \cong A_{\dim X - 1}(X)\) on a normal affine scheme.
 
-        ``class_group`` is \(\operatorname{coker}\rho_W\) for the principal-divisor
-        morphism ``principal_to_weil`` \(\rho_W\colon P \to D\) into a finite
-        Weil-divisor presentation \(D\), and ``weil_presentation_into_full_weil``
-        embeds \(D\) into the full Weil divisor group.  Through the scheme's
-        Weil/cycle isomorphism \(D\) becomes a finite presentation inside the
-        codimension-one cycle group, and the *same* principal divisors present
-        the Chow quotient, which is built here.
+        ``class_group`` is \(\operatorname{coker}\rho_W\) for its principal-divisor
+        morphism \(\rho_W\colon P \to D\) into a finite Weil-divisor presentation
+        \(D\), and ``weil_presentation_into_full_weil`` embeds \(D\) into the full
+        Weil divisor group.  Through the scheme's Weil/cycle isomorphism \(D\)
+        becomes a finite presentation inside the codimension-one cycle group,
+        and the *same* principal divisors present the Chow quotient, which is
+        built here; its ``rational_equivalence_morphism()`` is that composite.
         """
         scheme = class_group.class_group_scheme()
+        principal_to_weil = class_group.principal_to_weil_morphism()
         finite_weil = principal_to_weil.codomain()
-        assert class_group.cokernel_projection().domain() is finite_weil, (
-            "the class group is not presented on the codomain of the principal-divisor morphism"
-        )
         assert weil_presentation_into_full_weil.domain() is finite_weil, (
             "the Weil presentation embedding has the wrong source"
         )
@@ -175,6 +172,18 @@ class ChowGroups(OwnedCategoryOverBaseRing):
 
         def cycle_codimension(self):
             return int(self.chow_scheme().dimension()) - int(self.cycle_dimension())
+
+        def rational_equivalence_morphism(self):
+            r"""The rational-equivalence morphism \(\rho\) into the \(k\)-cycles with \(A_k(X) = \operatorname{coker}\rho\).
+
+            This is the defining morphism the presented-module level retains
+            for this cokernel.
+            """
+            rational_equivalence = self.cokernel_morphism()
+            assert rational_equivalence is not None, (
+                "this Chow group was not built as the cokernel of a rational-equivalence morphism"
+            )
+            return rational_equivalence
 
 
 class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
