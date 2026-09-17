@@ -129,6 +129,39 @@ Read from source; no session was run.
 Which engine-backed algebras answer `module_generating_set` today, and with what, was not determined.
 Scheduled as `algebra-structure-morphism-constructor` and `engine-algebras-through-the-structure-constructor` in [TODO.md](TODO.md).
 
+### Sheaf theory on non-affine schemes stops at the chart
+
+**Missing general mathematics.**
+For a ringed space \((X, \mathcal{O}_X)\) the tree has sheaves as functors on a site with descent (`Sheaves(coverage, D)`), but not the constructions sheaf theory on a non-affine scheme is built from:
+the category \(\mathbf{Mod}(\mathcal{O}_X)\) with inverse image \(f^{-1}\) and pullback \(f^{*}\);
+the Hom of quasi-coherent sheaves on a cover;
+the invertible (locally free of rank one) axiom;
+the group \(\mathrm{CDiv}(X) = \Gamma(X, \mathcal{K}_X^{*}/\mathcal{O}_X^{*})\);
+finite affine atlases as covering families in the Zariski coverage of \(\mathbf{Sch}_R/X\), and a scheme glued from a finite affine gluing datum;
+the fibered category of modules over varying rings, whose arrows are semilinear maps;
+the projectivization \(\mathbb{P}\colon \mathbf{Vect}_K \to \mathbf{Sch}_K\).
+Underneath, `Modules(R)` has products, equalizers and tensor products only for framed or presented modules, so \(\Gamma(X, F)\), a limit of restricted chart modules, cannot be built at its owner.
+
+**Dependency path.**
+Sheaves on \(\mathrm{Open}(X)\) with descent → sheaves of modules over \(\mathcal{O}_X\) → quasi-coherent and invertible sheaves, their morphisms and pullbacks → line bundles, Cartier divisors and linear systems.
+Gluing needs finite atlases, the glued-scheme entry, semilinear transitions and module limits.
+
+**Observed evidence.**
+Read from source at `d83d43c2` (gluing) and `cf26db85` (divisors), after both subtrees were rebuilt through their categories as far as these foundations allow.
+`schemes/gluing.py` keeps the glued scheme as a Sage scheme subclass with three side attributes, 16 `SageObject`s (atlases, refinements, finite-atlas descent data, semilinear maps, transitions, inverse images), and builds \(\Gamma(X, F)\) in two local categories, `GlobalSectionModules(R)` and `GlobalSectionAlgebras(R)`, as an equalizer on underlying sets.
+`divisors/invertible_sheaves.py` keeps five hand-assembled line-bundle classes; `divisors/general_divisors.py:116` keeps `FiniteAtlasCartierDivisor` as a `SageObject`; `divisors/linear_systems.py` installs three argument packages as side attributes on projective spaces adopted by `_refine_scheme`.
+
+**Existing partial capability.**
+`Sheaves(coverage, D)` with `DescentEqualizer`, `DescentData` and the entry `Sheaves.object`; `ModuleGluingData(cover)` and `AlgebraGluingData(cover)`; `QuasiCoherentSheaves(X)` with the affine equivalence; `FiberedFormedModuleMorphism` as a precedent for a fibered construction.
+
+**Affected consumers.**
+Glued schemes and their sheaves; line bundles on projective space and its subschemes; Cartier divisors on finite atlases; complete and imposed-multiplicity linear systems.
+
+**Coverage boundary.**
+Read from source; no session was run.
+Whether Sage or Singular supplies any of these constructions for the specimens in question was not surveyed.
+Scheduled in [TODO.md](TODO.md) as `sheaves-of-modules-over-a-sheaf-of-rings`, `quasi-coherent-sheaf-morphisms-on-non-affine-schemes`, `invertible-sheaf-axiom`, `cartier-divisors-as-sections`, `finite-affine-atlases`, `glued-scheme-entry`, `modules-over-varying-rings`, `projectivization-functor`, `limits-of-modules-created-by-underlying-sets` and `tensor-products-of-unframed-modules`.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
