@@ -147,20 +147,17 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                 )
             )
 
+        # Restriction along f: R -> S makes r act on B as f(r) acts:
+        # r * 1 is the image of f(r) under the structure morphism of B.
+        source_structure = algebra.algebra_structure_morphism()
         _OwnedAlgebraParent.__init__(
             self,
             _engine_ring(algebra),
             base_ring,
             labels,
+            scalar_structure=lambda scalar: source_structure(ring_map(scalar)),
             generator_values=generator_values,
             categories=tuple(categories),
-        )
-
-        source_structure = algebra.algebra_structure_morphism()
-        self.algebra_structure_construction().set_structure_map(
-            base_ring.Mor(self)(
-                lambda scalar: self(source_structure(ring_map(scalar))),
-            )
         )
 
         if presentation_data is None:

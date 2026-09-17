@@ -597,13 +597,6 @@ class SparseFreeAlgebra(Parent):
                 result[label] = result.get(label, self.base_ring().zero()) + left_coefficient * right_coefficient
         return self._from_dict(result)
 
-    def _ring_morphism_defining_algebra_structure(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
-
-    algebra_structure_morphism = _ring_morphism_defining_algebra_structure
-
     def ring_center(self):
         assert self.flavor() == "symmetric", (
             "the represented center is selected here for the symmetric sparse free algebra"
