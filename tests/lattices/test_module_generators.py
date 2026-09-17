@@ -250,7 +250,10 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     support = e0 + e3
 
     assert infinite.is_nondegenerate()
-    assert infinite.is_unimodular()
+    # The full dual is R^N, not the restricted finite-support dual.
+    # Sending every basis vector to 1 is outside the correlation image.
+    assert infinite.is_unimodular() is False
+    assert infinite.unformed_module() is ZZ**NN
     assert not infinite.is_even()
     assert e0.div() == 1
     assert support.div() == 1
@@ -294,3 +297,26 @@ def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
     assert first is ambient.subobject_on((e0,))
     assert first == first.ambient_module().subobject_on((e0,))
     assert second == second.ambient_module().subobject_on((e1,))
+
+
+def test_colimit_does_not_infer_signature_from_early_stages():
+    from sage.misc.unknown import Unknown
+
+    category = Lattices(ZZ)
+
+    def stage(n):
+        module = ZZ.free_module(n)
+        return category(module.diagonal_gram({8: -1} if n > 8 else {}))
+
+    lattice = category.colimit(stage)
+    assert lattice.signature_pair() is Unknown
+    assert lattice.module_generator(8).q() == -1
+    assert lattice.module_generator(0).q() == 1
+    assert "rank" in repr(lattice)
+
+
+def test_lattice_equipping_keeps_the_exact_module_even_with_positional_framing():
+    module = ZZ.free_module(3)
+    lattice = Lattices(ZZ)(module)
+    assert lattice.unformed_module() is module
+    assert lattice.module_generating_set() is module.module_generating_set()

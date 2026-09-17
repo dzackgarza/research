@@ -2,7 +2,9 @@ r"""Positive-cone components and their projectivized hyperbolic geometry."""
 
 from sage.arith.misc import gcd
 from sage.misc.cachefunc import cached_method
-from sage.structure.sage_object import SageObject
+from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
+from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -72,42 +74,6 @@ class PositiveConeComponents(OwnedCategory):
             return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
 
 
-class HyperbolicRay(SageObject):
-    r"""One rational projective ray in the hyperbolic space or its ideal boundary."""
-
-    def __init__(self, space, representative, *, ideal) -> None:
-        self._space = space
-        self._representative = representative
-        self._ideal = bool(ideal)
-
-    def space(self):
-        return self._space
-
-    def representative(self):
-        return self._representative
-
-    def is_ideal(self) -> bool:
-        return self._ideal
-
-    def is_interior(self) -> bool:
-        return not self._ideal
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, HyperbolicRay)
-            and other.space() is self.space()
-            and other.representative() == self.representative()
-            and other.is_ideal() == self.is_ideal()
-        )
-
-    def __hash__(self) -> int:
-        return hash((id(self.space()), tuple(self.representative().to_tuple()), self.is_ideal()))
-
-    def _repr_(self):
-        nature = "ideal boundary ray" if self.is_ideal() else "hyperbolic ray"
-        return f"{nature} [{self.representative()}]"
-
-
 class HyperbolicSpaces(OwnedCategory):
     r"""Projectivizations of chosen positive-cone components."""
 
@@ -117,6 +83,32 @@ class HyperbolicSpaces(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    class ElementMethods(Element):
+        r"""A rational point of a hyperbolic space: the ray of a positive vector of the component."""
+
+        def __init__(self, parent: Parent, representative) -> None:
+            Element.__init__(self, parent)
+            self._representative = representative
+
+        def representative(self):
+            r"""Return the primitive lattice vector on the ray, pairing positively with the timelike vector."""
+            return self._representative
+
+        def __eq__(self, other) -> bool:
+            return (
+                element_parent(other) is self.parent()
+                and other.representative() == self.representative()
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            return hash((id(self.parent()), self.representative()))
+
+        def _repr_(self) -> str:
+            return f"hyperbolic point [{self.representative()}]"
 
     class ParentMethods:
         def __init__(self, component, **rest) -> None:
@@ -129,23 +121,50 @@ class HyperbolicSpaces(OwnedCategory):
         def lattice(self):
             return self._component.lattice()
 
+        def __call__(self, *args, **kwargs):
+            r"""Construct a point through the owned element construction directly."""
+            return self._element_constructor_(*args, **kwargs)
+
+        def _element_constructor_(self, datum):
+            r"""Return the point on the ray of ``datum``, a positive vector of the component or a point of this space."""
+            match datum:
+                case _ if element_parent(datum) is self:
+                    return datum
+                case _:
+                    assert datum in self._component, (
+                        "a rational point of a hyperbolic space is the ray of a "
+                        "positive vector in the selected component"
+                    )
+                    return self.element_class(
+                        self,
+                        _primitive_on_selected_ray(
+                            self.lattice(), datum, self._component.timelike_vector()
+                        ),
+                    )
+
         def rational_point(self, vector):
-            if vector not in self._component:
-                raise ValueError("a rational hyperbolic point needs a positive vector in the selected component")
-            primitive = _primitive_on_selected_ray(
-                self.lattice(), vector, self._component.timelike_vector()
-            )
-            return HyperbolicRay(self, primitive, ideal=False)
+            return self(vector)
 
         def ideal_point(self, vector):
+            r"""Return the point at infinity on the ray of the isotropic ``vector``.
+
+            An ideal point of the projectivized component is an isotropic ray
+            of its closure, which is the one-dimensional rational polyhedral
+            cone it spans.
+            """
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                RationalPolyhedralCones,
+            )
+
             lattice = self.lattice()
             vector = lattice(vector)
-            if lattice.q(vector) != 0 or lattice.b(vector, self._component.timelike_vector()) <= 0:
-                raise ValueError("an ideal point needs a nonzero isotropic vector in the selected closed component")
+            assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
+                "an ideal point is the ray of a nonzero isotropic vector in the closed component"
+            )
             primitive = _primitive_on_selected_ray(
                 lattice, vector, self._component.timelike_vector()
             )
-            return HyperbolicRay(self, primitive, ideal=True)
+            return RationalPolyhedralCones().from_rays(lattice, (primitive,))
 
         def projectivize_cone(self, cone):
             if cone.ambient_lattice() is not self.lattice():
@@ -222,7 +241,6 @@ def _hyperbolic_space(component):
 
 __all__ = [
     "HyperbolicPolyhedra",
-    "HyperbolicRay",
     "HyperbolicSpaces",
     "PositiveConeComponents",
 ]

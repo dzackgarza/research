@@ -10,7 +10,7 @@ from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.structure.sage_object import SageObject
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
@@ -54,7 +54,7 @@ def _element_from_coordinates(lattice, coordinates):
     ring = lattice.base_ring()
 
     def owned(coefficient):
-        if getattr(coefficient, "parent", lambda: None)() is ring:
+        if element_parent(coefficient) is ring:
             return coefficient
         return ring._from_engine_element(coefficient)
 
@@ -67,133 +67,6 @@ def _element_from_coordinates(lattice, coordinates):
             if coefficient
         }
     )
-
-
-class VoronoiFacet(SageObject):
-    r"""One oriented facet of a definite lattice's Voronoi cell.
-
-    The facet retains the exact relevant lattice vector ``v`` whose supporting
-    inequality is ``b(x,v) <= q(v)/2``.  This orientation matters: ``v`` and
-    ``-v`` define opposite facets, and the stabilizer of this facet is the
-    point stabilizer of ``v`` in ``O(L)``.
-    """
-
-    def __init__(self, cell, polytope, relevant_vector) -> None:
-        self._cell = cell
-        self._polytope = polytope
-        self._relevant_vector = relevant_vector
-
-    def cell(self):
-        return self._cell
-
-    def lattice(self):
-        return self.cell().lattice()
-
-    def polytope(self):
-        return self._polytope
-
-    def relevant_vector(self):
-        return self._relevant_vector
-
-    def vertices(self):
-        return self.polytope().vertices()
-
-    def stabilizer(self):
-        return self.lattice().O().stabilizer(self.relevant_vector())
-
-    def __repr__(self) -> str:
-        return f"Voronoi facet of {self.lattice()} normal to {self.relevant_vector()}"
-
-
-class VoronoiCell(SageObject):
-    r"""The exact rational Voronoi cell of a definite lattice.
-
-    The retained polytope is the existing owned convex-polytope object.  The
-    extra structure here is lattice-specific: every facet is paired with its
-    exact relevant vector, incidences retain actual facet and vertex objects,
-    and orthogonal-group stabilizers act on the same lattice that defined the
-    metric.
-    """
-
-    def __init__(self, lattice, polytope) -> None:
-        self._lattice = lattice
-        self._polytope = polytope
-
-    def lattice(self):
-        return self._lattice
-
-    def polytope(self):
-        return self._polytope
-
-    def _engine_polyhedron(self):
-        return self.polytope()._engine_polyhedron()
-
-    def volume(self):
-        return self.polytope().volume()
-
-    def vertices(self):
-        return self.polytope().vertices()
-
-    def n_vertices(self):
-        return self.polytope().n_vertices()
-
-    def facets(self):
-        lattice = self.lattice()
-        _sign, gram = _positive_gram(lattice)
-        rationals = lattice.base_ring().fraction_field()
-        dual_gram = gram.change_ring(rationals).dual_tensor()
-        result = []
-        for face in self._engine_polyhedron().facets():
-            inequalities = tuple(
-                inequality
-                for inequality in face.ambient_Hrepresentation()
-                if inequality.is_inequality()
-            )
-            if len(inequalities) != 1:
-                raise ArithmeticError(
-                    "a Voronoi facet must have one ambient supporting inequality"
-                )
-            inequality = inequalities[0]
-            coefficients = tuple(
-                rationals._from_engine_element(SageQQ(entry))
-                for entry in inequality.A()
-            )
-            covector = tensor(rationals, (), (len(coefficients),), coefficients)
-            vector_coordinates = -(dual_gram * covector)
-            relevant_vector = _element_from_coordinates(
-                lattice,
-                tuple(lattice.base_ring()(coordinate) for coordinate in vector_coordinates),
-            )
-            if relevant_vector == lattice.zero():
-                raise ArithmeticError("a Voronoi facet has a nonzero relevant vector")
-            result.append(
-                VoronoiFacet(
-                    self,
-                    ConvexPolytopes()(face.as_polyhedron().vertices_list(), lattice=lattice),
-                    relevant_vector,
-                )
-            )
-        return finite_ordered_set(tuple(result))
-
-    def n_facets(self):
-        return self.facets().cardinality()
-
-    def incidences(self):
-        r"""Return the exact facet--vertex incidences of this Voronoi cell."""
-        incidences = []
-        for facet in self.facets():
-            facet_vertices = facet.vertices()
-            for vertex in self.vertices():
-                if vertex in facet_vertices:
-                    incidences.append((facet, vertex))
-        return finite_ordered_set(tuple(incidences))
-
-    def stabilizer(self):
-        r"""Return the full orthogonal group preserving the origin-centred cell."""
-        return self.lattice().O()
-
-    def __repr__(self) -> str:
-        return f"Voronoi cell of {self.lattice()}"
 
 
 @dataclass(frozen=True)
@@ -423,7 +296,7 @@ def _shortest_vectors(lattice):
 
 
 def _target_coordinates(lattice, target):
-    if getattr(target, "parent", lambda: None)() is lattice:
+    if element_parent(target) is lattice:
 
         coefficients = lattice.framing_coefficients(target)
         target = [
@@ -572,22 +445,32 @@ def _babai(lattice, target):
     return _element_from_coordinates(lattice, tuple(original))
 
 
-def _voronoi_cell(lattice, bound=None):
-    r"""Return the owned rational Voronoi cell in lattice coordinates."""
+def _voronoi_region(lattice, bound=None):
+    r"""Compute the exact rational Voronoi region, not just a bounded truncation.
+
+    First include the inequalities for every signed basis vector; their
+    independent covectors bound a polytope P.  Let R^2 be the maximum of q
+    on its vertices (convexity bounds q everywhere on P by this number).
+    For q(v) > 4 R^2 and x in P, Cauchy--Schwarz gives
+    b(x,v) <= sqrt(q(x)q(v)) < q(v)/2.  Hence all omitted inequalities are
+    automatic on P once all lattice vectors through 4 R^2 are included.
+
+    Both enumerations are exact PARI qfminim calls.  ``bound`` is a lower
+    bound on the initial enumeration, never a request to return an outer
+    approximation as the Voronoi cell.  Sage's rational polyhedron engine
+    supplies the exact vertex maximum and irredundant facet inequalities.
+    """
     from sage.geometry.polyhedron.constructor import Polyhedron
 
     _sign, gram = _positive_gram(lattice)
     rank = gram.tensor_shape()[0]
     rationals = lattice.base_ring().fraction_field()
     if rank == 0:
-        return VoronoiCell(
-            lattice,
-            ConvexPolytopes()(Polyhedron(vertices=[[]], base_ring=SageQQ).vertices_list()),
-        )
+        return Polyhedron(vertices=[[]], base_ring=SageQQ)
     gram_q = gram.change_ring(rationals)
     engine_gram = _engine_component_matrix(gram)
 
-    def cell_from_bound(radius):
+    def region_from_bound(radius):
         backend_radius = SageZZ(int(radius))
         _count, _largest, raw_coordinates = engine_gram.__pari__().qfminim(
             backend_radius, None
@@ -614,53 +497,109 @@ def _voronoi_cell(lattice, bound=None):
                 inequalities.append(
                     [_engine_element(rationals, entry) for entry in owned_entries]
                 )
-        return VoronoiCell(
-            lattice,
-            ConvexPolytopes()(
-                Polyhedron(ieqs=inequalities, base_ring=SageQQ).vertices_list(),
-                lattice=lattice,
-            ),
-        )
+        return Polyhedron(ieqs=inequalities, base_ring=SageQQ)
 
+    initial_bound = max(
+        SageQQ(_engine_element(rationals, gram_q[index, index])).ceil()
+        for index in range(rank)
+    ) + 1
     if bound is not None:
-        return cell_from_bound(bound)
-    radius = max(int(gram[index, index]) for index in range(rank)) + 1
-    for _attempt in range(16):
-        cell = cell_from_bound(radius)
-        if cell._engine_polyhedron().is_compact():
-            return cell
-        radius *= 2
-    raise RuntimeError(
-        f"failed to close the Voronoi cell within square bound {radius}"
+        initial_bound = max(initial_bound, SageQQ(bound).ceil())
+    outer = region_from_bound(initial_bound)
+    assert outer.is_compact(), "the signed basis inequalities bound the initial Voronoi polytope"
+    gram_engine_q = engine_gram.change_ring(SageQQ)
+    radius_squared = max(
+        engine_vector(SageQQ, vertex) * gram_engine_q * engine_vector(SageQQ, vertex)
+        for vertex in outer.vertices_list()
     )
+    complete_bound = max(initial_bound, (4 * radius_squared).ceil() + 1)
+    return outer if complete_bound == initial_bound else region_from_bound(complete_bound)
+
+
+def _voronoi_cell(lattice, bound=None):
+    r"""Return the Voronoi cell of ``lattice``: a convex polytope in ``L tensor QQ``.
+
+    The cell is built by ``ConvexPolytopes()`` on the vertices of the region,
+    with ``lattice`` as its ambient coordinate lattice.  Its facets and their
+    relevant vectors are :func:`_voronoi_facets`.
+    """
+    region = _voronoi_region(lattice, bound=bound)
+    match int(lattice.module_rank()):
+        case 0:
+            return ConvexPolytopes()(region.vertices_list())
+        case _:
+            return ConvexPolytopes()(region.vertices_list(), lattice=lattice)
+
+
+def _relevant_vector_of_inequality(lattice, inequality):
+    r"""Recover the relevant vector without assuming a normalized inequality.
+
+    A native inequality c + a.x >= 0 can be a positive multiple lambda of
+    q(v)/2 - b(x,v) >= 0.  Thus d=-G^-1 a=lambda v and
+    v=(2c/q(d))d.  This is invariant under the engine's rescaling of its
+    inequalities, which is especially visible for an even lattice such as A2.
+    """
+    _sign, gram = _positive_gram(lattice)
+    rank = gram.tensor_shape()[0]
+    ring = lattice.base_ring()
+    rationals = ring.fraction_field()
+    dual_gram = gram.change_ring(rationals).dual_tensor()
+    coefficients = tuple(
+        rationals._from_engine_element(SageQQ(entry)) for entry in inequality.A()
+    )
+    covector = tensor(rationals, (), (rank,), coefficients)
+    direction = -(dual_gram * covector)
+    gram_q = gram.change_ring(rationals)
+    square = (gram_q * direction) * direction
+    constant = rationals._from_engine_element(SageQQ(inequality.b()))
+    scalar = rationals(2) * constant / square
+    vector_coordinates = tuple(scalar * coordinate for coordinate in direction)
+    assert all(coordinate in ring for coordinate in vector_coordinates), (
+        "each exact Voronoi facet recovers an integral lattice vector"
+    )
+    return _element_from_coordinates(lattice, tuple(ring(coordinate) for coordinate in vector_coordinates))
 
 
 def _voronoi_relevant_vectors(lattice):
-    r"""Return the vectors defining facets of the Voronoi cell."""
-    cell = lattice.voronoi_cell()
-    _sign, gram = _positive_gram(lattice)
-    rank = gram.tensor_shape()[0]
-    rationals = lattice.base_ring().fraction_field()
-    dual_gram = gram.change_ring(rationals).dual_tensor()
+    r"""Return the Voronoi-relevant vectors: the vectors whose inequalities are facets of the cell."""
     relevant = []
-    for inequality in cell._engine_polyhedron().inequalities():
-        coefficients = tuple(
-            rationals._from_engine_element(SageQQ(entry))
-            for entry in inequality.A()
-        )
-        covector = tensor(rationals, (), (rank,), coefficients)
-        vector_coordinates = -(dual_gram * covector)
-        try:
-            integral = tuple(
-                lattice.base_ring()(coordinate)
-                for coordinate in vector_coordinates
-            )
-        except (TypeError, ValueError):
-            continue
-        candidate = _element_from_coordinates(lattice, integral)
-        if candidate != lattice.zero() and candidate not in relevant:
+    for inequality in _voronoi_region(lattice).inequalities():
+        candidate = _relevant_vector_of_inequality(lattice, inequality)
+        if candidate is not None and candidate != lattice.zero() and candidate not in relevant:
             relevant.append(candidate)
-    return tuple(relevant)
+    return finite_ordered_set(tuple(relevant))
+
+
+def _voronoi_facets(lattice):
+    r"""Return the facets of the Voronoi cell, indexed by their relevant vectors.
+
+    The facet at the relevant vector ``v`` is the convex polytope on which
+    ``b(x,v) = q(v)/2``; ``v`` and ``-v`` index opposite facets, and the
+    stabilizer of the facet at ``v`` in ``O(L)`` is the point stabilizer of
+    ``v``.
+    """
+    facets = {}
+    for face in _voronoi_region(lattice).facets():
+        inequalities = tuple(
+            inequality
+            for inequality in face.ambient_Hrepresentation()
+            if inequality.is_inequality()
+        )
+        if len(inequalities) != 1:
+            raise ArithmeticError(
+                "a Voronoi facet must have one ambient supporting inequality"
+            )
+        relevant_vector = _relevant_vector_of_inequality(lattice, inequalities[0])
+        if relevant_vector is None or relevant_vector == lattice.zero():
+            raise ArithmeticError("a Voronoi facet has a nonzero relevant lattice vector")
+        facets[relevant_vector] = ConvexPolytopes()(
+            face.as_polyhedron().vertices_list(), lattice=lattice
+        )
+    return finite_indexed_family(
+        finite_ordered_set(tuple(facets)),
+        lambda vector: facets[vector],
+        name=f"Voronoi facets of {lattice}",
+    )
 
 
 def _successive_minima(lattice):
@@ -806,7 +745,6 @@ def _covering_radius(lattice):
     _sign, gram = _positive_gram(lattice)
     rationals = lattice.base_ring().fraction_field()
     gram_q = gram.change_ring(rationals)
-    cell = lattice.voronoi_cell()
     squared = max(
         gram_q.contract(
             tensor.vector(
@@ -824,7 +762,7 @@ def _covering_radius(lattice):
                 ],
             ),
         )
-        for vertex in cell._engine_polyhedron().vertices_list()
+        for vertex in _voronoi_region(lattice).vertices_list()
     )
     return RR(_engine_element(rationals, squared)).sqrt()
 
@@ -891,6 +829,4 @@ def _kissing_number(lattice):
 
 __all__ = [
     "LatticeReduction",
-    "VoronoiCell",
-    "VoronoiFacet",
 ]

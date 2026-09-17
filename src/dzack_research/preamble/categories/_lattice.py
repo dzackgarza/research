@@ -1,13 +1,25 @@
-r"""An owned lattice parent.
+r"""The lattice construction and the Gram presentations of lattice forms.
 
-A lattice is a free module with a form.  The form is a type-$(0,2)$
-tensor, not a matrix.  The Python class does not extend Sage's
-module classes; it keeps an internal
-:class:`~sage.combinat.free_module.CombinatorialFreeModule` on a
-generating set.  When no generating set is given, that set is the
-formal symbols \(e_i\in\mathrm{SR}\).  Named descriptors (``U``, a
-finite simply-laced Cartan type, a Euclidean rank) are owned Gram
-tensors of type $(0,2)$.
+A lattice over a commutative ring \(R\) is a free \(R\)-module \(M\) with a
+symmetric \(R\)-valued bilinear form \(b\in\operatorname{Hom}_R(M\otimes_R M,R)\).
+It is built through its immediate structure owner.  The form \(b\) on \(M\)
+is computed from a Gram presentation of \(b\) in the framing of \(M\), and
+``FormModules(R)(b)`` builds the lattice on the data of \(M\), joined with
+``Lattices(R)`` and with the property axioms the presentation decides.  The
+lattice therefore is a module all the way down to its underlying set and
+answers ``unformed_module()`` with \(M\).  ``FormModules(R)`` retains \(b\) and
+\(M\); ``Lattices(R)`` retains the Gram presentation, which is the datum its
+level introduces.
+
+A Gram presentation is a type-$(0,2)$ tensor.  At finite rank it has a
+component array.  At infinite rank it is a pairing rule on finite supports
+(:class:`_PairingGram`), an element of \((M\otimes M)^*\) and not of
+\((M^*)^{\otimes 2}\).  Named descriptors (``U``, a finite crystallographic
+Cartan type, a Euclidean rank) are Gram presentations.
+
+The pairing rules are this module's private representation of a form; the
+routines that read their fields are the rules' own methods and the
+construction functions below, which share their owner.
 """
 
 import re
@@ -16,23 +28,16 @@ from itertools import accumulate, product
 from math import prod as product_value
 
 from sage.arith.misc import factor
-from sage.categories.category import Category
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
-from sage.misc.repr import repr_lincomb
-from sage.modules.free_module_element import FreeModuleElement
+from sage.misc.unknown import Unknown
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
+from sage.structure.category_object import normalize_names
 from sage.structure.element import Matrix, ModuleElement
-from sage.structure.element import parent as element_parent
-from sage.structure.indexed_generators import IndexedGenerators
-from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
-from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -40,12 +45,13 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
     _engine_element,
     _engine_ring,
+    _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
-    aleph0,
     cardinal,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -54,7 +60,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
-    CountablyInfiniteSets,
+    FiniteSets,
     EnumeratedSets,
     Sets,
 )
@@ -77,195 +83,146 @@ def _formal_symbol(index):
 
 
 def _formal_symbol_index(elt):
-    r"""Return \(i\) when ``elt`` is the formal symbol \(e_i\)."""
+    r"""The selected inverse on the formal-symbol image, with ``None`` off it."""
     if elt not in SR:
-        raise ValueError(elt)
+        return None
     symbol = SR(elt)
     if not symbol.is_symbol():
-        raise ValueError(elt)
-    text = str(symbol)
-    if not text.startswith("e_"):
-        raise ValueError(elt)
-    rest = text[2:]
-    if not rest.isdigit():
-        raise ValueError(elt)
-    index = int(rest)
-    if text != f"e_{index}":
-        raise ValueError(elt)
-    return index
+        return None
+    match re.fullmatch(r"e_(0|[1-9][0-9]*)", str(symbol)):
+        case None:
+            return None
+        case matched:
+            return NN(int(matched.group(1)))
 
 
-class _FormalSymbols(UniqueRepresentation, Parent):
-    r"""The enumerated set \(\{e_i : i\in\mathbb N\}\subset\mathrm{SR}\)."""
+@cached_function
+def _formal_symbols():
+    r"""The countably infinite set \(\{e_i : i\in\mathbb N\}\subset\mathrm{SR}\).
 
-    def __init__(self) -> None:
-        Parent.__init__(
-            self,
-            facade=SR,
-            category=Category.join((EnumeratedSets(), CountablyInfiniteSets())),
-        )
+    It is the image of \(\mathbb N\) under the injection \(i\mapsto e_i\),
+    whose inverse reads the index off the symbol, so it is enumerated by
+    \(\mathbb N\) and ranked by that inverse.
+    """
+    return NN.image_set(
+        _formal_symbol,
+        inverse=_formal_symbol_index,
+    )
 
-    def cardinality(self):
-        return aleph0
 
-    @cached_method
-    def ranking_map(self):
-        r"""The enumeration $e_i \mapsto i$, which is a bijection onto $\omega$."""
-        return self._ranking_isomorphism(_formal_symbol_index, _formal_symbol)
-
-    def __contains__(self, elt):
-        try:
-            self.ranking_map()(elt)
-        except (TypeError, ValueError):
-            return False
-        return True
-
-    def __iter__(self):
-        symbol_at = self.ranking_map().inverse()
-        index = 0
-        while True:
-            yield symbol_at(index)
-            index += 1
-
-    def _repr_(self) -> str:
-        return "{e_i : i in NN} subset of SR"
+def _formal_generating_set(rank):
+    r"""The formal symbols \(e_0,\ldots,e_{n-1}\), or all \(e_i\) at infinite rank."""
+    size = cardinal(rank)
+    match size.is_finite():
+        case False:
+            return _formal_symbols()
+        case True:
+            positions = Sets.Δ[int(size) - 1]
+            return FiniteOrderedSets().from_indexed(
+                positions,
+                lambda position: _formal_symbol(int(position)),
+                index_of=lambda symbol: positions[_formal_symbol_index(symbol)],
+                name="Formal lattice generators",
+            )
 
 
 def _as_generating_set(keys, rank):
-    r"""Return ``keys`` as an owned ordered generating set of cardinality ``rank``."""
+    r"""Return ``keys`` as an owned enumerated generating set of cardinality ``rank``.
 
-    if keys is None:
-        if rank == Infinity:
-            return _FormalSymbols()
-        positions = Sets.Δ[int(rank) - 1]
-        return FiniteOrderedSets().from_indexed(
-            positions,
-            lambda position: _formal_symbol(int(position)),
-            index_of=lambda symbol: positions[_formal_symbol_index(symbol)],
-            name="Formal lattice generators",
-        )
-    if isinstance(keys, (list, tuple, range)):
-        keys = finite_ordered_set(keys)
-    assert keys in EnumeratedSets()
-    key_cardinality = keys.cardinality()
-    if rank == Infinity:
-        if key_cardinality.is_finite():
-            raise ValueError(
-                f"the generating set has finite cardinality {key_cardinality}, not infinite rank"
-            )
-    elif (
-        not key_cardinality.is_finite()
-        or int(key_cardinality.finite_value()) != int(rank)
-    ):
-        raise ValueError(
-            f"the generating set has cardinality {key_cardinality}, not the free-module rank {rank}"
-        )
-    return keys
+    An owned enumerated set is taken as given; a finite literal enumeration
+    becomes the finite ordered set it enumerates.
+    """
+    selected = keys if keys in EnumeratedSets() else finite_ordered_set(keys)
+    size = cardinal(rank)
+    key_cardinality = cardinal(selected.cardinality())
+    assert key_cardinality == size, (
+        f"the generating set has cardinality {key_cardinality}, not the free-module rank {size}"
+    )
+    return selected
 
 
-def _generating_set_from_names(names, rank):
-    r"""Return an owned ordered family of SR symbols named by ``names``."""
-
-    if names is None or rank == Infinity:
-        return None
-    if isinstance(names, str):
-        raw_names = names.split(",")
-        name_source = finite_ordered_set(raw_names)
-        symbols = FiniteOrderedSets().from_indexed(
-            name_source,
-            lambda name: SR.var(str(name).strip()),
-            index_of=lambda symbol: name_source(str(symbol)),
-            name="Named lattice generators",
-        )
-    else:
-        name_source = (
-            finite_ordered_set(names)
-            if isinstance(names, (list, tuple, range))
-            else names
-        )
-        symbols = FiniteOrderedSets().from_indexed(
-            name_source,
-            lambda name: SR.var(str(name)),
-            index_of=lambda symbol: name_source(str(symbol)),
-            name="Named lattice generators",
-        )
-    size = symbols.cardinality()
-    if not size.is_finite() or int(size.finite_value()) != int(rank):
-        return None
-    return symbols
+def _generating_set_from_names(names):
+    r"""Return the SR symbols named by the normalized generator ``names``."""
+    name_source = finite_ordered_set(names)
+    return FiniteOrderedSets().from_indexed(
+        name_source,
+        lambda name: SR.var(str(name)),
+        index_of=lambda symbol: name_source(str(symbol)),
+        name="Named lattice generators",
+    )
 
 
 def _generating_set_for(rank, module_generators, names):
-    r"""The generating set: explicit, else ``names`` as SR symbols, else \(e_i\)."""
-    if module_generators is not None:
-        return _as_generating_set(module_generators, rank)
-    named = _generating_set_from_names(names, rank)
-    if named is not None:
-        return named
-    return _as_generating_set(None, rank)
+    r"""The generating set: explicit, else the named SR symbols, else the formal symbols \(e_i\).
+
+    Names name the generators of a finite framing only; at infinite rank the
+    generators are the formal symbols.
+    """
+    match module_generators:
+        case None:
+            pass
+        case _:
+            return _as_generating_set(module_generators, rank)
+    match names is not None and cardinal(rank).is_finite():
+        case True:
+            return _generating_set_from_names(names)
+        case False:
+            return _formal_generating_set(rank)
 
 
 def _resolve_key(keys, index):
-    r"""Return ``index`` as an element of the generating set ``keys``."""
-    if index in keys:
-        return index
-    return keys[int(index)]
+    r"""Return ``index`` as an element of ``keys``: a label, or a position in its enumeration."""
+    match index in keys:
+        case True:
+            return index
+        case False:
+            return keys[int(index)]
 
 
-def _vector_coefficients(vector, module):
-    r"""The support of an internal module vector, as an indexed family."""
-    # The owned free-module element stores its finite support explicitly.
+def _vector_coefficients(vector):
+    r"""The finite support of a module vector, as its coefficient on each framing label."""
     return dict(vector.monomial_coefficients())
 
 
 def _lattice_vector_from_coefficients(lattice, coefficients):
-    r"""The lattice vector with the given basis coefficients."""
+    r"""The lattice vector with the given coefficients on labels or framing positions."""
     return sum(
         (
             lattice.scalar_multiple(coefficient, lattice.module_generator(key))
             for key, coefficient in coefficients.items()
         ),
-        lattice.element_class(lattice, lattice._module.zero()),
+        lattice.zero(),
     )
 
 
-def _normalized_lattice_names(names, basis_keys):
-    r"""Normalize the named-generator datum for a finite lattice framing.
+def _normalized_lattice_names(names, rank):
+    r"""Normalize the generator-name datum of a lattice of the given rank.
 
-    Sage's ``L.<a1,...,a8> =`` preparser supplies the literal three-name tuple
+    Sage's ``L.<a1,...,a8> =`` preparser supplies the three names
     ``("a1", "Ellipsis", "a8")``.  The lattice constructor owns the rank, so
-    it is the responsible place to expand that syntactic datum to the eight
-    mathematical generator names.  Ordinary strings remain Sage's native
-    comma-separated naming syntax.
+    it expands that syntax to the eight generator names; every other spelling
+    is Sage's own name syntax, normalized by
+    :func:`~sage.structure.category_object.normalize_names`.  At infinite rank
+    no generator is named, and the names are normalized without a count.
     """
     match names:
-        case None | str():
-            return names
-        case _:
-            selected = tuple(names)
-    size = basis_keys.cardinality()
-    assert size.is_finite(), "explicit lattice generator names require a finite framing"
-    rank = int(size.finite_value())
-    ellipsis_positions = tuple(
-        position
-        for position, name in enumerate(selected)
-        if name is Ellipsis or str(name) == "Ellipsis"
-    )
-    match ellipsis_positions:
-        case ():
-            assert len(selected) == rank, (
-                f"{len(selected)} lattice generator names were supplied for rank {rank}"
-            )
-            return selected
-        case (position,):
-            assert position > 0 and position + 1 < len(selected), (
-                "an ellipsis in lattice generator names needs indexed endpoints"
-            )
-            assert len(selected) == 3 and position == 1, (
+        case None:
+            return None
+    size = cardinal(rank)
+    match size.is_finite():
+        case False:
+            return normalize_names(-1, names)
+    count = int(size)
+    written = normalize_names(-1, names)
+    match written.count("Ellipsis"):
+        case 0:
+            return normalize_names(count, names)
+        case 1:
+            assert len(written) == 3 and written[1] == "Ellipsis", (
                 "lattice generator ellipsis syntax has the form a1, ..., an"
             )
-            first = re.fullmatch(r"(.*?)(\d+)", str(selected[0]))
-            last = re.fullmatch(r"(.*?)(\d+)", str(selected[2]))
+            first = re.fullmatch(r"(.*?)(\d+)", written[0])
+            last = re.fullmatch(r"(.*?)(\d+)", written[2])
             assert first is not None and last is not None, (
                 "lattice generator ellipsis endpoints must end in integers"
             )
@@ -275,272 +232,262 @@ def _normalized_lattice_names(names, basis_keys):
             start = int(first.group(2))
             stop = int(last.group(2))
             assert start <= stop, "lattice generator ellipsis endpoints are increasing"
-            expanded = tuple(
-                f"{first.group(1)}{index}" for index in range(start, stop + 1)
+            return normalize_names(
+                count,
+                tuple(f"{first.group(1)}{index}" for index in range(start, stop + 1)),
             )
-            assert len(expanded) == rank, (
-                f"{len(expanded)} lattice generator names were supplied for rank {rank}"
-            )
-            return expanded
         case _:
             raise ValueError("lattice generator names contain more than one ellipsis")
 
 
-class Lattice(Parent, IndexedGenerators):
-    r"""A lattice: a free module with a form, as a parent in :class:`Lattices`.
+def _block_offsets(ranks):
+    r"""The positions at which consecutive blocks of the given ranks begin; all but the last are finite."""
+    return tuple(accumulate((int(rank) for rank in ranks[:-1]), initial=0))
 
-    The internal module is an owned free module on a generating
-    set stored here.  With no generating set given, that set is the
-    formal symbols \(e_i\in\mathrm{SR}\).  An element prints as a linear
-    combination of those generators, never as a coordinate tuple.
+
+def _block_position(offsets, position):
+    r"""The block a concatenated position lies in, and its place within that block."""
+    which = bisect_right(offsets, position) - 1
+    return which, position - offsets[which]
+
+
+def _form_of_gram(module, gram):
+    r"""The bilinear form \(b\) on ``module`` whose Gram presentation in its framing is ``gram``.
+
+    At finite rank \(b(e_i,e_j)\) is the component of ``gram`` at \((i,j)\),
+    the positions of the framing's enumeration.  At infinite rank \(b\) is the
+    pairing rule of the presentation evaluated on finite supports.  Either way
+    the result is an element of ``module.bilinear_forms(R)``, the Hom out of
+    the tensor square.
     """
-
-    _repr_term = IndexedGenerators._repr_generator
-    _latex_term = IndexedGenerators._latex_generator
-
-    def __init__(
-        self,
-        module,
-        gram,
-        category: Category,
-        sage_lattice,
-        names=None,
-        *,
-        unformed_module,
-        extra_categories=(),
-        construction_data=(),
-        subobject_ambient=None,
-        subobject_generator_images=None,
-        subobject_lift=None,
-        subobject_inclusion_factory=None,
-        subobject_verify_linearity=True,
-    ) -> None:
-        self._module = module
-        self._preamble_unformed_module = unformed_module
-        self._preamble_free_module_constructor = module._fresh_free_module_on
-        self._gram = gram
-        self._sage_lattice = sage_lattice
-        for name, value in construction_data:
-            setattr(self, f"_preamble_{name}", value)
-        parent_category = (
-            Cat().meet((category, *tuple(extra_categories)))
-            if extra_categories
-            else category
-        )
-        subobject_data = (
-            subobject_inclusion_factory is not None
-            or (subobject_ambient is not None and subobject_generator_images is not None)
-        )
-        if subobject_data:
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                ModuleSubobjects,
-            )
-
-            self._preamble_subobject_ambient = subobject_ambient
-            self._preamble_subobject_generator_images = subobject_generator_images
-            self._preamble_subobject_lift = subobject_lift
-            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
-            self._preamble_subobject_verify_linearity = subobject_verify_linearity
-            parent_category = Cat().meet(
-                (parent_category, ModuleSubobjects(category.base_ring()))
-            )
-        if isinstance(gram, _BiproductGram):
-            from dzack_research.preamble.categories.lattices import BiproductLattices
-
-            self._preamble_biproduct_factors = gram._summands
-            self._preamble_direct_sum_summands = gram._summands
-            self._preamble_direct_sum_index_set = gram._summands.index_set()
-            parent_category = Cat().meet(
-                (parent_category, BiproductLattices(category.base_ring()))
-            )
-        IndexedGenerators.__init__(
-            self,
-            _basis_keys(module),
-            prefix="",
-            bracket=False,
-            string_quotes=False,
-        )
-        parent_arguments = {
-            "base": category.base_ring(),
-            "category": parent_category,
-        }
-        if names is not None:
-            parent_arguments["names"] = _normalized_lattice_names(
-                names, _basis_keys(module)
-            )
-        Parent.__init__(self, **parent_arguments)
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            _framing_morphism,
-        )
-
-        self._preamble_framing_morphism = _framing_morphism(
-            module,
-            self,
-            lambda label: self.element_class(self, module.module_generator(label)),
-        )
-
-    def __call__(self, x):
-        r"""Construct a lattice vector through the owned module representation."""
-        return self._element_constructor_(x)
-
-    def _element_constructor_(self, x):
-        r"""Return a lattice vector from finite coordinates or keyed support."""
-        if isinstance(x, self.element_class) and x.parent() is self:
-            return x
-        match element_parent(x):
-            case source if source is self._module:
-                return self.element_class(self, x)
-            case Parent() as source if source is not self and self._built_on_the_same_data(source):
-                return self._element_on_the_same_data(source, x)
-        if isinstance(x, (tuple, list)):
-
-            size = self.module_generating_set().cardinality()
-            if not size.is_finite():
-                raise TypeError(
-                    "coordinate sequence syntax requires a finite lattice framing; "
-                    "use finitely supported label-keyed coordinates"
+    ring = module.base_ring()
+    forms = module.bilinear_forms(ring)
+    rank = module.module_rank()
+    match rank.is_finite():
+        case True:
+            size = int(rank)
+            return forms(
+                tuple(
+                    tuple(ring(gram[row, column]) for column in range(size))
+                    for row in range(size)
                 )
-            if len(x) != int(size.finite_value()):
-                raise ValueError("coordinate sequence has the wrong finite length")
-            return self.element_class(self, self._module(x))
-        if isinstance(x, FreeModuleElement):
-            return self.element_class(self, self._module(x))
-        return self.element_class(self, self._module(x))
+            )
+        case False:
+            return forms(lambda left, right: gram(left, right))
 
-    def zero(self):
-        r"""Return the additive identity of the underlying free module."""
-        return self.element_class(self, self._module.zero())
 
-    def an_element(self):
-        r"""Return a represented lattice element from the underlying module."""
-        return self.element_class(self, self._module.an_element())
+def _gram_rank(gram):
+    r"""The rank of the module a Gram presentation is stated on, as a cardinal."""
+    return cardinal(gram.tensor_shape()[0])
 
-    def _first_ngens(self, n):
-        r"""Return the first ``n`` module generators, for ``L.<e,f> =`` naming."""
-        from itertools import islice
 
-        return tuple(self.module_generator(key) for key in islice(self._indices, n))
+def _gram_determinant(gram, ring):
+    r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration."""
+    size = int(_gram_rank(gram))
+    return ring.matrix_space(size).from_rows(
+        tuple(
+            tuple(gram[row, column] for column in range(size))
+            for row in range(size)
+        )
+    ).determinant()
 
-    def _assign_names(self, names, *args, **kwds):
-        Parent._assign_names(self, names, *args, **kwds)
-        self.print_options(names=self.variable_names())
 
-    def _monomial_coefficients(self, vector):
-        r"""The support of an internal module vector, as an indexed family."""
-        return _vector_coefficients(vector, self._module)
-
-    class Element(ModuleElement):
-        r"""A lattice vector: a module element whose parent is the lattice."""
-
-        def __init__(self, parent, vector) -> None:
-            ModuleElement.__init__(self, parent)
-            self._vector = vector
-
-        def _add_(self, other):
-            return self.parent().element_class(self.parent(), self._vector + other._vector)
-
-        def _neg_(self):
-            return self.parent().element_class(self.parent(), -self._vector)
-
-        def _lmul_(self, scalar):
-            return self.parent().element_class(self.parent(), self._vector * scalar)
-
-        def __mul__(self, other):
-            if element_parent(other) is self.parent():
-                return self.b(other)
-            if other in self.parent().base_ring():
-                return self._lmul_(self.parent().base_ring()(other))
-            return NotImplemented
-
-        def __rmul__(self, scalar):
-            r"""Return \(r\cdot v\): the scalar action, written on the left."""
-            if scalar in self.parent().base_ring():
-                return self._lmul_(self.parent().base_ring()(scalar))
-            return NotImplemented
-
-        def __pow__(self, exponent):
-            if exponent != 2:
-                raise ValueError(f"v^n on a lattice vector is q(v) at n=2, got {exponent}")
-            return self.parent().q(self)
-
-        __xor__ = __pow__
-
-        def _richcmp_(self, other, op):
-            return richcmp(self._vector, other._vector, op)
-
-        def __hash__(self):
-            return hash(self._vector)
-
-        def underlying_set_element(self):
-            r"""Recover the source label when this is one canonical free generator."""
-            return self._vector.underlying_set_element()
-
-        def _sorted_items_for_printing(self):
-            print_options = self.parent().print_options()
-            terms = list(self.parent()._monomial_coefficients(self._vector).items())
-            try:
-                terms.sort(
-                    key=lambda term: print_options["sorting_key"](term[0]),
-                    reverse=print_options["sorting_reverse"],
-                )
-            except (TypeError, ValueError):
+def _known_conjunction(values):
+    r"""Conjoin mathematical decisions without treating Unknown as false."""
+    unknown = False
+    for value in values:
+        match value:
+            case False:
+                return False
+            case True:
                 pass
-            return terms
+            case _:
+                unknown = True
+    return Unknown if unknown else True
 
-        def _repr_(self):
-            return repr_lincomb(
-                self._sorted_items_for_printing(),
-                scalar_mult=self.parent()._print_options["scalar_mult"],
-                repr_monomial=self.parent()._repr_term,
-                strip_one=True,
-            )
 
-        def _latex_(self):
-            return repr_lincomb(
-                self._sorted_items_for_printing(),
-                scalar_mult=self.parent()._print_options["scalar_mult"],
-                latex_scalar_mult=self.parent()._print_options["latex_scalar_mult"],
-                repr_monomial=self.parent()._latex_term,
-                is_latex=True,
-                strip_one=True,
-            )
+def _regular_scalar(scalar, ring):
+    r"""Whether multiplication by this scalar is injective on R.
+
+    Units are regular.  Over a domain regular means nonzero; over a finite
+    ring, injective multiplication is surjective and hence the scalar is a
+    unit.  Neither criterion asserts regularity for a general zero divisor
+    ring whose nonunit regularity has not been decided by these data.
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import IntegralDomains
+
+    if scalar.is_unit():
+        return True
+    if ring in IntegralDomains():
+        return scalar != ring.zero()
+    if ring in FiniteSets():
+        return False
+    if scalar == ring.zero():
+        return False
+    return Unknown
+
+
+def _gram_is_nondegenerate(gram, ring):
+    r"""Whether the correlation of the presented form is injective.
+
+    A unit determinant makes the matrix invertible.  Over a domain, a
+    nonzero determinant is equivalent to injectivity.  Over a finite ring,
+    an injective endomorphism of R^n is surjective and its determinant is a
+    unit.  Over other rings the nonunit determinant does not decide this
+    predicate here.  Infinite forms use the actual pairing rule.
+    """
+    match _gram_rank(gram).is_finite():
+        case True:
+            return _regular_scalar(_gram_determinant(gram, ring), ring)
+        case False:
+            return gram.is_nondegenerate()
+
+
+def _gram_is_unimodular(gram, ring):
+    r"""Whether the correlation \(M\to M^\vee\) of the presented form is an isomorphism.
+
+    At finite rank it is decided by \(\det G\in R^\times\); at infinite rank
+    the pairing rule decides it or answers ``Unknown``.
+    """
+    match _gram_rank(gram).is_finite():
+        case True:
+            return bool(_gram_determinant(gram, ring).is_unit())
+        case False:
+            return gram.is_unimodular()
+
+
+def _gram_is_even(gram, ring):
+    r"""Whether \(b(x,x)\in 2R\) for every \(x\) of the presented symmetric form.
+
+    For a symmetric form
+    \(b(x,x)=\sum_i x_i^2 b(e_i,e_i)+2\sum_{i<j}x_ix_jb(e_i,e_j)\), so
+    evenness is membership of every diagonal value in the ideal \(2R\).  The
+    ideal is asked of a commutative base ring; over any other ring the answer
+    is ``Unknown``.
+    """
+    match ring in OwnedRings().Commutative():
+        case False:
+            return Unknown
+    twice = ring.ideal(ring(2))
+    match _gram_rank(gram).is_finite():
+        case True:
+            size = int(_gram_rank(gram))
+            return all(ring(gram[index, index]) in twice for index in range(size))
+        case False:
+            return gram.is_even_in(twice)
+
+
+def _gram_axiom_categories(lattices, gram):
+    r"""The property axioms of ``Lattices(R)`` the Gram presentation decides.
+
+    Finite rank, nondegeneracy, unimodularity and evenness are properties of
+    the form.  Each is joined at construction exactly when the presentation
+    decides that it holds, so an undecided property places nothing.
+    """
+    ring = lattices.base_ring()
+    axioms = []
+    match _gram_rank(gram).is_finite():
+        case True:
+            axioms.append(lattices.FinitelyGenerated())
+    match _gram_is_nondegenerate(gram, ring):
+        case True:
+            axioms.append(lattices.Nondegenerate())
+            match _gram_is_unimodular(gram, ring):
+                case True:
+                    axioms.append(lattices.Unimodular())
+    match _gram_is_even(gram, ring):
+        case True:
+            axioms.append(lattices.Even())
+    return tuple(axioms)
+
+
+def _lattice_object(
+    category,
+    module,
+    gram,
+    *,
+    names=None,
+    extra_categories=(),
+    construction_data=None,
+    subobject_construction=None,
+):
+    r"""Build the lattice on ``module`` whose form has the Gram presentation ``gram``.
+
+    This is the one construction every lattice route reaches (``CON-16``).
+    ``category`` is ``Lattices(R)`` and ``module`` is the framed free module,
+    or the lattice, the form is stated on.  The form \(b\) on ``module`` is
+    computed from ``gram`` (:func:`_form_of_gram`) and ``FormModules(R)(b)``
+    builds the lattice on the data of ``module``.  Its placement joins
+    ``category``, the property axioms ``gram`` decides and
+    ``extra_categories``; the lattice level receives ``gram`` as its datum,
+    and ``construction_data`` supplies the data the extra categories declare.
+    ``subobject_construction`` is the
+    :class:`~dzack_research.preamble.categories.modules.pure.modules.ModuleSubobjectConstruction`
+    of a lattice built as a subobject, whose inclusion the result retains.
+    """
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        FormModules,
+    )
+
+    ring = module.base_ring()
+    lattices = Lattices(ring)
+    assert category is lattices, f"{category} is not the category of lattices over {ring}"
+    data = dict(construction_data or {})
+    data["gram_tensor"] = gram
+    match names:
+        case None:
+            pass
+        case _:
+            data["names"] = names
+    subobject = {}
+    match subobject_construction:
+        case None:
+            pass
+        case _:
+            subobject = {
+                "_subobject_ambient": subobject_construction.ambient_module(),
+                "_subobject_generator_images": subobject_construction.generator_images(),
+                "_subobject_lift": subobject_construction.selected_lift(),
+                "_subobject_inclusion_factory": subobject_construction.inclusion_factory(),
+                "_subobject_verify_linearity": subobject_construction.verify_linearity(),
+            }
+    return FormModules(ring)(
+        _form_of_gram(module, gram),
+        _extra_categories=(
+            lattices,
+            *_gram_axiom_categories(lattices, gram),
+            *tuple(extra_categories),
+        ),
+        _extra_construction_data=data,
+        **subobject,
+    )
 
 
 @cached_function
-def _lattice_parent(
-    module,
-    gram,
-    category,
-    sage_lattice,
-    names=None,
-    root_cartan_type=None,
-):
-    r"""Construct a lattice and install the owned category surface.
+def _lattice_on_gram(category, module, gram, names, cartan_type):
+    r"""The lattice on ``module`` with Gram presentation ``gram``.
 
-    A lattice is its free module together with its form, so two
-    constructions naming one module and one Gram name one lattice.  Equal
-    Grams hash equally, so this is Sage's own construction cache.
+    A lattice is its module together with its form, so two constructions
+    naming one module and one Gram presentation name one lattice; equal Grams
+    hash equally, so this is Sage's own construction cache.  A finite
+    crystallographic ``cartan_type`` over \(\mathbb Z\) places the lattice in
+    ``RootLattices`` with that Cartan type as its datum.
     """
+    match cartan_type:
+        case None:
+            return _lattice_object(category, module, gram, names=names)
+        case _:
+            from dzack_research.preamble.categories.lattices import RootLattices
 
-    extra_categories = ()
-    construction_data = ()
-    if root_cartan_type is not None:
-        from dzack_research.preamble.categories.lattices import RootLattices
-
-        extra_categories = (RootLattices(),)
-        construction_data = (("cartan_type", root_cartan_type),)
-    lattice = Lattice(
-        module,
-        gram,
-        category,
-        sage_lattice,
-        names,
-        unformed_module=module,
-        extra_categories=extra_categories,
-        construction_data=construction_data,
-    )
-    refiner = getattr(category, "_refine_lattice_object", None)
-    return refiner(lattice) if refiner is not None else lattice
+            return _lattice_object(
+                category,
+                module,
+                gram,
+                names=names,
+                extra_categories=(RootLattices(),),
+                construction_data={"cartan_type": cartan_type},
+            )
 
 
 class _PairingGram(ModuleElement, Tensor):
@@ -550,6 +497,12 @@ class _PairingGram(ModuleElement, Tensor):
     rectangular array.  The parent is the type-$(0,2)$ tensor space on
     that module: \((M^*)^{\otimes 2}\) at finite rank, and
     \((M\otimes M)^*\) at infinite rank.
+
+    At infinite rank the rule is the only presentation of the form, so it
+    also answers the property questions the construction asks of it:
+    :meth:`is_nondegenerate`, :meth:`is_unimodular` and :meth:`is_even_in`
+    answer ``Unknown`` for a rule with no decision procedure, and each
+    subclass with one overrides them.
     """
 
     __hash__ = Tensor._tensor_hash
@@ -603,10 +556,33 @@ class _PairingGram(ModuleElement, Tensor):
         return _tensor_richcmp(self, other, op)
 
     def signature_pair(self):
-        rank = self.tensor_shape()[0]
-        if rank == Infinity:
-            raise TypeError("this Gram does not supply a signature at infinite rank")
-        return _sylvester(self)
+        r"""Return $(p,q)$ of the rule, by Sylvester's law at finite rank."""
+        return _sylvester(self) if _gram_rank(self).is_finite() else Unknown
+
+    def is_nondegenerate(self):
+        r"""``Unknown``: no finite restriction of this rule decides injectivity of its correlation."""
+        return Unknown
+
+    def is_unimodular(self):
+        r"""``Unknown``: no finite restriction of this rule decides that its correlation is an isomorphism."""
+        return Unknown
+
+    def is_even_in(self, twice):
+        r"""``Unknown``: this rule states no decision of \(b(x,x)\in 2R\) on all of its module."""
+        return Unknown
+
+    def dual_gram_on(self, dual_module):
+        r"""Materialize the inverse finite Gram; sparse infinite rules override it."""
+        rank = _gram_rank(self)
+        assert rank.is_finite(), (
+            "materializing the inverse of a general pairing requires finite rank; an infinite metric dual needs a defining rule"
+        )
+        ring = self.base_ring()
+        size = int(rank)
+        inverse = ring.matrix_space(size).from_rows(
+            tuple(self[row, column] for column in range(size)) for row in range(size)
+        ).inverse()
+        return tensor(ring, (), (rank, rank), tuple(tuple(inverse[row, column] for column in range(size)) for row in range(size)))
 
     def scaled_by(self, scalar):
         r"""Return the pairing \(\mathrm{scalar}\cdot b\)."""
@@ -616,32 +592,31 @@ class _PairingGram(ModuleElement, Tensor):
         return _ScaledGram(self, scalar)
 
     def __mul__(self, other):
-        if other in self.base_ring():
-            return self.scaled_by(other)
-        if isinstance(other, Tensor) and other.tensor_valence() == (NN**2)((1, 0)):
-            rank = self.tensor_shape()[0]
-            if rank == Infinity:
-                raise NotImplementedError(
-                    "contraction of a lazy infinite-rank Gram tensor requires a represented dual covector"
+        r"""Scale by an element of the base ring, or contract a type-$(1,0)$ vector of the same rank."""
+        ring = self.base_ring()
+        match other in ring:
+            case True:
+                return self.scaled_by(other)
+        rank = _gram_rank(self)
+        assert rank.is_finite(), (
+            "contraction of a lazy infinite-rank Gram tensor requires a represented dual covector"
+        )
+        size = int(rank)
+        assert other in TensorModule(ring, (size,), ()), (
+            f"a Gram tensor of rank {size} contracts a type-(1,0) vector of rank {size} or scales by a scalar"
+        )
+        return tensor(
+            ring,
+            (),
+            (size,),
+            [
+                sum(
+                    (self[i, j] * other[j] for j in range(size)),
+                    ring.zero(),
                 )
-            rank = int(rank)
-            if other._upper_index_ranks() != (rank,):
-                raise ValueError(
-                    f"cannot contract Gram rank {rank} with vector ranks {other._upper_index_ranks()}"
-                )
-            return tensor(
-                self.base_ring(),
-                (),
-                (rank,),
-                [
-                    sum(
-                        (self[i, j] * other[j] for j in range(rank)),
-                        self.base_ring().zero(),
-                    )
-                    for i in range(rank)
-                ],
-            )
-        raise TypeError("a Gram tensor contracts a vector or scales by a scalar")
+                for i in range(size)
+            ],
+        )
 
     def __rmul__(self, scalar):
         return self.scaled_by(scalar)
@@ -671,9 +646,30 @@ class _ScaledGram(_PairingGram):
         if self._scalar == 0:
             return signature_pair(0, 0)
         scaled = self._gram.signature_pair()
+        if scaled is Unknown:
+            return Unknown
         if self._scalar > 0:
             return scaled
         return signature_pair(scaled.second(), scaled.first())
+
+    def is_nondegenerate(self):
+        r"""Scaling a free-module form preserves injectivity exactly for a regular scalar."""
+        return _known_conjunction((_regular_scalar(self._scalar, self.base_ring()), self._gram.is_nondegenerate()))
+
+    def is_unimodular(self):
+        r"""\(sb\) is unimodular when \(s\) is a unit and \(b\) is unimodular."""
+        return self._scalar.is_unit() and self._gram.is_unimodular()
+
+    def is_even_in(self, twice):
+        r"""\(sb\) is even when \(s\in 2R\) or \(b\) is even."""
+        return self._scalar in twice or self._gram.is_even_in(twice)
+
+    def dual_gram_on(self, dual_module):
+        r"""The dual of \(sb\) is \(s^{-1}b^\vee\), for a unit \(s\)."""
+        assert self._scalar.is_unit(), (
+            f"the metric dual of a scaled form needs a unit scalar; {self._scalar} is not one"
+        )
+        return _ScaledGram(self._gram.dual_gram_on(dual_module), self._scalar.inverse_of_unit())
 
     def _latex_(self) -> str:
         return rf"{latex(self._scalar)}\,\left({latex(self._gram)}\right)"
@@ -705,7 +701,7 @@ class _DiagonalGram(_PairingGram):
         )
 
     def pairings_against(self, vector):
-        coefficients = _vector_coefficients(vector, self._module)
+        coefficients = _vector_coefficients(vector)
         return {key: self._diagonal_entry(key) * value for key, value in coefficients.items()}
 
     def _diagonal_entry(self, key):
@@ -723,8 +719,8 @@ class _DiagonalGram(_PairingGram):
         return self._diagonal_entry(i)
 
     def __call__(self, left, right):
-        coefficients_left = _vector_coefficients(left, self._module)
-        coefficients_right = _vector_coefficients(right, self._module)
+        coefficients_left = _vector_coefficients(left)
+        coefficients_right = _vector_coefficients(right)
         keys = set(coefficients_left) | set(coefficients_right)
         ring = self.base_ring()
         return sum(
@@ -733,59 +729,97 @@ class _DiagonalGram(_PairingGram):
         )
 
     def signature_pair(self):
-        rank = self._module.module_rank()
+        match _gram_rank(self).is_finite():
+            case True:
+                return _sylvester(self)
         default = self._default
-        if rank != Infinity:
-            return _sylvester(self)
         negative_exceptions = sum(1 for value in self._exceptions.values() if value < 0)
         positive_exceptions = sum(1 for value in self._exceptions.values() if value > 0)
         if default > 0:
-            return signature_pair(Infinity, negative_exceptions)
+            return signature_pair(cardinal(self._module.module_rank()), negative_exceptions)
         if default < 0:
-            return signature_pair(positive_exceptions, Infinity)
+            return signature_pair(positive_exceptions, cardinal(self._module.module_rank()))
         return signature_pair(positive_exceptions, negative_exceptions)
 
+    def is_nondegenerate(self):
+        r"""A diagonal correlation is injective exactly when each entry is regular."""
+        return _known_conjunction(
+            _regular_scalar(value, self.base_ring())
+            for value in (self._default, *self._exceptions.values())
+        )
+
+    def is_unimodular(self):
+        r"""Unimodularity refers to the full algebraic dual, not its finite-support part.
+
+        At infinite rank over a nonzero ring, all correlation values have
+        finite support.  The functional taking every basis vector to 1 is
+        in Hom(R^(I), R) but outside that image.  At finite rank the entries
+        must all be units, and the common finite-Gram entry checks that case.
+        """
+        ring = self.base_ring()
+        if not _gram_rank(self).is_finite():
+            return ring.one() == ring.zero()
+        return all(self._diagonal_entry(label).is_unit() for label in _basis_keys(self._module))
+
+    def is_even_in(self, twice):
+        r"""A diagonal form is even when every diagonal value lies in \(2R\)."""
+        return self._default in twice and all(value in twice for value in self._exceptions.values())
+
+    def dual_gram_on(self, dual_module):
+        r"""The dual of a diagonal form with unit entries is the diagonal form of the inverse entries.
+
+        ``dual_module`` is framed by the labels of this form's module, so each
+        exceptional value keeps its label.
+        """
+        assert self._default.is_unit() and all(value.is_unit() for value in self._exceptions.values()), (
+            "the represented finite-support metric dual has unit diagonal values"
+        )
+        return _DiagonalGram(
+            dual_module,
+            {key: value.inverse_of_unit() for key, value in self._exceptions.items()},
+            self._default.inverse_of_unit(),
+        )
+
     def _latex_(self) -> str:
-        rank = self._module.module_rank()
+        rank = cardinal(self._module.module_rank())
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
             if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
-                if rank == Infinity:
-                    return r"[-1]\oplus I_{\infty}"
-                if rank == 1:
+                match rank.is_finite():
+                    case False:
+                        return r"[-1]\oplus I_{\infty}"
+                if int(rank) == 1:
                     return r"[-1]"
                 return rf"[-1]\oplus I_{{{int(rank) - 1}}}"
         if not self._exceptions:
-            if rank == Infinity:
-                return rf"{latex(self._default)}\,I_{{\infty}}"
+            match rank.is_finite():
+                case False:
+                    return rf"{latex(self._default)}\,I_{{\infty}}"
             return rf"{latex(self._default)}\,I_{{{rank}}}"
-        if rank == Infinity:
-            return r"D_{\infty}"
+        match rank.is_finite():
+            case False:
+                return r"D_{\infty}"
         return rf"D_{{{rank}}}"
 
     def _pairing_name(self) -> str:
-        rank = self._module.module_rank()
+        rank = cardinal(self._module.module_rank())
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
             if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
-                if rank == Infinity:
-                    return "[-1] ⊕ I_∞"
-                if rank == 1:
+                match rank.is_finite():
+                    case False:
+                        return "[-1] ⊕ I_∞"
+                if int(rank) == 1:
                     return "[-1]"
                 return f"[-1] ⊕ I_{int(rank) - 1}"
+        symbol = f"I_{rank}" if rank.is_finite() else "I_∞"
         if not self._exceptions:
-            default = self._default
-            if default == ring.one():
-                symbol = "I_∞" if rank == Infinity else f"I_{rank}"
+            if self._default == ring.one():
                 return symbol
-            prefix = str(default)
-            symbol = "I_∞" if rank == Infinity else f"I_{rank}"
-            return f"{prefix} {symbol}"
-        if rank == Infinity:
-            return "D_∞"
-        return f"D_{rank}"
+            return f"{self._default} {symbol}"
+        return f"D_{rank}" if rank.is_finite() else "D_∞"
 
 
 class _IdentityGram(_DiagonalGram):
@@ -800,18 +834,24 @@ class _IdentityGram(_DiagonalGram):
 
     def signature_pair(self):
         _rational_fraction_field(self.base_ring())
-        return signature_pair(self._module.module_rank(), 0)
+        return signature_pair(cardinal(self._module.module_rank()), 0)
+
+    def dual_gram_on(self, dual_module):
+        r"""The identity form is its own metric dual."""
+        return _IdentityGram(dual_module)
 
     def _latex_(self) -> str:
-        rank = self._module.module_rank()
-        if rank == Infinity:
-            return r"I_{\infty}"
+        rank = cardinal(self._module.module_rank())
+        match rank.is_finite():
+            case False:
+                return r"I_{\infty}"
         return rf"I_{{{rank}}}"
 
     def _pairing_name(self) -> str:
-        rank = self._module.module_rank()
-        if rank == Infinity:
-            return "I_∞"
+        rank = cardinal(self._module.module_rank())
+        match rank.is_finite():
+            case False:
+                return "I_∞"
         return f"I_{rank}"
 
 
@@ -836,8 +876,7 @@ class _BiproductGram(_PairingGram):
 
     def _block_of(self, position):
         r"""The summand a concatenated position lies in, and its place there."""
-        which = bisect_right(self._offsets, position) - 1
-        return which, position - self._offsets[which]
+        return _block_position(self._offsets, position)
 
     def _by_block(self, coefficients):
         r"""Split coefficients on the sum's basis into one part per summand."""
@@ -858,11 +897,9 @@ class _BiproductGram(_PairingGram):
     def pairings_against(self, vector):
         keys = _basis_keys(self._module)
         result = {}
-        for which, part in self._by_block(
-            _vector_coefficients(vector, self._module)
-        ).items():
+        for which, part in self._by_block(_vector_coefficients(vector)).items():
             block = self._blocks[which]
-            block_keys = _basis_keys(block._module)
+            block_keys = block.module_generating_set()
             for label, value in block.generator_pairings(
                 _lattice_vector_from_coefficients(block, part)
             ).items():
@@ -871,8 +908,8 @@ class _BiproductGram(_PairingGram):
         return result
 
     def __call__(self, left, right):
-        left_parts = self._by_block(_vector_coefficients(left, self._module))
-        right_parts = self._by_block(_vector_coefficients(right, self._module))
+        left_parts = self._by_block(_vector_coefficients(left))
+        right_parts = self._by_block(_vector_coefficients(right))
         # Distinct summands pair to zero, so only the blocks both vectors
         # meet contribute.
         return sum(
@@ -891,10 +928,24 @@ class _BiproductGram(_PairingGram):
 
     def signature_pair(self):
         pairs = tuple(block.signature_pair() for block in self._blocks)
+        if any(pair is Unknown for pair in pairs):
+            return Unknown
         return signature_pair(
             sum(pair.first() for pair in pairs),
             sum(pair.second() for pair in pairs),
         )
+
+    def is_nondegenerate(self):
+        r"""An orthogonal sum is nondegenerate when every summand is."""
+        return _known_conjunction(block.is_nondegenerate() for block in self._blocks)
+
+    def is_unimodular(self):
+        r"""An orthogonal sum is unimodular when every summand is."""
+        return _known_conjunction(block.is_unimodular() for block in self._blocks)
+
+    def is_even_in(self, twice):
+        r"""An orthogonal sum is even when every summand is."""
+        return _known_conjunction(block.is_even() for block in self._blocks)
 
     def _latex_(self) -> str:
         return r" \oplus ".join(
@@ -937,9 +988,7 @@ class _TensorProductGram(_PairingGram):
         factors = self._factors
         factor_indices = tuple(factors.index_set())
         result = {}
-        for source_label, source_coefficient in _vector_coefficients(
-            vector, self._module
-        ).items():
+        for source_label, source_coefficient in _vector_coefficients(vector).items():
             pairing_data = tuple(
                 tuple(
                     factors[index].generator_pairings(
@@ -962,19 +1011,12 @@ class _TensorProductGram(_PairingGram):
                 result[target_label] = result.get(
                     target_label, self.base_ring().zero()
                 ) + value
-        nonzero = {}
         zero = self.base_ring().zero()
-        for label, value in result.items():
-            match value == zero:
-                case True:
-                    pass
-                case False:
-                    nonzero[label] = value
-        return nonzero
+        return {label: value for label, value in result.items() if value != zero}
 
     def __call__(self, left, right):
-        left_coefficients = _vector_coefficients(left, self._module)
-        right_coefficients = _vector_coefficients(right, self._module)
+        left_coefficients = _vector_coefficients(left)
+        right_coefficients = _vector_coefficients(right)
         return sum(
             (
                 left_coefficient
@@ -991,6 +1033,8 @@ class _TensorProductGram(_PairingGram):
         negative = SageZZ.zero()
         for lattice_factor in self._factors:
             pair = lattice_factor.signature_pair()
+            if pair is Unknown:
+                return Unknown
             new_positive = positive * pair.first() + negative * pair.second()
             new_negative = positive * pair.second() + negative * pair.first()
             positive, negative = new_positive, new_negative
@@ -1016,45 +1060,50 @@ class _ColimitGram(_PairingGram):
     enough to contain that support.
     """
 
-    def __init__(self, module, stage) -> None:
+    def __init__(self, module, stage, row_support=None) -> None:
         self._stage = stage
-        self._stages = {}
+        self._row_support = row_support
         self._become_tensor_on(module)
 
+    @cached_method
     def _stage_at(self, n):
-        n = int(n)
-        if n not in self._stages:
-            stage = self._stage(n)
-            if stage.module_rank() != n:
-                raise ValueError(f"stage(n) must have rank n, got stage({n}) of rank {stage.module_rank()}")
-            self._stages[n] = stage
-        return self._stages[n]
+        stage = self._stage(int(n))
+        assert stage.module_rank() == cardinal(n), (
+            f"stage(n) must have rank n, got stage({n}) of rank {stage.module_rank()}"
+        )
+        return stage
 
     def __getitem__(self, index):
         i, j = int(index[0]), int(index[1])
         return self._stage_at(max(i, j) + 1).gram_tensor()[i, j]
 
     def pairings_against(self, vector):
-        generating_set = _basis_keys(self._module)
-        coefficients = _vector_coefficients(vector, self._module)
+        r"""Read all generator pairings using stated finite row supports.
+
+        ``row_support(i)`` contains every j with G[i,j] nonzero.  Such data
+        are not part of an arbitrary colimit: a first-stage vector may pair
+        nontrivially with arbitrarily late basis vectors.  Evaluation on two
+        finite vectors does not need this additional row-finiteness datum.
+        """
+        coefficients = _vector_coefficients(vector)
         if not coefficients:
             return {}
-        ranking = generating_set.ranking_map()
-        stage = self._stage_at(max(int(ranking(key)) for key in coefficients) + 1)
-        stage_vector = _lattice_vector_from_coefficients(
-            stage,
-            {int(ranking(key)): value for key, value in coefficients.items()},
+        assert self._row_support is not None, (
+            "enumerating every nonzero generator pairing of this colimit needs stated finite row supports"
         )
-        stage_ranking = _basis_keys(stage._module).ranking_map()
+        labels = _basis_keys(self._module)
+        ranking = labels.ranking_map()
+        positions = {int(ranking(label)): value for label, value in coefficients.items()}
+        support = {int(column) for row in positions for column in self._row_support(row)}
         return {
-            generating_set[int(stage_ranking(label))]: value
-            for label, value in stage.generator_pairings(stage_vector).items()
+            labels[column]: sum((value * self[row, column] for row, value in positions.items()), self.base_ring().zero())
+            for column in support
         }
 
     def __call__(self, left, right):
         generating_set = _basis_keys(self._module)
-        coefficients_left = _vector_coefficients(left, self._module)
-        coefficients_right = _vector_coefficients(right, self._module)
+        coefficients_left = _vector_coefficients(left)
+        coefficients_right = _vector_coefficients(right)
         keys = set(coefficients_left) | set(coefficients_right)
         if not keys:
             return self.base_ring().zero()
@@ -1065,17 +1114,13 @@ class _ColimitGram(_PairingGram):
         return _lattice_vector_from_coefficients(stage, positions_left).b(_lattice_vector_from_coefficients(stage, positions_right))
 
     def signature_pair(self):
-        small = self._stage_at(4).signature_pair()
-        large = self._stage_at(8).signature_pair()
-        small_positive, small_negative = small.first(), small.second()
-        large_positive, large_negative = large.first(), large.second()
-        if large_negative == small_negative and large_positive > small_positive:
-            return signature_pair(Infinity, large_negative)
-        if large_positive == small_positive and large_negative > small_negative:
-            return signature_pair(large_positive, Infinity)
-        if large_positive > small_positive and large_negative > small_negative:
-            return signature_pair(Infinity, Infinity)
-        return large
+        r"""Finite sampling does not determine the inertia of an arbitrary colimit.
+
+        Diagonal forms agreeing through any chosen N can acquire their first
+        negative entry at N+1, or infinitely many negative entries thereafter.
+        The stage function alone supplies no decision of that infinite datum.
+        """
+        return Unknown
 
     def _latex_(self) -> str:
         return r"\operatorname{colim}_n G_n"
@@ -1085,13 +1130,29 @@ class _ColimitGram(_PairingGram):
 
 
 def _gram_name(gram) -> str:
-    r"""Name a Gram block in text: a pairing rule by its own name, ``U`` by its, a finite array by its rank."""
-    match gram:
-        case _PairingGram():
+    r"""Name a Gram block in text.
+
+    An infinite-rank block is a pairing rule and is named by its rule.  A
+    finite block is named from its components: ``U`` for the hyperbolic
+    plane, ``I_n`` for the identity, and ``G_n`` otherwise.
+    """
+    rank = _gram_rank(gram)
+    match rank.is_finite():
+        case False:
             return gram._pairing_name()
-        case _:
-            name = _hyperbolic_plane_name(gram)
-            return name if name is not None else f"G_{gram.tensor_shape()[0]}"
+    size = int(rank)
+    match _hyperbolic_plane_name(gram):
+        case None:
+            pass
+        case name:
+            return name
+    ring = gram.base_ring()
+    identity = all(
+        gram[row, column] == (ring.one() if row == column else ring.zero())
+        for row in range(size)
+        for column in range(size)
+    )
+    return f"I_{size}" if identity else f"G_{size}"
 
 
 def _diagonal_gram(module, exceptions, default=1):
@@ -1134,12 +1195,16 @@ def _orthogonal_sum(summands):
     concatenation, and are not constructed.
 
     The sum of \(R\)-lattices is an \(R\)-lattice, so the base ring is read
-    off the summands rather than supplied.
+    off the summands rather than supplied.  The result is placed in
+    ``BiproductLattices(R)`` with the summand family as its datum.
     """
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
     )
-    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.lattices import (
+        BiproductLattices,
+        Lattices,
+    )
 
     summands = _finite_factor_family(summands, name="Orthogonal summands")
     blocks = tuple(summands)
@@ -1149,22 +1214,30 @@ def _orthogonal_sum(summands):
     assert all(block in category for block in blocks), (
         "an orthogonal sum requires lattices over one common base ring"
     )
-    ranks = tuple(block.module_rank() for block in blocks)
-    assert all(rank != Infinity for rank in ranks[:-1]), (
+    ranks = tuple(cardinal(block.module_rank()) for block in blocks)
+    assert all(rank.is_finite() for rank in ranks[:-1]), (
         "the orthogonal sum concatenates the bases in index order, so only "
         "the summand at the last index may have infinite rank"
     )
-    offsets = tuple(accumulate((int(rank) for rank in ranks[:-1]), initial=0))
-    total = Infinity if ranks[-1] == Infinity else offsets[-1] + int(ranks[-1])
+    offsets = _block_offsets(ranks)
+    total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
 
-    module = ring.free_module(_as_generating_set(None, total))
-    gram = _BiproductGram(module, summands, offsets)
-    return _lattice_parent(module, gram, category, None, names=None)
-
+    module = ring.free_module(_formal_generating_set(total))
+    return _lattice_object(
+        category,
+        module,
+        _BiproductGram(module, summands, offsets),
+        extra_categories=(BiproductLattices(ring),),
+        construction_data={"biproduct_factors": summands},
+    )
 
 
 def _tensor_product_lattice(factors):
-    r"""Return the tensor product lattice with the product bilinear form."""
+    r"""Return the tensor product lattice with the product bilinear form.
+
+    The lattice is built on the tensor product module of the factors and
+    placed in ``TensorProductModules(R)`` with the factor family as its datum.
+    """
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
     )
@@ -1176,53 +1249,36 @@ def _tensor_product_lattice(factors):
 
     factors = _finite_factor_family(factors, name="Lattice tensor factors")
     values = tuple(factors)
-    match values:
-        case ():
-            raise ValueError("a lattice tensor product requires at least one factor")
-        case _:
-            pass
+    assert values, "a lattice tensor product is taken over a nonempty family of factors"
     ring = values[0].base_ring()
     category = Lattices(ring)
-    match all(lattice_factor in category for lattice_factor in values):
-        case True:
-            pass
-        case False:
-            raise ValueError("a lattice tensor product requires lattices over one ring")
-    module = Modules(ring).tensor_product(factors)
-    gram = _TensorProductGram(module, factors)
-    result = Lattice(
-        module,
-        gram,
-        category,
-        None,
-        unformed_module=module,
-        extra_categories=(TensorProductModules(ring),),
-        construction_data=(("tensor_factors", factors),),
+    assert all(lattice_factor in category for lattice_factor in values), (
+        "a lattice tensor product requires lattices over one ring"
     )
-    return category._refine_lattice_object(result)
+    module = Modules(ring).tensor_product(factors)
+    return _lattice_object(
+        category,
+        module,
+        _TensorProductGram(module, factors),
+        extra_categories=(TensorProductModules(ring),),
+        construction_data={"tensor_factors": factors},
+    )
 
 
-def _colimit_lattice(stage, *, category):
+def _colimit_lattice(stage, *, category, row_support=None):
     r"""\(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
     ``stage(n)`` is a rank-\(n\) lattice in ``category``.  The colimit
-    module is the free module on \(\mathbb N\).
+    module is the free module on the formal symbols \(e_i\), \(i\in\mathbb N\).
     """
     ring = category.base_ring()
     probe = stage(2)
-    if probe not in category:
-        raise TypeError("stage(n) must be a lattice in this category")
-    if probe.module_rank() != 2:
-        raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}")
-
-    module = ring._fresh_free_module_on(_as_generating_set(None, Infinity))
-    return _lattice_parent(
-        module,
-        _ColimitGram(module, stage),
-        category,
-        None,
-        names=None,
+    assert probe in category, "stage(n) must be a lattice in this category"
+    assert probe.module_rank() == cardinal(2), (
+        f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}"
     )
+    module = ring._fresh_free_module_on(_formal_symbols())
+    return _lattice_object(category, module, _ColimitGram(module, stage, row_support=row_support))
 
 
 def _rational_fraction_field(ring):
@@ -1234,9 +1290,10 @@ def _rational_fraction_field(ring):
     of that field.
     """
     field = ring.fraction_field()
-    if _engine_ring(field) is QQ:
-        return QQ
-    raise TypeError(f"the signature pair (p, q) is the real signature of a quadratic space over QQ; Frac({ring}) is {field}")
+    assert _engine_ring(field) is QQ, (
+        f"the signature pair (p, q) is the real signature of a quadratic space over QQ; Frac({ring}) is {field}"
+    )
+    return QQ
 
 
 def signature_pairs():
@@ -1267,24 +1324,25 @@ def _sylvester(gram: Tensor):
 
 
 def _signature_pair_of_gram(gram: Tensor):
-    r"""Return $(p,q)$ for a Gram tensor, by Sylvester over $\mathbb Q$."""
-    if isinstance(gram, _PairingGram):
-        return gram.signature_pair()
-    return _sylvester(gram)
+    r"""Return $(p,q)$ for a Gram presentation.
+
+    At finite rank it is Sylvester's law on the components; at infinite rank
+    the pairing rule states it.
+    """
+    match _gram_rank(gram).is_finite():
+        case True:
+            return _sylvester(gram)
+        case False:
+            return gram.signature_pair()
 
 
 def _discriminant_of_gram(gram: Tensor):
     r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$."""
-    rank = gram.tensor_shape()[0]
-    assert rank != Infinity
+    rank = _gram_rank(gram)
+    assert rank.is_finite(), "the discriminant is the signed determinant of a finite Gram"
     n = int(rank)
     negative_sign = (n * (n - 1) // 2) % 2 == 1
-    if isinstance(gram, _IdentityGram):
-        unit = gram.base_ring().one()
-        return -unit if negative_sign else unit
-
-    matrix = gram.base_ring().matrix_space(n).from_rows(gram.components())
-    determinant = matrix.determinant()
+    determinant = _gram_determinant(gram, gram.base_ring())
     return -determinant if negative_sign else determinant
 
 
@@ -1310,7 +1368,7 @@ def _hyperbolic_plane_name(gram: Tensor) -> str | None:
     return None
 
 
-def _lattice_latex(lattice: Lattice, ring_tex: str) -> str:
+def _lattice_latex(lattice, ring_tex: str) -> str:
     r"""The archived lattice display: $L$ with its invariants, then $G_L$.
 
     The Gram tensor is the form of $L$, not $L$; $G_L$ typesets its components.
@@ -1320,26 +1378,28 @@ def _lattice_latex(lattice: Lattice, ring_tex: str) -> str:
     gram_latex = re.sub(r"\b0\b", lambda _match: r"\cdot", gram_latex)
     signature_field = _engine_ring(lattice.base_ring().fraction_field())
 
-    if rank == Infinity:
-        if signature_field is QQ:
-            _signature = lattice.signature_pair()
-            pos, neg = _signature.first(), _signature.second()
-            invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)}, \\quad \\mathrm{{sig}}(L) = ({latex(pos)}, {neg}) \\\\"
-        else:
-            invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)} \\\\"
-    elif signature_field is QQ:
-        _signature = lattice.signature_pair()
-        pos, neg = _signature.first(), _signature.second()
-        disc_latex = _format_disc_latex(lattice.discriminant())
-        invariants = (
-            f"L \\in \\mathrm{{Lattices}}({ring_tex}), "
-            f"\\quad \\mathrm{{rk}}(L) = {rank}, "
-            f"\\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), "
-            f"\\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\"
-        )
-    else:
-        disc_latex = _format_disc_latex(lattice.discriminant())
-        invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\"
+    match cardinal(rank).is_finite():
+        case False:
+            if signature_field is QQ and lattice.signature_pair() is not Unknown:
+                _signature = lattice.signature_pair()
+                pos, neg = _signature.first(), _signature.second()
+                invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)}, \\quad \\mathrm{{sig}}(L) = ({latex(pos)}, {neg}) \\\\"
+            else:
+                invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)} \\\\"
+        case True:
+            if signature_field is QQ:
+                _signature = lattice.signature_pair()
+                pos, neg = _signature.first(), _signature.second()
+                disc_latex = _format_disc_latex(lattice.discriminant())
+                invariants = (
+                    f"L \\in \\mathrm{{Lattices}}({ring_tex}), "
+                    f"\\quad \\mathrm{{rk}}(L) = {rank}, "
+                    f"\\quad \\mathrm{{sig}}(L) = ({pos}, {neg}), "
+                    f"\\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\"
+                )
+            else:
+                disc_latex = _format_disc_latex(lattice.discriminant())
+                invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {rank}, \\quad \\mathrm{{disc}}(L) = {disc_latex} \\\\"
 
     lines = [
         r"\begin{gathered}",
@@ -1354,18 +1414,15 @@ def _lattice_latex(lattice: Lattice, ring_tex: str) -> str:
 
 
 def _finite_crystallographic_cartan_type(data):
-    r"""Return the finite crystallographic Cartan type named by ``data``."""
-    match data:
-        case CartanType_abstract():
-            cartan_type = data
-        case str():
-            cartan_type = CartanType(data)
-        case list() | tuple() if data and isinstance(data[0], str):
-            cartan_type = CartanType(list(data))
-        case _:
-            raise TypeError(f"{data} is not a Cartan type")
-    if not cartan_type.is_finite() or not cartan_type.is_crystallographic():
-        raise TypeError(f"{cartan_type} is not a finite crystallographic Cartan type")
+    r"""Return the finite crystallographic Cartan type named by ``data``.
+
+    ``data`` is a Cartan type, its name, or its list form; Sage's
+    ``CartanType`` reads all three.
+    """
+    cartan_type = CartanType(data)
+    assert cartan_type.is_finite() and cartan_type.is_crystallographic(), (
+        f"{cartan_type} is not a finite crystallographic Cartan type"
+    )
     return cartan_type
 
 
@@ -1393,8 +1450,7 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     """
     cartan = cartan_type.cartan_matrix()
     symmetrizer = cartan_type.symmetrizer()
-    if symmetrizer is None:
-        raise TypeError(f"{cartan_type} has no integral Cartan symmetrizer")
+    assert symmetrizer is not None, f"{cartan_type} has no integral Cartan symmetrizer"
     indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
     components = [
@@ -1410,7 +1466,7 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
 
 
 def _nested_gram_tensor(data, ring) -> Tensor:
-
+    r"""The type-$(0,2)$ Gram tensor with the given rows of components."""
     match _component_shape(data):
         case (rows, columns):
             gram_tensor = tensor(ring, (), (rows, columns), data)
@@ -1426,46 +1482,39 @@ def _lattice_from_gram_tensor(
     names,
     module_generators,
     category,
-    root_cartan_type=None,
-) -> Lattice:
-    match gram_tensor:
-        case Tensor() if gram_tensor.tensor_valence() == (NN**2)((0, 2)):
-            pass
-        case _:
-            raise TypeError("a named lattice is built from a type-(0,2) Gram tensor")
-    rows, columns = gram_tensor.tensor_shape()
-    if rows != columns:
-        raise ValueError(f"a Gram tensor is square, got shape {gram_tensor.tensor_shape()}")
-    generating_set = _generating_set_for(rows, module_generators, names)
+    cartan_type=None,
+):
+    r"""The lattice with Gram presentation ``gram_tensor``.
 
+    An infinite-rank presentation is a pairing rule, which already names the
+    free module it is stated on.  A finite presentation is stated on the free
+    module framed by ``module_generators``, by ``names``, or by the formal
+    symbols \(e_i\).
+    """
+    rows, columns = gram_tensor.tensor_shape()
+    assert rows == columns, f"a Gram tensor is square, got shape {gram_tensor.tensor_shape()}"
+    rank = cardinal(rows)
+    match rank.is_finite():
+        case False:
+            assert module_generators is None, (
+                "a pairing rule already determines the generating set"
+            )
+            return _lattice_on_gram(
+                category,
+                gram_tensor._module,
+                gram_tensor,
+                _normalized_lattice_names(names, rank),
+                None,
+            )
+    selected_names = _normalized_lattice_names(names, rank)
+    generating_set = _generating_set_for(rank, module_generators, selected_names)
     module = (
         ring.free_module(generating_set)
         if module_generators is None
         else ring._fresh_free_module_on(generating_set)
     )
-    return _lattice_parent(
-        module,
-        gram_tensor,
-        category,
-        None,
-        names,
-        root_cartan_type=(
-            root_cartan_type
-            if root_cartan_type is not None and _engine_ring(ring) is SageZZ
-            else None
-        ),
-    )
-
-
-def _require_form_tensor(form, ring):
-    match form:
-        case Tensor() if form.tensor_valence() == (NN**2)((0, 2)):
-            pass
-        case _:
-            raise TypeError("form= takes a type-(0,2) tensor")
-    if _engine_ring(form.base_ring()) != _engine_ring(ring):
-        raise TypeError(f"Lattices({ring}) takes an {ring}-valued form, got a form over {form.base_ring()}")
-    return form
+    root_cartan_type = cartan_type if ring is _own_ring(SageZZ) else None
+    return _lattice_on_gram(category, module, gram_tensor, selected_names, root_cartan_type)
 
 
 def _basis_keys(module):
@@ -1479,39 +1528,61 @@ def _basis_position(keys, label):
 
 
 def _owned_free_module(data, ring, module_generators=None, names=None):
-    r"""The engine free module of a lattice on the generating set of ``data``.
+    r"""The free module a lattice is stated on, on the generating set of ``data``.
 
     ``data`` is an owned free module.  Its labels are kept when they were
     chosen; positional labels (``R^n``, ``R^NN``) name nothing, so the
     lattice's generators are then ``module_generators``, ``names``, or the
     formal symbols \(e_i\).
     """
+    assert data in FramedFreeModules(ring), (
+        f"Lattices({ring}) takes a free module over {ring}, got {data}"
+    )
+    assert module_generators is None, (
+        "equipping a selected free module retains its framing; construct a reframed module first"
+    )
+    return data
 
-    if data not in FramedFreeModules(ring):
-        raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got {data}")
-    if _engine_ring(data.base_ring()) != _engine_ring(ring):
-        raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got base ring {data.base_ring()}")
-    labels = data.module_generating_set()
-    rank = data.module_rank()
-    if rank == Infinity:
-        positional = labels is NN
-    else:
-        positional = int(labels.cardinality()) == int(rank) and all(
-            (label := labels[position]) == position
-            or (label in NN and int(label) == position)
-            for position in range(int(rank))
-        )
 
-    if module_generators is None and not positional:
-        return ring._fresh_free_module_on(labels)
-    return ring._fresh_free_module_on(
-        _generating_set_for(rank, module_generators, names),
+def _identity_lattice(data, ring, names, module_generators, category):
+    r"""The Euclidean lattice on the free module ``data``: the identity Gram in its framing."""
+    selected_names = _normalized_lattice_names(names, data.module_rank())
+    module = _owned_free_module(
+        data, ring, module_generators=module_generators, names=selected_names
+    )
+    return _lattice_object(category, module, _IdentityGram(module), names=selected_names)
+
+
+def _root_lattice(cartan_type, ring, names, module_generators, category):
+    r"""The root lattice of a finite crystallographic Cartan type, in its simple-root framing."""
+    return _lattice_from_gram_tensor(
+        _root_cartan_gram_tensor(ring, cartan_type),
+        ring,
+        names,
+        module_generators,
+        category,
+        cartan_type=cartan_type,
     )
 
 
-def _identity_lattice(data, ring, names, module_generators, category) -> Lattice:
-    module = _owned_free_module(data, ring, module_generators=module_generators, names=names)
-    return _lattice_parent(module, _IdentityGram(module), category, None, names)
+def _lattice_with_form(data, form, ring, names, module_generators, category):
+    r"""The free module ``data`` equipped with the finite Gram presentation ``form``."""
+    assert data in FramedFreeModules(ring), (
+        "form= equips a free module given as the first argument"
+    )
+    assert form.tensor_valence() == (NN**2)((0, 2)), "form= takes a type-(0,2) tensor"
+    assert form.base_ring() is ring, (
+        f"Lattices({ring}) takes an {ring}-valued form, got a form over {form.base_ring()}"
+    )
+    assert _gram_rank(form).is_finite(), (
+        "form= states a finite Gram on a free module; a pairing rule determines "
+        "its own lattice, Lattices(R)(G)"
+    )
+    selected_names = _normalized_lattice_names(names, data.module_rank())
+    module = _owned_free_module(
+        data, ring, module_generators=module_generators, names=selected_names
+    )
+    return _lattice_on_gram(category, module, form, selected_names, None)
 
 
 def _lattice(
@@ -1521,57 +1592,45 @@ def _lattice(
     form=None,
     module_generators=None,
     *,
-    category: Category,
-) -> Lattice:
-    r"""Return an owned lattice in ``category``.
+    category,
+):
+    r"""Return the lattice in ``category`` that ``data`` presents.
+
+    This is the literal ingress of ``Lattices(R)(data)``: it reads which
+    presentation ``data`` is and computes the free module and Gram
+    presentation :func:`_lattice_object` builds on.
 
     ``Lattices(R)(R^n)`` is the standard Euclidean lattice: the identity
     Gram tensor on \(R^n\).  ``Lattices(R)(R^{\mathbb N})`` is the colimit
     of those, with \(\langle x,y\rangle=\sum_i x_i y_i\) on finite
     supports.  A pairing Gram on a free module is itself a lattice:
     ``Lattices(R)((R^NN).diagonal_gram({0: -1}))``.  ``form=`` equips a
-    given free module with such a Gram.  ``module_generators=`` is the
+    given free module with a finite Gram.  ``module_generators=`` is the
     generating set of that free module; when omitted, the generators
     are the formal symbols \(e_i\in\mathrm{SR}\).  A matrix (type
     $(1,1)$) is refused.  Named descriptors (``'U'``, a finite
-    simply-laced Cartan type, a Euclidean rank) are owned Gram tensors.
+    crystallographic Cartan type, a Euclidean rank) are Gram tensors.
     """
-    if basis is not None:
-        raise TypeError("Lattices(R) does not take a spanning basis; construct the free module and the Gram in this category")
+    assert basis is None, (
+        "Lattices(R) does not take a spanning basis; construct the free module and the Gram in this category"
+    )
     ring = category.base_ring()
-
-    framed = FramedFreeModules(ring)
-
-    if form is not None:
-        match data:
-            case _PairingGram():
-                raise TypeError("a pairing Gram already determines the lattice")
-            case _ if data in framed:
-                module = _owned_free_module(data, ring, module_generators=module_generators, names=names)
-            case _:
-                raise TypeError("form= takes a free module as the first argument")
-        form = _require_form_tensor(form, ring)
-        match form:
-            case _PairingGram() if form._module != module:
-                raise TypeError("the form is on a different free module")
-            case _:
-                return _lattice_parent(module, form, category, None, names)
+    match form:
+        case None:
+            pass
+        case _:
+            return _lattice_with_form(data, form, ring, names, module_generators, category)
 
     match data:
-        case _PairingGram():
-            if module_generators is not None:
-                raise TypeError("a pairing Gram already determines the generating set")
-            if _engine_ring(data.base_ring()) != _engine_ring(ring):
-                raise TypeError(f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}")
-            return _lattice_parent(data._module, data, category, None, names)
-        case _ if data in framed:
-            return _identity_lattice(data, ring, names, module_generators, category)
         case Tensor() if data.tensor_valence() == (NN**2)((0, 2)):
-            if _engine_ring(data.base_ring()) != _engine_ring(ring):
-                raise TypeError(f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}")
+            assert data.base_ring() is ring, (
+                f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}"
+            )
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)
         case Tensor() | Matrix():
             raise TypeError("a matrix is a type-(1,1) tensor (a linear map); a Gram is a type-(0,2) tensor")
+        case _ if data in FramedFreeModules(ring):
+            return _identity_lattice(data, ring, names, module_generators, category)
         case "U" | "H":
             return _lattice_from_gram_tensor(
                 _hyperbolic_plane_gram_tensor(ring),
@@ -1581,7 +1640,6 @@ def _lattice(
                 category,
             )
         case Integer() | int() if int(data) >= 0:
-
             return _identity_lattice(
                 ring.free_module(int(data)),
                 ring,
@@ -1589,43 +1647,31 @@ def _lattice(
                 module_generators,
                 category,
             )
-        case str():
-            cartan_type = _finite_crystallographic_cartan_type(data)
-            return _lattice_from_gram_tensor(
-                _root_cartan_gram_tensor(ring, cartan_type),
-                ring,
-                names,
-                module_generators,
-                category,
-                root_cartan_type=cartan_type,
-            )
-        case CartanType_abstract():
-            cartan_type = _finite_crystallographic_cartan_type(data)
-            return _lattice_from_gram_tensor(
-                _root_cartan_gram_tensor(ring, cartan_type),
-                ring,
-                names,
-                module_generators,
-                category,
-                root_cartan_type=cartan_type,
-            )
-        case list() | tuple() if data and isinstance(data[0], (list, tuple)):
-            return _lattice_from_gram_tensor(
-                _nested_gram_tensor(data, ring),
+        case str() | CartanType_abstract():
+            return _root_lattice(
+                _finite_crystallographic_cartan_type(data),
                 ring,
                 names,
                 module_generators,
                 category,
             )
-        case list() | tuple() if data and isinstance(data[0], str):
-            cartan_type = _finite_crystallographic_cartan_type(data)
-            return _lattice_from_gram_tensor(
-                _root_cartan_gram_tensor(ring, cartan_type),
-                ring,
-                names,
-                module_generators,
-                category,
-                root_cartan_type=cartan_type,
-            )
+        case list() | tuple() if data:
+            match _component_shape(data):
+                case (_rows, _columns):
+                    return _lattice_from_gram_tensor(
+                        _nested_gram_tensor(data, ring),
+                        ring,
+                        names,
+                        module_generators,
+                        category,
+                    )
+                case _:
+                    return _root_lattice(
+                        _finite_crystallographic_cartan_type(list(data)),
+                        ring,
+                        names,
+                        module_generators,
+                        category,
+                    )
         case _:
-            raise TypeError(f"Lattices({ring}) takes a free {ring}-module, a type-(0,2) Gram, 'U', a finite simply-laced Cartan type, or a nonnegative rank, got {data!r}")
+            raise TypeError(f"Lattices({ring}) takes a free {ring}-module, a type-(0,2) Gram, 'U', a finite crystallographic Cartan type, or a nonnegative rank, got {data!r}")

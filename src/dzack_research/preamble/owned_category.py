@@ -906,7 +906,11 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
 def _engine_object_type(object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine):
     r"""The native parent/element realization, without a second category node."""
     realized = _implementation_with_engine(object_type, owner_object_type, object_engine)
-    elements = _implementation_with_engine(element_type, owner_element_type, element_engine)
+    elements = (
+        element_type
+        if element_engine is None
+        else _implementation_with_engine(element_type, owner_element_type, element_engine)
+    )
     return type(realized)(
         f"{realized.__name__}.ObjectType",
         (realized,),
@@ -929,7 +933,7 @@ def _engine_object_type(object_type, owner_object_type, object_engine, element_t
 def _object_of(
     category: Category,
     *,
-    _engine: tuple[Category, type, type] | None = None,
+    _engine: tuple[Category, type, type | None] | None = None,
     **data: ConstructionData,
 ) -> Parent:
     r"""The object of ``category`` built from the data its levels declare.
