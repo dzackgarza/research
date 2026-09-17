@@ -33,7 +33,11 @@ from dzack_research.preamble.categories.schemes.schemes import (
 
 
 def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
-    r"""Raise one algebra polynomial to the corresponding complex chart formula."""
+    r"""Raise one algebra polynomial to the corresponding complex chart formula.
+
+    Engine adapter (``OWN-06``): read the private Sage polynomial of an owned
+    algebra element and write the Sage symbolic chart expression.
+    """
     backend = _engine_element(algebra, algebra(polynomial))
     source_ring = algebra.base_ring()
     target_ring = scalar_embedding.codomain()
@@ -78,8 +82,9 @@ class _AffineSpaceAnalytificationFunctor(Functor):
 
     @cached_method
     def _apply_morphism(self, morphism):
-        if morphism.domain() not in self.domain() or morphism.codomain() not in self.domain():
-            raise TypeError("affine analytification currently maps polynomial morphisms of affine spaces")
+        assert morphism.domain() in self.domain() and morphism.codomain() in self.domain(), (
+            "affine analytification maps morphisms between affine spaces over the embedding source"
+        )
         analytic_source = self.object_image(morphism.domain())
         analytic_target = self.object_image(morphism.codomain())
         source_chart = analytic_source.atlas()["standard"]
@@ -152,8 +157,9 @@ class AnalyticDiscFamily(SageObject):
             (restricted_parameter,),
         )
 
-        if analytic_base.open_inclusion() * analytic_family != analytified_family * analytic_total.open_inclusion():
-            raise ArithmeticError("the analytic disc family does not commute with its algebraic analytification square")
+        assert analytic_base.open_inclusion() * analytic_family == analytified_family * analytic_total.open_inclusion(), (
+            "the analytic disc family does not commute with its algebraic analytification square"
+        )
 
         self._scalar_embedding = embedding
         self._algebraic_total = algebraic_total
