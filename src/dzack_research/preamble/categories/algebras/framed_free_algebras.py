@@ -110,5 +110,5 @@ def _symmetric_algebra_of(module):
             Algebras(base).Associative().Unital().Commutative(),
             GradedAlgebras(base),
         ),
-        _free_source_module=module,
+        _generating_module=module,
     )

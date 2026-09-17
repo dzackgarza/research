@@ -33,17 +33,14 @@ class _SparseFreeAlgebra(_WordModule):
     def flavor(self):
         return self.word_flavor()
 
-    def free_source_module(self):
-        return self.word_source_module()
-
     def _source_has_component_protocol(self):
-        return _has_component_presentation(self.free_source_module())
+        return _has_component_presentation(self.generating_module())
 
     def algebra_generating_set(self):
-        return self.free_source_module().module_generating_set()
+        return self.generating_module().module_generating_set()
 
     def algebra_generator(self, label):
-        return self.from_component(1, self.free_source_module().module_generator(label))
+        return self.from_component(1, self.generating_module().module_generator(label))
 
     def _algebra_homset_class(self):
         return SparseFreeAlgebraHomset
@@ -56,7 +53,7 @@ class _SparseFreeAlgebra(_WordModule):
         match value:
             case _ if source is self:
                 return value
-            case _ if source is self.free_source_module():
+            case _ if source is self.generating_module():
                 return self.from_component(1, value)
             case dict():
                 return super()._element_constructor_(value)
@@ -77,7 +74,7 @@ class _SparseFreeAlgebra(_WordModule):
                 return True
             case _ if size.is_finite() and int(size.finite_value()) <= 1:
                 return True
-            case _ if self.free_source_module() in FramedFreeModules(self.base_ring()) and (self.base_ring().one() != self.base_ring().zero()) is True:
+            case _ if self.generating_module() in FramedFreeModules(self.base_ring()) and (self.base_ring().one() != self.base_ring().zero()) is True:
                 return False
             case _:
                 return Unknown
@@ -108,7 +105,7 @@ class _SparseFreeAlgebra(_WordModule):
 
     def _repr_(self):
         name = "T" if self.flavor() == "tensor" else "Sym"
-        return f"{name}({self.free_source_module()})"
+        return f"{name}({self.generating_module()})"
 
 
 def _word_product(module, left, right):
@@ -206,7 +203,7 @@ class SparseFreeAlgebraMorphism(Morphism):
         cached = self._component_maps.get(key)
         if cached is not None:
             return cached
-        source = self.domain().free_source_module()
+        source = self.domain().generating_module()
         component = source.module_component(key)
         images = {component_label: self._raw_image(source.module_label_from_component(key, component_label)) for component_label in component.module_generating_set()}
         certified = component.module_category().Mor(component, self.codomain())(images)
@@ -214,7 +211,7 @@ class SparseFreeAlgebraMorphism(Morphism):
         return certified
 
     def _image(self, label):
-        source = self.domain().free_source_module()
+        source = self.domain().generating_module()
         if not self.domain()._source_has_component_protocol():
             return self._raw_image(label)
         key = source.module_component_key(label)

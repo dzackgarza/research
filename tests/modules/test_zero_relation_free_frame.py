@@ -18,7 +18,7 @@ def test_zero_relations_place_the_exact_presented_module_with_its_basis():
     assert module.framing_coefficients(2 * u - 3 * v) == {"u": ZZ(2), "v": ZZ(-3)}
 
     for algebra in (module.tensor_algebra(), module.symmetric_algebra()):
-        assert algebra.free_source_module() is module
+        assert algebra.generating_module() is module
         assert algebra.graded_piece(1) is module
         assert algebra.framing_source() is not module
         x, y = algebra.algebra_generator("u"), algebra.algebra_generator("v")

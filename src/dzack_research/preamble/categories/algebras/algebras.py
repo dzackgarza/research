@@ -428,7 +428,7 @@ class _CommutativeUnitalAlgebraParentMethods:
         *,
         _extra_categories=(),
         _extra_construction_data=None,
-        _free_source_module=None,
+        _generating_module=None,
     ):
         r"""Return the selected finite-presentation quotient by ``relations``."""
         category = AlgebrasWithChosenFinitePresentation(self.base_ring())
@@ -437,7 +437,7 @@ class _CommutativeUnitalAlgebraParentMethods:
             relations,
             extra_categories=_extra_categories,
             extra_construction_data=_extra_construction_data,
-            free_source_module=_free_source_module,
+            generating_module=_generating_module,
         )
 
 
@@ -1600,7 +1600,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         *,
         extra_categories=(),
         extra_construction_data=None,
-        free_source_module=None,
+        generating_module=None,
     ):
         r"""Construct an algebra from its selected finite polynomial presentation."""
         if presentation_ring.base_ring() is not self.base_ring():
@@ -1614,7 +1614,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             relations,
             _extra_categories=tuple(extra_categories),
             _extra_construction_data=extra_construction_data,
-            _free_source_module=free_source_module,
+            _generating_module=generating_module,
         )
 
     class ParentMethods:
@@ -2506,7 +2506,7 @@ def _refine_algebra(
     match algebra:
         case _NativeFreeAlgebraParent() if algebra.base_ring() is base:
             selected_labels = algebra.algebra_generating_set() if labels is None else finite_ordered_set(labels)
-            generating = algebra.free_source_module()
+            generating = algebra.generating_module()
             match selected_labels == algebra.algebra_generating_set():
                 case True:
                     if not construction_data and all(algebra in category for category in categories):

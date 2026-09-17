@@ -136,7 +136,7 @@ class _AlgebraScalarExtensionFunctor(Functor):
         if algebra in SymmetricAlgebras(self._source_ring):
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-            source_module = algebra.free_source_module()
+            source_module = algebra.generating_module()
             extended_module = Modules(self._source_ring).scalar_extension(self.ring_map())(
                 source_module
             )

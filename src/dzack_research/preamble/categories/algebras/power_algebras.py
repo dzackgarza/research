@@ -23,35 +23,24 @@ from dzack_research.preamble.categories.modules.pure.modules import FramedModule
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
-class _PowerAlgebraConstruction:
-    r"""The selected source module and flavor defining one power algebra."""
-
-    def __init__(self, source_module, flavor) -> None:
-        self._source_module = source_module
-        self._flavor = flavor
-
-    def source_module(self):
-        return self._source_module
-
-    def flavor(self):
-        return self._flavor
-
-
 class _PowerAlgebra:
     r"""The power construction on a graded module, without duplicate arithmetic."""
 
-    def __init__(self, power_algebra_construction, **rest) -> None:
-        self._power_algebra_construction = power_algebra_construction
+    def __init__(self, generating_module, power_flavor, **rest) -> None:
+        self._generating_module = generating_module
+        self._power_flavor = power_flavor
         super().__init__(**rest)
 
-    def power_algebra_construction(self):
-        return self._power_algebra_construction
-
     def flavor(self):
-        return self.power_algebra_construction().flavor()
+        return self._power_flavor
 
-    def free_source_module(self):
-        return self.power_algebra_construction().source_module()
+    def generating_module(self):
+        r"""The exact input M of Lambda(M) or Gamma(M), not its full graded sum.
+
+        In Gamma(M), degree one need not generate the ordinary algebra;
+        generating_module names the input of the divided-power functor.
+        """
+        return self._generating_module
 
     def _power_algebra_homset_class(self):
         return PowerAlgebraHomset
@@ -59,14 +48,14 @@ class _PowerAlgebra:
     def algebra_generating_set(self):
         match self.flavor():
             case "alternating":
-                return self.free_source_module().module_generating_set()
+                return self.generating_module().module_generating_set()
             case "divided":
                 # Degree-one elements alone need not generate Gamma over Z.
                 # A module generating family is also an algebra generating family.
                 return self.module_generating_set()
 
     def algebra_generator(self, label):
-        source = self.free_source_module()
+        source = self.generating_module()
         match label:
             case _ if label in source.module_generating_set():
                 return self.from_component(1, source.module_generator(label))
@@ -78,7 +67,7 @@ class _PowerAlgebra:
         match value:
             case _ if source is self:
                 return value
-            case _ if source is self.free_source_module():
+            case _ if source is self.generating_module():
                 return self.from_component(1, value)
             case dict():
                 return super()._element_constructor_(value)
@@ -92,7 +81,7 @@ class _PowerAlgebra:
             case "divided":
                 return True
             case _:
-                size = self.free_source_module().module_generating_set().cardinality()
+                size = self.generating_module().module_generating_set().cardinality()
                 if (self.base_ring()(2) == self.base_ring().zero()) is True:
                     return True
                 if size.is_finite() and int(size.finite_value()) <= 1:
@@ -115,7 +104,7 @@ class _PowerAlgebra:
         )
         return self.from_component(
             exponent,
-            self.free_source_module().divided_power_element(
+            self.generating_module().divided_power_element(
                 exponent,
                 value.homogeneous_component(1),
             ),
@@ -131,7 +120,7 @@ class _PowerAlgebra:
 
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
-        return f"{symbol}({self.free_source_module()})"
+        return f"{symbol}({self.generating_module()})"
 
 
 class PowerAlgebraMorphism(Morphism):
@@ -139,8 +128,8 @@ class PowerAlgebraMorphism(Morphism):
 
     def __init__(self, parent, degree_one_map) -> None:
         Morphism.__init__(self, parent)
-        source_module = self.domain().free_source_module()
-        target_module = self.codomain().free_source_module()
+        source_module = self.domain().generating_module()
+        target_module = self.codomain().generating_module()
         if isinstance(degree_one_map, ModuleMorphism):
             if degree_one_map.domain() is not source_module or degree_one_map.codomain() is not target_module:
                 raise ValueError("the degree-one module map has the wrong endpoints")
@@ -210,7 +199,7 @@ class PowerAlgebraHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
-        module = self.domain().free_source_module()
+        module = self.domain().generating_module()
         identity = self(module.module_category().Mor(module, module).identity())
         identity._preamble_is_identity = True
         return identity
@@ -272,7 +261,7 @@ def _power_algebra_of(source, flavor):
     unit = module.from_component(0, module.graded_piece(0).module_generator(0))
     return _algebra_on_module(
         module, multiplication, placement=(category, FramedAlgebras(ring)), unit=unit,
-        construction_data={"power_algebra_construction": _PowerAlgebraConstruction(source, flavor)},
+        construction_data={"generating_module": source, "power_flavor": flavor},
     )
 
 

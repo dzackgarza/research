@@ -58,7 +58,7 @@ def test_mixed_tensor_algebra_exposes_the_two_tensor_algebra_factors() -> None:
     dual = algebra.dual_module()
 
     assert dual is module.dual_module()
-    assert algebra.vector_tensor_algebra().free_source_module() is module
-    assert algebra.covector_tensor_algebra().free_source_module() is dual
+    assert algebra.vector_tensor_algebra().generating_module() is module
+    assert algebra.covector_tensor_algebra().generating_module() is dual
     assert algebra.vector_tensor_algebra().graded_piece(2).module_rank() == 4
     assert algebra.covector_tensor_algebra().graded_piece(2).module_rank() == 4

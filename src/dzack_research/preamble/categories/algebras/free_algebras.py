@@ -59,16 +59,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
-class _FreeAlgebraConstruction:
-    r"""The selected source module of a free-algebra construction."""
-
-    def __init__(self, source_module) -> None:
-        self._source_module = source_module
-
-    def source_module(self):
-        return self._source_module
-
-
 class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
     r"""Native polynomial/word arithmetic on the canonical free module.
 
@@ -93,7 +83,7 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
         assert generating_module in FramedFreeModules(base), (
             "a native free algebra is presented on a free generating module"
         )
-        self._free_algebra_construction = _FreeAlgebraConstruction(generating_module)
+        self._generating_module = generating_module
         self._native_free_flavor = flavor
         labels = generating_module.module_generating_set()
         match flavor:
@@ -119,7 +109,7 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
     def _native_basis_image(self, label):
         r"""Evaluate one canonical graded basis label in the native algebra."""
         inner = label.summand_element()
-        labels = self._free_algebra_construction.source_module().module_generating_set()
+        labels = self._generating_module.module_generating_set()
         ranking = labels.ranking_map()
         match self._native_free_flavor:
             case "tensor":
@@ -143,7 +133,7 @@ class _NativeFreeAlgebraParent(_OwnedAlgebraParent):
         exponent tuples, and free-algebra keys are free-monoid words.  These
         representation distinctions stay in this selected engine adapter.
         """
-        generating = self._free_algebra_construction.source_module()
+        generating = self._generating_module
         base = generating.base_ring()
         labels = generating.module_generating_set()
         module_labels = self._native_module_basis.source().module_generating_set()
@@ -382,7 +372,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         *,
         extra_categories=(),
         extra_construction_data=None,
-        free_source_module=None,
+        generating_module=None,
         commutative_backend=False,
         finite_free_degree=None,
         presentation_flattening=None,
@@ -415,8 +405,8 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             presentation_ideal,
             lift_to_presentation,
         )
-        if free_source_module is not None:
-            self._free_algebra_construction = _FreeAlgebraConstruction(free_source_module)
+        if generating_module is not None:
+            self._generating_module = generating_module
 
         placement = [
             FinitelyPresentedAlgebras(base),
@@ -712,7 +702,7 @@ def _finitely_presented_algebra_from_data(
     *,
     _extra_categories=(),
     _extra_construction_data=None,
-    _free_source_module=None,
+    _generating_module=None,
 ):
     r"""Return the selected quotient ``R[S] / (relations)``."""
     base = presentation_ring.base_ring()
@@ -736,7 +726,7 @@ def _finitely_presented_algebra_from_data(
             ),
             _extra_categories=_extra_categories,
             _extra_construction_data=_extra_construction_data,
-            _free_source_module=_free_source_module,
+            _generating_module=_generating_module,
         )
     if presentation_ring not in SymmetricAlgebras(base):
         raise NotImplementedError(
@@ -818,7 +808,7 @@ def _finitely_presented_algebra_from_data(
             if _extra_construction_data is None
             else tuple(_extra_construction_data)
         ),
-        free_source_module=_free_source_module,
+        generating_module=_generating_module,
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
@@ -1015,16 +1005,16 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 # including zero; do not let this generic free-algebra method
                 # replace their degree-zero power module with the scalar ring.
                 case _ if self in AlternatingAlgebras(ring):
-                    return self.free_source_module().exterior_power(degree)
+                    return self.generating_module().exterior_power(degree)
                 case _ if self in DividedPowerAlgebras(ring):
-                    return self.free_source_module().divided_power_module(degree)
+                    return self.generating_module().divided_power_module(degree)
                 # Every flavor uses its authoritative module-power owner in
                 # every degree.  In degree zero this is the rank-one scalar
                 # module, not the ring parent viewed through an unrelated API.
                 case _ if self in TensorAlgebras(ring):
-                    return self.free_source_module().tensor_power(degree)
+                    return self.generating_module().tensor_power(degree)
                 case _ if self in SymmetricAlgebras(ring):
-                    return self.free_source_module().symmetric_power(degree)
+                    return self.generating_module().symmetric_power(degree)
             raise TypeError(
                 f"the graded free-algebra flavor of {self} is not represented"
             )
@@ -1124,25 +1114,15 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 for degree in degrees
             }
 
-        # The module a construction selected to build this algebra on.
-        # Declared here so a reader of this category sees the field, and so an
-        # algebra reached by a route that selected none answers below.
-        _free_algebra_construction = None
+        def generating_module(self):
+            r"""The exact input M of this chosen tensor-algebra construction.
 
-        def free_source_module(self):
-            r"""Return the module whose tensor algebra this object represents.
-
-            \(T_R(M)\) is the tensor algebra of a module, so a construction
-            that started from one states it.  Reached instead through variable
-            names, the algebra generating set is the datum that route supplies,
-            and \(T_R(F_R(S))\) is the algebra it built: the free module on
-            \(S\) is the degree-one piece either way.  So the source module is
-            a fact about the algebra, not about which constructor was called.
+            This is the degree-one module, not U(T(M)), the direct sum of
+            all tensor powers.  The native and relationful entries supply M
+            before constructing the algebra; this accessor never reconstructs
+            it from generator labels.
             """
-            construction = self._free_algebra_construction
-            if construction is not None:
-                return construction.source_module()
-            return self.algebra_base_ring().free_module(self.algebra_generating_set())
+            return self._generating_module
 
         @cached_method
         def ring_center(self):
@@ -1195,22 +1175,14 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
-        # The module a construction selected to build this algebra on, as on
-        # tensor algebras above.
-        _free_algebra_construction = None
+        def generating_module(self):
+            r"""The exact input M of this chosen symmetric-algebra construction.
 
-        def free_source_module(self):
-            r"""Return the module whose symmetric algebra this object represents.
-
-            A polynomial ring over \(R\) in the variables \(S\) is
-            \(\operatorname{Sym}_R(F_R(S))\).  So an algebra built from
-            variable names has a source module just as one built from a module
-            does, and it is the free module on its own algebra generating set.
+            For polynomial syntax the constructor supplies F_R(S) on its
+            variables.  For Sym_R(M) it supplies M itself, including its
+            relations.  Neither is the full underlying module U(Sym_R(M)).
             """
-            construction = self._free_algebra_construction
-            if construction is not None:
-                return construction.source_module()
-            return self.algebra_base_ring().free_module(self.algebra_generating_set())
+            return self._generating_module
 
         def from_component(self, degree, component):
             r"""Embed ``Sym^degree(M)`` through the shared graded-piece inclusion."""
@@ -1576,12 +1548,10 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         self._engine_morphism = None
         self._element_function = None
         self._preamble_is_identity = False
-        try:
-            source_module = domain.free_source_module()
-        except (AttributeError, ValueError):
-            source_module = None
-        if source_module is not None:
-            source_module.module_category().Mor(source_module, self.codomain().underlying_module())(self._images.value)
+        generating = domain.generating_module()
+        generating.module_category().Mor(
+            generating, self.codomain().underlying_module()
+        )(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()

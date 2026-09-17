@@ -171,7 +171,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
             TensorAlgebras(base),
             GradedAlgebras(base),
         ),
-        free_source_module=module,
+        generating_module=module,
     )
     return presented
 

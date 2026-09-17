@@ -19,7 +19,7 @@ def test_symmetric_algebra_constructs_the_full_monomial_frame():
     cubics = labels.cofactor(NN(3))
     aab = labels(NN(3), cubics.from_multiplicities({"a": 2, "b": 1}))
 
-    assert algebra.free_source_module() is module
+    assert algebra.generating_module() is module
     assert algebra.graded_piece(1) is module
     assert algebra.graded_piece(3) is module.symmetric_power(3)
     assert free is not module
@@ -43,7 +43,7 @@ def test_tensor_algebra_frame_keeps_the_order_and_repeated_letters():
     aba = labels(NN(3), words(lambda i: ("a", "b", "a")[int(i)]))
     aab = labels(NN(3), words(lambda i: ("a", "a", "b")[int(i)]))
 
-    assert algebra.free_source_module() is module
+    assert algebra.generating_module() is module
     assert algebra.graded_piece(3) is module.tensor_power(3)
     assert free in FramedFreeModules(QQ)
     assert algebra.module_generator(aba) == a * b * a
@@ -90,7 +90,7 @@ def test_free_algebra_on_the_zero_module_has_only_the_empty_word():
     module = QQ.free_module(0)
     for algebra in (module.tensor_algebra(), module.symmetric_algebra()):
         free = algebra.framing_source()
-        assert algebra.free_source_module() is module
+        assert algebra.generating_module() is module
         assert free.module_rank() == 1
         labels = tuple(free.module_generating_set())
         assert len(labels) == 1
@@ -106,7 +106,7 @@ def test_native_variable_spelling_does_not_replace_the_chosen_generator_labels()
         left = algebra.algebra_generator("first letter")
         right = algebra.algebra_generator("second letter")
         element = left * right + 2 * left
-        assert algebra.free_source_module() is module
+        assert algebra.generating_module() is module
         assert algebra.algebra_generating_set() is module.module_generating_set()
         assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
 
@@ -150,7 +150,7 @@ def test_free_forgetful_counits_evaluate_the_full_polynomial_module():
         unit = adjunction.unit(algebra)
         counit = adjunction.counit(algebra)
         formal = counit.domain()
-        assert formal.free_source_module() is algebra
+        assert formal.generating_module() is algebra
         assert unit.codomain() is formal
         assert counit.codomain() is algebra
         assert counit(unit(x**3 + 2 * x + algebra.one())) == x**3 + 2 * x + algebra.one()

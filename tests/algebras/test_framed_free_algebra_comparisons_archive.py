@@ -42,10 +42,17 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
     alternating = module.exterior_algebra()
     divided = module.divided_power_algebra()
 
-    assert tensor.free_source_module() is module
-    assert symmetric.free_source_module() is module
-    assert alternating.free_source_module() is module
-    assert divided.free_source_module() is module
+    assert tensor.generating_module() is module
+    assert symmetric.generating_module() is module
+    assert alternating.generating_module() is module
+    assert divided.generating_module() is module
+
+    for algebra in (tensor, symmetric, alternating, divided):
+        assert algebra.graded_piece(1) is module
+        assert algebra.unformed_module() is not module
+        full_module = algebra.unformed_module()
+        unit = algebra.one()
+        assert algebra(full_module(unit)) == unit
 
     x_t = tensor.algebra_generator("x")
     y_t = tensor.algebra_generator("y")
@@ -72,6 +79,11 @@ def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps()
     assert to_divided(x_s**3) == 6 * divided.divided_power(
         divided.algebra_generator("x"), 3
     )
+
+    gamma_two = divided.divided_power(divided.algebra_generator("x"), 2)
+    assert gamma_two != divided.zero()
+    assert divided.algebra_generator("x")**2 == 2 * gamma_two
+    assert divided(gamma_two.parent().unformed_module()(gamma_two)) == gamma_two
 
 
 def test_divided_to_symmetric_is_the_factorial_inverse_over_QQ() -> None:

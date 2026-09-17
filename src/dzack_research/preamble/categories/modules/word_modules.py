@@ -386,7 +386,8 @@ class _WordModule:
         cover = word_presentation.cover()
         self._install_framing(cover.module_generating_set(), lambda label: self(classes(cover.module_generator(label))), cover)
 
-    def word_source_module(self):
+    def generating_module(self):
+        r"""The module whose letters generate this word-module construction."""
         return self._word_presentation.source_module()
 
     def word_flavor(self):
@@ -434,9 +435,9 @@ class _WordModule:
             case 0:
                 return self.base_ring().regular_module()
             case 1:
-                return self.word_source_module()
+                return self.generating_module()
             case _:
-                return _word_degree_module(_module_on_word_quotient(self.word_source_module(), self.word_flavor()), degree)
+                return _word_degree_module(_module_on_word_quotient(self.generating_module(), self.word_flavor()), degree)
 
     def from_component(self, degree, component):
         degree = int(degree)
@@ -499,7 +500,7 @@ class _WordModule:
         return self.grading_monoid()
 
     def _repr_(self):
-        return f"Module of {self.word_flavor()} words on {self.word_source_module()}"
+        return f"Module of {self.word_flavor()} words on {self.generating_module()}"
 
 
 class _WordDegreeModule:
@@ -534,7 +535,7 @@ class _WordDegreeModule:
                 self._word_module.framing_coefficients(self._word_module(self(element).underlying_element())).items()}
 
     def _repr_(self):
-        return f"Degree-{self._word_degree} words on {self._word_module.word_source_module()}"
+        return f"Degree-{self._word_degree} words on {self._word_module.generating_module()}"
 
 
 @cached_function(key=lambda module, degree: (id(module), degree))
