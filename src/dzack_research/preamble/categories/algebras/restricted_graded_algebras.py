@@ -1,250 +1,196 @@
-r"""Restriction of scalar constants for represented graded power algebras."""
+r"""Restriction of scalars on the actual homogeneous modules of a graded algebra."""
 
 import operator
 
 from sage.categories.action import Action
 from sage.misc.cachefunc import cached_function
+from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras, _graded_multiplication_from_components
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
-    GradedDirectSumElement,
-    GradedDirectSumModule,
+    GradedDirectSumElement, _DirectSumOfModules, _direct_sum_of_modules,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _owned_ring,
-)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class _DegreeZeroAlgebraMultiplication(Action):
-    r"""Multiplication of a graded algebra by its canonical degree-zero subalgebra."""
+    r"""The retained coefficient-ring action on a scalar restriction."""
 
-    def __init__(self, degree_zero_algebra, graded_algebra, *, actor_on_left: bool):
-        self._graded_algebra = graded_algebra
-        self._actor_on_left = actor_on_left
-        super().__init__(
-            degree_zero_algebra,
-            graded_algebra,
-            is_left=actor_on_left,
-            op=operator.mul,
-        )
+    def __init__(self, degree_zero_algebra, graded_module, *, actor_on_left):
+        self._graded_module = graded_module
+        super().__init__(degree_zero_algebra, graded_module, is_left=actor_on_left, op=operator.mul)
 
     def _act_(self, actor, element):
-        embedded = self._graded_algebra.from_degree_zero(actor)
-        if self._actor_on_left:
-            return self._graded_algebra.multiply(embedded, element)
-        return self._graded_algebra.multiply(element, embedded)
+        module = self._graded_module
+        return module.from_realization(module.extension_algebra().scalar_multiple(actor, module.realize(element)))
 
 
-class RestrictedGradedAlgebraElement(GradedDirectSumElement):
-    def _mul_(self, other):
-        return self.parent().multiply(self, other)
-
+class _RestrictedGradedAlgebraElement(GradedDirectSumElement):
     def _acted_upon_(self, actor, self_on_left):
-        r"""Let the canonical degree-zero subalgebra multiply this element."""
-        parent = self.parent()
-        actor_parent = actor.parent() if hasattr(actor, "parent") else None
-        if actor_parent is parent.degree_zero_algebra():
-            actor = parent.from_degree_zero(actor)
-            return (
-                parent.multiply(self, actor)
-                if self_on_left
-                else parent.multiply(actor, self)
-            )
-        return super()._acted_upon_(actor, self_on_left)
+        module = self.parent()
+        match element_parent(actor):
+            case source if source is module.degree_zero_algebra():
+                return module.from_realization(module.extension_algebra().scalar_multiple(actor, module.realize(self)))
+            case _:
+                return super()._acted_upon_(actor, self_on_left)
 
 
-class RestrictedGradedAlgebra(GradedDirectSumModule):
-    r"""The same graded ring read over the constants of its degree-zero algebra."""
+class _RestrictedGradedAlgebra(_DirectSumOfModules):
+    r"""The direct-sum realization retaining restriction's original modules.
 
-    Element = RestrictedGradedAlgebraElement
+    The scalar restriction on each summand is constructed by its module owner.
+    This engine only assembles their existing element readings and coefficient
+    action; module arithmetic and algebra multiplication remain inherited.
+    """
 
-    def is_commutative(self):
-        r"""The same multiplication read over fewer scalars commutes exactly when it did."""
-        return self._extension_algebra.is_commutative()
-
-    def __init__(self, extension_algebra, ring_map, *, extra_categories=()) -> None:
+    def __init__(self, extension_algebra, ring_map, **rest) -> None:
         self._extension_algebra = extension_algebra
         self._ring_map = ring_map
-        self._degree_zero_algebra = extension_algebra.base_ring()
-        base = _owned_ring(ring_map.domain())
-        self._restricted_pieces = {}
-
-        def piece(degree):
-            degree = int(degree)
-            cached = self._restricted_pieces.get(degree)
-            if cached is not None:
-                return cached
-            extension_piece = extension_algebra.graded_piece(degree)
-            result = extension_piece.restrict_scalars(ring_map)
-            self._restricted_pieces[degree] = result
-            return result
-
-        def realize_generator(degree, label):
-            restricted_piece = piece(degree)
-            underlying = restricted_piece.module_generator(label).underlying_element()
-            return extension_algebra.from_component(degree, underlying)
-
-        def from_realization(element):
-            element = extension_algebra(element)
-            return self.from_components({degree: piece(degree)(component) for degree, component in element.homogeneous_components().items()})
-
-        categories = [
-            GradedAlgebras(base),
-            GradedAlgebras(base).Supercommutative().Alternating(),
-            *tuple(extra_categories),
-        ]
-        try:
-            degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
-            degree_one_labels = extension_algebra.free_source_module().module_generating_set()
-        except (AttributeError, TypeError):
-            self._preamble_algebra_generating_set = None
-        else:
-            framing = Sets().coproduct(
-                indexed_family(
-                    Sets.Δ[1],
-                    lambda index: (
-                        degree_zero_labels if int(index) == 0 else degree_one_labels
-                    ),
-                )
-            )
-            self._preamble_algebra_generating_set = framing
-
-            def generator_value(tagged):
-                if int(tagged.summand_index()) == 0:
-                    return self.from_degree_zero(self.degree_zero_algebra().algebra_generator(tagged.summand_element()))
-                return self.from_realization(self.extension_algebra().algebra_generator(tagged.summand_element()))
-
-            self._preamble_algebra_generator_values = indexed_family(
-                framing,
-                generator_value,
-                name="Restricted graded-algebra generators",
-            )
-            categories.append(FramedAlgebras(base))
-        GradedDirectSumModule.__init__(
-            self,
-            base,
-            piece,
-            name=f"{extension_algebra} over {base}",
-            realize_generator=realize_generator,
-            realized_object=extension_algebra,
-            from_realization=from_realization,
-            extra_categories=tuple(categories),
-        )
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
-
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        super().__init__(**rest)
         for actor_on_left in (True, False):
-            self.degree_zero_algebra().register_action(
-                _DegreeZeroAlgebraMultiplication(
-                    self.degree_zero_algebra(),
-                    self,
-                    actor_on_left=actor_on_left,
-                )
-            )
+            self.register_action(_DegreeZeroAlgebraMultiplication(
+                self.degree_zero_algebra(), self, actor_on_left=actor_on_left,
+            ))
+
+    def _direct_sum_realization(self):
+        return _RestrictedGradedAlgebra, _RestrictedGradedAlgebraElement
+
+    def _module_with_structure(self, categories, construction_data):
+        return super()._module_with_structure(categories, {
+            **construction_data,
+            "extension_algebra": self.extension_algebra(), "ring_map": self.ring_map(),
+        })
 
     def extension_algebra(self):
         return self._extension_algebra
 
     def degree_zero_algebra(self):
-        return self._degree_zero_algebra
+        return self.extension_algebra().base_ring()
 
     def ring_map(self):
         return self._ring_map
 
-    def algebra_base_ring(self):
-        return self.base_ring()
-
     def _element_constructor_(self, value):
-        r"""Include the degree-zero algebra into the restricted graded algebra.
-
-        The degree-zero algebra is part of this algebra's defining graded
-        structure, not an unrelated scalar parent.  Its canonical inclusion
-        is therefore valid ordinary element ingress in addition to the sparse
-        graded-direct-sum representation.
-        """
-        parent = value.parent() if hasattr(value, "parent") else None
-        if parent is self.degree_zero_algebra():
-            return self.from_degree_zero(value)
-        return super()._element_constructor_(value)
-
-    def _coerce_map_from_(self, source):
-        if source is self.degree_zero_algebra():
-            return True
-        return super()._coerce_map_from_(source)
+        source = element_parent(value)
+        match value:
+            case _ if source is self:
+                return value
+            case _ if source is self.extension_algebra():
+                return self.from_realization(value)
+            case _ if source is self.degree_zero_algebra():
+                return self.from_degree_zero(value)
+            case _ if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
+                return super()._element_constructor_(value)
+            case dict():
+                return super()._element_constructor_(value)
+            case _ if value in self.base_ring():
+                return self.from_degree_zero(self.ring_map()(self.base_ring()(value)))
+            case _:
+                return super()._element_constructor_(value)
 
     def _get_action_(self, source, op, self_on_left):
-        if op is operator.mul and source is self.degree_zero_algebra():
-            return _DegreeZeroAlgebraMultiplication(
-                source,
-                self,
-                actor_on_left=not self_on_left,
-            )
-        return super()._get_action_(source, op, self_on_left)
-
-    def multiply(self, left, right):
-        return self.from_realization(self.realize(left) * self.realize(right))
+        match (op is operator.mul, source is self.degree_zero_algebra()):
+            case (True, True):
+                return _DegreeZeroAlgebraMultiplication(source, self, actor_on_left=not self_on_left)
+            case _:
+                return super()._get_action_(source, op, self_on_left)
 
     def realize(self, element):
-        r"""Return the same finite homogeneous sum in the extension algebra.
+        r"""Read the homogeneous elements in their original scalar modules."""
+        extension = self.extension_algebra()
+        return sum((
+            extension.from_component(degree, component.underlying_element())
+            for degree, component in self(element).homogeneous_components().items()
+        ), extension.zero())
 
-        The restricted homogeneous pieces need not themselves carry a finite
-        framing over the smaller constants ring.  Realization therefore uses
-        the stored underlying element of each restricted piece directly,
-        rather than expanding it in an artificial restricted-scalar basis.
-        """
-        element = self(element)
-        result = self.extension_algebra().zero()
-        for degree, component in element.homogeneous_components().items():
-            underlying = component.underlying_element() if hasattr(component, "underlying_element") else component
-            result += self.extension_algebra().from_component(degree, underlying)
-        return result
-
-    def one(self):
-        return self.from_realization(self.extension_algebra().one())
-
-    def _an_element_(self):
-        r"""Return the unit as a canonical live specimen of this algebra."""
-        return self.one()
-
-    def algebra_generating_set(self):
-        assert self._preamble_algebra_generating_set is not None, (
-            "algebra_generating_set requires a selected finite algebra framing on this restricted graded algebra"
-        )
-        return self._preamble_algebra_generating_set
-
-    def algebra_generator(self, label):
-        r"""Return the generator at a point of the coproduct framing.
-
-        The framing is the coproduct of the degree-zero algebra's generating
-        set with the extension module's, so a label carries which summand it
-        came from and its point there.
-        """
-        labels = self.algebra_generating_set()
-        if label not in labels:
-            raise ValueError(f"{label!r} is not an algebra-generator label")
-        return self._preamble_algebra_generator_values[label]
+    def from_realization(self, element):
+        r"""Read the original homogeneous elements in the restricted modules."""
+        return self.from_components({
+            degree: self.graded_piece(degree)(component)
+            for degree, component in self.extension_algebra()(element).homogeneous_components().items()
+        })
 
     def from_degree_zero(self, element):
-        return self.from_realization(self.extension_algebra()(element))
+        return self.from_realization(self.extension_algebra()(self.degree_zero_algebra()(element)))
 
     def degree_zero_element(self, element):
-        realized = self.realize(element)
-        component = realized.homogeneous_component(0)
-        coefficients = realized.parent().graded_piece(0).framing_coefficients(component)
-        scalar = coefficients.get(0, self.degree_zero_algebra().zero())
-        return self.degree_zero_algebra()(scalar)
+        represented = self.realize(element)
+        coefficients = self.extension_algebra().graded_piece(0).framing_coefficients(represented.homogeneous_component(0))
+        return self.degree_zero_algebra()(coefficients.get(0, self.degree_zero_algebra().zero()))
+
+    def _repr_(self):
+        return f"{self.extension_algebra()} over {self.base_ring()}"
+
+
+def RestrictedGradedAlgebraElement(parent, components):
+    return parent.from_components(components)
+
+
+def RestrictedGradedAlgebra(extension_algebra, ring_map):
+    return extension_algebra.restrict_scalars(ring_map)
+
+
+def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), construction_data=None):
+    r"""Restrict the summands, then classify the unchanged homogeneous product.
+
+    For f:R->S, S-bilinearity implies R-bilinearity under r.x=f(r)x.
+    All algebra identities are unchanged by that action restriction, so only
+    the source's established identities are placed on the result.
+    """
+    ring = ring_map.domain()
+    extension = algebra.base_ring()
+    assert ring_map.codomain() is extension, "scalar restriction uses a map into the original coefficient ring"
+    monoid = algebra.grading_monoid()
+
+    def piece(degree):
+        return algebra.graded_piece(degree).restrict_scalars(ring_map)
+
+    module = _direct_sum_of_modules(
+        ring, monoid, indexed_family(monoid, piece),
+        _realization=(_RestrictedGradedAlgebra, _RestrictedGradedAlgebraElement),
+        construction_data={"extension_algebra": algebra, "ring_map": ring_map},
+    )
+
+    def component_product(s, x, t, y):
+        product = algebra.from_component(s, x.underlying_element()) * algebra.from_component(t, y.underlying_element())
+        degree = module.combine_degrees(s, t)
+        return module.graded_piece(degree)(product.homogeneous_component(degree))
+
+    multiplication = _graded_multiplication_from_components(module, component_product)
+    categories = (GradedAlgebras(ring, monoid), *extra_categories, *(
+        target for source, target in (
+            (Algebras(extension).Commutative(), Algebras(ring).Commutative()),
+            (GradedAlgebras(extension, monoid).Supercommutative(), GradedAlgebras(ring, monoid).Supercommutative()),
+            (GradedAlgebras(extension, monoid).Supercommutative().Alternating(), GradedAlgebras(ring, monoid).Supercommutative().Alternating()),
+        ) if algebra in source
+    ))
+    data = dict(construction_data or {})
+    if (extension in FramedAlgebras(ring) and algebra in FramedAlgebras(extension)
+            and ring_map is extension.algebra_structure_morphism()):
+        labels = Sets().coproduct(indexed_family(Sets.Δ[1], lambda i:
+            extension.algebra_generating_set() if int(i) == 0 else algebra.algebra_generating_set()))
+
+        def generator(label):
+            match int(label.summand_index()):
+                case 0:
+                    return module.from_degree_zero(extension.algebra_generator(label.summand_element()))
+                case 1:
+                    return module.from_realization(algebra.algebra_generator(label.summand_element()))
+
+        categories = (*categories, FramedAlgebras(ring))
+        data["algebra_generating_family"] = indexed_family(labels, generator)
+    return _algebra_on_module(
+        module, multiplication, placement=categories,
+        unit=module.from_realization(algebra.one()), construction_data=data,
+    )
 
 
 @cached_function(key=lambda algebra, ring_map: (id(algebra), id(ring_map)))
 def _restrict_graded_algebra_scalars(algebra, ring_map):
-    result = RestrictedGradedAlgebra(algebra, ring_map)
-    return result
+    return _restricted_graded_algebra(algebra, ring_map)
 
 
-__all__ = [
-    "RestrictedGradedAlgebra",
-    "RestrictedGradedAlgebraElement",
-]
+__all__ = ["RestrictedGradedAlgebra", "RestrictedGradedAlgebraElement"]

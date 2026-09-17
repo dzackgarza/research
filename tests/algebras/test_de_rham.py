@@ -278,3 +278,37 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
         * adjunction.unit(degree_zero)
     )
     assert right_triangle(t) == t
+
+
+def test_de_rham_constructs_restricted_pieces_and_product_before_exposing_the_dga() -> None:
+    algebra = QQ.polynomial_ring(("x", "y"))
+    de_rham = algebra.de_rham_algebra()
+    module = de_rham.unformed_module()
+    exterior = de_rham.extension_algebra()
+    assert module is not de_rham
+    assert module not in Algebras(QQ)
+    assert module.graded_piece(1).module_over_extension() is exterior.graded_piece(1)
+    assert module.graded_piece(1) is de_rham.graded_piece(1)
+    x = de_rham.from_degree_zero(algebra.algebra_generator("x"))
+    dx = de_rham.d(x)
+    multiplication = de_rham.multiplication()
+    assert multiplication.codomain() is module
+    assert multiplication.domain().tensor_factor(0) is module
+    assert multiplication.domain().tensor_factor(1) is module
+    assert de_rham(multiplication(module(x), module(dx))) == x * dx
+    assert de_rham.one() * dx == dx
+    assert de_rham.d(de_rham.d(x)) == de_rham.zero()
+    assert module.projection(1)(module(dx)) == dx.homogeneous_component(1)
+
+
+def test_restriction_does_not_invent_exterior_identities_on_a_tensor_algebra() -> None:
+    from dzack_research.preamble.all import GradedAlgebras, OwnedRings
+
+    source = QQ.free_module(finite_ordered_set(("x", "y"))).tensor_algebra()
+    restricted = source.restrict_scalars(OwnedRings().Mor(QQ, QQ).identity())
+    x = restricted.from_realization(source.algebra_generator("x"))
+    y = restricted.from_realization(source.algebra_generator("y"))
+    assert restricted.realize(x * y) == source.algebra_generator("x") * source.algebra_generator("y")
+    assert restricted.realize(x * x) != source.zero()
+    assert restricted not in GradedAlgebras(QQ).Supercommutative().Alternating()
+    assert restricted.unformed_module() is not restricted

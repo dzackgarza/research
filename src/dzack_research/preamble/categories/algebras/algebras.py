@@ -1415,6 +1415,18 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
+        def __init__(self, algebra_generating_family=None, **rest) -> None:
+            r"""Retain the selected family in the constructed algebra.
+
+            Values supplied by a construction may lie in its unformed module;
+            the algebra's ordinary element ingress reads them on the same data.
+            Native realizations that already supply this family retain it.
+            """
+            if algebra_generating_family is not None:
+                self._preamble_algebra_generating_set = algebra_generating_family.index_set()
+                self._preamble_algebra_generator_values = algebra_generating_family.map(self)
+            super().__init__(**rest)
+
         def is_framed_algebra(self) -> bool:
             return True
 

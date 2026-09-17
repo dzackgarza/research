@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     DifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
-    RestrictedGradedAlgebra,
+    _restricted_graded_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
@@ -25,6 +25,23 @@ class _DeRhamConstruction:
 
     def kahler_differentials(self):
         return self._kahler_differentials
+
+
+class _DeRhamAlgebra:
+    r"""The differential on the constructed restricted exterior algebra."""
+
+    def __init__(self, de_rham_construction, **rest) -> None:
+        self._de_rham_construction = de_rham_construction
+        super().__init__(**rest)
+        exterior = self.extension_algebra()
+        omega = self.kahler_differentials()
+        universal = omega.universal_derivation()
+
+        def differential(element):
+            image = _de_rham_differential_on_extension(exterior, omega, universal, self.realize(element))
+            return self.from_realization(image)
+
+        self._preamble_differential = Differential(self, differential)
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
@@ -64,7 +81,7 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [DifferentialGradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
-    class ParentMethods:
+    class ParentMethods(_DeRhamAlgebra):
         def de_rham_construction(self):
             return self._de_rham_construction
 
@@ -105,30 +122,6 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
     return result
 
 
-class _DeRhamAlgebra(RestrictedGradedAlgebra):
-    r"""The de Rham algebra with source and differential constructor-owned."""
-
-    def __init__(self, algebra, exterior, omega, ring_map) -> None:
-        self._de_rham_construction = _DeRhamConstruction(algebra, omega)
-        RestrictedGradedAlgebra.__init__(
-            self,
-            exterior,
-            ring_map,
-            extra_categories=(DeRhamAlgebras(algebra.base_ring()),),
-        )
-        universal = omega.universal_derivation()
-
-        def differential(element):
-            extension_element = self.realize(element)
-            image = _de_rham_differential_on_extension(
-                exterior,
-                omega,
-                universal,
-                extension_element,
-            )
-            return self.from_realization(image)
-
-        self._preamble_differential = Differential(self, differential)
 
 
 @cached_function(key=lambda algebra: id(algebra))
@@ -136,7 +129,10 @@ def _de_rham_algebra_from_source(algebra):
     omega = algebra.kahler_differentials()
     exterior = omega.exterior_algebra()
     ring_map = algebra.algebra_structure_morphism()
-    return _DeRhamAlgebra(algebra, exterior, omega, ring_map)
+    return _restricted_graded_algebra(
+        exterior, ring_map, extra_categories=(DeRhamAlgebras(algebra.base_ring()),),
+        construction_data={"de_rham_construction": _DeRhamConstruction(algebra, omega)},
+    )
 
 
 __all__ = ["DeRhamAlgebras"]
