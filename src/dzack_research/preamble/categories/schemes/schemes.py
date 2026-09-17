@@ -2270,7 +2270,7 @@ class Schemes(OwnedCategoryOverBaseRing):
 
                 return _affine_weil_cycle_isomorphism(self)
 
-            def closed_subscheme(self, *equations, placements=(), **level_data):
+            def closed_subscheme(self, *equations, placements=(), _quotient_data=None, **level_data):
                 r"""``V(f_1, ..., f_k) = Spec A/(f_1, ..., f_k)``, with its closed immersion.
 
                 The equations are given one by one or as a single finite family.
@@ -2281,7 +2281,13 @@ class Schemes(OwnedCategoryOverBaseRing):
                 equations = _equation_family(equations)
                 algebra = self.coordinate_algebra()
                 base = self.scheme_base_ring()
-                quotient, quotient_map = algebra._quotient_by_algebra_elements(tuple(equations))
+                match _quotient_data:
+                    case None:
+                        quotient, quotient_map = algebra._quotient_by_algebra_elements(tuple(equations))
+                    case (quotient, quotient_map):
+                        assert quotient_map.domain() is algebra and quotient_map.codomain() is quotient, (
+                            "the retained quotient datum belongs to this affine closed immersion"
+                        )
                 return _affine_scheme(
                     quotient,
                     base,
