@@ -196,10 +196,6 @@ class _SparseFreeModuleParent:
         # is this level's datum, and the framing it declares is the identity
         # of ``F_R(S)`` read on its basis.
         self._module_generating_set = module_generating_set
-        self._preamble_free_module_constructor = lambda new_labels, **options: ring._fresh_free_module_on(
-            new_labels,
-            **options,
-        )
         super().__init__(
             base_ring=ring,
             module_generating_set=module_generating_set,
@@ -360,12 +356,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def _fresh_free_module_on(self, labels, **options):
-            constructor = self.__dict__.get("_preamble_free_module_constructor")
-            if constructor is None:
-                raise NotImplementedError(
-                    "this free module has no selected fresh-parent constructor"
-                )
-            return constructor(labels, **options)
+            r"""Return a new free module on ``labels`` over this module's ring.
+
+            Protected contract of framed free modules: constructions that build
+            sibling free modules (covers, relation modules, matrix units) ask
+            the free module they start from, so the new module is over the same
+            ring.
+            """
+            return _fresh_free_module_on(self.base_ring(), labels, **options)
 
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
@@ -402,12 +400,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             """
 
             return _module_subobject_spanning(self, self.module_generators())
-
-        def base_ring(self):
-            selected = self.__dict__.get("_preamble_base_ring")
-            if selected is not None:
-                return selected
-            return _owned_ring(self.base())
 
         def diagonal_gram(self, exceptions, default=1):
             r"""Return the diagonal type-``(0,2)`` tensor in this selected basis."""
@@ -517,12 +509,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
-            def _fresh_free_module_on(self, labels, **options):
-                constructor = self.__dict__.get("_preamble_free_module_constructor")
-                if constructor is None:
-                    raise NotImplementedError("this finite free module has no selected free-module constructor")
-                return constructor(labels, **options)
-
             def _represented_vector_space_dimension(self):
                 return self.module_rank()
 
@@ -887,14 +873,13 @@ def _module_subobject_constructor_data(module, basis):
         coordinate_matrix = None
 
     def lift_from_finite_support(source, element):
+        r"""The preimage of ``element`` in the span, or ``None`` when ``element`` is outside it."""
         element = element if element.parent() is module else module(element)
         coefficients = module.framing_coefficients(element)
         if any(label not in support_labels for label in coefficients):
-            raise ValueError("the element has support outside this subobject")
+            return None
         if source_rank == 0:
-            if coefficients:
-                raise ValueError("the nonzero element is not in the zero subobject")
-            return source.zero()
+            return None if coefficients else source.zero()
         solution = _solve_left_integrally(
             coordinate_matrix,
             (
@@ -903,6 +888,8 @@ def _module_subobject_constructor_data(module, basis):
             ),
             ring,
         )
+        if solution is None:
+            return None
         return source.linear_combination(
             {
                 labels[i]: coefficient

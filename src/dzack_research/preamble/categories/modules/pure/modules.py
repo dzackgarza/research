@@ -749,15 +749,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 placement.append(AdditiveEndomorphismRings(center))
             return Category.join(tuple(placement))
         placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
-        free = FinitelyGeneratedFreeModules(ring)
-        matrix = (
-            domain in free
-            and codomain in free
-            and callable(getattr(domain, "_preamble_free_module_constructor", None))
-            and callable(getattr(codomain, "_preamble_free_module_constructor", None))
-            and callable(getattr(domain, "module_generating_set", None))
-            and callable(getattr(codomain, "module_generating_set", None))
-        )
+        matrix = _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)
         if matrix:
             placement.append(MatrixSpaces(ring))
             if domain is codomain:
@@ -803,6 +795,9 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
     class ParentMethods:
+        # The ring acting on this module: the datum this level introduces.
+        _preamble_base_ring = None
+
         def __init__(self, base_ring, **rest) -> None:
             ring = _owned_ring(base_ring)
             self._preamble_base_ring = ring
@@ -1121,10 +1116,17 @@ class Modules(OwnedCategoryOverBaseRing):
             return ModuleHomset
 
         def base_ring(self):
-            selected = self.__dict__.get("_preamble_base_ring")
-            if selected is not None:
-                return selected
-            return _owned_ring(self.base())
+            r"""Return the ring acting on this module.
+
+            A module constructed through this level stores its ring; a parent
+            refined into ``Modules(R)`` without running this level reads the
+            ring it was built over.
+            """
+            match self._preamble_base_ring:
+                case None:
+                    return _owned_ring(self.base())
+                case ring:
+                    return ring
 
         def is_module(self) -> bool:
             return True
@@ -1911,6 +1913,20 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def base_ring(self):
+            r"""The ring acting pointwise on ``Hom_R(M, N)``: ``R`` when commutative, else its centre.
+
+            ``(r f)(m) = r f(m)`` is ``R``-linear in ``m`` exactly when ``r``
+            commutes with the scalars, so a noncommutative ring acts through
+            its centre.
+            """
+            ring = self.domain().base_ring()
+            match ring:
+                case _ if ring in OwnedRings().Commutative():
+                    return ring
+                case _:
+                    return ring.ring_center()
+
         def source_module(self):
             return self.domain()
 
@@ -4149,21 +4165,35 @@ def _matrix_coefficients(homset, morphism):
 def _refine_matrix_hom(homset):
     r"""Return the already-constructed matrix Hom for finite free endpoints."""
     ring = homset.base_ring()
-    free = FinitelyGeneratedFreeModules(ring)
     domain = homset.domain()
     codomain = homset.codomain()
-    if domain not in free or codomain not in free:
+    if not (_coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)):
         return homset
-    if (
-        not callable(getattr(domain, "_preamble_free_module_constructor", None))
-        or not callable(getattr(codomain, "_preamble_free_module_constructor", None))
-        or not callable(getattr(domain, "module_generating_set", None))
-        or not callable(getattr(codomain, "module_generating_set", None))
-    ):
-        return homset
-    if homset not in MatrixSpaces(ring):
-        raise TypeError("a finite-free module Hom must be constructed as a matrix Hom")
+    assert homset in MatrixSpaces(ring), "a Hom between coordinate framed free modules is constructed as a matrix Hom"
     return homset
+
+
+def _coordinate_framed_free_module(module, ring) -> bool:
+    r"""Whether ``module`` is a finite framed free module whose elements are read as coordinates.
+
+    Those are the free modules ``F_R(S)`` constructed on their labels, the
+    matrix spaces between them, and the free form modules built on them; a
+    Hom module between two of them is realized as a matrix space.  A ring
+    placed as a finite free module over a base keeps its ring realization, and
+    its Hom modules keep the presented model.
+    """
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        FreeFormModules,
+    )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        _SparseFramedFreeModules,
+    )
+
+    return module in FinitelyGeneratedFreeModules(ring) and (
+        module in _SparseFramedFreeModules(ring)
+        or module in MatrixSpaces(ring)
+        or module in FreeFormModules(ring)
+    )
 
 
 def _torsion_module_presented_by_matrix(

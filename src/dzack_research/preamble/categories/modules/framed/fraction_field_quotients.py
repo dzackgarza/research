@@ -316,7 +316,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 element = self(element)
                 quotient = self.lift(element) / generator
                 if int(quotient.denominator()) != 1:
-                    raise ValueError("the selected class does not lie in this cyclic submodule")
+                    return None
                 return subobject.scalar_multiple(
                     self.base_ring()(quotient),
                     subobject.module_generator(label),
