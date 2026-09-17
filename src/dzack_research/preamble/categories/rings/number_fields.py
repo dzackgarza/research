@@ -660,20 +660,18 @@ def _owned_order_view(engine):
     """
     if not (engine is SageZZ or isinstance(engine, SageNumberFieldOrder)):
         raise TypeError("the selected integral-basis view requires a number-field order")
-    order = refine(_owned_engine_ring(engine), OrdersWithChosenIntegralBasis())
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        _framing_morphism,
-    )
+    order = _owned_engine_ring(engine)
+    if engine is not SageZZ:
+        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 
-    integers = _own_ring(SageZZ)
-    labels = _order_basis_labels(engine)
-    source = integers.free_module(labels)
-    order._preamble_framing_morphism = _framing_morphism(
-        source,
-        order,
-        lambda label: _order_basis_element(order, labels, label),
-    )
-    return order
+        integers = _own_ring(SageZZ)
+        labels = _order_basis_labels(engine)
+        source = integers.free_module(labels)
+        refine(order, FramedModules(integers))
+        order._install_framing(labels, lambda label: _order_basis_element(order, labels, label), source)
+    # The integers already have the exact regular rank-one frame. Other
+    # orders now have their actual integral-basis epimorphism as well.
+    return refine(order, OrdersWithChosenIntegralBasis())
 
 
 @cached_function

@@ -2737,7 +2737,8 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         # The selected framing epimorphism ``F_R(S) -> M``, this level's datum.
-        _framing_morphism = None
+        _selected_framing_source = None
+        _selected_framing_images = None
 
         def __init__(
             self,
@@ -2782,18 +2783,15 @@ class FramedModules(OwnedCategoryOverBaseRing):
             images of the free generators, and optionally the free module on
             those labels; it stores the framing epimorphism.
             """
-            assert self._framing_morphism is None, f"{self} already has a framing"
+            assert self._selected_framing_source is None, f"{self} already has a framing"
             source = framing_source
             if source is None:
                 source = self.base_ring().free_module(module_generating_set)
             assert source.module_generating_set() == module_generating_set, (
                 "the selected framing source does not have the requested generator set"
             )
-            self._framing_morphism = _framing_morphism(
-                source,
-                self,
-                module_generator_function,
-            )
+            self._selected_framing_source = source
+            self._selected_framing_images = module_generator_function
 
         def module_generating_set(self):
             return self.framing_source().module_generating_set()
@@ -2822,7 +2820,9 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         def framing_source(self):
             r"""Return the actual free module selected as the source of this framing."""
-            return self.framing_morphism().domain()
+            source = self._selected_framing_source
+            assert source is not None, f"{self} was constructed without its framing source"
+            return source
 
         def sub_framing_morphism(self, codomain):
             r"""Return the inclusion induced by this framing inside ``codomain``'s framing."""
@@ -2834,11 +2834,16 @@ class FramedModules(OwnedCategoryOverBaseRing):
                 verify_linearity=False,
             )
 
+        @cached_method
         def framing_morphism(self):
-            r"""Return the selected epimorphism \(F(S) \twoheadrightarrow M\)."""
-            morphism = self._framing_morphism
-            assert morphism is not None, f"{self} was constructed without its framing"
-            return morphism
+            r"""Realize the selected epimorphism on its already constructed source.
+
+            The source and generator map are fixed at construction. Only the
+            host morphism wrapper is lazy: eagerly constructing its enriched
+            Mor would ask for that Mor module's framing, and repeat without
+            end. No underlying module or framing choice is reconstructed here.
+            """
+            return _framing_morphism(self.framing_source(), self, self._selected_framing_images)
 
         @cached_method
         def framing_object(self):

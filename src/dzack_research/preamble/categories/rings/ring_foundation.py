@@ -3071,7 +3071,23 @@ class _PredicateSubringElement(_OwnedRingElement):
     element as a unit.
     """
 
+    def _repr_(self):
+        return repr(self.parent().inclusion()(self))
+
+    def _latex_(self):
+        from sage.misc.latex import latex
+
+        return latex(self.parent().inclusion()(self))
+
+    def is_zero(self):
+        return self == self.parent().zero()
+
+    def is_one(self):
+        return self == self.parent().one()
+
     def is_unit(self):
+        if (self == self.parent().one()) is True or (self == -self.parent().one()) is True:
+            return True
         value = self.parent().inclusion()(self)
         decision = value.is_unit()
         if decision is False:
