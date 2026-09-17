@@ -567,7 +567,7 @@ class LocalizationRings(OwnedCategory):
             if other.parent() is self.parent():
                 if other.parent() is not self.parent():
                     return NotImplemented
-                return self._mul_(other)
+                return LocalizationRings.ElementMethods._mul_(self, other)
             other_parent = getattr(other, "parent", lambda: None)()
             if other_parent is not None:
                 try:
@@ -735,15 +735,19 @@ class LocalizationRings(OwnedCategory):
                 case True:
                     super().__init__(
                         base=source.base_ring(),
-                        _engine_product=lambda left, right: left * right,
+                        _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
+                        _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
                         _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
                         **rest,
                     )
                 case False:
                     super().__init__(base=source.base_ring(), **rest)
-                    from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+                    from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-                    _initialize_engine_algebra(self, lambda left, right: left * right, LocalizationRings.ParentMethods.one(self))
+                    _algebra_from_native_ring(self,
+                        lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
+                        LocalizationRings.ParentMethods.one(self),
+                        lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)))
 
             localization_map = source.Mor(self)(
                 lambda element: self.fraction(element),
@@ -1270,9 +1274,10 @@ class _PredicateSubringParent(Parent):
         base = self if self._preamble_is_commutative else _own_ring(SageZZ)
         Parent.__init__(self, base=base, facade=ambient_ring, category=category)
         realize_owned_category(self)
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-        _initialize_engine_algebra(self, lambda left, right: self(left * right), self._one)
+        _algebra_from_native_ring(self, lambda left, right: self(left * right), self._one,
+            lambda scalar, element: self(self(scalar) * self(element)))
 
     def is_commutative(self):
         if self._preamble_is_commutative:
@@ -3088,6 +3093,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         what lets the module level's construction step -- registering the
         scalar action -- run on this route with nothing left to guess.
         """
+        canonical_native = base is None and category is None
         self._engine = engine
         if base is None:
             scalars = _engine_scalar_ring(engine)
@@ -3101,10 +3107,39 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             placement = Category.join((placement, category))
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, self._from_engine_element(engine.one()))
+        # The primitive owned ring already exists; its regular module must
+        # use this same scalar object when it constructs the rank-one cover.
+        # Sage CachedFunction.set_cache(value,*args) is the native cache API.
+        # Only this canonical factory path interns early, never another base
+        # structure over the same computation ring.
+        if canonical_native:
+            _owned_engine_ring.set_cache(self, engine)
+            if engine is SageZZ:
+                _owned_integers.set_cache(self)
+        try:
+            _algebra_from_native_ring(self, lambda left, right: left * right,
+                self._from_engine_element(engine.one()), self._native_scalar_action)
+        except BaseException:
+            # A failed constructor cannot leave its incomplete refinement in
+            # the canonical cache. Remove only this exact object's entries.
+            if canonical_native:
+                key = _owned_engine_ring.get_key(engine)
+                if _owned_engine_ring.cache.get(key) is self:
+                    del _owned_engine_ring.cache[key]
+                if engine is SageZZ:
+                    key = _owned_integers.get_key()
+                    if _owned_integers.cache.get(key) is self:
+                        del _owned_integers.cache[key]
+            raise
 
+
+
+    def _native_scalar_action(self, scalar, element):
+        r"""The native coefficient embedding before its module action is constructed."""
+        element = self(element)
+        return element._lmul_(self.base_ring()(scalar))
 
     def _from_engine_element(self, value):
         if getattr(value, "parent", lambda: None)() is not self._engine:

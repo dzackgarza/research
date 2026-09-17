@@ -217,6 +217,11 @@ class Modules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.general_modules import GeneralModules
         from dzack_research.preamble.owned_category import _object_of
 
+        from dzack_research.preamble.categories.modules.native_modules import _RingModulePresentation
+
+        if isinstance(datum, _RingModulePresentation):
+            assert scalar_action is None, "the native presentation already supplies the action"
+            return datum.construct(self)
         if scalar_action is None:
             scalar_action = datum
             module = scalar_action.codomain().domain()
@@ -806,6 +811,18 @@ class Modules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         # The ring acting on this module: the datum this level introduces.
         _preamble_base_ring = None
+        _preamble_native_module_presentation = None
+
+        def _native_module_presentation(self):
+            r"""The supplied native additive-group realization, or no such realization.
+
+            Protected Modules constructor contract. Only the module entry
+            installs it; its scalar/coordinate operations and the algebra
+            constructor consume it. It records the complete defining action,
+            never a category claim or a deferred reconstruction.
+            """
+            return self._preamble_native_module_presentation
+
 
         def __init__(self, base_ring, **rest) -> None:
             ring = _owned_ring(base_ring)
@@ -1219,6 +1236,9 @@ class Modules(OwnedCategoryOverBaseRing):
             have a different concrete Sage parent without changing which module
             supplies their selected coefficients.
             """
+            native = self._native_module_presentation()
+            if native is not None and native.is_regular():
+                return native.regular_coefficients(element)
             match self:
                 case _ if self in OwnedOrders():
                     # The selected integral basis of an order: the engine
@@ -1260,6 +1280,9 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def _owned_scalar_multiple(self, scalar, element):
             r"""Apply the owned scalar action to an owned module element."""
+            native = self._native_module_presentation()
+            if native is not None:
+                return native.scalar_multiple(scalar, element)
             if element not in self:
                 raise TypeError(f"{element} is not an element of {self}")
             scalar = self.base_ring()(scalar)

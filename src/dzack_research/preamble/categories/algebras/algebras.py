@@ -235,18 +235,26 @@ class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
 
 
-def _initialize_engine_algebra(algebra, multiplication, unit):
-    r"""Initialize the root datum at the native ring/algebra allocation boundary.
+def _algebra_from_native_ring(algebra, product, unit, scalar_action):
+    r"""Compute (M,m) from a native ring and enter the ordinary algebra constructor.
 
-    Unlike a call through category membership, this also works for the
-    integers during the native bootstrap, before the category parametrized
-    by those very integers can be installed.  All values and both operations
-    are supplied by the engine constructor; no category is inferred and no
-    previously constructed object's datum may be replaced.
+    The native unit is needed by the coefficient arithmetic of a self-based
+    ring, so the unit owner records it before constructing its regular module.
+    Modules(R) constructs the specified action and, over R itself, its actual
+    rank-one framing. The tensor owner classifies the primitive bilinear
+    product. Only then does _algebra_on_module construct the algebra datum.
+    Nothing in this route substitutes a bare binary function for m.
     """
-    Algebras.ParentMethods._install_multiplication(algebra, multiplication)
-    assert "_preamble_algebra_unit" not in vars(algebra), "the native algebra unit is initialized once"
-    algebra._preamble_algebra_unit = unit
+    from dzack_research.preamble.categories.modules.native_modules import _RingModulePresentation
+
+    ring = algebra.algebra_base_ring()
+    Algebras.Unital.ParentMethods._retain_unit(algebra, unit)
+    presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action)
+    module = Modules(ring)(presentation)
+    category = Algebras(ring).Associative().Unital()
+    if algebra.is_commutative() is True:
+        category = category.Commutative()
+    return _algebra_on_module(module, presentation.multiplication(), placement=(category,), unit=unit)
 
 
 class AlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -671,47 +679,39 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
-        def __init__(self, unformed_module=None, multiplication=None, *, _engine_product=None, **rest) -> None:
-            r"""Retain ``(M,m)`` at the root, including the native self-referential route.
+        def __init__(self, unformed_module=None, multiplication=None, *, _engine_product=None,
+                     _engine_scalar_action=None, _native_unit_factory=None, **rest) -> None:
+            r"""Construct the algebra from its exact module and tensor multiplication.
 
-            Public construction supplies both ``M`` and ``m``.  A ring engine
-            whose module is the object being constructed supplies its binary
-            product instead, through the private constructor parameter
-            ``_engine_product``.  Its element parent must exist before that
-            rule can be read as a bilinear form; that reading happens here,
-            after the cooperative lower constructors and before returning.
-            The two sources of multiplication data are mutually exclusive.
+            Native cooperative realizations supply primitive ring operations;
+            after the lower constructor finishes they compute the same module
+            and tensor datum through the owners used by every ordinary entry.
             """
             match _engine_product:
                 case None:
-                    assert unformed_module is not None and multiplication is not None, (
-                        "an algebra construction supplies its module and multiplication"
-                    )
-                    self._preamble_unformed_module = unformed_module
-                    self._preamble_multiplication = multiplication
+                    assert unformed_module is not None and multiplication is not None, "an algebra supplies its module and tensor multiplication"
+                    self._retain_algebra_datum(unformed_module, multiplication)
                     super().__init__(**rest)
                 case product:
-                    assert unformed_module is None and multiplication is None and callable(product), (
-                        "the native binary product is the single defining source of multiplication"
-                    )
+                    assert unformed_module is None and multiplication is None, "a native realization supplies one product source"
+                    assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
                     super().__init__(**rest)
-                    self._install_multiplication(product)
+                    _algebra_from_native_ring(self, product, _native_unit_factory(self), _engine_scalar_action)
 
-        def _install_multiplication(self, multiplication) -> None:
-            r"""Initialize the self-referential native bootstrap product.
+        def _retain_algebra_datum(self, module, multiplication):
+            r"""Retain the root constructor's already validated (M,m) once.
 
-            This is the protected allocation boundary used by native engines
-            not yet constructed on an independently supplied module.  Explicit
-            scalar maps already construct that module and reach
-            ``_algebra_on_module``; they do not use this bootstrap.
+            Called by this level's constructor and by _algebra_on_module when
+            the canonical native realization is the already constructed M.
+            Both callers supply an actual tensor morphism. A second product
+            never mutates an existing algebra.
             """
-            assert "_preamble_multiplication" not in vars(self), f"{self} already has its multiplication"
-            self._preamble_unformed_module = self
-            from dzack_research.preamble.categories.forms.forms import _callable_form_space
-
-            self._preamble_multiplication = _callable_form_space(
-                self, self, self, "bilinear"
-            )(multiplication)
+            previous = vars(self).get("_preamble_multiplication")
+            if previous is not None:
+                assert previous is multiplication and self._preamble_unformed_module is module, "an algebra's defining multiplication cannot be replaced"
+                return
+            self._preamble_unformed_module = module
+            self._preamble_multiplication = multiplication
 
         def unformed_module(self):
             r"""The module ``M`` this algebra is built on: the ``M`` of ``Algebras(R)(M, m)``, or the algebra itself when it realizes its own module."""
@@ -1221,43 +1221,19 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         class ParentMethods:
             def __init__(self, unit=None, *, _engine_unit=None, **rest) -> None:
-                r"""Retain the unit, an element of the module the multiplication is stated on."""
                 match _engine_unit:
                     case None:
-                        assert unit is not None, "a unital algebra construction supplies its unit"
-                        self._preamble_algebra_unit = unit
+                        assert unit is not None, "a unital algebra supplies its unit"
+                        self._retain_unit(unit)
                         super().__init__(**rest)
                     case unit_factory:
-                        assert unit is None and callable(unit_factory), (
-                            "the native unit is read once from the constructed element parent"
-                        )
-                        super().__init__(**rest)
-                        self._preamble_algebra_unit = unit_factory(self)
+                        assert unit is None and callable(unit_factory)
+                        super().__init__(_native_unit_factory=unit_factory, **rest)
 
-            def _install_multiplication_and_unit(self, multiplication, unit) -> None:
-                r"""Establish ``(M, m, 1)`` on a unital algebra that is itself the module ``M``.
-
-                Protected contract of ``Algebras(R).Unital()`` and the one
-                dispatcher of the installation contract (``OWN-05``): it calls
-                the root's ``_install_multiplication`` and retains the unit.
-                Its permitted callers are the constructors of the realizations
-                whose datum refers to the object itself --
-                ``_OwnedRingParent``, ``_PredicateSubringParent``,
-                ``LocalizationRings`` and ``QuotientRings`` in the rings
-                subtree, ``SparseFreeAlgebra``, ``PowerAlgebra``,
-                ``RestrictedGradedAlgebra`` and ``_CohomologyAlgebra`` in this
-                one -- each calling it once, before the object is returned
-                from its construction route.  Ordinary mathematical code never
-                calls it, and an algebra built by the entry with
-                ``(M, m, unit)`` never reaches it.
-
-                ``unit`` is an element this algebra reads as its unit by
-                coercion, as the entry's unit is an element of ``M``.  The
-                assertion reads this level's own storage to refuse a second
-                installation.
-                """
-                assert "_preamble_algebra_unit" not in vars(self), f"{self} already has its unit"
-                self._install_multiplication(multiplication)
+            def _retain_unit(self, unit):
+                r"""The one unit datum, including self-based coefficient construction."""
+                previous = vars(self).get("_preamble_algebra_unit")
+                assert previous is None or previous is unit or (previous == unit) is True, "a constructed unit cannot be replaced"
                 self._preamble_algebra_unit = unit
 
             @cached_method
@@ -1357,6 +1333,14 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
             data["unit"] = module(unit)
         case _:
             assert unit is None, "a unit is stated only with a unital placement"
+    native = module._native_module_presentation()
+    if native is not None and construction_data is None and multiplication is native.multiplication():
+        # This is the original ring product on its constructed module, not an
+        # alternative multiplication admitted merely because M is a ring.
+        Algebras.ParentMethods._retain_algebra_datum(module, module, multiplication)
+        if unit is not None:
+            Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
+        return refine(module, Cat().meet(categories))
     return module._module_with_structure(categories, data)
 
 

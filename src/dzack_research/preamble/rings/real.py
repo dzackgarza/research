@@ -473,9 +473,10 @@ class ExactRealField(UniqueRepresentation, Field):
             category=Cat().meet((OwnedFields(), UncountableSets())),
         )
         realize_owned_category(self)
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, ExactRealField.one(self))
+        _algebra_from_native_ring(self, lambda left, right: ExactRealNumber._mul_(left, right),
+            ExactRealField.one(self), lambda scalar, element: ExactRealNumber._mul_(self(scalar), self(element)))
 
 
     def _repr_(self) -> str:

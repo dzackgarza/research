@@ -730,8 +730,9 @@ class QuotientRings(OwnedCategory):
             self._preamble_engine_ring = _engine_ring
             super().__init__(
                 base=source,
-                _engine_product=lambda left, right: left * right,
-                _engine_unit=lambda algebra: algebra.one(),
+                _engine_product=lambda left, right: QuotientRings.ElementMethods._mul_(left, right),
+                _engine_scalar_action=lambda scalar, element: QuotientRings.ElementMethods._mul_(self(scalar), self(element)),
+                _engine_unit=lambda algebra: QuotientRings.ParentMethods.one(algebra),
                 **rest,
             )
 

@@ -979,7 +979,8 @@ def _differentiability_class(regularity, domain, codomain):
                 Cat().meet((VectorSpaces(RR), algebras)),
                 _engine=(Algebras(RR), _FunctionAlgebraDifferentiabilityClass, _DifferentiableMap),
                 base_ring=RR,
-                _engine_product=lambda left, right: left._mul_(right),
+                _engine_product=lambda left, right: _RealMap._mul_(left, right),
+                _engine_scalar_action=lambda scalar, element: _RealMap._lmul_(element, scalar),
                 _engine_unit=lambda algebra: algebra._element_constructor_(1),
                 **data,
             )

@@ -1608,9 +1608,11 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
             grading_monoid=bigrades,
             extra_categories=(GradedAlgebras(self._base_ring, bigrades),),
         )
-        from dzack_research.preamble.categories.algebras.algebras import _initialize_engine_algebra
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-        _initialize_engine_algebra(self, lambda left, right: left * right, self.one())
+        _algebra_from_native_ring(self, lambda left, right: MixedTensorAlgebraParent.multiply(self, left, right),
+            MixedTensorAlgebraParent.one(self),
+            lambda scalar, element: GradedDirectSumModule.scalar_multiple(self, scalar, element))
 
     def module(self):
         return self._module
