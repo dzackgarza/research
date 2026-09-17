@@ -54,7 +54,6 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
     CyclicCoverAlgebra,
@@ -72,88 +71,69 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     Schemes,
     _affine_morphism_from_pullback,
+    _affine_scheme,
     _affine_spec_morphism,
 )
-from dzack_research.preamble.refine import refine
 
 _ROOT_OF_UNITY_VARIABLE = "t"
 
 
 def _relative_cyclic_cover(cyclic_algebra):
     r"""Return the cyclic cover through the general relative-Spec owner."""
-    if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
-        raise TypeError("relative cyclic cover requires cyclic-cover algebra descent data")
     return cyclic_algebra.gluing_datum().relative_spectrum()
 
 
 def _relative_cover_chart(cyclic_algebra, chart_index):
-    line_bundle = cyclic_algebra.line_bundle()
-    cover = cyclic_algebra.cover()
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        FiniteAtlasInvertibleSheaf,
-    )
+    r"""Read the chosen base chart from the cyclic-algebra presentation owner.
 
-    if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-        return cover.chart(chart_index)
-    return cover.open(chart_index)
+    An affine scheme may also carry a finite-atlas presentation; affineness
+    alone does not choose between that presentation and a distinguished cover.
+    """
+    return cyclic_algebra._chart_scheme(chart_index)
 
 
-def _relative_cover_chart_indices(cyclic_algebra):
-    line_bundle = cyclic_algebra.line_bundle()
-    cover = cyclic_algebra.cover()
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        FiniteAtlasInvertibleSheaf,
-    )
-
-    if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-        return cover.chart_indices()
-    return cover.atlas()
-
-
-def _local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
-    r"""Return the canonical ``mu_n`` action on one affine chart of a relative cyclic cover."""
-    if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
-        raise TypeError("a local cyclic deck action requires cyclic-cover algebra data")
-    cover = cyclic_algebra.cover()
-    if hasattr(cover, "normalize_chart_index"):
-        chart_index = cover.normalize_chart_index(chart_index)
-    else:
-        chart_index = cover.chart_label(chart_index)
-    local_base = _relative_cover_chart(cyclic_algebra, chart_index).coordinate_algebra()
-    local_algebra = cyclic_algebra.local_algebra(chart_index)
-    local_scheme = (local_algebra).affine_spectrum()
-    group_scheme = AffineGroupSchemes(local_base).roots_of_unity(
-        int(cyclic_algebra.degree())
-    )
-    product = local_scheme.scheme_category().product((group_scheme.scheme(), local_scheme))
+def _mu_n_action_on_affine_cover(cover, group_scheme):
+    r"""The action ``mu_n x X -> X`` on ``X = Spec(A[z]/(z^n - f))`` with coaction ``z |-> u z``."""
+    cover_algebra = cover.coordinate_algebra()
+    product = cover.scheme_category().product((group_scheme.scheme(), cover))
     product_algebra = product.coordinate_algebra()
     group_pullback = product.projection(0).coordinate_algebra_morphism()
     cover_pullback = product.projection(1).coordinate_algebra_morphism()
     group_coordinate = group_scheme.scheme().coordinate_algebra().algebra_generator("u")
-    local_z = local_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
-    action_pullback = local_algebra.Mor(product_algebra)(
-        {
-            CYCLIC_COVER_VARIABLE: (
-                group_pullback(group_coordinate) * cover_pullback(local_z)
-            )
-        }
+    z = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
+    action_pullback = cover_algebra.Mor(product_algebra)(
+        {CYCLIC_COVER_VARIABLE: group_pullback(group_coordinate) * cover_pullback(z)}
     )
-    action_morphism = _affine_morphism_from_pullback(
-        product,
-        local_scheme,
-        action_pullback,
+    return AffineGroupSchemeActions(group_scheme)(
+        cover,
+        _affine_morphism_from_pullback(product, cover, action_pullback),
     )
-    return AffineGroupSchemeActions(group_scheme)(local_scheme, action_morphism)
+
+
+def _local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
+    r"""Return the canonical ``mu_n`` action on one affine chart of a relative cyclic cover."""
+    chart_index = cyclic_algebra.chart_index_set()(chart_index)
+    local_base = _relative_cover_chart(cyclic_algebra, chart_index).coordinate_algebra()
+    local_scheme = cyclic_algebra.local_algebra(chart_index).affine_spectrum()
+    group_scheme = AffineGroupSchemes(local_base).roots_of_unity(int(cyclic_algebra.degree()))
+    return _mu_n_action_on_affine_cover(local_scheme, group_scheme)
+
+
+def _deck_scalar(cyclic_algebra, root_of_unity):
+    r"""``root_of_unity`` in the scalars of the base, asserted to be an ``n``-th root of unity."""
+    scalar_ring = cyclic_algebra.scheme().scheme_base_ring()
+    root = scalar_ring(root_of_unity)
+    assert root ** int(cyclic_algebra.degree()) == scalar_ring.one(), (
+        f"the deck scalar {root} is not a {cyclic_algebra.degree()}-th root of unity"
+    )
+    return root
 
 
 def _relative_cyclic_local_deck_transformation(
     cyclic_algebra, chart_index, root_of_unity
 ):
     r"""Return ``z_i |-> root*z_i`` on one affine chart of a relative cover."""
-    scalar_ring = cyclic_algebra.scheme().scheme_base_ring()
-    root = scalar_ring(root_of_unity)
-    if root ** int(cyclic_algebra.degree()) != scalar_ring.one():
-        raise ValueError("a deck scalar must be an n-th root of unity")
+    root = _deck_scalar(cyclic_algebra, root_of_unity)
     local_algebra = cyclic_algebra.local_algebra(chart_index)
     local_base = _relative_cover_chart(cyclic_algebra, chart_index).coordinate_algebra()
     scalar = local_algebra.algebra_structure_morphism()(local_base(root))
@@ -161,33 +141,28 @@ def _relative_cyclic_local_deck_transformation(
     pullback = local_algebra.Mor(local_algebra)(
         {CYCLIC_COVER_VARIABLE: scalar * z}
     )
-    local_scheme = cyclic_algebra.relative_spectrum().arrow().domain().chart(chart_index)
+    local_scheme = cyclic_algebra.relative_spectrum().arrow().domain().gluing_datum().chart(chart_index)
     return _affine_morphism_from_pullback(local_scheme, local_scheme, pullback)
 
 
 def _relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     r"""Glue the chart automorphisms ``z_i -> zeta z_i`` on the relative cover."""
-    if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
-        raise TypeError("a relative deck transformation requires cyclic-cover algebra data")
-    scalar_ring = cyclic_algebra.scheme().scheme_base_ring()
-    root = scalar_ring(root_of_unity)
-    if root ** int(cyclic_algebra.degree()) != scalar_ring.one():
-        raise ValueError("a deck scalar must be an n-th root of unity")
-
+    root = _deck_scalar(cyclic_algebra, root_of_unity)
     relative = cyclic_algebra.relative_spectrum()
     glued = relative.arrow().domain()
-    local_maps = {}
-    for index in _relative_cover_chart_indices(cyclic_algebra):
-        local_automorphism = cyclic_algebra.local_deck_transformation(index, root)
-        local_maps[index] = glued.gluing_datum().chart_embedding(index) * local_automorphism
-    automorphism = glued.Mor(glued)(local_maps)
-    if any(
-        relative.arrow().local_map(index)
-        * cyclic_algebra.local_deck_transformation(index, root)
-        != relative.arrow().local_map(index)
-        for index in _relative_cover_chart_indices(cyclic_algebra)
-    ):
-        raise ArithmeticError("the deck transformation does not lie over the cyclic-cover base")
+    indices = cyclic_algebra.chart_index_set()
+    local_automorphisms = {
+        index: cyclic_algebra.local_deck_transformation(index, root)
+        for index in indices
+    }
+    automorphism = glued.Mor(glued)(
+        {index: glued.gluing_datum().chart_embedding(index) * local_automorphisms[index] for index in indices}
+    )
+    assert all(
+        relative.arrow().local_map(index) * local_automorphisms[index]
+        == relative.arrow().local_map(index)
+        for index in indices
+    ), "the deck transformation does not lie over the cyclic-cover base"
     return automorphism
 
 
@@ -379,7 +354,6 @@ class RelativeCyclicCoverLift(SageObject):
         self._base_automorphism = base_automorphism
         self._local_automorphisms = local_automorphisms
         self._automorphism = automorphism
-        self._fixed_subscheme = None
 
     def cyclic_algebra(self):
         return self._cyclic_algebra
@@ -412,13 +386,10 @@ class RelativeCyclicCoverLift(SageObject):
         )
         return determinant * self.fiber_scalar().inverse_of_unit()
 
+    @cached_method
     def fixed_subscheme(self):
-        if self._fixed_subscheme is None:
-            cover = self.cyclic_algebra().relative_spectrum().arrow().domain()
-            self._fixed_subscheme = cover.chartwise_fixed_subscheme(
-                self.local_automorphisms()
-            )
-        return self._fixed_subscheme
+        cover = self.cyclic_algebra().relative_spectrum().arrow().domain()
+        return cover.chartwise_fixed_subscheme(self.local_automorphisms())
 
     def is_fixed_point_free(self) -> bool:
         return all(
@@ -449,8 +420,9 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
     coefficients through the represented chart automorphism.  The branch
     equation is checked before the local maps are glued.
     """
-    if linearization.line_bundle() is not cyclic_algebra.line_bundle():
-        raise ValueError("a cyclic-cover lift requires a linearization of its defining line bundle")
+    assert linearization.line_bundle() is cyclic_algebra.line_bundle(), (
+        "a cyclic-cover lift requires a linearization of its defining line bundle"
+    )
     group_element = linearization.acting_group()(group_element)
     base_automorphism = linearization.scheme_action_of(group_element)
     relative = cyclic_algebra.relative_spectrum()
@@ -466,10 +438,9 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
         local_base = local_algebra.base_ring()
         scalar = local_base.algebra_structure_morphism()(fiber_scalar)
         branch = cyclic_algebra.local_branch_coefficient(index)
-        if base_pullback(branch) != scalar ** int(cyclic_algebra.degree()) * branch:
-            raise ValueError(
-                "the selected line-bundle lift does not preserve the cyclic-cover branch equation"
-            )
+        assert base_pullback(branch) == scalar ** int(cyclic_algebra.degree()) * branch, (
+            "the selected line-bundle lift does not preserve the cyclic-cover branch equation"
+        )
         basis_labels = local_algebra.module_generating_set()
         ranking = basis_labels.ranking_map()
 
@@ -492,7 +463,7 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
             return result
 
         pullback = local_algebra.Mor(local_algebra)(image)
-        local_scheme = cover.chart(index)
+        local_scheme = cover.gluing_datum().chart(index)
         local_lifts[index] = _affine_morphism_from_pullback(
             local_scheme, local_scheme, pullback
         )
@@ -505,16 +476,15 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
     )
     automorphism = cover.Mor(cover)(
         {
-            index: cover.chart_embedding(index) * local_family[index]
+            index: cover.gluing_datum().chart_embedding(index) * local_family[index]
             for index in cyclic_algebra.chart_index_set()
         }
     )
-    if any(
+    assert all(
         relative.arrow().local_map(index) * local_family[index]
-        != base_automorphism * relative.arrow().local_map(index)
+        == base_automorphism * relative.arrow().local_map(index)
         for index in cyclic_algebra.chart_index_set()
-    ):
-        raise ArithmeticError("the cyclic-cover lift does not commute with the cover morphism")
+    ), "the cyclic-cover lift does not commute with the cover morphism"
     return RelativeCyclicCoverLift(
         cyclic_algebra,
         linearization,
@@ -558,24 +528,6 @@ def _primitive_root_of_unity(scalars, degree):
         "mu_n, which the preamble does not own"
     )
     return scalars._from_engine_element(primitive[0])
-
-
-class _AffineCyclicCoverConstruction:
-    r"""The branch datum and deck action defining one affine cyclic cover."""
-
-    def __init__(self, branch_section, degree, deck_group_scheme_action) -> None:
-        self._branch_section = branch_section
-        self._degree = int(degree)
-        self._deck_group_scheme_action = deck_group_scheme_action
-
-    def branch_section(self):
-        return self._branch_section
-
-    def degree(self):
-        return self._degree
-
-    def deck_group_scheme_action(self):
-        return self._deck_group_scheme_action
 
 
 class CyclicCovers(OwnedCategory):
@@ -655,52 +607,39 @@ class CyclicCovers(OwnedCategory):
 
     def _call_(self, branch_section):
         r"""Return the cyclic cover branched along ``branch_section``."""
+        return self._cover_branched_along(self.base_algebra()(branch_section))
+
+    @cached_method
+    def _cover_branched_along(self, section):
+        r"""``Spec(A[z]/(z^n - f))`` over ``Spec A``, one object of this category for each ``f``.
+
+        The object is constructed through ``Schemes(A).Affine()`` with this
+        placement; its level data are the branch section ``f`` and the degree
+        ``n``, which with ``A`` determine the cover algebra.
+        """
         algebra = self.base_algebra()
-        section = algebra(branch_section)
         degree = self.cover_degree()
-
-        cover_algebra = algebra.cyclic_cover_presentation(section, degree)
-        cover = (cover_algebra).affine_spectrum()
-        image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
-        group_scheme = self.deck_group_scheme()
-        product = cover.scheme_category().product((group_scheme.scheme(), cover))
-        product_algebra = product.coordinate_algebra()
-        group_pullback = product.projection(0).coordinate_algebra_morphism()
-        cover_pullback = product.projection(1).coordinate_algebra_morphism()
-        group_coordinate = group_scheme.scheme().coordinate_algebra().algebra_generator("u")
-        action_pullback = cover_algebra.Mor(product_algebra)(
-            {
-                CYCLIC_COVER_VARIABLE: (
-                    group_pullback(group_coordinate) * cover_pullback(image)
-                )
-            }
+        return _affine_scheme(
+            algebra.cyclic_cover_presentation(section, degree),
+            algebra,
+            (self,),
+            branch_section=section,
+            cover_degree=degree,
         )
-        action_morphism = _affine_morphism_from_pullback(
-            product,
-            cover,
-            action_pullback,
-        )
-        group_scheme_action = AffineGroupSchemeActions(group_scheme)(
-            cover,
-            action_morphism,
-        )
-
-        cover._preamble_affine_cyclic_cover_construction = (
-            _AffineCyclicCoverConstruction(section, degree, group_scheme_action)
-        )
-        return refine(cover, self)
 
     class ParentMethods:
-        def affine_cyclic_cover_construction(self):
-            return self._preamble_affine_cyclic_cover_construction
+        def __init__(self, branch_section, cover_degree, **rest) -> None:
+            self._branch_section = branch_section
+            self._cover_degree = cover_degree
+            super().__init__(**rest)
 
         def cover_degree(self):
             r"""Return ``n``: the cover is finite locally free of this rank."""
-            return self.affine_cyclic_cover_construction().degree()
+            return self._cover_degree
 
         def branch_section(self):
             r"""Return ``f``, the section of ``L^n = O_X`` the cover is branched along."""
-            return self.affine_cyclic_cover_construction().branch_section()
+            return self._branch_section
 
         def deck_root_of_unity(self):
             r"""Return a primitive root identifying ``mu_n`` with the constant ``C_n`` here."""
@@ -716,9 +655,10 @@ class CyclicCovers(OwnedCategory):
                 self.cover_degree(),
             ).deck_group_scheme()
 
+        @cached_method
         def deck_group_scheme_action(self):
-            r"""Return the canonical action ``mu_n x X -> X``."""
-            return self.affine_cyclic_cover_construction().deck_group_scheme_action()
+            r"""Return the canonical action ``mu_n x X -> X``, the coaction ``z |-> u z``."""
+            return _mu_n_action_on_affine_cover(self, self.deck_group_scheme())
 
         def constant_deck_action(self):
             r"""Return the constant ``C_n`` action selected by a primitive root of unity.
@@ -751,10 +691,12 @@ class CyclicCovers(OwnedCategory):
                 element = element * generator
             cover_algebra = self.coordinate_algebra()
             scaling = cover_algebra(root_of_unity ** exponents[group_element])
-            return Algebras(self.scheme_base_ring()).Associative().Unital().Commutative().spectrum()(
+            return _affine_morphism_from_pullback(
+                self,
+                self,
                 cover_algebra.Mor(cover_algebra)(
                     {CYCLIC_COVER_VARIABLE: scaling * self.cover_variable()}
-                )
+                ),
             )
 
         def cover_variable(self):
@@ -772,12 +714,12 @@ class CyclicCovers(OwnedCategory):
             """
             return self.base_scheme().closed_subscheme(self.branch_section())
 
-        def _require_separable_degree(self):
+        def _assert_separable_degree(self):
             characteristic = int(self.scheme_base_ring().characteristic())
-            if characteristic != 0 and self.cover_degree() % characteristic == 0:
-                raise NotImplementedError(
-                    "the represented ramification comparison requires the cyclic degree to be invertible on the base"
-                )
+            assert characteristic == 0 or self.cover_degree() % characteristic != 0, (
+                f"the characteristic {characteristic} divides the degree {self.cover_degree()}: the "
+                "represented ramification comparison requires the cyclic degree to be invertible on the base"
+            )
 
         @cached_method
         def ramification_subscheme(self):
@@ -790,13 +732,13 @@ class CyclicCovers(OwnedCategory):
             unit this has support ``V(z)`` and retains the expected
             ``(n-1)``-fold different for ``n>2``.
             """
-            self._require_separable_degree()
+            self._assert_separable_degree()
             return self.differential_rank_drop_subscheme(0)
 
         @cached_method
         def ramification_support_subscheme(self):
             r"""Return the reduced-support model ``V(z)`` of the ramification locus."""
-            self._require_separable_degree()
+            self._assert_separable_degree()
             return self.closed_subscheme(self.cover_variable())
 
         @cached_method
