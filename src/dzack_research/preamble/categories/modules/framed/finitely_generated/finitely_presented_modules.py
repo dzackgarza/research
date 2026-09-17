@@ -2523,6 +2523,19 @@ def _presented_module_from_morphism(
         FramedFreeModules,
     )
 
+    # When every selected relation is zero, the chosen generators themselves
+    # are a basis: coker(0 : R^J -> R^I) = R^I.  Keep the selected quotient
+    # and its presentation, while declaring that basis at the module owner.
+    # In particular a free functor must retain this exact module, not replace
+    # it by its framing source merely to acquire a Free placement.
+    match all(
+        coefficient == base_ring.zero()
+        for row in chain(existing_rows, added_rows)
+        for coefficient in row
+    ):
+        case True:
+            _extra_categories = (*_extra_categories, FramedFreeModules(base_ring).FinitelyGenerated())
+
     if (
         existing_count == 0
         and presentation.domain() in FramedFreeModules(base_ring)
