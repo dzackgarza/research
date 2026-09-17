@@ -5,6 +5,8 @@ from dzack_research.preamble.categories.functions.lebesgue_graded import (
     GradedTensorProductModules,
     GradedTensorSquare,
     LebesgueGradedModules,
+    LebesgueConvolution,
+    LebesgueConvolutionModule,
     graded_lebesgue_algebra,
     lebesgue_convolution_algebra,
 )
@@ -20,6 +22,8 @@ __all__ = [
     "GradedTensorProductModules",
     "GradedTensorSquare",
     "LebesgueGradedModules",
+    "LebesgueConvolution",
+    "LebesgueConvolutionModule",
     "Lp",
     "ell",
     "graded_lebesgue_algebra",

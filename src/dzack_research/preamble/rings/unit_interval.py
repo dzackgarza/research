@@ -1,10 +1,7 @@
-r"""The monoid \(([0,1],\oplus)\) of Young's inequality.
+r"""The real interval [0,1] and the actual domain of Young degree composition.
 
-The operation is \(s\oplus t=s+t-1\), defined when \(s+t\ge 1\), with
-identity \(1\). This is the grading of convolution: if \(s=1/p\) and
-\(t=1/q\), then \(L^p*L^q\subseteq L^r\) for \(1/r=s\oplus t\). The
-identity degree is \(L^1\). Sage encodes this as a multiplicative
-monoid (identity ``one()``, not ``zero()``).
+The pair domain is D={(s,t): s+t>=1}; (s,t)->s+t-1 is a set map D->[0,1].
+This is not a monoid on [0,1], since the pair (0,0) has no image there.
 """
 
 from sage.rings.rational_field import QQ
@@ -12,22 +9,23 @@ from sage.structure.element import Element
 from sage.structure.element import parent as sage_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
-from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.refine import realize_owned_category
+from sage.misc.cachefunc import cached_method
+from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.logic import ask
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.rings.real import RR
 
 
-class UnitIntervalElement(Element):
+class _UnitIntervalElement:
     r"""An element of \(([0,1],\oplus)\)."""
 
     def __init__(self, parent, value) -> None:
         self._value = value
-        Element.__init__(self, parent)
+        super().__init__(parent)
 
     def _repr_(self) -> str:
         return repr(self._value)
@@ -35,47 +33,46 @@ class UnitIntervalElement(Element):
     def _latex_(self) -> str:
         return self._value._latex_()
 
-    def _mul_(self, other):
-        total = self._value + other._value - RR.one()
-        try:
-            return self.parent()(total)
-        except ValueError as error:
-            raise ValueError(
-                f"{self} ⊕ {other} = {total} is not in [0, 1]; "
-                "Young's inequality does not supply a convolution degree"
-            ) from error
-
     def as_extended_real(self):
         r"""This element as a real in \([0,1]\)."""
         return self._value
 
     def __hash__(self):
-        try:
-            return hash(QQ(self._value))
-        except (TypeError, ValueError):
-            return hash(str(self._value.expression()))
+        # A constant hash respects every equality that the exact-real owner
+        # can establish, including different equal symbolic expressions.
+        return hash(self.parent())
 
     def _richcmp_(self, other, op):
         return richcmp(self._value, other._value, op)
 
 
-class UnitInterval(UniqueRepresentation, Parent):
-    r"""The monoid \(([0,1],\oplus)\) with \(s\oplus t=s+t-1\) and identity \(1\)."""
+class _UnitInterval:
+    r"""The interval as a set, with endpoints zero and one."""
 
-    Element = UnitIntervalElement
+    @cached_method
+    def degree_pairs(self):
+        return Sets().product(indexed_family(Sets.Δ[1], lambda _: self))
 
-    def __init__(self) -> None:
-        Parent.__init__(
-            self,
-            category=Cat().meet((Monoids().Commutative(), Sets().Infinite())),
-        )
-        realize_owned_category(self)
+    @cached_method
+    def young_pairs(self):
+        def admissible(pair):
+            value = pair.component(0).as_extended_real() + pair.component(1).as_extended_real()
+            decision = ask(value >= RR.one())
+            assert decision is True or decision is False, "Young admissibility of this exact pair is undecided"
+            return decision
+
+        return Sets().condition_set(self.degree_pairs(), admissible)
+
+    @cached_method
+    def young_degree_map(self):
+        return Sets().Mor(self.young_pairs(), self)(lambda pair:
+            self(pair.component(0).as_extended_real() + pair.component(1).as_extended_real() - RR.one()))
 
     def _repr_(self) -> str:
-        return "unit interval under s⊕t = s+t-1"
+        return "Unit interval [0, 1]"
 
     def _latex_(self) -> str:
-        return r"([0,1],\oplus)"
+        return r"[0,1]"
 
     def _element_constructor_(self, value):
         if sage_parent(value) is self:
@@ -85,13 +82,13 @@ class UnitInterval(UniqueRepresentation, Parent):
         except AttributeError:
             pass
         real = RR(value)
-        nonnegative = real >= RR.zero()
-        at_most_one = real <= RR.one()
+        nonnegative = ask(real >= RR.zero())
+        at_most_one = ask(real <= RR.one())
         if nonnegative is False or at_most_one is False:
             raise ValueError(f"{value} is not in [0, 1]")
         if nonnegative is True and at_most_one is True:
             return self.element_class(self, real)
-        raise TypeError(
+        raise AssertionError(
             f"membership of {value} in [0, 1] is undecided; "
             f"use ask(0 <= {real} <= 1)"
         )
@@ -104,6 +101,7 @@ class UnitInterval(UniqueRepresentation, Parent):
         return True
 
     def one(self):
+        r"""The right endpoint, not a unit of an asserted multiplication."""
         return self(RR.one())
 
     def zero(self):
@@ -118,4 +116,8 @@ class UnitInterval(UniqueRepresentation, Parent):
         return continuum
 
 
-UnitInterval = UnitInterval()
+def UnitIntervalElement(parent, value):
+    return parent(value)
+
+
+UnitInterval = _object_of(Sets().Infinite(), _engine=(Sets(), _UnitInterval, _UnitIntervalElement))

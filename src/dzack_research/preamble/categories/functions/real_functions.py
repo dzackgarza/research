@@ -1058,7 +1058,7 @@ class _LebesgueSpace(_FunctionSpace):
     adds is the exponent \(p\in(0,\infty]\).  The Lebesgue space
     \(L^p(\mathbb R)\) proper is the quotient of \(\mathcal L^p(\mathbb R)\)
     by the maps vanishing almost everywhere; its elements are classes, not
-    maps, and it is not represented here.
+    maps; ``quotient_by_null_functions`` constructs that quotient.
 
     \(\mathcal L^2(\mathbb R)\) is the formed module on the vector space
     \(\mathcal L^2\) with the symmetric bilinear form
@@ -1106,7 +1106,14 @@ class _LebesgueSpace(_FunctionSpace):
 
     def _element_constructor_(self, value):
         element = super()._element_constructor_(value)
-        if self.integrability_exponent() != 2:
+        exponent = self.integrability_exponent()
+        formula = element._formula()
+        if formula is not None and not formula.variables() and exponent is not Infinity:
+            from dzack_research.preamble.logic import ask
+
+            if ask(RR(formula) != RR.zero()) is True:
+                raise ValueError("a nonzero constant on R has infinite finite-p integral")
+        if (exponent == 2) is not True:
             return element
         formula = element._formula()
         if formula is None:
@@ -1191,7 +1198,7 @@ def _lebesgue_space(exponent):
     modules = VectorSpaces(RR)
     data = dict(exponent=exponent, base_ring=RR, domain=RR, codomain=RR, indeterminate=SR.var("x"))
     module = _object_of(modules, _engine=(modules, _LebesgueSpace, _RealMap), **data)
-    if exponent != 2:
+    if (exponent == 2) is not True:
         return module
     formed = SymmetricBilinearFormModules(RR)
     return _object_of(
@@ -1273,7 +1280,7 @@ def _sequence_space(exponent):
     modules = VectorSpaces(RR)
     data = dict(exponent=exponent, base_ring=RR, domain=NN, codomain=RR, indeterminate=SR.var("n"))
     module = _object_of(modules, _engine=(modules, _SequenceSpace, _RealMap), **data)
-    if exponent != 2:
+    if (exponent == 2) is not True:
         return module
     formed = SymmetricBilinearFormModules(RR)
     return _object_of(

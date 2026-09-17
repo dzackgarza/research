@@ -29,7 +29,7 @@ def test_lebesgue_spaces_form_a_graded_module_over_holder_degrees() -> None:
     assert holder in LebesgueGradedModules(RR)
     assert young in GradedModules(RR, UnitInterval)
     assert holder.grading_monoid() is NonNegativeReals
-    assert young.grading_monoid() is UnitInterval
+    assert young.grading_index_set() is UnitInterval
     assert holder.graded_piece(NonNegativeReals.zero()) is Lp(Infinity)
     assert holder.graded_piece(~NonNegativeReals(2)) is Lp(2)
     assert holder.graded_piece(NonNegativeReals(2)) is Lp(QQ(1) / 2)
@@ -130,65 +130,47 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert unit_projection(constant_left * constant_right).expression() == Lp(Infinity)(6).expression()
 
 
-def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None:
-    session = _session()
-    C = session["C"]
-    QQ = session["QQ"]
-    RR = session["RR"]
-    Lp = session["Lp"]
-    Algebras = session["Algebras"]
-    GradedAlgebras = session["GradedAlgebras"]
-    GradedModules = session["GradedModules"]
-    LebesgueConvolutionAlgebra = session["LebesgueConvolutionAlgebra"]
-    GradedLebesgueModule = session["GradedLebesgueModule"]
-    GradedTensorProductModules = session["GradedTensorProductModules"]
-    LebesgueGradedModules = session["LebesgueGradedModules"]
-    UnitInterval = session["UnitInterval"]
+def test_full_young_family_retains_the_gaussian_convolution_on_its_quotient_sum() -> None:
+    from dzack_research.preamble.all import (
+        Algebras, Lp, RR, UnitInterval, LebesgueConvolutionModule, LebesgueConvolution,
+    )
+
+    module = LebesgueConvolutionModule
+    x = Lp(2).indeterminate()
+    gaussian = Lp(2)(exp(-x**2))
+    left = module(gaussian)
+    product = module.convolution(left, left)
+    half = UnitInterval(RR(1) / 2)
+    pair = UnitInterval.degree_pairs()(lambda _: half)
+    pairing = LebesgueConvolution[pair]
+    target = Lp(Infinity).quotient_by_null_functions()
+    expected = target(Lp(Infinity)(sqrt(pi / 2) * exp(-x**2 / 2)))
+    assert module not in Algebras(RR)
+    assert module.grading_index_set() is UnitInterval
+    assert module.graded_piece(half) is Lp(2).quotient_by_null_functions()
+    assert pairing.codomain() is target
+    assert product.homogeneous_component(UnitInterval.zero()) == expected
+    assert pairing(Lp(2).quotient_by_null_functions()(gaussian), Lp(2).quotient_by_null_functions()(gaussian)) == expected
+    assert module.integral_form()(product) == RR.zero()
+
+
+def test_l1_convolution_is_the_total_algebra_specialization_with_the_actual_module() -> None:
+    from dzack_research.preamble.all import Algebras, Lp, RR, LebesgueConvolutionAlgebra
 
     algebra = LebesgueConvolutionAlgebra
-    maps = C(Infinity, RR)
-    gaussian = Lp(2)(maps(exp(-(maps.indeterminate() ** 2))))
-    left = algebra(gaussian)
-    right = algebra(gaussian)
-    product = left * right
-    half = UnitInterval(QQ(1) / 2)
-    multiplication = algebra.multiplication_morphism()
-    epsilon = algebra.integral_form()
-    pairing_morphism = algebra.integral_pairing_morphism()
-
-    assert algebra is not GradedLebesgueModule(UnitInterval)
-    assert algebra in Algebras(RR).Associative()
-    assert algebra.unformed_module() is GradedLebesgueModule(UnitInterval)
-    assert algebra in LebesgueGradedModules(RR)
-    assert algebra in Algebras(RR)
-    assert algebra not in GradedAlgebras(RR, UnitInterval)
-    assert algebra.is_graded()
-    assert algebra.grading_monoid() is UnitInterval
-    assert algebra.graded_piece(UnitInterval.one()) is Lp(1)
-    assert algebra.graded_piece(UnitInterval.zero()) is Lp(Infinity)
-    assert algebra.graded_piece(half) is Lp(2)
-    assert algebra.combine_degrees(half, half) == UnitInterval.zero()
-    assert algebra.combine_degrees(UnitInterval.one(), half) == half
-    assert product.homogeneous_component(UnitInterval.zero()).parent() is Lp(Infinity)
-    assert multiplication.domain() in GradedTensorProductModules(RR)
-    assert product == multiplication(multiplication.domain().pure_tensor(left, right))
-    assert pairing_morphism.domain() is multiplication.domain()
-    assert pairing_morphism(
-        multiplication.domain().pure_tensor(left, right)
-    ) == epsilon(product)
-    assert epsilon(product) == RR.zero()
-    try:
-        algebra.one()
-    except AttributeError:
-        pass
-    else:
-        raise AssertionError("convolution L^1(R) is non-unital")
-    try:
-        algebra.unit_piece_projection()
-    except TypeError:
-        pass
-    else:
-        raise AssertionError("convolution has no unit-piece augmentation")
+    module = Lp(1).quotient_by_null_functions()
+    x = Lp(1).indeterminate()
+    gaussian = Lp(1)(exp(-x**2))
+    element = algebra(gaussian)
+    assert algebra.unformed_module() is module
+    assert algebra in Algebras(RR).Associative().Commutative()
+    assert algebra not in Algebras(RR).Unital()
+    assert algebra.multiplication().domain().tensor_factor(0) is module
+    assert algebra.multiplication().domain().tensor_factor(1) is module
+    assert algebra.multiplication().codomain() is module
+    assert (element * element) * element == element * (element * element)
+    integral = algebra.integration_morphism()
+    assert integral(element * element) == integral(element) * integral(element)
 
 
 def test_pointwise_algebra_reuses_the_module_components_and_tensor_classifier() -> None:

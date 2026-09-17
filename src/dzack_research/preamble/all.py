@@ -149,6 +149,8 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
     GradedTensorProductModules,
     GradedTensorSquare,
     LebesgueGradedModules,
+    LebesgueConvolution,
+    LebesgueConvolutionModule,
     Lp,
     ell,
     graded_lebesgue_algebra,

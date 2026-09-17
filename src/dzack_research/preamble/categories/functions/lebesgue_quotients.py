@@ -172,6 +172,12 @@ class _LebesgueQuotient:
     def _module_with_structure(self, categories, construction_data):
         return _quotient_with_structure(self.map_space(), categories, construction_data)
 
+    def convolution_pairing(self, other):
+        r"""The Young pairing on these two quotient spaces, with its exact target."""
+        from dzack_research.preamble.categories.functions.convolution import _convolution_pairing
+
+        return _convolution_pairing(self, other)
+
     @cached_method
     def quotient_projection(self):
         r"""The linear quotient map from integrable maps to their a.e. classes."""
@@ -200,3 +206,8 @@ def _quotient_with_structure(space, categories=(), construction_data=None):
 @cached_function(key=id)
 def _lebesgue_quotient(space):
     return _quotient_with_structure(space)
+
+
+def _is_lebesgue_quotient(space):
+    r"""Private realization recognition for literal ingress of a Lebesgue class."""
+    return isinstance(space, _LebesgueQuotient)
