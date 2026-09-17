@@ -118,14 +118,12 @@ from dzack_research.preamble.categories.coxeter_diagrams import (
     CoxeterDiagrams as CoxeterDiagrams,
 )
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
-    AffineCodimensionOneChowComparison,
     AlgebraicCycleGroups,
     CartierDivisorGroups,
     ChowGroups,
     ClassGroups,
     CompleteLinearSystems,
     CoxRings,
-    DivisorClassComparison,
     DivisorGroups,
     FiniteAtlasCartierDivisor,
     FiniteAtlasInvertibleSheaf,
@@ -140,7 +138,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     ProjectiveLinearSystems,
     ProjectiveSubschemeLineBundle,
     SectionRings,
-    SerreIntersectionData,
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
 )
