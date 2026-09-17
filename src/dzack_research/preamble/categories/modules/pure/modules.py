@@ -10,11 +10,13 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.matrix.constructor import matrix as engine_matrix
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.misc_c import prod
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
@@ -52,6 +54,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedOrders,
     OwnedRings,
     PrincipalIdealDomains,
@@ -615,25 +618,29 @@ class Modules(OwnedCategoryOverBaseRing):
 
             # A stricter module category may still contain this particular
             # coequalizer even though cokernels do not stay in that category
-            # in general.  Over a PID the presented quotient can certify that
-            # it is finite free and supplies the actual trivialization.  Use
-            # that isomorphic free representative when it lies in ``self`` so
-            # the selected colimit is genuinely an object of its stated target
+            # in general.  Over a PID a torsion-free presented quotient is
+            # finite free and supplies the actual trivialization.  Use that
+            # isomorphic free representative when it lies in ``self`` so the
+            # selected colimit is genuinely an object of its stated target
             # category, rather than a merely isomorphic presented module.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _SelectedFinitePresentationModules,
+            )
+
+            ring = left_morphism.domain().base_ring()
             coequalizer = raw_coequalizer
             projection = raw_projection
             coequalizer_transport = None
-            if raw_coequalizer not in self:
-                trivialization = getattr(raw_coequalizer, "finite_free_trivialization", None)
-                if callable(trivialization):
-                    try:
-                        candidate_transport = trivialization()
-                    except (NotImplementedError, ValueError):
-                        candidate_transport = None
-                    if (
-                        candidate_transport is not None
-                        and candidate_transport.codomain() in self
-                    ):
+            match raw_coequalizer:
+                case _ if raw_coequalizer in self:
+                    pass
+                case _ if (
+                    raw_coequalizer in _SelectedFinitePresentationModules(ring)
+                    and ring in PrincipalIdealDomains()
+                    and raw_coequalizer.is_torsion_free()
+                ):
+                    candidate_transport = raw_coequalizer.finite_free_trivialization()
+                    if candidate_transport.codomain() in self:
                         coequalizer_transport = candidate_transport
                         coequalizer = candidate_transport.codomain()
                         projection = candidate_transport.forward() * raw_projection
@@ -668,8 +675,9 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_equalizer_family(self, morphisms):
             r"""Realize a finite wide equalizer through kernels/intersections."""
             size = morphisms.cardinality()
-            if not size.is_finite():
-                raise NotImplementedError("the represented module wide-equalizer backend requires a finite arrow family")
+            assert size.is_finite(), (
+                "the represented module wide equalizer is taken over a finite arrow family"
+            )
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide equalizer family must be nonempty")
@@ -682,8 +690,9 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_coequalizer_family(self, morphisms):
             r"""Realize a finite wide coequalizer through images/sums/cokernels."""
             size = morphisms.cardinality()
-            if not size.is_finite():
-                raise NotImplementedError("the represented module wide-coequalizer backend requires a finite arrow family")
+            assert size.is_finite(), (
+                "the represented module wide coequalizer is taken over a finite arrow family"
+            )
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide coequalizer family must be nonempty")
@@ -788,11 +797,11 @@ class Modules(OwnedCategoryOverBaseRing):
             same owned ring parent multiply in that ring.  Only an element of
             the module's scalar ring acts through ``R -> End_R(M)``.
             """
-            scalar_parent = getattr(scalar, "parent", lambda: None)()
-            if scalar_parent is self.parent():
-                if self.parent() in OwnedRings():
+            match scalar:
+                case _ if element_parent(scalar) is self.parent() and self.parent() in OwnedRings():
                     return scalar._mul_(self)
-            return self.parent().scalar_multiple(scalar, self)
+                case _:
+                    return self.parent().scalar_multiple(scalar, self)
 
     class ParentMethods:
         # The ring acting on this module: the datum this level introduces.
@@ -1144,31 +1153,32 @@ class Modules(OwnedCategoryOverBaseRing):
             return Unknown
 
         def is_flat(self) -> bool:
-            r"""Decide flatness in the represented field/PID regimes.
+            r"""Decide flatness in the field and PID regimes.
 
             Every module over a field is flat.  Over a PID, flatness is
-            equivalent to torsion-freeness (Stacks Project, Tag 0AUW), so a
-            module type that already represents ``is_torsion_free`` supplies
-            an exact flatness decision without a second flatness algorithm.
+            equivalent to torsion-freeness (Stacks Project, Tag 0AUW), so the
+            torsion-freeness decision of the module decides it.
             """
 
             ring = self.base_ring()
-            if bool(_engine_ring(ring).is_field()):
-                return True
-            if ring not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "flatness is currently decided from torsion-freeness over a represented PID"
-                )
-            torsion_free = getattr(self, "is_torsion_free", None)
-            if torsion_free is None:
-                raise NotImplementedError(
-                    "this PID-module has no represented torsion-freeness decision"
-                )
-            return bool(torsion_free())
+            match ring:
+                case _ if ring in OwnedFields():
+                    return True
+                case _ if ring in PrincipalIdealDomains():
+                    return bool(self.is_torsion_free())
+                case _:
+                    raise AssertionError(
+                        f"flatness is decided over a field or a principal ideal domain, and {ring} is neither"
+                    )
 
+        @abstract_method
         def base_change(self, ring_map):
-            _ = ring_map
-            raise NotImplementedError(f"base change of {self} has no represented module construction")
+            r"""Return ``S tensor_R M`` along ``ring_map : R -> S``.
+
+            Every module has a scalar extension; each representation of modules
+            constructs it on its own data.
+            """
+            ...
 
         def vector_space(self):
             r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map."""
@@ -1527,9 +1537,9 @@ class Modules(OwnedCategoryOverBaseRing):
                 localized = self.localize_at_prime(point)
                 fiber = localized.base_change(point.local_ring().residue_map())
                 residue = point.residue_field()
-                if fiber not in VectorSpaces(residue):
-                    raise TypeError("base change to a residue field must construct a vector space")
-                fiber._preamble_fiber_localization = localized
+                assert fiber in VectorSpaces(residue), (
+                    "base change to a residue field constructs a vector space"
+                )
                 return fiber
 
             def fiber_dimension(self, point):
@@ -1655,11 +1665,11 @@ class Modules(OwnedCategoryOverBaseRing):
                 """
                 if self.is_projective():
                     return 0
-                if self.base_ring() in PrincipalIdealDomains():
-                    return 1
-                raise NotImplementedError(
-                    "projective dimension beyond the projective/PID regimes requires a represented finite resolution bound"
+                assert self.base_ring() in PrincipalIdealDomains(), (
+                    "projective dimension beyond the projective and PID regimes "
+                    "requires a represented finite resolution bound"
                 )
+                return 1
 
         class Torsion(CategoryWithAxiom):
             r"""Finitely presented torsion modules over a PID."""
@@ -3346,12 +3356,6 @@ def _represented_framed_free(module) -> bool:
     return module in FramedFreeModules(module.base_ring())
 
 
-@cached_function(key=lambda left, right: (id(left), id(right)))
-def _module_tensor_product(left, right):
-    r"""Return the represented categorical tensor product ``left tensor right``."""
-    ring = _owned_ring(left.base_ring())
-    if _owned_ring(right.base_ring()) != ring:
-        raise ValueError("a tensor product requires one common base ring")
 @cached_function(key=lambda factors: (factors.index_set(), tuple(map(id, factors))))
 def _module_tensor_product(factors):
     r"""Return $\bigotimes_{i \in I} M_i$ over the family's own index set."""
@@ -3786,55 +3790,33 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _matrix_column_coefficients(self, column_label):
-
-            columns = self.parent().column_index_set()
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
-            generator_image = self.__dict__.get("_generator_image")
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
+            generator_image = self._generator_image
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
             return self.codomain().framing_coefficients(image)
 
         def matrix_entry(self, row_label, column_label):
-            rows = self.parent().row_index_set()
-            columns = self.parent().column_index_set()
-            try:
-                row_label = rows(row_label)
-            except (TypeError, ValueError):
-                row_label = rows[int(row_label)]
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
+            row_label = _matrix_index(self.parent().row_index_set(), row_label)
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
             return self._matrix_column_coefficients(column_label).get(
                 row_label,
                 self.parent().base_ring().zero(),
             )
 
         def __getitem__(self, index):
-            if not isinstance(index, tuple) or len(index) != 2:
-                raise IndexError("a matrix entry is indexed by (row, column)")
+            r"""The entry at ``(row, column)``."""
             row, column = index
             return self.matrix_entry(row, column)
 
         def row(self, row_label):
-            rows = self.parent().row_index_set()
-            try:
-                row_label = rows(row_label)
-            except (TypeError, ValueError):
-                row_label = rows[int(row_label)]
+            row_label = _matrix_index(self.parent().row_index_set(), row_label)
             dual = self.domain().dual_module()
             return dual.linear_combination(
                 {column_label: self.matrix_entry(row_label, column_label) for column_label in self.parent().column_index_set() if self.matrix_entry(row_label, column_label)}
             )
 
         def column(self, column_label):
-            columns = self.parent().column_index_set()
-            try:
-                column_label = columns(column_label)
-            except (TypeError, ValueError):
-                column_label = columns[int(column_label)]
+            column_label = _matrix_index(self.parent().column_index_set(), column_label)
             return self(self.domain().module_generator(column_label))
 
         def rows(self):
@@ -4125,6 +4107,11 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             )
 
 
+def _matrix_index(index_set, key):
+    r"""Read a row or column key as a label of ``index_set``, or as the position of a label."""
+    return index_set(key) if key in index_set else index_set[int(key)]
+
+
 def _engine_matrix(morphism):
     r"""Privately materialize one matrix-Hom element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
@@ -4202,23 +4189,15 @@ def _torsion_module_presented_by_matrix(
     r"""Return the torsion module presented by relation rows ``relations``."""
 
     ring = _own_ring(SageZZ) if base_ring is None else base_ring
-    try:
-        relation_parent = relations.parent()
-    except AttributeError:
-        relation_parent = None
-    represented_matrix = (
-        relation_parent is not None and relation_parent in MatrixSpaces(ring)
-    )
-    if represented_matrix:
-        width = relations.parent().ncols()
-        relation_count = relations.parent().nrows()
-    else:
-        rows = tuple(tuple(row) for row in relations)
-        relation_count = len(rows)
-        width = 0 if not rows else len(rows[0])
-
-        relations = ring.matrix_space(relation_count, width).from_rows(rows)
-        represented_matrix = True
+    match relations:
+        case _ if element_parent(relations) in MatrixSpaces(ring):
+            width = relations.parent().ncols()
+            relation_count = relations.parent().nrows()
+        case _:
+            rows = tuple(tuple(row) for row in relations)
+            relation_count = len(rows)
+            width = 0 if not rows else len(rows[0])
+            relations = ring.matrix_space(relation_count, width).from_rows(rows)
     labels = (
         finite_ordered_set(range(width))
         if module_generating_set is None
