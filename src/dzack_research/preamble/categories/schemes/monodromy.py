@@ -46,10 +46,8 @@ class PointedAnalyticFundamentalGroup(SageObject):
     r"""A represented pointed ``pi_1`` with its actual group and base point."""
 
     def __init__(self, space, base_point, group, generator) -> None:
-        if base_point.manifold() is not space:
-            raise ValueError("a pointed fundamental group requires a point of its space")
-        if generator.parent() is not group:
-            raise ValueError("the loop generator belongs to the selected fundamental group")
+        assert base_point.manifold() is space, "a pointed fundamental group requires a point of its space"
+        assert generator.parent() is group, "the loop generator belongs to the selected fundamental group"
         self._space = space
         self._base_point = base_point
         self._group = group
@@ -82,12 +80,9 @@ class IntegralLocalSystem(Parent):
     """
 
     def __init__(self, base, pointed_fundamental_group, stalk_module, action_functor) -> None:
-        if pointed_fundamental_group.space() is not base:
-            raise ValueError("the local system fundamental group belongs to a different base")
-        if action_functor.group() is not pointed_fundamental_group.group():
-            raise ValueError("the monodromy action has the wrong fundamental group")
-        if action_functor.underlying_object() is not stalk_module:
-            raise ValueError("the monodromy action must select the local-system stalk")
+        assert pointed_fundamental_group.space() is base, "the local system fundamental group belongs to a different base"
+        assert action_functor.group() is pointed_fundamental_group.group(), "the monodromy action has the wrong fundamental group"
+        assert action_functor.underlying_object() is stalk_module, "the monodromy action must select the local-system stalk"
         self._base = base
         self._pointed_fundamental_group = pointed_fundamental_group
         self._stalk_module = stalk_module
@@ -138,8 +133,7 @@ class HigherDirectImageSheaf(Parent):
         self._degree = int(degree)
         self._smooth_stratum = smooth_stratum
         self._local_system = local_system
-        if local_system.base_space() is not smooth_stratum:
-            raise ValueError("the higher-direct-image restriction lives on the selected smooth stratum")
+        assert local_system.base_space() is smooth_stratum, "the higher-direct-image restriction lives on the selected smooth stratum"
         Parent.__init__(self, category=SheafObjects(smooth_stratum))
 
     def family_data(self):
@@ -168,8 +162,9 @@ class HigherDirectImageSheaf(Parent):
         assert point is self.restriction_to_smooth_stratum().base_point(), (
             "the selected proper-base-change comparison is materialized at the chosen smooth base point"
         )
-        if not self.family_data().proper_base_change_hypotheses_hold(point):
-            raise ValueError("topological proper base change hypotheses do not hold at this point")
+        assert self.family_data().proper_base_change_hypotheses_hold(point), (
+            "topological proper base change requires a proper family over the selected smooth point"
+        )
         stalk = self.stalk(point)
         fiber = self.family_data().fiber_cohomology(point)
         forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
@@ -260,12 +255,12 @@ class LegendreMonodromyFamily(SageObject):
             loop = pi_one(loop)
             result = cohomology.Mor(cohomology).identity()
             for letter in loop.Tietze():
-                if letter == 1:
-                    result = forward * result
-                elif letter == -1:
-                    result = inverse * result
-                else:
-                    raise ArithmeticError("the punctured-disc fundamental group has one signed generator")
+                assert letter in (1, -1), "the punctured-disc fundamental group has one signed generator"
+                match letter:
+                    case 1:
+                        result = forward * result
+                    case -1:
+                        result = inverse * result
             return result
 
         action_functor = GroupActionFunctor(
@@ -369,14 +364,9 @@ class LegendreMonodromyFamily(SageObject):
 
 
 
-def legendre_monodromy_family():
-    return LegendreMonodromyFamily()
-
-
 __all__ = [
     "HigherDirectImageSheaf",
     "IntegralLocalSystem",
     "LegendreMonodromyFamily",
     "PointedAnalyticFundamentalGroup",
-    "legendre_monodromy_family",
 ]

@@ -418,7 +418,6 @@ from dzack_research.preamble.categories.schemes import (
     ToricSchemes,
     ToricWeightCohomologyComplexes,
     Varieties,
-    legendre_monodromy_family,
     rational_quintic_with_nonrational_node_normalization,
     rational_quintic_with_two_nodes_normalization,
 )
