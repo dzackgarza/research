@@ -85,7 +85,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         def realize_generator(degree, label):
             restricted_piece = piece(degree)
             underlying = restricted_piece.module_generator(label).underlying_element()
-            return extension_algebra._from_component(degree, underlying)
+            return extension_algebra.from_component(degree, underlying)
 
         def from_realization(element):
             element = extension_algebra(element)
@@ -199,7 +199,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         result = self.extension_algebra().zero()
         for degree, component in element.homogeneous_components().items():
             underlying = component.underlying_element() if hasattr(component, "underlying_element") else component
-            result += self.extension_algebra()._from_component(degree, underlying)
+            result += self.extension_algebra().from_component(degree, underlying)
         return result
 
     def one(self):

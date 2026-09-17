@@ -128,7 +128,7 @@ def _interior_product(vector_field):
                         basis,
                     )
             if target_component != target_piece.zero():
-                result += exterior._from_component(degree - 1, target_component)
+                result += exterior.from_component(degree - 1, target_component)
         return result
 
     def contraction(element):

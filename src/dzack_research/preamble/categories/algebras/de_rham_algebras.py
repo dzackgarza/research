@@ -101,7 +101,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
                 )
             target_component += contribution
         if target_component != target_piece.zero():
-            result += exterior_algebra._from_component(target_degree, target_component)
+            result += exterior_algebra.from_component(target_degree, target_component)
     return result
 
 
