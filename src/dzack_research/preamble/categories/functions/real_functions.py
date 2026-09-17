@@ -1099,6 +1099,18 @@ class _LebesgueSpace(_FunctionSpace):
             raise ValueError(f"{formula} is not square-integrable on RR")
         return element
 
+    def quotient_by_null_functions(self):
+        r"""The actual Lebesgue space, quotienting these maps by a.e. equality."""
+        from dzack_research.preamble.categories.functions.lebesgue_quotients import _lebesgue_quotient
+
+        return _lebesgue_quotient(self)
+
+    def almost_everywhere_equal(self, left, right):
+        r"""The proposition that the two integrable maps agree outside a null set."""
+        from dzack_research.preamble.categories.functions.lebesgue_quotients import AlmostEverywhereEquality
+
+        return AlmostEverywhereEquality(self(left), self(right))
+
     def integrability_exponent(self):
         return self._exponent
 
