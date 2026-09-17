@@ -502,6 +502,19 @@ class ModulesOverGroupAlgebra(Modules):
                 return self
             return self._preamble_unformed_module
 
+        def _element_of_unformed_module(self, element):
+            r"""The element of the module the action was stated on, on the same data.
+
+            The ``R[G]``-module is built on the underlying additive group of
+            that module, so an element reads there as its underlying additive
+            element.
+            """
+            return self.unformed_module()(self._underlying_additive_element(element))
+
+        def _element_from_unformed_module(self, element):
+            r"""The element of this ``R[G]``-module on the data of an element of the module the action was stated on."""
+            return self(element)
+
         # The selected R-framing belongs to the module the action was stated
         # on.  These accessors expose that retained presentation without
         # asserting that it is an R[G]-basis.

@@ -176,6 +176,25 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             r"""The lattice this action was stated on, as ``Modules(R[G])`` answers it."""
             return self.source_group_module().unformed_module()
 
+        def _element_of_unformed_module(self, element):
+            r"""The element of the lattice the action was stated on, with the same coefficients.
+
+            A group lattice is built on the generating set of that lattice,
+            so an element reads there with the coefficients it has here.
+            Stated at this level because a group lattice is also an object of
+            ``Modules(R[G])``, whose reading through the underlying additive
+            group describes a module built on that group, not a lattice.
+            """
+            return self.unformed_module().linear_combination(
+                self.framing_coefficients(element)
+            )
+
+        def _element_from_unformed_module(self, element):
+            r"""The element of this group lattice with the coefficients ``element`` has in the lattice the action was stated on."""
+            return self.linear_combination(
+                self.unformed_module().framing_coefficients(element)
+            )
+
         @cached_method
         def action(self):
             source_group_module = self.source_group_module()

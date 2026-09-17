@@ -988,6 +988,24 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the module the form was stated on: the datum this module is built on."""
             return self._preamble_unformed_module
 
+        def _element_of_unformed_module(self, element):
+            r"""The element of :meth:`unformed_module` with the coefficients ``element`` has here.
+
+            A formed module is built on the framing of the module its form was
+            stated on: the same generating set and, for a presented module,
+            the same presentation.  So an element reads there with the same
+            coefficients.
+            """
+            return self.unformed_module().linear_combination(
+                self.framing_coefficients(element)
+            )
+
+        def _element_from_unformed_module(self, element):
+            r"""The element of this module with the coefficients ``element`` has in :meth:`unformed_module`."""
+            return self.linear_combination(
+                self.unformed_module().framing_coefficients(element)
+            )
+
         def pairing(self, left, right):
             return self.b(left, right)
 

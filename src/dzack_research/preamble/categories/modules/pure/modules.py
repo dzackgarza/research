@@ -1324,9 +1324,93 @@ class Modules(OwnedCategoryOverBaseRing):
 
             Module representations with a distinct underlying additive group
             implement this protected conversion together with
-            ``underlying_additive_group``.
+            ``underlying_additive_group``.  An ``R[G]``-module built on the
+            data of ``M`` has the underlying additive group of ``M``, and its
+            :meth:`_element_of_unformed_module` reads an element there.
             """
             return self(element)
+
+        def unformed_module(self):
+            r"""Return the module this module is built on.
+
+            A form or a group action stated on an ``R``-module ``M`` builds a
+            module on the data of ``M`` that retains ``M`` (``CON-16``); the
+            level stating that structure answers ``M`` here.  A module on
+            which no structure was stated is built on its own data.
+            """
+            return self
+
+        def _element_of_unformed_module(self, element):
+            r"""Read an element of this module in :meth:`unformed_module`.
+
+            Protected contract of ``Modules(R)``.  Every level whose
+            constructor retains the module its structure was stated on
+            implements it together with :meth:`_element_from_unformed_module`;
+            its one caller is :meth:`_element_on_the_same_data`.  It takes an
+            element of this module and returns the element of
+            ``unformed_module()`` on the same data.
+            """
+            assert self.unformed_module() is self, (
+                f"{self} retains {self.unformed_module()} and states no reading of its elements there"
+            )
+            return element
+
+        def _element_from_unformed_module(self, element):
+            r"""Read an element of :meth:`unformed_module` in this module.
+
+            The inverse half of :meth:`_element_of_unformed_module`, with the
+            same owner, implementers and caller.
+            """
+            assert self.unformed_module() is self, (
+                f"{self} retains {self.unformed_module()} and states no reading of its elements here"
+            )
+            return element
+
+        def _built_on_the_same_data(self, source) -> bool:
+            r"""Decide whether ``source`` and this module are built on the data of one module.
+
+            That holds when ``source`` retains this module, this module
+            retains ``source``, or both retain the same module.  It is asked
+            of the parent of an element, by its membership in ``Modules`` over
+            its own ring and by the identity of the retained modules.
+            """
+            ring = source.base_ring()
+            if ring not in OwnedRings() or source not in Modules(ring):
+                return False
+            retained = source.unformed_module()
+            return (
+                retained is self
+                or self.unformed_module() is source
+                or self.unformed_module() is retained
+            )
+
+        def _element_on_the_same_data(self, source, element):
+            r"""Read an element of ``source`` as the element of this module on the same data.
+
+            The dispatcher of the protected pair
+            :meth:`_element_of_unformed_module` and
+            :meth:`_element_from_unformed_module`, called from an element
+            constructor once :meth:`_built_on_the_same_data` holds.  A module
+            built on the data of ``M`` has no identification morphism back to
+            ``M`` (``CON-16``), and Sage's registered conversions do not reach
+            these parents: their ``__call__`` goes straight to
+            ``_element_constructor_`` because the generic conversion map Sage
+            would build (``Parent.discover_convert_map_from``,
+            ``sage/structure/parent.pyx``) takes its homset in
+            ``SetsWithPartialMaps``, which owned parents are not in.  So the
+            level that retains the module declares the reading, and the
+            receiving constructor asks the element's parent for it.
+            """
+            if source.unformed_module() is self:
+                return source._element_of_unformed_module(element)
+            if self.unformed_module() is source:
+                return self._element_from_unformed_module(element)
+            assert source.unformed_module() is self.unformed_module(), (
+                f"{source} and {self} are not built on the data of one module"
+            )
+            return self._element_from_unformed_module(
+                source._element_of_unformed_module(element)
+            )
 
         @cached_method
         def _ring_morphism_defining_module_action(self):
