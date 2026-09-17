@@ -41,6 +41,28 @@ if "Alternating" not in all_axioms:
     all_axioms.add("Alternating")
 
 
+def _graded_multiplication_from_components(module, component_product):
+    r"""Classify the bilinear product specified on homogeneous summands.
+
+    Protected graded-algebra constructor operation: callers supply maps
+    M_s x M_t -> M_(st), bilinear over the fixed scalar ring.  The finite
+    distributive extension is the unique product on the direct sum with those
+    restrictions (Mathlib Algebra/DirectSum/Ring, mulHom_of_of).
+    """
+    tensor = Modules(module.base_ring()).tensor_product((module, module))
+
+    def product(left, right):
+        return sum((
+            module.from_component(
+                module.combine_degrees(s, t), component_product(s, x, t, y),
+            )
+            for s, x in module(left).homogeneous_components().items()
+            for t, y in module(right).homogeneous_components().items()
+        ), module.zero())
+
+    return tensor.from_bilinear_map(module, product)
+
+
 def _rank_one_unit_algebra(category):
     r"""``R e`` with ``e e = e``, concentrated in the identity degree of the grading of ``category``.
 
