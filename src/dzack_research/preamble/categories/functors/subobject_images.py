@@ -33,6 +33,9 @@ class _DirectImageSubobjectFunctor(Functor):
     def _apply_object(self, subobject):
         return (self.morphism() * subobject.inclusion()).image()
 
+    def _repr_(self):
+        return f"Direct image f_* on subobjects along {self.morphism()}"
+
     def _apply_morphism(self, order_morphism):
         return self.codomain().Mor(
             self(order_morphism.domain()),
@@ -56,6 +59,9 @@ class _InverseImageSubobjectFunctor(Functor):
     def _apply_object(self, subobject):
         return _inverse_image_subobject(self.morphism(), subobject)
 
+    def _repr_(self):
+        return f"Inverse image f^(-1) on subobjects along {self.morphism()}"
+
     def _apply_morphism(self, order_morphism):
         return self.codomain().Mor(
             self(order_morphism.domain()),
@@ -73,6 +79,9 @@ class _SubobjectImageAdjunction(Adjunction):
             _InverseImageSubobjectFunctor(morphism),
         )
 
+
+    def _repr_(self):
+        return f"Galois connection f_* ⊣ f^(-1) along {self._morphism}"
 
     def unit(self, subobject):
         target = self.right_adjoint()(self.left_adjoint()(subobject))

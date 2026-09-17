@@ -67,17 +67,6 @@ class _FreeForgetfulAdjunction(Adjunction):
             lambda element: free.module_generator(element)
         )
 
-    def hom_set_isomorphism_forward(self, morphism, source=None):
-        r"""Transpose ``f:F_R(S)->M`` using ``F_R(S)``'s selected framing.
-
-        A free module retains the actual generating set ``S`` in its constructor-
-        owned framing.  That selected framing determines the adjunction source
-        without recovering a preimage from a reverse functor cache.
-        """
-        if source is None:
-            source = morphism.domain().module_generating_set()
-        return super().hom_set_isomorphism_forward(morphism, source=source)
-
     def counit(self, module):
         free = self.left_adjoint()(self.right_adjoint()(module))
         return free.module_category().Mor(free, module)(lambda element: element)

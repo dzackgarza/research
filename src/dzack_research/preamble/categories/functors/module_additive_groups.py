@@ -22,3 +22,6 @@ class UnderlyingAdditiveGroupFunctor(Functor):
         return hom.elementwise(
             lambda element: target._underlying_additive_element(morphism(source(element)))
         )
+
+    def _repr_(self):
+        return "Underlying additive group functor"

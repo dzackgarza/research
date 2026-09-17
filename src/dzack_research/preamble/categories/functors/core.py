@@ -3,12 +3,17 @@ r"""Functors, natural transformations, and adjunctions.
 These are deliberately small mathematical objects.  The existing Sage/owned
 categories remain the domain and codomain; this module adds no parallel
 category graph and no registry of relationships.
+
+A functor ``F: C -> D`` is an object of the functor category ``[C, D]``, which
+is ``Cat().Mor(C, D)``; a natural transformation ``F => G`` is an arrow of that
+category; an adjunction ``F -| U`` is the pair of functors together with its
+unit and counit.  ``Cat`` owns the functor category and its morphisms.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import overload
+from typing import final, overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -139,8 +144,12 @@ class Functor(SageObject):
         return self.object_image(obj)
 
     def morphism_image(self, morphism: Map) -> Map:
-        if not isinstance(morphism, Map):
-            raise TypeError("a functor acts on a morphism through its morphism action")
+        r"""The image ``F(f): F(A) -> F(B)`` of an arrow ``f: A -> B`` of the domain.
+
+        Both sides are decided by the Hom categories that own them: ``f`` is
+        an arrow of ``Hom_C(A, B)``, and its image is an arrow of
+        ``Hom_D(F(A), F(B))``, a membership that also fixes both endpoints.
+        """
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
             _category_hom,
         )
@@ -153,13 +162,6 @@ class Functor(SageObject):
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
-        if not isinstance(image, Map):
-            raise TypeError("the morphism action must return a morphism")
-        if image.domain() is not domain or image.codomain() is not codomain:
-            raise ValueError(
-                "a functor's morphism image must run between the cached images "
-                "of the original domain and codomain"
-            )
         if image not in _category_hom(self.codomain(), domain, codomain):
             raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
@@ -174,13 +176,29 @@ class Functor(SageObject):
     def __call__(self, value: Map) -> Map: ...
 
     def __call__(self, value: Parent | Map) -> Parent | Map:
-        return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
+        r"""Apply the object action to an object of the domain, the arrow action otherwise.
+
+        Whether ``value`` is an object is the domain category's question.
+        Asking it first is what lets a functor out of a Hom category, whose
+        objects are themselves arrows, read an arrow as the object it is.
+        """
+        match value:
+            case _ if value in self.domain():
+                return self.object_image(value)
+            case _:
+                return self.morphism_image(value)
 
     def then(self, other: Functor) -> Functor:
-        r"""Return ``other ∘ self``, retaining the nonidentity factor when possible."""
-        if isinstance(self, IdentityFunctor):
+        r"""Return ``other ∘ self``, retaining the nonidentity factor when possible.
+
+        An identity functor is the composite of no factors, so a side with no
+        factors is dropped.
+        """
+        if self.codomain() != other.domain():
+            raise ValueError("functor composition requires matching middle categories")
+        if not self.factors():
             return other
-        if isinstance(other, IdentityFunctor):
+        if not other.factors():
             return self
         return _CompositeFunctor(self, other)
 
@@ -287,20 +305,13 @@ class Functor(SageObject):
     def is_faithful(self) -> bool:
         return bool(self._faithful)
 
-    def _semantic_display_label(self) -> str:
-        r"""Return the subclass's mathematical label without treating it as the whole display."""
-        for cls in type(self).__mro__:
-            if cls is Functor:
-                break
-            method = cls.__dict__.get("_repr_")
-            if method is not None:
-                return str(method(self))
-        name = type(self).__name__
-        return name[:-7] if name.endswith("Functor") else name
+    def _repr_(self) -> str:
+        r"""The functor's standard name; a functor with none is named only by its endpoints."""
+        return "Functor"
 
     def __repr__(self) -> str:
         r"""Display the mathematical arrow together with any standard operation name."""
-        label = self._semantic_display_label()
+        label = self._repr_()
         endpoints = f"{self.domain()} -> {self.codomain()}"
         return label if endpoints in label else f"{label}: {endpoints}"
 
@@ -394,7 +405,13 @@ class _CompositeFunctor(Functor):
 
 
 class NaturalTransformation(SageObject):
-    r"""A natural transformation ``source => target`` given by its components."""
+    r"""A natural transformation ``source => target`` given by its components.
+
+    The datum is the family of components ``eta_X: F(X) -> G(X)`` indexed by
+    the objects of the common domain.  Naturality is the equation
+    ``G(f) eta_A = eta_B F(f)`` for every ``f: A -> B``; it is a property of
+    the family that its constructor states, not a check performed per arrow.
+    """
 
     def __init__(
         self,
@@ -418,18 +435,23 @@ class NaturalTransformation(SageObject):
 
     @cached_method(key=lambda self, obj: id(obj))
     def component(self, obj: Parent) -> Morphism:
+        r"""The component ``eta_X``, an arrow of ``Hom_D(F(X), G(X))``.
+
+        Membership in that Hom category is the whole requirement: it decides
+        both that the component is an arrow of the common codomain category
+        and that its endpoints are ``F(X)`` and ``G(X)``.
+        """
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
             _category_hom,
         )
 
         domain, codomain = self.source()(obj), self.target()(obj)
         arrow = self._component(obj)
-        if not isinstance(arrow, Morphism):
-            raise TypeError("a natural-transformation component must be a morphism")
-        if arrow.domain() is not domain or arrow.codomain() is not codomain:
-            raise ValueError("a natural-transformation component has the wrong source or target")
         if arrow not in _category_hom(self.source().codomain(), domain, codomain):
-            raise TypeError("the component is not a morphism of the common codomain category")
+            raise TypeError(
+                "a natural-transformation component at an object X is an arrow "
+                "F(X) -> G(X) of the common codomain category"
+            )
         return arrow
 
     __call__ = component
@@ -443,20 +465,49 @@ class NaturalTransformation(SageObject):
         return self.component(morphism.codomain()) * self.source()(morphism)
 
     def naturality_square(self, morphism: Map):
-        r"""Return the two naturality composites as an element of their owned product."""
+        r"""Return the two paths of the naturality square at ``f: A -> B``.
+
+        The square has two paths ``F(A) -> G(B)``, indexed by the two-element
+        set ``Sets.Δ[1]``: ``0`` is ``G(f) o eta_A`` and ``1`` is
+        ``eta_B o F(f)``.  Its value is one element of the product of the
+        family of the Hom-sets holding those two composites over that index
+        set (`CON-15`); projecting at an index recovers that path in its own
+        Hom-set.  Naturality is the statement that the two components agree.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
+        paths = Sets.Δ[1]
         target_composite = self.naturality_target_composite(morphism)
         source_composite = self.naturality_source_composite(morphism)
-        product = Sets().product((target_composite.parent(), source_composite.parent()))
-        return product((target_composite, source_composite))
+
+        def path(index):
+            return target_composite if int(index) == 0 else source_composite
+
+        product = Sets().product(indexed_family(paths, lambda index: path(index).parent()))
+        return product(path)
 
     def _repr_(self) -> str:
         return f"{self.source()} => {self.target()}"
 
 
 class Adjunction(SageObject):
-    r"""An adjunction ``F ⊣ U`` with its unit, counit, and Hom-set bijection."""
+    r"""An adjunction ``F ⊣ U`` given by its unit and counit.
+
+    The defining datum is the unit-counit presentation (Mathlib,
+    ``CategoryTheory.Adjunction.CoreUnitCounit``): functors
+    ``F: C -> D`` and ``U: D -> C`` with natural transformations
+    ``eta: 1_C => UF`` and ``epsilon: FU => 1_D`` satisfying the triangle
+    identities ``U(epsilon) o eta_U = 1_U`` and ``epsilon_F o F(eta) = 1_F``.
+    A subclass supplies exactly this datum, :meth:`unit` and :meth:`counit`.
+
+    Everything else is derived from it and is not supplied again: the natural
+    Hom-set bijection ``Phi: Hom_D(F(A), B) -> Hom_C(A, U(B))``, with
+    ``Phi(f) = U(f) o eta_A`` and ``Phi^{-1}(g) = epsilon_B o F(g)``, and the
+    unit and counit as natural transformations.  The triangle identities are
+    theorems about the supplied datum, established where it is constructed,
+    not re-checked here.
+    """
 
     def __init__(self, left_adjoint: Functor, right_adjoint: Functor) -> None:
         if left_adjoint.domain() != right_adjoint.codomain():
@@ -476,63 +527,69 @@ class Adjunction(SageObject):
         r"""Compose this adjunction with ``second``."""
         return _CompositeAdjunction(self, second)
 
-    def _semantic_display_label(self) -> str:
-        r"""Return a subclass operation label while the base owns the categorical endpoints."""
-        for cls in type(self).__mro__:
-            if cls is Adjunction:
-                break
-            method = cls.__dict__.get("_repr_")
-            if method is not None:
-                return str(method(self))
-        name = type(self).__name__
-        return name[:-10] if name.endswith("Adjunction") else name
+    def _repr_(self) -> str:
+        r"""The adjunction's standard name; one with none is named only by its categories."""
+        return "Adjunction"
 
     def __repr__(self) -> str:
-        label = self._semantic_display_label()
+        label = self._repr_()
         left = self.left_adjoint()
         endpoints = f"{left.domain()} <-> {left.codomain()}"
         return label if endpoints in label else f"{label}: {endpoints}"
 
     @abstract_method
     def unit(self, obj: Parent) -> Morphism:
-        r"""Return the unit component at ``obj``."""
+        r"""Return the unit component ``eta_A: A -> U(F(A))`` at ``obj``."""
 
     @abstract_method
     def counit(self, obj: Parent) -> Morphism:
-        r"""Return the counit component at ``obj``."""
+        r"""Return the counit component ``epsilon_B: F(U(B)) -> B`` at ``obj``."""
 
+    @final
     def hom_set_isomorphism_forward(
         self,
         morphism: Morphism,
         source: Parent,
     ) -> Morphism:
-        r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A`` for the stated ``A``."""
+        r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A`` for the stated ``A``.
+
+        Derived from the unit; a subclass never supplies it.  ``A`` is stated
+        because a left-adjoint image ``F(A)`` need not determine ``A``.
+        """
         if source not in self.left_adjoint().domain():
             raise TypeError("the stated adjunction source is outside the left-adjoint domain")
         if self.left_adjoint()(source) is not morphism.domain():
             raise ValueError("the morphism domain is not the left-adjoint image of the stated source")
         return self.right_adjoint()(morphism) * self.unit(source)
 
+    @final
     def hom_set_isomorphism_inverse(
         self,
         morphism: Morphism,
         codomain: Parent,
     ) -> Morphism:
-        r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)`` for the stated ``B``."""
+        r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)`` for the stated ``B``.
+
+        Derived from the counit; a subclass never supplies it.
+        """
         if codomain not in self.right_adjoint().domain():
             raise TypeError("the stated adjunction codomain is outside the right-adjoint domain")
         if self.right_adjoint()(codomain) is not morphism.codomain():
             raise ValueError("the morphism codomain is not the right-adjoint image of the stated codomain")
         return self.counit(codomain) * self.left_adjoint()(morphism)
 
+    @final
     def unit_transformation(self) -> NaturalTransformation:
+        r"""The unit ``eta: 1_C => UF`` as a natural transformation, from :meth:`unit`."""
         return NaturalTransformation(
             IdentityFunctor(self.left_adjoint().domain()),
             _CompositeFunctor(self.left_adjoint(), self.right_adjoint()),
             self.unit,
         )
 
+    @final
     def counit_transformation(self) -> NaturalTransformation:
+        r"""The counit ``epsilon: FU => 1_D`` as a natural transformation, from :meth:`counit`."""
         return NaturalTransformation(
             _CompositeFunctor(self.right_adjoint(), self.left_adjoint()),
             IdentityFunctor(self.left_adjoint().codomain()),
@@ -541,7 +598,11 @@ class Adjunction(SageObject):
 
 
 class _CompositeAdjunction(Adjunction):
-    r"""The composite of ``F ⊣ U`` and ``G ⊣ V`` as ``GF ⊣ UV``."""
+    r"""The composite of ``F ⊣ U`` and ``G ⊣ V`` as ``GF ⊣ UV``.
+
+    Its unit and counit are the standard composites (Mathlib,
+    ``Adjunction.comp_unit_app`` and ``comp_counit_app``): ``eta = U(eta') o eta`` and ``epsilon = epsilon' o G(epsilon)``.
+    """
 
     def __init__(self, first: Adjunction, second: Adjunction) -> None:
         if first.left_adjoint().codomain() != second.left_adjoint().domain():

@@ -43,12 +43,9 @@ class _CohomologyFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        try:
-            component = morphism.component(self.degree())
-        except AttributeError as error:
-            raise TypeError(
-                "a represented cochain morphism must expose its degreewise components"
-            ) from error
+        # A cochain map is its family of degreewise components; the arrow was
+        # admitted by the Hom of cochain complexes, which owns that family.
+        component = morphism.component(self.degree())
         return source.module_category().Mor(source, target)(
             {
                 label: target.class_of_cycle(

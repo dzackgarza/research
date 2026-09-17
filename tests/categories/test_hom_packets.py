@@ -238,3 +238,32 @@ def test_set_epi_family_constructs_and_composes_nonidentity_surjections() -> Non
     assert composite(source(0)) == target(0)
     assert composite(source(1)) == target(1)
     assert epi_composite.underlying_homset() is Sets().Mor(source, target)
+
+
+def test_induced_map_reads_arrows_as_objects_and_preserves_their_identity_two_arrows() -> None:
+    from dzack_research.preamble.categories.functors.core import IdentityFunctor
+
+    points = Sets.Δ[1]
+    arrows = Sets().Mor(points, points)
+    swap = arrows(lambda point: points(1 - int(point)))
+    induced = IdentityFunctor(Sets()).induced_hom_functor(points, points)
+    stated = induced.domain().object(swap)
+
+    assert induced(swap) is swap
+    assert induced(stated) is swap
+    assert induced(swap)(points(0)) == points(1)
+    identity = induced.domain().identity_2(swap)
+    assert induced(identity) is induced.codomain().identity_2(swap)
+
+
+def test_identity_functor_composition_requires_matching_categories() -> None:
+    import pytest
+    from dzack_research.preamble.categories.functors.core import IdentityFunctor
+
+    sets_identity = IdentityFunctor(Sets())
+    module_identity = IdentityFunctor(Modules(QQ))
+    assert sets_identity.then(sets_identity) is sets_identity
+    with pytest.raises(ValueError, match="matching middle categories"):
+        sets_identity.then(module_identity)
+    with pytest.raises(ValueError, match="matching middle categories"):
+        module_identity.then(sets_identity)

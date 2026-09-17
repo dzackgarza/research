@@ -108,6 +108,9 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
         group = _owned_group(group)
         super().__init__(GSetOrbitsFunctor(group), TrivialGSetFunctor(group))
 
+    def _repr_(self):
+        return f"Orbit/trivial-action adjunction (-)/G ⊣ Triv_G for {self.right_adjoint().group()}"
+
     def unit(self, g_set):
         orbit_set = self.left_adjoint()(g_set)
         trivial_orbits = self.right_adjoint()(orbit_set)
@@ -127,6 +130,9 @@ class GSetTrivialFixedAdjunction(Adjunction):
         group = _owned_group(group)
         super().__init__(TrivialGSetFunctor(group), GSetFixedPointsFunctor(group))
 
+    def _repr_(self):
+        return f"Trivial-action/fixed-point adjunction Triv_G ⊣ (-)^G for {self.left_adjoint().group()}"
+
     def unit(self, set_object):
         trivial = self.left_adjoint()(set_object)
         fixed = self.right_adjoint()(trivial)
@@ -144,10 +150,10 @@ class FreeGSetFunctor(Functor):
 
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
-        if self._group.is_finite() is not True:
-            raise NotImplementedError(
-                "the represented finite free G-set functor requires the acting group finite"
-            )
+        assert self._group.is_finite() is True, (
+            "G x S is a finite G-set for every finite set S exactly when G is finite; "
+            "the acting group is not established finite"
+        )
         super().__init__(FiniteSets(), FiniteGSets(self._group))
 
     def group(self):
@@ -221,10 +227,10 @@ class CofreeGSetFunctor(Functor):
 
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
-        if self._group.is_finite() is not True:
-            raise NotImplementedError(
-                "the represented finite cofree G-set functor requires the acting group finite"
-            )
+        assert self._group.is_finite() is True, (
+            "Map(G, S) is a finite G-set for every finite set S exactly when G is finite; "
+            "the acting group is not established finite"
+        )
         self._group_points = finite_ordered_set(self._group)
         super().__init__(FiniteSets(), FiniteGSets(self._group))
 
@@ -284,6 +290,9 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
         group = _owned_group(group)
         super().__init__(FreeGSetFunctor(group), UnderlyingFiniteGSetFunctor(group))
 
+    def _repr_(self):
+        return f"Free/underlying adjunction G x - ⊣ U for {self.left_adjoint().group()}"
+
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
         return Sets().Mor(set_object, free)(
@@ -306,6 +315,9 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
     def __init__(self, group) -> None:
         group = _owned_group(group)
         super().__init__(UnderlyingFiniteGSetFunctor(group), CofreeGSetFunctor(group))
+
+    def _repr_(self):
+        return f"Underlying/cofree adjunction U ⊣ Map(G, -) for {self.right_adjoint().group()}"
 
     def unit(self, g_set):
         cofree = self.right_adjoint()(self.left_adjoint()(g_set))
