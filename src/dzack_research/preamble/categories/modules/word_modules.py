@@ -467,6 +467,27 @@ class _WordModule:
             case _:
                 return piece(self(selected).underlying_element())
 
+    def homogeneous_components(self, element):
+        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
+        return {degree: self.homogeneous_component(element, degree) for degree in degrees}
+
+    def from_components(self, components):
+        return sum((self.from_component(degree, component) for degree, component in components.items()), self.zero())
+
+    def homogeneous_degree(self, element):
+        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
+        if len(degrees) != 1:
+            raise ValueError("a nonzero homogeneous element has exactly one degree")
+        return self.grading_monoid()(next(iter(degrees)))
+
+    def degree_on_module_generator(self, element):
+        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
+        assert len(degrees) == 1, "a nonzero homogeneous framing element has one degree"
+        return self.grading_monoid()(next(iter(degrees)))
+
+    def degree_index_set(self):
+        return self.grading_monoid()
+
     def _repr_(self):
         return f"Module of {self.word_flavor()} words on {self.word_source_module()}"
 
@@ -487,6 +508,9 @@ class _WordDegreeModule:
         cover = self.base_ring().free_module(word_module.degree_basis(word_degree))
         self._install_framing(cover.module_generating_set(), lambda label:
             self(word_module.module_generator(word_module.basis_label(word_degree, label)).underlying_element()), cover)
+
+    def degree(self):
+        return self._word_degree
 
     def _element_constructor_(self, value):
         match value:
@@ -520,12 +544,17 @@ def _word_degree_module(module, degree):
 
 
 def _word_module(presentation, *, extra_categories=(), construction_data=None):
+    r"""Construct the module quotient, optionally in a specialized native realization.
+
+    A stronger construction can supply the same private `_engine` datum used
+    by `_object_of`; its engine must still construct this quotient module.
+    The word presentation and its cover are retained unchanged.
+    """
     ring = presentation.base_ring()
-    return _object_of(
-        Cat().meet((GeneralModules(ring), FramedModules(ring), GradedModules(ring), *extra_categories)),
-        _engine=(GeneralModules(ring), _WordModule, _WordModuleElement),
-        base_ring=ring, word_presentation=presentation, **(construction_data or {}),
-    )
+    data = dict(construction_data or {})
+    category = Cat().meet((GeneralModules(ring), FramedModules(ring), GradedModules(ring), *extra_categories))
+    engine = data.pop("_engine", (GeneralModules(ring), _WordModule, _WordModuleElement))
+    return _object_of(category, _engine=engine, base_ring=ring, word_presentation=presentation, **data)
 
 
 @cached_function(key=lambda source, flavor: (id(source), flavor))

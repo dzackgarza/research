@@ -812,14 +812,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 return self.algebra_generator(label)
 
             piece = self.graded_piece(degree)
-            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-                SparseFreeAlgebra,
-            )
 
             if self in AlternatingAlgebras(self.base_ring()) or self in DividedPowerAlgebras(self.base_ring()):
                 return self.from_component(degree, piece.module_generator(label))
-            if isinstance(self, SparseFreeAlgebra):
-                return self.module_generator(self.basis_label(degree, label))
 
             ring = self.algebra_base_ring()
             result = self.one()
