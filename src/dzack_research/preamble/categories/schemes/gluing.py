@@ -3,6 +3,7 @@ r"""Descent and gluing for represented schemes, modules, and algebras."""
 from collections.abc import Mapping
 from itertools import combinations, permutations
 
+from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.schemes.generic.glue import GluedScheme as SageGluedScheme
@@ -40,10 +41,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
+    OwnedCategoryOverBaseRing,
     _engine_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
-    AlgebraSheaves,
     DistinguishedAffineCovers,
     QuasiCoherentSheaves,
     SheafObjects,
@@ -67,6 +68,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _chart_pair(cover, left_index, right_index):
@@ -1990,8 +1992,6 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         self._triple_modules = []
         self._transitions = []
         self._triple_transitions = []
-        self._sheaf = None
-        self._compatible_sections = None
         for pair in gluing_datum.transition_index_set():
             self.transition(*pair)
         self._verify_cocycle()
@@ -2257,17 +2257,54 @@ class FiniteAtlasModuleGluingDatum(SageObject):
             {index: identity_at(index) for index in self.chart_indices()},
         )
 
+    @cached_method
     def sheaf(self):
         r"""Return the quasi-coherent module sheaf represented by this descent datum."""
-        if self._sheaf is None:
-            self._sheaf = FiniteAtlasGluedModuleSheaf(self)
-        return self._sheaf
+        return FiniteAtlasGluedModuleSheaf(self)
 
+    def chart_index_set(self):
+        return self.gluing_datum().chart_index_set()
+
+    def restrict_scalar_to_chart(self, chart_index, scalar):
+        r"""The image of a scalar of the scheme's base ring in the section ring of one chart."""
+        ring = self.local_module(chart_index).base_ring()
+        return ring.algebra_structure_morphism()(scalar)
+
+    def compatible_local_sections(self, sections):
+        r"""Read an indexed family of local sections, checking agreement on every overlap.
+
+        On an overlap ``U_ij`` the target-chart section is transported through
+        the semilinear pullback and compared with the source-chart restriction,
+        so the comparison uses the two distinct overlap rings rather than
+        identifying their presentations.
+        """
+        atlas = self.gluing_datum()
+        components = finite_indexed_family(
+            atlas.chart_index_set(),
+            lambda index: self.local_module(index)(sections[index]),
+            name="Compatible finite-atlas section components",
+        )
+        for source_index, target_index in atlas.transition_index_set():
+            source_value = _change_coefficients(
+                components[source_index],
+                self.local_module(source_index),
+                self.pair_module(source_index, target_index),
+                atlas.overlap(source_index, target_index).inclusion().coordinate_algebra_morphism(),
+            )
+            target_value = _change_coefficients(
+                components[target_index],
+                self.local_module(target_index),
+                self.pair_module(target_index, source_index),
+                atlas.overlap(target_index, source_index).inclusion().coordinate_algebra_morphism(),
+            )
+            if self.transition(source_index, target_index).pullback()(target_value) != source_value:
+                raise ValueError("the finite-atlas local sections do not agree on an overlap")
+        return components
+
+    @cached_method
     def compatible_sections(self):
-        r"""Return global sections as the equalizer of the finite-atlas transitions."""
-        if self._compatible_sections is None:
-            self._compatible_sections = FiniteAtlasCompatibleSectionsModule(self)
-        return self._compatible_sections
+        r"""Return ``Gamma(X, F)`` over the base ring of the glued scheme."""
+        return GlobalSectionModules(self.scheme().scheme_base_ring())(self)
 
     def tensor_product(self, other):
         r"""Return the descent datum for the chartwise tensor product with ``other``."""
@@ -2850,13 +2887,67 @@ class FiniteAtlasAlgebraGluingMorphism(SageObject):
                 )
 
 
+def _cover_chart_family(cover, values, *, name):
+    r"""Read finite chart data on ``cover`` as the family ``i |-> values_i`` on its atlas.
+
+    The charts of a distinguished affine cover are labelled by their
+    positions, so a finite sequence of values and a family already indexed by
+    the atlas are both read at the position of each label.
+    """
+    supplied = finite_family(values, name=name)
+    family = finite_indexed_family(
+        cover.atlas(),
+        lambda label: supplied[cover.chart_position(label)],
+        name=name,
+    )
+    if supplied.cardinality() != family.cardinality():
+        raise ValueError(f"{name} needs exactly one entry on each affine chart")
+    return family
+
+
+def _cover_pair_family(cover, transitions, *, noun):
+    r"""Read transition data on ``cover`` as a family on its unordered pairs of charts."""
+    normalized = {
+        _chart_pair(cover, left, right): transition
+        for (left, right), transition in dict(transitions).items()
+    }
+    expected = tuple(combinations(tuple(cover.atlas()), 2))
+    if set(normalized) != set(expected):
+        raise ValueError(
+            f"{noun} requires one transition isomorphism for each pair of charts {expected}"
+        )
+    return finite_indexed_family(
+        finite_ordered_set(expected),
+        lambda pair: normalized[pair],
+        name=f"Transition isomorphisms of {noun}",
+    )
+
+
+def _restriction_scalar_map(cover, labels):
+    r"""``O(X) -> O(U_I)``, the structure-sheaf restriction to a cover intersection."""
+    scheme = cover.ambient_scheme()
+    return scheme.structure_sheaf().restriction_map(scheme, cover.intersection(*labels))
+
+
 class ModuleGluingHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return ModuleGluingHomset
 
 
 class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
-    r"""Module descent data on one represented distinguished affine cover."""
+    r"""Descent data for modules on one distinguished affine cover.
+
+    For ``X = Spec A`` covered by ``U_i = D(f_i)``, an object is a family of
+    ``O(U_i)``-modules ``M_i`` with isomorphisms of ``O(U_ij)``-modules
+    ``phi_ij : M_i|_{U_ij} -> M_j|_{U_ij}`` satisfying
+    ``phi_jk phi_ij = phi_ik`` on every triple overlap ``U_ijk``.  A morphism
+    is a family of ``O(U_i)``-linear maps commuting with the transitions.
+
+    ``ModuleGluingData(cover)(local_modules, transitions)`` is the one entry.
+    Each ``M_i`` is required to carry a finite framing, which is the
+    hypothesis under which the transition identities and the cocycle are
+    decided on generators.
+    """
 
     @staticmethod
     def __classcall__(cls, cover):
@@ -2872,334 +2963,327 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
+        return [DescentDataOnCover(self.cover().coverage(), self.cover())]
+
+    def an_object(self):
+        r"""The descent datum of ``O_X``: each ``O(U_i)`` as a free module of rank one."""
         cover = self.cover()
-        return [DescentDataOnCover(cover.coverage(), cover)]
+        local_modules = finite_indexed_family(
+            cover.atlas(),
+            lambda label: cover.open(label).coordinate_algebra().free_module(1),
+            name="Rank-one free chart modules",
+        )
+
+        def identity_transition(left, right):
+            source = cover.restrict_module(local_modules[left], left, right)
+            target = cover.restrict_module(local_modules[right], right, left)
+            forward = source.module_category().Mor(source, target)(target.module_generator)
+            inverse = target.module_category().Mor(target, source)(source.module_generator)
+            return source.module_category().Core().Mor(source, target)(forward, inverse)
+
+        return self(
+            local_modules,
+            {
+                (left, right): identity_transition(left, right)
+                for left, right in combinations(tuple(cover.atlas()), 2)
+            },
+        )
+
+    def object(self, local_modules, transitions):
+        r"""The module descent datum ``(M_i, phi_ij)`` on this cover."""
+        cover = self.cover()
+        return _object_of(
+            self,
+            local_modules=_cover_chart_family(
+                cover,
+                local_modules,
+                name="Local modules of module descent",
+            ),
+            transitions=_cover_pair_family(cover, transitions, noun="module gluing"),
+        )
+
+    __call__ = object
 
     def _repr_object_names(self):
         return f"module descent data on {self.cover()}"
 
     _HomCategory = ModuleGluingHomCategoryConstruction
 
+    class ParentMethods:
+        def __init__(self, local_modules, transitions, **rest) -> None:
+            self._local_modules = local_modules
+            self._transitions = transitions
+            super().__init__(**rest)
+            for label in self.chart_index_set():
+                if self.local_module(label).base_ring() is not self.cover().open(label).coordinate_algebra():
+                    raise ValueError("each local module must be defined over its chart section ring")
+                _finite_framing(self.local_module(label))
+            self._verify_pairwise_transitions()
+            self._verify_cocycles()
 
-class ModuleGluingDatum(Parent):
-    r"""Finitely framed modules with descent isomorphisms on an affine cover."""
+        def cover(self):
+            return self.category().cover()
 
-    def __init__(self, cover, local_modules, transitions) -> None:
-        self._cover = cover
-        self._local_modules = tuple(local_modules)
-        if cover.atlas().cardinality() != len(self._local_modules):
-            raise ValueError("module gluing requires exactly one local module on each affine chart")
-        for label, module in zip(cover.atlas(), self._local_modules, strict=True):
-            if module.base_ring() is not cover.open(label).coordinate_algebra():
-                raise ValueError("each local module must be defined over its chart section ring")
-            _finite_framing(module)
+        def ringed_space(self):
+            return self.cover().ambient_scheme()
 
-        expected = set(combinations(tuple(cover.atlas()), 2))
-        self._transitions = {
-            _chart_pair(cover, left, right): transition
-            for (left, right), transition in dict(transitions).items()
-        }
-        if set(self._transitions) != expected:
-            raise ValueError(
-                f"module gluing requires one transition isomorphism for each pair {sorted(expected)}"
+        scheme = ringed_space
+
+        def chart_index_set(self):
+            r"""The atlas of the cover, which labels the charts of this datum."""
+            return self.cover().atlas()
+
+        def local_modules(self):
+            return self._local_modules
+
+        def local_module(self, index):
+            return self.local_modules()[self.cover().chart_label(index)]
+
+        def restricted_module(self, chart_index, *intersection_indices):
+            return self.cover().restrict_module(
+                self.local_module(chart_index),
+                chart_index,
+                *intersection_indices,
             )
-        self._restriction_maps = {}
-        self._transition_restrictions = {}
-        self._inverse_transitions = {}
-        self._compatible_sections = None
-        self._sheaf = None
-        self._descent_presheaf = None
-        self._descent_data = None
-        self._verify_pairwise_transitions()
-        self._verify_cocycles()
-        Parent.__init__(self, category=ModuleGluingData(cover))
 
-    def cover(self):
-        return self._cover
+        def transition(self, source_index, target_index):
+            r"""Return the represented overlap isomorphism from one chart to another."""
+            pair = _chart_pair(self.cover(), source_index, target_index)
+            if pair == (self.cover().chart_label(source_index), self.cover().chart_label(target_index)):
+                return self._transitions[pair]
+            return self._reversed_transition(pair)
 
-    def ringed_space(self):
-        return self.cover().ambient_scheme()
-
-    scheme = ringed_space
-
-    def local_modules(self):
-        return self._local_modules
-
-    def local_module(self, index):
-        return self.local_modules()[self.cover().chart_position(index)]
-
-    def restricted_module(self, chart_index, *intersection_indices):
-        return self.cover().restrict_module(
-            self.local_module(chart_index),
-            chart_index,
-            *intersection_indices,
-        )
-
-    def transition(self, source_index, target_index):
-        r"""Return the represented overlap isomorphism from one chart to another."""
-
-        pair = _chart_pair(self.cover(), source_index, target_index)
-        source_index = self.cover().chart_label(source_index)
-        target_index = self.cover().chart_label(target_index)
-        if pair == (source_index, target_index):
-            return self._transitions[pair]
-        key = (source_index, target_index)
-        cached = self._inverse_transitions.get(key)
-        if cached is not None:
-            return cached
-        original = self._transitions[pair]
-        cached = original.parent()(original.inverse(), original.forward())
-        self._inverse_transitions[key] = cached
-        return cached
-
-    def _verify_pairwise_transitions(self) -> None:
-        for (left_index, right_index), transition in self._transitions.items():
-            if not isinstance(transition, CategoricalIsomorphism):
-                raise TypeError("module transition data must be represented categorical isomorphisms")
-            source = self.restricted_module(left_index, left_index, right_index)
-            target = self.restricted_module(right_index, left_index, right_index)
-            forward = transition.forward()
-            inverse = transition.inverse()
-            if forward.domain() is not source or forward.codomain() is not target:
-                raise ValueError("a module transition has the wrong overlap endpoints")
-            if inverse.domain() is not target or inverse.codomain() is not source:
-                raise ValueError("a module transition inverse has the wrong overlap endpoints")
-            for label in _finite_framing(source):
-                generator = source.module_generator(label)
-                if inverse(forward(generator)) != generator:
-                    raise ValueError("the stated module transition is not left-invertible on the overlap")
-            for label in _finite_framing(target):
-                generator = target.module_generator(label)
-                if forward(inverse(generator)) != generator:
-                    raise ValueError("the stated module transition is not right-invertible on the overlap")
-
-    def restriction_map(self, chart_index, *intersection_indices):
-        r"""Return ``M_i -> Res(M_i|U_I)`` over the chart restriction of scalars."""
-
-        chart_index = int(chart_index)
-        target_indices = self.cover().intersection_indices(
-            chart_index,
-            *intersection_indices,
-        )
-        return self.restriction_between_intersections(
-            chart_index,
-            (chart_index,),
-            target_indices,
-        )
-
-    def restriction_between_intersections(
-        self,
-        chart_index,
-        source_indices,
-        target_indices,
-    ):
-        r"""Return ``M_i|U_I -> Res(M_i|U_J)`` for ``U_J subseteq U_I``."""
-
-        chart_index = int(chart_index)
-        source_indices = self.cover().intersection_indices(
-            chart_index,
-            *tuple(source_indices),
-        )
-        target_indices = self.cover().intersection_indices(
-            chart_index,
-            *tuple(target_indices),
-        )
-        if not set(source_indices).issubset(target_indices):
-            raise ValueError("module restriction requires the target intersection to refine the source")
-        key = (chart_index, source_indices, target_indices)
-        cached = self._restriction_maps.get(key)
-        if cached is not None:
-            return cached
-        source = self.restricted_module(chart_index, *source_indices)
-        target = self.restricted_module(chart_index, *target_indices)
-        if target is source:
-            cached = source.module_category().Mor(source, source).identity()
-            self._restriction_maps[key] = cached
-            return cached
-        source_open = self.cover().intersection(*source_indices)
-        target_open = self.cover().intersection(*target_indices)
-        ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
-        restricted_target = target.restrict_scalars(ring_map)
-        cached = source.module_category().Mor(source, restricted_target)(
-            lambda label: restricted_target.wrap(target.module_generator(label))
-        )
-        self._restriction_maps[key] = cached
-        return cached
-
-    def restrict_section(self, chart_index, section, *intersection_indices):
-        r"""Restrict one local section to the selected cover intersection."""
-
-        restriction = self.restriction_map(chart_index, *intersection_indices)
-        image = restriction(self.local_module(chart_index)(section))
-        underlying = getattr(image, "underlying_element", None)
-        return image if underlying is None else underlying()
-
-    def restrict_section_between_intersections(
-        self,
-        chart_index,
-        section,
-        source_indices,
-        target_indices,
-    ):
-        r"""Restrict a section already living on one represented cover intersection."""
-
-        restriction = self.restriction_between_intersections(
-            chart_index,
-            source_indices,
-            target_indices,
-        )
-        source = self.restricted_module(chart_index, *tuple(source_indices))
-        image = restriction(source(section))
-        underlying = getattr(image, "underlying_element", None)
-        return image if underlying is None else underlying()
-
-    def transition_on_intersection(
-        self,
-        source_index,
-        target_index,
-        *intersection_indices,
-    ):
-        r"""Restrict a pairwise transition to a finer represented intersection."""
-
-        source_index = int(source_index)
-        target_index = int(target_index)
-        indices = self.cover().intersection_indices(
-            source_index,
-            target_index,
-            *intersection_indices,
-        )
-        key = (source_index, target_index, indices)
-        cached = self._transition_restrictions.get(key)
-        if cached is not None:
-            return cached
-        pair = tuple(sorted((source_index, target_index)))
-        transition = self.transition(source_index, target_index).forward()
-        if indices == pair:
-            self._transition_restrictions[key] = transition
-            return transition
-
-        pair_open = self.cover().intersection(*pair)
-        target_open = self.cover().intersection(*indices)
-        ring_map = self.scheme().structure_sheaf().restriction_map(pair_open, target_open)
-        pair_source = self.restricted_module(source_index, *pair)
-        pair_target = self.restricted_module(target_index, *pair)
-        source = self.restricted_module(source_index, *indices)
-        target = self.restricted_module(target_index, *indices)
-
-        def image(label):
-            pair_image = transition(pair_source.module_generator(label))
-            return _change_coefficients(pair_image, pair_target, target, ring_map)
-
-        cached = source.module_category().Mor(source, target)(image)
-        self._transition_restrictions[key] = cached
-        return cached
-
-    def _verify_cocycles(self) -> None:
-        for left_index, middle_index, right_index in combinations(
-            range(len(self.local_modules())),
-            3,
-        ):
-            indices = (left_index, middle_index, right_index)
-            left_middle = self.transition_on_intersection(
-                left_index,
-                middle_index,
-                *indices,
+        @cached_method
+        def _reversed_transition(self, pair):
+            r"""``phi_ij^{-1}``, the isomorphism of the pair read from ``j`` to ``i``."""
+            original = self._transitions[pair]
+            source = original.codomain()
+            target = original.domain()
+            return source.module_category().Core().Mor(source, target)(
+                original.inverse(),
+                original.forward(),
             )
-            middle_right = self.transition_on_intersection(
-                middle_index,
-                right_index,
-                *indices,
+
+        def _verify_pairwise_transitions(self) -> None:
+            for pair in self._transitions.index_set():
+                left, right = pair
+                transition = self._transitions[pair]
+                source = self.restricted_module(left, left, right)
+                target = self.restricted_module(right, left, right)
+                if transition not in source.module_category().Core().Mor(source, target):
+                    raise TypeError(
+                        "a module transition is an isomorphism between the restrictions of its two local modules to the overlap"
+                    )
+                forward = transition.forward()
+                inverse = transition.inverse()
+                for label in _finite_framing(source):
+                    generator = source.module_generator(label)
+                    if inverse(forward(generator)) != generator:
+                        raise ValueError("the stated module transition is not left-invertible on the overlap")
+                for label in _finite_framing(target):
+                    generator = target.module_generator(label)
+                    if forward(inverse(generator)) != generator:
+                        raise ValueError("the stated module transition is not right-invertible on the overlap")
+
+        def restriction_map(self, chart_index, *intersection_indices):
+            r"""Return ``M_i -> Res(M_i|U_I)`` over the chart restriction of scalars."""
+            chart = self.cover().chart_label(chart_index)
+            return self.restriction_between_intersections(
+                chart,
+                (chart,),
+                self.cover().intersection_indices(chart, *intersection_indices),
             )
-            left_right = self.transition_on_intersection(
-                left_index,
-                right_index,
-                *indices,
+
+        def restriction_between_intersections(self, chart_index, source_indices, target_indices):
+            r"""Return ``M_i|U_I -> Res(M_i|U_J)`` for ``U_J subseteq U_I``."""
+            cover = self.cover()
+            chart = cover.chart_label(chart_index)
+            return self._restriction_between(
+                chart,
+                cover.intersection_indices(chart, *tuple(source_indices)),
+                cover.intersection_indices(chart, *tuple(target_indices)),
             )
-            composite = middle_right * left_middle
-            if not _maps_agree_on_framing(composite, left_right):
-                raise ValueError("module transition isomorphisms fail the cocycle condition on a triple overlap")
 
-    def compatible_sections(self):
-        r"""Return the ``A``-module of local tuples agreeing under every transition."""
+        @cached_method
+        def _restriction_between(self, chart, source_labels, target_labels):
+            if not set(source_labels).issubset(target_labels):
+                raise ValueError("module restriction requires the target intersection to refine the source")
+            source = self.restricted_module(chart, *source_labels)
+            target = self.restricted_module(chart, *target_labels)
+            if target is source:
+                return source.module_category().Mor(source, source).identity()
+            source_open = self.cover().intersection(*source_labels)
+            target_open = self.cover().intersection(*target_labels)
+            ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
+            restricted_target = target.restrict_scalars(ring_map)
+            return source.module_category().Mor(source, restricted_target)(
+                lambda label: restricted_target.wrap(target.module_generator(label))
+            )
 
-        if self._compatible_sections is None:
-            self._compatible_sections = CompatibleLocalSectionsModule(self)
-        return self._compatible_sections
+        def restrict_section(self, chart_index, section, *intersection_indices):
+            r"""Restrict one local section to the selected cover intersection."""
+            chart = self.cover().chart_label(chart_index)
+            return self.restrict_section_between_intersections(
+                chart,
+                section,
+                (chart,),
+                self.cover().intersection_indices(chart, *intersection_indices),
+            )
 
-    def sheaf(self):
-        if self._sheaf is None:
-            self._sheaf = GluedModuleSheaf(self)
-        return self._sheaf
+        def restrict_section_between_intersections(self, chart_index, section, source_indices, target_indices):
+            r"""Restrict a section living on one represented cover intersection to a smaller one.
 
-    def descent_presheaf(self):
-        r"""Return the underlying set-valued presheaf on this cover's finite Čech site."""
+            The restriction lands in the restriction of scalars of the smaller
+            intersection's module; the section is read back in that module
+            itself.  When the two intersections are one open, the restriction
+            is the identity of its module.
+            """
+            cover = self.cover()
+            chart = cover.chart_label(chart_index)
+            source_labels = cover.intersection_indices(chart, *tuple(source_indices))
+            target_labels = cover.intersection_indices(chart, *tuple(target_indices))
+            source = self.restricted_module(chart, *source_labels)
+            target = self.restricted_module(chart, *target_labels)
+            image = self._restriction_between(chart, source_labels, target_labels)(source(section))
+            if target is source:
+                return image
+            return image.underlying_element()
 
-        if self._descent_presheaf is None:
-            self._descent_presheaf = _ModuleGluingCechPresheaf(self)
-        return self._descent_presheaf
+        def transition_on_intersection(self, source_index, target_index, *intersection_indices):
+            r"""Restrict a pairwise transition to a finer represented intersection."""
+            cover = self.cover()
+            source = cover.chart_label(source_index)
+            target = cover.chart_label(target_index)
+            return self._transition_on(
+                source,
+                target,
+                cover.intersection_indices(source, target, *intersection_indices),
+            )
 
-    def descent_data(self) -> DescentData:
-        r"""Return the sheaf-condition data carried by the existing gluing computation."""
+        @cached_method
+        def _transition_on(self, source_label, target_label, labels):
+            cover = self.cover()
+            pair = cover.intersection_indices(source_label, target_label)
+            transition = self.transition(source_label, target_label).forward()
+            if labels == pair:
+                return transition
+            pair_open = cover.intersection(*pair)
+            target_open = cover.intersection(*labels)
+            ring_map = self.scheme().structure_sheaf().restriction_map(pair_open, target_open)
+            pair_source = self.restricted_module(source_label, *pair)
+            pair_target = self.restricted_module(target_label, *pair)
+            source = self.restricted_module(source_label, *labels)
+            target = self.restricted_module(target_label, *labels)
+            return source.module_category().Mor(source, target)(
+                lambda label: _change_coefficients(
+                    transition(pair_source.module_generator(label)),
+                    pair_target,
+                    target,
+                    ring_map,
+                )
+            )
 
-        if self._descent_data is None:
+        def _verify_cocycles(self) -> None:
+            for left, middle, right in combinations(tuple(self.chart_index_set()), 3):
+                labels = (left, middle, right)
+                composite = self.transition_on_intersection(middle, right, *labels) * self.transition_on_intersection(left, middle, *labels)
+                if not _maps_agree_on_framing(composite, self.transition_on_intersection(left, right, *labels)):
+                    raise ValueError("module transition isomorphisms fail the cocycle condition on a triple overlap")
+
+        def restrict_scalar_to_chart(self, chart_index, scalar):
+            r"""The image of ``scalar in O(X)`` in the section ring ``O(U_i)`` of one chart."""
+            chart = self.cover().chart_label(chart_index)
+            return _restriction_scalar_map(self.cover(), (chart,))(scalar)
+
+        def compatible_local_sections(self, sections):
+            r"""Read an indexed family of local sections, checking agreement on every overlap.
+
+            ``(s_i)`` is a global section exactly when
+            ``phi_ij(s_i|_{U_ij}) = s_j|_{U_ij}`` for every pair of charts.
+            """
+            components = finite_indexed_family(
+                self.chart_index_set(),
+                lambda label: self.local_module(label)(sections[label]),
+                name="Compatible local sections",
+            )
+            for left, right in combinations(tuple(self.chart_index_set()), 2):
+                restricted_left = self.restrict_section(left, components[left], left, right)
+                restricted_right = self.restrict_section(right, components[right], left, right)
+                if self.transition(left, right).forward()(restricted_left) != restricted_right:
+                    raise ValueError("the local sections do not agree under the overlap transition")
+            return components
+
+        @cached_method
+        def compatible_sections(self):
+            r"""Return ``Gamma(X, F)``, the ``O(X)``-module of compatible local sections."""
+            return GlobalSectionModules(self.scheme().coordinate_algebra())(self)
+
+        @cached_method
+        def descent_presheaf(self):
+            r"""Return the presheaf of ``O(X)``-modules on this cover's finite Čech site."""
+            return _ModuleGluingCechPresheaf(self)
+
+        @cached_method
+        def descent_data(self) -> DescentData:
+            r"""Return the descent datum selecting ``Gamma(X, F)`` as the Čech equalizer.
+
+            The inverse of the canonical comparison is the identity of the
+            module of compatible sections, because that module is selected as
+            the equalizer.  The comparison itself is formed when a consumer
+            asks for it; forming it needs the product of the chart values in
+            ``Modules(O(X))``.
+            """
             presheaf = self.descent_presheaf()
-            coverage = self.cover().cech_coverage()
             selected_cover = self.cover().cech_covering_family()
 
             def inverse_for(equalizer):
                 if equalizer.covering_family() is not selected_cover:
                     raise ValueError("this affine descent datum belongs to a different Čech family")
                 global_sections = self.compatible_sections()
-                return Sets().Mor(global_sections, global_sections).identity()
+                return global_sections.Mor(global_sections).identity()
 
-            self._descent_data = DescentData(
-                coverage,
+            return DescentData(
+                self.cover().cech_coverage(),
                 presheaf,
                 inverse_for,
                 equalizer_for=presheaf.selected_equalizer_construction,
             )
-            # Materialize the selected comparison now.  For this concrete
-            # finite coverage there is one nontrivial represented family, so
-            # the sheaf witness is checked at construction rather than deferred
-            # until a later consumer happens to request it.
-            self._descent_data.comparison(selected_cover)
-        return self._descent_data
 
-    def descent_sheaf(self):
-        r"""Return the existing glued object, now placed in its sheaf category."""
+        @cached_method
+        def sheaf(self):
+            r"""Return the glued sheaf, an object of ``Sh(Čech site, Modules(O(X)))``."""
+            return self.cover().cech_coverage().sheaves(
+                Modules(self.scheme().coordinate_algebra())
+            ).object(self.descent_presheaf(), self.descent_data())
 
-        return self.sheaf()
+        def Mor(self, target):
+            r"""Return the represented Hom category of descent morphisms to ``target``."""
+            return self.category().Mor(self, target)
 
-    def Mor(self, target):
-        r"""Return the represented Hom category of descent morphisms to ``target``."""
-
-        return self.category().Mor(self, target)
-
-    def _repr_(self):
-        return f"Module gluing datum on {self.cover()}"
+        def _repr_(self):
+            return f"Module gluing datum on {self.cover()}"
 
 
 class _ModuleGluingCechPresheaf(Functor):
-    r"""The represented Čech presheaf already computed by affine module gluing.
+    r"""The presheaf of ``O(X)``-modules computed by affine module gluing.
 
-    This is the underlying set-valued presheaf of the module sheaf.  A chart
-    or overlap is therefore represented by its existing local module parent,
-    without forcing modules over different coordinate rings into one artificial
-    module category.  The global value is the existing
-    :class:`CompatibleLocalSectionsModule`, so selecting that same object as
-    the descent equalizer introduces no second gluing algorithm.
+    On the Čech site of the cover its value at a chart or a pair overlap
+    ``U_I`` is the local module over ``O(U_I)`` read over ``O(X)`` by
+    restriction of scalars along ``O(X) -> O(U_I)``; its value at ``X`` is
+    ``Gamma(X, F)``.  Restriction from ``U_i`` to ``U_ij`` lands in the module
+    of the chart that owns the overlap presentation, through the inverse
+    transition when that chart is the other one.
     """
 
-    def __init__(self, gluing_datum: ModuleGluingDatum) -> None:
+    def __init__(self, gluing_datum) -> None:
         self._gluing_datum = gluing_datum
         cover = gluing_datum.cover()
-        Functor.__init__(
-            self,
+        super().__init__(
             cover.cech_site().opposite(),
-            Sets(),
+            Modules(cover.ambient_scheme().coordinate_algebra()),
         )
 
-    def gluing_datum(self) -> ModuleGluingDatum:
+    def gluing_datum(self):
         return self._gluing_datum
 
     def cover(self):
@@ -3212,41 +3296,42 @@ class _ModuleGluingCechPresheaf(Functor):
         return tuple(opposite_object.underlying_object().value())
 
     def _apply_object(self, opposite_object):
-        label = self._label(opposite_object)
-        datum = self.gluing_datum()
-        if not label:
-            return datum.compatible_sections()
-        if len(label) == 1:
-            return datum.local_module(label[0])
-        if len(label) == 2:
-            owner = label[0]
-            return datum.restricted_module(owner, *label)
-        raise ValueError("the affine Čech presheaf is represented through pair overlaps")
+        return self._value(self._label(opposite_object))
 
-    def _restriction_value(self, source_label, target_label, element, target):
+    @cached_method
+    def _value(self, label):
         datum = self.gluing_datum()
-        cover = self.cover()
-        if not source_label:
-            section = datum.compatible_sections()(element)
-            if len(target_label) == 1:
-                chart = target_label[0]
-                return target(section.component(cover.chart_position(chart)))
-            owner = target_label[0]
-            local = section.component(cover.chart_position(owner))
-            return target(datum.restrict_section(owner, local, *target_label))
+        match label:
+            case ():
+                return datum.compatible_sections()
+            case (chart,):
+                return datum.local_module(chart).restrict_scalars(
+                    _restriction_scalar_map(self.cover(), label)
+                )
+            case (owner, _other):
+                return datum.restricted_module(owner, *label).restrict_scalars(
+                    _restriction_scalar_map(self.cover(), label)
+                )
+        assert False, "the Čech site of a cover has the covered scheme, the charts and the pair overlaps as objects"
 
-        if len(source_label) == 1 and len(target_label) == 2:
-            chart = source_label[0]
-            restricted = datum.restrict_section(
-                chart,
-                element,
-                *target_label,
-            )
-            owner = target_label[0]
-            if chart != owner:
-                restricted = datum.transition(owner, chart).inverse()(restricted)
-            return target(restricted)
-        raise ValueError("the supplied Čech-site arrow has no represented restriction")
+    def _restriction_value(self, source_label, target_label, element):
+        datum = self.gluing_datum()
+        target = self._value(target_label)
+        owner = target_label[0]
+        match source_label:
+            case ():
+                local = datum.compatible_sections()(element).component(owner)
+                match target_label:
+                    case (_chart,):
+                        return target.wrap(local)
+                    case _:
+                        return target.wrap(datum.restrict_section(owner, local, *target_label))
+            case (chart,):
+                restricted = datum.restrict_section(chart, element.underlying_element(), *target_label)
+                if chart != owner:
+                    restricted = datum.transition(owner, chart).inverse()(restricted)
+                return target.wrap(restricted)
+        assert False, "the Čech site of a cover has no arrow out of a pair overlap"
 
     def _apply_morphism(self, opposite_arrow):
         underlying = opposite_arrow.underlying_arrow()
@@ -3254,37 +3339,28 @@ class _ModuleGluingCechPresheaf(Functor):
         target_label = tuple(underlying.domain().value())
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
-        homset = Sets().Mor(source, target)
+        homset = source.module_category().Mor(source, target)
         if source_label == target_label:
             return homset.identity()
-        return homset(
-            lambda element: self._restriction_value(
-                source_label,
-                target_label,
-                element,
-                target,
-            ),
+        return homset.elementwise(
+            lambda element: self._restriction_value(source_label, target_label, element),
+            verify_linearity=False,
         )
 
     def selected_equalizer_construction(self, equalizer):
-        r"""Use the existing compatible-sections parent as the selected equalizer."""
-
+        r"""Select ``Gamma(X, F)`` and its inclusion into the chart product as the equalizer."""
         selected_cover = self.cover().cech_covering_family()
         if equalizer.covering_family() is not selected_cover:
             raise ValueError("the selected affine equalizer belongs to a different Čech family")
-        datum = self.gluing_datum()
-        compatible = datum.compatible_sections()
-        local_product_construction = equalizer.local_product_construction()
-        local_product = local_product_construction.object()
+        compatible = self.gluing_datum().compatible_sections()
+        local_product = equalizer.local_product_construction().object()
         inclusion = equalizer.restriction_to_product()
         left, right = equalizer.parallel_maps()
         diagram = _parallel_pair_diagram(left, right, self.codomain())
         shape = diagram.domain()
         universal_cone = diagram.Cones().cone(
             compatible,
-            lambda index: (
-                inclusion if index is shape.source() else left * inclusion
-            ),
+            lambda index: inclusion if index is shape.source() else left * inclusion,
         )
 
         def factorizer(cone):
@@ -3293,14 +3369,18 @@ class _ModuleGluingCechPresheaf(Functor):
 
             def image(element):
                 product_element = source_leg(element)
-                components = []
-                for chart in self.cover().atlas():
-                    components.append(
-                        local_product.projection(chart)(product_element)
+                return compatible(
+                    finite_indexed_family(
+                        self.cover().atlas(),
+                        lambda chart: local_product.projection(chart)(product_element).underlying_element(),
+                        name="Components of a factorization through the Čech equalizer",
                     )
-                return compatible(tuple(components))
+                )
 
-            return Sets().Mor(source, compatible)(image)
+            return source.module_category().Mor(source, compatible).elementwise(
+                image,
+                verify_linearity=False,
+            )
 
         return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -3312,25 +3392,23 @@ class ModuleGluingMorphism(Morphism):
     r"""A morphism between module descent data on one represented affine cover."""
 
     def __init__(self, parent, local_maps) -> None:
-        Morphism.__init__(self, parent)
-        local_maps = tuple(local_maps)
-        if len(local_maps) != len(self.domain().local_modules()):
-            raise ValueError("a module descent morphism requires one local map on each affine chart")
-
-        domain = self.domain()
-        codomain = self.codomain()
-
-        def owned_local_map(index, local_map):
-            source = domain.local_module(index)
-            target = codomain.local_module(index)
-            return source.module_category().Mor(source, target)(local_map)
-
-        self._local_maps = tuple(
-            owned_local_map(index, local_map)
-            for index, local_map in enumerate(local_maps)
+        super().__init__(parent)
+        supplied = _cover_chart_family(
+            self.cover(),
+            local_maps,
+            name="Local maps of a module descent morphism",
         )
-        self._restricted_local_maps = {}
-        self._global_sections_map = None
+
+        def owned_local_map(label):
+            source = self.domain().local_module(label)
+            target = self.codomain().local_module(label)
+            return source.module_category().Mor(source, target)(supplied[label])
+
+        self._local_maps = finite_indexed_family(
+            self.cover().atlas(),
+            owned_local_map,
+            name="Local maps of a module descent morphism",
+        )
         self._verify_overlap_compatibility()
 
     def cover(self):
@@ -3340,107 +3418,84 @@ class ModuleGluingMorphism(Morphism):
         return self._local_maps
 
     def local_map(self, index):
-        return self.local_maps()[int(index)]
+        return self.local_maps()[self.cover().chart_label(index)]
 
     def restricted_local_map(self, chart_index, *intersection_indices):
         r"""Restrict one chart map to the represented cover intersection."""
-
-        chart_index = int(chart_index)
-        indices = self.cover().intersection_indices(
-            chart_index,
-            *intersection_indices,
+        chart = self.cover().chart_label(chart_index)
+        return self._restricted_local_map(
+            chart,
+            self.cover().intersection_indices(chart, *intersection_indices),
         )
-        key = (chart_index, indices)
-        cached = self._restricted_local_maps.get(key)
-        if cached is not None:
-            return cached
 
-        local_map = self.local_map(chart_index)
-        source = self.domain().restricted_module(chart_index, *indices)
-        target = self.codomain().restricted_module(chart_index, *indices)
-        if source is self.domain().local_module(chart_index):
-            self._restricted_local_maps[key] = local_map
+    @cached_method
+    def _restricted_local_map(self, chart, labels):
+        local_map = self.local_map(chart)
+        source = self.domain().restricted_module(chart, *labels)
+        target = self.codomain().restricted_module(chart, *labels)
+        if source is self.domain().local_module(chart):
             return local_map
-
-        source_open = self.cover().open(chart_index)
-        target_open = self.cover().intersection(*indices)
         ring_map = self.domain().scheme().structure_sheaf().restriction_map(
-            source_open,
-            target_open,
+            self.cover().open(chart),
+            self.cover().intersection(*labels),
         )
-        local_source = self.domain().local_module(chart_index)
-        local_target = self.codomain().local_module(chart_index)
-
-        def image(label):
-            local_image = local_map(local_source.module_generator(label))
-            return _change_coefficients(local_image, local_target, target, ring_map)
-
-        cached = source.module_category().Mor(source, target)(image)
-        self._restricted_local_maps[key] = cached
-        return cached
+        local_source = self.domain().local_module(chart)
+        local_target = self.codomain().local_module(chart)
+        return source.module_category().Mor(source, target)(
+            lambda label: _change_coefficients(
+                local_map(local_source.module_generator(label)),
+                local_target,
+                target,
+                ring_map,
+            )
+        )
 
     def _verify_overlap_compatibility(self) -> None:
-        for left_index, right_index in combinations(
-            range(len(self.domain().local_modules())),
-            2,
-        ):
-            source_transition = self.domain().transition(left_index, right_index).forward()
-            target_transition = self.codomain().transition(left_index, right_index).forward()
-            left_restriction = self.restricted_local_map(
-                left_index,
-                left_index,
-                right_index,
-            )
-            right_restriction = self.restricted_local_map(
-                right_index,
-                left_index,
-                right_index,
-            )
-            via_left = target_transition * left_restriction
-            via_right = right_restriction * source_transition
+        for left, right in combinations(tuple(self.cover().atlas()), 2):
+            source_transition = self.domain().transition(left, right).forward()
+            target_transition = self.codomain().transition(left, right).forward()
+            via_left = target_transition * self.restricted_local_map(left, left, right)
+            via_right = self.restricted_local_map(right, left, right) * source_transition
             if not _maps_agree_on_framing(via_left, via_right):
                 raise ValueError(
                     "module descent morphism is incompatible with transition maps on an overlap"
                 )
 
+    @cached_method
     def global_sections_map(self):
-        r"""Return the induced ambient-ring linear map on compatible global sections."""
+        r"""Return the induced ``O(X)``-linear map on compatible global sections."""
+        source_sections = self.domain().compatible_sections()
+        target_sections = self.codomain().compatible_sections()
 
-        if self._global_sections_map is None:
-            source_sections = self.domain().compatible_sections()
-            target_sections = self.codomain().compatible_sections()
-
-            def image(section):
-                section = source_sections(section)
-                return target_sections(
-                    tuple(
-                        self.local_map(index)(section.component(index))
-                        for index in range(len(self.local_maps()))
-                    )
+        def image(section):
+            section = source_sections(section)
+            return target_sections(
+                finite_indexed_family(
+                    self.cover().atlas(),
+                    lambda label: self.local_map(label)(section.component(label)),
+                    name="Components of an induced global section",
                 )
-
-            self._global_sections_map = source_sections.module_category().Mor(source_sections, target_sections).elementwise(
-                image,
-                verify_linearity=False,
             )
-        return self._global_sections_map
+
+        return source_sections.module_category().Mor(source_sections, target_sections).elementwise(
+            image,
+            verify_linearity=False,
+        )
 
     def then(self, other):
         r"""Return ``other after self``."""
-
         if other.domain() is not self.codomain():
             raise ValueError("the first descent-morphism target must equal the second source")
         return other * self
 
     def __mul__(self, other):
-        if not isinstance(other, ModuleGluingMorphism):
-            return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
         return other.domain().Mor(self.codomain())(
-            tuple(
-                self.local_map(index) * other.local_map(index)
-                for index in range(len(self.local_maps()))
+            finite_indexed_family(
+                self.cover().atlas(),
+                lambda label: self.local_map(label) * other.local_map(label),
+                name="Local maps of a composite module descent morphism",
             )
         )
 
@@ -3456,14 +3511,11 @@ class ModuleGluingHomset(CategoricalHomset):
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
             raise ValueError("a module descent Hom requires one common affine cover")
-        CategoricalHomset.__init__(self, family, domain, codomain)
+        super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
         if isinstance(local_maps, ModuleGluingMorphism):
-            if (
-                local_maps.domain() is not self.domain()
-                or local_maps.codomain() is not self.codomain()
-            ):
+            if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                 raise ValueError("the module descent morphism has the wrong endpoints")
             if local_maps.parent() is self:
                 return local_maps
@@ -3474,13 +3526,10 @@ class ModuleGluingHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a descent endomorphism Hom")
         return self(
-            tuple(
-                module.module_category().Mor(module, module).identity()
-                for module in self.domain().local_modules()
+            self.domain().local_modules().map(
+                lambda module: module.module_category().Mor(module, module).identity()
             )
         )
-
-
 
 
 def _algebra_maps_agree_on_generators(left, right) -> bool:
@@ -3505,25 +3554,22 @@ def _finite_algebra_framing(algebra):
     return labels
 
 
-def _exact_algebra_map(source, target, morphism):
-    homset = _algebra_homset(source, target)
-    if (
-        isinstance(morphism, Morphism)
-        and morphism.domain() is source
-        and morphism.codomain() is target
-        and morphism.parent() is homset
-    ):
-        return morphism
-    return homset(morphism)
-
-
 class AlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return AlgebraGluingHomset
 
 
 class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
-    r"""Finite algebra descent data on one represented distinguished affine cover."""
+    r"""Descent data for unital associative algebras on one distinguished affine cover.
+
+    For ``X = Spec A`` covered by ``U_i = D(f_i)``, an object is a family of
+    finitely framed ``O(U_i)``-algebras ``B_i`` with algebra isomorphisms
+    ``phi_ij : B_i|_{U_ij} -> B_j|_{U_ij}`` satisfying the cocycle condition
+    on triple overlaps.  Forgetting the multiplications gives module descent
+    data on the same local objects.
+
+    ``AlgebraGluingData(cover)(local_algebras, transitions)`` is the one entry.
+    """
 
     @staticmethod
     def __classcall__(cls, cover):
@@ -3539,366 +3585,418 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
+        return [DescentDataOnCover(self.cover().coverage(), self.cover())]
+
+    def an_object(self):
+        r"""The descent datum of the relative affine line: ``O(U_i)[z]`` with ``z |-> z``."""
         cover = self.cover()
-        return [DescentDataOnCover(cover.coverage(), cover)]
+        local_algebras = finite_indexed_family(
+            cover.atlas(),
+            lambda label: cover.open(label).coordinate_algebra().free_module(("z",)).symmetric_algebra(),
+            name="Polynomial chart algebras",
+        )
+
+        def identity_transition(left, right):
+            source = cover.restrict_algebra(local_algebras[left], left, right)
+            target = cover.restrict_algebra(local_algebras[right], right, left)
+            algebras = Algebras(source.algebra_base_ring()).Associative().Unital()
+            forward = algebras.Mor(source, target)({"z": target.algebra_generator("z")})
+            inverse = algebras.Mor(target, source)({"z": source.algebra_generator("z")})
+            return algebras.Core().Mor(source, target)(forward, inverse)
+
+        return self(
+            local_algebras,
+            {
+                (left, right): identity_transition(left, right)
+                for left, right in combinations(tuple(cover.atlas()), 2)
+            },
+        )
+
+    def object(self, local_algebras, transitions):
+        r"""The algebra descent datum ``(B_i, phi_ij)`` on this cover."""
+        cover = self.cover()
+        return _object_of(
+            self,
+            local_algebras=_cover_chart_family(
+                cover,
+                local_algebras,
+                name="Local algebras of algebra descent",
+            ),
+            transitions=_cover_pair_family(cover, transitions, noun="algebra gluing"),
+        )
+
+    __call__ = object
 
     def _repr_object_names(self):
         return f"algebra descent data on {self.cover()}"
 
     _HomCategory = AlgebraGluingHomCategoryConstruction
 
+    class ParentMethods:
+        def __init__(self, local_algebras, transitions, **rest) -> None:
+            self._local_algebras = local_algebras
+            self._transitions = transitions
+            super().__init__(**rest)
+            for label in self.chart_index_set():
+                if self.local_algebra(label).base_ring() is not self.cover().open(label).coordinate_algebra():
+                    raise ValueError("each local algebra must be defined over its chart section ring")
+                _finite_algebra_framing(self.local_algebra(label))
+            self._verify_pairwise_transitions()
+            self._verify_cocycles()
 
-class AlgebraGluingDatum(Parent):
-    r"""Finite local algebras with algebra isomorphisms satisfying descent."""
+        def cover(self):
+            return self.category().cover()
 
-    def __init__(self, cover, local_algebras, transitions) -> None:
-        self._cover = cover
-        self._local_algebras = tuple(local_algebras)
-        if cover.atlas().cardinality() != len(self._local_algebras):
-            raise ValueError("algebra gluing requires exactly one local algebra on each affine chart")
-        for label, algebra in zip(cover.atlas(), self._local_algebras, strict=True):
-            ring = cover.open(label).coordinate_algebra()
-            if algebra.base_ring() is not ring:
-                raise ValueError("each local algebra must be defined over its chart section ring")
-            _finite_algebra_framing(algebra)
+        def ringed_space(self):
+            return self.cover().ambient_scheme()
 
-        expected = set(combinations(tuple(cover.atlas()), 2))
-        self._transitions = {
-            _chart_pair(cover, left, right): transition
-            for (left, right), transition in dict(transitions).items()
-        }
-        if set(self._transitions) != expected:
-            raise ValueError(
-                f"algebra gluing requires one transition isomorphism for each pair {sorted(expected)}"
+        scheme = ringed_space
+
+        def chart_index_set(self):
+            r"""The atlas of the cover, which labels the charts of this datum."""
+            return self.cover().atlas()
+
+        def local_algebras(self):
+            return self._local_algebras
+
+        def local_algebra(self, index):
+            return self.local_algebras()[self.cover().chart_label(index)]
+
+        def restricted_algebra(self, chart_index, *intersection_indices):
+            restricted = self.cover().restrict_algebra(
+                self.local_algebra(chart_index),
+                chart_index,
+                *intersection_indices,
             )
-        self._inverse_transitions = {}
-        self._restriction_maps = {}
-        self._transition_restrictions = {}
-        self._compatible_sections = None
-        self._sheaf = None
-        self._verify_pairwise_transitions()
-        self._verify_cocycles()
-        self._module_gluing_datum = None
-        Parent.__init__(self, category=AlgebraGluingData(cover))
+            target = self.cover().intersection(chart_index, *intersection_indices).coordinate_algebra()
+            if restricted not in Algebras(target).Associative().Unital():
+                raise TypeError("algebra scalar extension did not preserve the algebra structure")
+            _finite_algebra_framing(restricted)
+            return restricted
+
+        def transition(self, source_index, target_index):
+            pair = _chart_pair(self.cover(), source_index, target_index)
+            if pair == (self.cover().chart_label(source_index), self.cover().chart_label(target_index)):
+                return self._transitions[pair]
+            return self._reversed_transition(pair)
+
+        @cached_method
+        def _reversed_transition(self, pair):
+            r"""``phi_ij^{-1}``, the algebra isomorphism of the pair read from ``j`` to ``i``."""
+            original = self._transitions[pair]
+            source = original.codomain()
+            target = original.domain()
+            return Algebras(source.algebra_base_ring()).Associative().Unital().Core().Mor(source, target)(
+                original.inverse(),
+                original.forward(),
+            )
+
+        def _verify_pairwise_transitions(self) -> None:
+            for pair in self._transitions.index_set():
+                left, right = pair
+                transition = self._transitions[pair]
+                source = self.restricted_algebra(left, left, right)
+                target = self.restricted_algebra(right, left, right)
+                core = Algebras(source.algebra_base_ring()).Associative().Unital().Core()
+                if transition not in core.Mor(source, target):
+                    raise TypeError(
+                        "an algebra transition is an algebra isomorphism between the restrictions of its two local algebras to the overlap"
+                    )
+                if not _algebra_maps_agree_on_generators(
+                    transition.inverse() * transition.forward(),
+                    _algebra_homset(source, source).identity(),
+                ):
+                    raise ValueError("the stated algebra transition is not left-invertible on the overlap")
+                if not _algebra_maps_agree_on_generators(
+                    transition.forward() * transition.inverse(),
+                    _algebra_homset(target, target).identity(),
+                ):
+                    raise ValueError("the stated algebra transition is not right-invertible on the overlap")
+
+        def restriction_between_intersections(self, chart_index, source_indices, target_indices):
+            r"""Return the algebra restriction to a finer represented intersection."""
+            cover = self.cover()
+            chart = cover.chart_label(chart_index)
+            return self._restriction_between(
+                chart,
+                cover.intersection_indices(chart, *tuple(source_indices)),
+                cover.intersection_indices(chart, *tuple(target_indices)),
+            )
+
+        @cached_method
+        def _restriction_between(self, chart, source_labels, target_labels):
+            if not set(source_labels).issubset(target_labels):
+                raise ValueError("algebra restriction requires the target intersection to refine the source")
+            source = self.restricted_algebra(chart, *source_labels)
+            target = self.restricted_algebra(chart, *target_labels)
+            if target is source:
+                return _algebra_homset(source, source).identity()
+            source_open = self.cover().intersection(*source_labels)
+            target_open = self.cover().intersection(*target_labels)
+            ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
+            restricted_target = target.restrict_scalars(ring_map)
+            return _algebra_homset(source, restricted_target)(
+                lambda label: restricted_target(target.algebra_generator(label))
+            )
+
+        def restriction_map(self, chart_index, *intersection_indices):
+            chart = self.cover().chart_label(chart_index)
+            return self.restriction_between_intersections(
+                chart,
+                (chart,),
+                self.cover().intersection_indices(chart, *intersection_indices),
+            )
+
+        def restrict_section_between_intersections(self, chart_index, section, source_indices, target_indices):
+            source = self.restricted_algebra(chart_index, *tuple(source_indices))
+            target = self.restricted_algebra(chart_index, *tuple(target_indices))
+            image = self.restriction_between_intersections(
+                chart_index,
+                source_indices,
+                target_indices,
+            )(source(section))
+            return target(image)
+
+        def transition_on_intersection(self, source_index, target_index, *intersection_indices):
+            r"""Restrict an algebra transition to a finer represented intersection."""
+            cover = self.cover()
+            source = cover.chart_label(source_index)
+            target = cover.chart_label(target_index)
+            return self._transition_on(
+                source,
+                target,
+                cover.intersection_indices(source, target, *intersection_indices),
+            )
+
+        @cached_method
+        def _transition_on(self, source_label, target_label, labels):
+            pair = self.cover().intersection_indices(source_label, target_label)
+            transition = self.transition(source_label, target_label).forward()
+            if labels == pair:
+                return transition
+            pair_source = self.restricted_algebra(source_label, *pair)
+            source = self.restricted_algebra(source_label, *labels)
+            target = self.restricted_algebra(target_label, *labels)
+            target_restriction = self.restriction_between_intersections(target_label, pair, labels)
+            return _algebra_homset(source, target)(
+                lambda label: target(target_restriction(transition(pair_source.algebra_generator(label))))
+            )
+
+        def restricted_local_map(self, target_datum, chart_index, other_index, local_map):
+            r"""Base-change one local algebra map to a represented pair overlap."""
+            if target_datum.cover() is not self.cover():
+                raise ValueError("algebra descent maps require one underlying affine cover")
+            chart = self.cover().chart_label(chart_index)
+            other = self.cover().chart_label(other_index)
+            if (
+                local_map.domain() is not self.local_algebra(chart)
+                or local_map.codomain() is not target_datum.local_algebra(chart)
+            ):
+                raise ValueError("a local algebra-descent map has the wrong chart endpoints")
+            source = self.restricted_algebra(chart, chart, other)
+            target = target_datum.restricted_algebra(chart, chart, other)
+            ring_map = self.cover().structure_sheaf_restriction(chart, other)
+            extended_map = (
+                Algebras(ring_map.domain())
+                .Associative()
+                .Unital()
+                .scalar_extension(ring_map)(local_map)
+            )
+            extended_source = extended_map.domain()
+            return _algebra_homset(source, target)(
+                {
+                    label: target(extended_map(extended_source.algebra_generator(label)))
+                    for label in source.algebra_generating_set()
+                }
+            )
+
+        def _verify_cocycles(self) -> None:
+            for left, middle, right in combinations(tuple(self.chart_index_set()), 3):
+                labels = (left, middle, right)
+                if not _algebra_maps_agree_on_generators(
+                    self.transition_on_intersection(middle, right, *labels)
+                    * self.transition_on_intersection(left, middle, *labels),
+                    self.transition_on_intersection(left, right, *labels),
+                ):
+                    raise ValueError("algebra transition isomorphisms fail the cocycle condition on a triple overlap")
+
+        @cached_method
+        def underlying_module_datum(self):
+            r"""The module descent datum on the same local objects, multiplications forgotten."""
+            transitions = {}
+            for pair in self._transitions.index_set():
+                transition = self._transitions[pair]
+                forget = Algebras(self.cover().intersection(*pair).coordinate_algebra()).underlying_module()
+                forward = forget(transition.forward())
+                inverse = forget(transition.inverse())
+                transitions[pair] = forward.domain().module_category().Core().Mor(
+                    forward.domain(),
+                    forward.codomain(),
+                )(forward, inverse)
+            return ModuleGluingData(self.cover())(self.local_algebras(), transitions)
+
+        @cached_method
+        def compatible_sections(self):
+            r"""Return ``Gamma(X, A)``, the ``O(X)``-algebra of compatible local sections."""
+            return GlobalSectionAlgebras(self.scheme().coordinate_algebra())(self)
+
+        @cached_method
+        def descent_presheaf(self):
+            r"""Return the presheaf of ``O(X)``-algebras on this cover's finite Čech site."""
+            return _AlgebraGluingCechPresheaf(self)
+
+        @cached_method
+        def descent_data(self) -> DescentData:
+            r"""Return the descent datum selecting ``Gamma(X, A)`` as the Čech equalizer.
+
+            The inverse of the canonical comparison is the identity of the
+            algebra of compatible sections.  The comparison itself is formed
+            when a consumer asks for it; forming it needs the product of the
+            chart values among ``O(X)``-algebras.
+            """
+            presheaf = self.descent_presheaf()
+            selected_cover = self.cover().cech_covering_family()
+
+            def inverse_for(equalizer):
+                if equalizer.covering_family() is not selected_cover:
+                    raise ValueError("this affine descent datum belongs to a different Čech family")
+                global_sections = self.compatible_sections()
+                return _algebra_homset(global_sections, global_sections).identity()
+
+            return DescentData(self.cover().cech_coverage(), presheaf, inverse_for)
+
+        @cached_method
+        def sheaf(self):
+            r"""Return the glued sheaf, an object of ``Sh(Čech site, unital associative O(X)-algebras)``."""
+            return self.cover().cech_coverage().sheaves(
+                Algebras(self.scheme().coordinate_algebra()).Associative().Unital()
+            ).object(self.descent_presheaf(), self.descent_data())
+
+        def Mor(self, target):
+            return self.category().Mor(self, target)
+
+        def relative_spectrum(self):
+            r"""Return ``Spec_X(A)`` for this represented quasi-coherent algebra datum."""
+            from dzack_research.preamble.categories.schemes.relative_spec import (
+                _relative_spectrum,
+            )
+
+            return _relative_spectrum(self)
+
+        def _repr_(self):
+            return f"Algebra gluing datum on {self.cover()}"
+
+
+class _AlgebraGluingCechPresheaf(Functor):
+    r"""The presheaf of unital associative ``O(X)``-algebras computed by affine algebra gluing.
+
+    Its value at a chart or pair overlap ``U_I`` is the local algebra over
+    ``O(U_I)`` read over ``O(X)`` by restriction of scalars; its value at
+    ``X`` is ``Gamma(X, A)``.  Restriction maps are the algebra restrictions
+    of the descent datum, read through the inverse transition when the target
+    overlap is presented by the other chart.
+    """
+
+    def __init__(self, gluing_datum) -> None:
+        self._gluing_datum = gluing_datum
+        cover = gluing_datum.cover()
+        super().__init__(
+            cover.cech_site().opposite(),
+            Algebras(cover.ambient_scheme().coordinate_algebra()).Associative().Unital(),
+        )
+
+    def gluing_datum(self):
+        return self._gluing_datum
 
     def cover(self):
-        return self._cover
+        return self.gluing_datum().cover()
 
-    def ringed_space(self):
-        return self.cover().ambient_scheme()
+    def _label(self, opposite_object):
+        return tuple(opposite_object.underlying_object().value())
 
-    scheme = ringed_space
+    def _apply_object(self, opposite_object):
+        return self._value(self._label(opposite_object))
 
-    def local_algebras(self):
-        return self._local_algebras
-
-    def local_algebra(self, index):
-        return self.local_algebras()[self.cover().chart_position(index)]
-
-    def restricted_algebra(self, chart_index, *intersection_indices):
-        chart_index = int(chart_index)
-        restricted = self.cover().restrict_algebra(
-            self.local_algebra(chart_index),
-            chart_index,
-            *intersection_indices,
-        )
-        target = self.cover().intersection(
-            chart_index,
-            *intersection_indices,
-        ).coordinate_algebra()
-        if restricted not in Algebras(target).Associative().Unital():
-            raise TypeError("algebra scalar extension did not preserve the algebra structure")
-        _finite_algebra_framing(restricted)
-        return restricted
-
-    def transition(self, source_index, target_index):
-        source_index = int(source_index)
-        target_index = int(target_index)
-        if source_index == target_index:
-            raise ValueError("an algebra transition isomorphism is requested between two distinct charts")
-        if source_index < target_index:
-            return self._transitions[source_index, target_index]
-        key = (source_index, target_index)
-        cached = self._inverse_transitions.get(key)
-        if cached is not None:
-            return cached
-        original = self._transitions[target_index, source_index]
-        cached = original.parent()(original.inverse(), original.forward())
-        self._inverse_transitions[key] = cached
-        return cached
-
-    def _verify_pairwise_transitions(self) -> None:
-        for (left_index, right_index), transition in self._transitions.items():
-            if not isinstance(transition, CategoricalIsomorphism):
-                raise TypeError("algebra transition data must be represented categorical isomorphisms")
-            source = self.restricted_algebra(left_index, left_index, right_index)
-            target = self.restricted_algebra(right_index, left_index, right_index)
-            forward = transition.forward()
-            inverse = transition.inverse()
-            if forward.domain() is not source or forward.codomain() is not target:
-                raise ValueError("an algebra transition has the wrong overlap endpoints")
-            if inverse.domain() is not target or inverse.codomain() is not source:
-                raise ValueError("an algebra transition inverse has the wrong overlap endpoints")
-            if forward.parent() is not _algebra_homset(source, target):
-                raise TypeError("an algebra transition forward map must lie in the overlap algebra Hom")
-            if inverse.parent() is not _algebra_homset(target, source):
-                raise TypeError("an algebra transition inverse map must lie in the overlap algebra Hom")
-            if not _algebra_maps_agree_on_generators(
-                inverse * forward,
-                _algebra_homset(source, source).identity(),
-            ):
-                raise ValueError("the stated algebra transition is not left-invertible on the overlap")
-            if not _algebra_maps_agree_on_generators(
-                forward * inverse,
-                _algebra_homset(target, target).identity(),
-            ):
-                raise ValueError("the stated algebra transition is not right-invertible on the overlap")
-
-    def restriction_between_intersections(
-        self,
-        chart_index,
-        source_indices,
-        target_indices,
-    ):
-        r"""Return the algebra restriction to a finer represented intersection."""
-
-        chart_index = int(chart_index)
-        source_indices = self.cover().intersection_indices(
-            chart_index,
-            *tuple(source_indices),
-        )
-        target_indices = self.cover().intersection_indices(
-            chart_index,
-            *tuple(target_indices),
-        )
-        if not set(source_indices).issubset(target_indices):
-            raise ValueError("algebra restriction requires the target intersection to refine the source")
-        key = (chart_index, source_indices, target_indices)
-        cached = self._restriction_maps.get(key)
-        if cached is not None:
-            return cached
-        source = self.restricted_algebra(chart_index, *source_indices)
-        target = self.restricted_algebra(chart_index, *target_indices)
-        if target is source:
-            cached = _algebra_homset(source, source).identity()
-            self._restriction_maps[key] = cached
-            return cached
-        source_open = self.cover().intersection(*source_indices)
-        target_open = self.cover().intersection(*target_indices)
-        ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
-        restricted_target = target.restrict_scalars(ring_map)
-        cached = _algebra_homset(source, restricted_target)(
-            lambda label: restricted_target(target.algebra_generator(label))
-        )
-        self._restriction_maps[key] = cached
-        return cached
-
-    def restriction_map(self, chart_index, *intersection_indices):
-        chart_index = int(chart_index)
-        target_indices = self.cover().intersection_indices(
-            chart_index,
-            *intersection_indices,
-        )
-        return self.restriction_between_intersections(
-            chart_index,
-            (chart_index,),
-            target_indices,
-        )
-
-    def restrict_section_between_intersections(
-        self,
-        chart_index,
-        section,
-        source_indices,
-        target_indices,
-    ):
-        source = self.restricted_algebra(chart_index, *tuple(source_indices))
-        target = self.restricted_algebra(chart_index, *tuple(target_indices))
-        image = self.restriction_between_intersections(
-            chart_index,
-            source_indices,
-            target_indices,
-        )(source(section))
-        return target(image)
-
-    def transition_on_intersection(
-        self,
-        source_index,
-        target_index,
-        *intersection_indices,
-    ):
-        r"""Restrict an algebra transition to a finer represented intersection."""
-
-        source_index = int(source_index)
-        target_index = int(target_index)
-        indices = self.cover().intersection_indices(
-            source_index,
-            target_index,
-            *intersection_indices,
-        )
-        key = (source_index, target_index, indices)
-        cached = self._transition_restrictions.get(key)
-        if cached is not None:
-            return cached
-        pair = tuple(sorted((source_index, target_index)))
-        transition = self.transition(source_index, target_index).forward()
-        if indices == pair:
-            self._transition_restrictions[key] = transition
-            return transition
-
-        pair_source = self.restricted_algebra(source_index, *pair)
-        source = self.restricted_algebra(source_index, *indices)
-        target = self.restricted_algebra(target_index, *indices)
-        target_restriction = self.restriction_between_intersections(
-            target_index,
-            pair,
-            indices,
-        )
-
-        def image(label):
-            pair_image = transition(pair_source.algebra_generator(label))
-            return target(target_restriction(pair_image))
-
-        cached = _algebra_homset(source, target)(image)
-        self._transition_restrictions[key] = cached
-        return cached
-
-    def restricted_local_map(
-        self,
-        target_datum,
-        chart_index,
-        other_index,
-        local_map,
-    ):
-        r"""Base-change one local algebra map to a represented pair overlap."""
-
-        if target_datum.cover() is not self.cover():
-            raise ValueError("algebra descent maps require one underlying affine cover")
-        chart_index = int(chart_index)
-        other_index = int(other_index)
-        if (
-            local_map.domain() is not self.local_algebra(chart_index)
-            or local_map.codomain() is not target_datum.local_algebra(chart_index)
-        ):
-            raise ValueError("a local algebra-descent map has the wrong chart endpoints")
-        source = self.restricted_algebra(chart_index, chart_index, other_index)
-        target = target_datum.restricted_algebra(
-            chart_index,
-            chart_index,
-            other_index,
-        )
-        ring_map = self.cover().structure_sheaf_restriction(
-            chart_index,
-            other_index,
-        )
-        extended_map = (
-            Algebras(ring_map.domain())
-            .Associative()
-            .Unital()
-            .scalar_extension(ring_map)(local_map)
-        )
-        extended_source = extended_map.domain()
-        return _algebra_homset(source, target)(
-            {
-                label: target(
-                    extended_map(extended_source.algebra_generator(label))
+    @cached_method
+    def _value(self, label):
+        datum = self.gluing_datum()
+        match label:
+            case ():
+                return datum.compatible_sections()
+            case (chart,):
+                return datum.local_algebra(chart).restrict_scalars(
+                    _restriction_scalar_map(self.cover(), label)
                 )
-                for label in source.algebra_generating_set()
-            }
-        )
+            case (owner, _other):
+                return datum.restricted_algebra(owner, *label).restrict_scalars(
+                    _restriction_scalar_map(self.cover(), label)
+                )
+        assert False, "the Čech site of a cover has the covered scheme, the charts and the pair overlaps as objects"
 
-    def _verify_cocycles(self) -> None:
-        for left_index, middle_index, right_index in combinations(
-            range(len(self.local_algebras())),
-            3,
-        ):
-            indices = (left_index, middle_index, right_index)
-            left_middle = self.transition_on_intersection(
-                left_index,
-                middle_index,
-                *indices,
+    def _restriction_value(self, source_label, target_label, element):
+        datum = self.gluing_datum()
+        target = self._value(target_label)
+        owner = target_label[0]
+        match source_label:
+            case ():
+                local = datum.compatible_sections()(element).component(owner)
+                match target_label:
+                    case (_chart,):
+                        return target(local)
+                    case _:
+                        return target(
+                            datum.restrict_section_between_intersections(owner, local, (owner,), target_label)
+                        )
+            case (chart,):
+                restricted = datum.restrict_section_between_intersections(
+                    chart,
+                    datum.local_algebra(chart)(element),
+                    (chart,),
+                    target_label,
+                )
+                if chart != owner:
+                    restricted = datum.transition(owner, chart).inverse()(restricted)
+                return target(restricted)
+        assert False, "the Čech site of a cover has no arrow out of a pair overlap"
+
+    def _apply_morphism(self, opposite_arrow):
+        underlying = opposite_arrow.underlying_arrow()
+        source_label = tuple(underlying.codomain().value())
+        target_label = tuple(underlying.domain().value())
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        homset = _algebra_homset(source, target)
+        if source_label == target_label:
+            return homset.identity()
+        return homset(
+            SetMorphism(
+                Sets().Mor(source, target),
+                lambda element: self._restriction_value(source_label, target_label, element),
             )
-            middle_right = self.transition_on_intersection(
-                middle_index,
-                right_index,
-                *indices,
-            )
-            left_right = self.transition_on_intersection(
-                left_index,
-                right_index,
-                *indices,
-            )
-            if not _algebra_maps_agree_on_generators(
-                middle_right * left_middle,
-                left_right,
-            ):
-                raise ValueError("algebra transition isomorphisms fail the cocycle condition on a triple overlap")
-
-    def _build_underlying_module_datum(self):
-        transitions = {}
-        for (left_index, right_index), transition in self._transitions.items():
-            ring = self.cover().overlap(left_index, right_index).coordinate_algebra()
-            forget = Algebras(ring).underlying_module()
-            forward = forget(transition.forward())
-            inverse = forget(transition.inverse())
-            transitions[left_index, right_index] = forward.parent().base_category().Core().Mor(
-                forward.domain(),
-                forward.codomain(),
-            )(forward, inverse)
-        return ModuleGluingDatum(
-            self.cover(),
-            self.local_algebras(),
-            transitions,
         )
-
-    def underlying_module_datum(self):
-        if self._module_gluing_datum is None:
-            self._module_gluing_datum = self._build_underlying_module_datum()
-        return self._module_gluing_datum
-
-    def compatible_sections(self):
-        if self._compatible_sections is None:
-            self._compatible_sections = CompatibleLocalAlgebraSections(self)
-        return self._compatible_sections
-
-    def sheaf(self):
-        if self._sheaf is None:
-            self._sheaf = GluedAlgebraSheaf(self)
-        return self._sheaf
-
-    def Mor(self, target):
-        return self.category().Mor(self, target)
-
-    def relative_spectrum(self):
-        r"""Return ``Spec_X(A)`` for this represented quasi-coherent algebra datum."""
-        from dzack_research.preamble.categories.schemes.relative_spec import (
-            _relative_spectrum,
-        )
-
-        return _relative_spectrum(self)
 
     def _repr_(self):
-        return f"Algebra gluing datum on {self.cover()}"
+        return f"Čech presheaf of {self.gluing_datum()}"
 
 
 class AlgebraGluingMorphism(Morphism):
     r"""A compatible family of local algebra morphisms between descent data."""
 
     def __init__(self, parent, local_maps) -> None:
-        Morphism.__init__(self, parent)
-        local_maps = tuple(local_maps)
-        if len(local_maps) != len(self.domain().local_algebras()):
-            raise ValueError("an algebra descent morphism requires one local map on each affine chart")
-        self._local_maps = tuple(
-            _exact_algebra_map(
-                self.domain().local_algebra(index),
-                self.codomain().local_algebra(index),
-                local_map,
-            )
-            for index, local_map in enumerate(local_maps)
+        super().__init__(parent)
+        supplied = _cover_chart_family(
+            self.cover(),
+            local_maps,
+            name="Local maps of an algebra descent morphism",
         )
-        self._underlying_module_morphism = None
-        self._global_sections_map = None
+        self._local_maps = finite_indexed_family(
+            self.cover().atlas(),
+            lambda label: _algebra_homset(
+                self.domain().local_algebra(label),
+                self.codomain().local_algebra(label),
+            )(supplied[label]),
+            name="Local maps of an algebra descent morphism",
+        )
         self._verify_overlap_compatibility()
 
     def cover(self):
@@ -3908,32 +4006,17 @@ class AlgebraGluingMorphism(Morphism):
         return self._local_maps
 
     def local_map(self, index):
-        return self.local_maps()[int(index)]
+        return self.local_maps()[self.cover().chart_label(index)]
 
     def _verify_overlap_compatibility(self) -> None:
-        for left_index, right_index in combinations(
-            range(len(self.domain().local_algebras())),
-            2,
-        ):
-            source_transition = self.domain().transition(
-                left_index,
-                right_index,
-            ).forward()
-            target_transition = self.codomain().transition(
-                left_index,
-                right_index,
-            ).forward()
+        for left, right in combinations(tuple(self.cover().atlas()), 2):
+            source_transition = self.domain().transition(left, right).forward()
+            target_transition = self.codomain().transition(left, right).forward()
             left_restriction = self.domain().restricted_local_map(
-                self.codomain(),
-                left_index,
-                right_index,
-                self.local_map(left_index),
+                self.codomain(), left, right, self.local_map(left)
             )
             right_restriction = self.domain().restricted_local_map(
-                self.codomain(),
-                right_index,
-                left_index,
-                self.local_map(right_index),
+                self.codomain(), right, left, self.local_map(right)
             )
             if not _algebra_maps_agree_on_generators(
                 target_transition * left_restriction,
@@ -3943,36 +4026,36 @@ class AlgebraGluingMorphism(Morphism):
                     "algebra descent morphism is incompatible with transition maps on an overlap"
                 )
 
+    @cached_method
     def underlying_module_morphism(self):
-        if self._underlying_module_morphism is None:
-            module_maps = tuple(
-                Algebras(
-                    self.cover().open(index).coordinate_algebra()
-                ).underlying_module()(local_map)
-                for index, local_map in enumerate(self._local_maps)
+        return self.domain().underlying_module_datum().Mor(
+            self.codomain().underlying_module_datum()
+        )(
+            finite_indexed_family(
+                self.cover().atlas(),
+                lambda label: Algebras(self.cover().open(label).coordinate_algebra()).underlying_module()(
+                    self.local_map(label)
+                ),
+                name="Local module maps underlying an algebra descent morphism",
             )
-            self._underlying_module_morphism = self.domain().underlying_module_datum().Mor(
-                self.codomain().underlying_module_datum()
-            )(module_maps)
-        return self._underlying_module_morphism
+        )
 
+    @cached_method
     def global_sections_map(self):
-        if self._global_sections_map is None:
-            source = self.domain().compatible_sections()
-            target = self.codomain().compatible_sections()
+        source = self.domain().compatible_sections()
+        target = self.codomain().compatible_sections()
 
-            def image(section):
-                section = source(section)
-                return target(
-                    tuple(
-                        self.local_map(index)(section.component(index))
-                        for index in range(len(self.local_maps()))
-                    )
+        def image(section):
+            section = source(section)
+            return target(
+                finite_indexed_family(
+                    self.cover().atlas(),
+                    lambda label: self.local_map(label)(section.component(label)),
+                    name="Components of an induced global algebra section",
                 )
+            )
 
-            set_map = SetMorphism(Sets().Mor(source, target), image)
-            self._global_sections_map = _algebra_homset(source, target)(set_map)
-        return self._global_sections_map
+        return _algebra_homset(source, target)(SetMorphism(Sets().Mor(source, target), image))
 
     def relative_spectrum_morphism(self):
         r"""Return the contravariant morphism of relative spectra induced by this algebra map."""
@@ -3988,14 +4071,13 @@ class AlgebraGluingMorphism(Morphism):
         return other * self
 
     def __mul__(self, other):
-        if not isinstance(other, AlgebraGluingMorphism):
-            return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
         return other.domain().Mor(self.codomain())(
-            tuple(
-                self.local_map(index) * other.local_map(index)
-                for index in range(len(self.local_maps()))
+            finite_indexed_family(
+                self.cover().atlas(),
+                lambda label: self.local_map(label) * other.local_map(label),
+                name="Local maps of a composite algebra descent morphism",
             )
         )
 
@@ -4009,7 +4091,7 @@ class AlgebraGluingHomset(CategoricalHomset):
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
             raise ValueError("an algebra descent Hom requires one common affine cover")
-        CategoricalHomset.__init__(self, family, domain, codomain)
+        super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
         if isinstance(local_maps, AlgebraGluingMorphism):
@@ -4024,455 +4106,256 @@ class AlgebraGluingHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an algebra descent endomorphism Hom")
         return self(
-            tuple(
-                _algebra_homset(algebra, algebra).identity()
-                for algebra in self.domain().local_algebras()
+            self.domain().local_algebras().map(
+                lambda algebra: _algebra_homset(algebra, algebra).identity()
             )
         )
 
 
-class FiniteAtlasCompatibleSectionElement(ModuleElement):
-    r"""One global section represented by compatible sections on labelled affine charts."""
+class GlobalSectionModules(OwnedCategoryOverBaseRing):
+    r"""Modules of global sections ``Gamma(X, F)`` of a chosen module descent datum.
 
-    def __init__(self, parent, components, *, global_source_section=None) -> None:
-        ModuleElement.__init__(self, parent)
-        self._components = components
-        self._global_source_section = global_source_section
+    For a module descent datum ``F = (M_i, phi_ij)`` on a finite affine cover
+    of a scheme ``X``, a global section is a family ``(s_i)`` of local
+    sections ``s_i in M_i`` whose restrictions to every pair overlap agree
+    through the transitions.  These families are the equalizer of the two
+    restriction maps ``prod_i M_i -> prod_{i,j} M_ij`` on underlying sets,
+    with componentwise addition and with a scalar acting on each chart
+    through its restriction to that chart; the forgetful functor from modules
+    to sets creates this limit.
 
-    def components(self):
-        return self._components
-
-    def global_source_section(self):
-        r"""Return the selected global presentation of this compatible section, if any."""
-        return self._global_source_section
-
-    def component(self, index):
-        datum = self.parent().gluing_datum()
-        return self.components()[datum.gluing_datum().normalize_chart_index(index)]
-
-    def _add_(self, other):
-        datum = self.parent().gluing_datum()
-        return self.parent()(
-            {
-                index: self.component(index) + other.component(index)
-                for index in datum.chart_indices()
-            }
-        )
-
-    def _neg_(self):
-        datum = self.parent().gluing_datum()
-        return self.parent()(
-            {index: -self.component(index) for index in datum.chart_indices()}
-        )
-
-    def _lmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
-
-    def _acted_upon_(self, actor, self_on_left):
-        try:
-            scalar = self.parent().base_ring()(actor)
-        except (TypeError, ValueError):
-            return None
-        return self.parent().scalar_multiple(scalar, self)
-
-    def _richcmp_(self, other, op):
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        datum = self.parent().gluing_datum()
-        equal = (
-            isinstance(other, FiniteAtlasCompatibleSectionElement)
-            and other.parent() is self.parent()
-            and all(
-                self.component(index) == other.component(index)
-                for index in datum.chart_indices()
-            )
-        )
-        return equal if op == op_EQ else not equal
-
-    def _repr_(self):
-        return f"compatible finite-atlas sections {self.components()}"
-
-
-class FiniteAtlasCompatibleSectionsModule(Parent):
-    r"""Global sections of a finite-atlas module descent datum.
-
-    A section is one local element on every labelled chart.  On an overlap
-    ``U_ij`` the target-chart element is transported through the datum's
-    semilinear pullback and compared with the source-chart restriction.  Thus
-    the equalizer uses the actual distinct overlap rings rather than identifying
-    their presentations by position.
+    The descent datum is the defining datum of this level, and
+    ``GlobalSectionModules(R)(F)`` is the one entry.  The descent datum
+    answers ``chart_index_set``, ``local_module``,
+    ``compatible_local_sections`` and ``restrict_scalar_to_chart``, which is
+    everything this level reads from it.
     """
 
-    Element = FiniteAtlasCompatibleSectionElement
+    def an_object(self):
+        r"""``Gamma(Spec R, O)`` for the one-chart cover of ``Spec R``."""
+        scheme = self.base_ring().affine_spectrum()
+        cover = scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
+        return ModuleGluingData(cover).an_object().compatible_sections()
 
-    def __init__(self, gluing_datum) -> None:
-        self._gluing_datum = gluing_datum
-        self._preamble_base_ring = gluing_datum.scheme().scheme_base_ring()
-        Parent.__init__(self, category=Modules(self._preamble_base_ring))
+    def _repr_object_names(self):
+        return f"modules of global sections over {self.base_ring()}"
 
-    def gluing_datum(self):
-        return self._gluing_datum
+    def super_categories(self):
+        return [Modules(self.base_ring())]
 
-    def base_ring(self):
-        return self._preamble_base_ring
+    def object(self, gluing_datum):
+        r"""``Gamma(X, F)`` for the module descent datum ``F``."""
+        return _object_of(self, base_ring=self.base_ring(), gluing_datum=gluing_datum)
 
-    def base(self):
-        return self.base_ring()
+    __call__ = object
 
-    def _element_constructor_(self, value, *, global_source_section=None):
-        if isinstance(value, FiniteAtlasCompatibleSectionElement) and value.parent() is self:
-            return value
-        datum = self.gluing_datum()
-        atlas = datum.gluing_datum()
-        raw = _family_on_finite_ordered_set(
-            atlas.chart_index_set(),
-            value,
-            name="Components of a finite-atlas global section",
-            noun="a finite-atlas global section",
-        )
-        components = finite_indexed_family(
-            atlas.chart_index_set(),
-            lambda index: datum.local_module(index)(raw[index]),
-            name="Compatible finite-atlas section components",
-        )
-        for source_index, target_index in atlas.transition_index_set():
-            source_overlap = atlas.overlap(source_index, target_index)
-            target_overlap = atlas.overlap(target_index, source_index)
-            source_restriction = source_overlap.inclusion().coordinate_algebra_morphism()
-            target_restriction = target_overlap.inclusion().coordinate_algebra_morphism()
-            source_pair = datum.pair_module(source_index, target_index)
-            target_pair = datum.pair_module(target_index, source_index)
-            source_value = _change_coefficients(
-                components[source_index],
-                datum.local_module(source_index),
-                source_pair,
-                source_restriction,
+    class ElementMethods(ModuleElement):
+        r"""A global section, the family of its compatible local sections."""
+
+        def __init__(self, parent, components, *, global_source_section=None) -> None:
+            super().__init__(parent)
+            self._components = components
+            self._global_source_section = global_source_section
+
+        def components(self):
+            return self._components
+
+        def component(self, index):
+            return self.components()[index]
+
+        def global_source_section(self):
+            r"""Return the selected global presentation of this compatible section, if any."""
+            return self._global_source_section
+
+        def _add_(self, other):
+            return self.parent()(
+                finite_indexed_family(
+                    self.components().index_set(),
+                    lambda label: self.component(label) + other.component(label),
+                    name="Components of a sum of global sections",
+                )
             )
-            target_value = _change_coefficients(
-                components[target_index],
-                datum.local_module(target_index),
-                target_pair,
-                target_restriction,
+
+        def _neg_(self):
+            return self.parent()(self.components().map(lambda component: -component))
+
+        def _lmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _acted_upon_(self, actor, self_on_left):
+            if actor not in self.parent().base_ring():
+                return None
+            return self.parent().scalar_multiple(actor, self)
+
+        def _richcmp_(self, other, op):
+            if op not in (op_EQ, op_NE):
+                return NotImplemented
+            equal = other.parent() is self.parent() and all(
+                self.component(label) == other.component(label)
+                for label in self.components().index_set()
             )
-            transported = datum.transition(source_index, target_index).pullback()(target_value)
-            if transported != source_value:
-                raise ValueError("the finite-atlas local sections do not agree on an overlap")
-        return self.element_class(
-            self,
-            components,
-            global_source_section=global_source_section,
-        )
+            return equal if op == op_EQ else not equal
 
-    def from_global_section_components(self, components, global_section):
-        r"""Construct compatible local data with its selected global presentation."""
-        return self._element_constructor_(
-            components,
-            global_source_section=global_section,
-        )
+        def _repr_(self):
+            return f"compatible local sections {self.components()}"
 
-    def __call__(self, value):
-        return self._element_constructor_(value)
+    class ParentMethods:
+        def __init__(self, gluing_datum, **rest) -> None:
+            self._gluing_datum = gluing_datum
+            super().__init__(**rest)
 
-    def __contains__(self, value) -> bool:
-        return isinstance(value, FiniteAtlasCompatibleSectionElement) and value.parent() is self
+        def gluing_datum(self):
+            r"""The module descent datum whose global sections this module is."""
+            return self._gluing_datum
 
-    def zero(self):
-        datum = self.gluing_datum()
-        return self(
-            {index: datum.local_module(index).zero() for index in datum.chart_indices()}
-        )
-
-    def scalar_multiple(self, scalar, section):
-        datum = self.gluing_datum()
-        scalar = self.base_ring()(scalar)
-        section = self(section)
-        components = {}
-        for index in datum.chart_indices():
-            module = datum.local_module(index)
-            ring = module.base_ring()
-            local_scalar = ring.algebra_structure_morphism()(scalar)
-            components[index] = module.scalar_multiple(local_scalar, section.component(index))
-        return self(components)
-
-    def an_element(self):
-        return self.zero()
-
-    def _repr_(self):
-        return f"Compatible finite-atlas sections of {self.gluing_datum()}"
-
-
-class CompatibleLocalSectionElement(ModuleElement):
-    def __init__(self, parent, components) -> None:
-        ModuleElement.__init__(self, parent)
-        self._components = tuple(components)
-
-    def components(self):
-        return self._components
-
-    def component(self, index):
-        return self.components()[int(index)]
-
-    def _add_(self, other):
-        return self.parent()(
-            tuple(
-                left + right
-                for left, right in zip(self.components(), other.components(), strict=True)
+        def _element_constructor_(self, value, *, global_source_section=None):
+            if isinstance(value, self.element_class) and value.parent() is self:
+                return value
+            index_set = self.gluing_datum().chart_index_set()
+            if isinstance(value, IndexedFamily):
+                supplied = value
+            elif isinstance(value, Mapping):
+                supplied = finite_indexed_family(index_set, value.__getitem__)
+            else:
+                entries = finite_family(value)
+                supplied = finite_indexed_family(
+                    index_set,
+                    lambda label: entries[int(index_set.ranking_map()(label))],
+                )
+                if entries.cardinality() != supplied.cardinality():
+                    raise ValueError("a global section needs one local section on each chart")
+            return self.element_class(
+                self,
+                self.gluing_datum().compatible_local_sections(supplied),
+                global_source_section=global_source_section,
             )
-        )
 
-    def _neg_(self):
-        return self.parent()(tuple(-component for component in self.components()))
+        def from_global_section_components(self, components, global_section):
+            r"""Construct compatible local data with its selected global presentation."""
+            return self._element_constructor_(components, global_source_section=global_section)
 
-    def _lmul_(self, scalar):
-        return self.parent().scalar_multiple(scalar, self)
+        def __contains__(self, value) -> bool:
+            return isinstance(value, self.element_class) and value.parent() is self
 
-    def _acted_upon_(self, actor, self_on_left):
-        try:
-            scalar = self.parent().base_ring()(actor)
-        except (TypeError, ValueError):
-            return None
-        return self.parent().scalar_multiple(scalar, self)
-
-    def _richcmp_(self, other, op):
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        equal = (
-            isinstance(other, CompatibleLocalSectionElement)
-            and other.parent() is self.parent()
-            and all(
-                left == right
-                for left, right in zip(self.components(), other.components(), strict=True)
+        def zero(self):
+            datum = self.gluing_datum()
+            return self(
+                finite_indexed_family(
+                    datum.chart_index_set(),
+                    lambda label: datum.local_module(label).zero(),
+                    name="Components of the zero global section",
+                )
             )
-        )
-        return equal if op == op_EQ else not equal
 
-    def _repr_(self):
-        return f"compatible local sections {self.components()}"
-
-
-class CompatibleLocalSectionsModule(Parent):
-    r"""The equalizer module of local sections satisfying the descent equations."""
-
-    Element = CompatibleLocalSectionElement
-
-    def __init__(self, gluing_datum) -> None:
-        self._gluing_datum = gluing_datum
-        self._preamble_base_ring = gluing_datum.scheme().coordinate_algebra()
-        Parent.__init__(self, category=Modules(self._preamble_base_ring))
-
-    def gluing_datum(self):
-        return self._gluing_datum
-
-    def base_ring(self):
-        return self._preamble_base_ring
-
-    def base(self):
-        return self.base_ring()
-
-    def _element_constructor_(self, value):
-        if isinstance(value, CompatibleLocalSectionElement) and value.parent() is self:
-            return value
-        components = tuple(value)
-        datum = self.gluing_datum()
-        if len(components) != len(datum.local_modules()):
-            raise ValueError("a compatible section tuple needs one component on each affine chart")
-        components = tuple(
-            module(component)
-            for module, component in zip(datum.local_modules(), components, strict=True)
-        )
-        for left_index, right_index in combinations(range(len(components)), 2):
-            left = datum.restrict_section(
-                left_index,
-                components[left_index],
-                left_index,
-                right_index,
+        def scalar_multiple(self, scalar, section):
+            datum = self.gluing_datum()
+            scalar = self.base_ring()(scalar)
+            section = self(section)
+            return self(
+                finite_indexed_family(
+                    datum.chart_index_set(),
+                    lambda label: datum.local_module(label).scalar_multiple(
+                        datum.restrict_scalar_to_chart(label, scalar),
+                        section.component(label),
+                    ),
+                    name="Components of a scalar multiple of a global section",
+                )
             )
-            right = datum.restrict_section(
-                right_index,
-                components[right_index],
-                left_index,
-                right_index,
-            )
-            transition = datum.transition(left_index, right_index).forward()
-            if transition(left) != right:
-                raise ValueError("the local sections do not agree under the overlap transition")
-        return self.element_class(self, components)
 
-    def __call__(self, value):
-        return self._element_constructor_(value)
+        def an_element(self):
+            return self.zero()
 
-    def __contains__(self, value) -> bool:
-        return isinstance(value, CompatibleLocalSectionElement) and value.parent() is self
-
-    def zero(self):
-        return self(tuple(module.zero() for module in self.gluing_datum().local_modules()))
-
-    def scalar_multiple(self, scalar, section):
-        datum = self.gluing_datum()
-        scalar = self.base_ring()(scalar)
-        section = self(section)
-        structure_sheaf = datum.scheme().structure_sheaf()
-        components = []
-        for index, module in enumerate(datum.local_modules()):
-            local_scalar = structure_sheaf.restriction_map(
-                datum.scheme(),
-                datum.cover().open(index),
-            )(scalar)
-            components.append(module.scalar_multiple(local_scalar, section.component(index)))
-        return self(tuple(components))
-
-    def an_element(self):
-        return self.zero()
-
-    def _repr_(self):
-        return f"Compatible local sections of {self.gluing_datum()}"
+        def _repr_(self):
+            return f"Compatible local sections of {self.gluing_datum()}"
 
 
-class CompatibleLocalAlgebraSectionElement(CompatibleLocalSectionElement):
-    def _mul_(self, other):
-        return self.parent().multiply(self, other)
+class GlobalSectionAlgebras(OwnedCategoryOverBaseRing):
+    r"""Algebras of global sections ``Gamma(X, A)`` of a chosen algebra descent datum.
 
+    The underlying module is ``Gamma(X, U(A))`` for the module descent datum
+    obtained by forgetting the local multiplications, and the product and
+    unit are taken chart by chart.  Both routes from this category to
+    ``Modules(R)``, through global section modules and through algebras,
+    forget to the same module.
 
-class CompatibleLocalAlgebraSections(CompatibleLocalSectionsModule):
-    r"""The ambient-ring algebra of compatible local algebra sections.
-
-    The equalizer module need not carry a selected finite framing.  Its unit
-    and multiplication are nevertheless exact componentwise operations; a
-    represented tensor-product multiplication morphism is only available when
-    the module layer can materialize that tensor product.
+    ``GlobalSectionAlgebras(R)(A)`` is the one entry.  The multiplication is
+    not supplied to the algebra level as a morphism ``M tensor_R M -> M``:
+    the tensor square of a module of global sections is not represented,
+    since such a module carries no finite framing.
     """
 
-    Element = CompatibleLocalAlgebraSectionElement
+    def an_object(self):
+        r"""``Gamma(Spec R, O[z])`` for the one-chart cover of ``Spec R``."""
+        scheme = self.base_ring().affine_spectrum()
+        cover = scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
+        return AlgebraGluingData(cover).an_object().compatible_sections()
 
-    def __init__(self, gluing_datum) -> None:
-        self._algebra_gluing_datum = gluing_datum
-        self._gluing_datum = gluing_datum.underlying_module_datum()
-        self._preamble_base_ring = gluing_datum.scheme().coordinate_algebra()
-        self._preamble_algebra_base_ring = self._preamble_base_ring
-        self._preamble_is_commutative = all(
-            algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative()
-            for algebra in gluing_datum.local_algebras()
-        )
-        category = (
-            Algebras(self._preamble_base_ring).Associative().Unital().Commutative()
-            if self._preamble_is_commutative
-            else Algebras(self._preamble_base_ring).Associative().Unital()
-        )
-        Parent.__init__(self, category=category)
+    def _repr_object_names(self):
+        return f"algebras of global sections over {self.base_ring()}"
 
-    def algebra_gluing_datum(self):
-        return self._algebra_gluing_datum
+    def super_categories(self):
+        return [
+            GlobalSectionModules(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital(),
+        ]
 
-    def is_commutative(self) -> bool:
-        return self._preamble_is_commutative
+    def object(self, algebra_gluing_datum):
+        r"""``Gamma(X, A)`` for the algebra descent datum ``A``.
 
-    def one(self):
-        return self(
-            tuple(
-                algebra.one()
-                for algebra in self.algebra_gluing_datum().local_algebras()
+        When every local algebra is commutative, so is the algebra of
+        compatible sections, and it is constructed in the commutative
+        refinement.
+        """
+        ring = self.base_ring()
+        commutative = Algebras(ring).Associative().Unital().Commutative()
+        local_algebras = algebra_gluing_datum.local_algebras()
+        placement = (
+            Category.join((self, commutative))
+            if all(
+                algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative()
+                for algebra in local_algebras
             )
+            else self
+        )
+        return _object_of(
+            placement,
+            base_ring=ring,
+            gluing_datum=algebra_gluing_datum.underlying_module_datum(),
+            algebra_gluing_datum=algebra_gluing_datum,
         )
 
-    def multiply(self, left, right):
-        left = self(left)
-        right = self(right)
-        return self(
-            tuple(
-                left_component * right_component
-                for left_component, right_component in zip(
-                    left.components(),
-                    right.components(),
-                    strict=True,
+    __call__ = object
+
+    class ElementMethods:
+        def _mul_(self, other):
+            return self.parent().multiply(self, other)
+
+    class ParentMethods:
+        def __init__(self, algebra_gluing_datum, **rest) -> None:
+            self._algebra_gluing_datum = algebra_gluing_datum
+            super().__init__(**rest)
+
+        def algebra_gluing_datum(self):
+            r"""The algebra descent datum whose global sections this algebra is."""
+            return self._algebra_gluing_datum
+
+        def one(self):
+            datum = self.algebra_gluing_datum()
+            return self(datum.local_algebras().map(lambda algebra: algebra.one()))
+
+        def multiply(self, left, right):
+            left = self(left)
+            right = self(right)
+            return self(
+                finite_indexed_family(
+                    self.algebra_gluing_datum().chart_index_set(),
+                    lambda label: left.component(label) * right.component(label),
+                    name="Components of a product of global sections",
                 )
             )
-        )
 
-    def _repr_(self):
-        return f"Compatible local algebra sections of {self.algebra_gluing_datum()}"
-
-
-class GluedModuleSheaf(Parent):
-    r"""The module sheaf represented by one finite affine descent datum."""
-
-    def __init__(self, gluing_datum) -> None:
-        self._gluing_datum = gluing_datum
-        # Materialize the concrete equalizer witness before placing the object
-        # in Sh(C, Set): construction of this sheaf is the affirmative descent
-        # datum, not a later boolean refinement of a presheaf.
-        gluing_datum.descent_data()
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-        Parent.__init__(
-            self,
-            category=Cat().meet(
-                (
-                    gluing_datum.cover().cech_coverage().sheaves(Sets()),
-                    QuasiCoherentSheaves(gluing_datum.scheme()),
-                )
-            ),
-        )
-
-    def gluing_datum(self):
-        return self._gluing_datum
-
-    def ringed_space(self):
-        return self.gluing_datum().scheme()
-
-    scheme = ringed_space
-
-    def cover(self):
-        return self.gluing_datum().cover()
-
-    def functor(self):
-        return self.gluing_datum().descent_presheaf()
-
-    def descent_data(self):
-        return self.gluing_datum().descent_data()
-
-    def arrow(self):
-        return self.category().presheaf_category().category_of_categories().arrow(
-            self.functor()
-        )
-
-    def sections_on_chart(self, index):
-        return self.gluing_datum().local_module(index)
-
-    def sections_on_intersection(self, chart_index, *intersection_indices):
-        return self.gluing_datum().restricted_module(
-            chart_index,
-            *intersection_indices,
-        )
-
-    def restriction_map(self, chart_index, *intersection_indices):
-        return self.gluing_datum().restriction_map(chart_index, *intersection_indices)
-
-    def restriction_between_intersections(
-        self,
-        chart_index,
-        source_indices,
-        target_indices,
-    ):
-        return self.gluing_datum().restriction_between_intersections(
-            chart_index,
-            source_indices,
-            target_indices,
-        )
-
-    def transition(self, source_index, target_index, *intersection_indices):
-        return self.gluing_datum().transition_on_intersection(
-            source_index,
-            target_index,
-            *intersection_indices,
-        )
-
-    def global_sections(self):
-        return self.gluing_datum().compatible_sections()
-
-    sections = global_sections
-
-    def _repr_(self):
-        return f"Glued module sheaf on {self.scheme()} from {self.cover()}"
+        def _repr_(self):
+            return f"Compatible local algebra sections of {self.algebra_gluing_datum()}"
 
 
 class FiniteAtlasGluedModuleSheaf(Parent):
@@ -4847,82 +4730,6 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
         return self._inverse
 
 
-class GluedAlgebraSheaf(Parent):
-    r"""The algebra sheaf represented by finite affine algebra descent data."""
-
-    def __init__(self, gluing_datum) -> None:
-        self._gluing_datum = gluing_datum
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-        scheme = gluing_datum.scheme()
-        Parent.__init__(
-            self,
-            category=Cat().meet(
-                (
-                    AlgebraSheaves(scheme),
-                    QuasiCoherentSheaves(scheme),
-                )
-            ),
-        )
-
-    def gluing_datum(self):
-        return self._gluing_datum
-
-    def ringed_space(self):
-        return self.gluing_datum().scheme()
-
-    scheme = ringed_space
-
-    def cover(self):
-        return self.gluing_datum().cover()
-
-    def sections_on_chart(self, index):
-        return self.gluing_datum().local_algebra(index)
-
-    def sections_on_intersection(self, chart_index, *intersection_indices):
-        return self.gluing_datum().restricted_algebra(
-            chart_index,
-            *intersection_indices,
-        )
-
-    def restriction_map(self, chart_index, *intersection_indices):
-        return self.gluing_datum().restriction_map(chart_index, *intersection_indices)
-
-    def restriction_between_intersections(
-        self,
-        chart_index,
-        source_indices,
-        target_indices,
-    ):
-        return self.gluing_datum().restriction_between_intersections(
-            chart_index,
-            source_indices,
-            target_indices,
-        )
-
-    def transition(self, source_index, target_index, *intersection_indices):
-        return self.gluing_datum().transition_on_intersection(
-            source_index,
-            target_index,
-            *intersection_indices,
-        )
-
-    def global_sections(self):
-        return self.gluing_datum().compatible_sections()
-
-    sections = global_sections
-
-    def underlying_module_sheaf(self):
-        return self.gluing_datum().underlying_module_datum().sheaf()
-
-    def relative_spectrum(self):
-        r"""Return the relative spectrum of this algebra sheaf."""
-        return self.gluing_datum().relative_spectrum()
-
-    def _repr_(self):
-        return f"Glued algebra sheaf on {self.scheme()} from {self.cover()}"
-
-
 
 def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="Chartwise closed subscheme"):
     r"""Glue compatible closed subschemes of one finite affine atlas.
@@ -5080,16 +4887,11 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
 
 __all__ = [
     "AlgebraGluingData",
-    "AlgebraGluingDatum",
     "AlgebraGluingHomset",
     "AlgebraGluingMorphism",
-    "CompatibleLocalAlgebraSections",
-    "CompatibleLocalSectionsModule",
     "FiniteAtlasAlgebraGluingDatum",
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
-    "FiniteAtlasCompatibleSectionElement",
-    "FiniteAtlasCompatibleSectionsModule",
     "FiniteAffineAtlasPresentation",
     "FiniteAtlasInvertibleSheafRefinement",
     "FiniteAtlasLineBundlePullbackComparison",
@@ -5100,10 +4902,9 @@ __all__ = [
     "FiniteAtlasModuleGluingMorphism",
     "FiniteAtlasGluedModuleSheaf",
     "FiniteAtlasModuleTransition",
-    "GluedAlgebraSheaf",
-    "GluedModuleSheaf",
+    "GlobalSectionAlgebras",
+    "GlobalSectionModules",
     "ModuleGluingData",
-    "ModuleGluingDatum",
     "ModuleGluingHomset",
     "ModuleGluingMorphism",
     "SemilinearAlgebraMorphism",
