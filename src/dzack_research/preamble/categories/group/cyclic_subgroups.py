@@ -45,7 +45,7 @@ class CyclicGroups(OwnedCategory):
     def super_categories(self):
         return [OwnedAbelianGroups(), GroupsWithChosenFiniteGeneratingSet()]
 
-    def _call_(self, generator):
+    def _call_(self, generator, *, placements=(), **level_data):
         r"""Construct the cyclic subgroup from its selected generator.
 
         The generator determines both the ambient group and the subgroup
@@ -54,13 +54,14 @@ class CyclicGroups(OwnedCategory):
         abstract cyclic-group model.
         """
         supergroup = _owned_group(generator.parent())
-        placement = [self, Subgroups(supergroup)]
+        placement = [self, Subgroups(supergroup), *placements]
         if supergroup in FiniteGroups():
             placement.append(FiniteAbelianGroups())
         return _object_of(
             Cat().meet(placement),
             supergroup=supergroup,
             group_generator=supergroup(generator),
+            **level_data,
         )
 
     class ParentMethods:
