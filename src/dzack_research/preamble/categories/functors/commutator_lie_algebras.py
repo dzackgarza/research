@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.algebras.lie_algebras import (
     CommutatorLieAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
@@ -66,27 +65,16 @@ def _commutator_lie_algebra(algebra):
     r"""``A^-``: the algebra on ``A`` with bracket ``[x, y] = xy - yx``, one object per ``A``.
 
     The bracket is bilinear, so it is the map out of ``A (x)_R A``
-    determined on pairs of module generators by the product of ``A``.  The
+    induced by the difference of its two product evaluations, without
+    requiring a chosen module framing.  The
     commutator of an associative product is alternating and satisfies the
     Jacobi identity (Bourbaki, *Lie Groups and Lie Algebras* I §1.2), so that
     theorem is the placement.
     """
     ring = algebra.algebra_base_ring()
     tensor = _algebra_tensor_square_functor(ring)(algebra)
-    bracket = tensor.from_bilinear(
-        BilinearMap(
-            algebra,
-            algebra,
-            algebra,
-            lambda left, right: algebra.product(
-                algebra.module_generator(left),
-                algebra.module_generator(right),
-            )
-            - algebra.product(
-                algebra.module_generator(right),
-                algebra.module_generator(left),
-            ),
-        )
+    bracket = tensor.from_bilinear_map(
+        algebra, lambda left, right: algebra.product(left, right) - algebra.product(right, left),
     )
     return _algebra_on_module(
         algebra,
