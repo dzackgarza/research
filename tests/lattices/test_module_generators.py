@@ -4,6 +4,7 @@ from dzack_research.preamble.all import (
     ZZ,
     Cardinalities,
     Lattices,
+    Modules,
     QuadraticField,
     signature_pair,
     signature_pairs,
@@ -291,7 +292,12 @@ def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
 
     first = ambient.subobject_on((e0,))
     second = ambient.subobject_on((e1,))
+    subobjects = Modules(ZZ).Subobjects(ambient)
 
+    assert first.category().is_subcategory(subobjects)
+    assert second.category().is_subcategory(subobjects)
+    assert subobjects.as_slice_object(first).arrow() is first.inclusion()
+    assert subobjects.as_slice_object(second).arrow() is second.inclusion()
     assert first.gram_tensor() == second.gram_tensor()
     assert first is not second
     assert first is ambient.subobject_on((e0,))
