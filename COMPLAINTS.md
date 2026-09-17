@@ -144,10 +144,10 @@ Nothing else is assumed: unit, associativity and commutativity are axioms, and a
 One canonical constructor consumes \((A, \rho)\); every other route -- \((M, m)\), a group algebra, a centre, a quotient, a commutator Lie algebra, an engine-adopted ring, a free functor -- computes \(\rho\) from its own data and feeds it (CONTRIBUTING `CON-02`, `CON-06`; vault plan `PLAN-r-algebras-math-syntax-20260803`).
 
 **Observed evidence.**
-Ordinary native allocation still calls `_initialize_engine_algebra` or supplies `_engine_product` to the root. `_install_multiplication` sets the retained module to `self` and wraps the native binary product; this is not the required construction of that module followed by `Algebras(R)(M,m)`. The callers include `_OwnedRingParent`, `_OwnedAlgebraParent`, predicate subrings, exact real scalars, and localizations. Supplying their missing multiplication fields does not remove this bypass. The sparse-free realization still hand-writes module operations, and `FramedAlgebras.ParentMethods.cardinality` restates a set operation. The free-algebra input accessors still require the generating-module versus underlying-module distinction specified by `engine-algebras-through-the-structure-constructor`.
+The native finite-generator polynomial and free-algebra routes still need the canonical underlying free module on words or monomials, including its homogeneous pieces and framing. `_symmetric_algebra_on` and `_tensor_algebra_on` retain the generating module of the free functor while `_OwnedAlgebraParent` constructs a native scalar-action module; those are not a substitute for the free functor's full module factor. The `free_source_module` accessors in `free_algebras.py`, `power_algebras.py` and `sparse_free_algebras.py`, with the scalar-change consumer, still need the explicit generating-module versus underlying-module distinction. Replacing the former by `unformed_module` would identify different objects.
 
 **Existing capability.**
-The root constructs algebras from a module and tensor multiplication, and the module owner supplies the unframed tensor quotient and binary classifier. Multiplication-preserving Homs retain `Unknown` for undecided equations instead of demanding a framing. Explicit central ring maps construct their scalar-action module before using that root entry; the pointwise Lebesgue algebra uses the shared graded-sum realization. The native allocation paths above have not been brought through those constructions.
+The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier. The remaining free-functor factor must compose those existing owners, not introduce another scalar-action or multiplication constructor.
 
 **Affected consumers.**
 Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
@@ -155,7 +155,7 @@ Every algebra constructor and every algebra Hom; the tensor- and symmetric-algeb
 **Coverage boundary.**
 Read from source; no session was run.
 The named allocation paths and consumers were read from source; runtime behavior and the full terminal session remain unexecuted.
-Scheduled as `algebra-structure-morphism-constructor` and `engine-algebras-through-the-structure-constructor` in [TODO.md](TODO.md).
+Scheduled as `engine-algebras-through-the-structure-constructor` in [TODO.md](TODO.md).
 
 ### Sheaf theory on non-affine schemes stops at the chart
 
