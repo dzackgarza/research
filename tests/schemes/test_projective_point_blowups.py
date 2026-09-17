@@ -62,18 +62,18 @@ def test_cusp_total_and_strict_transforms_retain_center_multiplicity_and_excepti
 def test_blowup_canonical_bundle_is_pullback_canonical_plus_exceptional() -> None:
     _plane, _point, blowup, _cusp = _blowup_and_cusp()
     comparison = blowup.canonical_comparison()
-    canonical = comparison.canonical_line_bundle()
-    target = comparison.target_line_bundle()
+    canonical = comparison.domain()
+    target = comparison.codomain()
 
     assert tuple(
         canonical.multidegree()[label] for label in canonical.multidegree().index_set()
     ) == (-2, -1)
     assert tuple(
-        comparison.pulled_back_source_canonical_bundle().multidegree()[label]
-        for label in comparison.pulled_back_source_canonical_bundle().multidegree().index_set()
+        blowup.pulled_back_source_canonical_bundle().multidegree()[label]
+        for label in blowup.pulled_back_source_canonical_bundle().multidegree().index_set()
     ) == (-3, 0)
-    assert comparison.isomorphism().domain() is canonical
-    assert comparison.isomorphism().codomain() is target
+    assert blowup.canonical_line_bundle() is canonical
+    assert target == blowup.pulled_back_source_canonical_bundle().tensor_product(blowup.exceptional_line_bundle())
     assert blowup.anticanonical_line_bundle().is_ample()
     assert blowup.is_del_pezzo()
     assert blowup.del_pezzo_degree() == 8
