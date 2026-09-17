@@ -1,12 +1,16 @@
-"""Divisor groups as framed free modules."""
+r"""Divisor groups as framed free modules.
+
+A divisor group is built once, by the free-module construction of its
+underlying abelian group with the divisor category joined to it.  Each divisor
+category level stores only the datum it adds and threads the rest to the module
+levels through ``super().__init__``.
+"""
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.categories.modules.pure.modules import (
-    ModulesWithChosenFinitePresentation,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -16,70 +20,74 @@ from dzack_research.preamble.owned_category_bases import Category
 
 
 def _integers():
-    from sage.rings.integer_ring import ZZ as SageZZ
-
     return _own_ring(SageZZ)
 
 
-def _module_in_role(module, category, **construction_data):
-    r"""The object of ``category`` built on the presentation of ``module``.
+def _cokernel_in_category(presentation, category, **data):
+    r"""\(\operatorname{coker}(\rho)\) for the morphism ``presentation`` \(\rho\colon F \to G\), built once in ``category``.
 
-    The role's object is constructed on the presentation ``module`` carries,
-    through the module constructor that built ``module``; the levels
-    ``category`` adds consume ``construction_data`` in their cooperative
-    constructors.  The result is framed by ``module.module_generating_set()``,
-    so :func:`_framing_identity` relates the two.
+    The cokernel is framed by the generators of \(G\), and its
+    ``cokernel_projection()`` is the quotient map \(G \to \operatorname{coker}\rho\).
+    The levels of ``category`` consume ``data`` in their constructors.
     """
-    ring = module.base_ring()
-    assert (
-        module in FramedFreeModules(ring).FinitelyGenerated()
-        or module in ModulesWithChosenFinitePresentation(ring)
-    ), (
-        f"{category} is stated on a module with a finitely framed free or a chosen "
-        f"finite presentation, which {module} does not carry"
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _presented_module_from_morphism,
     )
-    return module._same_presentation_module(
-        module.module_generating_set(),
+
+    return _presented_module_from_morphism(
+        presentation,
+        _cokernel_morphism=presentation,
         _extra_categories=(category,),
-        _extra_construction_data=construction_data,
+        _extra_construction_data=data,
     )
 
 
-def _framing_identity(source, role):
-    r"""The isomorphism ``source -> role`` sending each framing generator to its namesake.
+def _zero_presentation():
+    r"""The zero morphism \(0 \to 0\) of abelian groups, whose cokernel is the zero group."""
+    zero = _integers().free_module(finite_ordered_set(()))
+    return zero.module_category().Mor(zero, zero)({})
 
-    ``role`` was built on the presentation of ``source`` by
-    :func:`_module_in_role`, so the two share one framing and this is the
-    identity in those coordinates.
-    """
-    return source.module_category().Mor(source, role)(
-        {label: role.module_generator(label) for label in source.module_generating_set()}
-    )
+
+def _free_presentation(generators):
+    r"""The zero morphism \(0 \to \mathbb{Z}^{(S)}\), presenting the free abelian group on ``generators``."""
+    integers = _integers()
+    zero = integers.free_module(finite_ordered_set(()))
+    free = integers.free_module(generators)
+    return zero.module_category().Mor(zero, free)({})
+
+
+def _affine_line_over_integers():
+    r"""\(\mathbb{A}^1_{\mathbb{Z}} = \operatorname{Spec} \mathbb{Z}[x]\), the witness scheme of the divisor categories."""
+    integers = _integers()
+    return integers.polynomial_ring(("x",)).affine_spectrum(base_ring=integers)
 
 
 class DivisorGroups(Category):
     r"""Free abelian groups on specified prime divisors.
 
-    An object is the free \(\mathbb{Z}\)-module on a chosen set of prime
-    divisors, framed by that set.
+    An object is the free \(\mathbb{Z}\)-module \(\bigoplus_{P \in S} \mathbb{Z}P\)
+    on a set \(S\) of prime divisors, framed by \(S\).  The set \(S\) is the
+    defining datum and the free-module level consumes it; this level adds no
+    datum of its own.
     """
 
     def an_object(self):
         r"""The free abelian group on one prime divisor."""
-        return self(_integers().free_module(finite_ordered_set(("D",))))
+        return self(finite_ordered_set(("D",)))
 
     @classmethod
     def _repr_object_names(cls):
         return "divisor groups"
 
     def super_categories(self):
-        return [FramedFreeModules(_integers())]
+        return [FramedFreeModules(_own_ring(SageZZ))]
 
-    def _call_(self, module):
-        assert module in FramedFreeModules(_integers()), (
-            "a divisor group is a free abelian group on specified prime divisors"
+    def _call_(self, prime_divisors):
+        r"""The free abelian group on the set ``prime_divisors`` of prime divisors."""
+        return _integers()._fresh_free_module_on(
+            prime_divisors,
+            _extra_categories=(self,),
         )
-        return _module_in_role(module, self)
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
@@ -98,17 +106,30 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         )
 
     def from_terms(self, terms):
-        r"""The formal divisor \(\sum_P a_P\,P\) of the finitely supported ``terms``.
+        r"""The formal divisor \(\sum_i a_i P_i\) of a finite family of terms \((a_i, P_i)\).
 
-        ``terms`` is the finitely supported coefficient function
-        \(P \mapsto a_P\), given as a mapping from prime divisors to
-        coefficients.
+        A prime divisor occurring in several terms receives the sum of their
+        coefficients, so the result is the finitely supported coefficient
+        function \(P \mapsto \sum_{P_i = P} a_i\).
         """
         ring = self.base_ring()
-        prime_divisors = finite_ordered_set(tuple(terms))
+        terms = tuple(terms)
+        prime_divisors = finite_ordered_set(
+            tuple(prime_divisor for _, prime_divisor in terms)
+        )
         group = self(tuple(prime_divisors))
         return group.linear_combination(
-            {prime_divisor: ring(terms[prime_divisor]) for prime_divisor in prime_divisors}
+            {
+                prime_divisor: sum(
+                    (
+                        ring(coefficient)
+                        for coefficient, component in terms
+                        if component == prime_divisor
+                    ),
+                    ring.zero(),
+                )
+                for prime_divisor in prime_divisors
+            }
         )
 
     @classmethod
