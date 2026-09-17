@@ -42,12 +42,6 @@ def _cokernel_in_category(presentation, category, **data):
     )
 
 
-def _zero_presentation():
-    r"""The zero morphism \(0 \to 0\) of abelian groups, whose cokernel is the zero group."""
-    zero = _integers().free_module(finite_ordered_set(()))
-    return zero.module_category().Mor(zero, zero)({})
-
-
 def _free_presentation(generators):
     r"""The zero morphism \(0 \to \mathbb{Z}^{(S)}\), presenting the free abelian group on ``generators``."""
     integers = _integers()

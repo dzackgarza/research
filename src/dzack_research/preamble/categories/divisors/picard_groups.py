@@ -6,8 +6,8 @@ from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.divisor_groups import (
     _affine_line_over_rationals,
     _cokernel_in_category,
+    _free_presentation,
     _integers,
-    _zero_presentation,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -46,13 +46,18 @@ class PicardGroups(Category):
         r"""\(\operatorname{CDiv}/\operatorname{im}(\rho)\) for the principal Cartier divisor morphism ``principal_divisors`` \(\rho\)."""
         return _cokernel_in_category(principal_divisors, self, picard_scheme=scheme)
 
-    def trivial(self, scheme):
-        r"""The zero Picard group of ``scheme``.
+    def free(self, scheme, generators):
+        r"""The free abelian group on the set ``generators`` of line-bundle classes of ``scheme``, presented by \(0 \to \mathbb{Z}^{(S)}\).
 
-        This is an explicit construction for a scheme whose Picard triviality
-        is already known; it does not assert or decide that theorem.
+        This is an explicit construction for a scheme whose Picard group is
+        already known to be free on these classes; it does not assert or
+        decide that theorem.
         """
-        return self(scheme, _zero_presentation())
+        return self(scheme, _free_presentation(generators))
+
+    def trivial(self, scheme):
+        r"""The zero Picard group of ``scheme``, the free group on no classes."""
+        return self.free(scheme, finite_ordered_set(()))
 
     def projective_bundle(self, projective_space, base_picard_group):
         r"""\(\operatorname{Pic}(\mathbb{P}^n_S) = \operatorname{Pic}(S) \oplus \mathbb{Z}[\mathcal{O}(1)]\).

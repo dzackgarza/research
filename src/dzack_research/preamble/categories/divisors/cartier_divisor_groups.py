@@ -25,7 +25,7 @@ class CartierDivisorGroups(Category):
 
     def an_object(self):
         r"""Cartier divisors of \(\mathbb{A}^1_{\mathbb{Q}}\) framed by one divisor with no relation."""
-        return self(_affine_line_over_rationals(), _free_presentation(finite_ordered_set(("D",))))
+        return self.free(_affine_line_over_rationals(), finite_ordered_set(("D",)))
 
     @classmethod
     def _repr_object_names(cls):
@@ -37,6 +37,10 @@ class CartierDivisorGroups(Category):
     def _call_(self, scheme, presentation):
         r"""\(\operatorname{coker}(\rho)\) for the presentation ``presentation`` of Cartier divisors of ``scheme``."""
         return _cokernel_in_category(presentation, self, divisor_scheme=scheme)
+
+    def free(self, scheme, generators):
+        r"""The free abelian group on the set ``generators`` of Cartier divisors of ``scheme``, presented by \(0 \to \mathbb{Z}^{(S)}\)."""
+        return self(scheme, _free_presentation(generators))
 
     class ParentMethods:
         def __init__(self, divisor_scheme, **rest) -> None:
