@@ -100,15 +100,12 @@ def _convolution_piece_product(left, right, degree):
 
 
 def _compose_morphisms(left, right):
-    r"""The composite \(left\circ right\)."""
-    if right.codomain() is not left.domain():
-        raise TypeError(
-            f"cannot compose: the codomain of {right} is not the domain of {left}"
-        )
-    return SetMorphism(
-        Sets().Mor(right.domain(), left.codomain()),
-        lambda value, left=left, right=right: left(right(value)),
-    )
+    r"""Compose the represented linear maps in their common module Hom."""
+    assert right.codomain() is left.domain(), "linear maps compose at their common module"
+    modules = Modules(left.domain().base_ring())
+    return modules.Mor(left.domain(), left.codomain())(left) * modules.Mor(
+        right.domain(), right.codomain()
+    )(right)
 
 
 class LebesgueGradedModules(OwnedCategoryOverBaseRing):
