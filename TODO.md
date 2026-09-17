@@ -189,6 +189,7 @@ Preserve the phase-T execution rules.
   **Goal:** finish integrating the remaining complaint remediations from `origin/remediate/scheme-gluing` and `origin/remediate/schemes` into `main` instead of redoing their work.
   Each branch forked from an older `main` and several end in an owner-pause checkpoint commit, so its work is partial by construction.
   **Acceptance:** for every listed branch, its commits have been reviewed against `CONTRIBUTING.md` (design philosophy, architecture specification, `DEV-50`–`DEV-59`) and the `COMPLAINTS.md` finding it claims; compliant work is finished at its mathematical owner and merged or rebased onto current `main`, and non-compliant commits are rejected with the reason recorded against that complaint rather than merged; the corresponding `objects-through-categories-*` or constructor node is removed or reduced to its genuine unfinished residue; the branch is deleted from `origin` once absorbed. Checkpoint commits that only record a pause are not absorbed as work.
+  **Banking cadence:** bank each owner integration and each defect repair as its own commit the moment it is coherent; a branch, or a pair of branches that share owners, is never integrated as one uncommitted delta. More than about thirty minutes of integration work without a commit means the unit was cut too large: stop, bank what is coherent, and continue in smaller units.
 
 ## Completion and local algebra
 
