@@ -46,6 +46,35 @@ def _has_finite_free_framing(module) -> bool:
     return _coordinate_framed_free_module(module, module.base_ring())
 
 
+def _finite_generating_elements(module):
+    r"""A finite determining family for linear maps, or no such supplied data.
+
+    Used only by module-morphism comparison. Relations are unnecessary for
+    comparing already admitted linear maps: linearity extends equality from
+    a spanning family. Products of spanning families span a tensor product
+    by bilinearity (Mathlib TensorProduct.ext). Adding structure preserves
+    the supplied unformed module's family through its existing coercion.
+    No infinite family or point sample is used to infer equality.
+    """
+    from dzack_research.preamble.categories.modules.pure.modules import FramedModules, TensorProductModules
+
+    ring = module.base_ring()
+    match module:
+        case _ if module in FramedModules(ring) and module.module_generating_set().cardinality().is_finite():
+            return iter(module.module_generators())
+        case _ if module in TensorProductModules(ring) and module.tensor_factors().cardinality() == 2:
+            left = _finite_generating_elements(module.tensor_factor(0))
+            right = _finite_generating_elements(module.tensor_factor(1))
+            if left is None or right is None:
+                return None
+            return (module.pure_tensor(x, y) for x, y in product(left, right))
+        case _ if module.unformed_module() is not module:
+            elements = _finite_generating_elements(module.unformed_module())
+            return None if elements is None else map(module, elements)
+        case _:
+            return None
+
+
 def _integral_left_solver(system, ring):
     r"""Factor one integral system once and return its exact row solver.
 
@@ -458,11 +487,10 @@ class ModuleMorphism(Morphism):
         return self + (-self.parent()(other))
 
     def _richcmp_(self, other, op):
-        r"""Decide equality from the source's chosen finite presentation.
+        r"""Compare admitted linear maps on an available finite spanning family.
 
-        Two linear maps agree exactly when they agree on a generating set, so
-        this is decidable when the source carries a chosen finite presentation
-        and not otherwise.
+        A missing finite family or undecided value comparison remains Unknown;
+        neither failed normalization nor a finite sample disproves equality.
         """
         from sage.structure.richcmp import op_EQ, op_NE
 
@@ -474,13 +502,10 @@ class ModuleMorphism(Morphism):
             return op == op_EQ
         from sage.misc.unknown import Unknown
 
-        domain = self.domain()
-        if domain._selected_presentation_rows() is None:
+        elements = _finite_generating_elements(self.domain())
+        if elements is None:
             return Unknown
-        comparisons = tuple(
-            self(domain.module_generator(label)) == other(domain.module_generator(label))
-            for label in domain.module_generating_set()
-        )
+        comparisons = tuple(self(element) == other(element) for element in elements)
         match (any(answer is False for answer in comparisons), all(answer is True for answer in comparisons)):
             case (True, _):
                 equal = False

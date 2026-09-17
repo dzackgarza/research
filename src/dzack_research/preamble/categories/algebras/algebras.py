@@ -99,8 +99,9 @@ class MultiplicativeAlgebraMorphism(Morphism):
 
     The datum is the linear map, an element of the module Hom.  The defining
     equation is one equation between two module morphisms out of
-    \(A\otimes_R A\), asked of the module Hom: it decides on a chosen finite
-    presentation of \(A\otimes_R A\) and answers ``Unknown`` otherwise.  A map
+    \(A\otimes_R A\), asked of the module Mor: its finite generating data
+    decide the equation when value equality is decided; otherwise it answers
+    ``Unknown``.  A map
     for which it answers ``False`` is refused; ``Unknown`` is recorded as the
     hypothesis the arrow is stated under (``CON-16``, ``DEV-52``).
     """
