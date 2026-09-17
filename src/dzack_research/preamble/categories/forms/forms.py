@@ -1,28 +1,36 @@
 r"""Exact pairings and quadratic forms through their universal module objects.
 
-Whenever the relevant universal object is represented, a pairing is literally an
-element of ``Hom_R(X tensor_R Y, W)`` and a quadratic map is literally an element
-of ``Hom_R(Gamma^2(M), W)``.  Only modules for which those universal objects are
-not represented retain an extensional callable form object; that fallback never
-pretends to be a second Hom implementation and has no coordinate presentation.
+Whenever the universal object is represented, a pairing is an element of
+``Hom_R(X tensor_R Y, W)`` and a quadratic map an element of
+``Hom_R(Gamma^2(M), W)``.  Otherwise the evaluation retains the original
+modules and value object; its pointwise module structure is constructed
+through the module owner, without assigning it a finite presentation.
 """
 
-from sage.categories.sets_cat import Sets
-from sage.misc.cachefunc import cached_function
-from sage.structure.element import Element
-from sage.structure.parent import Parent
+from itertools import chain, combinations, product
 
+from sage.misc.cachefunc import cached_function
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.element import parent as element_parent
+
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleHomset,
     TensorProductModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.powers import (
+    DividedSquareModules,
     QuadraticModuleHomset,
     QuadraticModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
     InternalHomModules,
     Modules,
+    ModulesWithChosenFinitePresentation,
+    TensorProductModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -32,10 +40,13 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _coerce_family_value as _coerce_value,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
-    _coordinate_family,
+    _coordinate_family_from_family,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
     _coordinate_family_from_function,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    _coordinate_family_from_rows,
 )
 from dzack_research.preamble.categories.sets.coordinate_families import (
     _coordinate_pair,
@@ -44,6 +55,8 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     _finite_framing,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import tensor
 
 # Historical form vocabulary now names the universal module-Hom owners.
@@ -130,9 +143,26 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
             return _descended_bilinear_form(self, morphism, value_projection)
 
 
-def _value_module_over(value_module, ring) -> bool:
+def _form_classifier_is_represented(left_module, right_module, value_module) -> bool:
+    r"""Whether forms on these modules are arrows out of a represented universal object.
 
-    return value_module in Modules(ring)
+    Bilinear maps ``X x Y -> W`` are classified by ``X \otimes_R Y`` and quadratic
+    maps ``M -> W`` by ``\Gamma^2_R(M)`` (take ``X = Y = M``).  A form is an arrow
+    of ``Modules(R)`` only when ``W`` is an ``R``-module, and the module owner
+    constructs both universal objects exactly when every module involved carries
+    its free framing or every one carries a chosen finite presentation
+    (``_module_tensor_product_with_data`` and ``_presented_degree_power``).  This
+    is that routing asked as placement, once, for every form construction here.
+    """
+    ring = left_module.base_ring()
+    if value_module not in Modules(ring):
+        return False
+    return (
+        left_module in FramedFreeModules(ring) and right_module in FramedFreeModules(ring)
+    ) or (
+        left_module in ModulesWithChosenFinitePresentation(ring)
+        and right_module in ModulesWithChosenFinitePresentation(ring)
+    )
 
 
 def _form_value_image(form):
@@ -204,70 +234,14 @@ def _descended_bilinear_form(form, morphism, value_projection):
     )
 
 
-class _CallableForm(Element):
-    r"""Extensional form data used only when no universal classifier is represented."""
+class _CallableFormMethods:
+    r"""A bilinear or quadratic map given by its evaluation.
 
-    def __init__(self, parent, datum) -> None:
-        Element.__init__(self, parent)
-        self._evaluation = None
-        self._lift_evaluation = None
-
-        coordinate_datum = (
-            isinstance(datum, IndexedFamily)
-            or hasattr(datum, "rows")
-            or (
-                isinstance(datum, (tuple, list))
-                and all(isinstance(row, (tuple, list)) for row in datum)
-            )
-        )
-        if coordinate_datum:
-            left_labels = _finite_framing(parent.left_module())
-            right_labels = _finite_framing(parent.right_module())
-            values = _coordinate_family(
-                left_labels,
-                right_labels,
-                parent.codomain(),
-                datum,
-                name=f"Callable {parent.kind()} coordinate input",
-            )
-
-            def bilinear(left, right):
-
-                left_coefficients = parent.left_module().framing_coefficients(left)
-                right_coefficients = parent.right_module().framing_coefficients(right)
-                result = parent.codomain().zero()
-                for left_label, left_coefficient in left_coefficients.items():
-                    for right_label, right_coefficient in right_coefficients.items():
-                        scalar = left_coefficient * right_coefficient
-                        if scalar:
-                            result += scalar * _coordinate_pair(
-                                values, left_label, right_label
-                            )
-                return result
-
-            if parent.kind() == "quadratic":
-                size = int(left_labels.cardinality())
-                for i in range(size):
-                    for j in range(i + 1, size):
-                        left = left_labels[i]
-                        right = left_labels[j]
-                        if _coordinate_pair(values, left, right) != _coordinate_pair(
-                            values, right, left
-                        ):
-                            raise ValueError(
-                                "the bilinear lift of a quadratic form must be symmetric"
-                            )
-                self._lift_evaluation = bilinear
-                self._evaluation = lambda element: bilinear(element, element)
-            else:
-                self._evaluation = bilinear
-            return
-
-        if not callable(datum):
-            raise TypeError(
-                "an unrepresented form is supplied by callable evaluation or finite coordinate ingress"
-            )
-        self._evaluation = datum
+    Used only when no universal classifier is represented.  The datum is the
+    evaluation itself, and for a quadratic map built from coordinates the
+    chosen symmetric bilinear lift ``b`` with ``q(x) = b(x, x)``; the space's
+    element constructor computes both from whatever the caller supplied.
+    """
 
     def left_module(self):
         return self.parent().left_module()
@@ -450,31 +424,87 @@ class _CallableForm(Element):
         )
         return _descended_bilinear_form(self, morphism, value_projection)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool | UnknownClass:
+        r"""Equality of two maps of this space, decided on finitely many generators.
+
+        A bilinear map is determined by its values on pairs of module generators,
+        and a quadratic map ``q`` by ``q(s)`` and ``q(s + t)`` on generators, because
+        ``q(\sum_s a_s s) = \sum_s a_s^2 q(s) + \sum_{s<t} a_s a_t (q(s+t) - q(s) - q(t))``.
+        So equality is decided when the modules carry finite framings.  Equality of
+        arbitrary extensional maps is not decidable, and otherwise the answer is
+        ``Unknown`` unless the two evaluations are one (`DEV-52`); a value comparison
+        that is itself undecided makes the answer ``Unknown``.
+        """
         if self is other:
             return True
-        if not isinstance(other, _CallableForm) or other.parent() is not self.parent():
+        if element_parent(other) is not self.parent():
             return False
         if self._evaluation is other._evaluation:
             return True
-        raise NotImplementedError("equality of arbitrary callable forms is not decidable")
+        left_module = self.left_module()
+        right_module = self.right_module()
+        ring = left_module.base_ring()
+        framed = left_module in FramedModules(ring) and right_module in FramedModules(ring)
+        if not framed:
+            return Unknown
+        left_labels = left_module.module_generating_set()
+        right_labels = right_module.module_generating_set()
+        if not (left_labels.cardinality().is_finite() and right_labels.cardinality().is_finite()):
+            return Unknown
+        match self.parent().kind():
+            case "quadratic":
+                generator = left_module.module_generator
+                probes = chain(
+                    map(generator, left_labels),
+                    (generator(left) + generator(right) for left, right in combinations(left_labels, 2)),
+                )
+                answers = (self(probe) == other(probe) for probe in probes)
+            case _:
+                answers = (
+                    self(left_module.module_generator(left), right_module.module_generator(right))
+                    == other(left_module.module_generator(left), right_module.module_generator(right))
+                    for left, right in product(left_labels, right_labels)
+                )
+        undecided = False
+        for answer in answers:
+            if answer is False:
+                return False
+            if answer is not True:
+                undecided = True
+        return Unknown if undecided else True
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def __ne__(self, other) -> bool | UnknownClass:
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
 
     def _repr_(self):
         return f"Extensional {self.parent().kind()} form with values in {self.codomain()}"
 
 
-class _CallableFormSpace(Parent):
-    Element = _CallableForm
+class _CallableForm(_CallableFormMethods):
+    r"""The evaluation held by the private set realization of forms."""
 
-    def __init__(self, left_module, right_module, value_module, kind) -> None:
+    def __init__(self, parent, evaluation, lift_evaluation=None) -> None:
+        self._evaluation = evaluation
+        self._lift_evaluation = lift_evaluation
+        super().__init__(parent)
+
+
+class _CallableFormSpace:
+    r"""The ``R``-bilinear maps ``X x Y -> W``, or the quadratic maps ``M -> W``, by evaluation.
+
+    This is the underlying set used by the module of forms below.  The
+    input callable states a bilinear or quadratic map, not an arbitrary
+    function whose laws can be decided on an infinite domain.  Finite
+    presented modules use their universal classifier instead.
+    """
+
+    def __init__(self, left_module, right_module, value_module, kind, **rest) -> None:
         self._left_module = left_module
         self._right_module = right_module
         self._value_module = value_module
         self._kind = kind
-        Parent.__init__(self, category=Sets())
+        super().__init__(**rest)
 
     def left_module(self):
         return self._left_module
@@ -497,80 +527,256 @@ class _CallableFormSpace(Parent):
         return self._element_constructor_(datum)
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, _CallableForm) and datum.parent() is self:
+        r"""Admit a map of this space: one of its elements, finite coordinates, or an evaluation.
+
+        This is the one boundary that reads the shape of foreign data.  An
+        indexed family over the two framings, a matrix, or rows are finite
+        coordinates; any other callable is the evaluation itself.
+        """
+        if element_parent(datum) is self:
             return datum
+        name = f"Callable {self.kind()} coordinate input"
+        if isinstance(datum, IndexedFamily):
+            return self._from_coordinate_values(
+                _coordinate_family_from_family(
+                    _finite_framing(self.left_module()),
+                    _finite_framing(self.right_module()),
+                    self.codomain(),
+                    datum,
+                    name=name,
+                )
+            )
+        if hasattr(datum, "rows") or (
+            isinstance(datum, (tuple, list))
+            and all(isinstance(row, (tuple, list)) for row in datum)
+        ):
+            return self._from_coordinate_values(
+                _coordinate_family_from_rows(
+                    _finite_framing(self.left_module()),
+                    _finite_framing(self.right_module()),
+                    self.codomain(),
+                    datum.rows() if hasattr(datum, "rows") else datum,
+                    name=name,
+                )
+            )
+        if not callable(datum):
+            raise TypeError(
+                "an unrepresented form is supplied by callable evaluation or finite coordinate ingress"
+            )
         return self.element_class(self, datum)
+
+    def _from_coordinate_values(self, values):
+        r"""The map whose values on pairs of framing generators are the family ``values``.
+
+        Bilinear extension ``b(x, y) = \sum_{s,t} x_s y_t\, b(s, t)`` over the two
+        framings.  For a quadratic space the coordinates are the chosen bilinear
+        lift ``b``, which must be symmetric, and the map is ``q(x) = b(x, x)``.
+        """
+        left_module = self.left_module()
+        right_module = self.right_module()
+        left_labels = _finite_framing(left_module)
+        zero = self.codomain().zero()
+
+        def bilinear(left, right):
+            left_coefficients = left_module.framing_coefficients(left)
+            right_coefficients = right_module.framing_coefficients(right)
+            return sum(
+                (
+                    scalar * _coordinate_pair(values, left_label, right_label)
+                    for left_label, left_coefficient in left_coefficients.items()
+                    for right_label, right_coefficient in right_coefficients.items()
+                    if (scalar := left_coefficient * right_coefficient)
+                ),
+                start=zero,
+            )
+
+        if self.kind() != "quadratic":
+            return self.element_class(self, bilinear)
+        if not all(
+            _coordinate_pair(values, left, right) == _coordinate_pair(values, right, left)
+            for left, right in combinations(left_labels, 2)
+        ):
+            raise ValueError("the bilinear lift of a quadratic form must be symmetric")
+        return self.element_class(self, lambda element: bilinear(element, element), bilinear)
 
     def from_quadratic_map(self, quadratic, **_options):
         if self.kind() != "quadratic":
             raise TypeError("quadratic-map construction belongs to a quadratic form space")
         return self(quadratic)
 
+    def __contains__(self, candidate):
+        return element_parent(candidate) is self
+
+    def _repr_(self):
+        return f"{self.kind().capitalize()} maps from {self.left_module()} to {self.codomain()}"
+
+
+class _CallableFormModuleElement(_CallableFormMethods):
+    r"""A form as an element of the module on the retained set of forms."""
+
+    @property
+    def _evaluation(self):
+        return self.underlying_element()._evaluation
+
+    @property
+    def _lift_evaluation(self):
+        return self.underlying_element()._lift_evaluation
+
+
+class _CallableFormModule:
+    r"""Pointwise module structure on the actual set of bilinear or quadratic maps.
+
+    The private engine supplies the defining operations to GeneralModules.
+    For central scalars, a linear combination of bilinear maps is bilinear;
+    likewise a linear combination of quadratic maps has the same quadratic
+    homogeneity and a bilinear polar map.  These identities follow termwise
+    from the supplied maps' identities.  Module arithmetic is inherited,
+    not implemented separately on the form elements.
+    """
+
+    def __init__(self, form_set, **rest) -> None:
+        value_module = form_set.codomain()
+        ring = form_set.left_module().base_ring()
+        super().__init__(
+            underlying_set=form_set,
+            addition=lambda left, right: form_set(lambda *args: left(*args) + right(*args)),
+            zero=form_set(lambda *args: value_module.zero()),
+            negation=lambda form: form_set(lambda *args: -form(*args)),
+            scalar_action=lambda scalar, form: form_set(
+                lambda *args: value_module.scalar_multiple(ring(scalar), form(*args))
+            ),
+            verify=False,
+            **rest,
+        )
+
+    def left_module(self):
+        return self.underlying_set().left_module()
+
+    def right_module(self):
+        return self.underlying_set().right_module()
+
+    def module(self):
+        return self.underlying_set().module()
+
+    def codomain(self):
+        return self.underlying_set().codomain()
+
+    def kind(self):
+        return self.underlying_set().kind()
+
+    def _element_constructor_(self, datum):
+        match element_parent(datum):
+            case parent if parent is self:
+                return datum
+            case _:
+                return super()._element_constructor_(self.underlying_set()(datum))
+
+    def from_quadratic_map(self, quadratic, **_options):
+        assert self.kind() == "quadratic", "quadratic-map construction belongs to quadratic forms"
+        return self(quadratic)
+
+    def _repr_(self):
+        return f"Module of {self.kind()} maps from {self.left_module()} to {self.codomain()}"
+
 
 @cached_function(key=lambda left_module, right_module, value_module, kind: (id(left_module), id(right_module), id(value_module), kind))
 def _callable_form_space(left_module, right_module, value_module, kind):
-    space = _CallableFormSpace(left_module, right_module, value_module, kind)
-    return space
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+
+    form_set = _object_of(
+        Sets(),
+        _engine=(Sets(), _CallableFormSpace, _CallableForm),
+        left_module=left_module,
+        right_module=right_module,
+        value_module=value_module,
+        kind=kind,
+    )
+    ring = left_module.base_ring()
+    match value_module:
+        case _ if value_module in Modules(ring):
+            scalars = ring.ring_center()
+            modules = GeneralModules(scalars)
+            return _object_of(
+                modules,
+                _engine=(modules, _CallableFormModule, _CallableFormModuleElement),
+                base_ring=scalars,
+                form_set=form_set,
+            )
+        case _:
+            return form_set
 
 
 def _is_bilinear_form(form) -> bool:
-    if isinstance(form, _CallableForm):
-        return form.parent().kind() == "bilinear" and form.left_module() is form.right_module()
+    r"""Whether ``form`` is a bilinear form on its module ``M``.
 
-    return (
-        isinstance(form, TensorProductModuleMorphism)
-        and form.left_module() is form.right_module()
-    )
+    A bilinear form on ``M`` classified by a represented tensor square is an
+    arrow out of ``M \otimes_R M``; otherwise it is an element of the space of
+    bilinear maps.  Which of the two applies is the routing that built the
+    form's space (:func:`_form_classifier_is_represented`).  A pairing of two
+    distinct modules is not a form on one module, and ``form.module()``
+    refuses it.
+    """
+    module = form.module()
+    forms = element_parent(form)
+    match module:
+        case _ if _form_classifier_is_represented(module, module, form.codomain()):
+            return forms.domain() in TensorProductModules(module.base_ring())
+        case _:
+            return forms.kind() == "bilinear"
 
 
 def _is_quadratic_form(form) -> bool:
-    if isinstance(form, _CallableForm):
-        return form.parent().kind() == "quadratic"
+    r"""Whether ``form`` is a quadratic form on its module ``M``.
 
-    return isinstance(form, QuadraticModuleMorphism)
+    A quadratic form classified by a represented divided square is an arrow
+    out of ``\Gamma^2_R(M)``; otherwise it is an element of the space of
+    quadratic maps.  The routing is :func:`_is_bilinear_form`'s.
+    """
+    module = form.module()
+    forms = element_parent(form)
+    match module:
+        case _ if _form_classifier_is_represented(module, module, form.codomain()):
+            return forms.domain() in DividedSquareModules(module.base_ring())
+        case _:
+            return forms.kind() == "quadratic"
 
 
 def _pairings(left_module, right_module, value_module):
-    r"""Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists."""
-    if left_module is right_module:
-        return left_module.bilinear_forms(value_module)
+    r"""Return the ``R``-bilinear maps ``X x Y -> W``.
 
-    if _value_module_over(value_module, left_module.base_ring()):
-        try:
+    That is ``Hom_R(X \otimes_R Y, W)`` when the tensor product is represented,
+    and the space of bilinear maps given by their evaluation otherwise.
+    """
+    match right_module:
+        case _ if right_module is left_module:
+            return left_module.bilinear_forms(value_module)
+        case _ if _form_classifier_is_represented(left_module, right_module, value_module):
             tensor_product = left_module.module_category().tensor_product(
                 (left_module, right_module)
             )
-        except NotImplementedError:
-            pass
-        else:
             return tensor_product.module_category().Mor(tensor_product, value_module)
-    return _callable_form_space(left_module, right_module, value_module, "bilinear")
+        case _:
+            return _callable_form_space(left_module, right_module, value_module, "bilinear")
 
 
 def _bilinear_forms(module, value_module):
-    r"""Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists."""
-
-    if _value_module_over(value_module, module.base_ring()):
-        try:
+    r"""Return ``Hom_R(M \otimes_R M, W)``, or the bilinear maps when the square is not represented."""
+    match module:
+        case _ if _form_classifier_is_represented(module, module, value_module):
             tensor_product = module.module_category().tensor_product((module, module))
-        except NotImplementedError:
-            pass
-        else:
             return tensor_product.module_category().Mor(tensor_product, value_module)
-    return _callable_form_space(module, module, value_module, "bilinear")
+        case _:
+            return _callable_form_space(module, module, value_module, "bilinear")
 
 
 def _quadratic_forms(module, value_module):
-    r"""Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented."""
-
-    if _value_module_over(value_module, module.base_ring()):
-        try:
+    r"""Return ``Hom_R(\Gamma^2(M), W)``, or the quadratic maps when the square is not represented."""
+    match module:
+        case _ if _form_classifier_is_represented(module, module, value_module):
             square = module.divided_square()
-        except NotImplementedError:
-            pass
-        else:
             return square.module_category().Mor(square, value_module)
-    return _callable_form_space(module, module, value_module, "quadratic")
+        case _:
+            return _callable_form_space(module, module, value_module, "quadratic")
 
 
 QuadraticFormMorphism = QuadraticModuleMorphism
@@ -584,14 +790,20 @@ def _quadratic_map(module, value_module, function):
 
 
 def _quadratic_map_from_morphism(module, morphism):
-    r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``."""
+    r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``.
 
+    A morphism of ``Hom_R(\Gamma^2(M), W)`` already is that quadratic map; any
+    other arrow out of the divided square is read through ``q(x) = f(\gamma_2(x))``.
+    """
     square = module.divided_square()
     if morphism.domain() is not square:
         raise ValueError("the classifier morphism has the wrong divided-square domain")
-    if isinstance(morphism, QuadraticModuleMorphism):
-        return morphism
-    return module.quadratic_map(
-        morphism.codomain(),
-        lambda element: morphism(square.quadratic(element)),
-    )
+    quadratic_maps = square.module_category().Mor(square, morphism.codomain())
+    match morphism:
+        case _ if element_parent(morphism) is quadratic_maps:
+            return morphism
+        case _:
+            return module.quadratic_map(
+                morphism.codomain(),
+                lambda element: morphism(square.quadratic(element)),
+            )

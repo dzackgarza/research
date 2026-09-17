@@ -122,3 +122,12 @@ def test_order_relations_are_certified_not_floating_point_guesses() -> None:
     assert (RR(pi) > RR(3)) is True
     assert (RR(e) < RR(3)) is True
     assert (RR(sqrt(2)) > RR(QQ(7) / 5)) is True
+
+
+def test_ask_does_not_confuse_integer_literals_with_truth_values() -> None:
+    assert ask(True) is True
+    assert ask(False) is False
+    assert ask(Unknown) is Unknown
+    for value in (0, 1, object()):
+        with pytest.raises(TypeError, match="boolean or Predicate"):
+            ask(value)

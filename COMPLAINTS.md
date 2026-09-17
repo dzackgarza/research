@@ -98,6 +98,20 @@ No session was run.
 The right-hand column states the category each docstring names; where building it requires a choice between several honest formulations, that choice is not made here.
 Whether any consumer additionally depends on the false declaration, rather than merely carrying it, was not determined.
 
+### Functions/sets/tensors branch review: rejected regressions
+
+The `functions-sets-tensors` review rejects the branch's unconditional
+linear-search replacement of `IndexedFamily`'s hash cache: it makes access
+to every new hashable label scan all earlier labels, while the existing
+unhashable-label path already covers those inputs.  This is not remediation
+of complaints 10 or 15.  It also rejects `finite_family` discarding a supplied
+family's retained index set, and the restriction of the degree-zero DGA
+functor to `DeRhamAlgebras`: neither follows from the mathematical domain.
+The coordinate parser retains bounded reading when rejecting extra rows or
+entries; eliminating `StopIteration` handling does not authorize consuming
+an infinite malformed input.  `ask` retains exact boolean admission rather
+than matching integer `0`/`1` as `False`/`True`.
+
 ### Algebras are not constructed from their structure morphism
 
 **Missing general mathematics.**

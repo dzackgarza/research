@@ -1,8 +1,11 @@
 r"""Tensor and symmetric algebra adjunctions, plus exterior-algebra functoriality."""
 
-from typing import Any, ClassVar
+from collections.abc import Callable
+from typing import ClassVar
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function
+from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -25,8 +28,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class _ModuleAlgebraFunctor(Functor):
-    _constructor: ClassVar[Any] = None
-    _codomain_category: ClassVar[Any] = None
+    r"""A free algebra functor on ``R``-modules, fixed by its object construction.
+
+    A specialization states the construction ``M |-> A(M)`` and the category
+    of algebras it lands in; the morphism action, extending a linear map
+    along the degree-one generators, is common to all of them.
+    """
+
+    _constructor: ClassVar[Callable[[Parent], Parent]]
+    _codomain_category: ClassVar[Callable[[Parent], Category]]
     _name = "free algebra"
 
     def __init__(self, base_ring) -> None:
@@ -146,7 +156,13 @@ def _symmetric_algebra_functor(base_ring) -> _SymmetricAlgebraFunctor:
 
 
 class _ModuleAlgebraAdjunction(Adjunction):
-    _left_functor_factory: ClassVar[Any] = None
+    r"""A free algebra functor ``F`` with its underlying-module right adjoint ``U``.
+
+    A specialization states the free functor over a base ring; the unit is
+    the degree-one inclusion and the counit the evaluation map.
+    """
+
+    _left_functor_factory: ClassVar[Callable[[Parent], _ModuleAlgebraFunctor]]
     _name = "module-algebra"
 
     def __init__(self, base_ring) -> None:

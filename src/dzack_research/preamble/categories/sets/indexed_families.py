@@ -75,12 +75,12 @@ class IndexedFamily[IndexT, ValueT](SageObject):
     __call__ = value
 
     def __getitem__(self, index: IndexT) -> ValueT:
-        r"""The value at ``index``, or -- failing that -- at that position."""
-        try:
-            normalized = self.index_set()(index)
-        except (TypeError, ValueError):
-            return self.value(self.index_set().ranking_map().inverse()(index))
-        return self.value(normalized)
+        r"""The value at a label, otherwise at a position in the index set's enumeration."""
+        match index in self.index_set():
+            case True:
+                return self.value(index)
+            case False:
+                return self.value(self.index_set().ranking_map().inverse()(index))
 
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())

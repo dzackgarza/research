@@ -1,8 +1,10 @@
 """Finite coordinate presentations built from owned indexed families."""
 
 from collections.abc import Callable, Iterable
+from itertools import islice
 
 from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -32,10 +34,61 @@ def _coerce_family_value[CoordinateValueInputT](
     value_module: Parent,
     value: CoordinateValueInputT,
 ) -> Element:
-    return (
-        value
-        if getattr(value, "parent", lambda: None)() is value_module
-        else value_module(value)
+    r"""``value`` as an element of ``value_module``: itself when that is its parent, its conversion otherwise."""
+    return value if element_parent(value) is value_module else value_module(value)
+
+
+def _coordinate_family_from_family(
+    left_labels: Parent,
+    right_labels: Parent,
+    value_module: Parent,
+    datum: IndexedFamily,
+    *,
+    name: str,
+) -> IndexedFamily:
+    r"""Transport a family indexed by pairs of labels to ``left × right``, coercing its values."""
+    indices = _coordinate_index_set(left_labels, right_labels)
+    source_indices = datum.index_set()
+
+    def transported(pair: Element) -> Element:
+        source_pair = source_indices(lambda index: pair.component(index))
+        return _coerce_family_value(value_module, datum[source_pair])
+
+    return indexed_family(indices, transported, name=name)
+
+
+def _coordinate_family_from_rows[CoordinateValueInputT](
+    left_labels: Parent,
+    right_labels: Parent,
+    value_module: Parent,
+    rows: Iterable[Iterable[CoordinateValueInputT]],
+    *,
+    name: str,
+) -> IndexedFamily:
+    r"""Parse finite rectangular rows as a family indexed by ``left × right``.
+
+    Literal ingress: the rows are read once, in the order of the two framings,
+    and their entries converted into ``value_module``.  Read at most one
+    excess row or entry, so a malformed infinite iterator is rejected too.
+    """
+    indices = _coordinate_index_set(left_labels, right_labels)
+    left_size = int(left_labels.cardinality())
+    right_size = int(right_labels.cardinality())
+    entries = tuple(
+        tuple(_coerce_family_value(value_module, entry) for entry in islice(row, right_size + 1))
+        for row in islice(rows, left_size + 1)
+    )
+    if len(entries) != left_size or any(len(row) != right_size for row in entries):
+        raise ValueError(
+            f"the coordinate presentation must have shape {left_size} x {right_size}"
+        )
+
+    return indexed_family(
+        indices,
+        lambda pair: entries[
+            int(left_labels.ranking_map()(pair.component(0)))
+        ][int(right_labels.ranking_map()(pair.component(1)))],
+        name=name,
     )
 
 
@@ -47,63 +100,21 @@ def _coordinate_family[CoordinateValueInputT](
     *,
     name: str,
 ) -> IndexedFamily:
-    r"""Parse finite rectangular data as a family indexed by ``left × right``."""
-    indices = _coordinate_index_set(left_labels, right_labels)
-    if isinstance(datum, IndexedFamily):
-        source_indices = datum.index_set()
+    r"""Parse finite coordinate data, a family over pairs of labels or rows, as a family over ``left × right``.
 
-        def transported(pair: Element) -> Element:
-            source_pair = source_indices(lambda index: pair.component(index))
-            return _coerce_family_value(value_module, datum[source_pair])
-
-        return indexed_family(indices, transported, name=name)
-
-    left_size = int(left_labels.cardinality())
-    right_size = int(right_labels.cardinality())
-    rows = iter(datum)
-    entries = {}
-    for left_position in range(left_size):
-        try:
-            row = iter(next(rows))
-        except StopIteration as error:
-            raise ValueError(
-                f"the coordinate presentation must have shape {left_size} x {right_size}"
-            ) from error
-        for right_position in range(right_size):
-            try:
-                entry = next(row)
-            except StopIteration as error:
-                raise ValueError(
-                    f"the coordinate presentation must have shape {left_size} x {right_size}"
-                ) from error
-            entries[left_position, right_position] = _coerce_family_value(
-                value_module, entry
+    The shared literal ingress of the quadratic-lift element constructor in
+    ``modules/powers.py``, which admits either presentation in one branch; it
+    reads which presentation ``datum`` is and hands it to the parser for it.
+    """
+    match datum:
+        case _ if isinstance(datum, IndexedFamily):
+            return _coordinate_family_from_family(
+                left_labels, right_labels, value_module, datum, name=name
             )
-        try:
-            next(row)
-        except StopIteration:
-            pass
-        else:
-            raise ValueError(
-                f"the coordinate presentation must have shape {left_size} x {right_size}"
+        case _:
+            return _coordinate_family_from_rows(
+                left_labels, right_labels, value_module, datum, name=name
             )
-    try:
-        next(rows)
-    except StopIteration:
-        pass
-    else:
-        raise ValueError(
-            f"the coordinate presentation must have shape {left_size} x {right_size}"
-        )
-
-    return indexed_family(
-        indices,
-        lambda pair: entries[
-            int(left_labels.ranking_map()(pair.component(0))),
-            int(right_labels.ranking_map()(pair.component(1))),
-        ],
-        name=name,
-    )
 
 
 def _coordinate_pair[LeftLabelT, RightLabelT](
