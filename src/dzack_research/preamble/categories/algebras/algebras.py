@@ -449,13 +449,14 @@ def _algebra_tensor_square_functor(base_ring):
 
 
 def _product_on(multiplication):
-    r"""``(x, y) |-> m(x (x) y)`` for ``m: M (x)_R M -> M``."""
-    tensor = multiplication.domain()
+    r"""``(x, y) |-> m(x, y)`` for ``m`` in ``M.bilinear_forms(M)``.
 
-    def product(left, right):
-        return multiplication(tensor.pure_tensor(left, right))
-
-    return product
+    That space is ``Hom_R(M (x)_R M, M)`` where the tensor square is
+    represented, whose arrows evaluate on two elements through the pure
+    tensor, and the bilinear maps ``M x M -> M`` otherwise; both evaluate on
+    two elements of ``M``.
+    """
+    return lambda left, right: multiplication(left, right)
 
 
 def _decide_on_module_generators(module, identity, arity):
@@ -637,8 +638,36 @@ class Algebras(OwnedCategoryOverBaseRing):
             self._preamble_multiplication = multiplication
             super().__init__(**rest)
 
+        def _install_multiplication(self, multiplication) -> None:
+            r"""Establish ``(M, m)`` on an algebra that is itself the module ``M``.
+
+            Protected contract of ``Algebras(R)`` (``OWN-05``), the root half of
+            the installation contract; its dispatcher is
+            ``Algebras(R).Unital().ParentMethods._install_multiplication_and_unit``
+            and nothing else calls it.
+
+            An algebra realized by an engine -- an owned ring over its engine,
+            a subring cut out by a predicate, a localization or quotient ring,
+            a sparse or graded realization of a free, power or cohomology
+            algebra -- is its own module, so ``M`` and ``m`` refer to the
+            object under construction and cannot be handed to ``__init__``.
+            ``multiplication`` is the product ``(x, y) |-> xy`` the realization
+            computes, a function of two elements of this algebra, read in
+            ``M.bilinear_forms(M)``.
+
+            Invariant: called exactly once, by the constructor of that
+            realization, before the object is returned from its construction
+            route and before any operation of this level is asked of it.  An
+            algebra built by ``Algebras(R)(M, m)`` takes ``(M, m)`` in
+            ``__init__`` and never reaches this; the assertion reads this
+            level's own storage to refuse a second installation.
+            """
+            assert "_preamble_multiplication" not in vars(self), f"{self} already has its multiplication"
+            self._preamble_unformed_module = self
+            self._preamble_multiplication = self.bilinear_forms(self)(multiplication)
+
         def unformed_module(self):
-            r"""The module ``M`` this algebra is built on, retained by ``Algebras(R)(M, m)``."""
+            r"""The module ``M`` this algebra is built on: the ``M`` of ``Algebras(R)(M, m)``, or the algebra itself when it realizes its own module."""
             return self._preamble_unformed_module
 
         def _element_of_unformed_module(self, element):
@@ -666,7 +695,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return self(module.underlying_additive_group()(element))
 
         def multiplication(self):
-            r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with."""
+            r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with, an element of ``M.bilinear_forms(M)``."""
             return self._preamble_multiplication
 
         @cached_method
@@ -1160,6 +1189,32 @@ class Algebras(OwnedCategoryOverBaseRing):
                 r"""Retain the unit, an element of the module the multiplication is stated on."""
                 self._preamble_algebra_unit = unit
                 super().__init__(**rest)
+
+            def _install_multiplication_and_unit(self, multiplication, unit) -> None:
+                r"""Establish ``(M, m, 1)`` on a unital algebra that is itself the module ``M``.
+
+                Protected contract of ``Algebras(R).Unital()`` and the one
+                dispatcher of the installation contract (``OWN-05``): it calls
+                the root's ``_install_multiplication`` and retains the unit.
+                Its permitted callers are the constructors of the realizations
+                whose datum refers to the object itself --
+                ``_OwnedRingParent``, ``_PredicateSubringParent``,
+                ``LocalizationRings`` and ``QuotientRings`` in the rings
+                subtree, ``SparseFreeAlgebra``, ``PowerAlgebra``,
+                ``RestrictedGradedAlgebra`` and ``_CohomologyAlgebra`` in this
+                one -- each calling it once, before the object is returned
+                from its construction route.  Ordinary mathematical code never
+                calls it, and an algebra built by the entry with
+                ``(M, m, unit)`` never reaches it.
+
+                ``unit`` is an element this algebra reads as its unit by
+                coercion, as the entry's unit is an element of ``M``.  The
+                assertion reads this level's own storage to refuse a second
+                installation.
+                """
+                assert "_preamble_algebra_unit" not in vars(self), f"{self} already has its unit"
+                self._install_multiplication(multiplication)
+                self._preamble_algebra_unit = unit
 
             @cached_method
             def one(self):
