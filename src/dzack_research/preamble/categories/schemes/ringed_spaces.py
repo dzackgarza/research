@@ -11,6 +11,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
+    HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -974,8 +975,22 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             return SchemeUnderlyingSpace(self)
 
 
+class LocallyRingedHomCategoryConstruction(HomCategoryConstruction):
+    r"""The Hom of locally ringed spaces, realized by the domain's presentation.
+
+    An affine scheme is determined by its ring, and maps out of a glued
+    scheme by compatible maps out of its charts (Stacks, Tags 01I1, 01JA).
+    Those presentations choose the arrow engine, not another Hom object.
+    """
+
+    def fixed_category_class_for(self, domain, codomain):
+        return domain._locally_ringed_homset_class()
+
+
 class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
     r"""Ringed spaces whose stalks are local rings."""
+
+    _HomCategory = LocallyRingedHomCategoryConstruction
 
     def an_object(self):
         r"""The locally ringed affine scheme ``Spec(ZZ)``."""
