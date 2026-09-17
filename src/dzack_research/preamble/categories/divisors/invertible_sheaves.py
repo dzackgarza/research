@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlasPresentation,
-    ModuleGluingDatum,
+    ModuleGluingData,
     _FiniteSchemeGluingDatum,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -46,8 +46,9 @@ class InvertibleSheaf(Parent):
     r"""A line bundle represented by rank-one free descent on one affine cover."""
 
     def __init__(self, gluing_datum) -> None:
-        if not isinstance(gluing_datum, ModuleGluingDatum):
-            raise TypeError("an invertible sheaf requires represented module descent data")
+        assert gluing_datum in ModuleGluingData(gluing_datum.cover()), (
+            "an invertible sheaf requires module descent data on its distinguished affine cover"
+        )
         self._gluing_datum = gluing_datum
         self._transition_units = {}
         for module in gluing_datum.local_modules():
@@ -56,8 +57,9 @@ class InvertibleSheaf(Parent):
                 raise TypeError(
                     "an invertible sheaf requires a rank-one finite free module on every chart"
                 )
-        for left in range(len(gluing_datum.local_modules())):
-            for right in range(left + 1, len(gluing_datum.local_modules())):
+        chart_count = int(gluing_datum.local_modules().cardinality())
+        for left in range(chart_count):
+            for right in range(left + 1, chart_count):
                 self._transition_units[left, right] = self._extract_transition_unit(
                     left,
                     right,
