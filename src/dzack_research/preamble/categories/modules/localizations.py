@@ -399,6 +399,8 @@ def _localized_module(
         subobject_ambient is not None and subobject_generator_images is not None
     ):
         placement.append(ModuleSubobjects(localization_ring))
+        if subobject_ambient is not None:
+            placement.append(Modules(localization_ring).Subobjects(subobject_ambient))
         data.update(
             subobject_ambient=subobject_ambient,
             subobject_generator_images=subobject_generator_images,

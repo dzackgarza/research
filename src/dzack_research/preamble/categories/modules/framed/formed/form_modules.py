@@ -2222,6 +2222,8 @@ def _form_module(
 
         if _subobject_ambient is not None or _subobject_inclusion_factory is not None:
             categories.append(ModuleSubobjects(base_ring))
+            if _subobject_ambient is not None:
+                categories.append(Modules(base_ring).Subobjects(_subobject_ambient))
             construction_data.update(
                 subobject_ambient=_subobject_ambient,
                 subobject_generator_images=_subobject_generator_images,
@@ -2282,4 +2284,3 @@ def _quadratic_form(module, value_module, datum):
         else module.quadratic_map(value_module, datum)
     )
     return FormModules(module.base_ring())(form)
-

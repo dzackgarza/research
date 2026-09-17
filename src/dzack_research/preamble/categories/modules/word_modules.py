@@ -629,7 +629,12 @@ def _word_degree_module(module, degree):
     r"""The homogeneous submodule of an already constructed word module."""
     ring = module.base_ring()
     return _object_of(
-        Cat().meet((GeneralModules(ring), FramedModules(ring), ModuleSubobjects(ring))),
+        Cat().meet((
+            GeneralModules(ring),
+            FramedModules(ring),
+            ModuleSubobjects(ring),
+            Modules(ring).Subobjects(module),
+        )),
         _engine=(GeneralModules(ring), _WordDegreeModule, None),
         base_ring=ring, word_module=module, word_degree=degree,
         subobject_ambient=module,
