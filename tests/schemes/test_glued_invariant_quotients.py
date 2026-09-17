@@ -306,7 +306,7 @@ def test_glued_quotient_rejects_a_noninvariant_global_map(
     )
     morphism: SchemeMorphism = Schemes(QQ).Mor(source, target)(local_maps)
 
-    with pytest.raises(ValueError, match="not invariant"):
+    with pytest.raises(AssertionError, match="not invariant"):
         quotient.factor_invariant_affine_morphism(morphism)
 
 
@@ -318,7 +318,7 @@ def test_glued_quotient_rejects_a_wrong_descended_overlap_map() -> None:
         {(0, 1): data.quotient_scale(2, quadratic_scale=5)}
     )
 
-    with pytest.raises(ValueError, match="quotient descent square"):
+    with pytest.raises(AssertionError, match="quotient descent square"):
         FiniteGluedInvariantQuotient(
             QQ,
             data.group,
@@ -370,7 +370,7 @@ def test_glued_quotient_rejects_a_nonequivariant_source_transition() -> None:
     source_transitions = _transition_family({(0, 1): source_transition})
     quotient_transitions = _transition_family({(0, 1): data.quotient_scale(2)})
 
-    with pytest.raises(ValueError, match="not G-equivariant"):
+    with pytest.raises(AssertionError, match="equivariant"):
         FiniteGluedInvariantQuotient(
             QQ,
             data.group,
