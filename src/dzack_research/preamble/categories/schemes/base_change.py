@@ -270,7 +270,7 @@ class _SchemeBaseChangeFunctor(Functor):
         """
         from dzack_research.preamble.categories.schemes.complete_intersections import (
             ProjectiveCompleteIntersections, _complete_intersection_base_supported,
-            _regular_sequence_codimension,
+            _is_regular_sequence,
         )
 
         ambient = scheme.inclusion().codomain()
@@ -287,7 +287,7 @@ class _SchemeBaseChangeFunctor(Functor):
         placements = [FiberProductSchemes(self._target_ring)]
         if (scheme in ProjectiveCompleteIntersections(self._source_ring)
                 and _complete_intersection_base_supported(self._target_ring)
-                and _regular_sequence_codimension(engine) == len(equations)):
+                and _is_regular_sequence(engine)):
             placements.append(ProjectiveCompleteIntersections(self._target_ring))
 
         def factor(to_source, to_base):
