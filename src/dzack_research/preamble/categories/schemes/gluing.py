@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_scheme,
     _affine_structure_morphism_to_base,
+    _scheme_composition_hom,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -116,12 +117,7 @@ def _lands_in_distinguished_open(morphism, distinguished_open):
     universal property of ``O(D(f)) = O(U)[1/f]`` (Stacks, Tag 01HR), and it
     is the hypothesis under which ``corestriction`` constructs the factor.
     """
-    defining_element = morphism.codomain().coordinate_algebra()(
-        distinguished_open.distinguished_open_element()
-    )
-    return morphism.domain().coordinate_algebra()(
-        morphism.coordinate_algebra_morphism()(defining_element)
-    ).is_unit()
+    return distinguished_open.contains_image_of(morphism)
 
 
 def _scheme_core_hom(isomorphism):
@@ -174,6 +170,21 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     def chart_index(self):
         return self._chart_index
 
+    def _in_homset(self, homset):
+        return _GluedSchemeOpenInclusion(homset, self.gluing_datum(), self.chart_index())
+
+    def is_open_immersion(self) -> bool:
+        return True
+
+    def __mul__(self, other):
+        datum = self.gluing_datum()
+        chart = datum.chart_isomorphism(self.chart_index())
+        return datum.chart_embedding(self.chart_index()) * (chart.inverse() * other)
+
+    def _postcompose_with(self, after):
+        chart = self.gluing_datum().chart_isomorphism(self.chart_index())
+        return after.local_map(self.chart_index()) * chart.inverse()
+
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, _GluedSchemeOpenInclusion)
@@ -224,6 +235,12 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
     def open_inclusion(self):
         return self.open_image().inclusion()
 
+    def _in_homset(self, homset):
+        return _GluedSchemeChartEmbedding(
+            homset, self.gluing_datum(), self.chart_index(),
+            self.open_image(), self.chart_isomorphism(),
+        )
+
     def is_open_immersion(self) -> bool:
         r"""True: ``e_i`` is the chart isomorphism onto its open image followed by that image's inclusion."""
         return True
@@ -231,11 +248,10 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        schemes = Schemes(self.codomain().scheme_base_ring())
-        chart_map = schemes.Mor(other.domain(), self.domain())(other)
+        chart_map = other
         return _GluedSchemeChartMap(
-            schemes.Mor(chart_map.domain(), self.codomain()),
-            self,
+            _scheme_composition_hom(self, other),
+            self.gluing_datum().chart_embedding(self.chart_index()),
             chart_map,
         )
 
@@ -300,15 +316,16 @@ class _GluedSchemeChartMap(SchemeMorphism):
     def gluing_datum(self):
         return self.chart_embedding().gluing_datum()
 
+    def _in_homset(self, homset):
+        chart_map = homset.homset_category().Mor(self.domain(), self.chart_embedding().domain())(self.chart_map())
+        return _GluedSchemeChartMap(homset, self.chart_embedding(), chart_map)
+
     def __mul__(self, other):
         composite = self.chart_map() * other
         if composite is NotImplemented:
             return NotImplemented
-        schemes = Schemes(self.codomain().scheme_base_ring())
         return _GluedSchemeChartMap(
-            schemes.Mor(composite.domain(), self.codomain()),
-            self.chart_embedding(),
-            schemes.Mor(composite.domain(), self.chart_embedding().domain())(composite),
+            _scheme_composition_hom(self, other), self.chart_embedding(), composite,
         )
 
     def _postcompose_with(self, after):
@@ -355,16 +372,16 @@ class _GluedSchemeChartMap(SchemeMorphism):
 class _GluedSchemeMorphism(SchemeMorphism):
     r"""A morphism out of a glued scheme, represented by compatible chart maps."""
 
-    def __init__(self, parent, local_maps, *, verify_compatibility=True) -> None:
-        super().__init__(None, homset=parent)
-        datum = self.domain().gluing_datum()
+    def __init__(self, parent, local_maps, *, verify_compatibility=True, cone_construction=None) -> None:
+        super().__init__(None, homset=parent, cone_construction=cone_construction)
+        datum = self.parent().gluing_datum()
         raw_local_maps = _family_on_finite_ordered_set(
             datum.chart_index_set(),
             local_maps,
             name="Raw local maps of a glued-scheme morphism",
             noun="a glued-scheme morphism",
         )
-        schemes = Schemes(datum.base_ring())
+        schemes = self.parent().homset_category()
         self._local_maps = finite_indexed_family(
             datum.chart_index_set(),
             lambda index: schemes.Mor(datum.chart(index), self.codomain())(
@@ -375,16 +392,22 @@ class _GluedSchemeMorphism(SchemeMorphism):
         if verify_compatibility:
             self._verify_overlap_compatibility()
 
+    def with_cone_construction(self, construction):
+        r"""Retain the inducing cone without discarding the compatible chart maps."""
+        return _GluedSchemeMorphism(
+            self.parent(), self.local_maps(), cone_construction=construction,
+        )
+
     def local_maps(self):
         return self._local_maps
 
     def local_map(self, index):
         return self.local_maps()[
-            self.domain().gluing_datum().normalize_chart_index(index)
+            self.parent().gluing_datum().normalize_chart_index(index)
         ]
 
     def _verify_overlap_compatibility(self) -> None:
-        datum = self.domain().gluing_datum()
+        datum = self.parent().gluing_datum()
         for left_index, right_index in combinations(tuple(datum.chart_indices()), 2):
             left_overlap = datum.overlap(left_index, right_index)
             right_overlap = datum.overlap(right_index, left_index)
@@ -403,7 +426,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
     def _postcompose_with(self, after):
         if after.domain() is not self.codomain():
             return NotImplemented
-        return self.domain().Mor(after.codomain())(
+        return _scheme_composition_hom(after, self)(
             tuple(after * local_map for local_map in self.local_maps())
         )
 
@@ -414,10 +437,10 @@ class _GluedSchemeMorphism(SchemeMorphism):
         local map on chart ``i``; a morphism out of another glued scheme
         composes chart by chart.  Both are its ``_postcompose_with``.
         """
-        if self._is_the_identity():
-            return other
         if other.codomain() is not self.domain():
             return NotImplemented
+        if self._is_the_identity():
+            return other
         if other._is_the_identity():
             return self
         return other._postcompose_with(self)
@@ -429,7 +452,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
             and other.codomain() is self.codomain()
             and all(
                 self.local_map(index) == other.local_map(index)
-                for index in self.domain().gluing_datum().chart_indices()
+                for index in self.parent().gluing_datum().chart_indices()
             )
         )
 
@@ -443,7 +466,19 @@ class _GluedSchemeMorphism(SchemeMorphism):
 
 
 class _GluedSchemeMorCategory(SchemeMorCategory):
-    r"""Maps out of a finite glued scheme, represented by compatible local maps."""
+    r"""Maps out of a glued scheme, represented by compatible local maps on its charts.
+
+    The gluing datum of the domain is retained by this Hom: a map out of the
+    glued scheme is a family of maps out of its charts agreeing through the
+    transitions, so every element reads the charts from it.
+    """
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        self._gluing_datum = domain.gluing_datum()
+        super().__init__(hom_family, domain, codomain)
+
+    def gluing_datum(self):
+        return self._gluing_datum
 
     def _element_constructor_(self, datum):
         if isinstance(datum, _GluedSchemeMorphism):
@@ -451,7 +486,9 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
                 raise ValueError("the glued-scheme morphism has the wrong endpoints")
             if datum.parent() is self:
                 return datum
-            datum = datum.local_maps()
+            return _GluedSchemeMorphism(
+                self, datum.local_maps(), cone_construction=datum.cone_construction(),
+            )
         if isinstance(datum, (tuple, list, IndexedFamily, Mapping)):
             return _GluedSchemeMorphism(self, datum)
         return super()._element_constructor_(datum)
@@ -460,7 +497,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on a glued-scheme endomorphism Hom")
-        datum = self.domain().gluing_datum()
+        datum = self.gluing_datum()
         return _GluedSchemeMorphism(
             self,
             tuple(
@@ -510,136 +547,86 @@ def _glued_chart_embedding(datum, index):
 
 
 def _glued_scheme(datum, placements, level_data):
-    r"""The scheme glued from ``datum``: the one entry of ``GluedSchemes(R)``, joined with ``placements``."""
+    r"""The scheme glued from ``datum``: an object of ``Schemes(R)``, built by its entry.
+
+    ``placements`` are further categories the scheme is an object of by its
+    construction, with the level data they declare.  The scheme is realized
+    privately by :class:`_GluedScheme`, which holds the gluing datum.
+    """
     base = datum.base_ring()
-    category = GluedSchemes(base)
+    category = Schemes(base)
     if placements:
         category = Category.join((category, *placements))
-    return _object_of(category, scheme_base_ring=base, gluing_datum=datum, **level_data)
+    data = dict(level_data)
+    native = data.pop("scheme_engine", None)
+    return _object_of(
+        category,
+        scheme_base_ring=base,
+        scheme_engine=_GluedScheme(datum, native),
+        **data,
+    )
 
 
-class GluedSchemes(OwnedCategoryOverBaseRing):
-    r"""Schemes over ``R`` glued from a chosen affine gluing datum.
+class _GluedScheme(SageObject):
+    r"""The private realization of a scheme glued from an affine gluing datum (``OWN-06``).
 
-    A gluing datum is a family of affine schemes ``U_i``, open subschemes
-    ``U_ij <= U_i`` and isomorphisms ``phi_ij : U_ij -> U_ji`` satisfying the
-    cocycle condition on triple overlaps; it determines a scheme ``X`` with
-    open immersions ``U_i -> X`` (Stacks, Tag 01JA).  An object of this
-    category is that scheme with its gluing datum retained as the chosen
-    presentation.  The datum is a choice beyond the scheme, so this is a data
-    subcategory of ``Schemes(R)``.
+    A gluing datum -- affine charts ``U_i``, open subschemes ``U_ij <= U_i`` and
+    isomorphisms ``phi_ij : U_ij -> U_ji`` satisfying the cocycle condition on
+    triple overlaps -- determines a scheme ``X`` with open immersions
+    ``U_i -> X`` (Stacks, Tag 01JA).  ``X`` is an object of ``Schemes(R)``.  This
+    realization is its ``scheme_engine``: it holds the gluing datum, the chosen
+    presentation of ``X`` (``CON-05``), and computes what that datum
+    determines.
 
-    Its level stores the datum, answers maps out of the scheme by compatible
-    local maps (``_GluedSchemeMorCategory``) and the structure morphism by the
-    charts' structure morphisms.  The scheme is built by
-    ``Schemes(R).glue_affine_charts`` and ``Schemes(R).glue_affine_atlas``.
+    Its consumer is the engine adapter of the ``Schemes(R)`` level, which reads
+    the datum through :meth:`gluing_datum` and asks this realization for the Hom
+    out of ``X`` (:meth:`scheme_homset_class`), the structure morphism
+    (:meth:`structure_morphism`) and the chartwise constructions.
     """
 
-    def an_object(self):
-        r"""The affine line with a doubled origin: two lines glued along ``D(x)``."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpaces
+    def __init__(self, gluing_datum, native_realization=None) -> None:
+        self._gluing_datum = gluing_datum
+        self._native_realization = native_realization
 
-        line = AffineSpaces(self.base_ring())(1, names=("x",))
-        punctured = line.distinguished_open(line.coordinate_algebra().algebra_generator("x"))
-        identity = punctured.categorical_identity_morphism()
-        schemes = Schemes(self.base_ring())
-        return schemes.glue_affine_charts(
-            line,
-            line,
-            schemes.Core().Mor(punctured, punctured)(identity, identity),
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def native_realization(self):
+        r"""The optional native scheme of this same atlas, supplied by its construction."""
+        assert self._native_realization is not None, (
+            "this gluing datum has no additional native scheme realization"
+        )
+        return self._native_realization
+
+    def scheme_homset_class(self):
+        r"""The compatible-chart-map realization of the Hom chosen by its family."""
+        return _GluedSchemeMorCategory
+
+    def structure_morphism(self, scheme):
+        r"""``X -> Spec R``, glued from the structure morphisms of the charts."""
+        datum = self.gluing_datum()
+        base = datum.base_ring()
+        base_scheme = base.affine_spectrum(base_ring=base)
+        return scheme.Mor(base_scheme)(
+            datum.charts().map(lambda chart: _affine_structure_morphism_to_base(chart, base))
         )
 
-    def _repr_object_names(self):
-        return f"schemes over {self.base_ring()} glued from an affine gluing datum"
+    def chartwise_closed_subscheme(self, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+        return _chartwise_closed_subscheme(self.gluing_datum(), local_closed_subschemes, name=name)
 
-    def super_categories(self):
-        return [Schemes(self.base_ring())]
+    def chartwise_fixed_subscheme(self, local_automorphisms):
+        return _chartwise_fixed_subscheme(self.gluing_datum(), local_automorphisms)
 
-    class ParentMethods:
-        def __init__(self, gluing_datum, **rest) -> None:
-            self._gluing_datum = gluing_datum
-            super().__init__(**rest)
+    def c2_chartwise_invariant_quotient(self, scheme, acting_group, local_actions):
+        r"""The glued scheme ``scheme`` modulo a chart-preserving ``C2`` action."""
+        from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import (
+            _c2_chartwise_glued_invariant_quotient,
+        )
 
-        def gluing_datum(self):
-            return self._gluing_datum
+        return _c2_chartwise_glued_invariant_quotient(scheme, acting_group, local_actions)
 
-        def _scheme_homset(self, schemes, codomain):
-            r"""A morphism out of a glued scheme is a compatible family of maps out of its charts."""
-            return _GluedSchemeMorCategory(schemes, self, codomain)
-
-        @cached_method
-        def structure_morphism(self):
-            r"""``X -> Spec R``, glued from the structure morphisms of the charts."""
-            base = self.gluing_datum().base_ring()
-            base_scheme = base.affine_spectrum(base_ring=base)
-            return self.Mor(base_scheme)(
-                self.gluing_datum().charts().map(
-                    lambda chart: _affine_structure_morphism_to_base(chart, base)
-                )
-            )
-
-        def chart_index_set(self):
-            return self.gluing_datum().chart_index_set()
-
-        def chart_indices(self):
-            return self.gluing_datum().chart_indices()
-
-        def number_of_charts(self):
-            return self.gluing_datum().number_of_charts()
-
-        def charts(self):
-            return self.gluing_datum().charts()
-
-        def chart(self, index):
-            return self.gluing_datum().chart(index)
-
-        def transitions(self):
-            return self.gluing_datum().transitions()
-
-        def transition_between(self, source_index, target_index):
-            return self.gluing_datum().transition_between(source_index, target_index)
-
-        def overlap_transition(self):
-            r"""``phi_01``, the transition from the first chart to the second."""
-            return self.gluing_datum().transition_between(0, 1)
-
-        def overlap(self, source_index, target_index):
-            return self.gluing_datum().overlap(source_index, target_index)
-
-        def triple_overlap(self, source_index, middle_index, target_index):
-            return self.gluing_datum().triple_overlap(source_index, middle_index, target_index)
-
-        def transition_on_triple(self, source_index, target_index, third_index):
-            return self.gluing_datum().transition_on_triple(source_index, target_index, third_index)
-
-        def chart_images(self):
-            return self.gluing_datum().chart_images()
-
-        def chart_image(self, index):
-            return self.gluing_datum().chart_image(index)
-
-        def chart_isomorphism(self, index):
-            return self.gluing_datum().chart_isomorphism(index)
-
-        def chart_embedding(self, index):
-            return self.gluing_datum().chart_embedding(index)
-
-        def chartwise_closed_subscheme(self, local_closed_subschemes, *, name="Chartwise closed subscheme"):
-            return _chartwise_closed_subscheme(self, local_closed_subschemes, name=name)
-
-        def chartwise_fixed_subscheme(self, local_automorphisms):
-            return _chartwise_fixed_subscheme(self, local_automorphisms)
-
-        def c2_chartwise_invariant_quotient(self, acting_group, local_actions):
-            r"""Return this glued scheme modulo a chart-preserving ``C2`` action."""
-            from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import (
-                _c2_chartwise_glued_invariant_quotient,
-            )
-
-            return _c2_chartwise_glued_invariant_quotient(self, acting_group, local_actions)
-
-        def _repr_(self):
-            return f"Scheme glued from affine atlas indexed by {self.chart_index_set()}"
+    def _repr_(self):
+        return f"Gluing realization over the affine atlas indexed by {self.gluing_datum().chart_index_set()}"
 
 
 class _TwoChartSchemeGluingDatum(SageObject):
@@ -2731,10 +2718,10 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
 
     def relative_spectrum(self):
         from dzack_research.preamble.categories.schemes.relative_spec import (
-            _relative_spectrum,
+            _finite_atlas_relative_spectrum,
         )
 
-        return _relative_spectrum(self)
+        return _finite_atlas_relative_spectrum(self)
 
 
 class FiniteAtlasAlgebraGluingMorphism(SageObject):
@@ -4634,7 +4621,7 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
 
 
 
-def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+def _chartwise_closed_subscheme(datum, local_closed_subschemes, *, name="Chartwise closed subscheme"):
     r"""Glue compatible closed subschemes of one finite affine atlas.
 
     A closed immersion is local on the target.  Each supplied ``Z_i -> U_i``
@@ -4642,14 +4629,13 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
     through the atlas transition of the glued scheme.  Corestriction into
     ``Z_j`` is the compatibility check; once every pair passes, the local
     closed schemes glue, and their inclusions glue to one closed immersion into
-    ``glued_scheme``, which is placed at construction.
+    the glued scheme of ``datum``, which is placed at construction.
     """
     from dzack_research.preamble.categories.schemes.schemes import (
         ClosedEmbeddings,
         ClosedSubschemes,
     )
 
-    datum = glued_scheme.gluing_datum()
     indices = datum.chart_index_set()
     local_closed = _family_on_finite_ordered_set(
         indices,
@@ -4660,10 +4646,10 @@ def _chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="
     for index in indices:
         if local_closed[index].inclusion().codomain() is not datum.chart(index):
             raise ValueError("each chartwise closed subscheme lies in its selected chart of the glued scheme")
-    return _glued_chartwise_subscheme(glued_scheme, local_closed, (ClosedEmbeddings(glued_scheme), ClosedSubschemes(glued_scheme.scheme_base_ring())))
+    return _glued_chartwise_subscheme(datum, local_closed, (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())))
 
 
-def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
+def _chartwise_fixed_subscheme(datum, local_automorphisms):
     r"""Glue the fixed subschemes of a chart-preserving automorphism.
 
     Each local automorphism is an endomorphism of the corresponding affine
@@ -4678,7 +4664,6 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
         ClosedSubschemes,
     )
 
-    datum = glued_scheme.gluing_datum()
     indices = datum.chart_index_set()
     automorphisms = _family_on_finite_ordered_set(
         indices,
@@ -4696,10 +4681,10 @@ def _chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
         lambda index: automorphisms[index].fixed_subscheme(),
         name="Affine charts of the glued fixed subscheme",
     )
-    return _glued_chartwise_subscheme(glued_scheme, local_fixed, (ClosedEmbeddings(glued_scheme), ClosedSubschemes(glued_scheme.scheme_base_ring())))
+    return _glued_chartwise_subscheme(datum, local_fixed, (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())))
 
 
-def _glued_chartwise_subscheme(glued_scheme, local_closed, placements):
+def _glued_chartwise_subscheme(datum, local_closed, placements):
     r"""Glue closed subschemes ``Z_i <= U_i`` that agree through the atlas transitions.
 
     ``Z_i cap U_ij`` is the distinguished open of ``Z_i`` cut out by the
@@ -4709,7 +4694,6 @@ def _glued_chartwise_subscheme(glued_scheme, local_closed, placements):
     ``Z_i -> U_i -> X`` are the local maps of the inclusion of the glued
     subscheme into ``X``.
     """
-    datum = glued_scheme.gluing_datum()
 
     def local_overlap(source_index, target_index):
         closed = local_closed[source_index]
@@ -4726,7 +4710,7 @@ def _glued_chartwise_subscheme(glued_scheme, local_closed, placements):
         into_target_closed = local_closed[target_index].corestriction(into_target_chart)
         return target.corestriction(into_target_closed)
 
-    schemes = Schemes(glued_scheme.scheme_base_ring())
+    schemes = Schemes(datum.base_ring())
     transitions = {}
     for left, right in datum.transition_index_set():
         forward = local_transition(left, right)
@@ -4736,7 +4720,7 @@ def _glued_chartwise_subscheme(glued_scheme, local_closed, placements):
         local_closed,
         transitions,
         placements=placements,
-        inclusion_codomain=glued_scheme,
+        inclusion_codomain=datum.scheme(),
         inclusion_datum=finite_indexed_family(
             datum.chart_index_set(),
             lambda index: datum.chart_embedding(index) * local_closed[index].inclusion(),
@@ -4763,7 +4747,6 @@ __all__ = [
     "QuasiCoherentSheavesWithChosenDescentDatum",
     "FiniteAtlasModuleTransition",
     "GlobalSectionAlgebras",
-    "GluedSchemes",
     "GlobalSectionModules",
     "ModuleGluingData",
     "ModuleGluingHomset",
