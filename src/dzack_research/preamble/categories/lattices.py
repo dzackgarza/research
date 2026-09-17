@@ -2504,12 +2504,20 @@ class Lattices(OwnedCategoryOverBaseRing):
             return _root_sublattice(self)
 
         def reduction_cell(self, inequalities, *, equations=()):
-            r"""Return the homogeneous rational reduction cell cut out in this lattice."""
-            from dzack_research.preamble.categories.reduction_complexes import (
-                RationalReductionCell,
+            r"""Return the homogeneous rational cell ``{x : a(x) >= 0, e(x) = 0}`` in this lattice.
+
+            The cell is a rational polyhedral cone.  Each rational wall, given
+            by its coordinates in the dual framing, is stated by the primitive
+            integral covector on its ray, which cuts out the same half-space.
+            """
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                _integral_covector,
             )
 
-            return RationalReductionCell(self, inequalities, equations=equations)
+            return self.rational_polyhedral_cone(
+                tuple(_integral_covector(self, wall) for wall in inequalities),
+                equation_covectors=tuple(_integral_covector(self, wall) for wall in equations),
+            )
 
         def reduction_complex_exploration(
             self,

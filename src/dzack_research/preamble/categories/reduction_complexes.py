@@ -12,6 +12,12 @@ vectors, which is how a general Lorentzian vector orbit is computed: the
 traversal then answers about the pair (cell, marked family) rather than about
 the cell alone.
 
+A cell is an object of ``RationalPolyhedralCones``: the cone in
+``L tensor QQ`` cut out by homogeneous half-spaces, with its faces,
+intersections, transport along isometries and stabilizers.  The records below
+join cells into the complex: an oriented adjacency, a face incidence, a marked
+cell, and the finite explorations and completed traversals built from them.
+
 None of this is computed here, and no registered provider of the capability
 layer supplies it.  The exact reduction is owned upstream by
 polyhedral_common, which reaches the Lorentzian perfect domain only as the
@@ -35,353 +41,22 @@ What *is* owned, so that a caller does not reach here for it:
   because ``-1`` exchanges the two components of the positive cone.
 """
 
-from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.matrix.constructor import matrix as engine_matrix
-from sage.modules.free_module_element import vector as sage_vector
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.polyhedral_cones import (
+    RationalPolyhedralCones,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
-    IndexedFamily,
     finite_indexed_family,
 )
 from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
-
-
-def _coordinates(vector):
-    components = getattr(vector, "components", None)
-    if callable(components):
-        return tuple(components())
-    return tuple(vector)
-
-
-def _owned_rational_vector(entries):
-    rationals = _own_ring(SageQQ)
-    return tensor.vector(
-        rationals,
-        [rationals._from_engine_element(SageQQ(entry)) for entry in entries],
-    )
-
-
-def _engine_rational_vector(vector):
-    return sage_vector(SageQQ, [SageQQ(entry) for entry in _coordinates(vector)])
-
-
-def _ray_key(entries):
-    entries = tuple(SageQQ(entry) for entry in entries)
-    first = next((entry for entry in entries if entry != 0), None)
-    if first is None:
-        raise ValueError("the zero vector does not define a ray")
-    scale = abs(first)
-    return tuple(entry / scale for entry in entries)
-
-
-def _line_key(entries):
-    entries = tuple(SageQQ(entry) for entry in entries)
-    first = next((entry for entry in entries if entry != 0), None)
-    if first is None:
-        raise ValueError("the zero vector does not define a line")
-    return tuple(entry / first for entry in entries)
-
-
-class RationalReductionCell(SageObject):
-    r"""An exact homogeneous rational polyhedral cell in lattice coordinates.
-
-    The public definition is its finite family of rational wall covectors and
-    linear equations.  Sage's exact polyhedral engine is private and supplies
-    irredundant facets, extreme rays, intersections, and dimensions.  All
-    inequalities use the convention ``a(x) >= 0``.
-    """
-
-    def __init__(self, lattice, inequalities, *, equations=()) -> None:
-        self._lattice = lattice
-        rank = int(lattice.module_rank())
-        self._inequalities = finite_ordered_set(
-            tuple(_owned_rational_vector(_coordinates(wall)) for wall in inequalities)
-        )
-        self._equations = finite_ordered_set(
-            tuple(_owned_rational_vector(_coordinates(wall)) for wall in equations)
-        )
-        for wall in tuple(self._inequalities) + tuple(self._equations):
-            if len(_coordinates(wall)) != rank:
-                raise ValueError("a reduction-cell wall has the lattice rank")
-        self._engine = Polyhedron(
-            ieqs=[[0, *map(SageQQ, _coordinates(wall))] for wall in self._inequalities],
-            eqns=[[0, *map(SageQQ, _coordinates(wall))] for wall in self._equations],
-            base_ring=SageQQ,
-        )
-        if not self._engine.contains(sage_vector(SageQQ, [0] * rank)):
-            raise ArithmeticError("a homogeneous reduction cell must contain the origin")
-
-    @classmethod
-    def _from_engine(cls, lattice, polyhedron):
-        if any(inequality.b() != 0 for inequality in polyhedron.inequalities()):
-            raise ArithmeticError("a reduction-cell intersection acquired an affine inequality")
-        if any(equation.b() != 0 for equation in polyhedron.equations()):
-            raise ArithmeticError("a reduction-cell intersection acquired an affine equation")
-        inequalities = tuple(
-            _owned_rational_vector(inequality.A())
-            for inequality in polyhedron.inequalities()
-        )
-        equations = tuple(
-            _owned_rational_vector(equation.A())
-            for equation in polyhedron.equations()
-        )
-        return cls(lattice, inequalities, equations=equations)
-
-    @classmethod
-    def from_rays(cls, lattice, rays):
-        r"""Return the exact homogeneous cell generated by the selected rational rays."""
-        rows = tuple(tuple(SageQQ(entry) for entry in _coordinates(ray)) for ray in rays)
-        if not rows:
-            raise ValueError("a ray-presented reduction cell requires at least one ray")
-        return cls._from_engine(
-            lattice,
-            Polyhedron(rays=rows, base_ring=SageQQ),
-        )
-
-    def lattice(self):
-        return self._lattice
-
-    def inequalities(self):
-        return self._inequalities
-
-    def equations(self):
-        return self._equations
-
-    def dimension(self):
-        return int(self._engine.dim())
-
-    def ambient_dimension(self):
-        return int(self.lattice().module_rank())
-
-    def facets(self):
-        r"""Return the irredundant facet-defining covectors."""
-        return finite_ordered_set(
-            tuple(
-                _owned_rational_vector(inequality.A())
-                for inequality in self._engine.inequalities()
-            )
-        )
-
-    def faces(self, dimension):
-        r"""Return the exact faces of the selected dimension.
-
-        Faces are returned as reduction cells in the same ambient lattice, so
-        incidences, stabilizers and transporters use the same mathematical
-        carrier as the ambient cell rather than private engine face handles.
-        """
-        dimension = int(dimension)
-        if dimension < 0 or dimension > self.dimension():
-            return finite_ordered_set(())
-        return finite_ordered_set(
-            tuple(
-                RationalReductionCell._from_engine(
-                    self.lattice(), face.as_polyhedron()
-                )
-                for face in self._engine.faces(dimension)
-            )
-        )
-
-    def facet(self, wall):
-        r"""Return the codimension-one face cut out by one irredundant wall."""
-        wall = _owned_rational_vector(_coordinates(wall))
-        wall_key = _ray_key(_coordinates(wall))
-        if all(
-            _ray_key(_coordinates(candidate)) != wall_key
-            for candidate in self.facets()
-        ):
-            raise ValueError("the selected covector is not an irredundant facet wall")
-        return RationalReductionCell(
-            self.lattice(),
-            tuple(self.inequalities()),
-            equations=tuple(self.equations()) + (wall,),
-        )
-
-    def extreme_rays(self):
-        r"""Return the exact extreme rays in the chosen lattice coordinates."""
-        return finite_ordered_set(
-            tuple(_owned_rational_vector(ray) for ray in self._engine.rays())
-        )
-
-    def lineality_generators(self):
-        r"""Return exact generators of the cell's linear lineality space."""
-        return finite_ordered_set(
-            tuple(_owned_rational_vector(line) for line in self._engine.lines())
-        )
-
-    def contains(self, vector) -> bool:
-        return bool(self._engine.contains(_engine_rational_vector(vector)))
-
-    def intersection(self, other):
-        if other.lattice() is not self.lattice():
-            raise ValueError("reduction cells are intersected in one ambient lattice")
-        return RationalReductionCell._from_engine(
-            self.lattice(), self._engine.intersection(other._engine)
-        )
-
-    def is_equal_to(self, other) -> bool:
-        r"""Return whether two cells are the same exact rational polyhedral cone."""
-        return (
-            isinstance(other, RationalReductionCell)
-            and other.lattice() is self.lattice()
-            and self._engine == other._engine
-        )
-
-    def transported_by(self, isometry):
-        r"""Return the image of this cell under a lattice isometry.
-
-        If ``C`` is cut out by row covectors ``a`` with ``a(x) >= 0`` and
-        ``g`` has coordinate matrix ``M`` (column-image convention), then
-        ``g(C)`` is cut out by ``a M^{-1}``, since ``a(M^{-1}y) >= 0`` is the
-        transported inequality.  Equations transform by the same rule.
-        """
-        lattice = self.lattice()
-        if isometry.domain() is not lattice or isometry.codomain() is not lattice:
-            raise ValueError("a reduction cell is transported by an automorphism of its lattice")
-        inverse = _engine_component_matrix(isometry.matrix()).change_ring(SageQQ).inverse()
-
-        def transported(covector):
-            return _owned_rational_vector(_engine_rational_vector(covector) * inverse)
-
-        return RationalReductionCell(
-            lattice,
-            tuple(transported(wall) for wall in self.inequalities()),
-            equations=tuple(transported(wall) for wall in self.equations()),
-        )
-
-    def with_marks(self, marked_vectors):
-        r"""Return this cell equipped with the selected labelled finite family of marks."""
-        return MarkedReductionCell(self, marked_vectors)
-
-    def transporter_witness_to(self, other, group):
-        r"""Return one element of a finite represented group carrying this cell to ``other``.
-
-        This is the exact local transporter operation used by a reduction
-        complex once a finite cell-stabilizer/quotient group is represented.
-        Infinite arithmetic traversal remains the separate provider obligation
-        of the ambient lattice's ``lorentzian_reduction_complex`` method.
-        """
-        if other.lattice() is not self.lattice():
-            return None
-        if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
-            raise ValueError("a cell transporter group acts on the ambient lattice")
-        group_cardinality = group.cardinality()
-        assert group_cardinality.is_finite(), (
-            "cell transporter search requires a finite represented acting group; "
-            "infinite arithmetic traversal belongs to the reduction-complex provider"
-        )
-        for isometry in group:
-            if self.transported_by(isometry).is_equal_to(other):
-                return isometry
-        return None
-
-    def adjacency_to(self, other, group):
-        r"""Return the exact adjacent-cell record from this cell to ``other``.
-
-        The record exists only when the two cells share a codimension-one face
-        and the supplied represented group contains an isometry carrying the
-        source cell to the target cell.  It retains the common face and the
-        transporter as mathematical objects rather than recomputing either
-        from incidence labels later.
-        """
-        if not self.is_adjacent_to(other):
-            return None
-        transporter = self.transporter_witness_to(other, group)
-        if transporter is None:
-            return None
-        return ReductionCellAdjacency(
-            self,
-            other,
-            self.intersection(other),
-            transporter,
-        )
-
-    def is_face_of(self, other) -> bool:
-        if other.lattice() is not self.lattice():
-            return False
-        return any(
-            face.as_polyhedron() == self._engine
-            for face in other._engine.faces(self.dimension())
-        )
-
-    def is_adjacent_to(self, other) -> bool:
-        if other.lattice() is not self.lattice():
-            return False
-        common = self.intersection(other)
-        return (
-            common.dimension() == self.dimension() - 1
-            and common.dimension() == other.dimension() - 1
-            and common.is_face_of(self)
-            and common.is_face_of(other)
-        )
-
-    def stabilizer(self, group):
-        r"""Return the subgroup preserving this cone setwise."""
-        if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
-            raise ValueError("a reduction-cell stabilizer acts on the ambient lattice")
-        ray_keys = frozenset(_ray_key(ray) for ray in self.extreme_rays())
-        line_keys = frozenset(
-            _line_key(line) for line in self.lineality_generators()
-        )
-
-        def preserves_cell(isometry):
-            matrix = _engine_component_matrix(isometry.matrix()).change_ring(SageQQ)
-            transformed_rays = frozenset(
-                _ray_key(matrix * _engine_rational_vector(ray))
-                for ray in self.extreme_rays()
-            )
-            transformed_lines = frozenset(
-                _line_key(matrix * _engine_rational_vector(line))
-                for line in self.lineality_generators()
-            )
-            return transformed_rays == ray_keys and transformed_lines == line_keys
-
-        return group.predicate_subgroup(preserves_cell, f"g preserves the rational reduction cell {self}")
-
-    def face_stabilizer(self, face, group):
-        r"""Return the subgroup preserving this cell and ``face`` setwise.
-
-        This is the cell-face stabilizer occurring in reduction-complex group
-        generation.  Requiring membership in the cell stabilizer is essential:
-        the ambient orthogonal group may preserve the lower-dimensional cone
-        while moving the chosen perfect domain to another cell.
-        """
-        if not isinstance(face, RationalReductionCell) or not face.is_face_of(self):
-            raise ValueError("a face stabilizer is attached to an actual face of this cell")
-        cell_stabilizer = self.stabilizer(group)
-        face_stabilizer = face.stabilizer(group)
-        return cell_stabilizer.intersection(face_stabilizer)
-
-    def face_incidences(self, dimension, group):
-        r"""Return the represented incidences with faces of ``dimension``.
-
-        Every record owns the embedded face and the subgroup stabilizing the
-        pair ``face <= cell``.  This is the incidence datum consumed by an
-        exact reduction-complex traversal when assembling quotient cells.
-        """
-        faces = self.faces(dimension)
-        return finite_indexed_family(
-            faces,
-            lambda face: ReductionFaceIncidence(
-                face,
-                self,
-                self.face_stabilizer(face, group),
-            ),
-            name=f"Face incidences of dimension {dimension} in {self}",
-        )
-
-    def _repr_(self):
-        return (
-            f"{self.dimension()}-dimensional rational reduction cell in "
-            f"{self.lattice()}"
-        )
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
 class ReductionCellAdjacency(SageObject):
@@ -393,15 +68,15 @@ class ReductionCellAdjacency(SageObject):
     """
 
     def __init__(self, source, target, common_face, transporter) -> None:
-        if source.lattice() is not target.lattice():
+        if source.ambient_lattice() is not target.ambient_lattice():
             raise ValueError("adjacent reduction cells lie in one lattice")
-        if common_face.lattice() is not source.lattice():
+        if common_face.ambient_lattice() is not source.ambient_lattice():
             raise ValueError("an adjacency face lies in the cells' ambient lattice")
         if not source.is_adjacent_to(target):
             raise ValueError("a reduction-cell adjacency requires a common facet")
         if not common_face.is_equal_to(source.intersection(target)):
             raise ValueError("the retained adjacency face is not the cells' intersection")
-        if not source.transported_by(transporter).is_equal_to(target):
+        if not source.transport(transporter).is_equal_to(target):
             raise ValueError("the retained adjacency transporter moves the source to the wrong cell")
         self._source = source
         self._target = target
@@ -415,7 +90,7 @@ class ReductionCellAdjacency(SageObject):
         return self._target
 
     def lattice(self):
-        return self.source().lattice()
+        return self.source().ambient_lattice()
 
     def common_face(self):
         return self._common_face
@@ -439,14 +114,14 @@ class ReductionFaceIncidence(SageObject):
     r"""One exact face inclusion inside a rational reduction cell.
 
     The incidence retains both mathematical cells and, when requested through
-    :meth:`RationalReductionCell.face_incidences`, the subgroup preserving the
-    pair.  It is therefore stronger than a dimension pair or an engine face
-    index and can be transported through the lattice action without losing the
-    actual embedded face.
+    ``face_incidences`` of the cell, the subgroup preserving the pair.  It is
+    therefore stronger than a dimension pair or an engine face index and can
+    be transported through the lattice action without losing the actual
+    embedded face.
     """
 
     def __init__(self, face, cell, stabilizer) -> None:
-        if face.lattice() is not cell.lattice() or not face.is_face_of(cell):
+        if face.ambient_lattice() is not cell.ambient_lattice() or not face.is_face_of(cell):
             raise ValueError("a reduction-face incidence is an actual face inclusion")
         self._face = face
         self._cell = cell
@@ -459,7 +134,7 @@ class ReductionFaceIncidence(SageObject):
         return self._cell
 
     def lattice(self):
-        return self.cell().lattice()
+        return self.cell().ambient_lattice()
 
     def stabilizer(self):
         return self._stabilizer
@@ -468,8 +143,8 @@ class ReductionFaceIncidence(SageObject):
         return self.cell().dimension() - self.face().dimension()
 
     def transported_by(self, isometry):
-        transported_cell = self.cell().transported_by(isometry)
-        transported_face = self.face().transported_by(isometry)
+        transported_cell = self.cell().transport(isometry)
+        transported_face = self.face().transport(isometry)
         return ReductionFaceIncidence(
             transported_face,
             transported_cell,
@@ -492,13 +167,13 @@ class MarkedReductionCell(SageObject):
     """
 
     def __init__(self, cell, marked_vectors) -> None:
-        if not isinstance(cell, RationalReductionCell):
-            raise TypeError("a marked reduction cell requires a rational reduction cell")
-        if not isinstance(marked_vectors, IndexedFamily):
-            raise TypeError("marked vectors are supplied as an owned indexed family")
-        if marked_vectors.cardinality().is_finite() is not True:
-            raise ValueError("a marked reduction cell has finitely many marks")
-        lattice = cell.lattice()
+        assert cell in RationalPolyhedralCones(), (
+            "a marked reduction cell is a rational polyhedral cone with marks"
+        )
+        assert marked_vectors.cardinality().is_finite(), (
+            "a marked reduction cell has a finite indexed family of marks"
+        )
+        lattice = cell.ambient_lattice()
         for vector in marked_vectors:
             if vector.parent() is not lattice:
                 raise ValueError("every marked vector belongs to the cell's ambient lattice")
@@ -508,7 +183,7 @@ class MarkedReductionCell(SageObject):
         self._marked_vectors = marked_vectors
 
     def lattice(self):
-        return self.cell().lattice()
+        return self.cell().ambient_lattice()
 
     def cell(self):
         return self._cell
@@ -525,13 +200,12 @@ class MarkedReductionCell(SageObject):
             name=f"Transported marks of {self}",
         )
         return MarkedReductionCell(
-            self.cell().transported_by(isometry),
+            self.cell().transport(isometry),
             transported_marks,
         )
 
     def is_equal_to(self, other) -> bool:
-        if not isinstance(other, MarkedReductionCell):
-            return False
+        r"""Return whether ``other``, a marked cell of the same lattice, has the same cell and the same labelled marks."""
         if not self.cell().is_equal_to(other.cell()):
             return False
         same_marks = self.marked_vectors() == other.marked_vectors()
@@ -539,8 +213,6 @@ class MarkedReductionCell(SageObject):
 
     def transporter_witness_to(self, other, group):
         r"""Return a finite-group element transporting both cell and labelled marks."""
-        if not isinstance(other, MarkedReductionCell):
-            return None
         if other.lattice() is not self.lattice():
             return None
         group_cardinality = group.cardinality()
@@ -565,8 +237,6 @@ class MarkedReductionCell(SageObject):
 
     def adjacency_to(self, other, group):
         r"""Return the marked adjacency when one isometry transports all retained data."""
-        if not isinstance(other, MarkedReductionCell):
-            return None
         underlying = self.cell().adjacency_to(other.cell(), group)
         if underlying is None:
             return None
@@ -586,10 +256,6 @@ class MarkedReductionCellAdjacency(SageObject):
     r"""An oriented adjacency of marked cells with one common transporter."""
 
     def __init__(self, source, target, cell_adjacency, transporter) -> None:
-        if not isinstance(source, MarkedReductionCell) or not isinstance(
-            target, MarkedReductionCell
-        ):
-            raise TypeError("a marked adjacency joins marked reduction cells")
         if cell_adjacency.source() is not source.cell() or cell_adjacency.target() is not target.cell():
             raise ValueError("the underlying adjacency joins the wrong reduction cells")
         if not source.transported_by(transporter).is_equal_to(target):
@@ -629,6 +295,17 @@ class MarkedReductionCellAdjacency(SageObject):
         return f"Marked reduction-cell adjacency {self.source()} -> {self.target()}"
 
 
+def _unpaired_facets(cells, incident_faces_of):
+    r"""The facets of the stated cells that no adjacency face accounts for."""
+    unpaired = []
+    for cell in cells:
+        incident_faces = incident_faces_of(cell)
+        for facet in cell.facets():
+            if not any(facet.is_equal_to(face) for face in incident_faces):
+                unpaired.append(facet)
+    return finite_ordered_set(tuple(unpaired))
+
+
 class RationalReductionComplexExploration(SageObject):
     r"""A finite exact exploration of a rational reduction complex.
 
@@ -642,12 +319,10 @@ class RationalReductionComplexExploration(SageObject):
         cells = finite_ordered_set(tuple(cells))
         if cells.cardinality() == 0:
             raise ValueError("a reduction-complex exploration has at least one cell")
-        if any(cell.lattice() is not lattice for cell in cells):
+        if any(cell.ambient_lattice() is not lattice for cell in cells):
             raise ValueError("all reduction-complex cells lie in one lattice")
         adjacencies = finite_ordered_set(tuple(adjacencies))
         for adjacency in adjacencies:
-            if not isinstance(adjacency, ReductionCellAdjacency):
-                raise TypeError("a reduction-complex edge is a ReductionCellAdjacency")
             if adjacency.lattice() is not lattice:
                 raise ValueError("an adjacency lies in the wrong lattice")
             if adjacency.source() not in cells or adjacency.target() not in cells:
@@ -675,18 +350,14 @@ class RationalReductionComplexExploration(SageObject):
 
     def unpaired_facets(self):
         r"""Return the retained cell facets not represented by an adjacency."""
-        unpaired = []
-        for cell in self.cells():
-            incident_faces = tuple(
+        return _unpaired_facets(
+            self.cells(),
+            lambda cell: tuple(
                 adjacency.common_face()
                 for adjacency in self.adjacencies()
                 if adjacency.source() is cell or adjacency.target() is cell
-            )
-            for wall in cell.facets():
-                facet = cell.facet(wall)
-                if not any(facet.is_equal_to(face) for face in incident_faces):
-                    unpaired.append(facet)
-        return finite_ordered_set(tuple(unpaired))
+            ),
+        )
 
     def adjacency_transporters(self):
         r"""Return the retained oriented cell transporters, preserving edge labels."""
@@ -752,12 +423,12 @@ class PerfectDomainOrbitAdjacency(SageObject):
         common_face,
         target_to_neighbor,
     ) -> None:
-        lattice = source.lattice()
-        if any(cell.lattice() is not lattice for cell in (target, neighbor, common_face)):
+        lattice = source.ambient_lattice()
+        if any(cell.ambient_lattice() is not lattice for cell in (target, neighbor, common_face)):
             raise ValueError("a perfect-domain adjacency lies in one ambient lattice")
         if not common_face.is_face_of(source) or not common_face.is_face_of(neighbor):
             raise ValueError("the retained perfect-domain face is not common to source and neighbor")
-        if not target.transported_by(target_to_neighbor).is_equal_to(neighbor):
+        if not target.transport(target_to_neighbor).is_equal_to(neighbor):
             raise ValueError("the retained orbit equivalence does not map target representative to neighbor")
         self._source = source
         self._target = target
@@ -800,7 +471,7 @@ class LorentzianPerfectDomainTraversal(SageObject):
         self._stabilizer_generators = stabilizer_generators
         if self._cells.cardinality() == 0:
             raise ValueError("a completed perfect-domain traversal has an orbit representative")
-        if any(cell.lattice() is not lattice for cell in self._cells):
+        if any(cell.ambient_lattice() is not lattice for cell in self._cells):
             raise ValueError("perfect-domain representatives lie in the traversed lattice")
         if any(adjacency.source() not in self._cells for adjacency in self._adjacencies):
             raise ValueError("a quotient adjacency starts at a retained representative")
@@ -835,18 +506,14 @@ class LorentzianPerfectDomainTraversal(SageObject):
         prefix from being promoted to a complete reduction domain merely
         because it used the ``total`` provider entry point.
         """
-        missing = []
-        for cell in self.cells():
-            source_faces = tuple(
+        return _unpaired_facets(
+            self.cells(),
+            lambda cell: tuple(
                 adjacency.common_face()
                 for adjacency in self.adjacencies()
                 if adjacency.source() is cell
-            )
-            for wall in cell.facets():
-                facet = cell.facet(wall)
-                if not any(facet.is_equal_to(face) for face in source_faces):
-                    missing.append(facet)
-        return finite_ordered_set(tuple(missing))
+            ),
+        )
 
     def cell_stabilizer_generators(self, cell):
         if cell not in self.cells():
@@ -921,14 +588,12 @@ def _perfect_domain_traversal_from_records(lattice, records):
     records = tuple(records)
     if not records:
         raise ArithmeticError("the perfect-domain provider returned no orbit representatives")
+    cones = RationalPolyhedralCones()
     raw_rays = tuple(
         tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"])
         for record in records
     )
-    cells = tuple(
-        RationalReductionCell.from_rays(lattice, rays)
-        for rays in raw_rays
-    )
+    cells = tuple(cones.from_rays(lattice, rays) for rays in raw_rays)
     orthogonal_group = lattice.O()
     stabilizer_by_cell = {}
     for cell, rays, record in zip(cells, raw_rays, records, strict=True):
@@ -964,14 +629,14 @@ def _perfect_domain_traversal_from_records(lattice, records):
                 tuple(SageZZ(entry) for entry in target_to_neighbor(lattice(row)).to_tuple())
                 for row in target_rays
             )
-            neighbor = RationalReductionCell.from_rays(lattice, neighbor_rays)
+            neighbor = cones.from_rays(lattice, neighbor_rays)
             incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])
             if len(incidence) != len(source_rays):
                 raise ArithmeticError("a perfect-domain facet incidence has the wrong length")
             face_rays = tuple(
                 ray for ray, selected in zip(source_rays, incidence, strict=True) if selected
             )
-            common_face = RationalReductionCell.from_rays(lattice, face_rays)
+            common_face = cones.from_rays(lattice, face_rays)
             adjacencies.append(
                 PerfectDomainOrbitAdjacency(
                     source,
@@ -1030,5 +695,4 @@ __all__ = [
     "RationalReductionComplexExploration",
     "ReductionFaceIncidence",
     "ReductionCellAdjacency",
-    "RationalReductionCell",
 ]
