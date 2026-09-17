@@ -2260,6 +2260,32 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "modules with a chosen finite presentation"
 
+    def _call_(self, morphism, category=None, **construction_data):
+        r"""Construct ``coker(rho)`` for ``rho: A -> B`` into a module with a chosen finite presentation.
+
+        A presentation ``F_1 -> F_0`` is the case ``B = F_0`` free.  The
+        chosen presentation of the cokernel is the presentation of ``B`` with
+        the images of the module generators of ``A`` added as relations, and
+        the cokernel retains ``rho`` as the morphism it is the cokernel of.
+        ``category`` joins a structured category to the cokernel; the levels
+        of that category read their data from ``construction_data``.
+        """
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _presented_module_from_morphism,
+        )
+
+        ring = self.base_ring()
+        assert morphism.codomain() in ModulesWithChosenFinitePresentation(ring), (
+            f"a cokernel with a chosen finite presentation is taken of a morphism into "
+            f"a module over {ring} with a chosen finite presentation"
+        )
+        return _presented_module_from_morphism(
+            morphism,
+            _cokernel_morphism=morphism,
+            _extra_categories=() if category is None else (category,),
+            _extra_construction_data=construction_data or None,
+        )
+
     def super_categories(self):
         return [
             Modules(self.base_ring()).FinitelyPresented(),
