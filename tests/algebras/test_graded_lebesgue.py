@@ -63,7 +63,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     GradedModules = session["GradedModules"]
     GradedLebesgueAlgebra = session["GradedLebesgueAlgebra"]
     GradedLebesgueModule = session["GradedLebesgueModule"]
-    GradedTensorProductModules = session["GradedTensorProductModules"]
+    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
     LebesgueGradedModules = session["LebesgueGradedModules"]
     NonNegativeReals = session["NonNegativeReals"]
 
@@ -104,7 +104,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     )
     assert multiplication in multiplication.domain().Mor(algebra)
     assert multiplication.codomain() is algebra
-    assert multiplication.domain() in GradedTensorProductModules(RR)
+    assert multiplication.domain() in TensorProductModules(RR)
     assert product.homogeneous_component(one).parent() is Lp(1)
     assert product == multiplication(multiplication.domain().pure_tensor(left, right))
     assert epsilon.domain() is algebra
@@ -189,3 +189,25 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
         pass
     else:
         raise AssertionError("convolution has no unit-piece augmentation")
+
+
+def test_pointwise_algebra_reuses_the_module_components_and_tensor_classifier() -> None:
+    from dzack_research.preamble.all import GradedLebesgueAlgebra, GradedLebesgueModule, Lp, NonNegativeReals, RR
+    from dzack_research.preamble.categories.modules.pure.modules import Modules, TensorProductModules
+
+    module = GradedLebesgueModule(NonNegativeReals)
+    algebra = GradedLebesgueAlgebra
+    two = algebra(Lp(Infinity)(RR(2)))
+    three = algebra(Lp(Infinity)(RR(3)))
+    multiplication = algebra.multiplication_morphism()
+
+    assert algebra.unformed_module() is module
+    assert module(two).homogeneous_component(NonNegativeReals.zero()) == Lp(Infinity)(RR(2))
+    assert multiplication.domain() in TensorProductModules(RR)
+    assert multiplication.domain().tensor_factor(0) is algebra
+    assert multiplication.domain().tensor_factor(1) is algebra
+    assert multiplication(multiplication.domain().pure_tensor(two, three)) == algebra(Lp(Infinity)(RR(6)))
+    assert algebra.one() * two == two
+    assert two * algebra.one() == two
+    assert algebra.degree_projection(NonNegativeReals.zero()).parent().homset_category().is_subcategory(Modules(RR))
+    assert module.graded_piece(NonNegativeReals(Infinity)).is_zero()

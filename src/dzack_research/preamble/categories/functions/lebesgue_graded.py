@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    _algebra_on_module,
     _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -44,6 +45,11 @@ from dzack_research.preamble.categories.functions.real_functions import (
     _is_lebesgue_space,
     _l2_pairing,
 )
+from dzack_research.preamble.categories.modules.graded_direct_sums import (
+    GradedDirectSumElement,
+    _DirectSumOfModules,
+    _direct_sum_of_modules,
+)
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -51,6 +57,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.real import RR
@@ -131,11 +138,9 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             r"""The projection \(\pi_s\colon N\to L^{1/s}\) onto a homogeneous piece."""
             degree = self.grading_monoid()(degree)
             piece = self.graded_piece(degree)
-            return SetMorphism(
-                Sets().Mor(self, piece),
-                lambda element, parent=self, degree=degree: parent(
-                    element
-                ).homogeneous_component(degree),
+            return Modules(self.base_ring()).Mor(self, piece).elementwise(
+                lambda element: self(element).homogeneous_component(degree),
+                verify_linearity=False,
             )
 
         def integration_of_degree_one(self):
@@ -237,8 +242,8 @@ class GradedTensorProductModules(OwnedCategoryOverBaseRing):
                     left_element.homogeneous_component(left_degree),
                     right_element.homogeneous_component(right_degree),
                 )
-                for left_degree in left_element._degrees()
-                for right_degree in right_element._degrees()
+                for left_degree in left_element.homogeneous_components()
+                for right_degree in right_element.homogeneous_components()
             )
             return self.element_class(self, summands)
 
@@ -304,6 +309,9 @@ class _GradedLebesgueElement(ModuleElement):
     def homogeneous_component(self, degree):
         degree = self.parent().grading_monoid()(degree)
         return self._components.get(degree, self.parent().graded_piece(degree).zero())
+
+    def homogeneous_components(self):
+        return dict(self._components)
 
     def _degrees(self):
         return self._components.keys()
@@ -432,7 +440,7 @@ def _lebesgue_multiplication(module, piece_product):
             components[degree] = (
                 components.get(degree, module.graded_piece(degree).zero()) + product
             )
-        return module._from_components(components)
+        return module.from_components(components)
 
     return _lebesgue_module_homset(tensor, module)(evaluate)
 
@@ -450,7 +458,7 @@ def _transport_multiplication(multiplication, algebra):
     ):
         product = multiplication(module_tensor._from_summands(element.summands()))
         return algebra._from_components(
-            {degree: product.homogeneous_component(degree) for degree in product._degrees()}
+            product.homogeneous_components()
         )
 
     return _lebesgue_module_homset(tensor, algebra)(evaluate)
@@ -498,7 +506,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
 
 
     def _element_of_unformed_module(self, element):
-        return self.unformed_module()._from_components(self(element).homogeneous_components())
+        return self.unformed_module().from_components(self(element).homogeneous_components())
 
     def _element_from_unformed_module(self, element):
         return self._from_components(self.unformed_module()(element).homogeneous_components())
@@ -555,56 +563,57 @@ class _LebesgueAlgebraFromMultiplication(Parent):
         return self.zero()
 
 
-class GradedLebesgueModule(UniqueRepresentation, Parent):
-    r"""The \(M\)-graded module \(\bigoplus_{s\in M} L^{1/s}\).
+class _LebesgueDirectSum(_DirectSumOfModules):
+    r"""The module direct-sum engine with literal ingress for an integrable map.
 
-    The monoid \(M\) supplies the index of Hölder degrees. The full
-    family uses \(([0,\infty],+)\); convolution uses \(([0,1],\oplus)\).
+    Arithmetic, homogeneous components, scalar action, injections, projections
+    and reconstruction under extra structure belong to the direct-sum owner.
+    Only reading a map in its summand is specific to the Lebesgue presentation.
     """
 
-    Element = _GradedLebesgueElement
-
-    def __init__(self, grading_monoid) -> None:
-        ring = _real_ring()
-        self._preamble_algebra_base_ring = ring
-        Parent.__init__(
-            self,
-            base=_engine_ring(ring),
-            category=Cat().meet(
-                (
-                    LebesgueGradedModules(ring),
-                    GradedModules(ring, grading_monoid),
-                )
-            ),
-        )
-
-    def _repr_(self) -> str:
-        return f"graded Lebesgue module over {self.grading_monoid()}"
-
-    def _latex_(self) -> str:
-        return r"\bigoplus_s L^{1/s}(\mathbb{R})"
-
-    def graded_piece(self, degree):
-        r"""The homogeneous summand \(L^{1/s}\) in Hölder degree \(s\)."""
-        return Lp(_lebesgue_exponent(self.grading_monoid()(degree)))
-
-    def _from_components(self, components):
-        return self.element_class(self, components)
+    def _direct_sum_realization(self):
+        return _LebesgueDirectSum, GradedDirectSumElement
 
     def _element_constructor_(self, value):
-        if element_parent(value) is self:
+        source = element_parent(value)
+        if source is self:
             return value
-        value_parent = element_parent(value)
-        if _is_lebesgue_space(value_parent):
-            degree = self.grading_monoid()(_holder_degree(value_parent).as_extended_real())
-            return self._from_components({degree: value})
-        raise TypeError(f"{value} is not a Lebesgue class in {self}")
+        if _is_lebesgue_space(source):
+            degree = self.grading_monoid()(_holder_degree(source).as_extended_real())
+            return self.from_component(degree, value)
+        if self in Algebras(self.base_ring()).Unital() and value in self.base_ring():
+            return self.from_component(self.grading_monoid().monoidal_unit(), Lp(Infinity)(value))
+        return super()._element_constructor_(value)
 
-    def zero(self):
-        return self._from_components({})
+    def _repr_(self):
+        return f"Lebesgue direct sum over {self.grading_monoid()}"
 
-    def _an_element_(self):
-        return self.zero()
+    def _latex_(self):
+        return r"\bigoplus_s \mathcal{L}^{1/s}(\mathbb{R})"
+
+
+@cached_function
+def GradedLebesgueModule(grading_monoid):
+    r"""The finite-support direct sum of the integrable-map spaces in Hölder degree.
+
+    Hölder degrees are finite.  Extending this grading to the extended
+    nonnegative monoid puts the zero module in degree infinity; it does not
+    introduce a nonexistent integrability exponent zero.
+    """
+    ring = _real_ring()
+
+    def piece(degree):
+        match degree.as_extended_real():
+            case value if value is Infinity:
+                return ring.free_module(0)
+            case _:
+                return Lp(_lebesgue_exponent(degree))
+
+    return _direct_sum_of_modules(
+        ring, grading_monoid, indexed_family(grading_monoid, piece),
+        extra_categories=(LebesgueGradedModules(ring),),
+        _realization=(_LebesgueDirectSum, GradedDirectSumElement),
+    )
 
 
 def _intern_graded_lebesgue_algebra(multiplication, ring, unital):
@@ -618,14 +627,41 @@ def _intern_graded_lebesgue_algebra(multiplication, ring, unital):
     return _LebesgueAlgebraFromMultiplication(module, multiplication, unital)
 
 
+def _pointwise_graded_product(module, left, right):
+    r"""Multiply finite homogeneous sums, with Hölder degree added in each term."""
+    return sum((
+        module.from_component(
+            module.combine_degrees(s, t),
+            _pointwise_piece_product(f, g, module.combine_degrees(s, t)),
+        )
+        for s, f in module(left).homogeneous_components().items()
+        for t, g in module(right).homogeneous_components().items()
+    ), module.zero())
+
+
 @cached_function
 def graded_lebesgue_algebra():
-    r"""The pointwise algebra \(\bigoplus_s L^{1/s}\), interned from its product."""
+    r"""The pointwise algebra, constructed on the module by its tensor classifier.
+
+    Hölder gives the product of the summands.  Pointwise associativity and
+    commutativity extend to finite sums, and the constant one in degree zero
+    is a two-sided unit.  These are the construction's axioms, not conclusions
+    drawn from sampling functions or the grading monoid.
+    """
     ring = _real_ring()
     module = GradedLebesgueModule(NonNegativeReals)
-    return module.algebra_from_multiplication(
-        _lebesgue_multiplication(module, _pointwise_piece_product),
-        unital=True,
+    tensor = Modules(ring).tensor_product((module, module))
+    multiplication = tensor.from_bilinear_map(
+        module, lambda left, right: _pointwise_graded_product(module, left, right),
+    )
+    category = Cat().meet((
+        GradedAlgebras(ring, NonNegativeReals),
+        Algebras(ring).Associative().Unital().Commutative(),
+        LebesgueGradedModules(ring),
+    ))
+    return _algebra_on_module(
+        module, multiplication, placement=(category,),
+        unit=module.from_component(NonNegativeReals.zero(), Lp(Infinity).one()),
     )
 
 

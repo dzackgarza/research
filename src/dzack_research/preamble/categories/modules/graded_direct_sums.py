@@ -421,21 +421,29 @@ class _DirectSumOfModules:
 
         return Modules(self.base_ring()).Mor(self, codomain).elementwise(evaluate, verify_linearity=False)
 
+    def _direct_sum_realization(self):
+        r"""The private component engine retained when further structure is supplied."""
+        return _DirectSumOfModules, GradedDirectSumElement
+
     def _module_with_structure(self, categories, construction_data):
         return _direct_sum_of_modules(
             self.base_ring(), self.grading_monoid(), self._summand_family,
             extra_categories=categories, construction_data=construction_data,
+            _realization=self._direct_sum_realization(),
         )
 
     def _repr_(self):
         return f"Direct sum over {self.degree_index_set()}"
 
 
-def _direct_sum_of_modules(ring, grading_monoid, pieces, *, extra_categories=(), construction_data=None):
+def _direct_sum_of_modules(
+    ring, grading_monoid, pieces, *, extra_categories=(), construction_data=None,
+    _realization=(_DirectSumOfModules, GradedDirectSumElement),
+):
     graded = GradedModules(ring, grading_monoid)
     assert pieces.index_set() is grading_monoid, "the grading indexes the summands"
     return _object_of(
         Cat().meet((graded, *extra_categories)),
-        _engine=(graded, _DirectSumOfModules, GradedDirectSumElement),
+        _engine=(graded, *_realization),
         base_ring=ring, summand_family=pieces, **(construction_data or {}),
     )
