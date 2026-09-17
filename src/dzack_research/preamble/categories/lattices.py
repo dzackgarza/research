@@ -86,6 +86,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _vectors_of_square,
     _vectors_of_square_and_divisibility,
     _voronoi_cell,
+    _voronoi_facets,
     _voronoi_relevant_vectors,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
@@ -2823,11 +2824,15 @@ class Lattices(OwnedCategoryOverBaseRing):
         approximate_closest_vector = babai
 
         def voronoi_cell(self, bound=None):
-
+            r"""Return the Voronoi cell of this definite lattice, a convex polytope in ``L tensor QQ``."""
             return _voronoi_cell(self, bound=bound)
 
-        def voronoi_relevant_vectors(self):
+        def voronoi_facets(self):
+            r"""Return the facets of the Voronoi cell, indexed by their relevant vectors."""
+            return _voronoi_facets(self)
 
+        def voronoi_relevant_vectors(self):
+            r"""Return the Voronoi-relevant vectors, the normals of the facets of the cell."""
             return _voronoi_relevant_vectors(self)
 
         def contact_polytope(self):
