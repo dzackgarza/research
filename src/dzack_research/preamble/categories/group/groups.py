@@ -1224,6 +1224,33 @@ class SubgroupInclusion(SetMorphism):
     def is_injective(self):
         return True
 
+    def factor_through_or_none(self, target_inclusion):
+        r"""Return the subgroup factor, or None when represented containment fails."""
+        if target_inclusion.codomain() is not self.codomain():
+            raise ValueError("subgroup factorization requires one ambient group")
+        source = self.domain()
+        target = target_inclusion.domain()
+        if source is target:
+            return source.Mor(target).identity()
+        match source:
+            case _ if source in GeneratedSubgroups(self.codomain()):
+                witnesses = source.selected_subgroup_generators()
+            case _ if source in OwnedFiniteGroups():
+                witnesses = source
+            case _:
+                assert source in GeneratedSubgroups(self.codomain()), (
+                    "subgroup containment is decided here from a chosen generating family or finite enumeration"
+                )
+        if not all(element in target for element in witnesses):
+            return None
+        return source.Mor(target)(lambda element: target(element))
+
+    def factor_through(self, target_inclusion):
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError("the source subgroup is not contained in the target")
+        return factor
+
     @cached_method
     def _cokernel_data(self):
         r"""Return the quotient by the normal closure of this subgroup image."""
@@ -1616,7 +1643,7 @@ class GroupAutomorphismGroups(OwnedCategory):
     """
 
     def super_categories(self):
-        return [OwnedGroups()]
+        return [OwnedGroups(), OwnedGroups().Subobjects(self.supergroup())]
 
     class ParentMethods:
         @cached_method

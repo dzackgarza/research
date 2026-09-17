@@ -1,7 +1,7 @@
 r"""Structured subgroup constructors retain the mathematics that defines them."""
 
 from dzack_research.preamble.all import ZZ, Lattices, Set
-from dzack_research.preamble.categories.group.groups import GeneratedSubgroups
+from dzack_research.preamble.categories.group.groups import GeneratedSubgroups, OwnedGroups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,
     IntersectionSubgroups,
@@ -27,6 +27,12 @@ def test_generated_subgroup_retains_the_selected_generating_family() -> None:
     assert subgroup.selected_subgroup_generators().cardinality() == 1
     assert subgroup.selected_subgroup_generators()[0] == generator
     assert subgroup.supergroup() is group
+    subobjects = OwnedGroups().Subobjects(group)
+    assert subgroup.category().is_subcategory(subobjects)
+    assert subobjects.as_slice_object(subgroup).arrow() is subgroup.inclusion()
+    trivial = group.subgroup(())
+    assert subobjects.Mor(trivial, subgroup).has_morphism()
+    assert not subobjects.Mor(subgroup, trivial).has_morphism()
 
 
 def test_kernel_and_preimage_subgroups_retain_their_defining_maps() -> None:
