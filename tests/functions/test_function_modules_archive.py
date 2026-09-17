@@ -102,3 +102,23 @@ def test_archived_finite_formed_module_still_has_a_gram_matrix() -> None:
 
     root_lattice = Lattices(ZZ)("A2")
     assert root_lattice.gram_matrix().list() == [-2, 1, 1, -2]
+
+
+def test_function_algebra_retains_root_multiplication_and_scalar_structure() -> None:
+    smooth = C(Infinity, RR)
+    x = smooth.coordinate()
+    multiplication = smooth.multiplication()
+    assert multiplication(smooth(2), x)(3) == 6
+    assert smooth.algebra_structure_morphism()(RR(4))(2) == 4
+
+
+def test_formed_function_engines_cross_to_their_original_vector_space() -> None:
+    from dzack_research.preamble.all import ell
+
+    for space in (Lp(2), ell(2)):
+        zero = space.zero()
+        module = space.unformed_module()
+        assert module is not space
+        assert module(zero)(0) == 0
+        assert space(module(zero))(0) == 0
+        assert space.b(zero, zero) == RR.zero()

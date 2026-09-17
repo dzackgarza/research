@@ -113,6 +113,11 @@ empty Hom: the previous zero-cardinality expectations at `continuum` versus
 The ordinal product also retains iterative traversal of ordinary factors
 rather than adding one recursive call per factor.  Symbolic function
 prefixes stay in the private engine, not in a category-level definition.
+The proposed `_CoordinateTensorModules` category is rejected: it names
+a private component encoding, not a new mathematical structure (CAT-28).
+Its engine now constructs through `Modules(R)`.  The function-space engines
+likewise use the shared entry, including the algebra root's native product
+and unit data and the formed module's actual form datum.
 The coordinate parser retains bounded reading when rejecting extra rows or
 entries; eliminating `StopIteration` handling does not authorize consuming
 an infinite malformed input.  `ask` retains exact boolean admission rather
