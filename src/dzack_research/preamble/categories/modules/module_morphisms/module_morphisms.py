@@ -2072,6 +2072,12 @@ class TensorProductModuleHomset(ModuleHomset):
                 return False
 
     def _element_constructor_(self, images):
+        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+
+        if self.domain() not in FramedModules(self.domain().base_ring()):
+            if self._is_two_argument_callable(images):
+                return self.domain().from_bilinear_map(self.codomain(), images)
+            return super()._element_constructor_(images)
         left = self.domain().tensor_factor(0)
         right = self.domain().tensor_factor(1)
         left_labels = left.module_generating_set()

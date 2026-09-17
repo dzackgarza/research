@@ -75,16 +75,11 @@ def _tensor_product_morphism(left_morphism, right_morphism, source=None, target=
         raise ValueError("the target tensor product has different factors")
 
 
-    return source.module_category().Mor(source, target)(
-        lambda pair: target.pure_tensor(
-            left_morphism(
-                left_morphism.domain().module_generator(pair.component(0))
-            ),
-            right_morphism(
-                right_morphism.domain().module_generator(pair.component(1))
-            ),
-        )
+    return source.from_bilinear_map(
+        target,
+        lambda left, right: target.pure_tensor(left_morphism(left), right_morphism(right)),
     )
+
 
 
 __all__ = [

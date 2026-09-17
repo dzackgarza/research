@@ -3339,6 +3339,14 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
                 lambda left_label, right_label: self.module_generator(_tensor_pair(labels, left_label, right_label)),
             )
 
+        def from_bilinear_map(self, codomain, bilinear):
+            r"""The unique linear map induced by an R-bilinear evaluation."""
+            left, right = self._two_factors()
+            return self.from_bilinear(BilinearMap(
+                left, right, codomain,
+                lambda i, j: bilinear(left.module_generator(i), right.module_generator(j)),
+            ))
+
         def from_bilinear(self, bilinear):
             left, right = self._two_factors()
             if bilinear.left_factor() is not left or bilinear.right_factor() is not right:
@@ -3398,7 +3406,12 @@ def _module_tensor_product_with_data(
         _represented_finite_presentation(factor) for factor in values
     )
     if not represented_free and not represented_presented:
-        raise NotImplementedError("the tensor product has no selected represented module backend for these factors")
+        from dzack_research.preamble.categories.modules.tensor_quotients import _tensor_quotient
+
+        return _tensor_quotient(
+            factors, extra_categories=extra_categories,
+            extra_construction_data=extra_construction_data,
+        )
 
     tensor_labels = _tensor_label_set(factors)
 
