@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.functors.core import NaturalTransformati
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
-    _engine_group,
     _integer_engine_point,
     _own_group,
     _owned_group,
@@ -151,16 +150,15 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 "the represented equivariant Hom-set requires a chosen finite group "
                 "generating set"
             )
-            self._preamble_g_set_points = point_set
-            self._preamble_permutation_representation = permutation_representation
+            self._point_set = point_set
+            self._permutation_representation = permutation_representation
             permutations = permutation_representation.codomain()
-            engine = _engine_group(permutations)
 
             def permute(group_element, point):
                 backend_permutation = permutations._to_engine(
                     permutation_representation(group_element)
                 )
-                return _owned_point(engine, backend_permutation(_integer_engine_point(point)))
+                return _owned_point(backend_permutation(_integer_engine_point(point)))
 
             for group_generator in group.group_generators():
                 for point in point_set:
@@ -181,11 +179,11 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         def permutation_representation(self):
             r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
-            return self._preamble_permutation_representation
+            return self._permutation_representation
 
         def point_set(self):
             r"""Return the finite set used to present the points of this ``G``-set."""
-            return self._preamble_g_set_points
+            return self._point_set
 
         def __iter__(self):
             return iter(self.point_set())
@@ -477,10 +475,7 @@ class OrbitSets(OwnedCategory):
             return iter(self._orbit_classes)
 
         def __contains__(self, orbit) -> bool:
-            try:
-                return orbit.parent() is self
-            except AttributeError:
-                return False
+            return isinstance(orbit, Element) and orbit.parent() is self
 
         def _element_constructor_(self, orbit):
             assert orbit in self, f"{orbit} is not an orbit of {self}"
@@ -540,6 +535,22 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
     return permutation_group(cycles)
 
 
+def _owned_point_set(point_set):
+    r"""Read a literal family of points as an owned finite ordered set.
+
+    Literal ingress adapter: an owned set is already the point set; a Python
+    tuple or list is read entry by entry, and a point written as a Python
+    ``int`` is the owned integer, the same point a permutation group's
+    elements return.
+    """
+    if point_set in FiniteSets():
+        return point_set
+    integers = _own_ring(SageZZ)
+    return finite_ordered_set(
+        tuple(integers(point) if isinstance(point, int) else point for point in point_set)
+    )
+
+
 def _finite_g_set_from_action(group, point_set, action):
     r"""Construct a represented finite ``G``-set from a binary action.
 
@@ -547,14 +558,7 @@ def _finite_g_set_from_action(group, point_set, action):
     defining group morphism ``G -> Sym(X)``; the returned object stores that
     morphism rather than the temporary binary callback.
     """
-
-    if isinstance(point_set, (tuple, list)):
-        # Integer literals are integers: points written as Python ints are
-        # owned integers, the same points a permutation group's elements return.
-        integers = _own_ring(SageZZ)
-        point_set = finite_ordered_set(
-            tuple(integers(point) if isinstance(point, int) else point for point in point_set)
-        )
+    point_set = _owned_point_set(point_set)
     assert point_set in FiniteSets(), (
         "the represented G-set constructor requires a finite point set"
     )
@@ -634,13 +638,6 @@ class Torsors(OwnedParameterizedCategory):
             presentation's selected trivializing choice.
             """
             return next(iter(self.point_set()))
-
-        def acting_group(self):
-            r"""Return the group named by this torsor's category node."""
-            for placement in self.category().all_super_categories(proper=False):
-                if isinstance(placement, Torsors):
-                    return placement.group()
-            raise AssertionError(f"{self} is not placed in a torsor category")
 
         def __iter__(self):
             r"""Enumerate through a chosen point and the free transitive action."""

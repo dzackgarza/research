@@ -424,3 +424,20 @@ def test_quadratic_kummer_character_does_not_install_a_false_characteristic_two_
     group = AbsoluteGaloisGroup(GF(4, "u"))
     with pytest.raises(ValueError, match="characteristic different from two"):
         group.quadratic_character(group.base_field().field_generators()[0])
+
+
+def test_finite_field_automorphism_constructor_keeps_endpoints_and_exact_indices() -> None:
+    from dzack_research.preamble.categories.group.profinite.galois_quotient import FiniteExtensionAutomorphismGroup
+
+    group = AbsoluteGaloisGroup(GF(2))
+    stage = group.finite_extension(2)
+    quotient = group.finite_quotient(stage)
+    assert quotient is FiniteExtensionAutomorphismGroup(stage)
+    assert quotient in OwnedGroups().Finite()
+    assert quotient.cardinality() == 2
+    for element in quotient:
+        assert element * ~element == quotient.one()
+    with pytest.raises((TypeError, ValueError)):
+        quotient(1.5)
+    with pytest.raises(ValueError):
+        quotient(stage.base_embedding())

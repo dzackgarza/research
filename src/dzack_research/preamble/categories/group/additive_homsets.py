@@ -35,11 +35,8 @@ class AdditiveHomGroups(OwnedCategory):
             return self.elementwise(lambda element: self.codomain().zero())
 
     class ElementMethods:
-        # Sage's Morphism binary-operator protocol returns NotImplemented for
-        # a foreign operand; the Hom parent then states its mathematical type.
-        def __add__(self, other):
-            if not isinstance(other, Morphism) or other.parent() is not self.parent():
-                return NotImplemented
+        def _add_(self, other):
+            r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Hom."""
             return self.parent().elementwise(lambda element: self(element) + other(element))
 
         def __neg__(self):
@@ -48,13 +45,17 @@ class AdditiveHomGroups(OwnedCategory):
         def __sub__(self, other):
             return self + (-other)
 
-        def __mul__(self, other):
-            if not isinstance(other, Morphism) or other.codomain() is not self.domain():
+        def _composition(self, right):
+            r"""``self ∘ right`` in the additive Hom family.
+
+            Sage's ``Map.__mul__`` has checked that ``right`` is a map into
+            this morphism's domain; a map outside the additive Hom theory is
+            not composed here.
+            """
+            if not right.parent().homset_category().is_subcategory(self.parent().homset_category()):
                 return NotImplemented
-            if not other.parent().homset_category().is_subcategory(self.parent().homset_category()):
-                return NotImplemented
-            hom = self.parent().hom_family().Of(other.domain(), self.codomain())
-            return hom.elementwise(lambda element: self(other(element)))
+            hom = self.parent().hom_family().Of(right.domain(), self.codomain())
+            return hom.elementwise(lambda element: self(right(element)))
 
         def __rmul__(self, scalar):
             return self.parent()._owned_scalar_multiple(scalar, self)
@@ -122,8 +123,7 @@ class AdditiveMorphism(Morphism):
         return self.codomain()(self._function(self.domain()(element)))
 
     def _add_(self, other):
-        if not isinstance(other, Morphism) or other.parent() is not self.parent():
-            return NotImplemented
+        r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Hom."""
         return self.parent().elementwise(
             lambda element: self(element) + other(element)
         )
@@ -141,11 +141,11 @@ class AdditiveMorphism(Morphism):
         return self.parent()._owned_scalar_multiple(scalar, self)
 
     def _acted_upon_(self, actor, self_on_left):
-        try:
-            scalar = self.parent().base_ring()(actor)
-        except (AttributeError, TypeError, ValueError):
+        r"""Scalar action of the Hom's scalar ring; any other actor is not an action here."""
+        scalars = self.parent().base_ring()
+        if actor not in scalars:
             return None
-        return self.parent()._owned_scalar_multiple(scalar, self)
+        return self.parent()._owned_scalar_multiple(scalars(actor), self)
 
     def _composition(self, right):
         r"""Compose inside the owned additive Hom family.
@@ -155,7 +155,7 @@ class AdditiveMorphism(Morphism):
         can ask for the wrong mathematical Hom.  The additive morphism already
         knows its Hom packet; compose there directly.
         """
-        if not isinstance(right, Morphism) or right.codomain() is not self.domain():
+        if right.codomain() is not self.domain():
             return NotImplemented
         if not right.parent().homset_category().is_subcategory(
             self.parent().homset_category()
@@ -167,8 +167,6 @@ class AdditiveMorphism(Morphism):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, Morphism) or other.parent() is not self.parent():
-            return op == op_NE
         if self is other:
             return op == op_EQ
         assert self.domain().is_finite() is True, (
@@ -187,7 +185,6 @@ class AdditiveHomset(CategoricalHomset):
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         self._preamble_base_ring = _own_ring(SageZZ)
-        self._preamble_algebra_base_ring = self._preamble_base_ring
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
         category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveHomGroups()
         super().__init__(family, domain, codomain, category=category)

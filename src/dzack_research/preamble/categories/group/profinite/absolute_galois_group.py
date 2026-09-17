@@ -3,7 +3,6 @@ r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 from typing import cast
 
 from sage.categories.finite_fields import FiniteFields
-from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.number_fields import NumberFields
 from sage.misc.classcall_metaclass import typecall
@@ -41,7 +40,6 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteExtensionAutomorphismGroup,
-    FiniteGaloisAutomorphism,
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
     GaloisRestrictionMap,
@@ -50,6 +48,7 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
+    OwnedRings,
     _engine_ring,
     _own_ring,
 )
@@ -143,34 +142,27 @@ class AbsoluteGaloisGroupElement(Element):
         return self._call_(element)
 
     def _call_(self, element):
+        r"""Evaluate: a Frobenius power by its exponent, otherwise the exact action; construction supplies one of the two."""
         if self._frobenius_exponent is not None:
             return self.parent()._finite_frobenius_image(
                 element, self._frobenius_exponent
             )
-        if self._exact_action is not None:
-            return self._exact_action(element)
-        raise NotImplementedError("this automorphism has no global exact action")
+        return self._exact_action(element)
 
     def fixes_base_field(self) -> bool:
         parent = cast("AbsoluteGaloisGroup", self.parent())
         embedding = parent.base_embedding()
-        try:
-            return all(
-                self(embedding(generator)) == embedding(generator)
-                for generator in parent.base_field().field_generators()
-            )
-        except NotImplementedError:
-            return False
+        return all(
+            self(embedding(generator)) == embedding(generator)
+            for generator in parent.base_field().field_generators()
+        )
 
     def restrict(self, stage):
         return self.parent().restriction_map(stage)(self)
 
-    def __mul__(self, other):
-        if isinstance(other, AbsoluteGaloisGroupElement):
-            if other.parent() is not self.parent():
-                return NotImplemented
-            return self.parent()._compose_elements(self, other)
-        return NotImplemented
+    def _mul_(self, other):
+        r"""``self ∘ other``; Sage's arithmetic calls this with one parent."""
+        return self.parent()._compose_elements(self, other)
 
     def __invert__(self):
         return self.inverse()
@@ -290,15 +282,13 @@ class ElementConjugacyClass(SageObject):
         return f"Conjugacy class of {self._representative} in {self._supergroup}"
 
 def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
-    domain = _own_ring(domain)
-    codomain = _own_ring(codomain)
-    if isinstance(embedding, ExactFieldMorphism):
-        if embedding.domain() is not domain or embedding.codomain() is not codomain:
-            raise ValueError("the supplied exact embedding has the wrong endpoints")
-        return embedding
-    if not isinstance(embedding, Map):
-        raise TypeError("an embedding must be an exact Sage field morphism")
-    return _exact_field_morphism_from_engine(domain, codomain, embedding)
+    r"""Read ``embedding`` as an element of the exact field Hom from ``domain`` to ``codomain``.
+
+    That Hom's element constructor admits its own elements and exact Sage
+    field maps between the corresponding engine fields, and refuses anything
+    else, including a map with other endpoints.
+    """
+    return _own_ring(domain).exact_morphisms_to(_own_ring(codomain))(embedding)
 
 
 class AbsoluteGaloisSliceAutomorphism(Morphism):
@@ -371,14 +361,12 @@ class AbsoluteGaloisCategoryConstruction(_RestrictedHomCategoryOf):
         return AbsoluteGaloisGroup
 
     def accepts(self, arrow) -> bool:
-        try:
-            return all(
-                arrow(self._base_embedding(generator))
-                == self._base_embedding(generator)
-                for generator in self._base_field.field_generators()
-            )
-        except (TypeError, ValueError, NotImplementedError):
-            return False
+        r"""Whether the closure endomorphism ``arrow`` fixes the embedded base field, read on its generators."""
+        return all(
+            arrow(self._base_embedding(generator))
+            == self._base_embedding(generator)
+            for generator in self._base_field.field_generators()
+        )
 
 
 @cached_function(key=lambda field: id(field))
@@ -398,28 +386,18 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     Element = AbsoluteGaloisGroupElement
 
     @staticmethod
-    def __classcall__(cls, *args, **kwargs):
-        # Open subgroups inherit this Python method but have different
-        # construction data; their own constructor remains ordinary.
-        if cls is not AbsoluteGaloisGroup:
-            return typecall(cls, *args, **kwargs)
-        if len(args) != 1:
-            return typecall(cls, *args, **kwargs)
-
-        field = _own_ring(args[0])
-        closure = kwargs.get("closure")
-        embedding = kwargs.get("embedding")
-        extra_categories = tuple(kwargs.get("extra_categories", ()))
-        if closure is not None or embedding is not None or extra_categories:
-            return typecall(
-                cls,
-                field,
-                closure=closure,
-                embedding=embedding,
-                extra_categories=extra_categories,
-            )
-
-        return _canonical_absolute_galois_group(field)
+    def __classcall__(cls, field, closure=None, embedding=None, extra_categories=()):
+        r"""``G_K`` for the canonical closure and embedding is one object per field; stated choices construct anew."""
+        field = _own_ring(field)
+        if closure is None and embedding is None and not extra_categories:
+            return _canonical_absolute_galois_group(field)
+        return typecall(
+            cls,
+            field,
+            closure=closure,
+            embedding=embedding,
+            extra_categories=tuple(extra_categories),
+        )
 
     def __init__(
         self,
@@ -437,14 +415,12 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         if embedding is None:
             embedding = self._field.first_exact_embedding(self._closure)
         self._embedding = _as_exact_embedding(self._field, self._closure, embedding)
-        self._one_element = None
         category = Cat().meet(
             (_absolute_galois_group_category(self._field), *tuple(extra_categories))
         )
         # The elements are field automorphisms of the closure, so this is the
         # subcategory of Aut_Fields(closure) fixing the structure map from K.
-        RestrictedHomCategoryParent.__init__(
-            self,
+        super().__init__(
             AbsoluteGaloisCategoryConstruction(
                 OwnedFields(),
                 self._field,
@@ -582,14 +558,13 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     def __hash__(self) -> int:
         return id(self)
 
+    @cached_method
     def one(self):
-        if self._one_element is None:
-            if self._is_finite_field():
-                self._one_element = FrobeniusElement(self, ZZ.zero())
-            else:
-                identity = self._closure.exact_morphisms_to(self._closure).identity()
-                self._one_element = AbsoluteGaloisGroupElement(self, exact_action=identity)
-        return self._one_element
+        r"""The identity: the zeroth Frobenius power over a finite field, else the identity of the closure."""
+        if self._is_finite_field():
+            return FrobeniusElement(self, ZZ.zero())
+        identity = self._closure.exact_morphisms_to(self._closure).identity()
+        return AbsoluteGaloisGroupElement(self, exact_action=identity)
 
     def an_element(self):
         return self.frobenius() if self._is_finite_field() else self.one()
@@ -648,44 +623,28 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             return left
         left_action = left.exact_action()
         right_action = right.exact_action()
-        if left_action is not None and right_action is not None:
-            return self(left_action * right_action)
-        raise NotImplementedError(
-            "composition requires globally exact realization data"
+        assert left_action is not None and right_action is not None, (
+            "composing a Frobenius power with an automorphism given by an exact map "
+            "requires the Frobenius power as an exact map of the closure, which is not represented"
         )
+        return self(left_action * right_action)
 
     def _inverse_element(self, element):
+        r"""``sigma^-1``: the negated Frobenius exponent, else the inverse of the exact action."""
         if element.frobenius_exponent() is not None:
             return FrobeniusElement(self, -element.frobenius_exponent())
         if element == self.one():
             return self.one()
-        exact = element.exact_action()
-        if exact is not None:
-            inverse_backend = exact._engine_morphism_crossing().inverse()
-            inverse = self._closure.exact_morphisms_to(self._closure)(inverse_backend)
-            return self(inverse)
-        raise NotImplementedError(
-            "the inverse requires globally exact realization data"
-        )
-
-    def _compatible_base_embedding(self, extension_field, closure_embedding):
-        if extension_field is self._field:
-            return self._field.exact_morphisms_to(self._field).identity()
-        compatible = []
-        for candidate in self._field.exact_embeddings(extension_field):
-            if all(
-                closure_embedding(candidate(generator)) == self._embedding(generator)
-                for generator in self._field.field_generators()
-            ):
-                compatible.append(candidate)
-        if len(compatible) != 1:
-            raise ValueError(
-                "the represented extension must contain the chosen copy of the base field"
-            )
-        return compatible[0]
+        inverse_backend = element.exact_action()._engine_morphism_crossing().inverse()
+        return self(self._closure.exact_morphisms_to(self._closure)(inverse_backend))
 
     def extension_data(self, extension, *, embedding=None, base_embedding=None):
-        if isinstance(extension, FiniteGaloisExtension):
+        r"""The stage ``K -> L -> Kbar`` named by a stage of this realization or by an owned field ``L``.
+
+        For a field the embeddings are the stated ones, or the first pair of
+        exact embeddings whose composite is the chosen ``K -> Kbar``.
+        """
+        if extension not in OwnedRings():
             if (
                 extension.base_field() is not self._field
                 or extension.algebraic_closure() is not self._closure
@@ -695,7 +654,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
                     "the finite extension belongs to a different realization"
                 )
             return extension
-        extension_field = _own_ring(extension)
+        extension_field = extension
         if (
             extension_field is self._field
             and embedding is None
@@ -776,10 +735,9 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         return GaloisRestrictionMap(self, self.finite_quotient(extension))
 
     def lift(self, finite_automorphism):
-        if not isinstance(finite_automorphism, FiniteGaloisAutomorphism):
-            raise TypeError("a lift starts from an exact finite Galois automorphism")
         quotient = finite_automorphism.parent()
         stage = self.extension_data(quotient.extension_data())
+        finite_automorphism = FiniteGaloisQuotient(stage)(finite_automorphism)
         if self._is_finite_field():
             generator = stage.field().field_generators()[0]
             q = self.base_field_order()
@@ -795,11 +753,10 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         )
 
     def lifts(self, finite_automorphism):
-        if not isinstance(finite_automorphism, FiniteGaloisAutomorphism):
-            raise TypeError("extensions start from an exact finite Galois automorphism")
         quotient = finite_automorphism.parent()
-        self.extension_data(quotient.extension_data())
-        return LiftCoset(GaloisRestrictionMap(self, quotient), finite_automorphism)
+        stage = self.extension_data(quotient.extension_data())
+        quotient = FiniteGaloisQuotient(stage)
+        return LiftCoset(GaloisRestrictionMap(self, quotient), quotient(finite_automorphism))
 
     def open_subgroup(self, extension, embedding=None):
         stage = self.extension_data(extension, embedding=embedding)
@@ -854,12 +811,11 @@ class OpenSubgroupInclusion(Morphism):
         element = subgroup(element)
         supergroup = self.codomain()
         exponent = element.frobenius_exponent()
-        if exponent is not None and supergroup._is_finite_field():
+        if exponent is not None:
+            # A Frobenius power exists only over a finite field, where the
+            # q^[E:K]-Frobenius of G_E is the [E:K]-th power of G_K's.
             return FrobeniusElement(supergroup, subgroup.index() * exponent)
-        exact = element.exact_action()
-        if exact is not None:
-            return supergroup(exact)
-        raise NotImplementedError("the subgroup element has no global exact action")
+        return supergroup(element.exact_action())
 
     def is_injective(self) -> bool:
         return True
@@ -871,11 +827,11 @@ class OpenSubgroupInclusion(Morphism):
 class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     r"""The actual subgroup fixing one embedded finite extension (E/K)."""
 
+    @staticmethod
+    def __classcall__(cls, supergroup, extension):
+        return typecall(cls, supergroup, extension)
+
     def __init__(self, supergroup, extension: FiniteGaloisExtension) -> None:
-        if not isinstance(extension, FiniteGaloisExtension):
-            raise TypeError(
-                "an open subgroup requires represented finite-extension data"
-            )
         extension = supergroup.extension_data(extension)
         self._supergroup = supergroup
         self._fixed_extension = extension
@@ -918,13 +874,10 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         if element not in self._supergroup:
             return False
         embedding = self.embedding()
-        try:
-            return all(
-                element(embedding(generator)) == embedding(generator)
-                for generator in self.fixed_field().field_generators()
-            )
-        except NotImplementedError:
-            return False
+        return all(
+            element(embedding(generator)) == embedding(generator)
+            for generator in self.fixed_field().field_generators()
+        )
 
     def _element_constructor_(self, datum=None, **options):
         if (
@@ -942,10 +895,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
                         "the Frobenius power is outside this open subgroup"
                     )
                 return FrobeniusElement(self, exponent // self.index())
-            exact = datum.exact_action()
-            if exact is not None:
-                return super()._element_constructor_(exact)
-            raise NotImplementedError("the supergroup element has no global exact action")
+            return super()._element_constructor_(datum.exact_action())
         return super()._element_constructor_(datum, **options)
 
     def conjugacy_class(self):
@@ -954,9 +904,11 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def core(self):
         if self.is_normal():
             return self
+        # A non-normal open subgroup occurs only over a number field, whose
+        # Sage engine names the field it is defined over by base_field().
         field = _engine_ring(self.fixed_field())
         base = _engine_ring(self._supergroup.base_field())
-        defining_base = getattr(field, "base_field", lambda: None)()
+        defining_base = field.base_field()
         assert defining_base is base or base.absolute_degree() == 1, (
             "the represented open-subgroup core requires a relative defining polynomial over "
             "the supergroup base field, or an absolute degree-one base"
@@ -973,23 +925,25 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         base_embedding = _exact_field_morphism_from_engine(
             self._supergroup.base_field(), normal_field, base_backend
         )
-        compatible_closure_embeddings = []
-        for fixed_to_normal in self.fixed_field().exact_embeddings(normal_field):
-            if not all(
+        # The embeddings N -> Kbar of the normal closure extending the chosen
+        # E -> Kbar through some K-embedding E -> N.
+        compatible_closure_embeddings = tuple(
+            normal_to_closure
+            for fixed_to_normal in self.fixed_field().exact_embeddings(normal_field)
+            if all(
                 fixed_to_normal(self._fixed_extension.base_embedding()(generator))
                 == base_embedding(generator)
                 for generator in self._supergroup.base_field().field_generators()
-            ):
-                continue
+            )
             for normal_to_closure in normal_field.exact_embeddings(
                 self._supergroup.algebraic_closure()
-            ):
-                if all(
-                    normal_to_closure(fixed_to_normal(generator))
-                    == self.embedding()(generator)
-                    for generator in self.fixed_field().field_generators()
-                ):
-                    compatible_closure_embeddings.append(normal_to_closure)
+            )
+            if all(
+                normal_to_closure(fixed_to_normal(generator))
+                == self.embedding()(generator)
+                for generator in self.fixed_field().field_generators()
+            )
+        )
         if not compatible_closure_embeddings:
             raise ValueError(
                 "the normal closure could not be placed compatibly inside the chosen algebraic closure"
@@ -1012,10 +966,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         return FiniteExtensionAutomorphismGroup(self.fixed_extension())
 
     def __le__(self, other) -> bool:
-        if (
-            not isinstance(other, OpenAbsoluteGaloisSubgroup)
-            or other.supergroup() is not self.supergroup()
-        ):
+        if other not in OpenAbsoluteGaloisSubgroups() or other.supergroup() is not self.supergroup():
             return False
         for embedding in other.fixed_field().exact_embeddings(self.fixed_field()):
             if all(
@@ -1026,10 +977,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         return False
 
     def intersection(self, other):
-        if (
-            not isinstance(other, OpenAbsoluteGaloisSubgroup)
-            or other.supergroup() is not self.supergroup()
-        ):
+        if other not in OpenAbsoluteGaloisSubgroups() or other.supergroup() is not self.supergroup():
             raise ValueError(
                 "open-subgroup intersection requires one supergroup Galois group"
             )
@@ -1049,13 +997,13 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
 
     def __init__(self, supergroup, extension_field) -> None:
         self._supergroup = supergroup
-        if isinstance(extension_field, FiniteGaloisExtension):
+        if extension_field not in OwnedRings():
             if extension_field.base_field() is not supergroup.base_field():
                 raise ValueError("the extension has the wrong supergroup base field")
             self._extension_field = extension_field.field()
             self._base_embedding = extension_field.base_embedding()
         else:
-            self._extension_field = _own_ring(extension_field)
+            self._extension_field = extension_field
             base_embeddings = supergroup.base_field().exact_embeddings(
                 self._extension_field
             )

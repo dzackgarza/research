@@ -212,14 +212,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def _call_(self, action_functor):
         r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
-        functors = self.functor_category()
-        try:
-            return functors.object(action_functor)
-        except (AttributeError, TypeError, ValueError) as error:
-            raise TypeError(
-                f"a {self.acting_group()}-object in {self.underlying_category()} "
-                "is constructed from a functor BG -> C"
-            ) from error
+        return self.functor_category().object(action_functor)
 
     def Mor(self, source, target):
         r"""Equivariant morphisms, as natural transformations on generic actions."""

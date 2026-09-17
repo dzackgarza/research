@@ -33,10 +33,11 @@ class ClassifyingMorphism(Morphism):
     def group_element(self):
         return self._group_element
 
-    def __mul__(self, other):
-        if not isinstance(other, ClassifyingMorphism) or other.parent() is not self.parent():
+    def _composition(self, right):
+        r"""Composition in ``BG`` is the group law; Sage's ``Map.__mul__`` has checked ``right`` is a map into the one object."""
+        if right.parent() is not self.parent():
             return NotImplemented
-        return self.parent()(self.group_element() * other.group_element())
+        return self.parent()(self.group_element() * right.group_element())
 
     def inverse(self):
         return self.parent()(~self.group_element())
@@ -44,8 +45,7 @@ class ClassifyingMorphism(Morphism):
     __invert__ = inverse
 
     def _richcmp_(self, other, op):
-        if not isinstance(other, ClassifyingMorphism) or other.parent() is not self.parent():
-            return NotImplemented
+        r"""Compare two arrows of ``BG`` by their group elements; Sage calls this with one parent."""
         return richcmp(self.group_element(), other.group_element(), op)
 
     def _repr_(self):

@@ -1,13 +1,13 @@
 """Submonoids represented as monomorphism subobjects of an ambient monoid."""
 
-from sage.structure.parent import Parent
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import (
     MonoidMorphism,
     Monoids,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.owned_category import _object_of
 
 
 class SubmonoidInclusion(MonoidMorphism):
@@ -31,7 +31,7 @@ class SubmonoidInclusion(MonoidMorphism):
         )
 
 
-class _SubmonoidParent(Parent):
+class _SubmonoidEngine:
     """A source monoid equipped with its chosen inclusion into an ambient monoid."""
 
     def __init__(
@@ -42,6 +42,7 @@ class _SubmonoidParent(Parent):
         predicate=None,
         description=None,
         structure_data=None,
+        **rest,
     ) -> None:
         if ambient not in Monoids():
             raise TypeError(f"{ambient} is not an owned monoid")
@@ -54,12 +55,7 @@ class _SubmonoidParent(Parent):
         self._preamble_monoid_generators = (
             None if generators is None else finite_ordered_set(tuple(generators))
         )
-        Parent.__init__(self, facade=ambient, category=Monoids().Subobjects(ambient))
-        self._preamble_inclusion = SubmonoidInclusion(
-            Monoids().Mor(self, ambient),
-            lambda element: element,
-        )
-        realize_owned_category(self)
+        super().__init__(facade=ambient, **rest)
         if predicate is not None and not bool(predicate(ambient.one())):
             raise ValueError("a submonoid must contain the ambient multiplicative identity")
 
@@ -68,8 +64,11 @@ class _SubmonoidParent(Parent):
 
     supermonoid = ambient_monoid
 
+    @cached_method
     def inclusion(self):
-        return self._preamble_inclusion
+        return SubmonoidInclusion(
+            Monoids().Mor(self, self.ambient_monoid()), lambda element: element
+        )
 
     def structure_data(self):
         return dict(self._preamble_submonoid_structure_data)
@@ -128,8 +127,11 @@ class _SubmonoidParent(Parent):
 
 def _generated_submonoid(ambient, generators, *, description=None, structure_data=None):
     normalized = tuple(ambient(generator) for generator in generators)
-    return _SubmonoidParent(
-        ambient,
+    category = Monoids().Subobjects(ambient)
+    return _object_of(
+        category,
+        _engine=(category, _SubmonoidEngine, None),
+        ambient=ambient,
         generators=normalized,
         description=description,
         structure_data=structure_data,
@@ -143,8 +145,11 @@ def _predicate_submonoid(
     *,
     structure_data=None,
 ):
-    return _SubmonoidParent(
-        ambient,
+    category = Monoids().Subobjects(ambient)
+    return _object_of(
+        category,
+        _engine=(category, _SubmonoidEngine, None),
+        ambient=ambient,
         predicate=predicate,
         description=description,
         structure_data=structure_data,

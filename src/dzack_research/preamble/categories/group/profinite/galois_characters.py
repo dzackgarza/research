@@ -84,7 +84,7 @@ def _finite_root_at_stage(root, stage):
         raise ValueError(
             "the finite-stage root does not realize the chosen closure root"
         )
-    return value
+    return stage.field()._from_engine_element(value)
 
 
 class CyclotomicCharacter(ProfiniteCharacter):
@@ -101,7 +101,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
         target = Integers(n).unit_group()
         closure = _engine_ring(domain.algebraic_closure())
         root = closure.zeta(n)
-        self._root = root
+        self._root = domain.algebraic_closure()._from_engine_element(root)
 
         if domain._is_finite_field():
             q_mod_n = Integers(n)(int(domain.base_field_order()))
@@ -111,23 +111,24 @@ class CyclotomicCharacter(ProfiniteCharacter):
         elif _engine_ring(domain.base_field()) is SageQQ:
             if n == 2:
                 stage = domain.extension_data(domain.base_field())
-                self._root_at_stage = _engine_ring(domain.base_field())(-1)
+                self._root_at_stage = domain.base_field()(-1)
             else:
                 base = cast(Any, _engine_ring(domain.base_field()))
                 polynomial = cast(Any, cyclotomic_polynomial(n)).change_ring(base)
                 field = base.extension(polynomial, f"zeta_{n}")
                 owned_field = _own_ring(field)
-                backend = field.Mor([root], closure)
+                backend = field.hom([root], closure)
                 embedding = _exact_field_morphism_from_engine(
                     owned_field,
                     domain.algebraic_closure(),
                     backend,
                 )
                 stage = domain.extension_data(owned_field, embedding=embedding)
-                self._root_at_stage = field.gen()
+                self._root_at_stage = owned_field._from_engine_element(field.gen())
         else:
-            raise NotImplementedError(
-                "the exact cyclotomic compositum is currently constructed for finite fields and QQ"
+            assert False, (
+                "the cyclotomic character exists over every field of characteristic prime to n; "
+                "the exact stage K(mu_n) is constructed here for finite fields and QQ"
             )
         super().__init__(domain, target, stage)
 
@@ -143,23 +144,29 @@ class CyclotomicCharacter(ProfiniteCharacter):
         return _unit_group_element(self.codomain(), residue)
 
     def _call_(self, element):
-        exponent = getattr(element, "frobenius_exponent", lambda: None)()
-        if exponent is not None and self.domain()._is_finite_field():
+        r"""``chi_n(sigma)``: the unit ``a`` with ``sigma(zeta) = zeta^a`` for the chosen root ``zeta``."""
+        element = self.domain()(element)
+        exponent = element.frobenius_exponent()
+        if exponent is not None:
             return self._exponent_image(exponent)
-
-        coordinate = getattr(element, "restriction_coordinate", lambda _stage: None)(
-            self.factor_extension()
-        )
+        coordinate = element.restriction_coordinate(self.factor_extension())
         if coordinate is not None:
             image = self.factor_extension().embedding()(coordinate(self._root_at_stage))
         else:
             image = element(self._root)
-        for residue in range(int(self._modulus)):
-            if gcd(residue, int(self._modulus)) == 1 and image == self._root**residue:
-                return _unit_group_element(self.codomain(), residue)
-        raise ValueError(
-            "the represented automorphism does not act through a unit exponent on mu_n"
+        modulus = int(self._modulus)
+        residue = next(
+            (
+                residue
+                for residue in range(modulus)
+                if gcd(residue, modulus) == 1 and image == self._root**residue
+            ),
+            None,
         )
+        assert residue is not None, (
+            "an automorphism of the closure sends a primitive n-th root of unity to a primitive one"
+        )
+        return _unit_group_element(self.codomain(), residue)
 
     def _repr_(self) -> str:
         return f"Cyclotomic character chi_{self._modulus}: {self.domain()} -> {self.codomain()}"
@@ -188,7 +195,7 @@ class QuadraticCharacter(ProfiniteCharacter):
 
         if backend_a.is_square():
             stage = domain.extension_data(domain.base_field())
-            self._root_at_stage = backend_a.sqrt()
+            self._root_at_stage = domain.base_field()._from_engine_element(backend_a.sqrt())
         elif domain._is_finite_field():
             stage = domain.finite_extension(2)
             self._root_at_stage = _finite_root_at_stage(root, stage)
@@ -197,14 +204,14 @@ class QuadraticCharacter(ProfiniteCharacter):
             t = polynomial_ring.gen()
             field = base.extension(t**2 - backend_a, "sqrt_a")
             owned_field = _own_ring(field)
-            backend = field.Mor([root], closure)
+            backend = field.hom([root], closure)
             embedding = _exact_field_morphism_from_engine(
                 owned_field,
                 domain.algebraic_closure(),
                 backend,
             )
             stage = domain.extension_data(owned_field, embedding=embedding)
-            self._root_at_stage = field.gen()
+            self._root_at_stage = owned_field._from_engine_element(field.gen())
 
         target = _own_group(CyclicPermutationGroup(2))
         super().__init__(domain, target, stage)
@@ -216,9 +223,9 @@ class QuadraticCharacter(ProfiniteCharacter):
         return self._root
 
     def _call_(self, element):
-        coordinate = getattr(element, "restriction_coordinate", lambda _stage: None)(
-            self.factor_extension()
-        )
+        r"""``+1`` when ``sigma`` fixes ``sqrt(a)``, the generator of ``C_2`` when it negates it."""
+        element = self.domain()(element)
+        coordinate = element.restriction_coordinate(self.factor_extension())
         if coordinate is not None:
             image = self.factor_extension().embedding()(coordinate(self._root_at_stage))
         else:

@@ -128,7 +128,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data_complete=None,
             **rest,
         ) -> None:
-            self._containing_group = supergroup
             self._predicate = predicate
             self._description = description
             self._character_data = dict(character_data or {})
@@ -138,9 +137,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 else bool(character_data_complete)
             )
             super().__init__(supergroup=supergroup, **rest)
-
-        def supergroup(self):
-            return self._containing_group
 
         def defining_predicate(self):
             return self._predicate
@@ -161,6 +157,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
 
         def cardinality(self):
+            r"""``|H|``: from the retained character data, else by counting a finite supergroup.
+
+            With complete finite-character data ``H`` is the preimage of a
+            subgroup of a finite quotient, so ``|H| = |G| |image of H| /
+            |image of G|``.  Otherwise, in a finite ``G``, ``H`` is the set of
+            elements satisfying the predicate, counted exactly in one pass over
+            ``G``, at a cost linear in ``|G|``: the predicate is a Python
+            function, which GAP's subgroup search by a property cannot evaluate.
+            """
             supergroup_cardinality = self.supergroup().cardinality()
             if self.contains_character_kernel():
                 quotient = self.finite_character_quotient()
@@ -171,30 +176,34 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                     return cardinal(order * subgroup_image_size // image_size)
                 if supergroup_cardinality.is_countably_infinite():
                     return supergroup_cardinality
-            assert False, (
+            assert supergroup_cardinality.is_finite(), (
                 "cardinality is defined for every predicate subgroup, but the current "
-                "exact computation requires represented finite-character data over a "
-                "finite or countably infinite supergroup"
+                "exact computation requires represented finite-character data or a "
+                "finite supergroup"
             )
+            return cardinal(sum(1 for _element in self))
+
+        def __iter__(self):
+            r"""The elements of the finite supergroup satisfying the predicate."""
+            supergroup = self.supergroup()
+            assert supergroup.is_finite() is True, (
+                "listing a predicate subgroup reads the elements of its supergroup, "
+                "which is not decided finite"
+            )
+            return (element for element in supergroup if self._predicate(element))
 
         def __contains__(self, element):
-            parent = getattr(element, "parent", lambda: None)()
-            if parent is not self._containing_group and element not in self._containing_group:
-                return False
-            return bool(self._predicate(element))
+            return element in self.supergroup() and bool(self._predicate(element))
 
         def _element_constructor_(self, datum):
-            element = (
-                datum
-                if datum in self._containing_group
-                else self._containing_group(datum)
-            )
+            supergroup = self.supergroup()
+            element = datum if datum in supergroup else supergroup(datum)
             if element not in self:
                 raise ValueError(f"{element} does not satisfy {self._description}")
             return element
 
         def one(self):
-            identity = self._containing_group.one()
+            identity = self.supergroup().one()
             if identity not in self:
                 raise ValueError(
                     f"{self._description} does not contain the identity; this is not a subgroup"
@@ -330,7 +339,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return finite_ordered_set(tuple(incidences))
 
         def _repr_(self):
-            return f"{{g in {self._containing_group} : {self._description}}}"
+            return f"{{g in {self.supergroup()} : {self._description}}}"
 
 
 class _PredicateSubgroupConstruction(OwnedParameterizedCategory):

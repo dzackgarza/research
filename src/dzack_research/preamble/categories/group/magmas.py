@@ -159,11 +159,16 @@ class MonoidMorphism(Morphism):
     def _call_(self, element):
         return self.codomain()(self._function(self.domain()(element)))
 
-    def __mul__(self, other):
-        if not isinstance(other, MonoidMorphism) or other.codomain() is not self.domain():
+    def _composition(self, right):
+        r"""``self ∘ right`` for a monoid morphism ``right``.
+
+        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
+        morphism's domain; a map outside the monoid Hom is not composed here.
+        """
+        if right.domain() not in Monoids() or not right.parent().hom_family().base_category().is_subcategory(Monoids()):
             return NotImplemented
-        hom = self.parent().hom_family().Of(other.domain(), self.codomain())
-        return hom(lambda element: self(other(element)))
+        hom = self.parent().hom_family().Of(right.domain(), self.codomain())
+        return hom(lambda element: self(right(element)))
 
 
 class MonoidHomset(CategoricalHomset):

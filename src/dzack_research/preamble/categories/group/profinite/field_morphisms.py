@@ -7,12 +7,14 @@ cross precisely that boundary without replacing an embedding by a numerical
 approximation or by descriptive metadata.
 """
 
-from typing import Any, cast
-
 from sage.categories.fields import Fields as SageFields
+from sage.categories.finite_fields import FiniteFields as SageFiniteFields
+from sage.categories.number_fields import NumberFields as SageNumberFields
+from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
+from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
@@ -23,54 +25,52 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-def _field_generators(field):
-    r"""Return exact elements which determine a unital map out of ``field``."""
+def _uses_generator_comparison(field) -> bool:
+    r"""Whether this adapter reads a finite determining family from the engine.
+
+    Number fields and finite fields supply algebraic generators.  A native
+    ngens() on an analytic or completed field need not count generators as
+    an abstract field, so it is not used to decide this question.  Other
+    realizations use the exact map backend's comparison instead.
+    """
     engine = _engine_ring(field)
-    if isinstance(engine, AlgebraicField_common):
-        raise TypeError(f"{engine} has no finite field-generating family")
-    try:
-        if engine.ngens() == Infinity:
-            raise TypeError(f"{engine} has no finite field-generating family")
-    except (AttributeError, NotImplementedError):
-        pass
-    try:
-        if engine.is_algebraically_closed() and not engine.is_finite():
-            raise TypeError(f"{engine} has no finite field-generating family")
-    except (AttributeError, NotImplementedError):
-        pass
-    generators = tuple(engine.gens())
-    if not generators:
-        return finite_ordered_set((field.one(),))
-    return finite_ordered_set(
-        tuple(
-            field._from_engine_element(engine(generator))
-            for generator in generators
-        )
+    return engine is SageQQ or engine in SageFiniteFields() or engine in SageNumberFields()
+
+
+def _native_field_generators(engine):
+    r"""Generators over the prime field, including each relative tower level."""
+    match engine:
+        case _ if engine is SageQQ:
+            return (engine.one(),)
+        case _ if engine in SageFiniteFields():
+            return tuple(engine.gens())
+        case _:
+            return tuple(engine.gens()) + tuple(
+                engine(generator)
+                for generator in _native_field_generators(engine.base_field())
+            )
+
+
+def _field_generators(field):
+    r"""A finite determining family for a represented finite or number field."""
+    assert _uses_generator_comparison(field), (
+        "this adapter reads field generators from finite-field and number-field presentations"
     )
+    return finite_ordered_set(tuple(
+        field._from_engine_element(generator)
+        for generator in _native_field_generators(_engine_ring(field))
+    ))
 
 
 class ExactFieldMorphism(Morphism):
-    r"""A field morphism with owned endpoints and an exact Sage map backend."""
+    r"""A field morphism with owned endpoints and an exact Sage map backend.
+
+    The backend is admitted by the exact field Hom's element constructor,
+    which checks it is a field homomorphism between the engine fields of the
+    endpoints.
+    """
 
     def __init__(self, parent, engine_morphism: Map) -> None:
-        if not isinstance(engine_morphism, Map):
-            raise TypeError("an exact field morphism requires a Sage map backend")
-        try:
-            homset_category = cast(Any, engine_morphism.parent()).homset_category()
-        except AttributeError as error:
-            raise TypeError(
-                "an exact field morphism requires a genuine field-homomorphism backend"
-            ) from error
-        if not homset_category.is_subcategory(SageFields()):
-            raise TypeError(
-                "an exact field morphism requires a genuine field-homomorphism backend"
-            )
-        if _engine_ring(engine_morphism.domain()) is not _engine_ring(parent.domain()):
-            raise ValueError("the exact backend has the wrong domain")
-        if _engine_ring(engine_morphism.codomain()) is not _engine_ring(
-            parent.codomain()
-        ):
-            raise ValueError("the exact backend has the wrong codomain")
         Morphism.__init__(self, parent)
         self._engine_morphism = engine_morphism
 
@@ -92,6 +92,11 @@ class ExactFieldMorphism(Morphism):
         return True
 
     def agrees_on_field(self, other) -> bool:
+        r"""Whether two exact maps with the same endpoints agree.
+
+        On a finite or number field the full tower generating family
+        determines the map; other realizations use their exact backend equality.
+        """
         if (
             self.domain() is not other.domain()
             or self.codomain() is not other.codomain()
@@ -99,16 +104,12 @@ class ExactFieldMorphism(Morphism):
             return False
         if self._engine_morphism_crossing() is other._engine_morphism_crossing():
             return True
-        try:
-            if self._engine_morphism_crossing() == other._engine_morphism_crossing():
-                return True
-        except (NotImplementedError, TypeError, ValueError):
-            pass
-        try:
-            generators = self.domain().field_generators()
-        except TypeError:
-            return False
-        return all(self(generator) == other(generator) for generator in generators)
+        if _uses_generator_comparison(self.domain()):
+            return all(
+                self(generator) == other(generator)
+                for generator in self.domain().field_generators()
+            )
+        return bool(self._engine_morphism_crossing() == other._engine_morphism_crossing())
 
     def __eq__(self, other) -> bool:
         return isinstance(other, ExactFieldMorphism) and self.agrees_on_field(other)
@@ -117,15 +118,12 @@ class ExactFieldMorphism(Morphism):
         return not self == other
 
     def __hash__(self) -> int:
-        try:
-            signature = tuple(
-                self(generator) for generator in self.domain().field_generators()
-            )
-        except TypeError:
-            # Exact backend equality is available even when the source has no
-            # finite determining family.  A constant backend signature keeps
-            # the hash compatible with that extensional equality.
-            signature = ("backend",)
+        r"""The values on the source's generators; a constant on an algebraic closure, compatible with backend equality."""
+        signature = (
+            tuple(self(generator) for generator in self.domain().field_generators())
+            if _uses_generator_comparison(self.domain())
+            else ("backend",)
+        )
         return hash(
             (
                 type(self),
@@ -135,14 +133,17 @@ class ExactFieldMorphism(Morphism):
             )
         )
 
-    def __mul__(self, other):
-        if (
-            not isinstance(other, ExactFieldMorphism)
-            or other.codomain() is not self.domain()
-        ):
+    def _composition(self, right):
+        r"""``self ∘ right`` for an exact field map ``right``, composed on the backends.
+
+        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
+        map's domain.
+        """
+        source = right.domain()
+        if source not in OwnedFields() or right.parent() is not source.exact_morphisms_to(self.domain()):
             return NotImplemented
-        backend = self._engine_morphism_crossing() * other._engine_morphism_crossing()
-        return other.domain().exact_morphisms_to(self.codomain())(backend)
+        backend = self._engine_morphism_crossing() * right._engine_morphism_crossing()
+        return source.exact_morphisms_to(self.codomain())(backend)
 
     def restrict_along(self, embedding):
         r"""Solve ``j tau = self j`` for the exact restriction ``tau``."""
@@ -176,13 +177,11 @@ class ExactFieldMorphism(Morphism):
         return finite_ordered_set(matches)
 
     def _repr_(self) -> str:
-        try:
-            generators = self.domain().field_generators()
-        except TypeError:
+        if not _uses_generator_comparison(self.domain()):
             return f"Exact field morphism {self.domain()} -> {self.codomain()}"
         images = ", ".join(
             f"{generator} -> {self(generator)}"
-            for generator in generators
+            for generator in self.domain().field_generators()
         )
         return f"Exact field morphism {self.domain()} -> {self.codomain()} ({images})"
 
@@ -196,10 +195,21 @@ class _ExactFieldHomset(CategoricalHomset):
         )
 
     def _element_constructor_(self, datum):
+        r"""Admit an exact field map between these endpoints, or a Sage field homomorphism between their engine fields."""
         if isinstance(datum, ExactFieldMorphism):
             if datum.parent() is self:
                 return datum
             datum = datum._engine_morphism_crossing()
+        if not isinstance(datum, Map):
+            raise TypeError("an exact field morphism requires a Sage map backend")
+        if not datum.parent().homset_category().is_subcategory(SageFields()):
+            raise TypeError(
+                "an exact field morphism requires a genuine field-homomorphism backend"
+            )
+        if _engine_ring(datum.domain()) is not _engine_ring(self.domain()):
+            raise ValueError("the exact backend has the wrong domain")
+        if _engine_ring(datum.codomain()) is not _engine_ring(self.codomain()):
+            raise ValueError("the exact backend has the wrong codomain")
         return self.element_class(self, datum)
 
     def identity(self):
@@ -225,17 +235,10 @@ def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMo
 
 
 def _exact_embeddings(domain, codomain):
-    r"""Return all exact embeddings of ``domain`` into ``codomain``."""
+    r"""Return all exact embeddings of ``domain`` into ``codomain``, as Sage's ``embeddings`` enumerates them."""
     domain = _own_ring(domain)
     codomain = _own_ring(codomain)
-    source = _engine_ring(domain)
-    target = _engine_ring(codomain)
-    backends = tuple(source.embeddings(target))
-    if not backends:
-        try:
-            backends = (source.Mor(target),)
-        except (TypeError, ValueError):
-            backends = ()
+    backends = tuple(_engine_ring(domain).embeddings(_engine_ring(codomain)))
     return finite_ordered_set(
         tuple(
             _exact_field_morphism_from_engine(domain, codomain, backend)

@@ -19,11 +19,11 @@ def test_finite_cyclic_subgroup_retains_ambient_group_and_selected_generator() -
     assert subgroup in CyclicGroups()
     assert declared in CyclicGroups()
     assert declared.supergroup() is ambient
-    assert declared.generator() == generator
+    assert declared.group_generator() == generator
     assert declared.inclusion()(generator) == generator
     assert subgroup in Subgroups(ambient)
     assert subgroup in FiniteAbelianGroups()
     assert subgroup.supergroup() is ambient
-    assert subgroup.generator() == generator
+    assert subgroup.group_generator() == generator
     assert subgroup.group_generators()[0] == generator
     assert subgroup.cardinality() == ambient.cardinality()

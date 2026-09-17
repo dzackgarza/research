@@ -39,4 +39,5 @@ class ProfiniteGroups(OwnedCategory):
 
         @abstract_method(optional=True)
         def topological_group_generators(self):
-            pass
+            r"""Return a family of elements generating a dense subgroup."""
+            ...
