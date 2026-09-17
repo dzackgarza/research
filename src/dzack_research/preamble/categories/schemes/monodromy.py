@@ -210,7 +210,7 @@ class LegendreMonodromyFamily(SageObject):
         z = section_ring.algebra_generator("z")
         scalar_t = section_ring.algebra_structure_morphism()(t)
         equation = y**2 * z - x * (x - z) * (x - scalar_t * z)
-        family = ProjectiveCompleteIntersections(ambient.scheme_base_ring())(ambient.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(ambient.scheme_base_ring())(ambient, equation)
 
         at_zero = parameter.Mor(rationals)({"t": rationals.zero()})
         at_half = parameter.Mor(rationals)({"t": rationals(1) / rationals(2)})
@@ -222,13 +222,10 @@ class LegendreMonodromyFamily(SageObject):
             name="Legendre_parameter_line",
             coordinate_names=("t",),
         )
-        analytic_t = analytic_line.atlas()["standard"].coordinate(0)
-        smooth_stratum = ComplexManifolds().open_submanifold(
-            analytic_line,
-            "Legendre_punctured_disc",
-            (abs(analytic_t) < 0.75, analytic_t != 0),
+        smooth_stratum = ComplexManifolds().disc(
+            0.75, "Legendre_punctured_disc", containing_manifold=analytic_line,
+            punctured=True,
         )
-        smooth_stratum._preamble_disc_radius = 0.75
         base_point = smooth_stratum.point((0.5,))
 
         pi_one = OwnedGroups().Free(1, names="gamma0")

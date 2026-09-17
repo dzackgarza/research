@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     Schemes,
+    _polynomial_exponents,
 )
 
 
@@ -41,10 +42,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     variables = tuple(chart.coordinates())
     result = 0
     for exponent, coefficient in backend.monomial_coefficients().items():
-        try:
-            powers = tuple(int(value) for value in exponent)
-        except TypeError:
-            powers = (int(exponent),)
+        powers = _polynomial_exponents(exponent, len(variables))
         owned_coefficient = source_ring._from_engine_element(engine_source(coefficient))
         term = engine_target(_engine_element(target_ring, scalar_embedding(owned_coefficient)))
         for variable, power in zip(variables, powers, strict=True):
@@ -137,14 +135,9 @@ class AnalyticDiscFamily(SageObject):
         analytic_base_ambient = analytification(algebraic_base)
         analytified_family = analytification(algebraic_family)
 
-        base_chart = analytic_base_ambient.atlas()["standard"]
-        base_coordinate = base_chart.coordinate(0)
-        analytic_base = ComplexManifolds().open_submanifold(
-            analytic_base_ambient,
-            "Delta",
-            abs(base_coordinate) < float(radius),
+        analytic_base = ComplexManifolds().disc(
+            radius, "Delta", containing_manifold=analytic_base_ambient,
         )
-        analytic_base._preamble_disc_radius = float(radius)
 
         total_chart = analytic_total_ambient.atlas()["standard"]
         total_parameter = total_chart.coordinate(1)
