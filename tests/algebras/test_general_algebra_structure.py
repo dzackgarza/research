@@ -286,6 +286,9 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     identity = Algebras(QQ).Mor(algebra, algebra)(linear)
     assert identity(three) == three
     assert identity.is_multiplicative() is Unknown
-    another = Algebras(QQ).Mor(algebra, algebra)(linear)
+    another_linear = algebra.module_category().Mor(algebra, algebra).elementwise(
+        lambda x: x, verify_linearity=False,
+    )
+    another = Algebras(QQ).Mor(algebra, algebra)(another_linear)
     assert (identity == another) is Unknown
     assert (identity != another) is Unknown

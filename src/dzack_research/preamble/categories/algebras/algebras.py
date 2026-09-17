@@ -478,6 +478,17 @@ def _product_on(multiplication):
     return lambda left, right: multiplication(left, right)
 
 
+def _all_identity_decisions(decisions):
+    r"""Conjoin decisions without treating an undecided equality as false."""
+    result = True
+    for decision in decisions:
+        if decision is False:
+            return False
+        if decision is not True:
+            result = Unknown
+    return result
+
+
 def _decide_on_module_generators(module, identity, arity):
     r"""Decide an ``R``-multilinear identity on tuples of module generators of ``module``.
 
@@ -490,7 +501,7 @@ def _decide_on_module_generators(module, identity, arity):
     match module:
         case _ if module in FramedModules(ring) and module.module_generating_set().cardinality().is_finite():
             labels = module.module_generating_set()
-            return all(
+            return _all_identity_decisions(
                 identity(*(module.module_generator(label) for label in labels_tuple))
                 for labels_tuple in itertools.product(labels, repeat=arity)
             )
@@ -512,7 +523,9 @@ def _alternation(multiplication):
     r"""``[x, x] = 0`` on generators and ``[x, y] + [y, x] = 0`` on pairs: alternation of a bilinear map."""
     product = _product_on(multiplication)
     zero = multiplication.codomain().zero()
-    return lambda x, y: product(x, x) == zero and product(x, y) + product(y, x) == zero
+    return lambda x, y: _all_identity_decisions((
+        product(x, x) == zero, product(x, y) + product(y, x) == zero,
+    ))
 
 
 def _jacobi_identity(multiplication):
@@ -523,7 +536,7 @@ def _jacobi_identity(multiplication):
 
 def _two_sided_unit(multiplication, unit):
     product = _product_on(multiplication)
-    return lambda x: product(unit, x) == x and product(x, unit) == x
+    return lambda x: _all_identity_decisions((product(unit, x) == x, product(x, unit) == x))
 
 
 def _assert_decided(held, statement, module):
