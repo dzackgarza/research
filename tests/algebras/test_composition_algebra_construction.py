@@ -54,3 +54,16 @@ def test_scalar_images_land_in_the_actual_endomorphism_centre_without_sampling()
     assert -two == structure(ZZ(-2))
     assert endomorphisms.is_central(centre.inclusion()(two)) is True
     assert structure(ZZ.one()) == centre.one()
+
+
+def test_scalar_arithmetic_survives_the_category_owned_element_operations():
+    endomorphisms = AdditiveGroups().AdditiveCommutative().End(QQ)
+    identity = endomorphisms.one()
+    two = endomorphisms.scalar_multiple(ZZ(2), identity)
+    three = endomorphisms.scalar_multiple(ZZ(3), identity)
+    assert endomorphisms.is_central(two + three) is True
+    assert endomorphisms.is_central(-two) is True
+    assert endomorphisms.is_central(two * three) is True
+    assert (two + three)(QQ(7)) == QQ(35)
+    assert (-two)(QQ(7)) == QQ(-14)
+    assert (two * three)(QQ(7)) == QQ(42)

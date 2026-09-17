@@ -76,9 +76,15 @@ class AdditiveHomGroups(OwnedCategory):
     class ElementMethods:
         def _add_(self, other):
             r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Hom."""
+            left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
+            if left is not None and right is not None:
+                return self.parent()._scalar_identity(left + right)
             return self.parent().elementwise(lambda element: self(element) + other(element))
 
         def __neg__(self):
+            scalar = _scalar_identity_coefficient(self)
+            if scalar is not None:
+                return self.parent()._scalar_identity(-scalar)
             return self.parent().elementwise(lambda element: -self(element))
 
         def __sub__(self, other):
@@ -93,6 +99,8 @@ class AdditiveHomGroups(OwnedCategory):
             """
             if not right.parent().homset_category().is_subcategory(self.parent().homset_category()):
                 return NotImplemented
+            if right.parent() is self.parent() and self.domain() is self.codomain():
+                return self.parent()._compose_endomorphisms(self, right)
             hom = self.parent().hom_family().Of(right.domain(), self.codomain())
             return hom.elementwise(lambda element: self(right(element)))
 
@@ -184,22 +192,13 @@ class AdditiveMorphism(Morphism):
         return self.codomain()(self._function(self.domain()(element)))
 
     def _add_(self, other):
-        r"""Pointwise sum; Sage's arithmetic calls this with two elements of one Hom."""
-        left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
-        if left is not None and right is not None:
-            return self.parent()._scalar_identity(left + right)
-        return self.parent().elementwise(
-            lambda element: self(element) + other(element)
-        )
+        return AdditiveHomGroups.ElementMethods._add_(self, other)
 
     def _neg_(self):
-        scalar = _scalar_identity_coefficient(self)
-        if scalar is not None:
-            return self.parent()._scalar_identity(-scalar)
-        return self.parent().elementwise(lambda element: -self(element))
+        return AdditiveHomGroups.ElementMethods.__neg__(self)
 
     def __neg__(self):
-        return self._neg_()
+        return AdditiveHomGroups.ElementMethods.__neg__(self)
 
     def __rmul__(self, scalar):
         return self.parent()._owned_scalar_multiple(scalar, self)
@@ -218,23 +217,9 @@ class AdditiveMorphism(Morphism):
         return self.parent()._owned_scalar_multiple(scalars(actor), self)
 
     def _composition(self, right):
-        r"""Compose inside the owned additive Hom family.
-
-        Sage's generic map composition constructs a Sage Homset before it
-        composes.  Owned rings also have a ring-Hom hook, so that generic route
-        can ask for the wrong mathematical Hom.  The additive morphism already
-        knows its Hom packet; compose there directly.
-        """
         if right.codomain() is not self.domain():
             return NotImplemented
-        if not right.parent().homset_category().is_subcategory(
-            self.parent().homset_category()
-        ):
-            return NotImplemented
-        if right.parent() is self.parent() and self.domain() is self.codomain():
-            return self.parent()._compose_endomorphisms(self, right)
-        hom = self.parent().hom_family().Of(right.domain(), self.codomain())
-        return hom.elementwise(lambda element: self(right(element)))
+        return AdditiveHomGroups.ElementMethods._composition(self, right)
 
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
