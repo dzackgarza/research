@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilies,
 )
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
@@ -198,6 +199,11 @@ class StructureSheaf(Parent):
             ),
         )
 
+    @cached_method
+    def presheaf(self):
+        r"""The actual module-valued presheaf underlying ``O_X`` on the represented affine site."""
+        return _AffineStructurePresheaf(self.ringed_space())
+
     def ringed_space(self):
         return self._ringed_space
 
@@ -290,6 +296,80 @@ class StructureSheaf(Parent):
 
     def _repr_(self) -> str:
         return f"Structure sheaf O_{{{self.scheme()}}}"
+
+
+class _AffineStructurePresheaf(Functor):
+    r"""``U -> Gamma(U,O_U)`` on the represented affine slice over an affine ``X``.
+
+    Values are read as ``O(X)``-modules by restriction of scalars along the
+    coordinate pullback ``O(X) -> O(U)``.  An arrow ``V -> U`` over ``X``
+    acts by its affine coordinate pullback ``O(U) -> O(V)``, regarded as an
+    ``O(X)``-linear map between those restricted modules.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        base = scheme.scheme_base_ring()
+        assert scheme in Schemes(base).Affine(), (
+            "the represented structure presheaf currently uses the affine slice over X"
+        )
+        self._scheme = scheme
+        self._scalar_ring = scheme.coordinate_algebra()
+        site = distinguished_affine_coverage(scheme).site_category()
+        Functor.__init__(self, site.opposite(), Modules(self._scalar_ring))
+
+    def scheme(self):
+        return self._scheme
+
+    def scalar_ring(self):
+        return self._scalar_ring
+
+    def site_category(self):
+        return self.domain().base_category()
+
+    def _slice_object(self, opposite_object):
+        return opposite_object.underlying_object()
+
+    def _apply_object(self, opposite_object):
+        slice_object = self._slice_object(opposite_object)
+        affine = slice_object.arrow().domain()
+        algebra = affine.coordinate_algebra()
+        scalar_map = slice_object.arrow().coordinate_algebra_morphism()
+        if affine is self.scheme():
+            return self.scalar_ring().regular_module()
+        return algebra.regular_module().restrict_scalars(scalar_map)
+
+    def _apply_morphism(self, opposite_arrow):
+        from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
+
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        triangle = opposite_arrow.underlying_arrow()
+        pullback = triangle.left().coordinate_algebra_morphism()
+        restricted = RestrictedScalarsModules(self.scalar_ring())
+
+        def image(element):
+            source_element = source(element)
+            match source:
+                case _ if source in restricted:
+                    underlying = source_element.underlying_element()
+                case _:
+                    underlying = source_element
+            pulled_back = pullback(underlying)
+            match target:
+                case _ if target in restricted:
+                    return target.wrap(pulled_back)
+                case _:
+                    return target(pulled_back)
+
+        return source.module_category().Mor(source, target)(
+            image, verify_linearity=False
+        )
+
+    def _repr_(self):
+        return f"Affine structure presheaf of {self.scheme()}"
 
 
 def _is_distinguished_open_of(open_subscheme, ambient) -> bool:

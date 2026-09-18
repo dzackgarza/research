@@ -240,6 +240,23 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     assert origin not in punctured_line
 
     sheaf = affine_line.structure_sheaf()
+    presheaf = sheaf.presheaf()
+    site = presheaf.site_category()
+    whole = site.object(affine_line.categorical_identity_morphism())
+    punctured_open = affine_line.distinguished_open(x)
+    open_object = site.object(punctured_open.inclusion())
+    opposite = site.opposite()
+    global_module = presheaf(opposite(whole))
+    open_module = presheaf(opposite(open_object))
+    restriction_triangle = site.Mor(open_object, whole)(punctured_open.inclusion())
+    restriction = presheaf(
+        opposite.Mor(opposite(whole), opposite(open_object))(restriction_triangle)
+    )
+    assert global_module is spectrum.ring().regular_module()
+    assert open_module.base_ring() is spectrum.ring()
+    assert restriction.domain() is global_module
+    assert restriction.codomain() is open_module
+    assert restriction(global_module(x)).underlying_element() == punctured_open.inclusion().coordinate_algebra_morphism()(x)
     principal_sections = sheaf.sections_on_distinguished_open(punctured_line)
     assert principal_sections.localization_source() is spectrum.ring()
     assert principal_sections.inverted_elements() == Set((spectrum.ring()(x),))
