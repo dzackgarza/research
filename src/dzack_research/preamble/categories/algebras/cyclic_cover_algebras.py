@@ -4,14 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer import Integer
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
-    InvertibleSheaf,
-)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -27,12 +23,26 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         ModuleMorphism,
     )
+    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+        InvertibleSheaf,
+    )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         DistinguishedAffineCovers,
     )
 
 
 CYCLIC_COVER_VARIABLE = "z"
+
+
+@cached_function
+def _invertible_sheaf_implementations():
+    r"""Load concrete line-bundle realizations only when cyclic-cover data are constructed."""
+    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+        FiniteAtlasInvertibleSheaf,
+        InvertibleSheaf,
+    )
+
+    return InvertibleSheaf, FiniteAtlasInvertibleSheaf
 
 
 def _cyclic_cover_presentation(
@@ -86,6 +96,7 @@ class CyclicCoverAlgebra(SageObject):
         branch_section: Element,
         degree: Integer,
     ) -> None:
+        InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
         if not isinstance(line_bundle, InvertibleSheaf):
             raise TypeError("cyclic-cover data requires an invertible sheaf")
         degree = Integer(degree)
@@ -182,6 +193,7 @@ class CyclicCoverAlgebra(SageObject):
 
     def _chart_scheme(self, index):
         cover = self.cover()
+        _InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
         if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
             return cover.chart(index)
         return cover.open(index)
@@ -254,6 +266,7 @@ class CyclicCoverAlgebra(SageObject):
 
     def _build_algebra_gluing_datum(self) -> Parent:
         charts = self.chart_index_set()
+        _InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
         if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
             from dzack_research.preamble.categories.schemes.gluing import (
                 FiniteAtlasAlgebraGluingDatum,
