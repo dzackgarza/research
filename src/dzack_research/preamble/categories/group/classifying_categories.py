@@ -1,7 +1,7 @@
 r"""The one-object category ``BG`` and the functor induced by a group map.
 
-The represented group names the unique object. Its elements name the
-arrows, and its multiplication is composition. Sage's ``Morphism`` and
+The category constructs one formal object. The represented group's elements
+name its endomorphisms, and group multiplication is composition. Sage's ``Morphism`` and
 the existing owned Hom construction supply the runtime representation;
 the group owner supplies multiplication, inverses and equality.
 """
@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import OwnedGroups, _owned_group
+from dzack_research.preamble.owned_category import _object_of
 
 
 class ClassifyingMorphism(Morphism):
@@ -86,11 +87,24 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
     def group(self):
         return self.parameter()
 
+    class ParentMethods:
+        r"""The unique formal object of ``BG``; ``G`` lives in its endomorphisms."""
+
+        def classifying_category(self):
+            return self.category()
+
+        def _repr_(self):
+            return f"* in B({self.classifying_category().group()})"
+
+    @cached_method
+    def object(self):
+        return _object_of(self)
+
     def an_object(self):
-        return self.group()
+        return self.object()
 
     def __contains__(self, candidate) -> bool:
-        return candidate is self.an_object()
+        return candidate is self.object()
 
     def super_categories(self):
         return [Objects()]

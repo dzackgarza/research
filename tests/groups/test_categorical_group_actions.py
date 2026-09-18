@@ -22,6 +22,10 @@ def test_classifying_category_and_the_quotient_from_c4_to_c2() -> None:
     arrows = category.Mor(point, point)
     arrow = arrows(generator)
 
+    assert point is category.an_object()
+    assert point in category
+    assert point is not group
+    assert category.group() is group
     assert (arrow * arrow).group_element() == generator * generator
     assert (arrow * arrow).group_element().order() == 2
     assert arrows.identity().group_element() == group.one()
