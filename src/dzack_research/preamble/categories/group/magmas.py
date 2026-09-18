@@ -179,7 +179,7 @@ class MonoidHomset(CategoricalHomset):
     def __init__(self, family, domain, codomain) -> None:
         super().__init__(family, domain, codomain)
 
-    def __call__(self, function):
+    def _element_constructor_(self, function):
         if isinstance(function, MonoidMorphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError("the monoid morphism has the wrong source or target")
@@ -187,8 +187,6 @@ class MonoidHomset(CategoricalHomset):
                 return function
             function = function.__call__
         return self.element_class(self, function)
-
-    _element_constructor_ = __call__
 
     def identity(self):
         if self.domain() is not self.codomain():
