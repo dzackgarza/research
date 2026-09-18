@@ -1110,14 +1110,14 @@ class _SpanCategory(_ConeCategory):
 
 
 class _ProductConeCategory(_ConeCategory):
-    r"""Selected product cones over one finite discrete diagram."""
+    r"""Selected product cones over one represented discrete diagram."""
 
     def super_categories(self):
         return [_ConeCategory(self.diagram())]
 
 
 class _CoproductCoconeCategory(_CoconeCategory):
-    r"""Selected coproduct cocones under one finite discrete diagram."""
+    r"""Selected coproduct cocones under one represented discrete diagram."""
 
     def super_categories(self):
         return [_CoconeCategory(self.diagram())]
@@ -1502,7 +1502,7 @@ class TensorProductCategory(OwnedCategoryBase):
 
 
 def _discrete_diagram(factors, target_category=None):
-    family = _finite_factor_family(factors)
+    family = _factor_family(factors)
     if family.cardinality() == cardinal(0):
         if target_category is None:
             raise ValueError(

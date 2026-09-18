@@ -500,7 +500,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.biproduct((left, right))
 
         def product(self, factors):
-            r"""Return $\prod_{i \in I} M_i$, which over a finite index set is the biproduct."""
+            r"""Return $\prod_{i \in I} M_i$, created on underlying sets in general."""
             return self._categorical_product_construction(factors).object()
 
         def _categorical_product(self, left, right):
@@ -514,16 +514,42 @@ class Modules(OwnedCategoryOverBaseRing):
             return self._categorical_coproduct_construction((left, right)).object()
 
         def _categorical_product_construction(self, factors):
-            r"""Return the selected finite product cone on the module biproduct."""
-            family = _finite_factor_family(factors, name="Product factors")
-            assert all(factor in self for factor in family), (
-                "a module product requires modules over one ring"
-            )
-            product = self.biproduct(family)
+            r"""Return the selected product cone in ``R-Mod``.
+
+            A finite family whose factors already carry the framed-free or
+            finite-presentation biproduct realization keeps that specialization.
+            Every other represented family is created by the underlying-set
+            functor: the underlying set is ``prod_i U(M_i)`` and the module
+            operations are componentwise.  Both routes retain this same
+            discrete diagram and universal cone.
+            """
+            family = _factor_family(factors, name="Product factors")
+            match family.cardinality().is_finite():
+                case True:
+                    assert all(factor in self for factor in family), (
+                        "a module product requires modules over one ring"
+                    )
+                case False:
+                    pass
+            match _finite_biproduct_realizes_product(family):
+                case True:
+                    product = self.biproduct(family)
+                case False:
+                    assert self == Modules(self.base_ring()), (
+                        "the underlying-set product realization is the general Modules(R) construction"
+                    )
+                    product = _module_product_created_by_underlying_sets(
+                        self.base_ring(),
+                        family,
+                    )
             diagram = _discrete_diagram(family, self)
             universal_cone = (diagram).ProductCones().cone(
                 product,
-                lambda index: product.projection(index.value()),
+                lambda index: _module_product_projection(
+                    product,
+                    family,
+                    index.value(),
+                ),
             )
 
             def factorizer(cone):
@@ -532,7 +558,11 @@ class Modules(OwnedCategoryOverBaseRing):
                     lambda label: cone.structure_morphism(diagram.domain()(label)),
                     name="Product cone legs",
                 )
-                return product.from_product_cone(legs)
+                match product:
+                    case _ if product in BiproductModules(self.base_ring()):
+                        return product.from_product_cone(legs)
+                    case _:
+                        return _module_product_factor(product, family, cone.apex(), legs)
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -567,7 +597,13 @@ class Modules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _categorical_equalizer_construction(self, left_morphism, right_morphism):
-            r"""Realize the selected equalizer cone through ``ker(left-right)``."""
+            r"""Realize the selected equalizer in ``R-Mod``.
+
+            The finite-presentation specialization is ``ker(left-right)``.
+            Otherwise the forgetful functor creates the equalizer from the
+            subset of the domain on which the two underlying set maps agree,
+            with the inherited componentwise module operations.
+            """
             if (
                 left_morphism.domain() not in self
                 or left_morphism.codomain() not in self
@@ -575,8 +611,21 @@ class Modules(OwnedCategoryOverBaseRing):
                 or left_morphism.codomain() is not right_morphism.codomain()
             ):
                 raise ValueError("module equalizer arrows must be parallel R-linear maps")
-            equalizer = (left_morphism - right_morphism).kernel()
-            inclusion = equalizer.inclusion()
+            match (
+                _represented_finite_presentation(left_morphism.domain()),
+                _represented_finite_presentation(left_morphism.codomain()),
+            ):
+                case (True, True):
+                    equalizer = (left_morphism - right_morphism).kernel()
+                    inclusion = equalizer.inclusion()
+                case _:
+                    assert self == Modules(self.base_ring()), (
+                        "the underlying-set equalizer realization is the general Modules(R) construction"
+                    )
+                    equalizer, inclusion = _module_equalizer_created_by_underlying_sets(
+                        left_morphism,
+                        right_morphism,
+                    )
             ambient_modules = Modules(left_morphism.domain().base_ring())
             diagram = _parallel_pair_diagram(
                 left_morphism, right_morphism, ambient_modules
@@ -594,11 +643,18 @@ class Modules(OwnedCategoryOverBaseRing):
             def factorizer(cone):
                 source_leg = cone.structure_morphism(shape.source())
                 source = cone.apex()
-                return source.module_category().Mor(source, equalizer)(
-                    lambda label: inclusion.lift(
-                        source_leg(source.module_generator(label))
-                    )
-                )
+                match equalizer:
+                    case _ if equalizer in ModuleSubobjects(left_morphism.domain().base_ring()):
+                        return source.module_category().Mor(source, equalizer).elementwise(
+                            lambda element: inclusion.lift(source_leg(element)),
+                            verify_linearity=False,
+                        )
+                    case _:
+                        return _module_equalizer_factor(
+                            equalizer,
+                            source,
+                            source_leg,
+                        )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -3444,6 +3500,147 @@ def _represented_framed_free(module) -> bool:
     )
 
     return module in FramedFreeModules(module.base_ring())
+
+
+def _finite_biproduct_realizes_product(factors) -> bool:
+    r"""Whether the existing finite biproduct backend realizes this product.
+
+    The empty product is terminal, not a nonempty direct sum.  Otherwise the
+    existing biproduct realization is retained exactly when all factors share
+    one of its represented construction routes: framed free or chosen finite
+    presentation.
+    """
+    size = factors.cardinality()
+    match size.is_finite():
+        case False:
+            return False
+        case True:
+            match int(size.finite_value()):
+                case 0:
+                    return False
+                case _:
+                    values = tuple(factors)
+                    return all(_represented_framed_free(factor) for factor in values) or all(
+                        _represented_finite_presentation(factor) for factor in values
+                    )
+
+
+def _module_product_cache_key(base_ring, factors):
+    size = factors.cardinality()
+    match size.is_finite():
+        case True:
+            return (
+                id(base_ring),
+                id(factors.index_set()),
+                tuple(id(factor) for factor in factors),
+            )
+        case False:
+            return id(base_ring), id(factors)
+
+
+@cached_function(key=_module_product_cache_key)
+def _module_product_created_by_underlying_sets(base_ring, factors):
+    r"""Create ``prod_i M_i`` from ``prod_i U(M_i)`` with pointwise operations."""
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+
+    ring = _owned_ring(base_ring)
+    modules = Modules(ring)
+    forgetful = modules.underlying_set()
+    underlying_factors = indexed_family(
+        factors.index_set(),
+        lambda index: forgetful(factors.value(index)),
+        name="Underlying sets of module product factors",
+    )
+    underlying_product = Sets().product(underlying_factors)
+
+    return GeneralModules(ring).from_operations(
+        underlying_product,
+        addition=lambda left, right: underlying_product(
+            lambda index: factors.value(index)(
+                left.component(index) + right.component(index)
+            )
+        ),
+        zero=underlying_product(
+            lambda index: factors.value(index).zero()
+        ),
+        negation=lambda element: underlying_product(
+            lambda index: -element.component(index)
+        ),
+        scalar_action=lambda scalar, element: underlying_product(
+            lambda index: factors.value(index).scalar_multiple(
+                scalar,
+                element.component(index),
+            )
+        ),
+    )
+
+
+def _module_product_projection(product, factors, index):
+    r"""Return the module projection induced by the underlying set projection."""
+    match product:
+        case _ if product in BiproductModules(product.base_ring()):
+            return product.projection(index)
+        case _:
+            underlying_projection = product.underlying_set().projection(index)
+            target = factors.value(index)
+            return product.module_category().Mor(product, target).elementwise(
+                lambda element: underlying_projection(element.underlying_element()),
+                verify_linearity=False,
+            )
+
+
+def _module_product_factor(product, factors, source, legs):
+    r"""Factor a module cone through a product created on underlying sets."""
+    assert legs.index_set() == factors.index_set(), (
+        "a module product cone has one leg for each factor"
+    )
+    forgetful = Modules(product.base_ring()).underlying_set()
+    underlying_factor = product.underlying_set().from_maps(
+        forgetful(source),
+        lambda index: forgetful(legs.value(index)),
+    )
+    return source.module_category().Mor(source, product).elementwise(
+        lambda element: product(underlying_factor(element)),
+        verify_linearity=False,
+    )
+
+
+def _module_equalizer_created_by_underlying_sets(left_morphism, right_morphism):
+    r"""Create the module equalizer from the equalizer of the underlying set maps."""
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+
+    source = left_morphism.domain()
+    ring = source.base_ring()
+    forgetful = Modules(ring).underlying_set()
+    set_equalizer = Sets().equalizer_construction(
+        forgetful(left_morphism),
+        forgetful(right_morphism),
+    )
+    underlying_equalizer = set_equalizer.object()
+    equalizer = GeneralModules(ring).from_operations(
+        underlying_equalizer,
+        addition=lambda left, right: underlying_equalizer(source(left) + source(right)),
+        zero=underlying_equalizer(source.zero()),
+        negation=lambda element: underlying_equalizer(-source(element)),
+        scalar_action=lambda scalar, element: underlying_equalizer(
+            source.scalar_multiple(scalar, source(element))
+        ),
+    )
+    shape = set_equalizer.diagram().domain()
+    underlying_inclusion = set_equalizer.structure_morphism(shape.source())
+    inclusion = equalizer.module_category().Mor(equalizer, source).elementwise(
+        lambda element: underlying_inclusion(element.underlying_element()),
+        verify_linearity=False,
+    )
+    return equalizer, inclusion
+
+
+def _module_equalizer_factor(equalizer, source, source_leg):
+    r"""Factor an equalizing module map through a set-created equalizer."""
+    return source.module_category().Mor(source, equalizer).elementwise(
+        lambda element: equalizer(source_leg(element)),
+        verify_linearity=False,
+    )
 
 
 @cached_function(key=lambda factors: (factors.index_set(), tuple(map(id, factors))))

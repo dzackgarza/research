@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.sets import NN, Sets, finite_ordered_set
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -207,6 +208,99 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     from_coproduct = coproduct.factor(cocone).apex_map()
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(0)) == from_left
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(1)) == from_right
+
+
+def _general_integer_module():
+    return GeneralModules(ZZ).from_operations(
+        ZZ,
+        addition=lambda left, right: ZZ(left + right),
+        zero=ZZ.zero(),
+        negation=lambda value: ZZ(-value),
+        scalar_action=lambda scalar, value: ZZ(scalar * value),
+    )
+
+
+def test_general_module_product_is_created_by_the_underlying_set_product() -> None:
+    line = _general_integer_module()
+    factors = indexed_family(NN, lambda _index: line, name="Countable module factors")
+    selected = Modules(ZZ).product_construction(factors)
+    product = selected.object()
+    shape = selected.diagram().domain()
+
+    assert product in GeneralModules(ZZ)
+    assert product.underlying_set().index_set() is NN
+    section = product(
+        product.underlying_set()(
+            lambda index: line(ZZ(int(index) + 1))
+        )
+    )
+    assert selected.structure_morphism(shape(NN(0)))(section) == line(ZZ(1))
+    assert selected.structure_morphism(shape(NN(1000)))(section) == line(ZZ(1001))
+
+    probe = _general_integer_module()
+    legs = indexed_family(
+        NN,
+        lambda index: probe.module_category().Mor(probe, line).elementwise(
+            lambda element, index=index: line(
+                ZZ((int(index) + 1) * element.underlying_element())
+            ),
+            verify_linearity=False,
+        ),
+        name="Cone legs into the countable product",
+    )
+    cone = selected.diagram().Cones().cone(
+        probe,
+        lambda index: legs.value(index.value()),
+    )
+    factor = selected.factor(cone).apex_map()
+    probe_element = probe(ZZ(2))
+    assert selected.structure_morphism(shape(NN(0)))(factor(probe_element)) == line(ZZ(2))
+    assert selected.structure_morphism(shape(NN(10)))(factor(probe_element)) == line(ZZ(22))
+
+
+def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -> None:
+    source = _general_integer_module()
+    target = _general_integer_module()
+    zero = source.module_category().Mor(source, target).elementwise(
+        lambda _element: target.zero(),
+        verify_linearity=False,
+    )
+    twice = source.module_category().Mor(source, target).elementwise(
+        lambda element: target(ZZ(2 * element.underlying_element())),
+        verify_linearity=False,
+    )
+    selected = Modules(ZZ).equalizer_construction(zero, twice)
+    equalizer = selected.object()
+    shape = selected.diagram().domain()
+    inclusion = selected.structure_morphism(shape.source())
+
+    assert equalizer in GeneralModules(ZZ)
+    assert source.zero() in equalizer.underlying_set()
+    assert source(ZZ(1)) not in equalizer.underlying_set()
+    assert inclusion(equalizer.zero()) == source.zero()
+    assert zero(inclusion(equalizer.zero())) == twice(inclusion(equalizer.zero()))
+
+    probe = GeneralModules(ZZ).an_object()
+    to_source = probe.module_category().Mor(probe, source).elementwise(
+        lambda _element: source.zero(),
+        verify_linearity=False,
+    )
+
+    def cone_leg(index):
+        match index:
+            case _ if index is shape.source():
+                return to_source
+            case _:
+                return zero * to_source
+
+    cone = selected.diagram().Cones().cone(
+        probe,
+        cone_leg,
+    )
+    factor = selected.factor(cone).apex_map()
+    assert factor.domain() is probe
+    assert factor.codomain() is equalizer
+    assert inclusion(factor(probe.zero())) == to_source(probe.zero())
 
 
 def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:

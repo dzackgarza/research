@@ -26,7 +26,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _enumerated_ring_elements,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Set
+from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
+    FiniteSets,
+    Set,
+)
 from dzack_research.preamble.owned_category import _object_of
 
 _LOGGER = logging.getLogger(__name__)
@@ -310,7 +314,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             regimes the structure is declared and a DEBUG diagnostic records
             that no exhaustive check was available.
             """
-            if self.is_finite() is not True:
+            if self.underlying_set() not in FiniteSets():
                 _LOGGER.debug(
                     "General module over %s accepted without exhaustive module-law verification",
                     self.base_ring(),
