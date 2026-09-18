@@ -180,12 +180,14 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
         @cached_method
         def normalization_data(self):
-            r"""The retained normalization and its local defects (Stacks, Tag 035E)."""
-            from dzack_research.preamble.categories.schemes.curve_genus import ProjectiveCurveNormalizationData
+            r"""Return this curve with its retained normalization and local-defect construction data."""
+            self.normalization_curve()
+            self.local_delta_contributions()
+            return self
 
-            return ProjectiveCurveNormalizationData(
-                self, self.normalization_morphism(), tuple(self.local_delta_contributions()),
-            )
+        def curve(self):
+            r"""Compatibility spelling for a curve carrying chosen normalization data."""
+            return self
 
         @cached_method
         def normalization_morphism(self):
@@ -208,8 +210,31 @@ class Curves(_DimensionSubcategoryOfVarieties):
             )
             return self._local_delta_contributions
 
+        local_contributions = local_delta_contributions
+
+        def total_delta_contribution(self):
+            return sum(
+                (int(contribution.weighted_contribution()) for contribution in self.local_delta_contributions()),
+                0,
+            )
+
+        def is_geometrically_integral(self) -> bool:
+            r"""The selected normalization by ``P^1`` certifies geometric integrality in this representation."""
+            normalization = self.normalization_curve()
+            return (
+                normalization in ProjectiveSpaces(self.scheme_base_ring())
+                and int(normalization.relative_dimension()) == 1
+            )
+
+        def normalization_is_connected(self) -> bool:
+            r"""The selected normalization ``P^1`` is connected."""
+            return self.is_geometrically_integral()
+
+        @cached_method
         def genus_comparison(self):
-            return self.normalization_data().genus_comparison()
+            from dzack_research.preamble.categories.schemes.curve_genus import _CurveGenusComparison
+
+            return _CurveGenusComparison(self)
 
         def geometric_genus(self):
             r"""The genus of the normalization, or the arithmetic genus when smooth."""
@@ -223,7 +248,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
                     )
                     return self.arithmetic_genus()
                 case _:
-                    return self.normalization_data().geometric_genus()
+                    return self.normalization_curve().arithmetic_genus()
 
         def genus(self):
             r"""Return geometric genus, never arithmetic genus by convention."""

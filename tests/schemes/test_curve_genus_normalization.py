@@ -10,6 +10,9 @@ def test_two_node_quintic_has_three_local_defects_and_rational_normalization() -
     data = rational_quintic_with_two_nodes_normalization()
     curve = data.curve()
     normalization = data.normalization_curve()
+
+    assert data is curve
+    assert curve.normalization_data() is curve
     contributions = tuple(data.local_contributions())
 
     assert data.normalization_morphism().domain() is normalization

@@ -84,20 +84,20 @@ class CurveLocalDeltaContribution(SageObject):
 class _CurveGenusComparison(SageObject):
     r"""The normalization-sequence equality between arithmetic and geometric genus."""
 
-    def __init__(self, normalization_data) -> None:
-        self._normalization_data = normalization_data
+    def __init__(self, curve) -> None:
+        self._curve = curve
         assert self.arithmetic_genus() == self.geometric_genus() + self.total_delta_contribution(), (
             "the selected local delta contributions do not exhaust the normalization genus defect"
         )
 
     def normalization_data(self):
-        return self._normalization_data
+        return self._curve
 
     def arithmetic_genus(self):
-        return self.normalization_data().curve().arithmetic_genus()
+        return self.normalization_data().arithmetic_genus()
 
     def geometric_genus(self):
-        return self.normalization_data().geometric_genus()
+        return self.normalization_data().normalization_curve().arithmetic_genus()
 
     def total_delta_contribution(self):
         return self.normalization_data().total_delta_contribution()
@@ -109,72 +109,6 @@ class _CurveGenusComparison(SageObject):
         return f"Genus comparison: p_a={self.arithmetic_genus()}, g={self.geometric_genus()}, delta={self.total_delta_contribution()}"
 
 
-
-class ProjectiveCurveNormalizationData(SageObject):
-    r"""A selected projective normalization map and all of its local defects."""
-
-    def __init__(
-        self,
-        curve,
-        normalization_morphism,
-        local_contributions,
-    ) -> None:
-        base = curve.scheme_base_ring()
-        assert curve in Curves(base) and curve in Schemes(base).Projective(), (
-            "curve normalization data require a projective integral curve"
-        )
-        assert normalization_morphism.codomain() is curve, (
-            "the normalization morphism must land in the selected curve"
-        )
-        normalization = normalization_morphism.domain()
-        contributions = tuple(local_contributions)
-        assert contributions, "a singular curve normalization records its nonzero local defects"
-        assert normalization in ProjectiveSpaces(base) and int(normalization.relative_dimension()) == 1, (
-            "geometric integrality is certified here only through a normalization by the projective line P^1"
-        )
-        self._curve = curve
-        self._normalization_morphism = normalization_morphism
-        self._local_contributions = contributions
-        self._geometrically_integral = True
-        self._connected_normalization = True
-        self.genus_comparison()
-
-    def curve(self):
-        return self._curve
-
-    def normalization_morphism(self):
-        return self._normalization_morphism
-
-    def normalization_curve(self):
-        return self.normalization_morphism().domain()
-
-    def is_geometrically_integral(self) -> bool:
-        return self._geometrically_integral
-
-    def normalization_is_connected(self) -> bool:
-        return self._connected_normalization
-
-    def local_contributions(self):
-        return finite_family(
-            self._local_contributions,
-            name="Local delta contributions of the projective curve normalization",
-        )
-
-    def total_delta_contribution(self):
-        return sum(
-            (int(contribution.weighted_contribution()) for contribution in self._local_contributions),
-            0,
-        )
-
-    def geometric_genus(self):
-        return self.normalization_curve().arithmetic_genus()
-
-    @cached_method
-    def genus_comparison(self):
-        return _CurveGenusComparison(self)
-
-    def _repr_(self) -> str:
-        return f"Normalization data for {self.curve()} via {self.normalization_morphism()}"
 
 
 
@@ -295,7 +229,6 @@ def rational_quintic_with_nonrational_node_normalization():
 
 __all__ = [
     "CurveLocalDeltaContribution",
-    "ProjectiveCurveNormalizationData",
     "rational_quintic_with_nonrational_node_normalization",
     "rational_quintic_with_two_nodes_normalization",
 ]

@@ -78,7 +78,6 @@ from dzack_research.preamble.categories.schemes.varieties import (
 
 from dzack_research.preamble.categories.schemes.curve_genus import (
     CurveLocalDeltaContribution,
-    ProjectiveCurveNormalizationData,
     rational_quintic_with_nonrational_node_normalization,
     rational_quintic_with_two_nodes_normalization,
 )
@@ -162,7 +161,6 @@ __all__ = [
     'distinguished_affine_coverage',
     'Curves',
     'CurveLocalDeltaContribution',
-    'ProjectiveCurveNormalizationData',
     'rational_quintic_with_nonrational_node_normalization',
     'rational_quintic_with_two_nodes_normalization',
     'SchemeMonomorphisms',

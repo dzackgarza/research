@@ -388,7 +388,6 @@ from dzack_research.preamble.categories.schemes import (
     ProductProjectiveSpaces,
     ProductSchemes,
     ProjectiveCompleteIntersections,
-    ProjectiveCurveNormalizationData,
     ProjectiveGeneralLinearGroup2,
     ProjectivePointBlowups,
     ProjectiveSchemes,
