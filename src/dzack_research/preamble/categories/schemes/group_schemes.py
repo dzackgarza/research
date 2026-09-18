@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     CategoryPacketMethods,
     HomCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -172,9 +173,7 @@ class AffineGroupSchemeMorphism(Morphism):
         return self._arrow
 
     def __mul__(self, other):
-        if not isinstance(other, AffineGroupSchemeMorphism):
-            return NotImplemented
-        if other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         return other.domain().Mor(self.codomain())(
             self.underlying_arrow() * other.underlying_arrow()
@@ -356,9 +355,7 @@ class AffineGroupSchemeEquivariantMorphism(Morphism):
         return self._arrow
 
     def __mul__(self, other):
-        if not isinstance(other, AffineGroupSchemeEquivariantMorphism):
-            return NotImplemented
-        if other.codomain() is not self.domain():
+        if not _precomposable(self, other):
             return NotImplemented
         return other.domain().Mor(self.codomain())(
             self.underlying_arrow() * other.underlying_arrow()
