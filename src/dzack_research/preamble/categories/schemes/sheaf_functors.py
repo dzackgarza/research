@@ -12,15 +12,17 @@ one associated sheaf for every cached module image. The topological inverse
 image ``f^{-1}`` remains distinct; finite-atlas inverse images are represented
 in ``categories.schemes.gluing`` before scalar extension to module pullback.
 For a represented closed immersion into projective space this module also
-realizes the object ``i^*O_P(d)``; it does not call that specialization a
-functor before the separate non-affine quasi-coherent Hom supplies its arrow
-action.
+realizes the object ``i^*O_P(d)``.  The quasi-coherent Hom represents arrows
+between such pullback objects by pulling back their ambient line-bundle maps;
+this bounded realization does not claim a pullback functor on arbitrary
+non-affine quasi-coherent sheaves.
 """
 
-from sage.structure.sage_object import SageObject
-
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalIsomorphism,
+)
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
 )
@@ -49,8 +51,20 @@ class _AffineQuasiCoherentFunctor(Functor):
         return self.codomain().associated_sheaf(target_module)
 
     def _apply_morphism(self, morphism):
-        r"""Apply the underlying module functor to an affine sheaf morphism."""
-        return self.underlying_module_functor()(morphism)
+        r"""Apply the module functor and raise the result back to the sheaf Hom."""
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        match morphism:
+            case CategoricalIsomorphism():
+                forward = self.on_morphism(morphism.forward())
+                inverse = self.on_morphism(morphism.inverse())
+                return self.codomain().Core().Mor(source, target)(forward, inverse)
+            case _:
+                pass
+        underlying = self.underlying_module_functor()(
+            morphism.underlying_module_morphism()
+        )
+        return self.codomain().Mor(source, target)(underlying)
 
 
 class AffineQuasiCoherentPullbackFunctor(_AffineQuasiCoherentFunctor):
@@ -67,7 +81,7 @@ class AffineQuasiCoherentDirectImageFunctor(_AffineQuasiCoherentFunctor):
         return f"Affine quasi-coherent direct image along {self.scheme_morphism()}"
 
 
-class AffineQuasiCoherentAdjunction(SageObject):
+class AffineQuasiCoherentAdjunction(Adjunction):
     r"""The affine adjunction ``f^* \dashv f_*`` raised from modules."""
 
     def __init__(self, scheme_morphism) -> None:
@@ -90,40 +104,34 @@ class AffineQuasiCoherentAdjunction(SageObject):
             scheme_morphism.domain(),
             scheme_morphism.codomain(),
         )
+        super().__init__(self._pullback, self._direct_image)
 
     def scheme_morphism(self):
         return self._scheme_morphism
 
-    def left_adjoint(self):
-        return self._pullback
-
-    pullback_functor = left_adjoint
-
-    def right_adjoint(self):
-        return self._direct_image
-
-    direct_image_functor = right_adjoint
+    pullback_functor = Adjunction.left_adjoint
+    direct_image_functor = Adjunction.right_adjoint
 
     def underlying_module_adjunction(self):
         return self._module_adjunction
 
     def unit(self, sheaf):
-        r"""Return ``F -> f_* f^* F`` as its represented module morphism."""
+        r"""Return ``F -> f_* f^* F`` in the quasi-coherent sheaf Hom."""
         pulled = self.left_adjoint().on_object(sheaf)
         pushed = self.right_adjoint().on_object(pulled)
         unit = self.underlying_module_adjunction().unit(sheaf.module())
         if unit.domain() is not sheaf.module() or unit.codomain() is not pushed.module():
             raise ArithmeticError("the affine sheaf adjunction unit has the wrong module endpoints")
-        return unit
+        return self.left_adjoint().domain().Mor(sheaf, pushed)(unit)
 
     def counit(self, sheaf):
-        r"""Return ``f^* f_* G -> G`` as its represented module morphism."""
+        r"""Return ``f^* f_* G -> G`` in the quasi-coherent sheaf Hom."""
         pushed = self.right_adjoint().on_object(sheaf)
         pulled = self.left_adjoint().on_object(pushed)
         counit = self.underlying_module_adjunction().counit(sheaf.module())
         if counit.domain() is not pulled.module() or counit.codomain() is not sheaf.module():
             raise ArithmeticError("the affine sheaf adjunction counit has the wrong module endpoints")
-        return counit
+        return self.left_adjoint().codomain().Mor(pulled, sheaf)(counit)
 
     def _repr_(self):
         return f"Affine quasi-coherent pullback/direct-image adjunction along {self.scheme_morphism()}"

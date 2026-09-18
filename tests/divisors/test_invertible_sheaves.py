@@ -148,6 +148,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     morphism = line.morphism_to(line, local_maps)
     image = morphism.global_sections_map()(section)
 
+    assert morphism in QuasiCoherentSheaves(scheme).Mor(line, line)
     assert image.parent() is line.global_sections()
     assert line.gluing_datum().compatible_section_component(image, 0) == local_maps[0](
         left_generator

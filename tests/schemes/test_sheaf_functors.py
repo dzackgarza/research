@@ -82,7 +82,7 @@ def _scalar_morphism(source, target, scalar):
                 )
             }
         )
-    return source.morphism_to(target, local_maps)
+    return QuasiCoherentSheaves(source.scheme()).Mor(source, target)(local_maps)
 
 
 def test_inverse_image_and_module_pullback_keep_the_structural_map_distinct() -> None:
@@ -125,6 +125,9 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     times_three = _scalar_morphism(middle, target, 3)
     composite = times_three * times_two
     pullback = refinement.module_pullback_functor()
+
+    assert times_two.parent() is QuasiCoherentSheaves(coarse.scheme()).Mor(source, middle)
+    assert times_three.parent() is QuasiCoherentSheaves(coarse.scheme()).Mor(middle, target)
 
     pulled_two = pullback.on_morphism(times_two)
     pulled_three = pullback.on_morphism(times_three)
@@ -226,7 +229,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     target_label = target_module.module_generating_set()[0]
-    times_two = target_module.module_category().Mor(target_module, target_module)(
+    times_two_module = target_module.module_category().Mor(target_module, target_module)(
         {
             target_label: target_module.scalar_multiple(
                 plane.coordinate_algebra()(2),
@@ -234,7 +237,9 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    target_identity = target_module.module_category().Mor(target_module, target_module).identity()
+    target_sheaf_hom = QuasiCoherentSheaves(plane).Mor(target_sheaf, target_sheaf)
+    times_two = target_sheaf_hom(times_two_module)
+    target_identity = target_sheaf_hom.identity()
 
     pulled = pullback.on_object(target_sheaf)
     assert pullback(target_sheaf) is pulled
@@ -244,10 +249,17 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     assert pulled_two * pulled_identity == pulled_two
     assert pulled_identity * pulled_two == pulled_two
 
+    target_identity_iso = QuasiCoherentSheaves(plane).Core().Mor(
+        target_sheaf,
+        target_sheaf,
+    )(target_identity, target_identity)
+    pulled_identity_iso = pullback.on_morphism(target_identity_iso)
+    assert pulled_identity_iso in QuasiCoherentSheaves(line).Core().Mor(pulled, pulled)
+
     source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     source_label = source_module.module_generating_set()[0]
-    times_three = source_module.module_category().Mor(source_module, source_module)(
+    times_three_module = source_module.module_category().Mor(source_module, source_module)(
         {
             source_label: source_module.scalar_multiple(
                 line.coordinate_algebra()(3),
@@ -255,7 +267,9 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    source_identity = source_module.module_category().Mor(source_module, source_module).identity()
+    source_sheaf_hom = QuasiCoherentSheaves(line).Mor(source_sheaf, source_sheaf)
+    times_three = source_sheaf_hom(times_three_module)
+    source_identity = source_sheaf_hom.identity()
 
     pushed = direct.on_object(source_sheaf)
     assert morphism.direct_image(source_sheaf) is pushed
@@ -266,28 +280,37 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
 
 
 def test_affine_quasi_coherent_pullback_is_left_adjoint_to_direct_image() -> None:
+    from dzack_research.preamble.categories.functors.core import Adjunction
+
     plane, line, morphism = _cusp_parametrization()
     adjunction = morphism.quasi_coherent_adjunction()
+    assert isinstance(adjunction, Adjunction)
 
     target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     pulled = adjunction.left_adjoint().on_object(target_sheaf)
     pushed_back = adjunction.right_adjoint().on_object(pulled)
     unit = adjunction.unit(target_sheaf)
-    assert unit.domain() is target_module
-    assert unit.codomain() is pushed_back.module()
+    assert unit.domain() is target_sheaf
+    assert unit.codomain() is pushed_back
+    assert unit in QuasiCoherentSheaves(plane).Mor(target_sheaf, pushed_back)
+    assert unit.underlying_module_morphism().domain() is target_module
+    assert unit.underlying_module_morphism().codomain() is pushed_back.module()
 
     source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     pushed = adjunction.right_adjoint().on_object(source_sheaf)
     pulled_back = adjunction.left_adjoint().on_object(pushed)
     counit = adjunction.counit(source_sheaf)
-    assert counit.domain() is pulled_back.module()
-    assert counit.codomain() is source_module
+    assert counit.domain() is pulled_back
+    assert counit.codomain() is source_sheaf
+    assert counit in QuasiCoherentSheaves(line).Mor(pulled_back, source_sheaf)
+    assert counit.underlying_module_morphism().domain() is pulled_back.module()
+    assert counit.underlying_module_morphism().codomain() is source_module
 
     source_label = source_module.module_generating_set()[0]
     source_generator = source_module.module_generator(source_label)
-    assert counit(
+    assert counit.underlying_module_morphism()(
         pulled_back.module_generator(
             pulled_back.module_generating_set()[0]
         )

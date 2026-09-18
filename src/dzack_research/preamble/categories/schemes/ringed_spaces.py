@@ -3,6 +3,7 @@
 from itertools import combinations
 
 from sage.categories.category import Category
+from sage.categories.morphism import Morphism
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
@@ -11,6 +12,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
+    CategoricalHomset,
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -958,15 +960,137 @@ class _AffineModuleSheafEngine:
         return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
 
 
-class QuasiCoherentSheaves(OwnedParameterizedCategory):
+class AffineQuasiCoherentSheafMorphism(Morphism):
+    r"""A morphism of affine quasi-coherent sheaves, represented by its module map."""
+
+    def __init__(self, parent, module_morphism) -> None:
+        Morphism.__init__(self, parent)
+        source_module = self.domain().module()
+        target_module = self.codomain().module()
+        self._underlying_module_morphism = source_module.module_category().Mor(
+            source_module,
+            target_module,
+        )(module_morphism)
+
+    def underlying_module_morphism(self):
+        return self._underlying_module_morphism
+
+    def kernel(self):
+        return self.underlying_module_morphism().kernel()
+
+    def cokernel(self):
+        return self.underlying_module_morphism().cokernel()
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, AffineQuasiCoherentSheafMorphism)
+            and other.parent() is self.parent()
+            and other.underlying_module_morphism() == self.underlying_module_morphism()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __mul__(self, other):
+        if not isinstance(other, AffineQuasiCoherentSheafMorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().homset_category().Mor(
+            other.domain(),
+            self.codomain(),
+        )(
+            self.underlying_module_morphism()
+            * other.underlying_module_morphism()
+        )
+
+
+class AffineQuasiCoherentSheafHomset(CategoricalHomset):
+    r"""``Hom_{O_X}(M~,N~)`` on affine ``X``, with sheaf endpoints."""
+
+    Element = AffineQuasiCoherentSheafMorphism
+
+    def _element_constructor_(self, module_morphism):
+        match module_morphism:
+            case AffineQuasiCoherentSheafMorphism() if module_morphism.parent() is self:
+                return module_morphism
+            case AffineQuasiCoherentSheafMorphism():
+                if (
+                    module_morphism.domain() is not self.domain()
+                    or module_morphism.codomain() is not self.codomain()
+                ):
+                    raise ValueError("the quasi-coherent sheaf morphism has the wrong endpoints")
+                module_morphism = module_morphism.underlying_module_morphism()
+            case _:
+                pass
+        return self.element_class(self, module_morphism)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom")
+        module = self.domain().module()
+        return self(module.module_category().Mor(module, module).identity())
+
+
+class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
+    r"""Choose the represented Hom realization from the sheaves' defining presentations."""
+
+    def fixed_category_class_for(self, domain, codomain):
+        category = self.base_category()
+        scheme = category.scheme()
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            FiniteAtlasModuleSheafHomset,
+            QuasiCoherentSheavesWithChosenDescentDatum,
+        )
+
+        descent = QuasiCoherentSheavesWithChosenDescentDatum(scheme)
+        if domain in descent and codomain in descent:
+            return FiniteAtlasModuleSheafHomset
+
+        trivialized = category.Invertible().WithChosenTrivialization()
+        if domain in trivialized and codomain in trivialized:
+            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                ChosenTrivializationQuasiCoherentHomset,
+            )
+
+            return ChosenTrivializationQuasiCoherentHomset
+
+        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+            ProductProjectiveSubschemeLineBundle,
+            ProjectiveSubschemeLineBundle,
+            PullbackLineBundleQuasiCoherentHomset,
+        )
+
+        match domain, codomain:
+            case ProjectiveSubschemeLineBundle(), ProjectiveSubschemeLineBundle():
+                return PullbackLineBundleQuasiCoherentHomset
+            case ProductProjectiveSubschemeLineBundle(), ProductProjectiveSubschemeLineBundle():
+                return PullbackLineBundleQuasiCoherentHomset
+            case _:
+                pass
+
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        assert scheme in Schemes(scheme.scheme_base_ring()).Affine(), (
+            "the represented non-affine quasi-coherent Hom requires finite-atlas descent "
+            "or a represented line-bundle pullback presentation"
+        )
+        return AffineQuasiCoherentSheafHomset
+
+
+class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Quasi-coherent ``O_X``-modules on one scheme ``X``.
 
     On an affine ``X = Spec A`` the association ``M |-> M~`` is an equivalence
     onto this category, inverse to global sections (Stacks, Tag 01I8).  The
     represented affine operations are therefore read through ``Modules(A)``
     rather than defined a second time.  For the
-    same reason a morphism of quasi-coherent sheaves on an affine scheme is a
-    morphism of the two modules, so no separate arrow type is introduced.
+    same reason a morphism of quasi-coherent sheaves on an affine scheme is
+    determined by a morphism of the two modules.  The represented sheaf arrow
+    retains the sheaves themselves as categorical endpoints and stores that
+    module map as its affine realization.
 
     On a non-affine represented scheme, quasi-coherent sheaves are carried by
     the finite-atlas/descent objects in ``schemes.gluing``.  The affine
@@ -986,6 +1110,8 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
 
     def an_object(self):
         return self.scheme().structure_sheaf()
+
+    _HomCategory = QuasiCoherentSheafHomCategoryConstruction
 
     def object(self, *, categories=(), construction_data=None, _engine):
         r"""Construct one represented quasi-coherent sheaf through this owner.
@@ -1054,12 +1180,6 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         r"""``M~ |-> M``, the inverse equivalence."""
         assert sheaf in self, "global sections are taken of a sheaf on this scheme"
         return sheaf.global_sections()
-
-    def sheaf_morphisms(self, source, target):
-        r"""``Hom_{O_X}(M~, N~) = Hom_A(M, N)``, where morphisms of these sheaves live."""
-        source_sections = self.global_sections(source)
-        target_sections = self.global_sections(target)
-        return source_sections.module_category().Mor(source_sections, target_sections)
 
     def local_presentation(self, sheaf):
         r"""``O_X^m -> O_X^n``, the presentation whose cokernel is ``F``.

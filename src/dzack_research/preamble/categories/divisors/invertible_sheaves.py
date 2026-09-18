@@ -2,8 +2,12 @@ r"""Invertible sheaves represented by rank-one affine module descent data."""
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.categories.morphism import Morphism
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -157,13 +161,8 @@ class InvertibleSheaf(_ModuleGluingSheafEngine):
     sections = global_sections
 
     def morphism_to(self, target, local_maps):
-        r"""Return the descent morphism represented by the supplied chart maps."""
-
-        if not isinstance(target, InvertibleSheaf):
-            raise TypeError("an invertible-sheaf morphism requires an invertible-sheaf target")
-        if target.cover() is not self.cover():
-            raise ValueError("invertible-sheaf descent morphisms require one affine cover")
-        return self.gluing_datum().Mor(target.gluing_datum())(local_maps)
+        r"""Return the sheaf morphism represented by the supplied chart maps."""
+        return QuasiCoherentSheaves(self.scheme()).Mor(self, target)(local_maps)
 
     @classmethod
     def _from_transition_units(cls, cover, transition_units):
@@ -973,55 +972,24 @@ class ProjectiveSubschemeLineBundle:
 
     def canonical_isomorphism_to(self, target):
         r"""Return the canonical comparison with an equal-degree presentation on this scheme."""
-        return _ProjectiveSubschemeLineBundleIsomorphism(self, target)
+        if not isinstance(target, ProjectiveSubschemeLineBundle):
+            raise TypeError("this line-bundle isomorphism compares two represented O_X(d) bundles")
+        if self.scheme() is not target.scheme():
+            raise ValueError("a line-bundle isomorphism lies over one scheme")
+        if self.degree() != target.degree():
+            raise ValueError("the selected projective line-bundle comparison requires equal degrees")
+        ambient = _chosen_trivialization_isomorphism(
+            self.ambient_line_bundle(),
+            target.ambient_line_bundle(),
+        )
+        sheaves = QuasiCoherentSheaves(self.scheme())
+        forward = sheaves.Mor(self, target)(ambient.forward())
+        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        return sheaves.Core().Mor(self, target)(forward, inverse)
 
     def _repr_(self):
         return f"O({self.degree()}) restricted to {self.scheme()}"
 
-
-class _ProjectiveSubschemeLineBundleIsomorphism(SageObject):
-    r"""The selected identity of two represented ``O_X(d)`` pullback presentations.
-
-    Two objects here carry the same closed immersion and the same integer
-    degree but may have arisen by different tensor constructions.  Their
-    canonical comparison is induced by the identity of ``O_P(d)`` before
-    pullback.  The source and target remain distinct construction objects.
-    """
-
-    def __init__(self, source, target) -> None:
-        if not isinstance(source, ProjectiveSubschemeLineBundle) or not isinstance(
-            target, ProjectiveSubschemeLineBundle
-        ):
-            raise TypeError("this line-bundle isomorphism compares two represented O_X(d) bundles")
-        if source.scheme() is not target.scheme():
-            raise ValueError("a line-bundle isomorphism lies over one scheme")
-        if source.degree() != target.degree():
-            raise ValueError("the selected projective line-bundle comparison requires equal degrees")
-        self._source = source
-        self._target = target
-
-    def domain(self):
-        return self._source
-
-    source = domain
-
-    def codomain(self):
-        return self._target
-
-    target = codomain
-
-    def inverse(self):
-        return type(self)(self.codomain(), self.domain())
-
-    def __mul__(self, other):
-        if not isinstance(other, _ProjectiveSubschemeLineBundleIsomorphism):
-            return NotImplemented
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        return type(self)(other.domain(), self.codomain())
-
-    def _repr_(self):
-        return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
 
 def _projective_o(projective_space, degree, *, base_change_image=None):
     r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
@@ -1421,26 +1389,11 @@ class ProductProjectiveSubschemeLineBundle:
 
     def canonical_isomorphism_to(self, target):
         r"""Return the canonical comparison with an equal-multidegree presentation on this scheme."""
-        return _ProductProjectiveSubschemeLineBundleIsomorphism(self, target)
-
-    def _repr_(self):
-        degrees = tuple(
-            self.multidegree()[label] for label in self.multidegree().index_set()
-        )
-        return f"O{degrees} restricted to {self.scheme()}"
-
-
-class _ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
-    r"""The canonical comparison of equal-multidegree restricted line bundles."""
-
-    def __init__(self, source, target) -> None:
-        if not isinstance(source, ProductProjectiveSubschemeLineBundle) or not isinstance(
-            target, ProductProjectiveSubschemeLineBundle
-        ):
+        if not isinstance(target, ProductProjectiveSubschemeLineBundle):
             raise TypeError("this comparison requires restricted multiprojective line bundles")
-        if source.scheme() is not target.scheme():
+        if self.scheme() is not target.scheme():
             raise ValueError("a line-bundle comparison lies over one scheme")
-        source_degrees = source.multidegree()
+        source_degrees = self.multidegree()
         target_degrees = target.multidegree()
         if source_degrees.index_set() is not target_degrees.index_set():
             raise ValueError("the two line bundles use different factor index sets")
@@ -1449,31 +1402,232 @@ class _ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
             for label in source_degrees.index_set()
         ):
             raise ValueError("the selected line-bundle comparison requires equal multidegrees")
-        self._source = source
-        self._target = target
+        ambient = _chosen_trivialization_isomorphism(
+            self.ambient_line_bundle(),
+            target.ambient_line_bundle(),
+        )
+        sheaves = QuasiCoherentSheaves(self.scheme())
+        forward = sheaves.Mor(self, target)(ambient.forward())
+        inverse = sheaves.Mor(target, self)(ambient.inverse())
+        return sheaves.Core().Mor(self, target)(forward, inverse)
 
-    def domain(self):
-        return self._source
+    def _repr_(self):
+        degrees = tuple(
+            self.multidegree()[label] for label in self.multidegree().index_set()
+        )
+        return f"O{degrees} restricted to {self.scheme()}"
 
-    source = domain
 
-    def codomain(self):
-        return self._target
+def _line_bundle_identity_local_maps(source, target):
+    r"""Return the chartwise basis identifications of two line bundles on one trivialization."""
+    if source.gluing_datum() is not target.gluing_datum():
+        raise ValueError("the represented line-bundle Hom requires one chosen trivializing cover")
+    return {
+        index: source.local_module(index).module_category().Mor(
+            source.local_module(index),
+            target.local_module(index),
+        )(
+            {
+                next(iter(source.local_module(index).module_generating_set())):
+                    _rank_one_generator(target.local_module(index))
+            }
+        )
+        for index in source.gluing_datum().chart_index_set()
+    }
 
-    target = codomain
 
-    def inverse(self):
-        return type(self)(self.codomain(), self.domain())
+class ChosenTrivializationQuasiCoherentMorphism(Morphism):
+    r"""A line-bundle sheaf morphism represented by compatible maps in one trivialization."""
+
+    def __init__(self, parent, local_maps) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
+        if source.gluing_datum() is not target.gluing_datum():
+            raise ValueError("line-bundle sheaf morphisms require one represented trivializing cover")
+        match source:
+            case InvertibleSheaf():
+                if not isinstance(target, InvertibleSheaf):
+                    raise TypeError("the two line bundles use different descent presentations")
+                self._descent_morphism = source.gluing_datum().Mor(
+                    target.gluing_datum()
+                )(local_maps)
+            case FiniteAtlasInvertibleSheaf():
+                if not isinstance(target, FiniteAtlasInvertibleSheaf):
+                    raise TypeError("the two line bundles use different descent presentations")
+                source_sheaf = source.module_sheaf()
+                target_sheaf = target.module_sheaf()
+                self._descent_morphism = QuasiCoherentSheaves(source.scheme()).Mor(
+                    source_sheaf,
+                    target_sheaf,
+                )(local_maps)
+            case _:
+                raise TypeError("the selected trivialization has no represented descent Hom")
+
+    def descent_morphism(self):
+        return self._descent_morphism
+
+    def local_map(self, index):
+        return self.descent_morphism().local_map(index)
+
+    @cached_method
+    def global_sections_map(self):
+        r"""Return the induced map on the compatible-section modules of the trivializations."""
+        match self.domain():
+            case InvertibleSheaf():
+                source_datum = self.domain().gluing_datum()
+                target_datum = self.codomain().gluing_datum()
+            case FiniteAtlasInvertibleSheaf():
+                source_datum = self.domain().module_sheaf().gluing_datum()
+                target_datum = self.codomain().module_sheaf().gluing_datum()
+            case _:
+                raise TypeError("the selected trivialization has no represented section descent")
+        source_sections = source_datum.compatible_sections()
+        target_sections = target_datum.compatible_sections()
+
+        def image(section):
+            return target_datum.compatible_section(
+                {
+                    index: self.local_map(index)(
+                        source_datum.compatible_section_component(section, index)
+                    )
+                    for index in source_datum.chart_index_set()
+                }
+            )
+
+        return source_sections.module_category().Mor(
+            source_sections,
+            target_sections,
+        ).elementwise(image, verify_linearity=False)
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ChosenTrivializationQuasiCoherentMorphism)
+            and other.parent() is self.parent()
+            and all(
+                self.local_map(index) == other.local_map(index)
+                for index in self.domain().gluing_datum().chart_index_set()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
 
     def __mul__(self, other):
-        if not isinstance(other, _ProductProjectiveSubschemeLineBundleIsomorphism):
+        if not isinstance(other, ChosenTrivializationQuasiCoherentMorphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return type(self)(other.domain(), self.codomain())
+        return self.parent().homset_category().Mor(
+            other.domain(),
+            self.codomain(),
+        )(
+            {
+                index: self.local_map(index) * other.local_map(index)
+                for index in other.domain().gluing_datum().chart_index_set()
+            }
+        )
 
-    def _repr_(self) -> str:
-        return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
+
+class ChosenTrivializationQuasiCoherentHomset(CategoricalHomset):
+    r"""The QCoh Hom of line bundles carrying one represented trivializing cover."""
+
+    Element = ChosenTrivializationQuasiCoherentMorphism
+
+    def _element_constructor_(self, local_maps):
+        match local_maps:
+            case ChosenTrivializationQuasiCoherentMorphism() if local_maps.parent() is self:
+                return local_maps
+            case ChosenTrivializationQuasiCoherentMorphism():
+                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
+                    raise ValueError("the line-bundle morphism has the wrong endpoints")
+                local_maps = {
+                    index: local_maps.local_map(index)
+                    for index in self.domain().gluing_datum().chart_index_set()
+                }
+            case _:
+                pass
+        return self.element_class(self, local_maps)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom")
+        return self(_line_bundle_identity_local_maps(self.domain(), self.domain()))
+
+
+def _chosen_trivialization_isomorphism(source, target):
+    r"""Return the basis-preserving isomorphism of equal represented line-bundle trivializations."""
+    sheaves = QuasiCoherentSheaves(source.scheme())
+    forward = sheaves.Mor(source, target)(_line_bundle_identity_local_maps(source, target))
+    inverse = sheaves.Mor(target, source)(_line_bundle_identity_local_maps(target, source))
+    return sheaves.Core().Mor(source, target)(forward, inverse)
+
+
+class PullbackLineBundleQuasiCoherentMorphism(Morphism):
+    r"""The pullback of a represented ambient line-bundle morphism along one closed immersion."""
+
+    def __init__(self, parent, ambient_morphism) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
+        if source.pullback_morphism() is not target.pullback_morphism():
+            raise ValueError("pullback line-bundle morphisms require one selected scheme morphism")
+        ambient_source = source.ambient_line_bundle()
+        ambient_target = target.ambient_line_bundle()
+        ambient_sheaves = QuasiCoherentSheaves(ambient_source.scheme())
+        self._ambient_morphism = ambient_sheaves.Mor(
+            ambient_source,
+            ambient_target,
+        )(ambient_morphism)
+
+    def ambient_morphism(self):
+        return self._ambient_morphism
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, PullbackLineBundleQuasiCoherentMorphism)
+            and other.parent() is self.parent()
+            and other.ambient_morphism() == self.ambient_morphism()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __mul__(self, other):
+        if not isinstance(other, PullbackLineBundleQuasiCoherentMorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().homset_category().Mor(
+            other.domain(),
+            self.codomain(),
+        )(self.ambient_morphism() * other.ambient_morphism())
+
+
+class PullbackLineBundleQuasiCoherentHomset(CategoricalHomset):
+    r"""The QCoh Hom represented by pullback from ambient line-bundle morphisms."""
+
+    Element = PullbackLineBundleQuasiCoherentMorphism
+
+    def _element_constructor_(self, ambient_morphism):
+        match ambient_morphism:
+            case PullbackLineBundleQuasiCoherentMorphism() if ambient_morphism.parent() is self:
+                return ambient_morphism
+            case PullbackLineBundleQuasiCoherentMorphism():
+                if ambient_morphism.domain() is not self.domain() or ambient_morphism.codomain() is not self.codomain():
+                    raise ValueError("the pullback line-bundle morphism has the wrong endpoints")
+                ambient_morphism = ambient_morphism.ambient_morphism()
+            case _:
+                pass
+        return self.element_class(self, ambient_morphism)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom")
+        ambient = self.domain().ambient_line_bundle()
+        return self(QuasiCoherentSheaves(ambient.scheme()).Mor(ambient, ambient).identity())
 
 
 def _product_projective_o(projective_product, degrees, *, base_change_image=None):

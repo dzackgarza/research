@@ -150,6 +150,23 @@ def test_projective_closed_subscheme_restriction_is_the_closed_immersion_pullbac
     assert restricted.degree() == 2
 
 
+def test_restricted_projective_line_bundle_comparison_is_a_quasi_coherent_isomorphism() -> None:
+    plane = ProjectiveSpaces(QQ)(2)
+    x, y, z = plane.homogeneous_coordinate_generators()
+    conic = plane.closed_subscheme(x * z - y**2)
+    left = plane.O(1).restrict_to(conic)
+    right = plane.O(1).restrict_to(conic)
+
+    comparison = left.canonical_isomorphism_to(right)
+    sheaves = QuasiCoherentSheaves(conic)
+
+    assert comparison in sheaves.Core().Mor(left, right)
+    assert comparison.forward() in sheaves.Mor(left, right)
+    assert comparison.inverse() in sheaves.Mor(right, left)
+    assert comparison.forward().ambient_morphism().domain() is left.ambient_line_bundle()
+    assert comparison.forward().ambient_morphism().codomain() is right.ambient_line_bundle()
+
+
 def test_projection_pullback_places_degree_in_the_selected_product_factor() -> None:
     labels = finite_ordered_set(("left", "right"))
     line = ProjectiveSpaces(QQ)(1)
