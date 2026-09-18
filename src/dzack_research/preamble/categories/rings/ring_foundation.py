@@ -1487,6 +1487,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""
 
+            class _HomCategory(HomCategoryConstruction):
+                def fixed_category_class(self):
+                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                        _ExactFieldHomset,
+                    )
+
+                    return _ExactFieldHomset
+
             @classmethod
             def _repr_object_names(cls):
                 return "fields"
@@ -1530,11 +1538,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def exact_morphisms_to(self, codomain):
                     r"""Return the exact-field morphism object from this field to ``codomain``."""
-                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-                        _exact_field_homset,
-                    )
-
-                    return _exact_field_homset(self, codomain)
+                    return OwnedFields().HomCategory().Of(self, codomain)
 
                 def exact_embeddings(self, codomain):
                     r"""Return the exact embeddings of this field into ``codomain``."""

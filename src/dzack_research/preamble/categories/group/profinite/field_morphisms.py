@@ -13,7 +13,6 @@ from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
 from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
@@ -189,9 +188,9 @@ class ExactFieldMorphism(Morphism):
 class _ExactFieldHomset(CategoricalHomset):
     Element = ExactFieldMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         CategoricalHomset.__init__(
-            self, OwnedFields().HomCategory(), domain, codomain
+            self, hom_family, domain, codomain
         )
 
     def _element_constructor_(self, datum):
@@ -220,12 +219,6 @@ class _ExactFieldHomset(CategoricalHomset):
 
     def _repr_(self) -> str:
         return f"Exact field morphisms from {self.domain()} to {self.codomain()}"
-
-
-@cached_function
-def _exact_field_homset(domain, codomain) -> _ExactFieldHomset:
-    return _ExactFieldHomset(domain, codomain)
-
 
 def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMorphism:
     r"""Wrap an exact Sage field map with the stated owned endpoints."""

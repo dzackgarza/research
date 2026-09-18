@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     GaloisRestrictionMap,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets import Sets
 
 
@@ -112,6 +113,7 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
     separate_identity = closure.exact_morphisms_to(closure).identity()
 
     assert closure.exact_morphisms_to(closure) is homset
+    assert homset is OwnedFields().HomCategory().Of(closure, closure)
     assert identity == same_identity
     assert hash(identity) == hash(same_identity)
     assert identity == separate_identity
