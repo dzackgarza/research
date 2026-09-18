@@ -117,41 +117,9 @@ def FiniteGaloisSubgroup(supergroup, elements, description):
     return PredicateSubgroups(supergroup)(lambda element: element in element_set, description)
 
 
-class FiniteElementConjugacyClass(SageObject):
-    r"""The actual conjugacy orbit of an element in a finite quotient."""
-
-    def __init__(self, supergroup, representative) -> None:
-        self._supergroup = supergroup
-        self._representative = supergroup(representative)
-        self._elements = frozenset(
-            element * self._representative * element.inverse() for element in supergroup
-        )
-
-    def supergroup(self):
-        return self._supergroup
-
-    def representative(self):
-        return self._representative
-
-    def __contains__(self, element) -> bool:
-        return element in self._elements
-
-    def elements(self):
-        return Set(self._elements)
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteElementConjugacyClass)
-            and other._supergroup is self._supergroup
-            and other._elements == self._elements
-        )
-
-    def __hash__(self) -> int:
-        return hash((id(self._supergroup), self._elements))
-
-    def _repr_(self) -> str:
-        return f"Conjugacy class of {self._representative} in {self._supergroup}"
-
+def FiniteElementConjugacyClass(supergroup, representative):
+    r"""Return the actual conjugacy orbit of ``representative`` in a finite group."""
+    return supergroup.conjugacy_class(representative)
 
 
 

@@ -396,6 +396,13 @@ class OrbitSets(OwnedCategory):
         def points(self):
             return self.parent().orbit_points(self)
 
+        elements = points
+
+        def acting_group(self):
+            return self.parent().g_set().acting_group()
+
+        supergroup = acting_group
+
         def __eq__(self, other) -> bool:
             return other in self.parent() and other._index == self._index
 

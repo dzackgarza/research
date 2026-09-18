@@ -2496,6 +2496,26 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     name="Conjugacy-class representatives",
                 )
 
+            @cached_method
+            def conjugation_g_set(self):
+                r"""The finite ``G``-set ``G`` under conjugation."""
+                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+                points = finite_ordered_set(tuple(self))
+                return FiniteGSets(self)(
+                    points,
+                    lambda group_element, point: group_element * point * group_element.inverse(),
+                )
+
+            @cached_method
+            def conjugacy_classes(self):
+                r"""The orbit set of the conjugation action of this finite group."""
+                return self.conjugation_g_set().orbits()
+
+            def conjugacy_class(self, representative):
+                r"""The actual conjugacy orbit of ``representative``."""
+                return self.conjugacy_classes().orbit_of(self(representative))
+
             def class_function(self, codomain, values, *, representatives=None):
                 r"""Return the class function on this finite group with the stated values."""
                 from dzack_research.preamble.categories.group.class_functions import (
