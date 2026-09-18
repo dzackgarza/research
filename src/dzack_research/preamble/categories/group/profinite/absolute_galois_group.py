@@ -53,6 +53,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class AbsoluteGaloisGroupElement(Element):
@@ -234,15 +235,15 @@ class FrobeniusElement(AbsoluteGaloisGroupElement):
         super().__init__(parent, frobenius_exponent=ZZ(exponent))
 
 
-class ElementConjugacyClass(SageObject):
-    r"""The conjugacy class of a represented global automorphism."""
+class _AbsoluteElementConjugacyClassEngine:
+    r"""Private realization of a represented absolute-Galois conjugacy orbit."""
 
-    def __init__(self, supergroup, representative) -> None:
-        self._supergroup = supergroup
+    def __init__(self, representative, **rest) -> None:
         self._representative = representative
+        super().__init__(**rest)
 
     def supergroup(self):
-        return self._supergroup
+        return self.codomain()
 
     def ambient(self):
         r"""Return the ambient absolute Galois group ``G_K``."""
@@ -251,35 +252,33 @@ class ElementConjugacyClass(SageObject):
     def representative(self):
         return self._representative
 
-    def __contains__(self, element) -> bool:
-        assert self._supergroup.is_abelian() is True, (
+    def _repr_(self) -> str:
+        return f"Conjugacy class of {self._representative} in {self.supergroup()}"
+
+
+def ElementConjugacyClass(supergroup, representative):
+    r"""The represented conjugacy orbit of ``representative`` as a subset of ``G_K``.
+
+    In the currently decidable absolute-Galois regime the group is abelian, so
+    the orbit is the singleton ``{representative}``.  Outside that regime the
+    predicate retains the existing assertion frontier rather than identifying
+    conjugacy with equality.
+    """
+    representative = supergroup(representative)
+
+    def is_conjugate(element):
+        assert supergroup.is_abelian() is True, (
             "conjugacy membership is represented here when the absolute Galois group is abelian"
         )
-        if element not in self._supergroup:
-            return False
-        return element == self._representative
+        return supergroup(element) == representative
 
-    def __eq__(self, other) -> bool:
-        if self is other:
-            return True
-        if not isinstance(other, ElementConjugacyClass):
-            return False
-        if other._supergroup is not self._supergroup:
-            return False
-        assert self._supergroup.is_abelian() is True, (
-            "conjugacy-class equality is represented here when the absolute Galois group is abelian"
-        )
-        return other._representative == self._representative
+    inclusion = supergroup.condition_set(is_conjugate).inclusion()
+    return Sets().Subobjects(supergroup).object(
+        inclusion,
+        _engine=_AbsoluteElementConjugacyClassEngine,
+        construction_data={"representative": representative},
+    )
 
-    def __hash__(self) -> int:
-        if self._supergroup.is_abelian() is not True:
-            raise TypeError(
-                "undecided absolute-Galois conjugacy classes are not hashable"
-            )
-        return hash((id(self._supergroup), self._representative))
-
-    def _repr_(self) -> str:
-        return f"Conjugacy class of {self._representative} in {self._supergroup}"
 
 def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
     r"""Read ``embedding`` as an element of the exact field Hom from ``domain`` to ``codomain``.
