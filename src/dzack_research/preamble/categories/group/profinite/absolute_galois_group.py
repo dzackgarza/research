@@ -85,7 +85,7 @@ class AbsoluteGaloisGroupElement(Element):
 
     @cached_method
     def as_morphism(self):
-        field_endomorphisms = self.parent().arrow_set()
+        field_endomorphisms = self.parent().field_automorphism_hom()
         if self._exact_action is not None:
             return field_endomorphisms(self._exact_action._engine_morphism_crossing())
         return field_endomorphisms.elementwise(lambda element: self(element))
@@ -440,6 +440,14 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
     def base_embedding(self) -> ExactFieldMorphism:
         return self._embedding
+
+    @cached_method
+    def field_automorphism_hom(self):
+        r"""The owned field Hom ``Hom(\bar K,\bar K)`` containing the exact actions of elements of ``G_K``."""
+        return self.algebraic_closure().exact_morphisms_to(self.algebraic_closure())
+
+    # Compatibility spelling while this realization still inherits the restricted-Hom host.
+    arrow_set = field_automorphism_hom
 
     geometric_point = base_embedding
 

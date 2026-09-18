@@ -91,6 +91,7 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert tuple(group.topological_group_generators()) == (frobenius,)
 
     field_endomorphisms = group.arrow_set()
+    assert field_endomorphisms is group.field_automorphism_hom()
     assert not isinstance(group, Homset)
     assert field_endomorphisms in group.super_categories()
     assert frobenius.as_morphism().parent() is field_endomorphisms
