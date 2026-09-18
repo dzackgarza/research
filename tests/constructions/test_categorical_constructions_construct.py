@@ -69,9 +69,25 @@ def test_pushouts_and_fiber_products_of_finite_sets() -> None:
 def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
     three = Sets.Δ[2]
     subobjects = Sets().Subobjects(three)
+    singleton = three.power_set()((three(0),))
+    pair = three.power_set()((three(0), three(1)))
     assert subobjects in Cat()
     assert subobjects.cardinality() == 8
     assert Sets().Subobjects(three).cardinality() == 8
+    assert singleton in subobjects
+    assert singleton.inclusion().codomain() is three
+    assert singleton.underlying_set() is singleton.inclusion().domain()
+    assert singleton.category() is subobjects
+    factor = subobjects.Mor(singleton, pair)
+    assert factor.domain() is singleton
+    assert factor.codomain() is pair
+    assert factor(singleton.inclusion().factor_through(pair.inclusion())).left().domain() is singleton.underlying_set()
+
+    four = Sets.Δ[3]
+    same_points = four.power_set()((four(0),))
+    assert same_points.inclusion().codomain() is four
+    assert singleton != same_points
+    assert singleton.inclusion() != same_points.inclusion()
 
 
 # ---------------------------------------------------------------------------

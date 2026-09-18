@@ -1102,6 +1102,92 @@ class SubobjectCategory(OwnedCategoryBase):
         return f"Subobjects of {self.base_object()}"
 
 
+class SetSubobjectCategory(SliceCategory):
+    r"""The represented subset inclusions ``A -> X`` as the monic objects of ``Set/X``.
+
+    Sets are the case where the subobject itself is naturally represented by
+    its inclusion morphism rather than by a separately structured source
+    parent.  Reuse the ordinary slice object's walking-arrow representation:
+    no second subset wrapper or arrow registry is introduced.
+    """
+
+    def super_categories(self):
+        return [
+            SliceCategory(self.base_category(), self.base_object()),
+            self.base_category().MonomorphismArrowCategory(),
+        ]
+
+    def admits_arrow(self, arrow: Morphism) -> bool:
+        return (
+            SliceCategory.admits_arrow(self, arrow)
+            and self.base_category().MonomorphismArrowCategory().admits_arrow(arrow)
+        )
+
+    def cardinality(self):
+        r"""The number of represented subsets of the fixed base set."""
+        return self.base_object().power_set().cardinality()
+
+    class ParentMethods:
+        def inclusion(self):
+            return self.arrow()
+
+        def underlying_set(self):
+            return self.source_object()
+
+        def domain(self):
+            return self.source_object()
+
+        def codomain(self):
+            return self.target_object()
+
+        def __contains__(self, member):
+            return member in self.inclusion()
+
+        def __iter__(self):
+            return iter(self.underlying_set())
+
+        def cardinality(self):
+            return self.underlying_set().cardinality()
+
+        def characteristic_morphism(self):
+            return self.inclusion().characteristic_morphism()
+
+        def factor_through_or_none(self, target):
+            return self.inclusion().factor_through_or_none(target.inclusion())
+
+        def factor_through(self, target):
+            return self.inclusion().factor_through(target.inclusion())
+
+        def __le__(self, other):
+            return self.inclusion() <= other.inclusion()
+
+        def union(self, other):
+            return self.category()(self.inclusion().union(other.inclusion()))
+
+        def intersection(self, other):
+            return self.category()(self.inclusion().intersection(other.inclusion()))
+
+        def difference(self, other):
+            return self.category()(self.inclusion().difference(other.inclusion()))
+
+        def symmetric_difference(self, other):
+            return self.category()(self.inclusion().symmetric_difference(other.inclusion()))
+
+        def complement(self):
+            return self.category()(self.inclusion().complement())
+
+        def __or__(self, other):
+            return self.union(other)
+
+        def __eq__(self, other):
+            return other in self.category() and self.inclusion() == other.inclusion()
+
+        __hash__ = None
+
+        def _repr_(self):
+            return repr(self.inclusion())
+
+
 class SuperobjectCategory(CosliceCategory):
     r"""The category of represented superobjects ``X -> B`` that are monic."""
 
@@ -1459,6 +1545,7 @@ __all__ = [
     "CoveringObjectCategory",
     "SliceCategory",
     "SubobjectCategory",
+    "SetSubobjectCategory",
     "SubobjectHomset",
     "SubobjectMorphism",
     "SuperobjectCategory",

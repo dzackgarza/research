@@ -578,6 +578,14 @@ class Sets(OwnedCategory):
         return _set_mor_category(domain, codomain)
 
     class SubcategoryMethods:
+        def Subobjects(self, base_object: Parent) -> Category:
+            r"""Return the monomorphism subcategory of the slice over ``base_object``."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SetSubobjectCategory,
+            )
+
+            return SetSubobjectCategory(self, base_object)
+
         def Finite(self) -> Category:
             r"""Return this category with the axiom that its objects are finite."""
             return self._with_axiom("Finite")
@@ -1567,14 +1575,15 @@ class PowerSets(OwnedCategory):
         def from_predicate(
             self,
             predicate: Callable[[SourcePointT], bool],
-        ) -> SetInclusion:
+        ):
             r"""The subset \(\{x\in X : P(x)\}\) with its inclusion."""
-            return self.base_set().condition_set(predicate).inclusion()
+            inclusion = self.base_set().condition_set(predicate).inclusion()
+            return Sets().Subobjects(self.base_set())(inclusion)
 
         def from_characteristic_morphism(
             self,
             characteristic_morphism: SetMorphism,
-        ) -> SetInclusion:
+        ):
             r"""The subset classified by \(\chi\colon X\to\Delta[1]\): where \(\chi=1\)."""
             if characteristic_morphism.parent() is not self.characteristic_homset():
                 raise ValueError("a characteristic morphism must lie in Hom(X, Δ[1])")
@@ -1595,7 +1604,8 @@ class PowerSets(OwnedCategory):
                 point = base(member)
                 if point not in normalized:
                     normalized.append(point)
-            return SetInclusion(finite_ordered_set(tuple(normalized)), base)
+            inclusion = SetInclusion(finite_ordered_set(tuple(normalized)), base)
+            return Sets().Subobjects(base)(inclusion)
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -1603,10 +1613,13 @@ class PowerSets(OwnedCategory):
 
         def _element_constructor_(self, candidate):
             r"""Admit a subset: an inclusion into \(X\), \(X\) itself, or finitely many members."""
+            subobjects = Sets().Subobjects(self.base_set())
+            if candidate in subobjects:
+                return candidate
             if isinstance(candidate, SetInclusion):
                 if candidate.codomain() is not self.base_set():
                     raise ValueError("the subobject has a different base set")
-                return candidate
+                return subobjects(candidate)
             if candidate is self.base_set():
                 return self.from_predicate(lambda _member: True)
             if candidate in Sets():
@@ -1629,6 +1642,8 @@ class PowerSets(OwnedCategory):
             element constructor, not a subset: ``P(X)((x, y))`` builds one.
             """
             base = self.base_set()
+            if candidate in Sets().Subobjects(base):
+                return True
             match candidate:
                 case _ if candidate is base:
                     return True
@@ -1643,10 +1658,10 @@ class PowerSets(OwnedCategory):
                 case _:
                     return False
 
-        def top(self) -> SetInclusion:
+        def top(self):
             return self(self.base_set())
 
-        def bottom(self) -> SetInclusion:
+        def bottom(self):
             return self(())
 
         def inverse_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
@@ -1662,7 +1677,8 @@ class PowerSets(OwnedCategory):
             target = morphism.codomain().power_set()
 
             def direct_image(subset):
-                return SetInclusion(subset.domain().image_set(morphism), morphism.codomain())
+                inclusion = SetInclusion(subset.underlying_set().image_set(morphism), morphism.codomain())
+                return Sets().Subobjects(morphism.codomain())(inclusion)
 
             return Sets().Mor(self, target)(direct_image)
 
